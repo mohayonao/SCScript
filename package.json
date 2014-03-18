@@ -1,0 +1,37 @@
+{
+  "name": "scscript",
+  "version": "0.0.0",
+  "author": "Nao Yonamine <mohayonao@gmail.com>",
+  "homepage": "http://mohayonao.github.io/SCScript/",
+  "bugs": "https://github.com/mohayonao/SCScript/issues",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mohayonao/SCScript.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/mohayonao/SCScript/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "main": "index.js",
+  "devDependencies": {
+    "mocha": "~1.18.1",
+    "chai": "~1.9.0",
+    "sinon": "~1.9.0",
+    "sinon-chai": "~2.5.0",
+    "istanbul": "~0.2.6",
+    "coveralls": "~2.10.0",
+    "grunt": "~0.4.4",
+    "grunt-contrib-connect": "~0.7.1",
+    "grunt-contrib-jshint": "~0.9.2",
+    "grunt-este-watch": "~0.1.15",
+    "grunt-plato": "~1.0.0"
+  },
+  "scripts": {
+    "test": "grunt travis --verbose && cat ./docs/report/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+  }
+}

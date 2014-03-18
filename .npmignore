@@ -1,0 +1,9 @@
+.git
+.DS_STORE
+.editorconfig
+.gitignore
+.jshint.json
+.travis.yml
+node_modules/
+docs/
+gruntfile.js

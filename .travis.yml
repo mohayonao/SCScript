@@ -1,0 +1,14 @@
+env: npm_config_mpg123_backend=dummy
+language: node_js
+node_js:
+  - 0.10
+before_script:
+  - npm install -g grunt-cli
+
+notifications:
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/e77d4e5ded8da988d7b0
+    on_success: change
+    on_failure: always
+    on_start: false

@@ -330,17 +330,16 @@ module.exports = function(grunt) {
 
   function makeBrowserTest() {
     var tests, tmpl;
-    if (grunt.file.exists("docs/report")) {
-      tests = grunt.file.expand("src/sc/**/*_test.js");
-      tests = tests.sort(testSorter).map(function(filepath) {
-        return "    <script src=\"../../../" + filepath + "\"></script>";
-      });
 
-      tmpl = grunt.file.read("docs/report/test/index.tmpl");
-      tmpl = tmpl.replace("#{TESTS}", tests.join("\n"));
+    tests = grunt.file.expand("src/sc/**/*_test.js");
+    tests = tests.sort(testSorter).map(function(filepath) {
+      return "    <script src=\"../../../" + filepath + "\"></script>";
+    });
 
-      grunt.file.write("docs/report/test/index.html", tmpl);
-    }
+    tmpl = grunt.file.read("assets/index.tmpl");
+    tmpl = tmpl.replace("#{TESTS}", tests.join("\n"));
+
+    grunt.file.write("docs/report/test/index.html", tmpl);
   }
 
   grunt.registerTask("build", function() {
@@ -380,7 +379,7 @@ module.exports = function(grunt) {
     );
 
     grunt.file.write("build/scscript.js", result.join(""));
-    
+
     makeBrowserTest();
   });
 

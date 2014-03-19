@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="extras/mocha.css">
+    <script src="extras/jquery.min.js"></script>
+    <script src="extras/mocha.js"></script>
+    <script src="extras/chai.js"></script>
+    <script src="extras/sinon-1.9.0.js"></script>
+    <script src="extras/sinon-chai.js"></script>
+    <script src="../../../build/scscript.js"></script>
+    <script>
+      window.require = function() {
+      };
+      window.expect = chai.expect;
+      SCScript.install(function(sc) {
+        window.sc = sc;
+      });
+      mocha.setup("bdd");
+      $(function() {
+        mocha.run();
+      });
+    </script>
+    <script src="../../../src/sc/sc_test.js"></script>
+  </head>
+  <body>
+    <div id="mocha"></div>
+  </body>
+</html>

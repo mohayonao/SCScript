@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/klass.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/klass.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">123.44</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">179</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">46.25</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.52</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/* jshint latedef: false */
+(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./sc&quot;);
+
+  sc.lang.klass = {};
+
+  var object_keys = global.Object.keys;
+  var metaClasses = {}, classes = {};
+
+  var extend = function(constructor, superMetaClass) {
+    function F() {}
+    F.prototype = superMetaClass._Spec.prototype;
+    constructor.prototype = new F();
+
+    function Meta_F() {}
+    Meta_F.prototype = superMetaClass._MetaSpec.prototype;
+
+    function MetaSpec() {}
+    MetaSpec.prototype = new Meta_F();
+
+    constructor.metaClass = new Class(MetaSpec);
+  };
+
+  var def = function(spec, classMethods, instanceMethods) {
+    object_keys(spec).forEach(function(methodName) {
+      if (methodName === &quot;constructor&quot;) {
+        return;
+      }
+      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
+        classMethods[methodName.substr(1)] = spec[methodName];
+      } else {
+        instanceMethods[methodName] = spec[methodName];
+      }
+    });
+  };
+
+  sc.lang.klass.define = function(className, superClassName, spec, opts) {
+    var ch0, constructor, metaClass;
+
+    ch0 = className.charCodeAt(0);
+    if (ch0 &lt; 0x41 || 0x5a &lt; ch0) { // faster test than !/^[A-Z]/.test(className)
+      throw new Error(
+        &quot;sc.lang.klass.define: classname should be CamelCase, but got &#039;&quot; + className + &quot;&#039;&quot;
+      );
+    }
+
+    if (metaClasses.hasOwnProperty(className) &amp;&amp; !(opts &amp;&amp; opts.force)) {
+      throw new Error(
+        &quot;sc.lang.klass.define: class &#039;&quot; + className + &quot;&#039; is already registered.&quot;
+      );
+    }
+
+    spec = spec || {};
+    constructor = spec.hasOwnProperty(&quot;constructor&quot;) ? spec.constructor : function() {};
+
+    if (className !== &quot;Object&quot;) {
+      if (!metaClasses.hasOwnProperty(superClassName)) {
+        throw new Error(
+          &quot;sc.lang.klass.define: superclass &#039;&quot; + superClassName + &quot;&#039; is not registered.&quot;
+        );
+      }
+      extend(constructor, metaClasses[superClassName]);
+    }
+
+    metaClass = constructor.metaClass;
+
+    def(spec, metaClass._MetaSpec.prototype, constructor.prototype);
+
+    metaClass._Spec = constructor;
+    metaClass._isMetaClass = true;
+    metaClass._name = &quot;Meta_&quot; + className;
+    metaClasses[className] = metaClass;
+    classes[className] = null;
+  };
+
+  sc.lang.klass.refine = function(className, spec) {
+    var metaClass;
+
+    if (!metaClasses.hasOwnProperty(className)) {
+      throw new Error(
+        &quot;sc.lang.klass.refine: class &#039;&quot; + className + &quot;&#039; is not registered.&quot;
+      );
+    }
+    metaClass = metaClasses[className];
+    def(spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype);
+  };
+
+  sc.lang.klass.get = function(name) {
+    var metaClass;
+
+    if (!classes[name]) {
+      if (!metaClasses.hasOwnProperty(name)) {
+        throw new Error(
+          &quot;sc.lang.klass.get: class &#039;&quot; + name + &quot;&#039; not registered.&quot;
+        );
+      }
+      metaClass = metaClasses[name];
+      classes[name] = new metaClass._MetaSpec();
+      classes[name]._name = name;
+      classes[name]._Spec = metaClass._Spec;
+      classes[name].initClass();
+    }
+
+    return classes[name];
+  };
+
+  function Object() {}
+  Object.metaClass = new Class();
+  sc.lang.klass.define(&quot;Object&quot;, null, { constructor: Object });
+
+  function Class(MetaSpec) {
+    this._name = &quot;Class&quot;;
+    this._Spec = Class;
+    this._MetaSpec = MetaSpec || function() {};
+    this._isMetaClass = false;
+  }
+  sc.lang.klass.define(&quot;Class&quot;, &quot;Object&quot;, { constructor: Class });
+
+
+  Object.metaClass._MetaSpec.prototype = classes.Class = new Class();
+
+
+  sc.lang.klass.refine(&quot;Object&quot;, {
+    $new: function() {
+      var instance = new this._Spec();
+      instance._class = this;
+      return instance;
+    },
+    $initClass: function() {},
+    class: function() {
+      return this._class;
+    },
+    isClass: function() {
+      return false;
+    },
+    isKindOf: function(aClass) {
+      return this instanceof aClass._Spec;
+    },
+    isMemberOf: function(aClass) {
+      return this._class === aClass;
+    },
+    _initializeWith: function(className, args) {
+      metaClasses[className]._Spec.apply(this, args);
+    },
+    _performWith: function(className, methodName, args) {
+      var metaClass, proto;
+
+      metaClass = metaClasses[className];
+      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
+        methodName = methodName.substr(1);
+        proto = metaClass._MetaSpec.prototype;
+      } else {
+        proto = metaClass._Spec.prototype;
+      }
+
+      return proto[methodName].apply(this, args);
+    },
+    toString: function() {
+      return &quot;instance of &quot; + this._class._name;
+    }
+  });
+
+  sc.lang.klass.refine(&quot;Class&quot;, {
+    name: function() {
+      return this._name;
+    },
+    class: function() {
+      return this._isMetaClass ? classes.Class : this._Spec.metaClass;
+    },
+    isClass: function() {
+      return true;
+    },
+    toString: function() {
+      return this._name;
+    }
+  });
+
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

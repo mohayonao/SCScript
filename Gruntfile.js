@@ -31,18 +31,10 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("./package.json")
   });
 
-  grunt.registerTask("default", function() {
-    loadNpmTasksIfNeeded("grunt-contrib-connect");
-    loadNpmTasksIfNeeded("grunt-este-watch");
+  grunt.registerTask("default", [ "connect", "watch" ]);
 
-    grunt.config.data.esteWatch = {
-      options: {
-        dirs: [ "src/**/", "bin/", "demo/" ]
-      },
-      js: function(file) {
-        return [ "check:" + file ];
-      }
-    };
+  grunt.registerTask("connect", function() {
+    loadNpmTasksIfNeeded("grunt-contrib-connect");
 
     grunt.config.data.connect = {
       server: {
@@ -54,6 +46,20 @@ module.exports = function(grunt) {
     };
 
     grunt.task.run("connect");
+  });
+
+  grunt.registerTask("watch", function() {
+    loadNpmTasksIfNeeded("grunt-este-watch");
+
+    grunt.config.data.esteWatch = {
+      options: {
+        dirs: [ "src/**/", "bin/", "demo/" ]
+      },
+      js: function(file) {
+        return [ "check:" + file ];
+      }
+    };
+
     grunt.task.run("esteWatch");
   });
 

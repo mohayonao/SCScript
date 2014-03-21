@@ -1,1 +1,2 @@
 require("./dollarSC");
+require("./klass");

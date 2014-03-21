@@ -288,6 +288,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask("report", function() {
     grunt.task.run([ "cover", "plato" ]);
+    makeBrowserTest();
   });
 
   grunt.registerTask("check", function(filter) {

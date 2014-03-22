@@ -208,14 +208,18 @@ module.exports = function(grunt) {
   }
 
   function testSorter(a, b) {
-    var r, p;
+    var r, p, cond = 0;
 
     p = { undefined: 1, lang: 2 };
     r = /^src\/sc\/(?:(.+?)\/)?(.+)\.js$/;
     a = r.exec(a);
     b = r.exec(b);
 
-    return ((p[a[1] + ""] || 6) - (p[b[1] + ""] || 6)) || (a[2] < b[2] ? -1 : +1);
+    cond = cond || (p[a[1]] || Infinity) - (p[b[1]] || Infinity);
+    cond = cond || a[2].split("/").length - b[2].split("/").length;
+    cond = cond || (a[2] < b[2] ? -1 : +1);
+
+    return cond;
   }
 
   grunt.registerTask("test", function(filter, reporter, cover) {

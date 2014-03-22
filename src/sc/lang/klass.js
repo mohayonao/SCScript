@@ -1,10 +1,12 @@
-/* jshint latedef: false */
 (function(sc) {
   "use strict";
 
   require("./sc");
+  require("./dollarSC");
 
   sc.lang.klass = {};
+
+  var $SC = sc.lang.$SC;
 
   var object_keys = global.Object.keys;
   var metaClasses = {}, classes = {};
@@ -53,7 +55,9 @@
     }
 
     spec = spec || {};
-    constructor = spec.hasOwnProperty("constructor") ? spec.constructor : function() {};
+    constructor = spec.hasOwnProperty("constructor") ? spec.constructor : function() {
+      this.__initializeWith__(superClassName);
+    };
 
     if (className !== "Object") {
       if (!metaClasses.hasOwnProperty(superClassName)) {
@@ -106,11 +110,14 @@
     return classes[name];
   };
 
-  function Object() {}
+  function Object() {
+    this._raw = this;
+  }
   Object.metaClass = new Class();
   sc.lang.klass.define("Object", null, { constructor: Object });
 
-  function Class(MetaSpec) {
+  function Class(MetaSpec) { // jshint ignore:line
+    this._raw = this;
     this._name = "Class";
     this._Spec = Class;
     this._MetaSpec = MetaSpec || function() {};
@@ -133,18 +140,18 @@
       return this._class;
     },
     isClass: function() {
-      return false;
+      return $SC.False();
     },
     isKindOf: function(aClass) {
-      return this instanceof aClass._Spec;
+      return $SC.Boolean(this instanceof aClass._Spec);
     },
     isMemberOf: function(aClass) {
-      return this._class === aClass;
+      return $SC.Boolean(this._class === aClass);
     },
-    _initializeWith: function(className, args) {
+    __initializeWith__: function(className, args) {
       metaClasses[className]._Spec.apply(this, args);
     },
-    _performWith: function(className, methodName, args) {
+    __performWith__: function(className, methodName, args) {
       var metaClass, proto;
 
       metaClass = metaClasses[className];
@@ -164,17 +171,19 @@
 
   sc.lang.klass.refine("Class", {
     name: function() {
-      return this._name;
+      return $SC.String(this._name);
     },
     class: function() {
       return this._isMetaClass ? classes.Class : this._Spec.metaClass;
     },
     isClass: function() {
-      return true;
+      return $SC.True();
     },
     toString: function() {
       return this._name;
     }
   });
+
+  $SC.Class = sc.lang.klass.get;
 
 })(sc);

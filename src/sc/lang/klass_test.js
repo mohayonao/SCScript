@@ -2,6 +2,8 @@
 
 require("./klass");
 
+var $SC = sc.lang.$SC;
+
 describe("sc.lang.klass", function() {
   var Object, Class, SuperClass, SubClass;
   describe("define", function() {
@@ -12,7 +14,7 @@ describe("sc.lang.klass", function() {
 
       sc.lang.klass.define("SuperClass", "Object", {
         constructor: function() {
-          this._initializeWith("Object");
+          this.__initializeWith__("Object");
         },
         $methodDefinedInSuperClass: function() {
           return "SuperClass.methodDefinedInSuperClass";
@@ -29,7 +31,7 @@ describe("sc.lang.klass", function() {
       });
 
       expect(function() {
-          sc.lang.klass.get("SuperClass");
+        sc.lang.klass.get("SuperClass");
       }).to.not.throw("class 'SuperClass' not registered.");
     });
     it("should throw error when invalid classname", function() {
@@ -85,10 +87,15 @@ describe("sc.lang.klass", function() {
       });
     });
     describe("#name", function() {
-      it("should return class name", function() {
+      it("should return class name", sinon.test(function() {
+        var spy = this.spy($SC, "String");
         var test = SubClass.name();
-        expect(test).to.be.equal("SubClass");
-      });
+
+         expect(spy).to.be.calledWith("SubClass");
+         expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
     });
     describe("#class", function() {
       it("should return Meta_Class when receiver is Class", function() {
@@ -101,10 +108,15 @@ describe("sc.lang.klass", function() {
       });
     });
     describe("#isClass", function() {
-      it("should return true", function() {
+      it("should return true", sinon.test(function() {
+        var spy = this.spy($SC, "True");
         var test = SubClass.isClass();
-        expect(test).to.be.equal(true);
-      });
+
+        expect(spy).to.be.calledWith(undefined);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
     });
   });
   describe("Object", function() {
@@ -115,30 +127,59 @@ describe("sc.lang.klass", function() {
       });
     });
     describe("#isClass", function() {
-      it("should return true", function() {
+      it("should return true", sinon.test(function() {
+        var spy = this.spy($SC, "False");
         var test = SubClass.new().isClass();
-        expect(test).to.be.equal(false);
-      });
+
+        expect(spy).to.be.calledWith(undefined);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
     });
     describe("#isKindOf", function() {
-      it("should return true when receiver is instance of given class", function() {
+      it("should return true when receiver is instance of given class", sinon.test(function() {
+        var spy = this.spy($SC, "Boolean");
         var test = SuperClass.new().isKindOf(SuperClass);
-        expect(test).to.be.equal(true);
-      });
-      it("should return true when receiver is not instance of given class", function() {
+
+        expect(spy).to.be.calledWith(true);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
+      it("should return false when receiver is not instance of given class", sinon.test(function() {
+        var spy = this.spy($SC, "Boolean");
         var test = SuperClass.new().isKindOf(SubClass);
-        expect(test).to.be.equal(false);
-      });
+
+        expect(spy).to.be.calledWith(false);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
     });
     describe("#isMemberOf", function() {
-      it("should return true when receiver is directly instance of given class", function() {
-        var test = SubClass.new().isMemberOf(SubClass);
-        expect(test).to.be.equal(true);
-      });
-      it("should return false when receiver is not directly instance of given class", function() {
-        var test = SubClass.new().isMemberOf(SuperClass);
-        expect(test).to.be.equal(false);
-      });
+      it("should return true when receiver is directly instance of given class",
+        sinon.test(function() {
+          var spy = this.spy($SC, "Boolean");
+          var test = SubClass.new().isMemberOf(SubClass);
+
+          expect(spy).to.be.calledWith(true);
+          expect(spy).to.be.returned(test);
+
+          spy.restore();
+        })
+      );
+      it("should return false when receiver is not directly instance of given class",
+        sinon.test(function() {
+          var spy = this.spy($SC, "Boolean");
+          var test = SubClass.new().isMemberOf(SuperClass);
+
+          expect(spy).to.be.calledWith(false);
+          expect(spy).to.be.returned(test);
+
+          spy.restore();
+        })
+      );
     });
   });
   describe("inheritance", function() {
@@ -159,12 +200,18 @@ describe("sc.lang.klass", function() {
       expect(test).to.be.equal("SubClass.methodOverriddenInSubClass");
     });
     it("#_performWith should apply behavior for any instance", function() {
-      var test = SubClass.new()._performWith("SuperClass", "methodOverriddenInSubClass");
+      var test = SubClass.new().__performWith__("SuperClass", "methodOverriddenInSubClass");
       expect(test).to.be.equal("SuperClass#methodOverriddenInSubClass");
     });
     it("#_performWith should apply behavior for any class when starts with $", function() {
-      var test = SubClass._performWith("SuperClass", "$methodOverriddenInSubClass");
+      var test = SubClass.__performWith__("SuperClass", "$methodOverriddenInSubClass");
       expect(test).to.be.equal("SuperClass.methodOverriddenInSubClass");
+    });
+  });
+  describe("$SC.Class", function() {
+    it("should return class", function() {
+      var test = $SC.Class("Object");
+      expect(test).to.be.equal(Object);
     });
   });
 });

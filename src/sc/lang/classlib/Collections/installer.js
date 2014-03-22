@@ -1,0 +1,9 @@
+require("./Array");
+require("./ArrayedCollection");
+require("./Collection");
+require("./Dictionary");
+require("./Environment");
+require("./Event");
+require("./SequenceableCollection");
+require("./Set");
+require("./String");

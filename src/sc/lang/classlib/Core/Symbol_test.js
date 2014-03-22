@@ -33,6 +33,12 @@ describe("class Symbol", function() {
       expect(test).to.be.equal("sym");
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_SYM", function() {
+      var test = $SC.Symbol("sym").__tag__();
+      expect(test).to.be.equal(sc.C.TAG_SYM);
+    });
+  });
   describe("#__str__", function() {
     it("should return JavaScript string", function() {
       var test = $SC.Symbol("sym").__str__();

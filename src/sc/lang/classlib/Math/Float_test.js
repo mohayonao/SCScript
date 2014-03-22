@@ -33,4 +33,10 @@ describe("class Float", function() {
       expect(test).to.be.equal(2014.0322);
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_FLOAT", function() {
+      var test = $SC.Float(2014.0323).__tag__();
+      expect(test).to.be.equal(sc.C.TAG_FLOAT);
+    });
+  });
 });

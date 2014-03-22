@@ -33,6 +33,12 @@ describe("class String", function() {
       expect(test).to.be.equal("str");
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_STR", function() {
+      var test = $SC.String("str").__tag__();
+      expect(test).to.be.equal(sc.C.TAG_STR);
+    });
+  });
   describe("#__str__", function() {
     it("should return JavaScript string", function() {
       var test = $SC.String("str").__str__();

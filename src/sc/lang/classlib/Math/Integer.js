@@ -21,6 +21,9 @@
     constructor: Integer,
     $new: function() {
       throw new Error("Integer.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return sc.C.TAG_INT;
     }
   });
 

@@ -22,6 +22,9 @@
     $new: function() {
       throw new Error("Symbol.new is illegal, should use literal.");
     },
+    __tag__: function() {
+      return sc.C.TAG_SYM;
+    },
     __str__: function() {
       return this._raw;
     }

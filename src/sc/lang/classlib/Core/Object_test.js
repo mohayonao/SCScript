@@ -16,6 +16,12 @@ describe("class Object", function() {
     expect(test).to.be.equal(instance);
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_OBJ", function() {
+      var test = Object.new().__tag__();
+      expect(test).to.be.equal(sc.C.TAG_OBJ);
+    });
+  });
   describe("#__num__", function() {
     it("should return 0 as JavaScript number", function() {
       var test = Object.new().__num__();

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
+    <title>Online Test Suite - SCScript</title>
     <link rel="stylesheet" href="../../../assets/mocha.css">
     <script src="../../../assets/jquery.min.js"></script>
     <script src="../../../assets/mocha.js"></script>
@@ -15,6 +17,7 @@
       SCScript.install(function(sc) {
         window.sc = sc;
       });
+#{CONSTS}
       mocha.setup("bdd");
       $(function() {
         mocha.run();

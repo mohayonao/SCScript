@@ -42,4 +42,10 @@ describe("class Integer", function() {
       expect(test).to.be.equal(2014);
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_INT", function() {
+      var test = $SC.Integer(2014).__tag__();
+      expect(test).to.be.equal(sc.C.TAG_INT);
+    });
+  });
 });

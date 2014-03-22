@@ -21,6 +21,9 @@
     constructor: Nil,
     $new: function() {
       throw new Error("Nil.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return sc.C.TAG_NIL;
     }
   });
 

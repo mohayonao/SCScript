@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.4" };
+var sc = { VERSION: "0.0.5" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -252,6 +252,9 @@ var sc = { VERSION: "0.0.4" };
     js: function() {
       return this._raw;
     },
+    __tag__: function() {
+      return 1;
+    },
     __num__: function() {
       return 0;
     },
@@ -322,6 +325,9 @@ var sc = { VERSION: "0.0.4" };
     constructor: Integer,
     $new: function() {
       throw new Error("Integer.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return 2;
     }
   });
 
@@ -355,6 +361,9 @@ var sc = { VERSION: "0.0.4" };
     constructor: Float,
     $new: function() {
       throw new Error("Float.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return 9;
     }
   });
 
@@ -395,6 +404,9 @@ var sc = { VERSION: "0.0.4" };
     $new: function() {
       throw new Error("Symbol.new is illegal, should use literal.");
     },
+    __tag__: function() {
+      return 3;
+    },
     __str__: function() {
       return this._raw;
     }
@@ -434,6 +446,9 @@ var sc = { VERSION: "0.0.4" };
     constructor: Nil,
     $new: function() {
       throw new Error("Nil.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return 5;
     }
   });
 
@@ -496,6 +511,9 @@ var sc = { VERSION: "0.0.4" };
     $new: function() {
       throw new Error("Char.new is illegal, should use literal.");
     },
+    __tag__: function() {
+      return 4;
+    },
     __str__: function() {
       return this._raw;
     }
@@ -545,6 +563,9 @@ var sc = { VERSION: "0.0.4" };
     constructor: True,
     $new: function() {
       throw new Error("True.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return 7;
     }
   });
 
@@ -552,6 +573,9 @@ var sc = { VERSION: "0.0.4" };
     constructor: False,
     $new: function() {
       throw new Error("False.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return 6;
     }
   });
 
@@ -615,6 +639,9 @@ var sc = { VERSION: "0.0.4" };
     constructor: String,
     $new: function() {
       throw new Error("String.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return 10;
     },
     __str__: function() {
       return this._raw;

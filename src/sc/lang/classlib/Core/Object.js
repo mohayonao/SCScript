@@ -8,6 +8,9 @@
     js: function() {
       return this._raw;
     },
+    __tag__: function() {
+      return sc.C.TAG_OBJ;
+    },
     __num__: function() {
       return 0;
     },

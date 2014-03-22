@@ -38,6 +38,9 @@
     constructor: True,
     $new: function() {
       throw new Error("True.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return sc.C.TAG_TRUE;
     }
   });
 
@@ -45,6 +48,9 @@
     constructor: False,
     $new: function() {
       throw new Error("False.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return sc.C.TAG_FALSE;
     }
   });
 

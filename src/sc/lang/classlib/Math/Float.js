@@ -21,6 +21,9 @@
     constructor: Float,
     $new: function() {
       throw new Error("Float.new is illegal, should use literal.");
+    },
+    __tag__: function() {
+      return sc.C.TAG_FLOAT;
     }
   });
 

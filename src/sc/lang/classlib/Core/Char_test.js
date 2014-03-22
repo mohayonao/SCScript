@@ -33,6 +33,12 @@ describe("class Char", function() {
       expect(test).to.be.equal("a");
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_CHAR", function() {
+      var test = $SC.Char("a").__tag__();
+      expect(test).to.be.equal(sc.C.TAG_CHAR);
+    });
+  });
   describe("#__str__", function() {
     it("should return JavaScript string", function() {
       var test = $SC.Char("a").__str__();

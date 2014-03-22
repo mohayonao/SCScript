@@ -24,6 +24,9 @@
     $new: function() {
       throw new Error("String.new is illegal, should use literal.");
     },
+    __tag__: function() {
+      return sc.C.TAG_STR;
+    },
     __str__: function() {
       return this._raw;
     }

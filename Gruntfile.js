@@ -31,18 +31,10 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON("./package.json")
   });
 
-  grunt.registerTask("default", function() {
-    loadNpmTasksIfNeeded("grunt-contrib-connect");
-    loadNpmTasksIfNeeded("grunt-este-watch");
+  grunt.registerTask("default", [ "connect", "watch" ]);
 
-    grunt.config.data.esteWatch = {
-      options: {
-        dirs: [ "src/**/", "bin/", "demo/" ]
-      },
-      js: function(file) {
-        return [ "check:" + file ];
-      }
-    };
+  grunt.registerTask("connect", function() {
+    loadNpmTasksIfNeeded("grunt-contrib-connect");
 
     grunt.config.data.connect = {
       server: {
@@ -54,6 +46,20 @@ module.exports = function(grunt) {
     };
 
     grunt.task.run("connect");
+  });
+
+  grunt.registerTask("watch", function() {
+    loadNpmTasksIfNeeded("grunt-este-watch");
+
+    grunt.config.data.esteWatch = {
+      options: {
+        dirs: [ "src/**/", "bin/", "demo/" ]
+      },
+      js: function(file) {
+        return [ "check:" + file ];
+      }
+    };
+
     grunt.task.run("esteWatch");
   });
 
@@ -202,14 +208,18 @@ module.exports = function(grunt) {
   }
 
   function testSorter(a, b) {
-    var r, p;
+    var r, p, cond = 0;
 
     p = { undefined: 1, lang: 2 };
     r = /^src\/sc\/(?:(.+?)\/)?(.+)\.js$/;
     a = r.exec(a);
     b = r.exec(b);
 
-    return ((p[a[1] + ""] || 6) - (p[b[1] + ""] || 6)) || (a[2] < b[2] ? -1 : +1);
+    cond = cond || (p[a[1]] || Infinity) - (p[b[1]] || Infinity);
+    cond = cond || a[2].split("/").length - b[2].split("/").length;
+    cond = cond || (a[2] < b[2] ? -1 : +1);
+
+    return cond;
   }
 
   grunt.registerTask("test", function(filter, reporter, cover) {

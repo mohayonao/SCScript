@@ -326,8 +326,8 @@ var sc = { VERSION: "0.0.4" };
   });
 
   $SC.Integer = function(value) {
-    if (!Number.isFinite(value)) {
-      return $SC.Float(value);
+    if (!global.isFinite(value)) {
+      return $SC.Float(+value);
     }
     return new Integer(value|0);
   };

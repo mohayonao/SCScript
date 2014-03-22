@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">123.44</p>
+      <p class="stat">122.34</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">179</p>
+      <p class="stat">189</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">46.25</p>
+      <p class="stat">46.04</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.52</p>
+      <p class="stat">1.67</p>
     </div>
   </div>
 </div>
@@ -90,13 +90,15 @@
 
 <div class="container">
   <div class="row">
-    <textarea id="file-source" class="col-md-12">/* jshint latedef: false */
-(function(sc) {
+    <textarea id="file-source" class="col-md-12">(function(sc) {
   &quot;use strict&quot;;
 
   require(&quot;./sc&quot;);
+  require(&quot;./dollarSC&quot;);
 
   sc.lang.klass = {};
+
+  var $SC = sc.lang.$SC;
 
   var object_keys = global.Object.keys;
   var metaClasses = {}, classes = {};
@@ -145,7 +147,9 @@
     }
 
     spec = spec || {};
-    constructor = spec.hasOwnProperty(&quot;constructor&quot;) ? spec.constructor : function() {};
+    constructor = spec.hasOwnProperty(&quot;constructor&quot;) ? spec.constructor : function() {
+      this.__initializeWith__(superClassName);
+    };
 
     if (className !== &quot;Object&quot;) {
       if (!metaClasses.hasOwnProperty(superClassName)) {
@@ -198,11 +202,14 @@
     return classes[name];
   };
 
-  function Object() {}
+  function Object() {
+    this._raw = this;
+  }
   Object.metaClass = new Class();
   sc.lang.klass.define(&quot;Object&quot;, null, { constructor: Object });
 
-  function Class(MetaSpec) {
+  function Class(MetaSpec) { // jshint ignore:line
+    this._raw = this;
     this._name = &quot;Class&quot;;
     this._Spec = Class;
     this._MetaSpec = MetaSpec || function() {};
@@ -225,18 +232,18 @@
       return this._class;
     },
     isClass: function() {
-      return false;
+      return $SC.False();
     },
     isKindOf: function(aClass) {
-      return this instanceof aClass._Spec;
+      return $SC.Boolean(this instanceof aClass._Spec);
     },
     isMemberOf: function(aClass) {
-      return this._class === aClass;
+      return $SC.Boolean(this._class === aClass);
     },
-    _initializeWith: function(className, args) {
+    __initializeWith__: function(className, args) {
       metaClasses[className]._Spec.apply(this, args);
     },
-    _performWith: function(className, methodName, args) {
+    __performWith__: function(className, methodName, args) {
       var metaClass, proto;
 
       metaClass = metaClasses[className];
@@ -256,18 +263,20 @@
 
   sc.lang.klass.refine(&quot;Class&quot;, {
     name: function() {
-      return this._name;
+      return $SC.String(this._name);
     },
     class: function() {
       return this._isMetaClass ? classes.Class : this._Spec.metaClass;
     },
     isClass: function() {
-      return true;
+      return $SC.True();
     },
     toString: function() {
       return this._name;
     }
   });
+
+  $SC.Class = sc.lang.klass.get;
 
 })(sc);</textarea>
   </div>

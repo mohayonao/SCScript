@@ -21,7 +21,30 @@
     constructor: Float,
     $new: function() {
       throw new Error("Float.new is illegal, should use literal.");
-    }
+    },
+    __tag__: function() {
+      return sc.C.TAG_FLOAT;
+    },
+    NotYetImplemented: [
+      "isFloat",
+      "asFloat",
+      "clip",
+      "wrap",
+      "fold",
+      "coin",
+      "xrand2",
+      "as32Bits",
+      "high32Bits",
+      "low32Bits",
+      "$from32Bits",
+      "$from64Bits",
+      "do",
+      "reverseDo",
+      "asStringPrec",
+      "archiveAsCompileString",
+      "storeOn",
+      "switch",
+    ]
   });
 
   $SC.Float = function(value) {

@@ -313,6 +313,18 @@ module.exports = function(grunt) {
     grunt.task.run("test::list:lcovonly");
   });
 
+  grunt.registerTask("testem", function() {
+    var done = this.async();
+    var child = grunt.util.spawn({
+      cmd: "testem",
+      args: [ "ci", "--launch", "Chrome,Safari,Firefox,Opera" ]
+    }, function() {
+      done();
+    });
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+  });
+
   function sortModules(root) {
     var result = [];
 
@@ -340,15 +352,18 @@ module.exports = function(grunt) {
   }
 
   function makeBrowserTest() {
-    var tests, tmpl;
+    var tmpl, tests, consts;
+
+    tmpl = grunt.file.read("assets/index.tmpl");
 
     tests = grunt.file.expand("src/sc/**/*_test.js");
     tests = tests.sort(testSorter).map(function(filepath) {
       return "    <script src=\"../../../" + filepath + "\"></script>";
     });
-
-    tmpl = grunt.file.read("assets/index.tmpl");
     tmpl = tmpl.replace("#{TESTS}", tests.join("\n"));
+
+    consts = grunt.file.read("src/const.js").trim();
+    tmpl = tmpl.replace("#{CONSTS}", consts);
 
     grunt.file.write("docs/report/test/index.html", tmpl);
   }

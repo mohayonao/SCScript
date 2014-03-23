@@ -60,6 +60,12 @@ describe("class True", function() {
       expect(test).to.be.equal(true);
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_TRUE", function() {
+      var test = $SC.True().__tag__();
+      expect(test).to.be.equal(sc.C.TAG_TRUE);
+    });
+  });
 });
 describe("class False", function() {
   describe("$SC.False", function() {
@@ -86,6 +92,12 @@ describe("class False", function() {
     it("should return JavaScript boolean", function() {
       var test = $SC.False().js();
       expect(test).to.be.equal(false);
+    });
+  });
+  describe("#__tag__", function() {
+    it("should return TAG_FALSE", function() {
+      var test = $SC.False().__tag__();
+      expect(test).to.be.equal(sc.C.TAG_FALSE);
     });
   });
 });

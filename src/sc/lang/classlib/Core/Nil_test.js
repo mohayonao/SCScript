@@ -31,4 +31,10 @@ describe("class Nil", function() {
       expect(test).to.be.equal(null);
     });
   });
+  describe("#__tag__", function() {
+    it("should return TAG_NIL", function() {
+      var test = $SC.Nil().__tag__();
+      expect(test).to.be.equal(sc.C.TAG_NIL);
+    });
+  });
 });

@@ -22,9 +22,37 @@
     $new: function() {
       throw new Error("Char.new is illegal, should use literal.");
     },
+    __tag__: function() {
+      return sc.C.TAG_CHAR;
+    },
     __str__: function() {
       return this._raw;
-    }
+    },
+    NotYetImplemented: [
+      "hash",
+      "ascii",
+      "digit",
+      "asAscii",
+      "asUnicode",
+      "toUpper",
+      "toLower",
+      "isAlpha",
+      "isAlphaNum",
+      "isPrint",
+      "isPunct",
+      "isControl",
+      "isSpace",
+      "isVowel",
+      "isDecDigit",
+      "isUpper",
+      "isLower",
+      "isFileSafe",
+      "isPathSeparator",
+      "$bullet",
+      "printOn",
+      "storeOn",
+      "archiveAsCompileString",
+    ]
   });
 
   $SC.Char = function(value) {

@@ -31,7 +31,25 @@
   sc.lang.klass.define("Boolean", "Object", {
     $new: function() {
       throw new Error("Boolean.new is illegal, should use literal.");
-    }
+    },
+    NotYetImplemented: [
+      "xor",
+      "if",
+      "not",
+      "and",
+      "or",
+      "nand",
+      "asInteger",
+      "binaryValue",
+      "asBoolean",
+      "booleanValue",
+      "keywordWarnings",
+      "trace",
+      "printOn",
+      "storeOn",
+      "archiveAsCompileString",
+      "while",
+    ]
   });
 
   sc.lang.klass.define("True", "Boolean", {
@@ -41,7 +59,16 @@
     },
     __tag__: function() {
       return sc.C.TAG_TRUE;
-    }
+    },
+    NotYetImplemented: [
+      "if",
+      "not",
+      "and",
+      "or",
+      "nand",
+      "asInteger",
+      "binaryValue",
+    ]
   });
 
   sc.lang.klass.define("False", "Boolean", {
@@ -51,7 +78,16 @@
     },
     __tag__: function() {
       return sc.C.TAG_FALSE;
-    }
+    },
+    NotYetImplemented: [
+      "if",
+      "not",
+      "and",
+      "or",
+      "nand",
+      "asInteger",
+      "binaryValue",
+    ]
   });
 
   $SC.Boolean = function(value) {

@@ -32,6 +32,7 @@
     "grunt-plato": "~1.0.0"
   },
   "scripts": {
-    "test": "grunt travis --verbose && cat ./docs/report/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "grunt test testem",
+    "travis": "grunt travis --verbose && cat ./docs/report/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   }
 }

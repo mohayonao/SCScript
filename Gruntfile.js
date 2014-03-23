@@ -313,6 +313,18 @@ module.exports = function(grunt) {
     grunt.task.run("test::list:lcovonly");
   });
 
+  grunt.registerTask("testem", function() {
+    var done = this.async();
+    var child = grunt.util.spawn({
+      cmd: "testem",
+      args: [ "ci", "--launch", "Chrome,Safari,Firefox,Opera" ]
+    }, function() {
+      done();
+    });
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+  });
+
   function sortModules(root) {
     var result = [];
 

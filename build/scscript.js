@@ -91,26 +91,42 @@ var sc = { VERSION: "0.0.7" };
     }
   };
 
-  var def = function(className, spec, classMethods, instanceMethods) {
+  var def = function(className, spec, classMethods, instanceMethods, opts) {
+
+    var setMethod = function(methods, methodName, func) {
+      var dot;
+
+      if (methods.hasOwnProperty(methodName) && !(opts && opts.force)) {
+        dot = methods === classMethods ? "." : "#";
+        throw new Error(className + dot + methodName + " is already defined.");
+      }
+
+      methods[methodName] = func;
+    };
+
     Object.keys(spec).forEach(function(methodName) {
       var thrower;
+
       if (methodName === "constructor") {
         return;
       }
+
       if (throwError.hasOwnProperty(methodName)) {
         thrower = throwError[methodName];
         spec[methodName].forEach(function(methodName) {
           if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
             methodName = methodName.substr(1);
-            classMethods[methodName] = thrower(className + "." + methodName);
+            setMethod(classMethods, methodName, thrower(className + "." + methodName));
           } else {
-            instanceMethods[methodName] = thrower(className + "#" + methodName);
+            setMethod(instanceMethods, methodName, thrower(className + "#" + methodName));
           }
         });
-      } else if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
-        classMethods[methodName.substr(1)] = spec[methodName];
       } else {
-        instanceMethods[methodName] = spec[methodName];
+        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+          setMethod(classMethods, methodName.substr(1), spec[methodName]);
+        } else {
+          setMethod(instanceMethods, methodName, spec[methodName]);
+        }
       }
     });
   };
@@ -147,7 +163,7 @@ var sc = { VERSION: "0.0.7" };
 
     metaClass = constructor.metaClass;
 
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, opts);
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
@@ -156,7 +172,7 @@ var sc = { VERSION: "0.0.7" };
     classes[className] = null;
   };
 
-  sc.lang.klass.refine = function(className, spec) {
+  sc.lang.klass.refine = function(className, spec, opts) {
     var metaClass;
 
     if (!metaClasses.hasOwnProperty(className)) {
@@ -165,7 +181,7 @@ var sc = { VERSION: "0.0.7" };
       );
     }
     metaClass = metaClasses[className];
-    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts);
   };
 
   sc.lang.klass.get = function(name) {
@@ -265,6 +281,8 @@ var sc = { VERSION: "0.0.7" };
 
 // src/sc/lang/classlib/Core/Object.js
 (function(sc) {
+
+  // var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Object", {
     js: function() {
@@ -422,7 +440,6 @@ var sc = { VERSION: "0.0.7" };
       "alwaysYield",
       "yieldAndReset",
       "idle",
-      "while",
       "dependants",
       "changed",
       "addDependant",
@@ -490,7 +507,6 @@ var sc = { VERSION: "0.0.7" };
       "archiveAsObject",
       "checkCanArchive",
       "writeTextArchive",
-      "protect",
       "$readTextArchive",
       "asTextArchive",
       "getContainedObjects",
@@ -664,16 +680,12 @@ var sc = { VERSION: "0.0.7" };
       "putN",
       "putAll",
       "do",
-      "while",
       "subSample",
       "loop",
       "generate",
-      "while",
       "collect",
       "reject",
-      "while",
       "select",
-      "while",
       "dot",
       "interlace",
       "appendStream",
@@ -917,8 +929,6 @@ var sc = { VERSION: "0.0.7" };
       "writeInputSpec",
       "series",
       "seriesIter",
-      "while",
-      "while",
       "degreeToKey",
       "keyToDegree",
       "nearestInList",
@@ -1478,10 +1488,7 @@ var sc = { VERSION: "0.0.7" };
       "numVars",
       "varArgs",
       "loop",
-      "loop",
       "block",
-      "block",
-      "try",
       "asRoutine",
       "dup",
       "sum",
@@ -1765,7 +1772,6 @@ var sc = { VERSION: "0.0.7" };
       "flopDict",
       "histo",
       "printAll",
-      "printAll",
       "printcsAll",
       "dumpAll",
       "printOn",
@@ -1789,7 +1795,6 @@ var sc = { VERSION: "0.0.7" };
       "$series",
       "$geom",
       "$fib",
-      "while",
       "$rand",
       "$exprand",
       "$rand2",
@@ -1808,7 +1813,6 @@ var sc = { VERSION: "0.0.7" };
       "indicesOfEqual",
       "find",
       "findAll",
-      "while",
       "indexOfGreaterThan",
       "indexIn",
       "indexInBetween",
@@ -2024,19 +2028,11 @@ var sc = { VERSION: "0.0.7" };
       "mergeSort",
       "mergeSortTemp",
       "mergeTemp",
-      "while",
-      "while",
-      "while",
       "insertionSort",
       "insertionSortRange",
-      "while",
-      "while",
       "hoareMedian",
       "hoareFind",
-      "while",
       "hoarePartition",
-      "while",
-      "while",
       "$streamContents",
       "$streamContentsLimit",
       "wrapAt",
@@ -2075,9 +2071,7 @@ var sc = { VERSION: "0.0.7" };
       "indexOf",
       "indexOfGreaterThan",
       "takeThese",
-      "while",
       "replace",
-      "while",
       "slotSize",
       "slotAt",
       "slotPut",
@@ -2226,13 +2220,11 @@ var sc = { VERSION: "0.0.7" };
       "containsi",
       "findRegexp",
       "findAllRegexp",
-      "while",
       "find",
       "findBackwards",
       "endsWith",
       "beginsWith",
       "findAll",
-      "while",
       "replace",
       "escapeChar",
       "shellQuote",
@@ -2430,9 +2422,7 @@ var sc = { VERSION: "0.0.7" };
       "$make",
       "$use",
       "make",
-      "protect",
       "use",
-      "protect",
       "eventAt",
       "composeEvents",
       "$pop",

@@ -76,6 +76,31 @@ describe("sc.lang.klass", function() {
         sc.lang.klass.refine("NotRegisteredClass", {});
       }).to.throw("class 'NotRegisteredClass' is not registered.");
     });
+    it("should error when re-define method", function() {
+      expect(function() {
+        sc.lang.klass.refine("SubClass", {
+          $methodOverriddenInSubClass: function() {
+            return "SubClass.methodOverriddenInSubClass";
+          }
+        });
+      }).to.throw("SubClass.methodOverriddenInSubClass is already defined.");
+      expect(function() {
+        sc.lang.klass.refine("SubClass", {
+          methodOverriddenInSubClass: function() {
+            return "SubClass#methodOverriddenInSubClass";
+          }
+        });
+      }).to.throw("SubClass#methodOverriddenInSubClass is already defined.");
+    });
+    it("should not throw error when re-defin method with option.force is true", function() {
+      expect(function() {
+        sc.lang.klass.refine("SubClass", {
+          methodOverriddenInSubClass: function() {
+            return "SubClass#methodOverriddenInSubClass";
+          }
+        }, { force: true });
+      }).to.not.throw("SubClass#methodOverriddenInSubClass is already defined.");
+    });
   });
   describe("Class", function() {
     before(function() {

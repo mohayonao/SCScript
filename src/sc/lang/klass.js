@@ -32,26 +32,42 @@
     }
   };
 
-  var def = function(className, spec, classMethods, instanceMethods) {
+  var def = function(className, spec, classMethods, instanceMethods, opts) {
+
+    var setMethod = function(methods, methodName, func) {
+      var dot;
+
+      if (methods.hasOwnProperty(methodName) && !(opts && opts.force)) {
+        dot = methods === classMethods ? "." : "#";
+        throw new Error(className + dot + methodName + " is already defined.");
+      }
+
+      methods[methodName] = func;
+    };
+
     Object.keys(spec).forEach(function(methodName) {
       var thrower;
+
       if (methodName === "constructor") {
         return;
       }
+
       if (throwError.hasOwnProperty(methodName)) {
         thrower = throwError[methodName];
         spec[methodName].forEach(function(methodName) {
           if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
             methodName = methodName.substr(1);
-            classMethods[methodName] = thrower(className + "." + methodName);
+            setMethod(classMethods, methodName, thrower(className + "." + methodName));
           } else {
-            instanceMethods[methodName] = thrower(className + "#" + methodName);
+            setMethod(instanceMethods, methodName, thrower(className + "#" + methodName));
           }
         });
-      } else if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
-        classMethods[methodName.substr(1)] = spec[methodName];
       } else {
-        instanceMethods[methodName] = spec[methodName];
+        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+          setMethod(classMethods, methodName.substr(1), spec[methodName]);
+        } else {
+          setMethod(instanceMethods, methodName, spec[methodName]);
+        }
       }
     });
   };
@@ -88,7 +104,7 @@
 
     metaClass = constructor.metaClass;
 
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, opts);
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
@@ -97,7 +113,7 @@
     classes[className] = null;
   };
 
-  sc.lang.klass.refine = function(className, spec) {
+  sc.lang.klass.refine = function(className, spec, opts) {
     var metaClass;
 
     if (!metaClasses.hasOwnProperty(className)) {
@@ -106,7 +122,7 @@
       );
     }
     metaClass = metaClasses[className];
-    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts);
   };
 
   sc.lang.klass.get = function(name) {

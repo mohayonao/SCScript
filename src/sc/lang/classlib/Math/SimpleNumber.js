@@ -152,8 +152,6 @@
       "writeInputSpec",
       "series",
       "seriesIter",
-      "while",
-      "while",
       "degreeToKey",
       "keyToDegree",
       "nearestInList",

@@ -85,7 +85,6 @@
       "flopDict",
       "histo",
       "printAll",
-      "printAll",
       "printcsAll",
       "dumpAll",
       "printOn",

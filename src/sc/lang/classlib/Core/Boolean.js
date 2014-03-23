@@ -8,7 +8,7 @@
   var trueInstance = null;
   var falseInstance = null;
 
-  function True() {
+  function SCTrue() {
     if (trueInstance) {
       return trueInstance;
     }
@@ -18,7 +18,7 @@
     trueInstance = this;
   }
 
-  function False() {
+  function SCFalse() {
     if (falseInstance) {
       return falseInstance;
     }
@@ -53,7 +53,7 @@
   });
 
   sc.lang.klass.define("True", "Boolean", {
-    constructor: True,
+    constructor: SCTrue,
     $new: function() {
       throw new Error("True.new is illegal, should use literal.");
     },
@@ -72,7 +72,7 @@
   });
 
   sc.lang.klass.define("False", "Boolean", {
-    constructor: False,
+    constructor: SCFalse,
     $new: function() {
       throw new Error("False.new is illegal, should use literal.");
     },
@@ -95,11 +95,11 @@
   };
 
   $SC.True = function() {
-    return new True();
+    return new SCTrue();
   };
 
   $SC.False = function() {
-    return new False();
+    return new SCFalse();
   };
 
 })(sc);

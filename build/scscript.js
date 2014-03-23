@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.6" };
+var sc = { VERSION: "0.0.7" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -67,7 +67,6 @@ var sc = { VERSION: "0.0.6" };
 
   var $SC = sc.lang.$SC;
 
-  var object_keys = global.Object.keys;
   var metaClasses = {}, classes = {};
 
   var extend = function(constructor, superMetaClass) {
@@ -81,7 +80,7 @@ var sc = { VERSION: "0.0.6" };
     function MetaSpec() {}
     MetaSpec.prototype = new Meta_F();
 
-    constructor.metaClass = new Class(MetaSpec);
+    constructor.metaClass = new SCClass(MetaSpec);
   };
 
   var throwError = {
@@ -93,7 +92,7 @@ var sc = { VERSION: "0.0.6" };
   };
 
   var def = function(className, spec, classMethods, instanceMethods) {
-    object_keys(spec).forEach(function(methodName) {
+    Object.keys(spec).forEach(function(methodName) {
       var thrower;
       if (methodName === "constructor") {
         return;
@@ -188,22 +187,22 @@ var sc = { VERSION: "0.0.6" };
     return classes[name];
   };
 
-  function Object() {
+  function SCObject() {
     this._raw = this;
   }
-  Object.metaClass = new Class();
-  sc.lang.klass.define("Object", null, { constructor: Object });
+  SCObject.metaClass = new SCClass();
+  sc.lang.klass.define("Object", null, { constructor: SCObject });
 
-  function Class(MetaSpec) { // jshint ignore:line
+  function SCClass(MetaSpec) { // jshint ignore:line
     this._raw = this;
     this._name = "Class";
-    this._Spec = Class;
+    this._Spec = SCClass;
     this._MetaSpec = MetaSpec || function() {};
     this._isMetaClass = false;
   }
-  sc.lang.klass.define("Class", "Object", { constructor: Class });
+  sc.lang.klass.define("Class", "Object", { constructor: SCClass });
 
-  Object.metaClass._MetaSpec.prototype = classes.Class = new Class();
+  SCObject.metaClass._MetaSpec.prototype = classes.Class = new SCClass();
 
   sc.lang.klass.refine("Object", {
     $new: function() {
@@ -945,7 +944,7 @@ var sc = { VERSION: "0.0.6" };
 
   var instances = {};
 
-  function Integer(value) {
+  function SCInteger(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -956,7 +955,7 @@ var sc = { VERSION: "0.0.6" };
   }
 
   sc.lang.klass.define("Integer", "SimpleNumber", {
-    constructor: Integer,
+    constructor: SCInteger,
     $new: function() {
       throw new Error("Integer.new is illegal, should use literal.");
     },
@@ -1027,7 +1026,7 @@ var sc = { VERSION: "0.0.6" };
     if (!global.isFinite(value)) {
       return $SC.Float(+value);
     }
-    return new Integer(value|0);
+    return new SCInteger(value|0);
   };
 
 })(sc);
@@ -1039,7 +1038,7 @@ var sc = { VERSION: "0.0.6" };
 
   var instances = {};
 
-  function Float(value) {
+  function SCFloat(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -1050,7 +1049,7 @@ var sc = { VERSION: "0.0.6" };
   }
 
   sc.lang.klass.define("Float", "SimpleNumber", {
-    constructor: Float,
+    constructor: SCFloat,
     $new: function() {
       throw new Error("Float.new is illegal, should use literal.");
     },
@@ -1080,7 +1079,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.Float = function(value) {
-    return new Float(+value);
+    return new SCFloat(+value);
   };
 
 })(sc);
@@ -1142,7 +1141,7 @@ var sc = { VERSION: "0.0.6" };
 
   var instances = {};
 
-  function Symbol(value) {
+  function SCSymbol(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -1153,7 +1152,7 @@ var sc = { VERSION: "0.0.6" };
   }
 
   sc.lang.klass.define("Symbol", "Object", {
-    constructor: Symbol,
+    constructor: SCSymbol,
     $new: function() {
       throw new Error("Symbol.new is illegal, should use literal.");
     },
@@ -1280,7 +1279,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.Symbol = function(value) {
-    return new Symbol(String(value));
+    return new SCSymbol(String(value));
   };
 
 })(sc);
@@ -1321,7 +1320,7 @@ var sc = { VERSION: "0.0.6" };
 
   var nilInstance = null;
 
-  function Nil() {
+  function SCNil() {
     if (nilInstance) {
       return nilInstance;
     }
@@ -1332,7 +1331,7 @@ var sc = { VERSION: "0.0.6" };
   }
 
   sc.lang.klass.define("Nil", "Object", {
-    constructor: Nil,
+    constructor: SCNil,
     $new: function() {
       throw new Error("Nil.new is illegal, should use literal.");
     },
@@ -1397,7 +1396,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.Nil = function() {
-    return new Nil();
+    return new SCNil();
   };
 
 })(sc);
@@ -1446,14 +1445,14 @@ var sc = { VERSION: "0.0.6" };
 
   var $SC = sc.lang.$SC;
 
-  function Function(value) {
+  function SCFunction(value) {
     this.__initializeWith__("AbstractFunction");
     this._class = $SC.Class("Function");
     this._raw = value;
   }
 
   sc.lang.klass.define("Function", "AbstractFunction", {
-    constructor: Function,
+    constructor: SCFunction,
     $new: function() {
       throw new Error("Function.new is illegal, should use literal.");
     },
@@ -1511,7 +1510,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.Function = function(value) {
-    return new Function(value); // jshint ignore: line
+    return new SCFunction(value); // jshint ignore: line
   };
 
 })(sc);
@@ -1523,7 +1522,7 @@ var sc = { VERSION: "0.0.6" };
 
   var instances = {};
 
-  function Char(value) {
+  function SCChar(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -1534,7 +1533,7 @@ var sc = { VERSION: "0.0.6" };
   }
 
   sc.lang.klass.define("Char", "Magnitude", {
-    constructor: Char,
+    constructor: SCChar,
     $new: function() {
       throw new Error("Char.new is illegal, should use literal.");
     },
@@ -1572,7 +1571,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.Char = function(value) {
-    return new Char(String(value).charAt(0));
+    return new SCChar(String(value).charAt(0));
   };
 
 })(sc);
@@ -1585,7 +1584,7 @@ var sc = { VERSION: "0.0.6" };
   var trueInstance = null;
   var falseInstance = null;
 
-  function True() {
+  function SCTrue() {
     if (trueInstance) {
       return trueInstance;
     }
@@ -1595,7 +1594,7 @@ var sc = { VERSION: "0.0.6" };
     trueInstance = this;
   }
 
-  function False() {
+  function SCFalse() {
     if (falseInstance) {
       return falseInstance;
     }
@@ -1630,7 +1629,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   sc.lang.klass.define("True", "Boolean", {
-    constructor: True,
+    constructor: SCTrue,
     $new: function() {
       throw new Error("True.new is illegal, should use literal.");
     },
@@ -1649,7 +1648,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   sc.lang.klass.define("False", "Boolean", {
-    constructor: False,
+    constructor: SCFalse,
     $new: function() {
       throw new Error("False.new is illegal, should use literal.");
     },
@@ -1672,11 +1671,11 @@ var sc = { VERSION: "0.0.6" };
   };
 
   $SC.True = function() {
-    return new True();
+    return new SCTrue();
   };
 
   $SC.False = function() {
-    return new False();
+    return new SCFalse();
   };
 
 })(sc);
@@ -2153,12 +2152,11 @@ var sc = { VERSION: "0.0.6" };
 // src/sc/lang/classlib/Collections/String.js
 (function(sc) {
 
-  var jsString = global.String;
   var $SC = sc.lang.$SC;
 
   var instances = {};
 
-  function String(value) {
+  function SCString(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -2170,7 +2168,7 @@ var sc = { VERSION: "0.0.6" };
   }
 
   sc.lang.klass.define("String", "RawArray", {
-    constructor: String,
+    constructor: SCString,
     $new: function() {
       throw new Error("String.new is illegal, should use literal.");
     },
@@ -2291,7 +2289,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.String = function(value) {
-    return new String(jsString(value)); // jshint ignore: line
+    return new SCString(String(value)); // jshint ignore: line
   };
 
 })(sc);
@@ -2339,14 +2337,14 @@ var sc = { VERSION: "0.0.6" };
 
   var $SC = sc.lang.$SC;
 
-  function Dictionary(value) {
+  function SCDictionary(value) {
     this.__initializeWith__("Set");
     this._class = $SC.Class("Dictionary");
     this._raw = value || {};
   }
 
   sc.lang.klass.define("Dictionary", "Set", {
-    constructor: Dictionary,
+    constructor: SCDictionary,
     NotYetImplemented: [
       // "$new",
       "$newFrom",
@@ -2419,7 +2417,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.Dictionary = function(value) {
-    return new Dictionary(value);
+    return new SCDictionary(value);
   };
 
 })(sc);
@@ -2482,14 +2480,14 @@ var sc = { VERSION: "0.0.6" };
 
   var $SC = sc.lang.$SC;
 
-  function Array(value) {
+  function SCArray(value) {
     this.__initializeWith__("ArrayedCollection");
     this._class = $SC.Class("Array");
     this._raw = value || [];
   }
 
   sc.lang.klass.define("Array", "ArrayedCollection", {
-    constructor: Array,
+    constructor: SCArray,
     NotYetImplemented: [
       "$with",
       "reverse",
@@ -2546,7 +2544,7 @@ var sc = { VERSION: "0.0.6" };
   });
 
   $SC.Array = function(value) {
-    return new Array(value);
+    return new SCArray(value);
   };
 
 })(sc);

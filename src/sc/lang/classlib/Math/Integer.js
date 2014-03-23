@@ -7,7 +7,7 @@
 
   var instances = {};
 
-  function Integer(value) {
+  function SCInteger(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -18,7 +18,7 @@
   }
 
   sc.lang.klass.define("Integer", "SimpleNumber", {
-    constructor: Integer,
+    constructor: SCInteger,
     $new: function() {
       throw new Error("Integer.new is illegal, should use literal.");
     },
@@ -89,7 +89,7 @@
     if (!global.isFinite(value)) {
       return $SC.Float(+value);
     }
-    return new Integer(value|0);
+    return new SCInteger(value|0);
   };
 
 })(sc);

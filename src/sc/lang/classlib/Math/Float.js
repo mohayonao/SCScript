@@ -7,7 +7,7 @@
 
   var instances = {};
 
-  function Float(value) {
+  function SCFloat(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -18,7 +18,7 @@
   }
 
   sc.lang.klass.define("Float", "SimpleNumber", {
-    constructor: Float,
+    constructor: SCFloat,
     $new: function() {
       throw new Error("Float.new is illegal, should use literal.");
     },
@@ -48,7 +48,7 @@
   });
 
   $SC.Float = function(value) {
-    return new Float(+value);
+    return new SCFloat(+value);
   };
 
 })(sc);

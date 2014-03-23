@@ -5,14 +5,14 @@
 
   var $SC = sc.lang.$SC;
 
-  function Array(value) {
+  function SCArray(value) {
     this.__initializeWith__("ArrayedCollection");
     this._class = $SC.Class("Array");
     this._raw = value || [];
   }
 
   sc.lang.klass.define("Array", "ArrayedCollection", {
-    constructor: Array,
+    constructor: SCArray,
     NotYetImplemented: [
       "$with",
       "reverse",
@@ -69,7 +69,7 @@
   });
 
   $SC.Array = function(value) {
-    return new Array(value);
+    return new SCArray(value);
   };
 
 })(sc);

@@ -7,7 +7,7 @@
 
   var instances = {};
 
-  function Symbol(value) {
+  function SCSymbol(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -18,7 +18,7 @@
   }
 
   sc.lang.klass.define("Symbol", "Object", {
-    constructor: Symbol,
+    constructor: SCSymbol,
     $new: function() {
       throw new Error("Symbol.new is illegal, should use literal.");
     },
@@ -145,7 +145,7 @@
   });
 
   $SC.Symbol = function(value) {
-    return new Symbol(String(value));
+    return new SCSymbol(String(value));
   };
 
 })(sc);

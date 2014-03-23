@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">127.75</p>
+      <p class="stat">125.58</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">36</p>
+      <p class="stat">147</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">12.48</p>
+      <p class="stat">7.66</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.19</p>
+      <p class="stat">0.54</p>
     </div>
   </div>
 </div>
@@ -116,9 +116,120 @@
     $new: function() {
       throw new Error(&quot;String.new is illegal, should use literal.&quot;);
     },
+    __tag__: function() {
+      return sc.C.TAG_STR;
+    },
     __str__: function() {
       return this._raw;
-    }
+    },
+    NotYetImplemented: [
+      // &quot;$initClass&quot;,
+      &quot;$doUnixCmdAction&quot;,
+      &quot;prUnixCmd&quot;,
+      &quot;unixCmd&quot;,
+      &quot;unixCmdGetStdOut&quot;,
+      &quot;asSymbol&quot;,
+      &quot;asInteger&quot;,
+      &quot;asFloat&quot;,
+      &quot;ascii&quot;,
+      &quot;stripRTF&quot;,
+      &quot;stripHTML&quot;,
+      &quot;$scDir&quot;,
+      &quot;compare&quot;,
+      &quot;hash&quot;,
+      &quot;performBinaryOpOnSimpleNumber&quot;,
+      &quot;performBinaryOpOnComplex&quot;,
+      &quot;multiChannelPerform&quot;,
+      &quot;isString&quot;,
+      &quot;asString&quot;,
+      &quot;asCompileString&quot;,
+      &quot;species&quot;,
+      &quot;postln&quot;,
+      &quot;post&quot;,
+      &quot;postcln&quot;,
+      &quot;postc&quot;,
+      &quot;postf&quot;,
+      &quot;format&quot;,
+      &quot;prFormat&quot;,
+      &quot;matchRegexp&quot;,
+      &quot;fformat&quot;,
+      &quot;die&quot;,
+      &quot;error&quot;,
+      &quot;warn&quot;,
+      &quot;inform&quot;,
+      &quot;catArgs&quot;,
+      &quot;scatArgs&quot;,
+      &quot;ccatArgs&quot;,
+      &quot;catList&quot;,
+      &quot;scatList&quot;,
+      &quot;ccatList&quot;,
+      &quot;split&quot;,
+      &quot;containsStringAt&quot;,
+      &quot;icontainsStringAt&quot;,
+      &quot;contains&quot;,
+      &quot;containsi&quot;,
+      &quot;findRegexp&quot;,
+      &quot;findAllRegexp&quot;,
+      &quot;while&quot;,
+      &quot;find&quot;,
+      &quot;findBackwards&quot;,
+      &quot;endsWith&quot;,
+      &quot;beginsWith&quot;,
+      &quot;findAll&quot;,
+      &quot;while&quot;,
+      &quot;replace&quot;,
+      &quot;escapeChar&quot;,
+      &quot;shellQuote&quot;,
+      &quot;quote&quot;,
+      &quot;tr&quot;,
+      &quot;insert&quot;,
+      &quot;wrapExtend&quot;,
+      &quot;zeroPad&quot;,
+      &quot;padLeft&quot;,
+      &quot;padRight&quot;,
+      &quot;underlined&quot;,
+      &quot;scramble&quot;,
+      &quot;rotate&quot;,
+      &quot;compile&quot;,
+      &quot;interpret&quot;,
+      &quot;interpretPrint&quot;,
+      &quot;$readNew&quot;,
+      &quot;prCat&quot;,
+      &quot;printOn&quot;,
+      &quot;storeOn&quot;,
+      &quot;inspectorClass&quot;,
+      &quot;standardizePath&quot;,
+      &quot;realPath&quot;,
+      &quot;withTrailingSlash&quot;,
+      &quot;withoutTrailingSlash&quot;,
+      &quot;absolutePath&quot;,
+      &quot;pathMatch&quot;,
+      &quot;load&quot;,
+      &quot;loadPaths&quot;,
+      &quot;loadRelative&quot;,
+      &quot;resolveRelative&quot;,
+      &quot;include&quot;,
+      &quot;exclude&quot;,
+      &quot;basename&quot;,
+      &quot;dirname&quot;,
+      &quot;splitext&quot;,
+      &quot;asRelativePath&quot;,
+      &quot;asAbsolutePath&quot;,
+      &quot;systemCmd&quot;,
+      &quot;gethostbyname&quot;,
+      &quot;getenv&quot;,
+      &quot;setenv&quot;,
+      &quot;unsetenv&quot;,
+      &quot;codegen_UGenCtorArg&quot;,
+      &quot;ugenCodeString&quot;,
+      &quot;asSecs&quot;,
+      &quot;speak&quot;,
+      &quot;toLower&quot;,
+      &quot;toUpper&quot;,
+      &quot;mkdir&quot;,
+      &quot;parseYAML&quot;,
+      &quot;parseYAMLFile&quot;,
+    ]
   });
 
   $SC.String = function(value) {

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">139.34</p>
+      <p class="stat">122.65</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">8</p>
+      <p class="stat">102</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">1.80</p>
+      <p class="stat">3.15</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.02</p>
+      <p class="stat">0.26</p>
     </div>
   </div>
 </div>
@@ -95,7 +95,101 @@
 
   require(&quot;../Core/Object&quot;);
 
-  sc.lang.klass.define(&quot;Collection&quot;, &quot;Object&quot;);
+  sc.lang.klass.define(&quot;Collection&quot;, &quot;Object&quot;, {
+    NotYetImplemented: [
+      &quot;$newFrom&quot;,
+      &quot;$with&quot;,
+      &quot;$fill&quot;,
+      &quot;$fill2D&quot;,
+      &quot;$fill3D&quot;,
+      &quot;$fillND&quot;,
+      &quot;hash&quot;,
+      &quot;species&quot;,
+      &quot;do&quot;,
+      &quot;iter&quot;,
+      &quot;size&quot;,
+      &quot;flatSize&quot;,
+      &quot;isEmpty&quot;,
+      &quot;notEmpty&quot;,
+      &quot;asCollection&quot;,
+      &quot;isCollection&quot;,
+      &quot;add&quot;,
+      &quot;addAll&quot;,
+      &quot;remove&quot;,
+      &quot;removeAll&quot;,
+      &quot;removeEvery&quot;,
+      &quot;removeAllSuchThat&quot;,
+      &quot;atAll&quot;,
+      &quot;putEach&quot;,
+      &quot;includes&quot;,
+      &quot;includesEqual&quot;,
+      &quot;includesAny&quot;,
+      &quot;includesAll&quot;,
+      &quot;matchItem&quot;,
+      &quot;collect&quot;,
+      &quot;select&quot;,
+      &quot;reject&quot;,
+      &quot;collectAs&quot;,
+      &quot;selectAs&quot;,
+      &quot;rejectAs&quot;,
+      &quot;detect&quot;,
+      &quot;detectIndex&quot;,
+      &quot;doMsg&quot;,
+      &quot;collectMsg&quot;,
+      &quot;selectMsg&quot;,
+      &quot;rejectMsg&quot;,
+      &quot;detectMsg&quot;,
+      &quot;detectIndexMsg&quot;,
+      &quot;lastForWhich&quot;,
+      &quot;lastIndexForWhich&quot;,
+      &quot;inject&quot;,
+      &quot;injectr&quot;,
+      &quot;count&quot;,
+      &quot;occurrencesOf&quot;,
+      &quot;any&quot;,
+      &quot;every&quot;,
+      &quot;sum&quot;,
+      &quot;mean&quot;,
+      &quot;product&quot;,
+      &quot;sumabs&quot;,
+      &quot;maxItem&quot;,
+      &quot;minItem&quot;,
+      &quot;maxIndex&quot;,
+      &quot;minIndex&quot;,
+      &quot;maxValue&quot;,
+      &quot;minValue&quot;,
+      &quot;maxSizeAtDepth&quot;,
+      &quot;maxDepth&quot;,
+      &quot;deepCollect&quot;,
+      &quot;deepDo&quot;,
+      &quot;invert&quot;,
+      &quot;sect&quot;,
+      &quot;union&quot;,
+      &quot;difference&quot;,
+      &quot;symmetricDifference&quot;,
+      &quot;isSubsetOf&quot;,
+      &quot;asArray&quot;,
+      &quot;asBag&quot;,
+      &quot;asList&quot;,
+      &quot;asSet&quot;,
+      &quot;asSortedList&quot;,
+      &quot;powerset&quot;,
+      &quot;flopDict&quot;,
+      &quot;histo&quot;,
+      &quot;printAll&quot;,
+      &quot;printAll&quot;,
+      &quot;printcsAll&quot;,
+      &quot;dumpAll&quot;,
+      &quot;printOn&quot;,
+      &quot;storeOn&quot;,
+      &quot;storeItemsOn&quot;,
+      &quot;printItemsOn&quot;,
+      &quot;writeDef&quot;,
+      &quot;writeInputSpec&quot;,
+      &quot;case&quot;,
+      &quot;makeEnvirValPairs&quot;,
+    ]
+  });
 
 })(sc);</textarea>
   </div>

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">124.13</p>
+      <p class="stat">123.79</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">34</p>
+      <p class="stat">95</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">13.96</p>
+      <p class="stat">10.43</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.19</p>
+      <p class="stat">0.39</p>
     </div>
   </div>
 </div>
@@ -113,12 +113,73 @@
     constructor: Integer,
     $new: function() {
       throw new Error(&quot;Integer.new is illegal, should use literal.&quot;);
-    }
+    },
+    __tag__: function() {
+      return sc.C.TAG_INT;
+    },
+    NotYetImplemented: [
+      &quot;isInteger&quot;,
+      &quot;hash&quot;,
+      &quot;clip&quot;,
+      &quot;wrap&quot;,
+      &quot;fold&quot;,
+      &quot;even&quot;,
+      &quot;odd&quot;,
+      &quot;xrand&quot;,
+      &quot;xrand2&quot;,
+      &quot;degreeToKey&quot;,
+      &quot;do&quot;,
+      &quot;generate&quot;,
+      &quot;collectAs&quot;,
+      &quot;collect&quot;,
+      &quot;reverseDo&quot;,
+      &quot;for&quot;,
+      &quot;forBy&quot;,
+      &quot;to&quot;,
+      &quot;asAscii&quot;,
+      &quot;asUnicode&quot;,
+      &quot;asDigit&quot;,
+      &quot;asBinaryDigits&quot;,
+      &quot;asDigits&quot;,
+      &quot;nextPowerOfTwo&quot;,
+      &quot;isPowerOfTwo&quot;,
+      &quot;leadingZeroes&quot;,
+      &quot;trailingZeroes&quot;,
+      &quot;numBits&quot;,
+      &quot;log2Ceil&quot;,
+      &quot;grayCode&quot;,
+      &quot;setBit&quot;,
+      &quot;nthPrime&quot;,
+      &quot;prevPrime&quot;,
+      &quot;nextPrime&quot;,
+      &quot;indexOfPrime&quot;,
+      &quot;isPrime&quot;,
+      &quot;exit&quot;,
+      &quot;asStringToBase&quot;,
+      &quot;asBinaryString&quot;,
+      &quot;asHexString&quot;,
+      &quot;asIPString&quot;,
+      &quot;archiveAsCompileString&quot;,
+      &quot;geom&quot;,
+      &quot;fib&quot;,
+      &quot;factors&quot;,
+      &quot;while&quot;,
+      &quot;pidRunning&quot;,
+      &quot;factorial&quot;,
+      &quot;isCaps&quot;,
+      &quot;isShift&quot;,
+      &quot;isCtrl&quot;,
+      &quot;isAlt&quot;,
+      &quot;isCmd&quot;,
+      &quot;isNumPad&quot;,
+      &quot;isHelp&quot;,
+      &quot;isFun&quot;,
+    ]
   });
 
   $SC.Integer = function(value) {
-    if (!Number.isFinite(value)) {
-      return $SC.Float(value);
+    if (!global.isFinite(value)) {
+      return $SC.Float(+value);
     }
     return new Integer(value|0);
   };

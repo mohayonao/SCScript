@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">128.89</p>
+      <p class="stat">126.31</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">34</p>
+      <p class="stat">151</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">12.32</p>
+      <p class="stat">7.45</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.17</p>
+      <p class="stat">0.55</p>
     </div>
   </div>
 </div>
@@ -114,9 +114,126 @@
     $new: function() {
       throw new Error(&quot;Symbol.new is illegal, should use literal.&quot;);
     },
+    __tag__: function() {
+      return sc.C.TAG_SYM;
+    },
     __str__: function() {
       return this._raw;
-    }
+    },
+    NotYetImplemented: [
+      &quot;asSymbol&quot;,
+      &quot;asInteger&quot;,
+      &quot;asFloat&quot;,
+      &quot;ascii&quot;,
+      &quot;asCompileString&quot;,
+      &quot;asClass&quot;,
+      &quot;asSetter&quot;,
+      &quot;asGetter&quot;,
+      &quot;asSpec&quot;,
+      &quot;asWarp&quot;,
+      &quot;asTuning&quot;,
+      &quot;asScale&quot;,
+      &quot;isSetter&quot;,
+      &quot;isClassName&quot;,
+      &quot;isMetaClassName&quot;,
+      &quot;isPrefix&quot;,
+      &quot;isPrimitiveName&quot;,
+      &quot;isPrimitive&quot;,
+      &quot;isMap&quot;,
+      &quot;isRest&quot;,
+      &quot;envirGet&quot;,
+      &quot;envirPut&quot;,
+      &quot;blend&quot;,
+      &quot;asBinOpString&quot;,
+      &quot;applyTo&quot;,
+      &quot;performBinaryOpOnSomething&quot;,
+      &quot;neg&quot;,
+      &quot;bitNot&quot;,
+      &quot;abs&quot;,
+      &quot;ceil&quot;,
+      &quot;floor&quot;,
+      &quot;frac&quot;,
+      &quot;sign&quot;,
+      &quot;sqrt&quot;,
+      &quot;exp&quot;,
+      &quot;midicps&quot;,
+      &quot;cpsmidi&quot;,
+      &quot;midiratio&quot;,
+      &quot;ratiomidi&quot;,
+      &quot;ampdb&quot;,
+      &quot;dbamp&quot;,
+      &quot;octcps&quot;,
+      &quot;cpsoct&quot;,
+      &quot;log&quot;,
+      &quot;log2&quot;,
+      &quot;log10&quot;,
+      &quot;sin&quot;,
+      &quot;cos&quot;,
+      &quot;tan&quot;,
+      &quot;asin&quot;,
+      &quot;acos&quot;,
+      &quot;atan&quot;,
+      &quot;sinh&quot;,
+      &quot;cosh&quot;,
+      &quot;tanh&quot;,
+      &quot;rand&quot;,
+      &quot;rand2&quot;,
+      &quot;linrand&quot;,
+      &quot;bilinrand&quot;,
+      &quot;sum3rand&quot;,
+      &quot;distort&quot;,
+      &quot;softclip&quot;,
+      &quot;coin&quot;,
+      &quot;even&quot;,
+      &quot;odd&quot;,
+      &quot;rectWindow&quot;,
+      &quot;hanWindow&quot;,
+      &quot;welWindow&quot;,
+      &quot;triWindow&quot;,
+      &quot;scurve&quot;,
+      &quot;ramp&quot;,
+      &quot;mod&quot;,
+      &quot;min&quot;,
+      &quot;max&quot;,
+      &quot;bitAnd&quot;,
+      &quot;bitOr&quot;,
+      &quot;bitXor&quot;,
+      &quot;bitHammingDistance&quot;,
+      &quot;hammingDistance&quot;,
+      &quot;lcm&quot;,
+      &quot;gcd&quot;,
+      &quot;round&quot;,
+      &quot;roundUp&quot;,
+      &quot;trunc&quot;,
+      &quot;atan2&quot;,
+      &quot;hypot&quot;,
+      &quot;hypotApx&quot;,
+      &quot;pow&quot;,
+      &quot;leftShift&quot;,
+      &quot;rightShift&quot;,
+      &quot;unsignedRightShift&quot;,
+      &quot;rrand&quot;,
+      &quot;exprand&quot;,
+      &quot;degreeToKey&quot;,
+      &quot;degrad&quot;,
+      &quot;raddeg&quot;,
+      &quot;doNumberOp&quot;,
+      &quot;doComplexOp&quot;,
+      &quot;doSignalOp&quot;,
+      &quot;doListOp&quot;,
+      &quot;primitiveIndex&quot;,
+      &quot;specialIndex&quot;,
+      &quot;printOn&quot;,
+      &quot;storeOn&quot;,
+      &quot;codegen_UGenCtorArg&quot;,
+      &quot;archiveAsCompileString&quot;,
+      &quot;kr&quot;,
+      &quot;ir&quot;,
+      &quot;tr&quot;,
+      &quot;ar&quot;,
+      &quot;matchOSCAddressPattern&quot;,
+      &quot;help&quot;,
+    ]
   });
 
   $SC.Symbol = function(value) {

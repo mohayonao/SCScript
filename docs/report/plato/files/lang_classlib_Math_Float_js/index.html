@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.57</p>
+      <p class="stat">126.94</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">31</p>
+      <p class="stat">54</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">13.30</p>
+      <p class="stat">10.98</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.16</p>
+      <p class="stat">0.24</p>
     </div>
   </div>
 </div>
@@ -113,7 +113,30 @@
     constructor: Float,
     $new: function() {
       throw new Error(&quot;Float.new is illegal, should use literal.&quot;);
-    }
+    },
+    __tag__: function() {
+      return sc.C.TAG_FLOAT;
+    },
+    NotYetImplemented: [
+      &quot;isFloat&quot;,
+      &quot;asFloat&quot;,
+      &quot;clip&quot;,
+      &quot;wrap&quot;,
+      &quot;fold&quot;,
+      &quot;coin&quot;,
+      &quot;xrand2&quot;,
+      &quot;as32Bits&quot;,
+      &quot;high32Bits&quot;,
+      &quot;low32Bits&quot;,
+      &quot;$from32Bits&quot;,
+      &quot;$from64Bits&quot;,
+      &quot;do&quot;,
+      &quot;reverseDo&quot;,
+      &quot;asStringPrec&quot;,
+      &quot;archiveAsCompileString&quot;,
+      &quot;storeOn&quot;,
+      &quot;switch&quot;,
+    ]
   });
 
   $SC.Float = function(value) {

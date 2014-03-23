@@ -8,7 +8,6 @@
 
   var $SC = sc.lang.$SC;
 
-  var object_keys = global.Object.keys;
   var metaClasses = {}, classes = {};
 
   var extend = function(constructor, superMetaClass) {
@@ -22,7 +21,7 @@
     function MetaSpec() {}
     MetaSpec.prototype = new Meta_F();
 
-    constructor.metaClass = new Class(MetaSpec);
+    constructor.metaClass = new SCClass(MetaSpec);
   };
 
   var throwError = {
@@ -34,7 +33,7 @@
   };
 
   var def = function(className, spec, classMethods, instanceMethods) {
-    object_keys(spec).forEach(function(methodName) {
+    Object.keys(spec).forEach(function(methodName) {
       var thrower;
       if (methodName === "constructor") {
         return;
@@ -129,23 +128,23 @@
     return classes[name];
   };
 
-  function Object() {
+  function SCObject() {
     this._raw = this;
   }
-  Object.metaClass = new Class();
-  sc.lang.klass.define("Object", null, { constructor: Object });
+  SCObject.metaClass = new SCClass();
+  sc.lang.klass.define("Object", null, { constructor: SCObject });
 
-  function Class(MetaSpec) { // jshint ignore:line
+  function SCClass(MetaSpec) { // jshint ignore:line
     this._raw = this;
     this._name = "Class";
-    this._Spec = Class;
+    this._Spec = SCClass;
     this._MetaSpec = MetaSpec || function() {};
     this._isMetaClass = false;
   }
-  sc.lang.klass.define("Class", "Object", { constructor: Class });
+  sc.lang.klass.define("Class", "Object", { constructor: SCClass });
 
 
-  Object.metaClass._MetaSpec.prototype = classes.Class = new Class();
+  SCObject.metaClass._MetaSpec.prototype = classes.Class = new SCClass();
 
 
   sc.lang.klass.refine("Object", {

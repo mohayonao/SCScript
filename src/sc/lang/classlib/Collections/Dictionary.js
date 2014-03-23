@@ -5,14 +5,14 @@
 
   var $SC = sc.lang.$SC;
 
-  function Dictionary(value) {
+  function SCDictionary(value) {
     this.__initializeWith__("Set");
     this._class = $SC.Class("Dictionary");
     this._raw = value || {};
   }
 
   sc.lang.klass.define("Dictionary", "Set", {
-    constructor: Dictionary,
+    constructor: SCDictionary,
     NotYetImplemented: [
       // "$new",
       "$newFrom",
@@ -85,7 +85,7 @@
   });
 
   $SC.Dictionary = function(value) {
-    return new Dictionary(value);
+    return new SCDictionary(value);
   };
 
 })(sc);

@@ -25,12 +25,31 @@
     constructor.metaClass = new Class(MetaSpec);
   };
 
-  var def = function(spec, classMethods, instanceMethods) {
+  var throwError = {
+    NotYetImplemented: function(id) {
+      return function() {
+        throw new Error("NotYetImplemented: " + id);
+      };
+    }
+  };
+
+  var def = function(className, spec, classMethods, instanceMethods) {
     object_keys(spec).forEach(function(methodName) {
+      var thrower;
       if (methodName === "constructor") {
         return;
       }
-      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+      if (throwError.hasOwnProperty(methodName)) {
+        thrower = throwError[methodName];
+        spec[methodName].forEach(function(methodName) {
+          if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+            methodName = methodName.substr(1);
+            classMethods[methodName] = thrower(className + "." + methodName);
+          } else {
+            instanceMethods[methodName] = thrower(className + "#" + methodName);
+          }
+        });
+      } else if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
         classMethods[methodName.substr(1)] = spec[methodName];
       } else {
         instanceMethods[methodName] = spec[methodName];
@@ -70,7 +89,7 @@
 
     metaClass = constructor.metaClass;
 
-    def(spec, metaClass._MetaSpec.prototype, constructor.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype);
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
@@ -88,7 +107,7 @@
       );
     }
     metaClass = metaClasses[className];
-    def(spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype);
   };
 
   sc.lang.klass.get = function(name) {

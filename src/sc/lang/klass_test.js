@@ -27,7 +27,11 @@ describe("sc.lang.klass", function() {
         },
         methodOverriddenInSubClass: function() {
           return "SuperClass#methodOverriddenInSubClass";
-        }
+        },
+        NotYetImplemented: [
+          "$notYetImplemented",
+          "notYetImplemented"
+        ]
       });
 
       expect(function() {
@@ -206,6 +210,18 @@ describe("sc.lang.klass", function() {
     it("#_performWith should apply behavior for any class when starts with $", function() {
       var test = SubClass.__performWith__("SuperClass", "$methodOverriddenInSubClass");
       expect(test).to.be.equal("SuperClass.methodOverriddenInSubClass");
+    });
+    describe("special method", function() {
+      describe("<notYetImplemented>", function() {
+        it("should bind function that throw NotYetImplemented error", function() {
+          expect(function() {
+            SuperClass.notYetImplemented();
+          }).to.throw("NotYetImplemented: SuperClass.notYetImplemented");
+          expect(function() {
+            SuperClass.new().notYetImplemented();
+          }).to.throw("NotYetImplemented: SuperClass#notYetImplemented");
+        });
+      });
     });
   });
   describe("$SC.Class", function() {

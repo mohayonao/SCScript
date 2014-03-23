@@ -7,7 +7,7 @@
 
   var instances = {};
 
-  function Char(value) {
+  function SCChar(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -18,7 +18,7 @@
   }
 
   sc.lang.klass.define("Char", "Magnitude", {
-    constructor: Char,
+    constructor: SCChar,
     $new: function() {
       throw new Error("Char.new is illegal, should use literal.");
     },
@@ -56,7 +56,7 @@
   });
 
   $SC.Char = function(value) {
-    return new Char(String(value).charAt(0));
+    return new SCChar(String(value).charAt(0));
   };
 
 })(sc);

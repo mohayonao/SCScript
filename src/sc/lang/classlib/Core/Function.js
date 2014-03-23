@@ -5,14 +5,14 @@
 
   var $SC = sc.lang.$SC;
 
-  function Function(value) {
+  function SCFunction(value) {
     this.__initializeWith__("AbstractFunction");
     this._class = $SC.Class("Function");
     this._raw = value;
   }
 
   sc.lang.klass.define("Function", "AbstractFunction", {
-    constructor: Function,
+    constructor: SCFunction,
     $new: function() {
       throw new Error("Function.new is illegal, should use literal.");
     },
@@ -70,7 +70,7 @@
   });
 
   $SC.Function = function(value) {
-    return new Function(value); // jshint ignore: line
+    return new SCFunction(value); // jshint ignore: line
   };
 
 })(sc);

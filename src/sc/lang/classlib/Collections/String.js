@@ -3,12 +3,11 @@
 
   require("./ArrayedCollection");
 
-  var jsString = global.String;
   var $SC = sc.lang.$SC;
 
   var instances = {};
 
-  function String(value) {
+  function SCString(value) {
     if (instances[value]) {
       return instances[value];
     }
@@ -20,7 +19,7 @@
   }
 
   sc.lang.klass.define("String", "RawArray", {
-    constructor: String,
+    constructor: SCString,
     $new: function() {
       throw new Error("String.new is illegal, should use literal.");
     },
@@ -141,7 +140,7 @@
   });
 
   $SC.String = function(value) {
-    return new String(jsString(value)); // jshint ignore: line
+    return new SCString(String(value)); // jshint ignore: line
   };
 
 })(sc);

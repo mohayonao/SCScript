@@ -7,7 +7,7 @@
 
   var nilInstance = null;
 
-  function Nil() {
+  function SCNil() {
     if (nilInstance) {
       return nilInstance;
     }
@@ -18,7 +18,7 @@
   }
 
   sc.lang.klass.define("Nil", "Object", {
-    constructor: Nil,
+    constructor: SCNil,
     $new: function() {
       throw new Error("Nil.new is illegal, should use literal.");
     },
@@ -83,7 +83,7 @@
   });
 
   $SC.Nil = function() {
-    return new Nil();
+    return new SCNil();
   };
 
 })(sc);

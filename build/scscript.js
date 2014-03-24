@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.8" };
+var sc = { VERSION: "0.0.9" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -1393,13 +1393,9 @@ var sc = { VERSION: "0.0.8" };
   var nilInstance = null;
 
   function SCNil() {
-    if (nilInstance) {
-      return nilInstance;
-    }
     this.__initializeWith__("Object");
     this._class = $SC.Class("Nil");
     this._raw = null;
-    nilInstance = this;
   }
 
   sc.lang.klass.define("Nil", "Object", {
@@ -1468,7 +1464,10 @@ var sc = { VERSION: "0.0.8" };
   });
 
   $SC.Nil = function() {
-    return new SCNil();
+    if (!nilInstance) {
+      nilInstance = new SCNil();
+    }
+    return nilInstance;
   };
 
 })(sc);
@@ -1692,13 +1691,9 @@ var sc = { VERSION: "0.0.8" };
   });
 
   function SCTrue() {
-    if (trueInstance) {
-      return trueInstance;
-    }
     this.__initializeWith__("Boolean");
     this._class = $SC.Class("True");
     this._raw = true;
-    trueInstance = this;
   }
 
   sc.lang.klass.define("True", "Boolean", {
@@ -1721,13 +1716,9 @@ var sc = { VERSION: "0.0.8" };
   });
 
   function SCFalse() {
-    if (falseInstance) {
-      return falseInstance;
-    }
     this.__initializeWith__("Boolean");
     this._class = $SC.Class("False");
     this._raw = false;
-    falseInstance = this;
   }
 
   sc.lang.klass.define("False", "Boolean", {
@@ -1754,11 +1745,17 @@ var sc = { VERSION: "0.0.8" };
   };
 
   $SC.True = function() {
-    return new SCTrue();
+    if (!trueInstance) {
+      trueInstance = new SCTrue();
+    }
+    return trueInstance;
   };
 
   $SC.False = function() {
-    return new SCFalse();
+    if (!falseInstance) {
+      falseInstance = new SCFalse();
+    }
+    return falseInstance;
   };
 
 })(sc);

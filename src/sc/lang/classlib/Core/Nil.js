@@ -8,13 +8,9 @@
   var nilInstance = null;
 
   function SCNil() {
-    if (nilInstance) {
-      return nilInstance;
-    }
     this.__initializeWith__("Object");
     this._class = $SC.Class("Nil");
     this._raw = null;
-    nilInstance = this;
   }
 
   sc.lang.klass.define("Nil", "Object", {
@@ -83,7 +79,10 @@
   });
 
   $SC.Nil = function() {
-    return new SCNil();
+    if (!nilInstance) {
+      nilInstance = new SCNil();
+    }
+    return nilInstance;
   };
 
 })(sc);

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">122.46</p>
+      <p class="stat">120.14</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">207</p>
+      <p class="stat">222</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">47.14</p>
+      <p class="stat">49.34</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.87</p>
+      <p class="stat">2.00</p>
     </div>
   </div>
 </div>
@@ -124,26 +124,42 @@
     }
   };
 
-  var def = function(className, spec, classMethods, instanceMethods) {
+  var def = function(className, spec, classMethods, instanceMethods, opts) {
+
+    var setMethod = function(methods, methodName, func) {
+      var dot;
+
+      if (methods.hasOwnProperty(methodName) &amp;&amp; !(opts &amp;&amp; opts.force)) {
+        dot = methods === classMethods ? &quot;.&quot; : &quot;#&quot;;
+        throw new Error(className + dot + methodName + &quot; is already defined.&quot;);
+      }
+
+      methods[methodName] = func;
+    };
+
     Object.keys(spec).forEach(function(methodName) {
       var thrower;
+
       if (methodName === &quot;constructor&quot;) {
         return;
       }
+
       if (throwError.hasOwnProperty(methodName)) {
         thrower = throwError[methodName];
         spec[methodName].forEach(function(methodName) {
           if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
             methodName = methodName.substr(1);
-            classMethods[methodName] = thrower(className + &quot;.&quot; + methodName);
+            setMethod(classMethods, methodName, thrower(className + &quot;.&quot; + methodName));
           } else {
-            instanceMethods[methodName] = thrower(className + &quot;#&quot; + methodName);
+            setMethod(instanceMethods, methodName, thrower(className + &quot;#&quot; + methodName));
           }
         });
-      } else if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
-        classMethods[methodName.substr(1)] = spec[methodName];
       } else {
-        instanceMethods[methodName] = spec[methodName];
+        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
+          setMethod(classMethods, methodName.substr(1), spec[methodName]);
+        } else {
+          setMethod(instanceMethods, methodName, spec[methodName]);
+        }
       }
     });
   };
@@ -165,9 +181,12 @@
     }
 
     spec = spec || {};
-    constructor = spec.hasOwnProperty(&quot;constructor&quot;) ? spec.constructor : function() {
-      this.__initializeWith__(superClassName);
-    };
+    if (!spec.hasOwnProperty(&quot;constructor&quot;)) {
+      throw new Error(
+        &quot;sc.lang.klass.define: class &#039;&quot; + className + &quot;&#039; must have constructor.&quot;
+      );
+    }
+    constructor = spec.constructor;
 
     if (className !== &quot;Object&quot;) {
       if (!metaClasses.hasOwnProperty(superClassName)) {
@@ -180,7 +199,7 @@
 
     metaClass = constructor.metaClass;
 
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, opts);
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
@@ -189,7 +208,7 @@
     classes[className] = null;
   };
 
-  sc.lang.klass.refine = function(className, spec) {
+  sc.lang.klass.refine = function(className, spec, opts) {
     var metaClass;
 
     if (!metaClasses.hasOwnProperty(className)) {
@@ -198,7 +217,7 @@
       );
     }
     metaClass = metaClasses[className];
-    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts);
   };
 
   sc.lang.klass.get = function(name) {
@@ -241,7 +260,9 @@
 
   sc.lang.klass.refine(&quot;Object&quot;, {
     $new: function() {
-      var instance = new this._Spec();
+      var args, instance;
+      args = [].slice.call(arguments);
+      instance = new this._Spec(args);
       instance._class = this;
       return instance;
     },
@@ -273,9 +294,6 @@
       }
 
       return proto[methodName].apply(this, args);
-    },
-    toString: function() {
-      return &quot;instance of &quot; + this._class._name;
     }
   });
 
@@ -288,9 +306,6 @@
     },
     isClass: function() {
       return $SC.True();
-    },
-    toString: function() {
-      return this._name;
     }
   });
 

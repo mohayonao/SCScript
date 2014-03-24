@@ -3,12 +3,16 @@
 
   require("./Collection");
 
+  function SCSequenceableCollection() {
+    this.__initializeWith__("Collection");
+  }
+
   sc.lang.klass.define("SequenceableCollection", "Collection", {
+    constructor: SCSequenceableCollection,
     NotYetImplemented: [
       "$series",
       "$geom",
       "$fib",
-      "while",
       "$rand",
       "$exprand",
       "$rand2",
@@ -27,7 +31,6 @@
       "indicesOfEqual",
       "find",
       "findAll",
-      "while",
       "indexOfGreaterThan",
       "indexIn",
       "indexInBetween",
@@ -243,19 +246,11 @@
       "mergeSort",
       "mergeSortTemp",
       "mergeTemp",
-      "while",
-      "while",
-      "while",
       "insertionSort",
       "insertionSortRange",
-      "while",
-      "while",
       "hoareMedian",
       "hoareFind",
-      "while",
       "hoarePartition",
-      "while",
-      "while",
       "$streamContents",
       "$streamContentsLimit",
       "wrapAt",

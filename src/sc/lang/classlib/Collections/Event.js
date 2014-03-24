@@ -3,9 +3,13 @@
 
   require("./Environment");
 
+  function SCEvent() {
+    this.__initializeWith__("Environment");
+  }
+
   sc.lang.klass.define("Event", "Environment", {
+    constructor: SCEvent,
     NotYetImplemented: [
-      "$new",
       "$default",
       "$silent",
       "$addEventType",
@@ -21,7 +25,7 @@
       "asUGenInput",
       "printOn",
       "storeOn",
-      "$initClass",
+      // "$initClass",
       "$makeDefaultSynthDef",
       "$makeParentEvents",
     ]

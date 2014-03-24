@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.7" };
+var sc = { VERSION: "0.0.8" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -91,26 +91,42 @@ var sc = { VERSION: "0.0.7" };
     }
   };
 
-  var def = function(className, spec, classMethods, instanceMethods) {
+  var def = function(className, spec, classMethods, instanceMethods, opts) {
+
+    var setMethod = function(methods, methodName, func) {
+      var dot;
+
+      if (methods.hasOwnProperty(methodName) && !(opts && opts.force)) {
+        dot = methods === classMethods ? "." : "#";
+        throw new Error(className + dot + methodName + " is already defined.");
+      }
+
+      methods[methodName] = func;
+    };
+
     Object.keys(spec).forEach(function(methodName) {
       var thrower;
+
       if (methodName === "constructor") {
         return;
       }
+
       if (throwError.hasOwnProperty(methodName)) {
         thrower = throwError[methodName];
         spec[methodName].forEach(function(methodName) {
           if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
             methodName = methodName.substr(1);
-            classMethods[methodName] = thrower(className + "." + methodName);
+            setMethod(classMethods, methodName, thrower(className + "." + methodName));
           } else {
-            instanceMethods[methodName] = thrower(className + "#" + methodName);
+            setMethod(instanceMethods, methodName, thrower(className + "#" + methodName));
           }
         });
-      } else if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
-        classMethods[methodName.substr(1)] = spec[methodName];
       } else {
-        instanceMethods[methodName] = spec[methodName];
+        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+          setMethod(classMethods, methodName.substr(1), spec[methodName]);
+        } else {
+          setMethod(instanceMethods, methodName, spec[methodName]);
+        }
       }
     });
   };
@@ -132,9 +148,12 @@ var sc = { VERSION: "0.0.7" };
     }
 
     spec = spec || {};
-    constructor = spec.hasOwnProperty("constructor") ? spec.constructor : function() {
-      this.__initializeWith__(superClassName);
-    };
+    if (!spec.hasOwnProperty("constructor")) {
+      throw new Error(
+        "sc.lang.klass.define: class '" + className + "' must have constructor."
+      );
+    }
+    constructor = spec.constructor;
 
     if (className !== "Object") {
       if (!metaClasses.hasOwnProperty(superClassName)) {
@@ -147,7 +166,7 @@ var sc = { VERSION: "0.0.7" };
 
     metaClass = constructor.metaClass;
 
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, opts);
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
@@ -156,7 +175,7 @@ var sc = { VERSION: "0.0.7" };
     classes[className] = null;
   };
 
-  sc.lang.klass.refine = function(className, spec) {
+  sc.lang.klass.refine = function(className, spec, opts) {
     var metaClass;
 
     if (!metaClasses.hasOwnProperty(className)) {
@@ -165,7 +184,7 @@ var sc = { VERSION: "0.0.7" };
       );
     }
     metaClass = metaClasses[className];
-    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype);
+    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts);
   };
 
   sc.lang.klass.get = function(name) {
@@ -206,7 +225,9 @@ var sc = { VERSION: "0.0.7" };
 
   sc.lang.klass.refine("Object", {
     $new: function() {
-      var instance = new this._Spec();
+      var args, instance;
+      args = [].slice.call(arguments);
+      instance = new this._Spec(args);
       instance._class = this;
       return instance;
     },
@@ -238,9 +259,6 @@ var sc = { VERSION: "0.0.7" };
       }
 
       return proto[methodName].apply(this, args);
-    },
-    toString: function() {
-      return "instance of " + this._class._name;
     }
   });
 
@@ -253,9 +271,6 @@ var sc = { VERSION: "0.0.7" };
     },
     isClass: function() {
       return $SC.True();
-    },
-    toString: function() {
-      return this._name;
     }
   });
 
@@ -265,6 +280,8 @@ var sc = { VERSION: "0.0.7" };
 
 // src/sc/lang/classlib/Core/Object.js
 (function(sc) {
+
+  // var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Object", {
     js: function() {
@@ -422,7 +439,6 @@ var sc = { VERSION: "0.0.7" };
       "alwaysYield",
       "yieldAndReset",
       "idle",
-      "while",
       "dependants",
       "changed",
       "addDependant",
@@ -490,7 +506,6 @@ var sc = { VERSION: "0.0.7" };
       "archiveAsObject",
       "checkCanArchive",
       "writeTextArchive",
-      "protect",
       "$readTextArchive",
       "asTextArchive",
       "getContainedObjects",
@@ -509,7 +524,12 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Core/AbstractFunction.js
 (function(sc) {
 
+  function SCAbstractFunction() {
+    this.__initializeWith__("Object");
+  }
+
   sc.lang.klass.define("AbstractFunction", "Object", {
+    constructor: SCAbstractFunction,
     NotYetImplemented: [
       "composeUnaryOp",
       "composeBinaryOp",
@@ -651,7 +671,12 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Streams/Stream.js
 (function(sc) {
 
+  function SCStream() {
+    this.__initializeWith__("AbstractFunction");
+  }
+
   sc.lang.klass.define("Stream", "AbstractFunction", {
+    constructor: SCStream,
     NotYetImplemented: [
       "parent",
       "next",
@@ -664,16 +689,12 @@ var sc = { VERSION: "0.0.7" };
       "putN",
       "putAll",
       "do",
-      "while",
       "subSample",
       "loop",
       "generate",
-      "while",
       "collect",
       "reject",
-      "while",
       "select",
-      "while",
       "dot",
       "interlace",
       "appendStream",
@@ -692,9 +713,13 @@ var sc = { VERSION: "0.0.7" };
     ]
   });
 
+  function SCPauseStream() {
+    this.__initializeWith__("Stream");
+  }
+
   sc.lang.klass.define("PauseStream", "Stream", {
+    constructor: SCPauseStream,
     NotYetImplemented: [
-      "$new",
       "isPlaying",
       "play",
       "reset",
@@ -715,9 +740,13 @@ var sc = { VERSION: "0.0.7" };
     ]
   });
 
+  function SCTask() {
+    this.__initializeWith__("PauseStream");
+  }
+
   sc.lang.klass.define("Task", "PauseStream", {
+    constructor: SCTask,
     NotYetImplemented: [
-      "$new",
       "storeArgs",
     ]
   });
@@ -727,7 +756,12 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Math/Magnitude.js
 (function(sc) {
 
+  function SCMagnitude() {
+    this.__initializeWith__("Object");
+  }
+
   sc.lang.klass.define("Magnitude", "Object", {
+    constructor: SCMagnitude,
     NotYetImplemented: [
       "hash",
       "exclusivelyBetween",
@@ -743,7 +777,12 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Math/Number.js
 (function(sc) {
 
+  function SCNumber() {
+    this.__initializeWith__("Magnitude");
+  }
+
   sc.lang.klass.define("Number", "Magnitude", {
+    constructor: SCNumber,
     NotYetImplemented: [
       "isNumber",
       "mod",
@@ -768,7 +807,12 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Math/SimpleNumber.js
 (function(sc) {
 
+  function SCSimpleNumber() {
+    this.__initializeWith__("Number");
+  }
+
   sc.lang.klass.define("SimpleNumber", "Number", {
+    constructor: SCSimpleNumber,
     NotYetImplemented: [
       "$new",
       "isValidUGenInput",
@@ -917,8 +961,6 @@ var sc = { VERSION: "0.0.7" };
       "writeInputSpec",
       "series",
       "seriesIter",
-      "while",
-      "while",
       "degreeToKey",
       "keyToDegree",
       "nearestInList",
@@ -944,14 +986,10 @@ var sc = { VERSION: "0.0.7" };
 
   var instances = {};
 
-  function SCInteger(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCInteger() {
     this.__initializeWith__("SimpleNumber");
     this._class = $SC.Class("Integer");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = 0;
   }
 
   sc.lang.klass.define("Integer", "SimpleNumber", {
@@ -1023,10 +1061,21 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.Integer = function(value) {
+    var instance;
+
     if (!global.isFinite(value)) {
       return $SC.Float(+value);
     }
-    return new SCInteger(value|0);
+
+    value = value|0;
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCInteger();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);
@@ -1038,14 +1087,10 @@ var sc = { VERSION: "0.0.7" };
 
   var instances = {};
 
-  function SCFloat(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCFloat() {
     this.__initializeWith__("SimpleNumber");
     this._class = $SC.Class("Float");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = 0.0;
   }
 
   sc.lang.klass.define("Float", "SimpleNumber", {
@@ -1079,7 +1124,17 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.Float = function(value) {
-    return new SCFloat(+value);
+    var instance;
+
+    value = +value;
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCFloat();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);
@@ -1087,9 +1142,13 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Core/Thread.js
 (function(sc) {
 
+  function SCThread() {
+    this.__initializeWith__("Stream");
+  }
+
   sc.lang.klass.define("Thread", "Stream", {
+    constructor: SCThread,
     NotYetImplemented: [
-      "$new",
       "init",
       "copy",
       "clock_",
@@ -1114,7 +1173,12 @@ var sc = { VERSION: "0.0.7" };
     ]
   });
 
+  function SCRoutine() {
+    this.__initializeWith__("Thread");
+  }
+
   sc.lang.klass.define("Routine", "Thread", {
+    constructor: SCRoutine,
     NotYetImplemented: [
       "$run",
       "next",
@@ -1141,14 +1205,10 @@ var sc = { VERSION: "0.0.7" };
 
   var instances = {};
 
-  function SCSymbol(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCSymbol() {
     this.__initializeWith__("Object");
     this._class = $SC.Class("Symbol");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = "";
   }
 
   sc.lang.klass.define("Symbol", "Object", {
@@ -1279,7 +1339,15 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.Symbol = function(value) {
-    return new SCSymbol(String(value));
+    var instance;
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCSymbol();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);
@@ -1287,9 +1355,13 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Core/Ref.js
 (function(sc) {
 
+  function SCRef() {
+    this.__initializeWith__("Object");
+  }
+
   sc.lang.klass.define("Ref", "Object", {
+    constructor: SCRef,
     NotYetImplemented: [
-      "$new",
       "set",
       "get",
       "dereference",
@@ -1445,10 +1517,11 @@ var sc = { VERSION: "0.0.7" };
 
   var $SC = sc.lang.$SC;
 
-  function SCFunction(value) {
+  function SCFunction() {
     this.__initializeWith__("AbstractFunction");
     this._class = $SC.Class("Function");
-    this._raw = value;
+    // istanbul ignore next
+    this._raw = function() {};
   }
 
   sc.lang.klass.define("Function", "AbstractFunction", {
@@ -1478,10 +1551,7 @@ var sc = { VERSION: "0.0.7" };
       "numVars",
       "varArgs",
       "loop",
-      "loop",
       "block",
-      "block",
-      "try",
       "asRoutine",
       "dup",
       "sum",
@@ -1510,7 +1580,9 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.Function = function(value) {
-    return new SCFunction(value); // jshint ignore: line
+    var instance = new SCFunction();
+    instance._raw = value;
+    return instance;
   };
 
 })(sc);
@@ -1522,14 +1594,10 @@ var sc = { VERSION: "0.0.7" };
 
   var instances = {};
 
-  function SCChar(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCChar() {
     this.__initializeWith__("Magnitude");
     this._class = $SC.Class("Char");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = "\0";
   }
 
   sc.lang.klass.define("Char", "Magnitude", {
@@ -1571,7 +1639,17 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.Char = function(value) {
-    return new SCChar(String(value).charAt(0));
+    var instance;
+
+    value = String(value).charAt(0);
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCChar();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);
@@ -1584,27 +1662,12 @@ var sc = { VERSION: "0.0.7" };
   var trueInstance = null;
   var falseInstance = null;
 
-  function SCTrue() {
-    if (trueInstance) {
-      return trueInstance;
-    }
-    this.__initializeWith__("Boolean");
-    this._class = $SC.Class("True");
-    this._raw = true;
-    trueInstance = this;
-  }
-
-  function SCFalse() {
-    if (falseInstance) {
-      return falseInstance;
-    }
-    this.__initializeWith__("Boolean");
-    this._class = $SC.Class("False");
-    this._raw = false;
-    falseInstance = this;
+  function SCBoolean() {
+    this.__initializeWith__("Object");
   }
 
   sc.lang.klass.define("Boolean", "Object", {
+    constructor: SCBoolean,
     $new: function() {
       throw new Error("Boolean.new is illegal, should use literal.");
     },
@@ -1628,6 +1691,16 @@ var sc = { VERSION: "0.0.7" };
     ]
   });
 
+  function SCTrue() {
+    if (trueInstance) {
+      return trueInstance;
+    }
+    this.__initializeWith__("Boolean");
+    this._class = $SC.Class("True");
+    this._raw = true;
+    trueInstance = this;
+  }
+
   sc.lang.klass.define("True", "Boolean", {
     constructor: SCTrue,
     $new: function() {
@@ -1646,6 +1719,16 @@ var sc = { VERSION: "0.0.7" };
       "binaryValue",
     ]
   });
+
+  function SCFalse() {
+    if (falseInstance) {
+      return falseInstance;
+    }
+    this.__initializeWith__("Boolean");
+    this._class = $SC.Class("False");
+    this._raw = false;
+    falseInstance = this;
+  }
 
   sc.lang.klass.define("False", "Boolean", {
     constructor: SCFalse,
@@ -1683,7 +1766,12 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Collections/Collection.js
 (function(sc) {
 
+  function SCCollection() {
+    this.__initializeWith__("Object");
+  }
+
   sc.lang.klass.define("Collection", "Object", {
+    constructor: SCCollection,
     NotYetImplemented: [
       "$newFrom",
       "$with",
@@ -1765,7 +1853,6 @@ var sc = { VERSION: "0.0.7" };
       "flopDict",
       "histo",
       "printAll",
-      "printAll",
       "printcsAll",
       "dumpAll",
       "printOn",
@@ -1784,12 +1871,16 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Collections/SequenceableCollection.js
 (function(sc) {
 
+  function SCSequenceableCollection() {
+    this.__initializeWith__("Collection");
+  }
+
   sc.lang.klass.define("SequenceableCollection", "Collection", {
+    constructor: SCSequenceableCollection,
     NotYetImplemented: [
       "$series",
       "$geom",
       "$fib",
-      "while",
       "$rand",
       "$exprand",
       "$rand2",
@@ -1808,7 +1899,6 @@ var sc = { VERSION: "0.0.7" };
       "indicesOfEqual",
       "find",
       "findAll",
-      "while",
       "indexOfGreaterThan",
       "indexIn",
       "indexInBetween",
@@ -2024,19 +2114,11 @@ var sc = { VERSION: "0.0.7" };
       "mergeSort",
       "mergeSortTemp",
       "mergeTemp",
-      "while",
-      "while",
-      "while",
       "insertionSort",
       "insertionSortRange",
-      "while",
-      "while",
       "hoareMedian",
       "hoareFind",
-      "while",
       "hoarePartition",
-      "while",
-      "while",
       "$streamContents",
       "$streamContentsLimit",
       "wrapAt",
@@ -2055,7 +2137,12 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Collections/ArrayedCollection.js
 (function(sc) {
 
+  function SCArrayedCollection() {
+    this.__initializeWith__("SequenceableCollection");
+  }
+
   sc.lang.klass.define("ArrayedCollection", "SequenceableCollection", {
+    constructor: SCArrayedCollection,
     NotYetImplemented: [
       "$newClear",
       "indexedSize",
@@ -2075,9 +2162,7 @@ var sc = { VERSION: "0.0.7" };
       "indexOf",
       "indexOfGreaterThan",
       "takeThese",
-      "while",
       "replace",
-      "while",
       "slotSize",
       "slotAt",
       "slotPut",
@@ -2137,7 +2222,12 @@ var sc = { VERSION: "0.0.7" };
     ]
   });
 
+  function SCRawArray() {
+    this.__initializeWith__("ArrayedCollection");
+  }
+
   sc.lang.klass.define("RawArray", "ArrayedCollection", {
+    constructor: SCRawArray,
     NotYetImplemented: [
       "archiveAsCompileString",
       "archiveAsObject",
@@ -2154,17 +2244,10 @@ var sc = { VERSION: "0.0.7" };
 
   var $SC = sc.lang.$SC;
 
-  var instances = {};
-
   function SCString(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
-    // TODO: array?
     this.__initializeWith__("RawArray");
     this._class = $SC.Class("String");
     this._raw = value;
-    instances[value] = this;
   }
 
   sc.lang.klass.define("String", "RawArray", {
@@ -2226,13 +2309,11 @@ var sc = { VERSION: "0.0.7" };
       "containsi",
       "findRegexp",
       "findAllRegexp",
-      "while",
       "find",
       "findBackwards",
       "endsWith",
       "beginsWith",
       "findAll",
-      "while",
       "replace",
       "escapeChar",
       "shellQuote",
@@ -2289,7 +2370,9 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.String = function(value) {
-    return new SCString(String(value)); // jshint ignore: line
+    var instance = new SCString();
+    instance._raw = value;
+    return instance;
   };
 
 })(sc);
@@ -2297,9 +2380,13 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Collections/Set.js
 (function(sc) {
 
+  function SCSet() {
+    this.__initializeWith__("Collection");
+  }
+
   sc.lang.klass.define("Set", "Collection", {
+    constructor: SCSet,
     NotYetImplemented: [
-      // "$new",
       "species",
       "copy",
       "do",
@@ -2337,16 +2424,15 @@ var sc = { VERSION: "0.0.7" };
 
   var $SC = sc.lang.$SC;
 
-  function SCDictionary(value) {
+  function SCDictionary() {
     this.__initializeWith__("Set");
     this._class = $SC.Class("Dictionary");
-    this._raw = value || {};
+    this._raw = {};
   }
 
   sc.lang.klass.define("Dictionary", "Set", {
     constructor: SCDictionary,
     NotYetImplemented: [
-      // "$new",
       "$newFrom",
       "at",
       "atFail",
@@ -2397,9 +2483,13 @@ var sc = { VERSION: "0.0.7" };
     ]
   });
 
+  function IdentityDictionary() {
+    this.__initializeWith__("Dictionary");
+  }
+
   sc.lang.klass.define("IdentityDictionary", "Dictionary", {
+    constructor: IdentityDictionary,
     NotYetImplemented: [
-      "$new",
       "at",
       "put",
       "putGet",
@@ -2417,7 +2507,9 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.Dictionary = function(value) {
-    return new SCDictionary(value);
+    var instance = new SCDictionary();
+    instance._raw = value;
+    return instance;
   };
 
 })(sc);
@@ -2425,14 +2517,17 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Collections/Environment.js
 (function(sc) {
 
+  function SCEnvironment() {
+    this.__initializeWith__("IdentityDictionary");
+  }
+
   sc.lang.klass.define("Environment", "IdentityDictionary", {
+    constructor: SCEnvironment,
     NotYetImplemented: [
       "$make",
       "$use",
       "make",
-      "protect",
       "use",
-      "protect",
       "eventAt",
       "composeEvents",
       "$pop",
@@ -2449,9 +2544,13 @@ var sc = { VERSION: "0.0.7" };
 // src/sc/lang/classlib/Collections/Event.js
 (function(sc) {
 
+  function SCEvent() {
+    this.__initializeWith__("Environment");
+  }
+
   sc.lang.klass.define("Event", "Environment", {
+    constructor: SCEvent,
     NotYetImplemented: [
-      "$new",
       "$default",
       "$silent",
       "$addEventType",
@@ -2467,7 +2566,7 @@ var sc = { VERSION: "0.0.7" };
       "asUGenInput",
       "printOn",
       "storeOn",
-      "$initClass",
+      // "$initClass",
       "$makeDefaultSynthDef",
       "$makeParentEvents",
     ]
@@ -2480,10 +2579,10 @@ var sc = { VERSION: "0.0.7" };
 
   var $SC = sc.lang.$SC;
 
-  function SCArray(value) {
+  function SCArray() {
     this.__initializeWith__("ArrayedCollection");
     this._class = $SC.Class("Array");
-    this._raw = value || [];
+    this._raw = [];
   }
 
   sc.lang.klass.define("Array", "ArrayedCollection", {
@@ -2544,7 +2643,9 @@ var sc = { VERSION: "0.0.7" };
   });
 
   $SC.Array = function(value) {
-    return new SCArray(value);
+    var instance = new SCArray();
+    instance._raw = value;
+    return instance;
   };
 
 })(sc);

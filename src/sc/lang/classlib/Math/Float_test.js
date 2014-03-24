@@ -5,11 +5,23 @@ require("./Float");
 var $SC = sc.lang.$SC;
 
 describe("class Float", function() {
+  var Float;
+  before(function() {
+    Float = $SC.Class("Float");
+  });
   describe("$SC.Float", function() {
-    it("should return instance of Float", function() {
+    it("should return instance of Float with defaults", sinon.test(function() {
+      var spy = this.spy($SC, "Boolean");
       var instance = $SC.Float(0);
-      expect(String(instance)).to.be.equal("instance of Float");
-    });
+      var test = instance.isMemberOf(Float);
+
+      expect(spy).to.be.calledWith(true);
+      expect(spy).to.be.returned(test);
+
+      expect(instance.js()).to.be.equal(0);
+
+      spy.restore();
+    }));
   });
   describe("instance", function() {
     it("should be shared", function() {

@@ -3,7 +3,12 @@
 
   require("./Object");
 
+  function SCAbstractFunction() {
+    this.__initializeWith__("Object");
+  }
+
   sc.lang.klass.define("AbstractFunction", "Object", {
+    constructor: SCAbstractFunction,
     NotYetImplemented: [
       "composeUnaryOp",
       "composeBinaryOp",

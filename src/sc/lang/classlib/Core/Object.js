@@ -4,6 +4,8 @@
   require("../../klass");
   require("../../dollarSC");
 
+  // var $SC = sc.lang.$SC;
+
   sc.lang.klass.refine("Object", {
     js: function() {
       return this._raw;
@@ -160,7 +162,6 @@
       "alwaysYield",
       "yieldAndReset",
       "idle",
-      "while",
       "dependants",
       "changed",
       "addDependant",
@@ -228,7 +229,6 @@
       "archiveAsObject",
       "checkCanArchive",
       "writeTextArchive",
-      "protect",
       "$readTextArchive",
       "asTextArchive",
       "getContainedObjects",

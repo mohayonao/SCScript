@@ -8,27 +8,12 @@
   var trueInstance = null;
   var falseInstance = null;
 
-  function SCTrue() {
-    if (trueInstance) {
-      return trueInstance;
-    }
-    this.__initializeWith__("Boolean");
-    this._class = $SC.Class("True");
-    this._raw = true;
-    trueInstance = this;
-  }
-
-  function SCFalse() {
-    if (falseInstance) {
-      return falseInstance;
-    }
-    this.__initializeWith__("Boolean");
-    this._class = $SC.Class("False");
-    this._raw = false;
-    falseInstance = this;
+  function SCBoolean() {
+    this.__initializeWith__("Object");
   }
 
   sc.lang.klass.define("Boolean", "Object", {
+    constructor: SCBoolean,
     $new: function() {
       throw new Error("Boolean.new is illegal, should use literal.");
     },
@@ -52,6 +37,16 @@
     ]
   });
 
+  function SCTrue() {
+    if (trueInstance) {
+      return trueInstance;
+    }
+    this.__initializeWith__("Boolean");
+    this._class = $SC.Class("True");
+    this._raw = true;
+    trueInstance = this;
+  }
+
   sc.lang.klass.define("True", "Boolean", {
     constructor: SCTrue,
     $new: function() {
@@ -70,6 +65,16 @@
       "binaryValue",
     ]
   });
+
+  function SCFalse() {
+    if (falseInstance) {
+      return falseInstance;
+    }
+    this.__initializeWith__("Boolean");
+    this._class = $SC.Class("False");
+    this._raw = false;
+    falseInstance = this;
+  }
 
   sc.lang.klass.define("False", "Boolean", {
     constructor: SCFalse,

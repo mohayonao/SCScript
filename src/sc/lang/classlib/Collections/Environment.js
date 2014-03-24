@@ -3,14 +3,17 @@
 
   require("./Dictionary");
 
+  function SCEnvironment() {
+    this.__initializeWith__("IdentityDictionary");
+  }
+
   sc.lang.klass.define("Environment", "IdentityDictionary", {
+    constructor: SCEnvironment,
     NotYetImplemented: [
       "$make",
       "$use",
       "make",
-      "protect",
       "use",
-      "protect",
       "eventAt",
       "composeEvents",
       "$pop",

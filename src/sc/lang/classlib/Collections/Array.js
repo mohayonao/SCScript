@@ -5,10 +5,10 @@
 
   var $SC = sc.lang.$SC;
 
-  function SCArray(value) {
+  function SCArray() {
     this.__initializeWith__("ArrayedCollection");
     this._class = $SC.Class("Array");
-    this._raw = value || [];
+    this._raw = [];
   }
 
   sc.lang.klass.define("Array", "ArrayedCollection", {
@@ -69,7 +69,9 @@
   });
 
   $SC.Array = function(value) {
-    return new SCArray(value);
+    var instance = new SCArray();
+    instance._raw = value;
+    return instance;
   };
 
 })(sc);

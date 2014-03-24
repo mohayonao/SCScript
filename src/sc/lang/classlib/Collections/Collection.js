@@ -3,7 +3,12 @@
 
   require("../Core/Object");
 
+  function SCCollection() {
+    this.__initializeWith__("Object");
+  }
+
   sc.lang.klass.define("Collection", "Object", {
+    constructor: SCCollection,
     NotYetImplemented: [
       "$newFrom",
       "$with",
@@ -84,7 +89,6 @@
       "powerset",
       "flopDict",
       "histo",
-      "printAll",
       "printAll",
       "printcsAll",
       "dumpAll",

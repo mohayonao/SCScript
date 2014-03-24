@@ -7,14 +7,10 @@
 
   var instances = {};
 
-  function SCSymbol(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCSymbol() {
     this.__initializeWith__("Object");
     this._class = $SC.Class("Symbol");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = "";
   }
 
   sc.lang.klass.define("Symbol", "Object", {
@@ -145,7 +141,15 @@
   });
 
   $SC.Symbol = function(value) {
-    return new SCSymbol(String(value));
+    var instance;
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCSymbol();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);

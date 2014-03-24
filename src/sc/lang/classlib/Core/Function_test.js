@@ -5,11 +5,23 @@ require("./Function");
 var $SC = sc.lang.$SC;
 
 describe("class Function", function() {
+  var Function;
+  before(function() {
+    Function = $SC.Class("Function");
+  });
   describe("$SC.Function", function() {
-    it("should return instance of Function", function() {
+    it("should return instance of Function", sinon.test(function() {
+      var spy = this.spy($SC, "Boolean");
       var instance = $SC.Function(function() {});
-      expect(String(instance)).to.be.equal("instance of Function");
-    });
+      var test = instance.isMemberOf(Function);
+
+      expect(spy).to.be.calledWith(true);
+      expect(spy).to.be.returned(test);
+
+      expect(instance.js()).to.be.a("function");
+
+      spy.restore();
+    }));
   });
   describe(".new", function() {
     it("should throw error", function() {

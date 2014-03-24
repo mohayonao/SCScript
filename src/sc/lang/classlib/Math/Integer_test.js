@@ -5,12 +5,24 @@ require("./Integer");
 var $SC = sc.lang.$SC;
 
 describe("class Integer", function() {
+  var Integer;
+  before(function() {
+    Integer = $SC.Class("Integer");
+  });
   describe("$SC.Integer", function() {
-    it("should return instance of Integer", function() {
+    it("should return instance of Integer with defaults", sinon.test(function() {
+      var spy = this.spy($SC, "Boolean");
       var instance = $SC.Integer(0);
-      expect(String(instance)).to.be.equal("instance of Integer");
-    });
-    it("should return instance of Float when given is not finite", sinon.test(function() {
+      var test = instance.isMemberOf(Integer);
+
+      expect(spy).to.be.calledWith(true);
+      expect(spy).to.be.returned(test);
+
+      expect(instance.js()).to.be.equal(0);
+
+      spy.restore();
+    }));
+    it("should return instance of Float when given finite", sinon.test(function() {
       var spy = this.spy($SC, "Float");
       var test = $SC.Integer(Infinity);
 

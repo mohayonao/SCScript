@@ -89,9 +89,12 @@
     }
 
     spec = spec || {};
-    constructor = spec.hasOwnProperty("constructor") ? spec.constructor : function() {
-      this.__initializeWith__(superClassName);
-    };
+    if (!spec.hasOwnProperty("constructor")) {
+      throw new Error(
+        "sc.lang.klass.define: class '" + className + "' must have constructor."
+      );
+    }
+    constructor = spec.constructor;
 
     if (className !== "Object") {
       if (!metaClasses.hasOwnProperty(superClassName)) {
@@ -165,7 +168,9 @@
 
   sc.lang.klass.refine("Object", {
     $new: function() {
-      var instance = new this._Spec();
+      var args, instance;
+      args = [].slice.call(arguments);
+      instance = new this._Spec(args);
       instance._class = this;
       return instance;
     },
@@ -197,9 +202,6 @@
       }
 
       return proto[methodName].apply(this, args);
-    },
-    toString: function() {
-      return "instance of " + this._class._name;
     }
   });
 
@@ -212,9 +214,6 @@
     },
     isClass: function() {
       return $SC.True();
-    },
-    toString: function() {
-      return this._name;
     }
   });
 

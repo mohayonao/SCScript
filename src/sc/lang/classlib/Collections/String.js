@@ -5,17 +5,10 @@
 
   var $SC = sc.lang.$SC;
 
-  var instances = {};
-
   function SCString(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
-    // TODO: array?
     this.__initializeWith__("RawArray");
     this._class = $SC.Class("String");
     this._raw = value;
-    instances[value] = this;
   }
 
   sc.lang.klass.define("String", "RawArray", {
@@ -138,7 +131,9 @@
   });
 
   $SC.String = function(value) {
-    return new SCString(String(value)); // jshint ignore: line
+    var instance = new SCString();
+    instance._raw = value;
+    return instance;
   };
 
 })(sc);

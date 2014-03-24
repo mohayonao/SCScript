@@ -3,7 +3,12 @@
 
   require("./Collection");
 
+  function SCSequenceableCollection() {
+    this.__initializeWith__("Collection");
+  }
+
   sc.lang.klass.define("SequenceableCollection", "Collection", {
+    constructor: SCSequenceableCollection,
     NotYetImplemented: [
       "$series",
       "$geom",

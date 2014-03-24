@@ -7,15 +7,19 @@ var $SC = sc.lang.$SC;
 describe("sc.lang.klass", function() {
   var Object, Class, SuperClass, SubClass;
   describe("define", function() {
+    function SCSuperClass() {
+      this.__initializeWith__("Object");
+    }
+    function SCSubClass() {
+      this.__initializeWith__("SuperClass");
+    }
     it("should register class", function() {
       expect(function() {
         sc.lang.klass.get("SuperClass");
       }).to.throw("class 'SuperClass' not registered.");
 
       sc.lang.klass.define("SuperClass", "Object", {
-        constructor: function() {
-          this.__initializeWith__("Object");
-        },
+        constructor: SCSuperClass,
         $methodDefinedInSuperClass: function() {
           return "SuperClass.methodDefinedInSuperClass";
         },
@@ -43,20 +47,33 @@ describe("sc.lang.klass", function() {
         sc.lang.klass.define("superclass", "Object");
       }).to.throw("classname should be CamelCase, but got 'superclass'");
     });
+    it("should throw error when not have constructor", function() {
+      expect(function() {
+        sc.lang.klass.define("NotHaveConstructor", "Object");
+      }).to.throw("class 'NotHaveConstructor' must have constructor.");
+    });
     it("should throw error when extend from not registered class", function() {
       expect(function() {
-        sc.lang.klass.define("TestClass", "NotRegisteredClass");
+        sc.lang.klass.define("TestClass", "NotRegisteredClass", {
+          constructor: function() {}
+        });
       }).to.throw("superclass 'NotRegisteredClass' is not registered.");
     });
     it("should throw error when redefine", function() {
-      sc.lang.klass.define("SubClass", "SuperClass");
+      sc.lang.klass.define("SubClass", "SuperClass", {
+        constructor: SCSubClass
+      });
       expect(function() {
-        sc.lang.klass.define("SubClass", "SuperClass");
+        sc.lang.klass.define("SubClass", "SuperClass", {
+          constructor: SCSubClass
+        });
       }).to.throw("class 'SubClass' is already registered.");
     });
     it("should not throw error when redefine with option.force is true", function() {
       expect(function() {
-        sc.lang.klass.define("SubClass", "SuperClass", null, { force: true });
+        sc.lang.klass.define("SubClass", "SuperClass", {
+          constructor: SCSubClass
+        }, { force: true });
       }).to.not.throw("class 'SubClass' is already registered.");
     });
   });
@@ -110,31 +127,49 @@ describe("sc.lang.klass", function() {
       SubClass   = sc.lang.klass.get("SubClass");
     });
     describe("#new", function() {
-      it("should return instance", function() {
-        var test = SubClass.new();
-        expect(String(test)).to.be.equal("instance of SubClass");
-      });
+      it("should return instance", sinon.test(function() {
+        var spy = this.spy($SC, "Boolean");
+        var instance = SuperClass.new();
+        var test = instance.isMemberOf(SuperClass);
+
+        expect(spy).to.be.calledWith(true);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
     });
     describe("#name", function() {
       it("should return class name", sinon.test(function() {
         var spy = this.spy($SC, "String");
         var test = SubClass.name();
 
-         expect(spy).to.be.calledWith("SubClass");
-         expect(spy).to.be.returned(test);
+        expect(spy).to.be.calledWith("SubClass");
+        expect(spy).to.be.returned(test);
 
         spy.restore();
       }));
     });
     describe("#class", function() {
-      it("should return Meta_Class when receiver is Class", function() {
-        var test = SubClass.class();
-        expect(String(test)).to.be.equal("Meta_SubClass");
-      });
-      it("should return Class when receiver is Meta_Class", function() {
-        var test = SubClass.class().class();
-        expect(String(test)).to.be.equal("Class");
-      });
+      it("should return Meta_Class when receiver is Class", sinon.test(function() {
+        var spy = this.spy($SC, "Boolean");
+        var instance = SubClass.class();
+        var test = instance.isKindOf(Class);
+
+        expect(spy).to.be.calledWith(true);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
+      it("should return Class when receiver is Meta_Class", sinon.test(function() {
+        var spy = this.spy($SC, "Boolean");
+        var instance = SubClass.class().class();
+        var test = instance.isKindOf(Class);
+
+        expect(spy).to.be.calledWith(true);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
     });
     describe("#isClass", function() {
       it("should return true", sinon.test(function() {
@@ -150,10 +185,16 @@ describe("sc.lang.klass", function() {
   });
   describe("Object", function() {
     describe("#class", function() {
-      it("should return class", function() {
-        var test = SubClass.new().class();
-        expect(String(test)).to.be.equal("SubClass");
-      });
+      it("should return class", sinon.test(function() {
+        var spy = this.spy($SC, "Boolean");
+        var instance = SubClass.new().class();
+        var test = instance.isKindOf(Class);
+
+        expect(spy).to.be.calledWith(true);
+        expect(spy).to.be.returned(test);
+
+        spy.restore();
+      }));
     });
     describe("#isClass", function() {
       it("should return true", sinon.test(function() {

@@ -7,14 +7,10 @@
 
   var instances = {};
 
-  function SCChar(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCChar() {
     this.__initializeWith__("Magnitude");
     this._class = $SC.Class("Char");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = "\0";
   }
 
   sc.lang.klass.define("Char", "Magnitude", {
@@ -56,7 +52,17 @@
   });
 
   $SC.Char = function(value) {
-    return new SCChar(String(value).charAt(0));
+    var instance;
+
+    value = String(value).charAt(0);
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCChar();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);

@@ -3,9 +3,13 @@
 
   require("./Object");
 
+  function SCRef() {
+    this.__initializeWith__("Object");
+  }
+
   sc.lang.klass.define("Ref", "Object", {
+    constructor: SCRef,
     NotYetImplemented: [
-      "$new",
       "set",
       "get",
       "dereference",

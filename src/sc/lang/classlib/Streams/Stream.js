@@ -3,7 +3,12 @@
 
   require("../Core/AbstractFunction");
 
+  function SCStream() {
+    this.__initializeWith__("AbstractFunction");
+  }
+
   sc.lang.klass.define("Stream", "AbstractFunction", {
+    constructor: SCStream,
     NotYetImplemented: [
       "parent",
       "next",
@@ -40,9 +45,13 @@
     ]
   });
 
+  function SCPauseStream() {
+    this.__initializeWith__("Stream");
+  }
+
   sc.lang.klass.define("PauseStream", "Stream", {
+    constructor: SCPauseStream,
     NotYetImplemented: [
-      "$new",
       "isPlaying",
       "play",
       "reset",
@@ -63,9 +72,13 @@
     ]
   });
 
+  function SCTask() {
+    this.__initializeWith__("PauseStream");
+  }
+
   sc.lang.klass.define("Task", "PauseStream", {
+    constructor: SCTask,
     NotYetImplemented: [
-      "$new",
       "storeArgs",
     ]
   });

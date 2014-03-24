@@ -3,7 +3,12 @@
 
   require("./SequenceableCollection");
 
+  function SCArrayedCollection() {
+    this.__initializeWith__("SequenceableCollection");
+  }
+
   sc.lang.klass.define("ArrayedCollection", "SequenceableCollection", {
+    constructor: SCArrayedCollection,
     NotYetImplemented: [
       "$newClear",
       "indexedSize",
@@ -83,7 +88,12 @@
     ]
   });
 
+  function SCRawArray() {
+    this.__initializeWith__("ArrayedCollection");
+  }
+
   sc.lang.klass.define("RawArray", "ArrayedCollection", {
+    constructor: SCRawArray,
     NotYetImplemented: [
       "archiveAsCompileString",
       "archiveAsObject",

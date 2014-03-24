@@ -5,20 +5,23 @@ require("./String");
 var $SC = sc.lang.$SC;
 
 describe("class String", function() {
-  describe("$SC.String", function() {
-    it("should return instance of String", function() {
-      var instance = $SC.String("str");
-      expect(String(instance)).to.be.equal("instance of String");
-    });
+  var String;
+  before(function() {
+    String = $SC.Class("String");
   });
-  describe("instance", function() {
-    it("should be shared", function() {
-      var a = $SC.String("str0");
-      var b = $SC.String("str0");
-      var c = $SC.String("str1");
-      expect(a).to.be.equal(b);
-      expect(b).to.be.not.equal(c);
-    });
+  describe("$SC.String", function() {
+    it("should return instance of String with defaults", sinon.test(function() {
+      var spy = this.spy($SC, "Boolean");
+      var instance = $SC.String("str");
+      var test = instance.isMemberOf(String);
+
+      expect(spy).to.be.calledWith(true);
+      expect(spy).to.be.returned(test);
+
+      expect(instance.js()).to.be.equal("str");
+
+      spy.restore();
+    }));
   });
   describe(".new", function() {
     it("should throw error", function() {

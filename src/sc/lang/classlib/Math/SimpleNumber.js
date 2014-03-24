@@ -3,7 +3,12 @@
 
   require("./Number");
 
+  function SCSimpleNumber() {
+    this.__initializeWith__("Number");
+  }
+
   sc.lang.klass.define("SimpleNumber", "Number", {
+    constructor: SCSimpleNumber,
     NotYetImplemented: [
       "$new",
       "isValidUGenInput",

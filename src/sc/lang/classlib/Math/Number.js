@@ -3,7 +3,12 @@
 
   require("./Magnitude");
 
+  function SCNumber() {
+    this.__initializeWith__("Magnitude");
+  }
+
   sc.lang.klass.define("Number", "Magnitude", {
+    constructor: SCNumber,
     NotYetImplemented: [
       "isNumber",
       "mod",

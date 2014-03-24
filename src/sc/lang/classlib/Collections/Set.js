@@ -3,9 +3,13 @@
 
   require("./Collection");
 
+  function SCSet() {
+    this.__initializeWith__("Collection");
+  }
+
   sc.lang.klass.define("Set", "Collection", {
+    constructor: SCSet,
     NotYetImplemented: [
-      // "$new",
       "species",
       "copy",
       "do",

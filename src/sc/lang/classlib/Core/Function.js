@@ -5,10 +5,11 @@
 
   var $SC = sc.lang.$SC;
 
-  function SCFunction(value) {
+  function SCFunction() {
     this.__initializeWith__("AbstractFunction");
     this._class = $SC.Class("Function");
-    this._raw = value;
+    // istanbul ignore next
+    this._raw = function() {};
   }
 
   sc.lang.klass.define("Function", "AbstractFunction", {
@@ -67,7 +68,9 @@
   });
 
   $SC.Function = function(value) {
-    return new SCFunction(value); // jshint ignore: line
+    var instance = new SCFunction();
+    instance._raw = value;
+    return instance;
   };
 
 })(sc);

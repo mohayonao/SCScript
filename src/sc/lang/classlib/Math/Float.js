@@ -7,14 +7,10 @@
 
   var instances = {};
 
-  function SCFloat(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCFloat() {
     this.__initializeWith__("SimpleNumber");
     this._class = $SC.Class("Float");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = 0.0;
   }
 
   sc.lang.klass.define("Float", "SimpleNumber", {
@@ -48,7 +44,17 @@
   });
 
   $SC.Float = function(value) {
-    return new SCFloat(+value);
+    var instance;
+
+    value = +value;
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCFloat();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);

@@ -5,11 +5,23 @@ require("./Symbol");
 var $SC = sc.lang.$SC;
 
 describe("class Symbol", function() {
+  var Symbol;
+  before(function() {
+    Symbol = $SC.Class("Symbol");
+  });
   describe("$SC.Symbol", function() {
-    it("should return instance of Symbol", function() {
+    it("should return instance of Symbol with defaults", sinon.test(function() {
+      var spy = this.spy($SC, "Boolean");
       var instance = $SC.Symbol("sym");
-      expect(String(instance)).to.be.equal("instance of Symbol");
-    });
+      var test = instance.isMemberOf(Symbol);
+
+      expect(spy).to.be.calledWith(true);
+      expect(spy).to.be.returned(test);
+
+      expect(instance.js()).to.be.equal("sym");
+
+      spy.restore();
+    }));
   });
   describe("instance", function() {
     it("should be shared", function() {

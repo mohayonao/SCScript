@@ -7,14 +7,10 @@
 
   var instances = {};
 
-  function SCInteger(value) {
-    if (instances[value]) {
-      return instances[value];
-    }
+  function SCInteger() {
     this.__initializeWith__("SimpleNumber");
     this._class = $SC.Class("Integer");
-    this._raw = value;
-    instances[value] = this;
+    this._raw = 0;
   }
 
   sc.lang.klass.define("Integer", "SimpleNumber", {
@@ -86,10 +82,21 @@
   });
 
   $SC.Integer = function(value) {
+    var instance;
+
     if (!global.isFinite(value)) {
       return $SC.Float(+value);
     }
-    return new SCInteger(value|0);
+
+    value = value|0;
+
+    if (!instances.hasOwnProperty(value)) {
+      instance = new SCInteger();
+      instance._raw = value;
+      instances[value] = instance;
+    }
+
+    return instances[value];
   };
 
 })(sc);

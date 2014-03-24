@@ -5,11 +5,23 @@ require("./Nil");
 var $SC = sc.lang.$SC;
 
 describe("class Nil", function() {
+  var Nil;
+  before(function() {
+    Nil = $SC.Class("Nil");
+  });
   describe("$SC.Nil", function() {
-    it("should return instance of Nil", function() {
+    it("should return instance of Nil", sinon.test(function() {
+      var spy = this.spy($SC, "Boolean");
       var instance = $SC.Nil();
-      expect(String(instance)).to.be.equal("instance of Nil");
-    });
+      var test = instance.isMemberOf(Nil);
+
+      expect(spy).to.be.calledWith(true);
+      expect(spy).to.be.returned(test);
+
+      expect(instance.js()).to.be.equal(null);
+
+      spy.restore();
+    }));
   });
   describe("instance", function() {
     it("should be shared", function() {

@@ -3,9 +3,13 @@
 
   require("../Streams/Stream");
 
+  function SCThread() {
+    this.__initializeWith__("Stream");
+  }
+
   sc.lang.klass.define("Thread", "Stream", {
+    constructor: SCThread,
     NotYetImplemented: [
-      "$new",
       "init",
       "copy",
       "clock_",
@@ -30,7 +34,12 @@
     ]
   });
 
+  function SCRoutine() {
+    this.__initializeWith__("Thread");
+  }
+
   sc.lang.klass.define("Routine", "Thread", {
+    constructor: SCRoutine,
     NotYetImplemented: [
       "$run",
       "next",

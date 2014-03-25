@@ -101,13 +101,15 @@ module.exports = function(grunt) {
     if (tests.length) {
       grunt.config.data.jshint.test = {
         options: {
-          expr: true,
+          expr    : true,
           loopfunc: true,
+          maxlen  : 256,
           globals: {
             sc        : true,
             context   : true,
             describe  : true,
             it        : true,
+            chai      : true,
             sinon     : true,
             expect    : true,
             before    : true,
@@ -254,11 +256,10 @@ module.exports = function(grunt) {
     clearRequireCache();
 
     global.expect = chai.expect;
+    global.chai = chai;
     global.sinon = sinon;
     global.sc = { VERSION: grunt.config.data.pkg.version };
     global.sc.C = require("./src/const");
-
-    require("./src/sc/test/utils");
 
     if (cover) {
       coverageVar = "$$cov_" + Date.now() + "$$";
@@ -267,6 +268,8 @@ module.exports = function(grunt) {
       istanbul.hook.hookRequire(function(file) { return matchFn[file]; }, transformer);
       global[coverageVar] = {};
     }
+
+    require("./src/sc/test/utils");
 
     if (!reporter) {
       reporter = "spec";
@@ -361,9 +364,6 @@ module.exports = function(grunt) {
       return "    <script src=\"../../../" + filepath + "\"></script>";
     });
     tmpl = tmpl.replace("#{TESTS}", tests.join("\n"));
-
-    consts = grunt.file.read("src/const.js").trim();
-    tmpl = tmpl.replace("#{CONSTS}", consts);
 
     grunt.file.write("docs/report/test/index.html", tmpl);
   }

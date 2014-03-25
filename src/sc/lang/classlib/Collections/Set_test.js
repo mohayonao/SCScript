@@ -4,23 +4,73 @@ require("./Set");
 
 var $SC = sc.lang.$SC;
 
-describe("class Set", function() {
-  var Set;
+describe("SCSet", function() {
+  var SCSet;
   before(function() {
-    Set = $SC.Class("Set");
+    SCSet = $SC.Class("Set");
+    this.createInstance = function() {
+      return SCSet.new();
+    };
   });
-  describe(".new", function() {
-    it("should return instance of Set", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = Set.new();
-      var test = instance.isMemberOf(Set);
+  it("#valueOf", function() {
+    var instance, test;
 
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
-
-      expect(instance.js()).to.be.equal(instance);
-
-      spy.restore();
-    }));
+    instance = this.createInstance();
+    test = instance.valueOf();
+    expect(test).to.equal(instance);
+  });
+  it.skip("#species", function() {
+  });
+  it.skip("#copy", function() {
+  });
+  it.skip("#do", function() {
+  });
+  it.skip("#clear", function() {
+  });
+  it.skip("#makeEmpty", function() {
+  });
+  it.skip("#includes", function() {
+  });
+  it.skip("#findMatch", function() {
+  });
+  it.skip("#add", function() {
+  });
+  it.skip("#remove", function() {
+  });
+  it.skip("#choose", function() {
+  });
+  it.skip("#pop", function() {
+  });
+  it.skip("#powerset", function() {
+  });
+  it.skip("#unify", function() {
+  });
+  it.skip("#sect", function() {
+  });
+  it.skip("#union", function() {
+  });
+  it.skip("#difference", function() {
+  });
+  it.skip("#symmetricDifference", function() {
+  });
+  it.skip("#isSubsetOf", function() {
+  });
+  it.skip("#initSet", function() {
+  });
+  it.skip("#putCheck", function() {
+  });
+  it.skip("#fullCheck", function() {
+  });
+  it.skip("#grow", function() {
+  });
+  it.skip("#noCheckAdd", function() {
+  });
+  it.skip("#scanFor", function() {
+  });
+  it.skip("#fixCollisionsFrom", function() {
+  });
+  it.skip("#keyAt", function() {
+  });
+  it.skip("#asSet", function() {
   });
 });

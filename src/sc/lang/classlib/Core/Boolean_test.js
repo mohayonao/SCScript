@@ -4,124 +4,281 @@ require("./Boolean");
 
 var $SC = sc.lang.$SC;
 
-describe("class Boolean", function() {
-  describe("$SC.Boolean", function() {
-    it("should return instance of True when given true", sinon.test(function() {
-      var spy = this.spy($SC, "True");
-      var test = $SC.Boolean(true);
-
-      expect(spy).to.be.called;
-      expect(spy).to.be.returned(test);
-
-      spy.restore();
-    }));
-    it("should return instance of False when given false", sinon.test(function() {
-      var spy = this.spy($SC, "False");
-      var test = $SC.Boolean(false);
-
-      expect(spy).to.be.called;
-      expect(spy).to.be.returned(test);
-
-      spy.restore();
-    }));
+describe("SCBoolean", function() {
+  var SCBoolean;
+  before(function() {
+    SCBoolean = $SC.Class("Boolean");
+    this.createInstance = function(value) {
+      var instance = $SC.Boolean(!!value);
+      var testMethod = this.test.title.substr(1);
+      sc.test.setSingletonMethod(instance, "Boolean", testMethod);
+      return instance;
+    };
   });
-  describe(".new", function() {
-    it("should throw error", function() {
-      expect(function() {
-        $SC.Class("Boolean").new();
-      }).to.throw("Boolean.new is illegal");
+  it("#__bool__", function() {
+    var instance = this.createInstance();
+
+    expect(function() {
+      instance.__bool__();
+    }).to.not.throw();
+  });
+  it("#toString", function() {
+    var instance, test;
+
+    instance = this.createInstance(true);
+    test = instance.toString();
+    expect(test).to.be.a("JSString").that.equals("true");
+
+    instance = this.createInstance(false);
+    test = instance.toString();
+    expect(test).to.be.a("JSString").that.equals("false");
+  });
+  it(".new", function() {
+    expect(function() {
+      SCBoolean.new();
+    }).to.throw("should use literal");
+  });
+  it("#xor", sinon.test(function() {
+    var instance, test, spy;
+
+    spy = this.spy(sc.test.func);
+    this.stub($SC, "Boolean", function() {
+      return sc.test.object({
+        not: spy
+      });
     });
+
+    instance = this.createInstance();
+
+    test = instance.xor();
+    expect(spy).to.be.calledLastIn(test);
+  }));
+  it("#asBoolean", function() {
+    var instance = this.createInstance();
+    expect(instance.asBoolean).to.be.nop;
+  });
+  it("#booleanValue", function() {
+    var instance = this.createInstance();
+    expect(instance.booleanValue).to.be.nop;
+  });
+  it("#archiveAsCompileString", function() {
+    var test, instance;
+
+    instance = this.createInstance();
+
+    test = instance.archiveAsCompileString();
+    expect(test).to.be.a("SCBoolean").that.is.true;
+  });
+  it("#while", function() {
+    var instance = this.createInstance();
+    expect(function() {
+      instance.while();
+    }).to.throw();
+  });
+  it("#shallowCopy", function() {
+    var instance = this.createInstance();
+    expect(instance.shallowCopy).to.be.nop;
   });
 });
-describe("class True", function() {
-  var True;
+
+describe("SCTrue", function() {
+  var SCTrue;
   before(function() {
-    True = $SC.Class("True");
+    SCTrue = $SC.Class("True");
+    this.createInstance = function() {
+      return $SC.True();
+    };
   });
-  describe("$SC.True", function() {
-    it("should return instance of True", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = $SC.True();
-      var test = instance.isMemberOf(True);
+  it(".new", function() {
+    expect(function() {
+      SCTrue.new();
+    }).to.throw("should use literal");
+  });
+  it("#if", sinon.test(function() {
+    var instance, test;
+    var $trueFunc, $falseFunc;
 
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
+    $trueFunc = sc.test.object({
+      value: sc.test.func
+    });
+    $falseFunc = sc.test.object({
+      value: function() {
+        throw new Error("not reached");
+      }
+    });
 
-      expect(instance.js()).to.be.equal(true);
+    instance = this.createInstance();
 
-      spy.restore();
-    }));
+    test = instance.if($trueFunc, $falseFunc);
+    expect($trueFunc.value).to.be.calledLastIn(test);
+  }));
+  it("#not", function() {
+    var instance, test;
+
+    instance = this.createInstance();
+
+    test = instance.not();
+    expect(test).to.be.a("SCBoolean").that.is.false;
   });
-  describe("instance", function() {
-    it("should be shared", function() {
-      var a = $SC.True();
-      var b = $SC.True();
-      expect(a).to.be.equal(b);
+  it("#&&", function() {
+    var instance, test;
+    var $that;
+
+    $that = sc.test.object({
+      value: sc.test.func
     });
+
+    instance = this.createInstance();
+
+    test = instance ["&&"] ($that);
+    expect($that.value).to.be.calledLastIn(test);
   });
-  describe(".new", function() {
-    it("should throw error", function() {
-      expect(function() {
-        $SC.Class("True").new();
-      }).to.throw("True.new is illegal");
-    });
+  it("#||", function() {
+    var instance = this.createInstance();
+    expect(instance["||"]).to.be.nop;
   });
-  describe("#js", function() {
-    it("should return JavaScript boolean", function() {
-      var test = $SC.True().js();
-      expect(test).to.be.equal(true);
+  it("#and", function() {
+    var instance, test;
+    var $that;
+
+    $that = sc.test.object({
+      value: sc.test.func
     });
+
+    instance = this.createInstance();
+
+    test = instance.and($that);
+    expect($that.value).to.be.calledLastIn(test);
   });
-  describe("#__tag__", function() {
-    it("should return TAG_TRUE", function() {
-      var test = $SC.True().__tag__();
-      expect(test).to.be.equal(sc.C.TAG_TRUE);
+  it("#or", function() {
+    var instance = this.createInstance();
+    expect(instance.or).to.be.nop;
+  });
+  it("#nand", function() {
+    var instance, test;
+    var $that;
+
+    $that = sc.test.object({
+      value: function() {
+        return this;
+      },
+      not: sc.test.func
     });
+
+    instance = this.createInstance();
+
+    test = instance.nand($that);
+    expect($that.not).to.be.calledLastIn(test);
+  });
+  it("#asInteger", function() {
+    var instance, test;
+
+    instance = this.createInstance();
+
+    test = instance.asInteger();
+    expect(test).to.be.a("SCInteger").that.equals(1);
+  });
+  it("#binaryValue", function() {
+    var instance, test;
+
+    instance = this.createInstance();
+
+    test = instance.binaryValue();
+    expect(test).to.be.a("SCInteger").that.equals(1);
   });
 });
-describe("class False", function() {
-  var False;
+
+describe("SCFalse", function() {
+  var SCFalse;
   before(function() {
-    False = $SC.Class("False");
+    SCFalse = $SC.Class("False");
+    this.createInstance = function() {
+      return $SC.False();
+    };
   });
-  describe("$SC.True", function() {
-    it("should return instance of True", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = $SC.False();
-      var test = instance.isMemberOf(False);
+  it(".new", function() {
+    expect(function() {
+      SCFalse.new();
+    }).to.throw("should use literal");
+  });
+  it("#if", sinon.test(function() {
+    var instance, test;
+    var $trueFunc, $falseFunc;
 
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
+    $trueFunc = sc.test.object({
+      value: function() {
+        throw new Error("not reached");
+      }
+    });
+    $falseFunc = sc.test.object({
+      value: sc.test.func
+    });
 
-      expect(instance.js()).to.be.equal(false);
+    instance = this.createInstance();
 
-      spy.restore();
-    }));
+    test = instance.if($trueFunc, $falseFunc);
+    expect($falseFunc.value).to.be.calledLastIn(test);
+  }));
+  it("#not", function() {
+    var instance, test;
+
+    instance = this.createInstance();
+    test = instance.not();
+    expect(test).to.be.a("SCBoolean").that.is.true;
   });
-  describe("instance", function() {
-    it("should be shared", function() {
-      var a = $SC.False();
-      var b = $SC.False();
-      expect(a).to.be.equal(b);
-    });
+  it("#&&", function() {
+    var instance = this.createInstance();
+    expect(instance["&&"]).to.be.nop;
   });
-  describe(".new", function() {
-    it("should throw error", function() {
-      expect(function() {
-        $SC.Class("False").new();
-      }).to.throw("False.new is illegal");
+  it("#||", function() {
+    var instance, test;
+    var $that;
+
+    $that = sc.test.object({
+      value: sc.test.func
     });
+
+    instance = this.createInstance();
+
+    test = instance ["||"] ($that);
+    expect($that.value).to.be.calledLastIn(test);
   });
-  describe("#js", function() {
-    it("should return JavaScript boolean", function() {
-      var test = $SC.False().js();
-      expect(test).to.be.equal(false);
-    });
+  it("#and", function() {
+    var instance = this.createInstance();
+    expect(instance.and).to.be.nop;
   });
-  describe("#__tag__", function() {
-    it("should return TAG_FALSE", function() {
-      var test = $SC.False().__tag__();
-      expect(test).to.be.equal(sc.C.TAG_FALSE);
+  it("#or", function() {
+    var instance, test;
+    var $that;
+
+    $that = sc.test.object({
+      value: sc.test.func
     });
+
+    instance = this.createInstance();
+
+    test = instance.or($that);
+    expect($that.value).to.be.calledLastIn(test);
+  });
+  it("#nand", function() {
+    var instance, test;
+
+    instance = this.createInstance();
+    test = instance.nand();
+    expect(test).to.be.a("SCBoolean").that.is.true;
+  });
+  it("#asInteger", function() {
+    var instance, test;
+
+    instance = this.createInstance();
+    test = instance.asInteger();
+    expect(test).to.be.a("SCInteger").that.equals(0);
+  });
+  it("#binaryValue", function() {
+    var instance, test;
+
+    instance = this.createInstance();
+    test = instance.binaryValue();
+    expect(test).to.be.a("SCInteger").that.equals(0);
   });
 });

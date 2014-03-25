@@ -5,135 +5,270 @@
 
   var $SC = sc.lang.$SC;
 
-  function SCString(value) {
-    this.__initializeWith__("RawArray");
-    this._class = $SC.Class("String");
-    this._raw = value;
-  }
+  sc.lang.klass.refine("String", function(spec, utils) {
 
-  sc.lang.klass.define("String", "RawArray", {
-    constructor: SCString,
-    $new: function() {
+    spec.__str__ = function() {
+      return this.valueOf();
+    };
+
+    spec.__elem__ = function($item) {
+      if ($item.__tag !== sc.C.TAG_CHAR) {
+        throw new TypeError("Wrong type.");
+      }
+      return $item;
+    };
+
+    spec.valueOf = function() {
+      return this._.map(function(elem) {
+        return elem.__str__();
+      }).join("");
+    };
+
+    spec.toString = function() {
+      return this.valueOf();
+    };
+
+    // TODO: implements unixCmdActions
+    // TODO: implements unixCmdActions_
+
+    spec.$new = function() {
       throw new Error("String.new is illegal, should use literal.");
-    },
-    __tag__: function() {
-      return sc.C.TAG_STR;
-    },
-    __str__: function() {
-      return this._raw;
-    },
-    NotYetImplemented: [
-      // "$initClass",
-      "$doUnixCmdAction",
-      "prUnixCmd",
-      "unixCmd",
-      "unixCmdGetStdOut",
-      "asSymbol",
-      "asInteger",
-      "asFloat",
-      "ascii",
-      "stripRTF",
-      "stripHTML",
-      "$scDir",
-      "compare",
-      "hash",
-      "performBinaryOpOnSimpleNumber",
-      "performBinaryOpOnComplex",
-      "multiChannelPerform",
-      "isString",
-      "asString",
-      "asCompileString",
-      "species",
-      "postln",
-      "post",
-      "postcln",
-      "postc",
-      "postf",
-      "format",
-      "prFormat",
-      "matchRegexp",
-      "fformat",
-      "die",
-      "error",
-      "warn",
-      "inform",
-      "catArgs",
-      "scatArgs",
-      "ccatArgs",
-      "catList",
-      "scatList",
-      "ccatList",
-      "split",
-      "containsStringAt",
-      "icontainsStringAt",
-      "contains",
-      "containsi",
-      "findRegexp",
-      "findAllRegexp",
-      "find",
-      "findBackwards",
-      "endsWith",
-      "beginsWith",
-      "findAll",
-      "replace",
-      "escapeChar",
-      "shellQuote",
-      "quote",
-      "tr",
-      "insert",
-      "wrapExtend",
-      "zeroPad",
-      "padLeft",
-      "padRight",
-      "underlined",
-      "scramble",
-      "rotate",
-      "compile",
-      "interpret",
-      "interpretPrint",
-      "$readNew",
-      "prCat",
-      "printOn",
-      "storeOn",
-      "inspectorClass",
-      "standardizePath",
-      "realPath",
-      "withTrailingSlash",
-      "withoutTrailingSlash",
-      "absolutePath",
-      "pathMatch",
-      "load",
-      "loadPaths",
-      "loadRelative",
-      "resolveRelative",
-      "include",
-      "exclude",
-      "basename",
-      "dirname",
-      "splitext",
-      "asRelativePath",
-      "asAbsolutePath",
-      "systemCmd",
-      "gethostbyname",
-      "getenv",
-      "setenv",
-      "unsetenv",
-      "codegen_UGenCtorArg",
-      "ugenCodeString",
-      "asSecs",
-      "speak",
-      "toLower",
-      "toUpper",
-      "mkdir",
-      "parseYAML",
-      "parseYAMLFile",
-    ]
-  });
+    };
 
-  $SC.String = function(value) {
-    var instance = new SCString();
-    instance._raw = value;
-    return instance;
-  };
+    // TODO: implements $initClass
+    // TODO: implements $doUnixCmdAction
+    // TODO: implements unixCmd
+    // TODO: implements unixCmdGetStdOut
+
+    spec.asSymbol = function() {
+      return $SC.Symbol(this.__str__());
+    };
+
+    spec.asInteger = function() {
+      var m = /^[-+]?\d+/.exec(this.__str__());
+      return $SC.Integer(m ? m[0]|0 : 0);
+    };
+
+    spec.asFloat = function() {
+      var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
+      return $SC.Float(m ? +m[0] : 0);
+    };
+
+    spec.ascii = function() {
+      var raw = this.__str__();
+      var a, i, imax;
+
+      a = new Array(raw.length);
+      for (i = 0, imax = a.length; i < imax; ++i) {
+        a[i] = $SC.Integer(raw.charCodeAt(i));
+      }
+
+      return $SC.Array(a);
+    };
+
+    // TODO: implements stripRTF
+    // TODO: implements stripHTML
+    // TODO: implements $scDir
+
+    spec.compare = function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, fn;
+      $aString    = utils.defaultValue$Nil($aString);
+      $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
+
+      if ($aString.__tag !== sc.C.TAG_STR) {
+        return utils.nilInstance;
+      }
+
+      araw = this._;
+      braw = $aString._;
+      length = Math.min(araw.length, braw.length);
+
+      if ($ignoreCase.__bool__()) {
+        fn = function(ch) {
+          return ch.toLowerCase();
+        };
+      } else {
+        fn = function(ch) {
+          return ch;
+        };
+      }
+      for (i = 0; i < length; i++) {
+        a = fn(araw[i]._).charCodeAt(0);
+        b = fn(braw[i]._).charCodeAt(0);
+        cmp = a - b;
+        if (cmp !== 0) {
+          return $SC.Integer(cmp < 0 ? -1 : +1);
+        }
+      }
+
+      if (araw.length < braw.length) {
+        cmp = -1;
+      } else if (araw.length > braw.length) {
+        cmp = 1;
+      }
+
+      return $SC.Integer(cmp);
+    };
+
+    spec["<"] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() < 0
+      );
+    };
+
+    spec[">"] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() > 0
+      );
+    };
+
+    spec["<="] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() <= 0
+      );
+    };
+
+    spec[">="] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() >= 0
+      );
+    };
+
+    spec["=="] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() === 0
+      );
+    };
+
+    spec["!="] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() !== 0
+      );
+    };
+
+    // TODO: implements hash
+
+    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
+      $aNumber = utils.defaultValue$Nil($aNumber);
+      return $aNumber.asString().perform($aSelector, this);
+    };
+
+    spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
+      $aComplex = utils.defaultValue$Nil($aComplex);
+      return $aComplex.asString().perform($aSelector, this);
+    };
+
+    spec.multiChannelPerform = function() {
+      throw new Error("String:multiChannelPerform. Cannot expand strings.");
+    };
+
+    spec.isString = utils.alwaysReturn$True;
+
+    spec.asString = utils.nop;
+
+    spec.asCompileString = function() {
+      return $SC.String("\"" + this.__str__() + "\"");
+    };
+
+    spec.species = function() {
+      return $SC.Class("String");
+    };
+
+    // TODO: implements postln
+    // TODO: implements post
+    // TODO: implements postcln
+    // TODO: implements postc
+    // TODO: implements postf
+    // TODO: implements format
+    // TODO: implements matchRegexp
+    // TODO: implements fformat
+    // TODO: implements die
+    // TODO: implements error
+    // TODO: implements warn
+    // TODO: implements inform
+
+    spec["++"] = function($anObject) {
+      return $SC.String(
+        this.toString() + $anObject.asString().toString()
+      );
+    };
+
+    spec["+"] = function($anObject) {
+      return $SC.String(
+        this.toString() + " " + $anObject.asString().toString()
+      );
+    };
+
+    // TODO: implements catArgs
+    // TODO: implements scatArgs
+    // TODO: implements ccatArgs
+    // TODO: implements catList
+    // TODO: implements scatList
+    // TODO: implements ccatList
+    // TODO: implements split
+    // TODO: implements containsStringAt
+    // TODO: implements icontainsStringAt
+    // TODO: implements contains
+    // TODO: implements containsi
+    // TODO: implements findRegexp
+    // TODO: implements findAllRegexp
+    // TODO: implements find
+    // TODO: implements findBackwards
+    // TODO: implements endsWith
+    // TODO: implements beginsWith
+    // TODO: implements findAll
+    // TODO: implements replace
+    // TODO: implements escapeChar
+    // TODO: implements shellQuote
+    // TODO: implements quote
+    // TODO: implements tr
+    // TODO: implements insert
+    // TODO: implements wrapExtend
+    // TODO: implements zeroPad
+    // TODO: implements padLeft
+    // TODO: implements padRight
+    // TODO: implements underlined
+    // TODO: implements scramble
+    // TODO: implements rotate
+    // TODO: implements compile
+    // TODO: implements interpret
+    // TODO: implements interpretPrint
+    // TODO: implements $readNew
+    // TODO: implements printOn
+    // TODO: implements storeOn
+    // TODO: implements inspectorClass
+    // TODO: implements standardizePath
+    // TODO: implements realPath
+    // TODO: implements withTrailingSlash
+    // TODO: implements withoutTrailingSlash
+    // TODO: implements absolutePath
+    // TODO: implements pathMatch
+    // TODO: implements load
+    // TODO: implements loadPaths
+    // TODO: implements loadRelative
+    // TODO: implements resolveRelative
+    // TODO: implements include
+    // TODO: implements exclude
+    // TODO: implements basename
+    // TODO: implements dirname
+    // TODO: implements splittext
+    // TODO: implements +/+
+    // TODO: implements asRelativePath
+    // TODO: implements asAbsolutePath
+    // TODO: implements systemCmd
+    // TODO: implements gethostbyname
+    // TODO: implements getenv
+    // TODO: implements setenv
+    // TODO: implements unsetenv
+    // TODO: implements codegen_UGenCtorArg
+    // TODO: implements ugenCodeString
+    // TODO: implements asSecs
+    // TODO: implements speak
+    // TODO: implements toLower
+    // TODO: implements toUpper
+    // TODO: implements mkdir
+    // TODO: implements parseYAML
+    // TODO: implements parseYAMLFile
+  });
 
 })(sc);

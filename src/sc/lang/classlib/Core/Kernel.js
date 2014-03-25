@@ -4,37 +4,36 @@
   require("./Object");
 
   sc.lang.klass.refine("Class", {
-    NotYetImplemented: [
-      "superclass",
-      "asClass",
-      "initClass",
-      "$initClassTree",
-      "$allClasses",
-      "findMethod",
-      "findRespondingMethodFor",
-      "findOverriddenMethod",
-      "superclassesDo",
-      "while",
-      "dumpByteCodes",
-      "dumpClassSubtree",
-      "dumpInterface",
-      "asString",
-      "printOn",
-      "storeOn",
-      "archiveAsCompileString",
-      "hasHelpFile",
-      "helpFilePath",
-      "help",
-      "openHelpFile",
-      "shallowCopy",
-      "openCodeFile",
-      "classVars",
-      "inspectorClass",
-      "findReferences",
-      "$findAllReferences",
-      "allSubclasses",
-      "superclasses",
-    ]
+    // TODO: implements superclass
+    // TODO: implements asClass
+    // TODO: implements initClass
+    // TODO: implements $initClassTree
+    // TODO: implements $allClasses
+    // TODO: implements findMethod
+    // TODO: implements findRespondingMethodFor
+    // TODO: implements findOverriddenMethod
+    // TODO: implements superclassesDo
+    // TODO: implements while
+    // TODO: implements dumpByteCodes
+    // TODO: implements dumpClassSubtree
+    // TODO: implements dumpInterface
+    // TODO: implements asString
+    // TODO: implements printOn
+    // TODO: implements storeOn
+    // TODO: implements archiveAsCompileString
+    // TODO: implements hasHelpFile
+    // TODO: implements helpFilePath
+    // TODO: implements help
+    // TODO: implements openHelpFile
+    // TODO: implements shallowCopy
+    // TODO: implements openCodeFile
+    // TODO: implements classVars
+    // TODO: implements inspectorClass
+    // TODO: implements findReferences
+    // TODO: implements $findAllReferences
+    // TODO: implements allSubclasses
+    // TODO: implements superclasses
   });
 
 })(sc);
+

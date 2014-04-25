@@ -4,66 +4,156 @@ require("./Dictionary");
 
 var $SC = sc.lang.$SC;
 
-describe("class Dictionary", function() {
-  var Dictionary;
+describe("SCDictionary", function() {
+  var SCDictionary;
   before(function() {
-    Dictionary = $SC.Class("Dictionary");
+    SCDictionary = $SC.Class("Dictionary");
+    this.createInstance = function() {
+      return SCDictionary.new();
+    };
   });
-  describe("$SC.Dictionary", function() {
-    it("should return instance of Dictionary with defaults", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = $SC.Dictionary({ a: 1, b: 2, c: 3 });
+  it("#valueOf", function() {
+    var instance, test;
 
-      var test = instance.isMemberOf(Dictionary);
-
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
-
-      expect(instance.js()).to.be.deep.equal({ a: 1, b: 2, c: 3 });
-
-      spy.restore();
-    }));
+    instance = this.createInstance();
+    test = instance.valueOf();
+    expect(test).to.be.a("JSObject").that.eqls({});
   });
-  describe(".new", function() {
-    it("should return instance of Dictionary", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = Dictionary.new();
-      var test = instance.isMemberOf(Dictionary);
-
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
-
-      expect(instance.js()).to.be.deep.equal({});
-
-      spy.restore();
-    }));
+  it.skip("#$newFrom", function() {
   });
-  describe("#js", function() {
-    it("should return JavaScript object", function() {
-      var dict = { freq: 440 };
-      var test = $SC.Dictionary(dict).js();
-      expect(test).to.be.equal(dict);
-    });
+  it.skip("#at", function() {
+  });
+  it.skip("#atFail", function() {
+  });
+  it.skip("#matchAt", function() {
+  });
+  it.skip("#trueAt", function() {
+  });
+  it.skip("#add", function() {
+  });
+  it.skip("#put", function() {
+  });
+  it.skip("#putAll", function() {
+  });
+  it.skip("#putPairs", function() {
+  });
+  it.skip("#getPairs", function() {
+  });
+  it.skip("#associationAt", function() {
+  });
+  it.skip("#associationAtFail", function() {
+  });
+  it.skip("#keys", function() {
+  });
+  it.skip("#values", function() {
+  });
+  it.skip("#includes", function() {
+  });
+  it.skip("#includesKey", function() {
+  });
+  it.skip("#removeAt", function() {
+  });
+  it.skip("#removeAtFail", function() {
+  });
+  it.skip("#remove", function() {
+  });
+  it.skip("#removeFail", function() {
+  });
+  it.skip("#keysValuesDo", function() {
+  });
+  it.skip("#keysValuesChange", function() {
+  });
+  it.skip("#do", function() {
+  });
+  it.skip("#keysDo", function() {
+  });
+  it.skip("#associationsDo", function() {
+  });
+  it.skip("#pairsDo", function() {
+  });
+  it.skip("#collect", function() {
+  });
+  it.skip("#select", function() {
+  });
+  it.skip("#reject", function() {
+  });
+  it.skip("#invert", function() {
+  });
+  it.skip("#merge", function() {
+  });
+  it.skip("#blend", function() {
+  });
+  it.skip("#findKeyForValue", function() {
+  });
+  it.skip("#sortedKeysValuesDo", function() {
+  });
+  it.skip("#choose", function() {
+  });
+  it.skip("#order", function() {
+  });
+  it.skip("#powerset", function() {
+  });
+  it.skip("#transformEvent", function() {
+  });
+  it.skip("#embedInStream", function() {
+  });
+  it.skip("#asSortedArray", function() {
+  });
+  it.skip("#asKeyValuePairs", function() {
+  });
+  it.skip("#keysValuesArrayDo", function() {
+  });
+  it.skip("#grow", function() {
+  });
+  it.skip("#fixCollisionsFrom", function() {
+  });
+  it.skip("#scanFor", function() {
+  });
+  it.skip("#storeItemsOn", function() {
+  });
+  it.skip("#printItemsOn", function() {
   });
 });
 
-describe("class IdentityDictionary", function() {
-  var IdentityDictionary;
+describe("SCIdentityDictionary", function() {
+  var SCIdentityDictionary;
   before(function() {
-    IdentityDictionary = $SC.Class("IdentityDictionary");
+    SCIdentityDictionary = $SC.Class("IdentityDictionary");
+    this.createInstance = function() {
+      return SCIdentityDictionary.new();
+    };
   });
-  describe(".new", function() {
-    it("should return empty IdentityDictionary", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = IdentityDictionary.new();
-      var test = instance.isMemberOf(IdentityDictionary);
+  it("#valueOf", function() {
+    var instance, test;
 
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
-
-      expect(instance.js()).to.be.deep.equal({});
-
-      spy.restore();
-    }));
+    instance = this.createInstance();
+    test = instance.valueOf();
+    expect(test).to.be.a("JSObject").that.eqls({});
+  });
+  it.skip("#at", function() {
+  });
+  it.skip("#put", function() {
+  });
+  it.skip("#putGet", function() {
+  });
+  it.skip("#includesKey", function() {
+  });
+  it.skip("#findKeyForValue", function() {
+  });
+  it.skip("#scanFor", function() {
+  });
+  it.skip("#freezeAsParent", function() {
+  });
+  it.skip("#insertParent", function() {
+  });
+  it.skip("#storeItemsOn", function() {
+  });
+  it.skip("#doesNotUnderstand", function() {
+  });
+  it.skip("#nextTimeOnGrid", function() {
+  });
+  it.skip("#asQuant", function() {
+  });
+  it.skip("#timingOffset", function() {
   });
 });

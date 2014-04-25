@@ -3,94 +3,79 @@
 
   require("./Set");
 
-  var $SC = sc.lang.$SC;
-
   function SCDictionary() {
     this.__initializeWith__("Set");
-    this._class = $SC.Class("Dictionary");
-    this._raw = {};
+    this._ = {};
   }
 
-  sc.lang.klass.define("Dictionary", "Set", {
-    constructor: SCDictionary,
-    NotYetImplemented: [
-      "$newFrom",
-      "at",
-      "atFail",
-      "matchAt",
-      "trueAt",
-      "add",
-      "put",
-      "putAll",
-      "putPairs",
-      "getPairs",
-      "associationAt",
-      "associationAtFail",
-      "keys",
-      "values",
-      "includes",
-      "includesKey",
-      "removeAt",
-      "removeAtFail",
-      "remove",
-      "removeFail",
-      "keysValuesDo",
-      "keysValuesChange",
-      "do",
-      "keysDo",
-      "associationsDo",
-      "pairsDo",
-      "collect",
-      "select",
-      "reject",
-      "invert",
-      "merge",
-      "blend",
-      "findKeyForValue",
-      "sortedKeysValuesDo",
-      "choose",
-      "order",
-      "powerset",
-      "transformEvent",
-      "embedInStream",
-      "asSortedArray",
-      "asKeyValuePairs",
-      "keysValuesArrayDo",
-      "grow",
-      "fixCollisionsFrom",
-      "scanFor",
-      "storeItemsOn",
-      "printItemsOn",
-    ]
+  sc.lang.klass.define(SCDictionary, "Dictionary : Set", function() {
+    // TODO: implements $newFrom
+    // TODO: implements at
+    // TODO: implements atFail
+    // TODO: implements matchAt
+    // TODO: implements trueAt
+    // TODO: implements add
+    // TODO: implements put
+    // TODO: implements putAll
+    // TODO: implements putPairs
+    // TODO: implements getPairs
+    // TODO: implements associationAt
+    // TODO: implements associationAtFail
+    // TODO: implements keys
+    // TODO: implements values
+    // TODO: implements includes
+    // TODO: implements includesKey
+    // TODO: implements removeAt
+    // TODO: implements removeAtFail
+    // TODO: implements remove
+    // TODO: implements removeFail
+    // TODO: implements keysValuesDo
+    // TODO: implements keysValuesChange
+    // TODO: implements do
+    // TODO: implements keysDo
+    // TODO: implements associationsDo
+    // TODO: implements pairsDo
+    // TODO: implements collect
+    // TODO: implements select
+    // TODO: implements reject
+    // TODO: implements invert
+    // TODO: implements merge
+    // TODO: implements blend
+    // TODO: implements findKeyForValue
+    // TODO: implements sortedKeysValuesDo
+    // TODO: implements choose
+    // TODO: implements order
+    // TODO: implements powerset
+    // TODO: implements transformEvent
+    // TODO: implements embedInStream
+    // TODO: implements asSortedArray
+    // TODO: implements asKeyValuePairs
+    // TODO: implements keysValuesArrayDo
+    // TODO: implements grow
+    // TODO: implements fixCollisionsFrom
+    // TODO: implements scanFor
+    // TODO: implements storeItemsOn
+    // TODO: implements printItemsOn
   });
 
-  function IdentityDictionary() {
+  function SCIdentityDictionary() {
     this.__initializeWith__("Dictionary");
   }
 
-  sc.lang.klass.define("IdentityDictionary", "Dictionary", {
-    constructor: IdentityDictionary,
-    NotYetImplemented: [
-      "at",
-      "put",
-      "putGet",
-      "includesKey",
-      "findKeyForValue",
-      "scanFor",
-      "freezeAsParent",
-      "insertParent",
-      "storeItemsOn",
-      "doesNotUnderstand",
-      "nextTimeOnGrid",
-      "asQuant",
-      "timingOffset",
-    ]
+  sc.lang.klass.define(SCIdentityDictionary, "IdentityDictionary : Dictionary", function() {
+    // TODO: implements at
+    // TODO: implements put
+    // TODO: implements putGet
+    // TODO: implements includesKey
+    // TODO: implements findKeyForValue
+    // TODO: implements scanFor
+    // TODO: implements freezeAsParent
+    // TODO: implements insertParent
+    // TODO: implements storeItemsOn
+    // TODO: implements doesNotUnderstand
+    // TODO: implements nextTimeOnGrid
+    // TODO: implements asQuant
+    // TODO: implements timingOffset
   });
-
-  $SC.Dictionary = function(value) {
-    var instance = new SCDictionary();
-    instance._raw = value;
-    return instance;
-  };
 
 })(sc);

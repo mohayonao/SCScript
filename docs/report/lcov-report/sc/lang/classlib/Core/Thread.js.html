@@ -205,7 +205,7 @@
         Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(3 / 3)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Lines: <span class="metric">100% <small>(8 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
@@ -276,7 +276,18 @@
 58
 59
 60
-61</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -312,15 +323,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -345,54 +367,65 @@
     this.__initializeWith__("Stream");
   }
 &nbsp;
-  sc.lang.klass.define("Thread", "Stream", {
-    constructor: SCThread,
-    NotYetImplemented: [
-      "init",
-      "copy",
-      "clock_",
-      "seconds_",
-      "beats_",
-      "isPlaying",
-      "threadPlayer",
-      "findThreadPlayer",
-      "randSeed_",
-      "randData_",
-      "randData",
-      "failedPrimitiveName",
-      "handleError",
-      "next",
-      "value",
-      "valueArray",
-      "$primitiveError",
-      "$primitiveErrorString",
-      "storeOn",
-      "archiveAsCompileString",
-      "checkCanArchive",
-    ]
+  sc.lang.klass.define(SCThread, "Thread : Stream", function() {
+    // TODO: implements state
+    // TODO: implements parent
+    // TODO: implements primitiveError
+    // TODO: implements primitiveIndex
+    // TODO: implements beats
+    // TODO: implements seconds
+    // TODO: implements clock
+    // TODO: implements nextBeat
+    // TODO: implements endBeat
+    // TODO: implements endBeat_
+    // TODO: implements endValue
+    // TODO: implements endValue_
+    // TODO: implements exceptionHandler
+    // TODO: implements exceptionHandler_
+    // TODO: implements threadPlayer_
+    // TODO: implements executingPath
+    // TODO: implements oldExecutingPath
+&nbsp;
+    // TODO: implements init
+    // TODO: implements copy
+    // TODO: implements clock_
+    // TODO: implements seconds_
+    // TODO: implements beats_
+    // TODO: implements isPlaying
+    // TODO: implements threadPlayer
+    // TODO: implements findThreadPlayer
+    // TODO: implements randSeed_
+    // TODO: implements randData_
+    // TODO: implements randData
+    // TODO: implements failedPrimitiveName
+    // TODO: implements handleError
+    // TODO: implements next
+    // TODO: implements value
+    // TODO: implements valueArray
+    // TODO: implements $primitiveError
+    // TODO: implements $primitiveErrorString
+    // TODO: implements storeOn
+    // TODO: implements archiveAsCompileString
+    // TODO: implements checkCanArchive
   });
 &nbsp;
   function SCRoutine() {
     this.__initializeWith__("Thread");
   }
 &nbsp;
-  sc.lang.klass.define("Routine", "Thread", {
-    constructor: SCRoutine,
-    NotYetImplemented: [
-      "$run",
-      "next",
-      "value",
-      "resume",
-      "run",
-      "valueArray",
-      "reset",
-      "stop",
-      "prStop",
-      "storeArgs",
-      "storeOn",
-      "awake",
-      "prStart",
-    ]
+  sc.lang.klass.define(SCRoutine, "Routine : Thread", function() {
+    // TODO: implements $run
+    // TODO: implements next
+    // TODO: implements value
+    // TODO: implements resume
+    // TODO: implements run
+    // TODO: implements valueArray
+    // TODO: implements reset
+    // TODO: implements stop
+    // TODO: implements p
+    // TODO: implements storeArgs
+    // TODO: implements storeOn
+    // TODO: implements awake
   });
 &nbsp;
 })(sc);
@@ -401,7 +434,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 24 2014 23:10:40 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 25 2014 19:28:25 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

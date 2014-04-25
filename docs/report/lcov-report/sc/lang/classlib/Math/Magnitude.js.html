@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Math/Magnitude.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(36 / 36)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(2 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(14 / 14)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(36 / 36)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -238,24 +238,112 @@
 20
 21
 22
-23</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -265,20 +353,64 @@
 &nbsp;
   require("../Core/Object");
 &nbsp;
-  function SCMagnitude() {
-    this.__initializeWith__("Object");
-  }
+  var $SC = sc.lang.$SC;
 &nbsp;
-  sc.lang.klass.define("Magnitude", "Object", {
-    constructor: SCMagnitude,
-    NotYetImplemented: [
-      "hash",
-      "exclusivelyBetween",
-      "inclusivelyBetween",
-      "min",
-      "max",
-      "clip",
-    ]
+  sc.lang.klass.refine("Magnitude", function(spec, utils) {
+    spec["=="] = function($aMagnitude) {
+      return $SC.Boolean(this.valueOf() === $aMagnitude.valueOf());
+    };
+&nbsp;
+    spec["!="] = function($aMagnitude) {
+      return $SC.Boolean(this.valueOf() !== $aMagnitude.valueOf());
+    };
+&nbsp;
+    spec.hash = function() {
+      return this._subclassResponsibility("hash");
+    };
+&nbsp;
+    spec["&lt;"] = function($aMagnitude) {
+      return $SC.Boolean(this &lt; $aMagnitude);
+    };
+&nbsp;
+    spec["&gt;"] = function($aMagnitude) {
+      return $SC.Boolean(this &gt; $aMagnitude);
+    };
+&nbsp;
+    spec["&lt;="] = function($aMagnitude) {
+      return $SC.Boolean(this &lt;= $aMagnitude);
+    };
+&nbsp;
+    spec["&gt;="] = function($aMagnitude) {
+      return $SC.Boolean(this &gt;= $aMagnitude);
+    };
+&nbsp;
+    spec.exclusivelyBetween = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+      return $SC.Boolean($lo &lt; this &amp;&amp; this &lt; $hi);
+    };
+&nbsp;
+    spec.inclusivelyBetween = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+      return $SC.Boolean($lo &lt;= this &amp;&amp; this &lt;= $hi);
+    };
+&nbsp;
+    spec.min = function($aMagnitude) {
+      $aMagnitude = utils.defaultValue$Nil($aMagnitude);
+      return this &lt;= $aMagnitude ? this : $aMagnitude;
+    };
+&nbsp;
+    spec.max = function($aMagnitude) {
+      $aMagnitude = utils.defaultValue$Nil($aMagnitude);
+      return this &gt;= $aMagnitude ? this : $aMagnitude;
+    };
+&nbsp;
+    spec.clip = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+      return this &lt;= $lo ? $lo : this &gt;= $hi ? $hi : this;
+    };
   });
 &nbsp;
 })(sc);
@@ -287,7 +419,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 24 2014 23:10:40 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 25 2014 19:28:25 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

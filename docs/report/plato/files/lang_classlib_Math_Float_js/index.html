@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">123.58</p>
+      <p class="stat">120.62</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">60</p>
+      <p class="stat">228</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">11.71</p>
+      <p class="stat">34.26</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.27</p>
+      <p class="stat">2.33</p>
     </div>
   </div>
 </div>
@@ -96,58 +96,226 @@
   require(&quot;./SimpleNumber&quot;);
 
   var $SC = sc.lang.$SC;
+  var iterator = sc.lang.iterator;
+  var mathlib = sc.libs.mathlib;
 
-  var instances = {};
+  function prOpFloat(selector, type1, type2) {
+    var func = mathlib[selector];
 
-  function SCFloat() {
-    this.__initializeWith__(&quot;SimpleNumber&quot;);
-    this._class = $SC.Class(&quot;Float&quot;);
-    this._raw = 0.0;
+    return function($aNumber, $adverb) {
+      var tag = $aNumber.__tag;
+
+      switch (tag) {
+      case sc.C.TAG_INT:
+        return type1(func(this._, $aNumber._));
+      case sc.C.TAG_FLOAT:
+        return type2(func(this._, $aNumber._));
+      }
+
+      return $aNumber.performBinaryOpOnSimpleNumber(
+        $SC.Symbol(selector), this, $adverb
+      );
+    };
   }
 
-  sc.lang.klass.define(&quot;Float&quot;, &quot;SimpleNumber&quot;, {
-    constructor: SCFloat,
-    $new: function() {
+  sc.lang.klass.refine(&quot;Float&quot;, function(spec, utils) {
+    spec.toString = function() {
+      var raw = this._;
+
+      if (raw === Infinity) {
+        return &quot;inf&quot;;
+      }
+      if (raw === -Infinity) {
+        return &quot;-inf&quot;;
+      }
+      if (isNaN(raw)) {
+        return &quot;nan&quot;;
+      }
+
+      return String(this._);
+    };
+
+    spec.$new = function() {
       throw new Error(&quot;Float.new is illegal, should use literal.&quot;);
-    },
-    __tag__: function() {
-      return sc.C.TAG_FLOAT;
-    },
-    NotYetImplemented: [
-      &quot;isFloat&quot;,
-      &quot;asFloat&quot;,
-      &quot;clip&quot;,
-      &quot;wrap&quot;,
-      &quot;fold&quot;,
-      &quot;coin&quot;,
-      &quot;xrand2&quot;,
-      &quot;as32Bits&quot;,
-      &quot;high32Bits&quot;,
-      &quot;low32Bits&quot;,
-      &quot;$from32Bits&quot;,
-      &quot;$from64Bits&quot;,
-      &quot;do&quot;,
-      &quot;reverseDo&quot;,
-      &quot;asStringPrec&quot;,
-      &quot;archiveAsCompileString&quot;,
-      &quot;storeOn&quot;,
-      &quot;switch&quot;,
-    ]
+    };
+
+    spec.isFloat = utils.alwaysReturn$True;
+    spec.asFloat = utils.nop;
+
+    [
+      [ &quot;+&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;-&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;*&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;/&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;mod&quot;     , $SC.Float  , $SC.Float   ],
+      [ &quot;div&quot;     , $SC.Integer, $SC.Integer ],
+      [ &quot;pow&quot;     , $SC.Float  , $SC.Float   ],
+      [ &quot;min&quot;     , $SC.Float  , $SC.Float   ],
+      [ &quot;max&quot;     , $SC.Float  , $SC.Float   ],
+      [ &quot;bitAnd&quot;  , $SC.Float  , $SC.Float   ],
+      [ &quot;bitOr&quot;   , $SC.Float  , $SC.Float   ],
+      [ &quot;bitXor&quot;  , $SC.Float  , $SC.Float   ],
+      [ &quot;lcm&quot;     , $SC.Float  , $SC.Float   ],
+      [ &quot;gcd&quot;     , $SC.Float  , $SC.Float   ],
+      [ &quot;round&quot;   , $SC.Float  , $SC.Float   ],
+      [ &quot;roundUp&quot; , $SC.Float  , $SC.Float   ],
+      [ &quot;trunc&quot;   , $SC.Float  , $SC.Float   ],
+      [ &quot;atan2&quot;   , $SC.Float  , $SC.Float   ],
+      [ &quot;hypot&quot;   , $SC.Float  , $SC.Float   ],
+      [ &quot;hypotApx&quot;, $SC.Float  , $SC.Float   ],
+      [ &quot;leftShift&quot;         , $SC.Float, $SC.Float ],
+      [ &quot;rightShift&quot;        , $SC.Float, $SC.Float ],
+      [ &quot;unsignedRightShift&quot;, $SC.Float, $SC.Float ],
+      [ &quot;ring1&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;ring2&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;ring3&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;ring4&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;difsqr&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;sumsqr&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;sqrsum&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;sqrdif&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;absdif&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;thresh&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;amclip&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;scaleneg&quot;, $SC.Float, $SC.Float ],
+      [ &quot;clip2&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;fold2&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;wrap2&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;excess&quot;  , $SC.Float, $SC.Float ],
+      [ &quot;firstArg&quot;, $SC.Float, $SC.Float ],
+      [ &quot;rrand&quot;   , $SC.Float, $SC.Float ],
+      [ &quot;exprand&quot; , $SC.Float, $SC.Float ],
+    ].forEach(function(items) {
+      spec[items[0]] = prOpFloat.apply(null, items);
+    });
+
+    spec.clip = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+
+      // &lt;-- _ClipFloat --&gt;
+      if ($lo.__tag === sc.C.TAG_SYM) {
+        return $lo;
+      }
+      if ($hi.__tag === sc.C.TAG_SYM) {
+        return $hi;
+      }
+
+      return $SC.Float(
+        mathlib.clip(this._, $lo.__num__(), $hi.__num__())
+      );
+    };
+
+    spec.wrap = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+
+      // &lt;-- _WrapInt --&gt;
+      if ($lo.__tag === sc.C.TAG_SYM) {
+        return $lo;
+      }
+      if ($hi.__tag === sc.C.TAG_SYM) {
+        return $hi;
+      }
+
+      return $SC.Float(
+        mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
+      );
+    };
+
+    spec.fold = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+
+      // &lt;-- _FoldFloat --&gt;
+      if ($lo.__tag === sc.C.TAG_SYM) {
+        return $lo;
+      }
+      if ($hi.__tag === sc.C.TAG_SYM) {
+        return $hi;
+      }
+
+      return $SC.Float(
+        mathlib.fold(this._, $lo.__num__(), $hi.__num__())
+      );
+    };
+
+    // TODO: implements coin
+    // TODO: implements xrand2
+
+    spec.as32Bits = function() {
+      // &lt;-- _As32Bits --&gt;
+      return $SC.Integer(
+        new Int32Array(
+          new Float32Array([ this._ ]).buffer
+        )[0]
+      );
+    };
+
+    spec.high32Bits = function() {
+      // &lt;-- _High32Bits --&gt;
+      return $SC.Integer(
+        new Int32Array(
+          new Float64Array([ this._ ]).buffer
+        )[1]
+      );
+    };
+
+    spec.low32Bits = function() {
+      // &lt;-- _Low32Bits --&gt;
+      return $SC.Integer(
+        new Int32Array(
+          new Float64Array([ this._ ]).buffer
+        )[0]
+      );
+    };
+
+    spec.$from32Bits = function($word) {
+      // &lt;-- _From32Bits --&gt;
+      return $SC.Float(
+        new Float32Array(
+          new Int32Array([ $word.__num__() ]).buffer
+        )[0]
+      );
+    };
+
+    spec.$from64Bits = function($hiWord, $loWord) {
+      // &lt;-- _From64Bits --&gt;
+      return $SC.Float(
+        new Float64Array(
+          new Int32Array([ $loWord.__num__(), $hiWord.__num__() ]).buffer
+        )[0]
+      );
+    };
+
+    spec.do = function($function) {
+      iterator.execute(
+        iterator.float$do(this),
+        $function
+      );
+      return this;
+    };
+
+    spec.reverseDo = function($function) {
+      iterator.execute(
+        iterator.float$reverseDo(this),
+        $function
+      );
+      return this;
+    };
+
+    // TODO: implements asStringPrec
+    // TODO: implements archiveAsCompileString
+    // TODO: implements storeOn
+    // TODO: implements switch
+
+    spec.bitNot = function() {
+      var f64 = new Float64Array([ this._ ]);
+      var i32 = new Int32Array(f64.buffer);
+      i32[0] = ~i32[0];
+      return $SC.Float(f64[0]);
+    };
   });
-
-  $SC.Float = function(value) {
-    var instance;
-
-    value = +value;
-
-    if (!instances.hasOwnProperty(value)) {
-      instance = new SCFloat();
-      instance._raw = value;
-      instances[value] = instance;
-    }
-
-    return instances[value];
-  };
 
 })(sc);</textarea>
   </div>

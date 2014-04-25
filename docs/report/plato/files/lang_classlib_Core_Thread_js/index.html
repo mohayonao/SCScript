@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.44</p>
+      <p class="stat">148.90</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">60</p>
+      <p class="stat">71</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">4.47</p>
+      <p class="stat">2.63</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.18</p>
+      <p class="stat">0.07</p>
     </div>
   </div>
 </div>
@@ -99,54 +99,65 @@
     this.__initializeWith__(&quot;Stream&quot;);
   }
 
-  sc.lang.klass.define(&quot;Thread&quot;, &quot;Stream&quot;, {
-    constructor: SCThread,
-    NotYetImplemented: [
-      &quot;init&quot;,
-      &quot;copy&quot;,
-      &quot;clock_&quot;,
-      &quot;seconds_&quot;,
-      &quot;beats_&quot;,
-      &quot;isPlaying&quot;,
-      &quot;threadPlayer&quot;,
-      &quot;findThreadPlayer&quot;,
-      &quot;randSeed_&quot;,
-      &quot;randData_&quot;,
-      &quot;randData&quot;,
-      &quot;failedPrimitiveName&quot;,
-      &quot;handleError&quot;,
-      &quot;next&quot;,
-      &quot;value&quot;,
-      &quot;valueArray&quot;,
-      &quot;$primitiveError&quot;,
-      &quot;$primitiveErrorString&quot;,
-      &quot;storeOn&quot;,
-      &quot;archiveAsCompileString&quot;,
-      &quot;checkCanArchive&quot;,
-    ]
+  sc.lang.klass.define(SCThread, &quot;Thread : Stream&quot;, function() {
+    // TODO: implements state
+    // TODO: implements parent
+    // TODO: implements primitiveError
+    // TODO: implements primitiveIndex
+    // TODO: implements beats
+    // TODO: implements seconds
+    // TODO: implements clock
+    // TODO: implements nextBeat
+    // TODO: implements endBeat
+    // TODO: implements endBeat_
+    // TODO: implements endValue
+    // TODO: implements endValue_
+    // TODO: implements exceptionHandler
+    // TODO: implements exceptionHandler_
+    // TODO: implements threadPlayer_
+    // TODO: implements executingPath
+    // TODO: implements oldExecutingPath
+
+    // TODO: implements init
+    // TODO: implements copy
+    // TODO: implements clock_
+    // TODO: implements seconds_
+    // TODO: implements beats_
+    // TODO: implements isPlaying
+    // TODO: implements threadPlayer
+    // TODO: implements findThreadPlayer
+    // TODO: implements randSeed_
+    // TODO: implements randData_
+    // TODO: implements randData
+    // TODO: implements failedPrimitiveName
+    // TODO: implements handleError
+    // TODO: implements next
+    // TODO: implements value
+    // TODO: implements valueArray
+    // TODO: implements $primitiveError
+    // TODO: implements $primitiveErrorString
+    // TODO: implements storeOn
+    // TODO: implements archiveAsCompileString
+    // TODO: implements checkCanArchive
   });
 
   function SCRoutine() {
     this.__initializeWith__(&quot;Thread&quot;);
   }
 
-  sc.lang.klass.define(&quot;Routine&quot;, &quot;Thread&quot;, {
-    constructor: SCRoutine,
-    NotYetImplemented: [
-      &quot;$run&quot;,
-      &quot;next&quot;,
-      &quot;value&quot;,
-      &quot;resume&quot;,
-      &quot;run&quot;,
-      &quot;valueArray&quot;,
-      &quot;reset&quot;,
-      &quot;stop&quot;,
-      &quot;prStop&quot;,
-      &quot;storeArgs&quot;,
-      &quot;storeOn&quot;,
-      &quot;awake&quot;,
-      &quot;prStart&quot;,
-    ]
+  sc.lang.klass.define(SCRoutine, &quot;Routine : Thread&quot;, function() {
+    // TODO: implements $run
+    // TODO: implements next
+    // TODO: implements value
+    // TODO: implements resume
+    // TODO: implements run
+    // TODO: implements valueArray
+    // TODO: implements reset
+    // TODO: implements stop
+    // TODO: implements p
+    // TODO: implements storeArgs
+    // TODO: implements storeOn
+    // TODO: implements awake
   });
 
 })(sc);</textarea>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - libs/mathlib.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>libs/mathlib.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">120.07</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">379</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">138.18</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">3.17</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./sc&quot;);
+  require(&quot;./random&quot;);
+
+  var rand = sc.libs.random;
+  var mathlib = {};
+
+  mathlib.rand = function(a) {
+    return rand.next() * a;
+  };
+
+  mathlib[&quot;+&quot;] = function(a, b) {
+    return a + b;
+  };
+
+  mathlib[&quot;-&quot;] = function(a, b) {
+    return a - b;
+  };
+
+  mathlib[&quot;*&quot;] = function(a, b) {
+    return a * b;
+  };
+
+  mathlib[&quot;/&quot;] = function(a, b) {
+    return a / b;
+  };
+
+  mathlib.mod = function(a, b) {
+    if (a === 0 || b === 0) {
+      return 0;
+    }
+    if ((a &gt; 0 &amp;&amp; b &lt; 0) || (a &lt; 0 &amp;&amp; b &gt; 0)) {
+      return b + a % b;
+    }
+    return a % b;
+  };
+
+  mathlib.div = function(a, b) {
+    if (b === 0) {
+      return a|0;
+    }
+    return (a / b)|0;
+  };
+
+  mathlib.pow = function(a, b) {
+    return Math.pow(a, b);
+  };
+
+  mathlib.min = Math.min;
+  mathlib.max = Math.max;
+
+  mathlib.bitAnd = function(a, b) {
+    return a &amp; b;
+  };
+
+  mathlib.bitOr = function(a, b) {
+    return a | b;
+  };
+
+  mathlib.bitXor = function(a, b) {
+    return a ^ b;
+  };
+
+  var gcd = function(a, b) {
+    var t;
+
+    a = a|0;
+    b = b|0;
+
+    while (b !== 0) {
+      t = a % b;
+      a = b;
+      b = t;
+    }
+
+    return Math.abs(a);
+  };
+
+  mathlib.lcm = function(a, b) {
+    if (a === 0 &amp;&amp; b === 0) {
+      return 0;
+    }
+    return Math.abs((a|0) * (b|0)) / gcd(a, b);
+  };
+
+  mathlib.gcd = function(a, b) {
+    return gcd(a, b);
+  };
+
+  mathlib.round = function(a, b) {
+    return b === 0 ? a : Math.round(a / b) * b;
+  };
+
+  mathlib.roundUp = function(a, b) {
+    return b === 0 ? a : Math.ceil(a / b) * b;
+  };
+
+  mathlib.trunc = function(a, b) {
+    return b === 0 ? a : Math.floor(a / b) * b;
+  };
+
+  mathlib.atan2 = Math.atan2;
+
+  mathlib.hypot = function(a, b) {
+    return Math.sqrt((a * a) + (b * b));
+  };
+
+  mathlib.hypotApx = function(a, b) {
+    var x = Math.abs(a);
+    var y = Math.abs(b);
+    var minxy = Math.min(x, y);
+    return x + y - (Math.sqrt(2) - 1) * minxy;
+  };
+
+  mathlib.leftShift = function(a, b) {
+    if (b &lt; 0) {
+      return (a|0) &gt;&gt; (-b|0);
+    }
+    return (a|0) &lt;&lt; (b|0);
+  };
+
+  mathlib.rightShift = function(a, b) {
+    if (b &lt; 0) {
+      return (a|0) &lt;&lt; (-b|0);
+    }
+    return (a|0) &gt;&gt; (b|0);
+  };
+
+  mathlib.unsignedRightShift = function(a, b) {
+    if (b &lt; 0) {
+      return (a|0) &lt;&lt; (-b|0);
+    }
+    return (a|0) &gt;&gt; (b|0);
+  };
+
+  mathlib.ring1 = function(a, b) {
+    return a * b + a;
+  };
+
+  mathlib.ring2 = function(a, b) {
+    return a * b + a + b;
+  };
+
+  mathlib.ring3 = function(a, b) {
+    return a * a * b;
+  };
+
+  mathlib.ring4 = function(a, b) {
+    return a * a * b - a * b * b;
+  };
+
+  mathlib.difsqr = function(a, b) {
+    return a * a - b * b;
+  };
+
+  mathlib.sumsqr = function(a, b) {
+    return a * a + b * b;
+  };
+
+  mathlib.sqrsum = function(a, b) {
+    return (a + b) * (a + b);
+  };
+
+  mathlib.sqrdif = function(a, b) {
+    return (a - b) * (a - b);
+  };
+
+  mathlib.absdif = function(a, b) {
+    return Math.abs(a - b);
+  };
+
+  mathlib.thresh = function(a, b) {
+    return a &lt; b ? 0 : a;
+  };
+
+  mathlib.amclip = function(a, b) {
+    return a * 0.5 * (b + Math.abs(b));
+  };
+
+  mathlib.scaleneg = function(a, b) {
+    b = 0.5 * b + 0.5;
+    return (Math.abs(a) - a) * b + a;
+  };
+
+  mathlib.clip2 = function(a, b) {
+    return Math.max(-b, Math.min(a, b));
+  };
+
+  mathlib.fold2 = function(a, b) {
+    var x, c, range, range2;
+
+    if (b === 0) {
+      return 0;
+    }
+
+    x = a + b;
+    if (a &gt;= b) {
+      a = b + b - a;
+      if (a &gt;= -b) {
+        return a;
+      }
+    } else if (a &lt; -b) {
+      a = -b - b - a;
+      if (a &lt; b) {
+        return a;
+      }
+    } else {
+      return a;
+    }
+
+    range  = b + b;
+    range2 = range + range;
+    c = x - range2 * Math.floor(x / range2);
+
+    if (c &gt;= range) {
+      c = range2 - c;
+    }
+
+    return c - b;
+  };
+
+  mathlib.wrap2 = function(a, b) {
+    var range;
+
+    if (b === 0) {
+      return 0;
+    }
+
+    if (a &gt;= b) {
+      range = b + b;
+      a -= range;
+      if (a &lt; b) {
+        return a;
+      }
+    } else if (a &lt; -b) {
+      range = b + b;
+      a += range;
+      if (a &gt;= -b) {
+        return a;
+      }
+    } else {
+      return a;
+    }
+
+    return a - range * Math.floor((a + b) / range);
+  };
+
+  mathlib.excess = function(a, b) {
+    return a - Math.max(-b, Math.min(a, b));
+  };
+
+  mathlib.firstArg = function(a) {
+    return a;
+  };
+
+  mathlib.rrand = function(a, b) {
+    return a + rand.next() * (b - a);
+  };
+
+  mathlib.exprand = function(a, b) {
+    return a * Math.exp(Math.log(b / a) * rand.next());
+  };
+
+  mathlib.clip = function(val, lo, hi) {
+    return Math.max(lo, Math.min(val, hi));
+  };
+
+  mathlib.iwrap = function(val, lo, hi) {
+    var range;
+
+    range = hi - lo + 1;
+    val -= range * Math.floor((val - lo) / range);
+
+    return val;
+  };
+
+  mathlib.wrap = function(val, lo, hi) {
+    var range;
+
+    if (hi === lo) {
+      return lo;
+    }
+
+    range = (hi - lo);
+    if (val &gt;= hi) {
+      val -= range;
+      if (val &lt; hi) {
+        return val;
+      }
+    } else if (val &lt; lo) {
+      val += range;
+      if (val &gt;= lo) {
+        return val;
+      }
+    } else {
+      return val;
+    }
+
+    return val - range * Math.floor((val - lo) / range);
+  };
+
+  mathlib.ifold = function(val, lo, hi) {
+    var x, range1, range2;
+
+    range1 = hi - lo;
+    range2 = range1 * 2;
+    x = val - lo;
+    x -= range2 * Math.floor(x / range2);
+
+    if (x &gt;= range1) {
+      return range2 - x + lo;
+    }
+
+    return x + lo;
+  };
+
+  mathlib.fold = function(val, lo, hi) {
+    var x, range1, range2;
+
+    if (hi === lo) {
+      return lo;
+    }
+
+    if (val &gt;= hi) {
+      val = (hi * 2) - val;
+      if (val &gt;= lo) {
+        return val;
+      }
+    } else if (val &lt; lo) {
+      val = (lo * 2) - val;
+      if (val &lt; hi) {
+        return val;
+      }
+    } else {
+      return val;
+    }
+
+    range1 = hi - lo;
+    range2 = range1 * 2;
+    x = val - lo;
+    x -= range2 * Math.floor(x / range2);
+
+    if (x &gt;= range1) {
+      return range2 - x + lo;
+    }
+
+    return x + lo;
+  };
+
+  mathlib.clip_idx = function(index, len) {
+    return Math.max(0, Math.min(index, len - 1));
+  };
+
+  mathlib.wrap_idx = function(index, len) {
+    index = index % len;
+    if (index &lt; 0) {
+      index += len;
+    }
+    return index;
+  };
+
+  mathlib.fold_idx = function(index, len) {
+    var len2 = len * 2 - 2;
+
+    index = (index|0) % len2;
+    if (index &lt; 0) {
+      index += len2;
+    }
+    if (len &lt;= index) {
+      return len2 - index;
+    }
+    return index;
+  };
+
+  sc.libs.mathlib = mathlib;
+
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

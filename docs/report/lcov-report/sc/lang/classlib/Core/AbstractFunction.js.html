@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Core/AbstractFunction.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(402 / 402)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(2 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(175 / 175)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(402 / 402)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -364,15 +364,1243 @@
 146
 147
 148
-149</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718
+719
+720
+721
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734
+735
+736
+737
+738
+739
+740
+741
+742
+743
+744
+745
+746
+747
+748
+749
+750
+751
+752
+753
+754
+755
+756
+757
+758
+759
+760
+761
+762
+763
+764
+765
+766
+767
+768
+769
+770
+771
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -380,133 +1608,249 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">9</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">8</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">8</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">8</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">16</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -517,146 +1861,818 @@
 &nbsp;
   require("./Object");
 &nbsp;
-  function SCAbstractFunction() {
-    this.__initializeWith__("Object");
+  var $SC = sc.lang.$SC;
+  var fn = sc.lang.fn;
+  var utils = sc.lang.klass.utils;
+&nbsp;
+  sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
+    spec.composeUnaryOp = function($aSelector) {
+      return $SC.Class("UnaryOpFunction").new($aSelector, this);
+    };
+&nbsp;
+    spec.composeBinaryOp = function($aSelector, $something, $adverb) {
+      return $SC.Class("BinaryOpFunction").new($aSelector, this, $something, $adverb);
+    };
+&nbsp;
+    spec.reverseComposeBinaryOp = function($aSelector, $something, $adverb) {
+      return $SC.Class("BinaryOpFunction").new($aSelector, $something, this, $adverb);
+    };
+&nbsp;
+    spec.composeNAryOp = function($aSelector, $anArgList) {
+      return $SC.Class("NAryOpFunction").new($aSelector, this, $anArgList);
+    };
+&nbsp;
+    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aNumber, $adverb);
+    };
+&nbsp;
+    spec.performBinaryOpOnSignal = function($aSelector, $aSignal, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aSignal, $adverb);
+    };
+&nbsp;
+    spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aComplex, $adverb);
+    };
+&nbsp;
+    spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aSeqColl, $adverb);
+    };
+&nbsp;
+    spec.neg = function() {
+      return this.composeUnaryOp($SC.Symbol("neg"));
+    };
+&nbsp;
+    spec.reciprocal = function() {
+      return this.composeUnaryOp($SC.Symbol("reciprocal"));
+    };
+&nbsp;
+    spec.bitNot = function() {
+      return this.composeUnaryOp($SC.Symbol("bitNot"));
+    };
+&nbsp;
+    spec.abs = function() {
+      return this.composeUnaryOp($SC.Symbol("abs"));
+    };
+&nbsp;
+    spec.asFloat = function() {
+      return this.composeUnaryOp($SC.Symbol("asFloat"));
+    };
+&nbsp;
+    spec.asInteger = function() {
+      return this.composeUnaryOp($SC.Symbol("asInteger"));
+    };
+&nbsp;
+    spec.ceil = function() {
+      return this.composeUnaryOp($SC.Symbol("ceil"));
+    };
+&nbsp;
+    spec.floor = function() {
+      return this.composeUnaryOp($SC.Symbol("floor"));
+    };
+&nbsp;
+    spec.frac = function() {
+      return this.composeUnaryOp($SC.Symbol("frac"));
+    };
+&nbsp;
+    spec.sign = function() {
+      return this.composeUnaryOp($SC.Symbol("sign"));
+    };
+&nbsp;
+    spec.squared = function() {
+      return this.composeUnaryOp($SC.Symbol("squared"));
+    };
+&nbsp;
+    spec.cubed = function() {
+      return this.composeUnaryOp($SC.Symbol("cubed"));
+    };
+&nbsp;
+    spec.sqrt = function() {
+      return this.composeUnaryOp($SC.Symbol("sqrt"));
+    };
+&nbsp;
+    spec.exp = function() {
+      return this.composeUnaryOp($SC.Symbol("exp"));
+    };
+&nbsp;
+    spec.midicps = function() {
+      return this.composeUnaryOp($SC.Symbol("midicps"));
+    };
+&nbsp;
+    spec.cpsmidi = function() {
+      return this.composeUnaryOp($SC.Symbol("cpsmidi"));
+    };
+&nbsp;
+    spec.midiratio = function() {
+      return this.composeUnaryOp($SC.Symbol("midiratio"));
+    };
+&nbsp;
+    spec.ratiomidi = function() {
+      return this.composeUnaryOp($SC.Symbol("ratiomidi"));
+    };
+&nbsp;
+    spec.ampdb = function() {
+      return this.composeUnaryOp($SC.Symbol("ampdb"));
+    };
+&nbsp;
+    spec.dbamp = function() {
+      return this.composeUnaryOp($SC.Symbol("dbamp"));
+    };
+&nbsp;
+    spec.octcps = function() {
+      return this.composeUnaryOp($SC.Symbol("octcps"));
+    };
+&nbsp;
+    spec.cpsoct = function() {
+      return this.composeUnaryOp($SC.Symbol("cpsoct"));
+    };
+&nbsp;
+    spec.log = function() {
+      return this.composeUnaryOp($SC.Symbol("log"));
+    };
+&nbsp;
+    spec.log2 = function() {
+      return this.composeUnaryOp($SC.Symbol("log2"));
+    };
+&nbsp;
+    spec.log10 = function() {
+      return this.composeUnaryOp($SC.Symbol("log10"));
+    };
+&nbsp;
+    spec.sin = function() {
+      return this.composeUnaryOp($SC.Symbol("sin"));
+    };
+&nbsp;
+    spec.cos = function() {
+      return this.composeUnaryOp($SC.Symbol("cos"));
+    };
+&nbsp;
+    spec.tan = function() {
+      return this.composeUnaryOp($SC.Symbol("tan"));
+    };
+&nbsp;
+    spec.asin = function() {
+      return this.composeUnaryOp($SC.Symbol("asin"));
+    };
+&nbsp;
+    spec.acos = function() {
+      return this.composeUnaryOp($SC.Symbol("acos"));
+    };
+&nbsp;
+    spec.atan = function() {
+      return this.composeUnaryOp($SC.Symbol("atan"));
+    };
+&nbsp;
+    spec.sinh = function() {
+      return this.composeUnaryOp($SC.Symbol("sinh"));
+    };
+&nbsp;
+    spec.cosh = function() {
+      return this.composeUnaryOp($SC.Symbol("cosh"));
+    };
+&nbsp;
+    spec.tanh = function() {
+      return this.composeUnaryOp($SC.Symbol("tanh"));
+    };
+&nbsp;
+    spec.rand = function() {
+      return this.composeUnaryOp($SC.Symbol("rand"));
+    };
+&nbsp;
+    spec.rand2 = function() {
+      return this.composeUnaryOp($SC.Symbol("rand2"));
+    };
+&nbsp;
+    spec.linrand = function() {
+      return this.composeUnaryOp($SC.Symbol("linrand"));
+    };
+&nbsp;
+    spec.bilinrand = function() {
+      return this.composeUnaryOp($SC.Symbol("bilinrand"));
+    };
+&nbsp;
+    spec.sum3rand = function() {
+      return this.composeUnaryOp($SC.Symbol("sum3rand"));
+    };
+&nbsp;
+    spec.distort = function() {
+      return this.composeUnaryOp($SC.Symbol("distort"));
+    };
+&nbsp;
+    spec.softclip = function() {
+      return this.composeUnaryOp($SC.Symbol("softclip"));
+    };
+&nbsp;
+    spec.coin = function() {
+      return this.composeUnaryOp($SC.Symbol("coin"));
+    };
+&nbsp;
+    spec.even = function() {
+      return this.composeUnaryOp($SC.Symbol("even"));
+    };
+&nbsp;
+    spec.odd = function() {
+      return this.composeUnaryOp($SC.Symbol("odd"));
+    };
+&nbsp;
+    spec.rectWindow = function() {
+      return this.composeUnaryOp($SC.Symbol("rectWindow"));
+    };
+&nbsp;
+    spec.hanWindow = function() {
+      return this.composeUnaryOp($SC.Symbol("hanWindow"));
+    };
+&nbsp;
+    spec.welWindow = function() {
+      return this.composeUnaryOp($SC.Symbol("welWindow"));
+    };
+&nbsp;
+    spec.triWindow = function() {
+      return this.composeUnaryOp($SC.Symbol("triWindow"));
+    };
+&nbsp;
+    spec.scurve = function() {
+      return this.composeUnaryOp($SC.Symbol("scurve"));
+    };
+&nbsp;
+    spec.ramp = function() {
+      return this.composeUnaryOp($SC.Symbol("ramp"));
+    };
+&nbsp;
+    spec.isPositive = function() {
+      return this.composeUnaryOp($SC.Symbol("isPositive"));
+    };
+&nbsp;
+    spec.isNegative = function() {
+      return this.composeUnaryOp($SC.Symbol("isNegative"));
+    };
+&nbsp;
+    spec.isStrictlyPositive = function() {
+      return this.composeUnaryOp($SC.Symbol("isStrictlyPositive"));
+    };
+&nbsp;
+    spec.rho = function() {
+      return this.composeUnaryOp($SC.Symbol("rho"));
+    };
+&nbsp;
+    spec.theta = function() {
+      return this.composeUnaryOp($SC.Symbol("theta"));
+    };
+&nbsp;
+    spec.rotate = function($function) {
+      return this.composeBinaryOp($SC.Symbol("rotate"), $function);
+    };
+&nbsp;
+    spec.dist = function($function) {
+      return this.composeBinaryOp($SC.Symbol("dist"), $function);
+    };
+&nbsp;
+    spec["+"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("+"), $function, $adverb);
+    };
+&nbsp;
+    spec["-"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("-"), $function, $adverb);
+    };
+&nbsp;
+    spec["*"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("*"), $function, $adverb);
+    };
+&nbsp;
+    spec["/"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("/"), $function, $adverb);
+    };
+&nbsp;
+    spec.div = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("div"), $function, $adverb);
+    };
+&nbsp;
+    spec.mod = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("mod"), $function, $adverb);
+    };
+&nbsp;
+    spec.pow = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("pow"), $function, $adverb);
+    };
+&nbsp;
+    spec.min = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("min"), $function, $adverb);
+    };
+&nbsp;
+    spec.max = function($function, $adverb) {
+      $function = utils.defaultValue$Integer($function, 0);
+      return this.composeBinaryOp($SC.Symbol("max"), $function, $adverb);
+    };
+&nbsp;
+    spec["&lt;"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("&lt;"), $function, $adverb);
+    };
+&nbsp;
+    spec["&lt;="] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("&lt;="), $function, $adverb);
+    };
+&nbsp;
+    spec["&gt;"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("&gt;"), $function, $adverb);
+    };
+&nbsp;
+    spec["&gt;="] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("&gt;="), $function, $adverb);
+    };
+&nbsp;
+    spec.bitAnd = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("bitAnd"), $function, $adverb);
+    };
+&nbsp;
+    spec.bitOr = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("bitOr"), $function, $adverb);
+    };
+&nbsp;
+    spec.bitXor = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("bitXor"), $function, $adverb);
+    };
+&nbsp;
+    spec.bitHammingDistance = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("bitHammingDistance"), $function, $adverb);
+    };
+&nbsp;
+    spec.lcm = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("lcm"), $function, $adverb);
+    };
+&nbsp;
+    spec.gcd = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("gcd"), $function, $adverb);
+    };
+&nbsp;
+    spec.round = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("round"), $function, $adverb);
+    };
+&nbsp;
+    spec.roundUp = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("roundUp"), $function, $adverb);
+    };
+&nbsp;
+    spec.trunc = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("trunc"), $function, $adverb);
+    };
+&nbsp;
+    spec.atan2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("atan2"), $function, $adverb);
+    };
+&nbsp;
+    spec.hypot = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("hypot"), $function, $adverb);
+    };
+&nbsp;
+    spec.hypotApx = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("hypotApx"), $function, $adverb);
+    };
+&nbsp;
+    spec.leftShift = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("leftShift"), $function, $adverb);
+    };
+&nbsp;
+    spec.rightShift = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("rightShift"), $function, $adverb);
+    };
+&nbsp;
+    spec.unsignedRightShift = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("unsignedRightShift"), $function, $adverb);
+    };
+&nbsp;
+    spec.ring1 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("ring1"), $function, $adverb);
+    };
+&nbsp;
+    spec.ring2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("ring2"), $function, $adverb);
+    };
+&nbsp;
+    spec.ring3 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("ring3"), $function, $adverb);
+    };
+&nbsp;
+    spec.ring4 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("ring4"), $function, $adverb);
+    };
+&nbsp;
+    spec.difsqr = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("difsqr"), $function, $adverb);
+    };
+&nbsp;
+    spec.sumsqr = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("sumsqr"), $function, $adverb);
+    };
+&nbsp;
+    spec.sqrsum = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("sqrsum"), $function, $adverb);
+    };
+&nbsp;
+    spec.sqrdif = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("sqrdif"), $function, $adverb);
+    };
+&nbsp;
+    spec.absdif = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("absdif"), $function, $adverb);
+    };
+&nbsp;
+    spec.thresh = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("thresh"), $function, $adverb);
+    };
+&nbsp;
+    spec.amclip = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("amclip"), $function, $adverb);
+    };
+&nbsp;
+    spec.scaleneg = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("scaleneg"), $function, $adverb);
+    };
+&nbsp;
+    spec.clip2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("clip2"), $function, $adverb);
+    };
+&nbsp;
+    spec.fold2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("fold2"), $function, $adverb);
+    };
+&nbsp;
+    spec.wrap2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("wrap2"), $function, $adverb);
+    };
+&nbsp;
+    spec.excess = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("excess"), $function, $adverb);
+    };
+&nbsp;
+    spec.firstArg = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("firstArg"), $function, $adverb);
+    };
+&nbsp;
+    spec.rrand = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("rrand"), $function, $adverb);
+    };
+&nbsp;
+    spec.exprand = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("exprand"), $function, $adverb);
+    };
+&nbsp;
+    spec["@"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("@"), $function, $adverb);
+    };
+&nbsp;
+    spec.real = utils.nop;
+    spec.imag = function() {
+      return $SC.Float(0.0);
+    };
+&nbsp;
+    spec["||"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("||"), $function, $adverb);
+    };
+&nbsp;
+    spec["&amp;&amp;"] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("&amp;&amp;"), $function, $adverb);
+    };
+&nbsp;
+    spec.xor = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("xor"), $function, $adverb);
+    };
+&nbsp;
+    spec.nand = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol("nand"), $function, $adverb);
+    };
+&nbsp;
+    spec.not = function() {
+      return this.composeUnaryOp($SC.Symbol("not"));
+    };
+&nbsp;
+    spec.ref = function() {
+      return this.composeUnaryOp($SC.Symbol("asRef"));
+    };
+&nbsp;
+    spec.clip = function($lo, $hi) {
+      return this.composeNAryOp($SC.Symbol("clip"), $SC.Array([ $lo, $hi ]));
+    };
+&nbsp;
+    spec.wrap = function($lo, $hi) {
+      return this.composeNAryOp($SC.Symbol("wrap"), $SC.Array([ $lo, $hi ]));
+    };
+&nbsp;
+    spec.fold = function($lo, $hi) {
+      return this.composeNAryOp($SC.Symbol("fold"), $SC.Array([ $lo, $hi ]));
+    };
+&nbsp;
+    spec.blend = function($that, $blendFrac) {
+      $blendFrac = utils.defaultValue$Float($blendFrac, 0.5);
+      return this.composeNAryOp(
+        $SC.Symbol("blend"), $SC.Array([ $that, $blendFrac ])
+      );
+    };
+&nbsp;
+    spec.linlin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("linlin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+&nbsp;
+    spec.linexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("linexp"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+&nbsp;
+    spec.explin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("explin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+&nbsp;
+    spec.expexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("expexp"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+&nbsp;
+    spec.lincurve = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+      $inMin  = utils.defaultValue$Integer($inMin, 0);
+      $inMax  = utils.defaultValue$Integer($inMax, 1);
+      $outMin = utils.defaultValue$Integer($outMin, 0);
+      $outMax = utils.defaultValue$Integer($outMax, 1);
+      $curve  = utils.defaultValue$Integer($curve, -4);
+      $clip   = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("lincurve"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
+      );
+    };
+&nbsp;
+    spec.curvelin = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+      $inMin  = utils.defaultValue$Integer($inMin, 0);
+      $inMax  = utils.defaultValue$Integer($inMax, 1);
+      $outMin = utils.defaultValue$Integer($outMin, 0);
+      $outMax = utils.defaultValue$Integer($outMax, 1);
+      $curve  = utils.defaultValue$Integer($curve, -4);
+      $clip   = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("curvelin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
+      );
+    };
+&nbsp;
+    spec.bilin = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("bilin"), $SC.Array([
+          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
+        ])
+      );
+    };
+&nbsp;
+    spec.biexp = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, "minmax");
+      return this.composeNAryOp(
+        $SC.Symbol("biexp"), $SC.Array([
+          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
+        ])
+      );
+    };
+&nbsp;
+    spec.moddif = function($function, $mod) {
+      $function = utils.defaultValue$Float($function, 0.0);
+      $mod      = utils.defaultValue$Float($mod     , 1.0);
+      return this.composeNAryOp(
+        $SC.Symbol("moddif"), $SC.Array([ $function, $mod ])
+      );
+    };
+&nbsp;
+    spec.degreeToKey = function($scale, $stepsPerOctave) {
+      $stepsPerOctave = utils.defaultValue$Integer($stepsPerOctave, 12);
+      return this.composeNAryOp(
+        $SC.Symbol("degreeToKey"), $SC.Array([ $scale, $stepsPerOctave ])
+      );
+    };
+&nbsp;
+    spec.degrad = function() {
+      return this.composeUnaryOp($SC.Symbol("degrad"));
+    };
+&nbsp;
+    spec.raddeg = function() {
+      return this.composeUnaryOp($SC.Symbol("raddeg"));
+    };
+&nbsp;
+    spec.applyTo = function() {
+      return this.value.apply(this, arguments);
+    };
+&nbsp;
+    // TODO: implements &lt;&gt;
+    // TODO: implements sampled
+&nbsp;
+    spec.asUGenInput = function($for) {
+      return this.value($for);
+    };
+&nbsp;
+    spec.asAudioRateInput = function($for) {
+      var $result;
+&nbsp;
+      $result = this.value($for);
+&nbsp;
+      if ($result.rate().__sym__() !== "audio") {
+        return $SC.Class("K2A").ar($result);
+      }
+&nbsp;
+      return $result;
+    };
+&nbsp;
+    spec.asControlInput = function() {
+      return this.value();
+    };
+&nbsp;
+    spec.isValidUGenInput = utils.alwaysReturn$True;
+  });
+&nbsp;
+  function SCUnaryOpFunction(args) {
+    this.__initializeWith__("AbstractFunction");
+    this.$selector = utils.defaultValue$Nil(args[0]);
+    this.$a        = utils.defaultValue$Nil(args[1]);
   }
 &nbsp;
-  sc.lang.klass.define("AbstractFunction", "Object", {
-    constructor: SCAbstractFunction,
-    NotYetImplemented: [
-      "composeUnaryOp",
-      "composeBinaryOp",
-      "reverseComposeBinaryOp",
-      "composeNAryOp",
-      "performBinaryOpOnSimpleNumber",
-      "performBinaryOpOnSignal",
-      "performBinaryOpOnComplex",
-      "performBinaryOpOnSeqColl",
-      "neg",
-      "reciprocal",
-      "bitNot",
-      "abs",
-      "asFloat",
-      "asInteger",
-      "ceil",
-      "floor",
-      "frac",
-      "sign",
-      "squared",
-      "cubed",
-      "sqrt",
-      "exp",
-      "midicps",
-      "cpsmidi",
-      "midiratio",
-      "ratiomidi",
-      "ampdb",
-      "dbamp",
-      "octcps",
-      "cpsoct",
-      "log",
-      "log2",
-      "log10",
-      "sin",
-      "cos",
-      "tan",
-      "asin",
-      "acos",
-      "atan",
-      "sinh",
-      "cosh",
-      "tanh",
-      "rand",
-      "rand2",
-      "linrand",
-      "bilinrand",
-      "sum3rand",
-      "distort",
-      "softclip",
-      "coin",
-      "even",
-      "odd",
-      "rectWindow",
-      "hanWindow",
-      "welWindow",
-      "triWindow",
-      "scurve",
-      "ramp",
-      "isPositive",
-      "isNegative",
-      "isStrictlyPositive",
-      "rho",
-      "theta",
-      "rotate",
-      "dist",
-      "div",
-      "mod",
-      "pow",
-      "min",
-      "max",
-      "bitAnd",
-      "bitOr",
-      "bitXor",
-      "bitHammingDistance",
-      "lcm",
-      "gcd",
-      "round",
-      "roundUp",
-      "trunc",
-      "atan2",
-      "hypot",
-      "hypotApx",
-      "leftShift",
-      "rightShift",
-      "unsignedRightShift",
-      "ring1",
-      "ring2",
-      "ring3",
-      "ring4",
-      "difsqr",
-      "sumsqr",
-      "sqrsum",
-      "sqrdif",
-      "absdif",
-      "thresh",
-      "amclip",
-      "scaleneg",
-      "clip2",
-      "fold2",
-      "wrap2",
-      "excess",
-      "firstArg",
-      "rrand",
-      "exprand",
-      "real",
-      "imag",
-      "xor",
-      "nand",
-      "not",
-      "ref",
-      "clip",
-      "wrap",
-      "fold",
-      "blend",
-      "linlin",
-      "linexp",
-      "explin",
-      "expexp",
-      "lincurve",
-      "curvelin",
-      "bilin",
-      "biexp",
-      "moddif",
-      "degreeToKey",
-      "degrad",
-      "raddeg",
-      "applyTo",
-      "sampled",
-      "asUGenInput",
-      "asAudioRateInput",
-      "asControlInput",
-      "isValidUGenInput",
-    ]
+  sc.lang.klass.define(SCUnaryOpFunction, "UnaryOpFunction : AbstractFunction", function(spec) {
+&nbsp;
+    spec.value = function() {
+      var $a = this.$a;
+      return $a.value.apply($a, arguments).perform(this.$selector);
+    };
+&nbsp;
+    spec.valueArray = function($args) {
+      return this.$a.valueArray($args).perform(this.$selector);
+    };
+&nbsp;
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+&nbsp;
+    spec.functionPerformList = function($selector, $arglist) {
+      return this.performList($selector, $arglist);
+    };
+&nbsp;
+    // TODO: implements storeOn
+  });
+&nbsp;
+  function SCBinaryOpFunction(args) {
+    this.__initializeWith__("AbstractFunction");
+    this.$selector = utils.defaultValue$Nil(args[0]);
+    this.$a        = utils.defaultValue$Nil(args[1]);
+    this.$b        = utils.defaultValue$Nil(args[2]);
+    this.$adverb   = utils.defaultValue$Nil(args[3]);
+  }
+&nbsp;
+  sc.lang.klass.define(SCBinaryOpFunction, "BinaryOpFunction : AbstractFunction", function(spec) {
+&nbsp;
+    spec.value = function() {
+      return this.$a.value.apply(this.$a, arguments)
+        .perform(this.$selector, this.$b.value.apply(this.$b, arguments), this.$adverb);
+    };
+&nbsp;
+    spec.valueArray = function($args) {
+      return this.$a.valueArray($args)
+        .perform(this.$selector, this.$b.valueArray($args, arguments), this.$adverb);
+    };
+&nbsp;
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+&nbsp;
+    spec.functionPerformList = function($selector, $arglist) {
+      return this.performList($selector, $arglist);
+    };
+&nbsp;
+    // TODO: implements storeOn
+  });
+&nbsp;
+  function SCNAryOpFunction(args) {
+    this.__initializeWith__("AbstractFunction");
+    this.$selector = utils.defaultValue$Nil(args[0]);
+    this.$a        = utils.defaultValue$Nil(args[1]);
+    this.$arglist  = utils.defaultValue$Nil(args[2]);
+  }
+&nbsp;
+  sc.lang.klass.define(SCNAryOpFunction, "NAryOpFunction : AbstractFunction", function(spec) {
+&nbsp;
+    spec.value = function() {
+      var args = arguments;
+      return this.$a.value.apply(this.$a, args)
+        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+          return $_.value.apply($_, args);
+        })));
+    };
+&nbsp;
+    spec.valueArray = function($args) {
+      return this.$a.valueArray($args)
+        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+          return $_.valueArray($args);
+        })));
+    };
+&nbsp;
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+&nbsp;
+    spec.functionPerformList = function($selector, $arglist) {
+      return this.performList($selector, $arglist);
+    };
+&nbsp;
+    // TODO: implements storeOn
+  });
+&nbsp;
+  function SCFunctionList(args) {
+    this.__initializeWith__("AbstractFunction");
+    this.$array   = utils.defaultValue$Nil(args[0]);
+    this._flopped = false;
+  }
+&nbsp;
+  sc.lang.klass.define(SCFunctionList, "FunctionList : AbstractFunction", function(spec, utils) {
+&nbsp;
+    spec.array = function() {
+      return this.$array;
+    };
+&nbsp;
+    spec.array_ = function($value) {
+      $value = utils.defaultValue$Nil($value);
+      this.$array = $value;
+      return this;
+    };
+&nbsp;
+    spec.flopped = function() {
+      return $SC.Boolean(this._flopped);
+    };
+&nbsp;
+    spec.addFunc = fn(function($$functions) {
+      if (this._flopped) {
+        throw new Error("cannot add a function to a flopped FunctionList");
+      }
+&nbsp;
+      this.$array = this.$array.addAll($$functions);
+&nbsp;
+      return this;
+    }, "*functions");
+&nbsp;
+    spec.removeFunc = function($function) {
+      this.$array.remove($function);
+&nbsp;
+      if (this.$array.size() &lt; 2) {
+        return this.$array.at(utils.int0Instance);
+      }
+&nbsp;
+      return this;
+    };
+&nbsp;
+    spec.replaceFunc = function($find, $replace) {
+      this.$array = this.$array.replace($find, $replace);
+      return this;
+    };
+&nbsp;
+    spec.value = function() {
+      var $res, args = arguments;
+&nbsp;
+      $res = this.$array.collect($SC.Function(function($_) {
+        return $_.value.apply($_, args);
+      }));
+&nbsp;
+      return this._flopped ? $res.flop() : $res;
+    };
+&nbsp;
+    spec.valueArray = function($args) {
+      var $res;
+&nbsp;
+      $res = this.$array.collect($SC.Function(function($_) {
+        return $_.valueArray($args);
+      }));
+&nbsp;
+      return this._flopped ? $res.flop() : $res;
+    };
+&nbsp;
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+&nbsp;
+    spec.do = function($function) {
+      this.$array.do($function);
+      return this;
+    };
+&nbsp;
+    spec.flop = function() {
+      if (!this._flopped) {
+        this.$array = this.$array.collect($SC.Function(function($_) {
+          return $_.flop();
+        }));
+      }
+      this._flopped = true;
+&nbsp;
+      return this;
+    };
+&nbsp;
+    // TODO: implements envirFlop
+&nbsp;
+    spec.storeArgs = function() {
+      return $SC.Array([ this.$array ]);
+    };
+&nbsp;
   });
 &nbsp;
 })(sc);
@@ -665,7 +2681,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 24 2014 23:10:40 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 25 2014 19:28:25 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">125.15</p>
+      <p class="stat">137.56</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">148</p>
+      <p class="stat">820</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">3.12</p>
+      <p class="stat">41.26</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.40</p>
+      <p class="stat">10.57</p>
     </div>
   </div>
 </div>
@@ -95,146 +95,818 @@
 
   require(&quot;./Object&quot;);
 
-  function SCAbstractFunction() {
-    this.__initializeWith__(&quot;Object&quot;);
+  var $SC = sc.lang.$SC;
+  var fn = sc.lang.fn;
+  var utils = sc.lang.klass.utils;
+
+  sc.lang.klass.refine(&quot;AbstractFunction&quot;, function(spec, utils) {
+    spec.composeUnaryOp = function($aSelector) {
+      return $SC.Class(&quot;UnaryOpFunction&quot;).new($aSelector, this);
+    };
+
+    spec.composeBinaryOp = function($aSelector, $something, $adverb) {
+      return $SC.Class(&quot;BinaryOpFunction&quot;).new($aSelector, this, $something, $adverb);
+    };
+
+    spec.reverseComposeBinaryOp = function($aSelector, $something, $adverb) {
+      return $SC.Class(&quot;BinaryOpFunction&quot;).new($aSelector, $something, this, $adverb);
+    };
+
+    spec.composeNAryOp = function($aSelector, $anArgList) {
+      return $SC.Class(&quot;NAryOpFunction&quot;).new($aSelector, this, $anArgList);
+    };
+
+    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aNumber, $adverb);
+    };
+
+    spec.performBinaryOpOnSignal = function($aSelector, $aSignal, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aSignal, $adverb);
+    };
+
+    spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aComplex, $adverb);
+    };
+
+    spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
+      return this.reverseComposeBinaryOp($aSelector, $aSeqColl, $adverb);
+    };
+
+    spec.neg = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;neg&quot;));
+    };
+
+    spec.reciprocal = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;reciprocal&quot;));
+    };
+
+    spec.bitNot = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;bitNot&quot;));
+    };
+
+    spec.abs = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;abs&quot;));
+    };
+
+    spec.asFloat = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;asFloat&quot;));
+    };
+
+    spec.asInteger = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;asInteger&quot;));
+    };
+
+    spec.ceil = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;ceil&quot;));
+    };
+
+    spec.floor = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;floor&quot;));
+    };
+
+    spec.frac = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;frac&quot;));
+    };
+
+    spec.sign = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;sign&quot;));
+    };
+
+    spec.squared = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;squared&quot;));
+    };
+
+    spec.cubed = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;cubed&quot;));
+    };
+
+    spec.sqrt = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;sqrt&quot;));
+    };
+
+    spec.exp = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;exp&quot;));
+    };
+
+    spec.midicps = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;midicps&quot;));
+    };
+
+    spec.cpsmidi = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;cpsmidi&quot;));
+    };
+
+    spec.midiratio = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;midiratio&quot;));
+    };
+
+    spec.ratiomidi = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;ratiomidi&quot;));
+    };
+
+    spec.ampdb = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;ampdb&quot;));
+    };
+
+    spec.dbamp = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;dbamp&quot;));
+    };
+
+    spec.octcps = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;octcps&quot;));
+    };
+
+    spec.cpsoct = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;cpsoct&quot;));
+    };
+
+    spec.log = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;log&quot;));
+    };
+
+    spec.log2 = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;log2&quot;));
+    };
+
+    spec.log10 = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;log10&quot;));
+    };
+
+    spec.sin = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;sin&quot;));
+    };
+
+    spec.cos = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;cos&quot;));
+    };
+
+    spec.tan = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;tan&quot;));
+    };
+
+    spec.asin = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;asin&quot;));
+    };
+
+    spec.acos = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;acos&quot;));
+    };
+
+    spec.atan = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;atan&quot;));
+    };
+
+    spec.sinh = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;sinh&quot;));
+    };
+
+    spec.cosh = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;cosh&quot;));
+    };
+
+    spec.tanh = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;tanh&quot;));
+    };
+
+    spec.rand = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;rand&quot;));
+    };
+
+    spec.rand2 = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;rand2&quot;));
+    };
+
+    spec.linrand = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;linrand&quot;));
+    };
+
+    spec.bilinrand = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;bilinrand&quot;));
+    };
+
+    spec.sum3rand = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;sum3rand&quot;));
+    };
+
+    spec.distort = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;distort&quot;));
+    };
+
+    spec.softclip = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;softclip&quot;));
+    };
+
+    spec.coin = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;coin&quot;));
+    };
+
+    spec.even = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;even&quot;));
+    };
+
+    spec.odd = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;odd&quot;));
+    };
+
+    spec.rectWindow = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;rectWindow&quot;));
+    };
+
+    spec.hanWindow = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;hanWindow&quot;));
+    };
+
+    spec.welWindow = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;welWindow&quot;));
+    };
+
+    spec.triWindow = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;triWindow&quot;));
+    };
+
+    spec.scurve = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;scurve&quot;));
+    };
+
+    spec.ramp = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;ramp&quot;));
+    };
+
+    spec.isPositive = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;isPositive&quot;));
+    };
+
+    spec.isNegative = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;isNegative&quot;));
+    };
+
+    spec.isStrictlyPositive = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;isStrictlyPositive&quot;));
+    };
+
+    spec.rho = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;rho&quot;));
+    };
+
+    spec.theta = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;theta&quot;));
+    };
+
+    spec.rotate = function($function) {
+      return this.composeBinaryOp($SC.Symbol(&quot;rotate&quot;), $function);
+    };
+
+    spec.dist = function($function) {
+      return this.composeBinaryOp($SC.Symbol(&quot;dist&quot;), $function);
+    };
+
+    spec[&quot;+&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;+&quot;), $function, $adverb);
+    };
+
+    spec[&quot;-&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;-&quot;), $function, $adverb);
+    };
+
+    spec[&quot;*&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;*&quot;), $function, $adverb);
+    };
+
+    spec[&quot;/&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;/&quot;), $function, $adverb);
+    };
+
+    spec.div = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;div&quot;), $function, $adverb);
+    };
+
+    spec.mod = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;mod&quot;), $function, $adverb);
+    };
+
+    spec.pow = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;pow&quot;), $function, $adverb);
+    };
+
+    spec.min = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;min&quot;), $function, $adverb);
+    };
+
+    spec.max = function($function, $adverb) {
+      $function = utils.defaultValue$Integer($function, 0);
+      return this.composeBinaryOp($SC.Symbol(&quot;max&quot;), $function, $adverb);
+    };
+
+    spec[&quot;&lt;&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;&lt;&quot;), $function, $adverb);
+    };
+
+    spec[&quot;&lt;=&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;&lt;=&quot;), $function, $adverb);
+    };
+
+    spec[&quot;&gt;&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;&gt;&quot;), $function, $adverb);
+    };
+
+    spec[&quot;&gt;=&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;&gt;=&quot;), $function, $adverb);
+    };
+
+    spec.bitAnd = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;bitAnd&quot;), $function, $adverb);
+    };
+
+    spec.bitOr = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;bitOr&quot;), $function, $adverb);
+    };
+
+    spec.bitXor = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;bitXor&quot;), $function, $adverb);
+    };
+
+    spec.bitHammingDistance = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;bitHammingDistance&quot;), $function, $adverb);
+    };
+
+    spec.lcm = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;lcm&quot;), $function, $adverb);
+    };
+
+    spec.gcd = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;gcd&quot;), $function, $adverb);
+    };
+
+    spec.round = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;round&quot;), $function, $adverb);
+    };
+
+    spec.roundUp = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;roundUp&quot;), $function, $adverb);
+    };
+
+    spec.trunc = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;trunc&quot;), $function, $adverb);
+    };
+
+    spec.atan2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;atan2&quot;), $function, $adverb);
+    };
+
+    spec.hypot = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;hypot&quot;), $function, $adverb);
+    };
+
+    spec.hypotApx = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;hypotApx&quot;), $function, $adverb);
+    };
+
+    spec.leftShift = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;leftShift&quot;), $function, $adverb);
+    };
+
+    spec.rightShift = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;rightShift&quot;), $function, $adverb);
+    };
+
+    spec.unsignedRightShift = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;unsignedRightShift&quot;), $function, $adverb);
+    };
+
+    spec.ring1 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;ring1&quot;), $function, $adverb);
+    };
+
+    spec.ring2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;ring2&quot;), $function, $adverb);
+    };
+
+    spec.ring3 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;ring3&quot;), $function, $adverb);
+    };
+
+    spec.ring4 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;ring4&quot;), $function, $adverb);
+    };
+
+    spec.difsqr = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;difsqr&quot;), $function, $adverb);
+    };
+
+    spec.sumsqr = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;sumsqr&quot;), $function, $adverb);
+    };
+
+    spec.sqrsum = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;sqrsum&quot;), $function, $adverb);
+    };
+
+    spec.sqrdif = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;sqrdif&quot;), $function, $adverb);
+    };
+
+    spec.absdif = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;absdif&quot;), $function, $adverb);
+    };
+
+    spec.thresh = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;thresh&quot;), $function, $adverb);
+    };
+
+    spec.amclip = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;amclip&quot;), $function, $adverb);
+    };
+
+    spec.scaleneg = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;scaleneg&quot;), $function, $adverb);
+    };
+
+    spec.clip2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;clip2&quot;), $function, $adverb);
+    };
+
+    spec.fold2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;fold2&quot;), $function, $adverb);
+    };
+
+    spec.wrap2 = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;wrap2&quot;), $function, $adverb);
+    };
+
+    spec.excess = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;excess&quot;), $function, $adverb);
+    };
+
+    spec.firstArg = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;firstArg&quot;), $function, $adverb);
+    };
+
+    spec.rrand = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;rrand&quot;), $function, $adverb);
+    };
+
+    spec.exprand = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;exprand&quot;), $function, $adverb);
+    };
+
+    spec[&quot;@&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;@&quot;), $function, $adverb);
+    };
+
+    spec.real = utils.nop;
+    spec.imag = function() {
+      return $SC.Float(0.0);
+    };
+
+    spec[&quot;||&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;||&quot;), $function, $adverb);
+    };
+
+    spec[&quot;&amp;&amp;&quot;] = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;&amp;&amp;&quot;), $function, $adverb);
+    };
+
+    spec.xor = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;xor&quot;), $function, $adverb);
+    };
+
+    spec.nand = function($function, $adverb) {
+      return this.composeBinaryOp($SC.Symbol(&quot;nand&quot;), $function, $adverb);
+    };
+
+    spec.not = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;not&quot;));
+    };
+
+    spec.ref = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;asRef&quot;));
+    };
+
+    spec.clip = function($lo, $hi) {
+      return this.composeNAryOp($SC.Symbol(&quot;clip&quot;), $SC.Array([ $lo, $hi ]));
+    };
+
+    spec.wrap = function($lo, $hi) {
+      return this.composeNAryOp($SC.Symbol(&quot;wrap&quot;), $SC.Array([ $lo, $hi ]));
+    };
+
+    spec.fold = function($lo, $hi) {
+      return this.composeNAryOp($SC.Symbol(&quot;fold&quot;), $SC.Array([ $lo, $hi ]));
+    };
+
+    spec.blend = function($that, $blendFrac) {
+      $blendFrac = utils.defaultValue$Float($blendFrac, 0.5);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;blend&quot;), $SC.Array([ $that, $blendFrac ])
+      );
+    };
+
+    spec.linlin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;linlin&quot;), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+
+    spec.linexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;linexp&quot;), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+
+    spec.explin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;explin&quot;), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+
+    spec.expexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;expexp&quot;), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
+      );
+    };
+
+    spec.lincurve = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+      $inMin  = utils.defaultValue$Integer($inMin, 0);
+      $inMax  = utils.defaultValue$Integer($inMax, 1);
+      $outMin = utils.defaultValue$Integer($outMin, 0);
+      $outMax = utils.defaultValue$Integer($outMax, 1);
+      $curve  = utils.defaultValue$Integer($curve, -4);
+      $clip   = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;lincurve&quot;), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
+      );
+    };
+
+    spec.curvelin = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+      $inMin  = utils.defaultValue$Integer($inMin, 0);
+      $inMax  = utils.defaultValue$Integer($inMax, 1);
+      $outMin = utils.defaultValue$Integer($outMin, 0);
+      $outMax = utils.defaultValue$Integer($outMax, 1);
+      $curve  = utils.defaultValue$Integer($curve, -4);
+      $clip   = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;curvelin&quot;), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
+      );
+    };
+
+    spec.bilin = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;bilin&quot;), $SC.Array([
+          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
+        ])
+      );
+    };
+
+    spec.biexp = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+      $clip = utils.defaultValue$Symbol($clip, &quot;minmax&quot;);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;biexp&quot;), $SC.Array([
+          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
+        ])
+      );
+    };
+
+    spec.moddif = function($function, $mod) {
+      $function = utils.defaultValue$Float($function, 0.0);
+      $mod      = utils.defaultValue$Float($mod     , 1.0);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;moddif&quot;), $SC.Array([ $function, $mod ])
+      );
+    };
+
+    spec.degreeToKey = function($scale, $stepsPerOctave) {
+      $stepsPerOctave = utils.defaultValue$Integer($stepsPerOctave, 12);
+      return this.composeNAryOp(
+        $SC.Symbol(&quot;degreeToKey&quot;), $SC.Array([ $scale, $stepsPerOctave ])
+      );
+    };
+
+    spec.degrad = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;degrad&quot;));
+    };
+
+    spec.raddeg = function() {
+      return this.composeUnaryOp($SC.Symbol(&quot;raddeg&quot;));
+    };
+
+    spec.applyTo = function() {
+      return this.value.apply(this, arguments);
+    };
+
+    // TODO: implements &lt;&gt;
+    // TODO: implements sampled
+
+    spec.asUGenInput = function($for) {
+      return this.value($for);
+    };
+
+    spec.asAudioRateInput = function($for) {
+      var $result;
+
+      $result = this.value($for);
+
+      if ($result.rate().__sym__() !== &quot;audio&quot;) {
+        return $SC.Class(&quot;K2A&quot;).ar($result);
+      }
+
+      return $result;
+    };
+
+    spec.asControlInput = function() {
+      return this.value();
+    };
+
+    spec.isValidUGenInput = utils.alwaysReturn$True;
+  });
+
+  function SCUnaryOpFunction(args) {
+    this.__initializeWith__(&quot;AbstractFunction&quot;);
+    this.$selector = utils.defaultValue$Nil(args[0]);
+    this.$a        = utils.defaultValue$Nil(args[1]);
   }
 
-  sc.lang.klass.define(&quot;AbstractFunction&quot;, &quot;Object&quot;, {
-    constructor: SCAbstractFunction,
-    NotYetImplemented: [
-      &quot;composeUnaryOp&quot;,
-      &quot;composeBinaryOp&quot;,
-      &quot;reverseComposeBinaryOp&quot;,
-      &quot;composeNAryOp&quot;,
-      &quot;performBinaryOpOnSimpleNumber&quot;,
-      &quot;performBinaryOpOnSignal&quot;,
-      &quot;performBinaryOpOnComplex&quot;,
-      &quot;performBinaryOpOnSeqColl&quot;,
-      &quot;neg&quot;,
-      &quot;reciprocal&quot;,
-      &quot;bitNot&quot;,
-      &quot;abs&quot;,
-      &quot;asFloat&quot;,
-      &quot;asInteger&quot;,
-      &quot;ceil&quot;,
-      &quot;floor&quot;,
-      &quot;frac&quot;,
-      &quot;sign&quot;,
-      &quot;squared&quot;,
-      &quot;cubed&quot;,
-      &quot;sqrt&quot;,
-      &quot;exp&quot;,
-      &quot;midicps&quot;,
-      &quot;cpsmidi&quot;,
-      &quot;midiratio&quot;,
-      &quot;ratiomidi&quot;,
-      &quot;ampdb&quot;,
-      &quot;dbamp&quot;,
-      &quot;octcps&quot;,
-      &quot;cpsoct&quot;,
-      &quot;log&quot;,
-      &quot;log2&quot;,
-      &quot;log10&quot;,
-      &quot;sin&quot;,
-      &quot;cos&quot;,
-      &quot;tan&quot;,
-      &quot;asin&quot;,
-      &quot;acos&quot;,
-      &quot;atan&quot;,
-      &quot;sinh&quot;,
-      &quot;cosh&quot;,
-      &quot;tanh&quot;,
-      &quot;rand&quot;,
-      &quot;rand2&quot;,
-      &quot;linrand&quot;,
-      &quot;bilinrand&quot;,
-      &quot;sum3rand&quot;,
-      &quot;distort&quot;,
-      &quot;softclip&quot;,
-      &quot;coin&quot;,
-      &quot;even&quot;,
-      &quot;odd&quot;,
-      &quot;rectWindow&quot;,
-      &quot;hanWindow&quot;,
-      &quot;welWindow&quot;,
-      &quot;triWindow&quot;,
-      &quot;scurve&quot;,
-      &quot;ramp&quot;,
-      &quot;isPositive&quot;,
-      &quot;isNegative&quot;,
-      &quot;isStrictlyPositive&quot;,
-      &quot;rho&quot;,
-      &quot;theta&quot;,
-      &quot;rotate&quot;,
-      &quot;dist&quot;,
-      &quot;div&quot;,
-      &quot;mod&quot;,
-      &quot;pow&quot;,
-      &quot;min&quot;,
-      &quot;max&quot;,
-      &quot;bitAnd&quot;,
-      &quot;bitOr&quot;,
-      &quot;bitXor&quot;,
-      &quot;bitHammingDistance&quot;,
-      &quot;lcm&quot;,
-      &quot;gcd&quot;,
-      &quot;round&quot;,
-      &quot;roundUp&quot;,
-      &quot;trunc&quot;,
-      &quot;atan2&quot;,
-      &quot;hypot&quot;,
-      &quot;hypotApx&quot;,
-      &quot;leftShift&quot;,
-      &quot;rightShift&quot;,
-      &quot;unsignedRightShift&quot;,
-      &quot;ring1&quot;,
-      &quot;ring2&quot;,
-      &quot;ring3&quot;,
-      &quot;ring4&quot;,
-      &quot;difsqr&quot;,
-      &quot;sumsqr&quot;,
-      &quot;sqrsum&quot;,
-      &quot;sqrdif&quot;,
-      &quot;absdif&quot;,
-      &quot;thresh&quot;,
-      &quot;amclip&quot;,
-      &quot;scaleneg&quot;,
-      &quot;clip2&quot;,
-      &quot;fold2&quot;,
-      &quot;wrap2&quot;,
-      &quot;excess&quot;,
-      &quot;firstArg&quot;,
-      &quot;rrand&quot;,
-      &quot;exprand&quot;,
-      &quot;real&quot;,
-      &quot;imag&quot;,
-      &quot;xor&quot;,
-      &quot;nand&quot;,
-      &quot;not&quot;,
-      &quot;ref&quot;,
-      &quot;clip&quot;,
-      &quot;wrap&quot;,
-      &quot;fold&quot;,
-      &quot;blend&quot;,
-      &quot;linlin&quot;,
-      &quot;linexp&quot;,
-      &quot;explin&quot;,
-      &quot;expexp&quot;,
-      &quot;lincurve&quot;,
-      &quot;curvelin&quot;,
-      &quot;bilin&quot;,
-      &quot;biexp&quot;,
-      &quot;moddif&quot;,
-      &quot;degreeToKey&quot;,
-      &quot;degrad&quot;,
-      &quot;raddeg&quot;,
-      &quot;applyTo&quot;,
-      &quot;sampled&quot;,
-      &quot;asUGenInput&quot;,
-      &quot;asAudioRateInput&quot;,
-      &quot;asControlInput&quot;,
-      &quot;isValidUGenInput&quot;,
-    ]
+  sc.lang.klass.define(SCUnaryOpFunction, &quot;UnaryOpFunction : AbstractFunction&quot;, function(spec) {
+
+    spec.value = function() {
+      var $a = this.$a;
+      return $a.value.apply($a, arguments).perform(this.$selector);
+    };
+
+    spec.valueArray = function($args) {
+      return this.$a.valueArray($args).perform(this.$selector);
+    };
+
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+
+    spec.functionPerformList = function($selector, $arglist) {
+      return this.performList($selector, $arglist);
+    };
+
+    // TODO: implements storeOn
+  });
+
+  function SCBinaryOpFunction(args) {
+    this.__initializeWith__(&quot;AbstractFunction&quot;);
+    this.$selector = utils.defaultValue$Nil(args[0]);
+    this.$a        = utils.defaultValue$Nil(args[1]);
+    this.$b        = utils.defaultValue$Nil(args[2]);
+    this.$adverb   = utils.defaultValue$Nil(args[3]);
+  }
+
+  sc.lang.klass.define(SCBinaryOpFunction, &quot;BinaryOpFunction : AbstractFunction&quot;, function(spec) {
+
+    spec.value = function() {
+      return this.$a.value.apply(this.$a, arguments)
+        .perform(this.$selector, this.$b.value.apply(this.$b, arguments), this.$adverb);
+    };
+
+    spec.valueArray = function($args) {
+      return this.$a.valueArray($args)
+        .perform(this.$selector, this.$b.valueArray($args, arguments), this.$adverb);
+    };
+
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+
+    spec.functionPerformList = function($selector, $arglist) {
+      return this.performList($selector, $arglist);
+    };
+
+    // TODO: implements storeOn
+  });
+
+  function SCNAryOpFunction(args) {
+    this.__initializeWith__(&quot;AbstractFunction&quot;);
+    this.$selector = utils.defaultValue$Nil(args[0]);
+    this.$a        = utils.defaultValue$Nil(args[1]);
+    this.$arglist  = utils.defaultValue$Nil(args[2]);
+  }
+
+  sc.lang.klass.define(SCNAryOpFunction, &quot;NAryOpFunction : AbstractFunction&quot;, function(spec) {
+
+    spec.value = function() {
+      var args = arguments;
+      return this.$a.value.apply(this.$a, args)
+        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+          return $_.value.apply($_, args);
+        })));
+    };
+
+    spec.valueArray = function($args) {
+      return this.$a.valueArray($args)
+        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+          return $_.valueArray($args);
+        })));
+    };
+
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+
+    spec.functionPerformList = function($selector, $arglist) {
+      return this.performList($selector, $arglist);
+    };
+
+    // TODO: implements storeOn
+  });
+
+  function SCFunctionList(args) {
+    this.__initializeWith__(&quot;AbstractFunction&quot;);
+    this.$array   = utils.defaultValue$Nil(args[0]);
+    this._flopped = false;
+  }
+
+  sc.lang.klass.define(SCFunctionList, &quot;FunctionList : AbstractFunction&quot;, function(spec, utils) {
+
+    spec.array = function() {
+      return this.$array;
+    };
+
+    spec.array_ = function($value) {
+      $value = utils.defaultValue$Nil($value);
+      this.$array = $value;
+      return this;
+    };
+
+    spec.flopped = function() {
+      return $SC.Boolean(this._flopped);
+    };
+
+    spec.addFunc = fn(function($$functions) {
+      if (this._flopped) {
+        throw new Error(&quot;cannot add a function to a flopped FunctionList&quot;);
+      }
+
+      this.$array = this.$array.addAll($$functions);
+
+      return this;
+    }, &quot;*functions&quot;);
+
+    spec.removeFunc = function($function) {
+      this.$array.remove($function);
+
+      if (this.$array.size() &lt; 2) {
+        return this.$array.at(utils.int0Instance);
+      }
+
+      return this;
+    };
+
+    spec.replaceFunc = function($find, $replace) {
+      this.$array = this.$array.replace($find, $replace);
+      return this;
+    };
+
+    spec.value = function() {
+      var $res, args = arguments;
+
+      $res = this.$array.collect($SC.Function(function($_) {
+        return $_.value.apply($_, args);
+      }));
+
+      return this._flopped ? $res.flop() : $res;
+    };
+
+    spec.valueArray = function($args) {
+      var $res;
+
+      $res = this.$array.collect($SC.Function(function($_) {
+        return $_.valueArray($args);
+      }));
+
+      return this._flopped ? $res.flop() : $res;
+    };
+
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+
+    spec.do = function($function) {
+      this.$array.do($function);
+      return this;
+    };
+
+    spec.flop = function() {
+      if (!this._flopped) {
+        this.$array = this.$array.collect($SC.Function(function($_) {
+          return $_.flop();
+        }));
+      }
+      this._flopped = true;
+
+      return this;
+    };
+
+    // TODO: implements envirFlop
+
+    spec.storeArgs = function() {
+      return $SC.Array([ this.$array ]);
+    };
+
   });
 
 })(sc);</textarea>

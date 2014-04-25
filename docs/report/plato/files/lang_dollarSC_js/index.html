@@ -96,14 +96,14 @@
   require(&quot;./sc&quot;);
 
   var $SC = function(msg, rcv, args) {
-      var method;
+    var method;
 
-      method = rcv[msg];
-      if (method) {
-        return method.apply(rcv, args);
-      }
+    method = rcv[msg];
+    if (method) {
+      return method.apply(rcv, args);
+    }
 
-      throw new Error(String(rcv) + &quot; cannot understand message &#039;&quot; + msg + &quot;&#039;&quot;);
+    throw new Error(String(rcv) + &quot; cannot understand message &#039;&quot; + msg + &quot;&#039;&quot;);
   };
 
   /* istanbul ignore next */

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">125.76</p>
+      <p class="stat">133.54</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">68</p>
+      <p class="stat">163</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">10.53</p>
+      <p class="stat">35.90</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.32</p>
+      <p class="stat">1.64</p>
     </div>
   </div>
 </div>
@@ -97,65 +97,160 @@
 
   var $SC = sc.lang.$SC;
 
-  var instances = {};
+  sc.lang.klass.refine(&quot;Char&quot;, function(spec, utils) {
+    spec.__str__ = function() {
+      return this._;
+    };
 
-  function SCChar() {
-    this.__initializeWith__(&quot;Magnitude&quot;);
-    this._class = $SC.Class(&quot;Char&quot;);
-    this._raw = &quot;\0&quot;;
-  }
+    spec.$nl = function() {
+      return $SC.Char(&quot;\n&quot;);
+    };
 
-  sc.lang.klass.define(&quot;Char&quot;, &quot;Magnitude&quot;, {
-    constructor: SCChar,
-    $new: function() {
+    spec.$ff = function() {
+      return $SC.Char(&quot;\f&quot;);
+    };
+
+    spec.$tab = function() {
+      return $SC.Char(&quot;\t&quot;);
+    };
+
+    spec.$space = function() {
+      return $SC.Char(&quot; &quot;);
+    };
+
+    spec.$comma = function() {
+      return $SC.Char(&quot;,&quot;);
+    };
+
+    spec.$new = function() {
       throw new Error(&quot;Char.new is illegal, should use literal.&quot;);
-    },
-    __tag__: function() {
-      return sc.C.TAG_CHAR;
-    },
-    __str__: function() {
-      return this._raw;
-    },
-    NotYetImplemented: [
-      &quot;hash&quot;,
-      &quot;ascii&quot;,
-      &quot;digit&quot;,
-      &quot;asAscii&quot;,
-      &quot;asUnicode&quot;,
-      &quot;toUpper&quot;,
-      &quot;toLower&quot;,
-      &quot;isAlpha&quot;,
-      &quot;isAlphaNum&quot;,
-      &quot;isPrint&quot;,
-      &quot;isPunct&quot;,
-      &quot;isControl&quot;,
-      &quot;isSpace&quot;,
-      &quot;isVowel&quot;,
-      &quot;isDecDigit&quot;,
-      &quot;isUpper&quot;,
-      &quot;isLower&quot;,
-      &quot;isFileSafe&quot;,
-      &quot;isPathSeparator&quot;,
-      &quot;$bullet&quot;,
-      &quot;printOn&quot;,
-      &quot;storeOn&quot;,
-      &quot;archiveAsCompileString&quot;,
-    ]
+    };
+
+    // TODO: implements hash
+
+    spec.ascii = function() {
+      return $SC.Integer(this._.charCodeAt(0));
+    };
+
+    spec.digit = function() {
+      var ascii = this._.charCodeAt(0);
+      if (0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) {
+        return $SC.Integer(ascii - 0x30);
+      }
+      if (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) {
+        return $SC.Integer(ascii - 0x37);
+      }
+      if (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a) {
+        return $SC.Integer(ascii - 0x57);
+      }
+      throw new Error(&quot;digitValue failed&quot;);
+    };
+
+    spec.asAscii = utils.nop;
+
+    spec.asUnicode = function() {
+      return this.ascii();
+    };
+
+    spec.toUpper = function() {
+      return $SC.Char(this._.toUpperCase());
+    };
+
+    spec.toLower = function() {
+      return $SC.Char(this._.toLowerCase());
+    };
+
+    spec.isAlpha = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
+                         (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+    };
+
+    spec.isAlphaNum = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
+                         (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
+                         (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+    };
+
+    spec.isPrint = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
+    };
+
+    spec.isPunct = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
+                         (0x3a &lt;= ascii &amp;&amp; ascii &lt;= 0x40) ||
+                         (0x5b &lt;= ascii &amp;&amp; ascii &lt;= 0x60) ||
+                         (0x7b &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
+    };
+
+    spec.isControl = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
+    };
+
+    spec.isSpace = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
+    };
+
+    spec.isVowl = function() {
+      var ch = this._.charAt(0).toUpperCase();
+      return $SC.Boolean(&quot;AEIOU&quot;.indexOf(ch) !== -1);
+    };
+
+    spec.isDecDigit = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
+    };
+
+    spec.isUpper = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
+    };
+
+    spec.isLower = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+    };
+
+    spec.isFileSafe = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
+                         ascii !== 0x2f &amp;&amp; // 0x2f is &#039;/&#039;
+                         ascii !== 0x3a &amp;&amp; // 0x3a is &#039;:&#039;
+                         ascii !== 0x22);  // 0x22 is &#039;&quot;&#039;
+    };
+
+    spec.isPathSeparator = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean(ascii === 0x2f);
+    };
+
+    spec[&quot;&lt;&quot;] = function($aChar) {
+      return $SC.Boolean(this.ascii() &lt; $aChar.ascii());
+    };
+
+    spec[&quot;++&quot;] = function($that) {
+      return $SC.String(this._ + $that.__str__());
+    };
+
+    // TODO: implements $bullet
+    // TODO: implements printOn
+    // TODO: implements storeOn
+
+    spec.archiveAsCompileString = function() {
+      return $SC.True();
+    };
+
+    spec.asString = function() {
+      return $SC.String(this._);
+    };
+
+    spec.shallowCopy = utils.nop;
   });
-
-  $SC.Char = function(value) {
-    var instance;
-
-    value = String(value).charAt(0);
-
-    if (!instances.hasOwnProperty(value)) {
-      instance = new SCChar();
-      instance._raw = value;
-      instances[value] = instance;
-    }
-
-    return instances[value];
-  };
 
 })(sc);</textarea>
   </div>

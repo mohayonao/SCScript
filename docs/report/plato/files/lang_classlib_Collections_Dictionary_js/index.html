@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">121.76</p>
+      <p class="stat">146.34</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">96</p>
+      <p class="stat">81</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">7.56</p>
+      <p class="stat">4.56</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.35</p>
+      <p class="stat">0.08</p>
     </div>
   </div>
 </div>
@@ -95,95 +95,80 @@
 
   require(&quot;./Set&quot;);
 
-  var $SC = sc.lang.$SC;
-
   function SCDictionary() {
     this.__initializeWith__(&quot;Set&quot;);
-    this._class = $SC.Class(&quot;Dictionary&quot;);
-    this._raw = {};
+    this._ = {};
   }
 
-  sc.lang.klass.define(&quot;Dictionary&quot;, &quot;Set&quot;, {
-    constructor: SCDictionary,
-    NotYetImplemented: [
-      &quot;$newFrom&quot;,
-      &quot;at&quot;,
-      &quot;atFail&quot;,
-      &quot;matchAt&quot;,
-      &quot;trueAt&quot;,
-      &quot;add&quot;,
-      &quot;put&quot;,
-      &quot;putAll&quot;,
-      &quot;putPairs&quot;,
-      &quot;getPairs&quot;,
-      &quot;associationAt&quot;,
-      &quot;associationAtFail&quot;,
-      &quot;keys&quot;,
-      &quot;values&quot;,
-      &quot;includes&quot;,
-      &quot;includesKey&quot;,
-      &quot;removeAt&quot;,
-      &quot;removeAtFail&quot;,
-      &quot;remove&quot;,
-      &quot;removeFail&quot;,
-      &quot;keysValuesDo&quot;,
-      &quot;keysValuesChange&quot;,
-      &quot;do&quot;,
-      &quot;keysDo&quot;,
-      &quot;associationsDo&quot;,
-      &quot;pairsDo&quot;,
-      &quot;collect&quot;,
-      &quot;select&quot;,
-      &quot;reject&quot;,
-      &quot;invert&quot;,
-      &quot;merge&quot;,
-      &quot;blend&quot;,
-      &quot;findKeyForValue&quot;,
-      &quot;sortedKeysValuesDo&quot;,
-      &quot;choose&quot;,
-      &quot;order&quot;,
-      &quot;powerset&quot;,
-      &quot;transformEvent&quot;,
-      &quot;embedInStream&quot;,
-      &quot;asSortedArray&quot;,
-      &quot;asKeyValuePairs&quot;,
-      &quot;keysValuesArrayDo&quot;,
-      &quot;grow&quot;,
-      &quot;fixCollisionsFrom&quot;,
-      &quot;scanFor&quot;,
-      &quot;storeItemsOn&quot;,
-      &quot;printItemsOn&quot;,
-    ]
+  sc.lang.klass.define(SCDictionary, &quot;Dictionary : Set&quot;, function() {
+    // TODO: implements $newFrom
+    // TODO: implements at
+    // TODO: implements atFail
+    // TODO: implements matchAt
+    // TODO: implements trueAt
+    // TODO: implements add
+    // TODO: implements put
+    // TODO: implements putAll
+    // TODO: implements putPairs
+    // TODO: implements getPairs
+    // TODO: implements associationAt
+    // TODO: implements associationAtFail
+    // TODO: implements keys
+    // TODO: implements values
+    // TODO: implements includes
+    // TODO: implements includesKey
+    // TODO: implements removeAt
+    // TODO: implements removeAtFail
+    // TODO: implements remove
+    // TODO: implements removeFail
+    // TODO: implements keysValuesDo
+    // TODO: implements keysValuesChange
+    // TODO: implements do
+    // TODO: implements keysDo
+    // TODO: implements associationsDo
+    // TODO: implements pairsDo
+    // TODO: implements collect
+    // TODO: implements select
+    // TODO: implements reject
+    // TODO: implements invert
+    // TODO: implements merge
+    // TODO: implements blend
+    // TODO: implements findKeyForValue
+    // TODO: implements sortedKeysValuesDo
+    // TODO: implements choose
+    // TODO: implements order
+    // TODO: implements powerset
+    // TODO: implements transformEvent
+    // TODO: implements embedInStream
+    // TODO: implements asSortedArray
+    // TODO: implements asKeyValuePairs
+    // TODO: implements keysValuesArrayDo
+    // TODO: implements grow
+    // TODO: implements fixCollisionsFrom
+    // TODO: implements scanFor
+    // TODO: implements storeItemsOn
+    // TODO: implements printItemsOn
   });
 
-  function IdentityDictionary() {
+  function SCIdentityDictionary() {
     this.__initializeWith__(&quot;Dictionary&quot;);
   }
 
-  sc.lang.klass.define(&quot;IdentityDictionary&quot;, &quot;Dictionary&quot;, {
-    constructor: IdentityDictionary,
-    NotYetImplemented: [
-      &quot;at&quot;,
-      &quot;put&quot;,
-      &quot;putGet&quot;,
-      &quot;includesKey&quot;,
-      &quot;findKeyForValue&quot;,
-      &quot;scanFor&quot;,
-      &quot;freezeAsParent&quot;,
-      &quot;insertParent&quot;,
-      &quot;storeItemsOn&quot;,
-      &quot;doesNotUnderstand&quot;,
-      &quot;nextTimeOnGrid&quot;,
-      &quot;asQuant&quot;,
-      &quot;timingOffset&quot;,
-    ]
+  sc.lang.klass.define(SCIdentityDictionary, &quot;IdentityDictionary : Dictionary&quot;, function() {
+    // TODO: implements at
+    // TODO: implements put
+    // TODO: implements putGet
+    // TODO: implements includesKey
+    // TODO: implements findKeyForValue
+    // TODO: implements scanFor
+    // TODO: implements freezeAsParent
+    // TODO: implements insertParent
+    // TODO: implements storeItemsOn
+    // TODO: implements doesNotUnderstand
+    // TODO: implements nextTimeOnGrid
+    // TODO: implements asQuant
+    // TODO: implements timingOffset
   });
-
-  $SC.Dictionary = function(value) {
-    var instance = new SCDictionary();
-    instance._raw = value;
-    return instance;
-  };
 
 })(sc);</textarea>
   </div>

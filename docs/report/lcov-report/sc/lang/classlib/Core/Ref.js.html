@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Core/Ref.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(31 / 31)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(2 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(2 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(10 / 10)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(31 / 31)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -250,31 +250,103 @@
 32
 33
 34
-35</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -289,32 +361,68 @@
 &nbsp;
   require("./Object");
 &nbsp;
-  function SCRef() {
+  var $SC = sc.lang.$SC;
+&nbsp;
+  function SCRef(args) {
     this.__initializeWith__("Object");
+    this._value = args[0] || $SC.Nil();
   }
 &nbsp;
-  sc.lang.klass.define("Ref", "Object", {
-    constructor: SCRef,
-    NotYetImplemented: [
-      "set",
-      "get",
-      "dereference",
-      "asRef",
-      "valueArray",
-      "valueEnvir",
-      "valueArrayEnvir",
-      "next",
-      "embedInStream",
-      "asUGenInput",
-      "printOn",
-      "storeOn",
-      "at",
-      "put",
-      "seq",
-      "asControlInput",
-      "asBufWithValues",
-      "multichannelExpandRef",
-    ]
+  sc.lang.klass.define(SCRef, "Ref : AbstractFunction", function(spec, utils) {
+    spec.valueOf = function() {
+      return this._value.valueOf();
+    };
+&nbsp;
+    spec.value = function() {
+      return this._value;
+    };
+&nbsp;
+    spec.value_ = function($value) {
+      this._value = $value;
+      return this;
+    };
+&nbsp;
+    // $new
+&nbsp;
+    spec.set = function($thing) {
+      $thing = utils.defaultValue$Nil($thing);
+      this._value = $thing;
+      return this;
+    };
+&nbsp;
+    spec.get = function() {
+      return this._value;
+    };
+&nbsp;
+    spec.dereference = spec.value;
+&nbsp;
+    spec.asRef = utils.nop;
+&nbsp;
+    spec.valueArray = spec.value;
+&nbsp;
+    spec.valueEnvir = spec.value;
+&nbsp;
+    spec.valueArrayEnvir = spec.value;
+&nbsp;
+    spec.next = spec.value;
+&nbsp;
+    spec.asUGenInput = utils.nop;
+&nbsp;
+    // TODO: implements printOn
+    // TODO: implements storeOn
+&nbsp;
+    spec.at = function($key) {
+      return this._value.at($key);
+    };
+&nbsp;
+    spec.put = function($key, $val) {
+      return this._value.put($key, $val);
+    };
+&nbsp;
+    // TODO: implements seq
+    // TODO: implements asControlInput
+    // TODO: implements asBufWithValues
+    // TODO: implements multichannelExpandRef
   });
 &nbsp;
 })(sc);
@@ -323,7 +431,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 24 2014 23:10:40 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 25 2014 19:28:25 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

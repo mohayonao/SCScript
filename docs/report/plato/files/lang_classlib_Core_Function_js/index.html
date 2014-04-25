@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">130.40</p>
+      <p class="stat">128.43</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">76</p>
+      <p class="stat">141</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">7.20</p>
+      <p class="stat">28.23</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.28</p>
+      <p class="stat">0.85</p>
     </div>
   </div>
 </div>
@@ -95,75 +95,140 @@
 
   require(&quot;./AbstractFunction&quot;);
 
+  var slice = [].slice;
   var $SC = sc.lang.$SC;
 
-  function SCFunction() {
-    this.__initializeWith__(&quot;AbstractFunction&quot;);
-    this._class = $SC.Class(&quot;Function&quot;);
-    // istanbul ignore next
-    this._raw = function() {};
-  }
+  sc.lang.klass.refine(&quot;Function&quot;, function(spec, utils) {
+    var bool = utils.bool;
+    var SCArray = $SC.Class(&quot;Array&quot;);
 
-  sc.lang.klass.define(&quot;Function&quot;, &quot;AbstractFunction&quot;, {
-    constructor: SCFunction,
-    $new: function() {
+    // TODO: implements def
+
+    spec.$new = function() {
       throw new Error(&quot;Function.new is illegal, should use literal.&quot;);
-    },
-    NotYetImplemented: [
-      &quot;isFunction&quot;,
-      &quot;isClosed&quot;,
-      &quot;storeOn&quot;,
-      &quot;archiveAsCompileString&quot;,
-      &quot;archiveAsObject&quot;,
-      &quot;checkCanArchive&quot;,
-      &quot;shallowCopy&quot;,
-      &quot;choose&quot;,
-      &quot;update&quot;,
-      &quot;value&quot;,
-      &quot;valueArray&quot;,
-      &quot;valueEnvir&quot;,
-      &quot;valueArrayEnvir&quot;,
-      &quot;functionPerformList&quot;,
-      &quot;valueWithEnvir&quot;,
-      &quot;performWithEnvir&quot;,
-      &quot;performKeyValuePairs&quot;,
-      &quot;numArgs&quot;,
-      &quot;numVars&quot;,
-      &quot;varArgs&quot;,
-      &quot;loop&quot;,
-      &quot;block&quot;,
-      &quot;asRoutine&quot;,
-      &quot;dup&quot;,
-      &quot;sum&quot;,
-      &quot;defer&quot;,
-      &quot;thunk&quot;,
-      &quot;transformEvent&quot;,
-      &quot;set&quot;,
-      &quot;get&quot;,
-      &quot;fork&quot;,
-      &quot;forkIfNeeded&quot;,
-      &quot;awake&quot;,
-      &quot;cmdPeriod&quot;,
-      &quot;bench&quot;,
-      &quot;protect&quot;,
-      &quot;try&quot;,
-      &quot;prTry&quot;,
-      &quot;handleError&quot;,
-      &quot;case&quot;,
-      &quot;matchItem&quot;,
-      &quot;performDegreeToKey&quot;,
-      &quot;flop&quot;,
-      &quot;envirFlop&quot;,
-      &quot;makeFlopFunc&quot;,
-      &quot;inEnvir&quot;,
-    ]
-  });
+    };
 
-  $SC.Function = function(value) {
-    var instance = new SCFunction();
-    instance._raw = value;
-    return instance;
-  };
+    spec.isFunction = utils.alwaysReturn$True;
+
+    // TODO: implements isClosed
+
+    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsObject = utils.alwaysReturn$True;
+
+    // TODO: implements checkCanArchive
+
+    spec.shallowCopy = utils.nop;
+
+    spec.choose = function() {
+      return this.value();
+    };
+
+    spec.update = function() {
+      return this._.apply(this, arguments);
+    };
+
+    spec.value = function() {
+      return this._.apply(this, arguments);
+    };
+
+    spec.valueArray = function($args) {
+      $args = utils.defaultValue$Nil($args);
+      return this._.apply(this, $args.asArray()._);
+    };
+
+    // TODO: implements valueEnvir
+    // TODO: implements valueArrayEnvir
+    // TODO: implements functionPerformList
+    // TODO: implements valueWithEnvir
+    // TODO: implements performWithEnvir
+    // TODO: implements performKeyValuePairs
+    // TODO: implements numArgs
+    // TODO: implements numVars
+    // TODO: implements varArgs
+    // TODO: implements loop
+    // TODO: implements block
+
+    spec.asRoutine = function() {
+      return $SC.Class(&quot;Routine&quot;).new(this);
+    };
+
+    spec.dup = function($n) {
+      $n = utils.defaultValue$Integer($n, 2);
+      return SCArray.fill($n, this);
+    };
+
+    // TODO: implements sum
+    // TODO: implements defer
+    // TODO: implements thunk
+    // TODO: implements transformEvent
+    // TODO: implements set
+    // TODO: implements get
+    // TODO: implements fork
+    // TODO: implements forkIfNeeded
+    // TODO: implements awake
+    // TODO: implements cmdPeriod
+    // TODO: implements bench
+    // TODO: implements protect
+    // TODO: implements try
+    // TODO: implements prTry
+    // TODO: implements handleError
+
+    spec.case = function() {
+      var args, i, imax;
+
+      args = slice.call(arguments);
+      args.unshift(this);
+
+      for (i = 0, imax = args.length &gt;&gt; 1; i &lt; imax; ++i) {
+        if (bool(args[i * 2].value())) {
+          return args[i * 2 + 1].value();
+        }
+      }
+
+      if (args.length % 2 === 1) {
+        return args[args.length - 1].value();
+      }
+
+      return utils.nilInstance;
+    };
+
+    spec.r = function() {
+      return $SC.Class(&quot;Routine&quot;).new(this);
+    };
+
+    spec.p = function() {
+      return $SC.Class(&quot;Prout&quot;).new(this);
+    };
+
+    // TODO: implements matchItem
+    // TODO: implements performDegreeToKey
+
+    spec.flop = function() {
+      var $this = this;
+      // if(def.argNames.isNil) { ^this };
+      return $SC.Function(function() {
+        var $$args = $SC.Array(slice.call(arguments));
+        return $$args.flop().collect($SC.Function(function($_) {
+          return $this.valueArray($_);
+        }));
+      });
+    };
+
+    // TODO: implements envirFlop
+    // TODO: implements makeFlopFunc
+    // TODO: implements inEnvir
+
+    spec.while = function($body) {
+      $body = utils.defaultValue$Nil($body);
+
+      sc.lang.iterator.execute(
+        sc.lang.iterator.function$while(this),
+        $body
+      );
+
+      return this;
+    };
+  });
 
 })(sc);</textarea>
   </div>

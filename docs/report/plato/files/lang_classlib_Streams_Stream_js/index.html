@@ -45,7 +45,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">124.86</p>
+      <p class="stat">148.39</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">4.52</p>
+      <p class="stat">3.08</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.28</p>
+      <p class="stat">0.10</p>
     </div>
   </div>
 </div>
@@ -99,80 +99,80 @@
     this.__initializeWith__(&quot;AbstractFunction&quot;);
   }
 
-  sc.lang.klass.define(&quot;Stream&quot;, &quot;AbstractFunction&quot;, {
-    constructor: SCStream,
-    NotYetImplemented: [
-      &quot;parent&quot;,
-      &quot;next&quot;,
-      &quot;iter&quot;,
-      &quot;value&quot;,
-      &quot;valueArray&quot;,
-      &quot;nextN&quot;,
-      &quot;all&quot;,
-      &quot;put&quot;,
-      &quot;putN&quot;,
-      &quot;putAll&quot;,
-      &quot;do&quot;,
-      &quot;subSample&quot;,
-      &quot;loop&quot;,
-      &quot;generate&quot;,
-      &quot;collect&quot;,
-      &quot;reject&quot;,
-      &quot;select&quot;,
-      &quot;dot&quot;,
-      &quot;interlace&quot;,
-      &quot;appendStream&quot;,
-      &quot;collate&quot;,
-      &quot;composeUnaryOp&quot;,
-      &quot;composeBinaryOp&quot;,
-      &quot;reverseComposeBinaryOp&quot;,
-      &quot;composeNAryOp&quot;,
-      &quot;embedInStream&quot;,
-      &quot;while&quot;,
-      &quot;asEventStreamPlayer&quot;,
-      &quot;play&quot;,
-      &quot;trace&quot;,
-      &quot;constrain&quot;,
-      &quot;repeat&quot;,
-    ]
+  sc.lang.klass.define(SCStream, &quot;Stream : AbstractFunction&quot;, function() {
+    // TODO: implements parent
+    // TODO: implements next
+    // TODO: implements iter
+    // TODO: implements value
+    // TODO: implements valueArray
+    // TODO: implements nextN
+    // TODO: implements all
+    // TODO: implements put
+    // TODO: implements putN
+    // TODO: implements putAll
+    // TODO: implements do
+    // TODO: implements subSample
+    // TODO: implements loop
+    // TODO: implements generate
+    // TODO: implements collect
+    // TODO: implements reject
+    // TODO: implements select
+    // TODO: implements dot
+    // TODO: implements interlace
+    // TODO: implements ++
+    // TODO: implements appendStream
+    // TODO: implements collate
+    // TODO: implements &lt;&gt;
+    // TODO: implements composeUnaryOp
+    // TODO: implements composeBinaryOp
+    // TODO: implements reverseComposeBinaryOp
+    // TODO: implements composeNAryOp
+    // TODO: implements embedInStream
+    // TODO: implements while
+    // TODO: implements asEventStreamPlayer
+    // TODO: implements play
+    // TODO: implements trace
+    // TODO: implements constrain
+    // TODO: implements repeat
   });
 
   function SCPauseStream() {
     this.__initializeWith__(&quot;Stream&quot;);
   }
 
-  sc.lang.klass.define(&quot;PauseStream&quot;, &quot;Stream&quot;, {
-    constructor: SCPauseStream,
-    NotYetImplemented: [
-      &quot;isPlaying&quot;,
-      &quot;play&quot;,
-      &quot;reset&quot;,
-      &quot;stop&quot;,
-      &quot;prStop&quot;,
-      &quot;removedFromScheduler&quot;,
-      &quot;streamError&quot;,
-      &quot;wasStopped&quot;,
-      &quot;canPause&quot;,
-      &quot;pause&quot;,
-      &quot;resume&quot;,
-      &quot;refresh&quot;,
-      &quot;start&quot;,
-      &quot;stream_&quot;,
-      &quot;next&quot;,
-      &quot;awake&quot;,
-      &quot;threadPlayer&quot;,
-    ]
+  sc.lang.klass.define(SCPauseStream, &quot;PauseStream : Stream&quot;, function() {
+    // TODO: implements stream
+    // TODO: implements originalStream
+    // TODO: implements clock
+    // TODO: implements nextBeat
+    // TODO: implements streamHasEnded
+    // TODO: implements streamHasEnded_
+
+    // TODO: implements isPlaying
+    // TODO: implements play
+    // TODO: implements reset
+    // TODO: implements stop
+    // TODO: implements prStop
+    // TODO: implements removedFromScheduler
+    // TODO: implements streamError
+    // TODO: implements wasStopped
+    // TODO: implements canPause
+    // TODO: implements pause
+    // TODO: implements resume
+    // TODO: implements refresh
+    // TODO: implements start
+    // TODO: implements stream_
+    // TODO: implements next
+    // TODO: implements awake
+    // TODO: implements threadPlayer
   });
 
   function SCTask() {
     this.__initializeWith__(&quot;PauseStream&quot;);
   }
 
-  sc.lang.klass.define(&quot;Task&quot;, &quot;PauseStream&quot;, {
-    constructor: SCTask,
-    NotYetImplemented: [
-      &quot;storeArgs&quot;,
-    ]
+  sc.lang.klass.define(SCTask, &quot;Task : PauseStream&quot;, function() {
+    // TODO: implements storeArgs
   });
 
 })(sc);</textarea>

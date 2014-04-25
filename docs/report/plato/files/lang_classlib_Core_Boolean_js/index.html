@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.59</p>
+      <p class="stat">133.77</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">110</p>
+      <p class="stat">116</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">17.33</p>
+      <p class="stat">18.33</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.52</p>
+      <p class="stat">0.73</p>
     </div>
   </div>
 </div>
@@ -97,107 +97,113 @@
 
   var $SC = sc.lang.$SC;
 
-  var trueInstance = null;
-  var falseInstance = null;
+  sc.lang.klass.refine(&quot;Boolean&quot;, function(spec, utils) {
+    spec.__bool__ = function() {
+      return this._;
+    };
 
-  function SCBoolean() {
-    this.__initializeWith__(&quot;Object&quot;);
-  }
+    spec.toString = function() {
+      return String(this._);
+    };
 
-  sc.lang.klass.define(&quot;Boolean&quot;, &quot;Object&quot;, {
-    constructor: SCBoolean,
-    $new: function() {
+    spec.$new = function() {
       throw new Error(&quot;Boolean.new is illegal, should use literal.&quot;);
-    },
-    NotYetImplemented: [
-      &quot;xor&quot;,
-      &quot;if&quot;,
-      &quot;not&quot;,
-      &quot;and&quot;,
-      &quot;or&quot;,
-      &quot;nand&quot;,
-      &quot;asInteger&quot;,
-      &quot;binaryValue&quot;,
-      &quot;asBoolean&quot;,
-      &quot;booleanValue&quot;,
-      &quot;keywordWarnings&quot;,
-      &quot;trace&quot;,
-      &quot;printOn&quot;,
-      &quot;storeOn&quot;,
-      &quot;archiveAsCompileString&quot;,
-      &quot;while&quot;,
-    ]
+    };
+
+    spec.xor = function($bool) {
+      return $SC.Boolean(this === $bool).not();
+    };
+
+    // TODO: implements if
+    // TODO: implements nop
+    // TODO: implements &amp;&amp;
+    // TODO: implements ||
+    // TODO: implements and
+    // TODO: implements or
+    // TODO: implements nand
+    // TODO: implements asInteger
+    // TODO: implements binaryValue
+
+    spec.asBoolean = utils.nop;
+    spec.booleanValue = utils.nop;
+
+    // TODO: implements keywordWarnings
+    // TODO: implements trace
+    // TODO: implements printOn
+    // TODO: implements storeOn
+
+    spec.archiveAsCompileString = utils.alwaysReturn$True;
+
+    spec.while = function() {
+      var msg = &quot;While was called with a fixed (unchanging) Boolean as the condition. &quot;;
+      msg += &quot;Please supply a Function instead.&quot;;
+      throw new Error(msg);
+    };
+
+    spec.shallowCopy = utils.nop;
   });
 
-  function SCTrue() {
-    if (trueInstance) {
-      return trueInstance;
-    }
-    this.__initializeWith__(&quot;Boolean&quot;);
-    this._class = $SC.Class(&quot;True&quot;);
-    this._raw = true;
-    trueInstance = this;
-  }
-
-  sc.lang.klass.define(&quot;True&quot;, &quot;Boolean&quot;, {
-    constructor: SCTrue,
-    $new: function() {
+  sc.lang.klass.refine(&quot;True&quot;, function(spec, utils) {
+    spec.$new = function() {
       throw new Error(&quot;True.new is illegal, should use literal.&quot;);
-    },
-    __tag__: function() {
-      return sc.C.TAG_TRUE;
-    },
-    NotYetImplemented: [
-      &quot;if&quot;,
-      &quot;not&quot;,
-      &quot;and&quot;,
-      &quot;or&quot;,
-      &quot;nand&quot;,
-      &quot;asInteger&quot;,
-      &quot;binaryValue&quot;,
-    ]
+    };
+
+    spec.if = function($trueFunc) {
+      $trueFunc = utils.defaultValue$Nil($trueFunc);
+      return $trueFunc.value();
+    };
+
+    spec.not = utils.alwaysReturn$False;
+
+    spec[&quot;&amp;&amp;&quot;] = function($that) {
+      return $that.value();
+    };
+
+    spec[&quot;||&quot;] = utils.nop;
+
+    spec.and = function($that) {
+      $that = utils.defaultValue$Nil($that);
+      return $that.value();
+    };
+    spec.or = spec[&quot;||&quot;];
+
+    spec.nand = function($that) {
+      $that = utils.defaultValue$Nil($that);
+      return $that.value().not();
+    };
+
+    spec.asInteger = utils.alwaysReturn$Integer_1;
+    spec.binaryValue = utils.alwaysReturn$Integer_1;
   });
 
-  function SCFalse() {
-    if (falseInstance) {
-      return falseInstance;
-    }
-    this.__initializeWith__(&quot;Boolean&quot;);
-    this._class = $SC.Class(&quot;False&quot;);
-    this._raw = false;
-    falseInstance = this;
-  }
-
-  sc.lang.klass.define(&quot;False&quot;, &quot;Boolean&quot;, {
-    constructor: SCFalse,
-    $new: function() {
+  sc.lang.klass.refine(&quot;False&quot;, function(spec, utils) {
+    spec.$new = function() {
       throw new Error(&quot;False.new is illegal, should use literal.&quot;);
-    },
-    __tag__: function() {
-      return sc.C.TAG_FALSE;
-    },
-    NotYetImplemented: [
-      &quot;if&quot;,
-      &quot;not&quot;,
-      &quot;and&quot;,
-      &quot;or&quot;,
-      &quot;nand&quot;,
-      &quot;asInteger&quot;,
-      &quot;binaryValue&quot;,
-    ]
+    };
+
+    spec.if = function($trueFunc, $falseFunc) {
+      return $falseFunc.value();
+    };
+
+    spec.not = utils.alwaysReturn$True;
+
+    spec[&quot;&amp;&amp;&quot;] = utils.nop;
+
+    spec[&quot;||&quot;] = function($that) {
+      return $that.value();
+    };
+
+    spec.and = utils.nop;
+
+    spec.or = function($that) {
+      $that = utils.defaultValue$Nil($that);
+      return $that.value();
+    };
+
+    spec.nand = utils.alwaysReturn$True;
+    spec.asInteger = utils.alwaysReturn$Integer_0;
+    spec.binaryValue = utils.alwaysReturn$Integer_0;
   });
-
-  $SC.Boolean = function(value) {
-    return value ? $SC.True() : $SC.False();
-  };
-
-  $SC.True = function() {
-    return new SCTrue();
-  };
-
-  $SC.False = function() {
-    return new SCFalse();
-  };
 
 })(sc);</textarea>
   </div>

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">131.64</p>
+      <p class="stat">135.31</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">22</p>
+      <p class="stat">66</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">3.86</p>
+      <p class="stat">33.52</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.06</p>
+      <p class="stat">0.53</p>
     </div>
   </div>
 </div>
@@ -95,20 +95,64 @@
 
   require(&quot;../Core/Object&quot;);
 
-  function SCMagnitude() {
-    this.__initializeWith__(&quot;Object&quot;);
-  }
+  var $SC = sc.lang.$SC;
 
-  sc.lang.klass.define(&quot;Magnitude&quot;, &quot;Object&quot;, {
-    constructor: SCMagnitude,
-    NotYetImplemented: [
-      &quot;hash&quot;,
-      &quot;exclusivelyBetween&quot;,
-      &quot;inclusivelyBetween&quot;,
-      &quot;min&quot;,
-      &quot;max&quot;,
-      &quot;clip&quot;,
-    ]
+  sc.lang.klass.refine(&quot;Magnitude&quot;, function(spec, utils) {
+    spec[&quot;==&quot;] = function($aMagnitude) {
+      return $SC.Boolean(this.valueOf() === $aMagnitude.valueOf());
+    };
+
+    spec[&quot;!=&quot;] = function($aMagnitude) {
+      return $SC.Boolean(this.valueOf() !== $aMagnitude.valueOf());
+    };
+
+    spec.hash = function() {
+      return this._subclassResponsibility(&quot;hash&quot;);
+    };
+
+    spec[&quot;&lt;&quot;] = function($aMagnitude) {
+      return $SC.Boolean(this &lt; $aMagnitude);
+    };
+
+    spec[&quot;&gt;&quot;] = function($aMagnitude) {
+      return $SC.Boolean(this &gt; $aMagnitude);
+    };
+
+    spec[&quot;&lt;=&quot;] = function($aMagnitude) {
+      return $SC.Boolean(this &lt;= $aMagnitude);
+    };
+
+    spec[&quot;&gt;=&quot;] = function($aMagnitude) {
+      return $SC.Boolean(this &gt;= $aMagnitude);
+    };
+
+    spec.exclusivelyBetween = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+      return $SC.Boolean($lo &lt; this &amp;&amp; this &lt; $hi);
+    };
+
+    spec.inclusivelyBetween = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+      return $SC.Boolean($lo &lt;= this &amp;&amp; this &lt;= $hi);
+    };
+
+    spec.min = function($aMagnitude) {
+      $aMagnitude = utils.defaultValue$Nil($aMagnitude);
+      return this &lt;= $aMagnitude ? this : $aMagnitude;
+    };
+
+    spec.max = function($aMagnitude) {
+      $aMagnitude = utils.defaultValue$Nil($aMagnitude);
+      return this &gt;= $aMagnitude ? this : $aMagnitude;
+    };
+
+    spec.clip = function($lo, $hi) {
+      $lo = utils.defaultValue$Nil($lo);
+      $hi = utils.defaultValue$Nil($hi);
+      return this &lt;= $lo ? $lo : this &gt;= $hi ? $hi : this;
+    };
   });
 
 })(sc);</textarea>

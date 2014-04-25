@@ -18,39 +18,19 @@
       SCScript.install(function(sc) {
         window.sc = sc;
       });
-(function(global) {
-  "use strict";
-
-  var C = {
-    TAG_NOT_INITIALIZED: 0x00,
-    TAG_OBJ: 0x01,
-    TAG_INT: 0x02,
-    TAG_SYM: 0x03,
-    TAG_CHAR: 0x04,
-    TAG_NIL: 0x05,
-    TAG_FALSE: 0x06,
-    TAG_TRUE: 0x07,
-    TAG_PTR: 0x08,
-    TAG_FLOAT: 0x09,
-    TAG_STR: 0x0a,
-    TAG_UNUSED: 0xff,
-  };
-
-  if (typeof global.sc !== "undefined") {
-    global.sc.C = C;
-  }
-  if (typeof module !== "undefined") {
-    module.exports = C;
-  }
-
-})(this.self||global);
+    </script>
+    <script>
       mocha.setup("bdd");
       $(function() {
         mocha.run();
       });
     </script>
+    <script src="../../../src/const.js"></script>
+    <script src="../../../src/sc/test/utils.js"></script>
     <script src="../../../src/sc/sc_test.js"></script>
     <script src="../../../src/sc/lang/dollarSC_test.js"></script>
+    <script src="../../../src/sc/lang/fn_test.js"></script>
+    <script src="../../../src/sc/lang/iterator_test.js"></script>
     <script src="../../../src/sc/lang/klass_test.js"></script>
     <script src="../../../src/sc/lang/classlib/Collections/Array_test.js"></script>
     <script src="../../../src/sc/lang/classlib/Collections/ArrayedCollection_test.js"></script>
@@ -77,6 +57,8 @@
     <script src="../../../src/sc/lang/classlib/Math/Number_test.js"></script>
     <script src="../../../src/sc/lang/classlib/Math/SimpleNumber_test.js"></script>
     <script src="../../../src/sc/lang/classlib/Streams/Stream_test.js"></script>
+    <script src="../../../src/sc/libs/mathlib_test.js"></script>
+    <script src="../../../src/sc/libs/random_test.js"></script>
   </head>
   <body>
     <div id="mocha"></div>

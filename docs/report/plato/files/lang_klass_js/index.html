@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">120.14</p>
+      <p class="stat">121.17</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">222</p>
+      <p class="stat">549</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">49.34</p>
+      <p class="stat">61.62</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.00</p>
+      <p class="stat">5.10</p>
     </div>
   </div>
 </div>
@@ -98,9 +98,18 @@
 
   sc.lang.klass = {};
 
+  var slice = [].slice;
   var $SC = sc.lang.$SC;
 
-  var metaClasses = {}, classes = {};
+  var metaClasses = {};
+  var classes = {};
+  var utils = {};
+
+  var createClassInstance = function(MetaSpec) {
+    var instance = new SCClass();
+    instance._MetaSpec = MetaSpec;
+    return instance;
+  };
 
   var extend = function(constructor, superMetaClass) {
     function F() {}
@@ -113,85 +122,80 @@
     function MetaSpec() {}
     MetaSpec.prototype = new Meta_F();
 
-    constructor.metaClass = new SCClass(MetaSpec);
+    constructor.metaClass = createClassInstance(MetaSpec);
   };
 
-  var throwError = {
-    NotYetImplemented: function(id) {
-      return function() {
-        throw new Error(&quot;NotYetImplemented: &quot; + id);
-      };
-    }
-  };
-
-  var def = function(className, spec, classMethods, instanceMethods, opts) {
+  var def = function(className, fn, classMethods, instanceMethods, opts) {
 
     var setMethod = function(methods, methodName, func) {
-      var dot;
-
-      if (methods.hasOwnProperty(methodName) &amp;&amp; !(opts &amp;&amp; opts.force)) {
-        dot = methods === classMethods ? &quot;.&quot; : &quot;#&quot;;
-        throw new Error(className + dot + methodName + &quot; is already defined.&quot;);
+      var bond;
+      if (methods.hasOwnProperty(methodName) &amp;&amp; !opts.force) {
+        bond = methods === classMethods ? &quot;.&quot; : &quot;#&quot;;
+        throw new Error(
+          &quot;sc.lang.klass.refine: &quot; +
+            className + bond + methodName + &quot; is already defined.&quot;
+        );
       }
-
       methods[methodName] = func;
     };
 
+    var spec = {};
+    if (typeof fn === &quot;function&quot;) {
+      fn(spec, utils);
+    } else {
+      spec = fn;
+    }
+
     Object.keys(spec).forEach(function(methodName) {
-      var thrower;
-
-      if (methodName === &quot;constructor&quot;) {
-        return;
-      }
-
-      if (throwError.hasOwnProperty(methodName)) {
-        thrower = throwError[methodName];
-        spec[methodName].forEach(function(methodName) {
-          if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
-            methodName = methodName.substr(1);
-            setMethod(classMethods, methodName, thrower(className + &quot;.&quot; + methodName));
-          } else {
-            setMethod(instanceMethods, methodName, thrower(className + &quot;#&quot; + methodName));
-          }
-        });
+      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
+        setMethod(classMethods, methodName.substr(1), spec[methodName]);
       } else {
-        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
-          setMethod(classMethods, methodName.substr(1), spec[methodName]);
-        } else {
-          setMethod(instanceMethods, methodName, spec[methodName]);
-        }
+        setMethod(instanceMethods, methodName, spec[methodName]);
       }
     });
   };
 
-  sc.lang.klass.define = function(className, superClassName, spec, opts) {
-    var ch0, constructor, metaClass;
+  sc.lang.klass.define = function(constructor, className, spec) {
+    var items, superClassName, ch0, metaClass, newClass;
+
+    if (typeof constructor !== &quot;function&quot;) {
+      throw new Error(
+        &quot;sc.lang.klass.define: &quot; +
+          &quot;first argument must be a constructor, but got: &quot; + typeof(constructor)
+      );
+    }
+
+    if (typeof className !== &quot;string&quot;) {
+      throw new Error(
+        &quot;sc.lang.klass.define: &quot; +
+          &quot;second argument must be a string, but got: &quot; + String(className)
+      );
+    }
+
+    items = className.split(&quot;:&quot;);
+    className = items[0].trim();
+    superClassName = (items[1] || &quot;Object&quot;).trim();
 
     ch0 = className.charCodeAt(0);
     if (ch0 &lt; 0x41 || 0x5a &lt; ch0) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
-        &quot;sc.lang.klass.define: classname should be CamelCase, but got &#039;&quot; + className + &quot;&#039;&quot;
+        &quot;sc.lang.klass.define: &quot; +
+          &quot;classname should be CamelCase, but got &#039;&quot; + className + &quot;&#039;&quot;
       );
     }
 
-    if (metaClasses.hasOwnProperty(className) &amp;&amp; !(opts &amp;&amp; opts.force)) {
+    if (metaClasses.hasOwnProperty(className)) {
       throw new Error(
-        &quot;sc.lang.klass.define: class &#039;&quot; + className + &quot;&#039; is already registered.&quot;
+        &quot;sc.lang.klass.define: &quot; +
+          &quot;class &#039;&quot; + className + &quot;&#039; is already registered.&quot;
       );
     }
-
-    spec = spec || {};
-    if (!spec.hasOwnProperty(&quot;constructor&quot;)) {
-      throw new Error(
-        &quot;sc.lang.klass.define: class &#039;&quot; + className + &quot;&#039; must have constructor.&quot;
-      );
-    }
-    constructor = spec.constructor;
 
     if (className !== &quot;Object&quot;) {
       if (!metaClasses.hasOwnProperty(superClassName)) {
         throw new Error(
-          &quot;sc.lang.klass.define: superclass &#039;&quot; + superClassName + &quot;&#039; is not registered.&quot;
+          &quot;sc.lang.klass.define: &quot; +
+            &quot;superclass &#039;&quot; + superClassName + &quot;&#039; is not registered.&quot;
         );
       }
       extend(constructor, metaClasses[superClassName]);
@@ -199,13 +203,27 @@
 
     metaClass = constructor.metaClass;
 
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, opts);
+    spec = spec || {};
+    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, {});
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = &quot;Meta_&quot; + className;
+
+    newClass = new metaClass._MetaSpec();
+    newClass._name = className;
+    newClass._Spec = metaClass._Spec;
+    newClass._Spec.prototype.__class = newClass;
+    newClass._Spec.prototype.__Spec  = newClass._Spec;
+
+    classes[&quot;Meta_&quot; + className] = metaClass;
+    classes[className] = newClass;
+
+    if (newClass.initClass) {
+      newClass.initClass();
+    }
+
     metaClasses[className] = metaClass;
-    classes[className] = null;
   };
 
   sc.lang.klass.refine = function(className, spec, opts) {
@@ -213,103 +231,412 @@
 
     if (!metaClasses.hasOwnProperty(className)) {
       throw new Error(
-        &quot;sc.lang.klass.refine: class &#039;&quot; + className + &quot;&#039; is not registered.&quot;
+        &quot;sc.lang.klass.refine: &quot; +
+          &quot;class &#039;&quot; + className + &quot;&#039; is not registered.&quot;
       );
     }
     metaClass = metaClasses[className];
-    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts);
+    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts || {});
   };
 
   sc.lang.klass.get = function(name) {
-    var metaClass;
-
     if (!classes[name]) {
-      if (!metaClasses.hasOwnProperty(name)) {
-        throw new Error(
-          &quot;sc.lang.klass.get: class &#039;&quot; + name + &quot;&#039; not registered.&quot;
-        );
-      }
-      metaClass = metaClasses[name];
-      classes[name] = new metaClass._MetaSpec();
-      classes[name]._name = name;
-      classes[name]._Spec = metaClass._Spec;
-      classes[name].initClass();
+      throw new Error(
+        &quot;sc.lang.klass.get: &quot; +
+          &quot;class &#039;&quot; + name + &quot;&#039; is not registered.&quot;
+      );
     }
-
     return classes[name];
   };
 
-  function SCObject() {
-    this._raw = this;
-  }
-  SCObject.metaClass = new SCClass();
-  sc.lang.klass.define(&quot;Object&quot;, null, { constructor: SCObject });
+  sc.lang.klass.exists = function(name) {
+    return !!classes[name];
+  };
 
-  function SCClass(MetaSpec) { // jshint ignore:line
-    this._raw = this;
+  // basic classes
+  function SCObject() {
+    this._ = this;
+  }
+
+  function SCClass() {
+    this._ = this;
     this._name = &quot;Class&quot;;
-    this._Spec = SCClass;
-    this._MetaSpec = MetaSpec || function() {};
+    this._Spec = null;
     this._isMetaClass = false;
   }
-  sc.lang.klass.define(&quot;Class&quot;, &quot;Object&quot;, { constructor: SCClass });
 
+  function SCNil() {
+    this.__initializeWith__(&quot;Object&quot;);
+    this._ = null;
+  }
 
-  SCObject.metaClass._MetaSpec.prototype = classes.Class = new SCClass();
+  function SCSymbol() {
+    this.__initializeWith__(&quot;Object&quot;);
+    this._ = &quot;&quot;;
+  }
 
+  function SCBoolean() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
 
-  sc.lang.klass.refine(&quot;Object&quot;, {
-    $new: function() {
-      var args, instance;
-      args = [].slice.call(arguments);
-      instance = new this._Spec(args);
-      instance._class = this;
-      return instance;
-    },
-    $initClass: function() {},
-    class: function() {
-      return this._class;
-    },
-    isClass: function() {
-      return $SC.False();
-    },
-    isKindOf: function(aClass) {
-      return $SC.Boolean(this instanceof aClass._Spec);
-    },
-    isMemberOf: function(aClass) {
-      return $SC.Boolean(this._class === aClass);
-    },
+  function SCTrue() {
+    this.__initializeWith__(&quot;Boolean&quot;);
+    this._ = true;
+  }
+
+  function SCFalse() {
+    this.__initializeWith__(&quot;Boolean&quot;);
+    this._ = false;
+  }
+
+  function SCMagnitude() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+
+  function SCChar() {
+    this.__initializeWith__(&quot;Magnitude&quot;);
+    this._ = &quot;\0&quot;;
+  }
+
+  function SCNumber() {
+    this.__initializeWith__(&quot;Magnitude&quot;);
+  }
+
+  function SCSimpleNumber() {
+    this.__initializeWith__(&quot;Number&quot;);
+  }
+
+  function SCInteger() {
+    this.__initializeWith__(&quot;SimpleNumber&quot;);
+    this._ = 0;
+  }
+
+  function SCFloat() {
+    this.__initializeWith__(&quot;SimpleNumber&quot;);
+    this._ = 0.0;
+  }
+
+  function SCCollection() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+
+  function SCSequenceableCollection() {
+    this.__initializeWith__(&quot;Collection&quot;);
+  }
+
+  function SCArrayedCollection() {
+    this.__initializeWith__(&quot;SequenceableCollection&quot;);
+    this._immutable = false;
+    this._ = [];
+  }
+
+  function SCRawArray() {
+    this.__initializeWith__(&quot;ArrayedCollection&quot;);
+  }
+
+  function SCArray() {
+    this.__initializeWith__(&quot;ArrayedCollection&quot;);
+  }
+
+  function SCString(value) {
+    this.__initializeWith__(&quot;RawArray&quot;);
+    this._ = value;
+  }
+
+  function SCAbstractFunction() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+
+  function SCFunction() {
+    this.__initializeWith__(&quot;AbstractFunction&quot;);
+    // istanbul ignore next
+    this._ = function() {};
+  }
+
+  SCObject.metaClass = createClassInstance(function() {});
+  sc.lang.klass.define(SCObject, &quot;Object&quot;, {
+    __tag: sc.C.TAG_OBJ,
     __initializeWith__: function(className, args) {
       metaClasses[className]._Spec.apply(this, args);
     },
-    __performWith__: function(className, methodName, args) {
-      var metaClass, proto;
-
-      metaClass = metaClasses[className];
-      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
-        methodName = methodName.substr(1);
-        proto = metaClass._MetaSpec.prototype;
-      } else {
-        proto = metaClass._Spec.prototype;
-      }
-
-      return proto[methodName].apply(this, args);
-    }
+    $initClass: function() {}
   });
 
-  sc.lang.klass.refine(&quot;Class&quot;, {
-    name: function() {
+  sc.lang.klass.define(SCClass, &quot;Class&quot;);
+
+  SCObject.metaClass._MetaSpec.prototype = classes.Class = createClassInstance();
+  classes.Class._Spec = SCClass;
+  classes.Object = new SCObject.metaClass._MetaSpec();
+  classes.Object._name = &quot;Object&quot;;
+  classes.Object._Spec = SCObject.metaClass._Spec;
+  classes.Object._Spec.prototype.__class = classes.Object;
+  classes.Object._Spec.prototype.__Spec = classes.Object._Spec;
+
+  sc.lang.klass.define(SCNil, &quot;Nil&quot;, {
+    __tag: sc.C.TAG_NIL
+  });
+
+  sc.lang.klass.define(SCSymbol, &quot;Symbol&quot;, {
+    __tag: sc.C.TAG_SYM
+  });
+
+  sc.lang.klass.define(SCBoolean, &quot;Boolean&quot;);
+
+  sc.lang.klass.define(SCTrue, &quot;True : Boolean&quot;, {
+    __tag: sc.C.TAG_TRUE
+  });
+
+  sc.lang.klass.define(SCFalse, &quot;False : Boolean&quot;, {
+    __tag: sc.C.TAG_FALSE
+  });
+
+  sc.lang.klass.define(SCMagnitude, &quot;Magnitude&quot;);
+
+  sc.lang.klass.define(SCChar, &quot;Char : Magnitude&quot;, {
+    __tag: sc.C.TAG_CHAR
+  });
+
+  sc.lang.klass.define(SCNumber, &quot;Number : Magnitude&quot;);
+  sc.lang.klass.define(SCSimpleNumber, &quot;SimpleNumber : Number&quot;);
+
+  sc.lang.klass.define(SCInteger, &quot;Integer : SimpleNumber&quot;, {
+    __tag: sc.C.TAG_INT
+  });
+
+  sc.lang.klass.define(SCFloat, &quot;Float : SimpleNumber&quot;, {
+    __tag: sc.C.TAG_FLOAT
+  });
+
+  sc.lang.klass.define(SCCollection, &quot;Collection&quot;);
+  sc.lang.klass.define(SCSequenceableCollection, &quot;SequenceableCollection : Collection&quot;);
+  sc.lang.klass.define(SCArrayedCollection, &quot;ArrayedCollection : SequenceableCollection&quot;);
+  sc.lang.klass.define(SCRawArray, &quot;RawArray : ArrayedCollection&quot;);
+
+  sc.lang.klass.define(SCArray, &quot;Array : ArrayedCollection&quot;, {
+    __tag: sc.C.TAG_ARRAY
+  });
+
+  sc.lang.klass.define(SCString, &quot;String : RawArray&quot;, {
+    __tag: sc.C.TAG_STR
+  });
+
+  sc.lang.klass.define(SCAbstractFunction, &quot;AbstractFunction&quot;);
+
+  sc.lang.klass.define(SCFunction, &quot;Function : AbstractFunction&quot;, {
+    __tag: sc.C.TAG_FUNCTION
+  });
+
+  sc.lang.klass.refine(&quot;Object&quot;, function(spec) {
+    spec.$new = function() {
+      if (this._Spec === SCClass) {
+        return $SC.Nil();
+      }
+      return new this._Spec(slice.call(arguments));
+    };
+
+    spec.class = function() {
+      return this.__class;
+    };
+
+    spec.isClass = function() {
+      return falseInstance;
+    };
+
+    spec.isKindOf = function($aClass) {
+      return $SC.Boolean(this instanceof $aClass._Spec);
+    };
+
+    spec.isMemberOf = function($aClass) {
+      return $SC.Boolean(this.__class === $aClass);
+    };
+
+    spec.toString = function() {
+      var name = this.__class._name;
+      if (/^[AEIOU]/.test(name)) {
+        return String(&quot;an &quot; + name);
+      } else {
+        return String(&quot;a &quot; + name);
+      }
+    };
+
+    spec.valueOf = function() {
+      return this._;
+    };
+  });
+
+  sc.lang.klass.refine(&quot;Class&quot;, function(spec) {
+    spec.name = function() {
       return $SC.String(this._name);
-    },
-    class: function() {
-      return this._isMetaClass ? classes.Class : this._Spec.metaClass;
-    },
-    isClass: function() {
-      return $SC.True();
-    }
+    };
+
+    spec.class = function() {
+      if (this._isMetaClass) {
+        return  classes.Class;
+      }
+      return $SC.Class(&quot;Meta_&quot; + this._name);
+    };
+
+    spec.isClass = function() {
+      return trueInstance;
+    };
+
+    spec.toString = function() {
+      return String(this._name);
+    };
   });
 
   $SC.Class = sc.lang.klass.get;
+
+  var nilInstance = new SCNil();
+
+  $SC.Nil = function() {
+    return nilInstance;
+  };
+
+  var symbolInstances = {};
+
+  $SC.Symbol = function(value) {
+    var instance;
+    if (!symbolInstances.hasOwnProperty(value)) {
+      instance = new SCSymbol();
+      instance._ = value;
+      symbolInstances[value] = instance;
+    }
+    return symbolInstances[value];
+  };
+
+  var trueInstance = new SCTrue();
+  var falseInstance = new SCFalse();
+
+  $SC.True = function() {
+    return trueInstance;
+  };
+
+  $SC.False = function() {
+    return falseInstance;
+  };
+  $SC.Boolean = function($value) {
+    return $value ? trueInstance : falseInstance;
+  };
+
+  var charInstances = {};
+
+  $SC.Char = function(value) {
+    var instance;
+
+    value = String(value).charAt(0);
+
+    if (!charInstances.hasOwnProperty(value)) {
+      instance = new SCChar();
+      instance._ = value;
+      charInstances[value] = instance;
+    }
+
+    return charInstances[value];
+  };
+
+  var intInstances = {};
+
+  $SC.Integer = function(value) {
+    var instance;
+
+    if (!global.isFinite(value)) {
+      return $SC.Float(+value);
+    }
+
+    value = value|0;
+
+    if (!intInstances.hasOwnProperty(value)) {
+      instance = new SCInteger();
+      instance._ = value;
+      intInstances[value] = instance;
+    }
+
+    return intInstances[value];
+  };
+
+  var floatInstances = {};
+
+  $SC.Float = function(value) {
+    var instance;
+
+    value = +value;
+
+    if (!floatInstances.hasOwnProperty(value)) {
+      instance = new SCFloat();
+      instance._ = value;
+      floatInstances[value] = instance;
+    }
+
+    return floatInstances[value];
+  };
+
+  $SC.Array = function(value, immutable) {
+    var instance = new SCArray();
+    instance._ = value || [];
+    instance._immutable = !!immutable;
+    return instance;
+  };
+
+  $SC.String = function(value, immutable) {
+    var instance = new SCString();
+    instance._ = String(value).split(&quot;&quot;).map($SC.Char);
+    instance._immutable = !!immutable;
+    return instance;
+  };
+
+  $SC.Function = function(value) {
+    var instance = new SCFunction();
+    instance._ = value;
+    return instance;
+  };
+
+  var int0Instance = $SC.Integer(0);
+  var int1Instance = $SC.Integer(1);
+
+  utils = {
+    nilInstance: nilInstance,
+    trueInstance: trueInstance,
+    falseInstance: falseInstance,
+    int0Instance: int0Instance,
+    int1Instance: int1Instance,
+    nop: function() {
+      return this;
+    },
+    alwaysReturn$Nil: $SC.Nil,
+    alwaysReturn$True: $SC.True,
+    alwaysReturn$False: $SC.False,
+    alwaysReturn$Integer_0: function() {
+      return int0Instance;
+    },
+    alwaysReturn$Integer_1: function() {
+      return int1Instance;
+    },
+    defaultValue$Nil: function($obj) {
+      return $obj || nilInstance;
+    },
+    defaultValue$Boolean: function($obj, value) {
+      return $obj || $SC.Boolean(value);
+    },
+    defaultValue$Integer: function($obj, value) {
+      return $obj || $SC.Integer(value);
+    },
+    defaultValue$Float: function($obj, value) {
+      return $obj || $SC.Float(value);
+    },
+    defaultValue$Symbol: function($obj, value) {
+      return $obj || $SC.Symbol(value);
+    },
+    bool: function(a) {
+      return a.__bool__();
+    },
+    getMethod: function(className, methodName) {
+      return sc.lang.klass.get(className)._Spec.prototype[methodName];
+    }
+  };
+
+  sc.lang.klass.classes = classes;
+  sc.lang.klass.utils = utils;
 
 })(sc);</textarea>
   </div>

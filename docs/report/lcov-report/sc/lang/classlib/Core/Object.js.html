@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Core/Object.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(8 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(318 / 318)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(34 / 34)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">98.73% <small>(78 / 79)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(8 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(318 / 318)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -461,7 +461,493 @@
 243
 244
 245
-246</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">13</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -469,11 +955,445 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">267</span>
+<span class="cline-any cline-yes">267</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">267</span>
+<span class="cline-any cline-yes">267</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">267</span>
+<span class="cline-any cline-yes">266</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">38</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">18</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">18</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">13</span>
+<span class="cline-any cline-yes">13</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13</span>
+<span class="cline-any cline-yes">13</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -507,170 +1427,152 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">34</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">9</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">9</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">6</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -709,245 +1611,696 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(sc) {
   "use strict";
 &nbsp;
-  require("../../klass");
-  require("../../dollarSC");
+  require("../../classlib");
 &nbsp;
-  // var $SC = sc.lang.$SC;
+  var slice = [].slice;
+  var $SC = sc.lang.$SC;
+  var fn = sc.lang.fn;
 &nbsp;
-  sc.lang.klass.refine("Object", {
-    js: function() {
-      return this._raw;
-    },
-    __tag__: function() {
-      return sc.C.TAG_OBJ;
-    },
-    __num__: function() {
-      return 0;
-    },
-    __str__: function() {
-      return this._class._name;
-    },
-    NotYetImplemented: [
-      "$newCopyArgs",
-      "dump",
-      "post",
-      "postln",
-      "postc",
-      "postcln",
-      "postcs",
-      "totalFree",
-      "largestFreeBlock",
-      "gcDumpGrey",
-      "gcDumpSet",
-      "gcInfo",
-      "gcSanity",
-      "canCallOS",
-      "size",
-      "indexedSize",
-      "flatSize",
-      "do",
-      "generate",
-      "respondsTo",
-      "performMsg",
-      "perform",
-      "performList",
-      "functionPerformList",
-      "superPerform",
-      "superPerformList",
-      "tryPerform",
-      "multiChannelPerform",
-      "performWithEnvir",
-      "performKeyValuePairs",
-      "copy",
-      "contentsCopy",
-      "shallowCopy",
-      "copyImmutable",
-      "deepCopy",
-      "dup",
-      "poll",
-      "value",
-      "valueArray",
-      "valueEnvir",
-      "valueArrayEnvir",
-      "equals",
-      "compareObject",
-      "instVarHash",
-      "basicHash",
-      "hash",
-      "identityHash",
-      "next",
-      "reset",
-      "first",
-      "iter",
-      "stop",
-      "free",
-      "clear",
-      "removedFromScheduler",
-      "isPlaying",
-      "embedInStream",
-      "cyc",
-      "fin",
-      "repeat",
-      "loop",
-      "asStream",
-      "eventAt",
-      "composeEvents",
-      "finishEvent",
-      "atLimit",
-      "isRest",
-      "threadPlayer",
-      "threadPlayer_",
-      "isNil",
-      "notNil",
-      "isNumber",
-      "isInteger",
-      "isFloat",
-      "isSequenceableCollection",
-      "isCollection",
-      "isArray",
-      "isString",
-      "containsSeqColl",
-      "isValidUGenInput",
-      "isException",
-      "isFunction",
-      "matchItem",
-      "trueAt",
-      "falseAt",
-      "pointsTo",
-      "mutable",
-      "frozen",
-      "halt",
-      "prHalt",
-      "primitiveFailed",
-      "reportError",
-      "subclassResponsibility",
-      "doesNotUnderstand",
-      "shouldNotImplement",
-      "outOfContextReturn",
-      "immutableError",
-      "deprecated",
-      "mustBeBoolean",
-      "notYetImplemented",
-      "dumpBackTrace",
-      "getBackTrace",
-      "throw",
-      "species",
-      "asCollection",
-      "asSymbol",
-      "asString",
-      "asCompileString",
-      "cs",
-      "printClassNameOn",
-      "printOn",
-      "storeOn",
-      "storeParamsOn",
-      "simplifyStoreArgs",
-      "storeArgs",
-      "storeModifiersOn",
-      "as",
-      "dereference",
-      "reference",
-      "asRef",
-      "asArray",
-      "asSequenceableCollection",
-      "rank",
-      "deepCollect",
-      "deepDo",
-      "slice",
-      "shape",
-      "unbubble",
-      "bubble",
-      "obtain",
-      "instill",
-      "addFunc",
-      "removeFunc",
-      "replaceFunc",
-      "addFuncTo",
-      "removeFuncFrom",
-      "while",
-      "switch",
-      "yield",
-      "alwaysYield",
-      "yieldAndReset",
-      "idle",
-      "dependants",
-      "changed",
-      "addDependant",
-      "removeDependant",
-      "release",
-      "releaseDependants",
-      "update",
-      "addUniqueMethod",
-      "removeUniqueMethods",
-      "removeUniqueMethod",
-      "inspect",
-      "inspectorClass",
-      "inspector",
-      "crash",
-      "stackDepth",
-      "dumpStack",
-      "dumpDetailedBackTrace",
-      "freeze",
-      "asInt",
-      "blend",
-      "blendAt",
-      "blendPut",
-      "fuzzyEqual",
-      "isUGen",
-      "numChannels",
-      "pair",
-      "pairs",
-      "awake",
-      "beats_",
-      "clock_",
-      "performBinaryOpOnSomething",
-      "performBinaryOpOnSimpleNumber",
-      "performBinaryOpOnSignal",
-      "performBinaryOpOnComplex",
-      "performBinaryOpOnSeqColl",
-      "performBinaryOpOnUGen",
-      "writeDefFile",
-      "protect",
-      "isInputUGen",
-      "isOutputUGen",
-      "isControlUGen",
-      "source",
-      "asUGenInput",
-      "asControlInput",
-      "asAudioRateInput",
-      "$prNew",
-      "$prNewCopyArgs",
-      "slotSize",
-      "slotAt",
-      "slotPut",
-      "slotKey",
-      "slotIndex",
-      "slotsDo",
-      "slotValuesDo",
-      "getSlots",
-      "setSlots",
-      "instVarSize",
-      "instVarAt",
-      "instVarPut",
-      "writeArchive",
-      "$readArchive",
-      "asArchive",
-      "initFromArchive",
-      "archiveAsCompileString",
-      "archiveAsObject",
-      "checkCanArchive",
-      "writeTextArchive",
-      "$readTextArchive",
-      "asTextArchive",
-      "getContainedObjects",
-      "writeBinaryArchive",
-      "$readBinaryArchive",
-      "asBinaryArchive",
-      "genNext",
-      "genCurrent",
-      "$classRedirect",
-      "help",
-    ]
+  sc.lang.klass.refine("Object", function(spec, utils) {
+    var bool = utils.bool;
+    var $nil = utils.nilInstance;
+    var $int1 = utils.int1Instance;
+    var SCArray = $SC.Class("Array");
+&nbsp;
+    spec.__num__ = function() {
+      throw new Error("Wrong Type");
+    };
+&nbsp;
+    spec.__int__ = function() {
+      return this.__num__()|0;
+    };
+&nbsp;
+    spec.__bool__ = function() {
+      throw new Error("Wrong Type");
+    };
+&nbsp;
+    spec.__sym__ = function() {
+      throw new Error("Wrong Type");
+    };
+&nbsp;
+    spec.__str__ = function() {
+      return String(this);
+    };
+&nbsp;
+    // TODO: implements $new
+    // TODO: implements $newCopyArgs
+&nbsp;
+    spec.$newFrom = function() {
+      return this._doesNotUnderstand("newFrom");
+    };
+&nbsp;
+    // TODO: implements dump
+    // TODO: implements post
+    // TODO: implements postln
+    // TODO: implements postc
+    // TODO: implements postcln
+    // TODO: implements postcs
+    // TODO: implements totalFree
+    // TODO: implements largestFreeBlock
+    // TODO: implements gcDumpGrey
+    // TODO: implements gcDumpSet
+    // TODO: implements gcInfo
+    // TODO: implements gcSanity
+    // TODO: implements canCallOS
+&nbsp;
+    spec.size = utils.alwaysReturn$Integer_0;
+    spec.indexedSize = utils.alwaysReturn$Integer_0;
+    spec.flatSize = utils.alwaysReturn$Integer_1;
+&nbsp;
+    spec.do = function($function) {
+      $function = utils.defaultValue$Nil($function);
+&nbsp;
+      sc.lang.iterator.execute(
+        sc.lang.iterator.object$do(this),
+        $function
+      );
+&nbsp;
+      return this;
+    };
+&nbsp;
+    spec.generate = function($function, $state) {
+      $state = utils.defaultValue$Nil($state);
+&nbsp;
+      this.do($function);
+&nbsp;
+      return $state;
+    };
+&nbsp;
+    // already defined: class
+    // already defined: isKindOf
+    // already defined: isMemberOf
+&nbsp;
+    spec.respondsTo = function($aSymbol) {
+      $aSymbol = utils.defaultValue$Nil($aSymbol);
+      return $SC.Boolean(typeof this[$aSymbol.__sym__()] === "function");
+    };
+&nbsp;
+    // TODO: implements performMsg
+&nbsp;
+    spec.perform = function($selector) {
+      var selector, method;
+      $selector = utils.defaultValue$Nil($selector);
+&nbsp;
+      selector = $selector.__sym__();
+      method = this[selector];
+&nbsp;
+      if (method) {
+        return method.apply(this, slice.call(arguments, 1));
+      }
+&nbsp;
+      throw new Error("Message '" + selector + "' not understood.");
+    };
+&nbsp;
+    spec.performList = function($selector, $arglist) {
+      var selector, method;
+      $selector = utils.defaultValue$Nil($selector);
+      $arglist  = utils.defaultValue$Nil($arglist);
+&nbsp;
+      selector = $selector.__sym__();
+      method = this[selector];
+&nbsp;
+      if (method) {
+        return method.apply(this, $arglist.asArray()._);
+      }
+&nbsp;
+      throw new Error("Message '" + selector + "' not understood.");
+    };
+&nbsp;
+    spec.functionPerformList = utils.nop;
+&nbsp;
+    // TODO: implements superPerform
+    // TODO: implements superPerformList
+    // TODO: implements tryPerform
+    // TODO: implements multiChannelPerform
+    // TODO: implements performWithEnvir
+    // TODO: implements performKeyValuePairs
+&nbsp;
+    var copy = function(obj) {
+      var copied = obj;
+&nbsp;
+      if (Array.isArray(obj)) {
+        copied = obj.slice();
+      } else if (obj &amp;&amp; obj.constructor === Object) {
+        copied = {};
+        Object.keys(obj).forEach(function(key) {
+          copied[key] = obj[key];
+        });
+      }
+&nbsp;
+      return copied;
+    };
+&nbsp;
+    spec.copy = function() {
+      return this.shallowCopy();
+    };
+&nbsp;
+    // TODO: implements contentsCopy
+&nbsp;
+    spec.shallowCopy = function() {
+      var a = new this.__class._Spec();
+&nbsp;
+      Object.keys(this).forEach(function(key) {
+        a[key] = copy(this[key]);
+      }, this);
+&nbsp;
+      if (this._ === this) {
+        a._ = a;
+      }
+&nbsp;
+      return a;
+    };
+&nbsp;
+    // TODO: implements copyImmutable
+    // TODO: implements deepCopy
+&nbsp;
+    spec.dup = function($n) {
+      var $this = this;
+      var $array, i, imax;
+&nbsp;
+      $n = utils.defaultValue$Integer($n, 2);
+      if (bool($n.isSequenceableCollection())) {
+        return SCArray.fillND($n, $SC.Function(function() {
+          return $this.copy();
+        }));
+      }
+&nbsp;
+      $array = SCArray.new($n);
+      for (i = 0, imax = $n.__int__(); i &lt; imax; ++i) {
+        $array.add(this.copy());
+      }
+&nbsp;
+      return $array;
+    };
+&nbsp;
+    spec["!"] = function($n) {
+      return this.dup($n);
+    };
+&nbsp;
+    spec.poll = function() {
+      return this.value();
+    };
+&nbsp;
+    spec.value = utils.nop;
+    spec.valueArray = utils.nop;
+    spec.valueEnvir = utils.nop;
+    spec.valueArrayEnvir = utils.nop;
+&nbsp;
+    spec["=="] = function($obj) {
+      return this ["==="] ($obj);
+    };
+&nbsp;
+    spec["!="] = function($obj) {
+      return (this ["=="] ($obj)).not();
+    };
+&nbsp;
+    spec["==="] = function($obj) {
+      return $SC.Boolean(this === $obj);
+    };
+&nbsp;
+    spec["!=="] = function($obj) {
+      return $SC.Boolean(this !== $obj);
+    };
+&nbsp;
+    // TODO: implements equals
+    // TODO: implements compareObject
+    // TODO: implements instVarHash
+    // TODO: implements basicHash
+    // TODO: implements hash
+    // TODO: implements identityHash
+&nbsp;
+    spec["-&gt;"] = function($obj) {
+      return $SC.Class("Association").new(this, $obj);
+    };
+&nbsp;
+    spec.next = utils.nop;
+    spec.reset = utils.nop;
+&nbsp;
+    spec.first = function($inval) {
+      $inval = utils.defaultValue$Nil($inval);
+&nbsp;
+      this.reset();
+      return this.next($inval);
+    };
+&nbsp;
+    spec.iter = function() {
+      return $SC.Class("OneShotStream").new(this);
+    };
+&nbsp;
+    spec.stop = utils.nop;
+    spec.free = utils.nop;
+    spec.clear = utils.nop;
+    spec.removedFromScheduler = utils.nop;
+    spec.isPlaying = utils.alwaysReturn$False;
+&nbsp;
+    spec.embedInStream = function() {
+      return this.yield();
+    };
+&nbsp;
+    // TODO: implements cyc
+    // TODO: implements fin
+    // TODO: implements repeat
+    // TODO: implements loop
+&nbsp;
+    spec.asStream = utils.nop;
+&nbsp;
+    // TODO: implements streamArg
+&nbsp;
+    spec.eventAt = utils.alwaysReturn$Nil;
+&nbsp;
+    spec.composeEvents = function($event) {
+      $event = utils.defaultValue$Nil($event);
+      return $event.copy();
+    };
+&nbsp;
+    spec.finishEvent = utils.nop;
+    spec.atLimit = utils.alwaysReturn$False;
+    spec.isRest = utils.alwaysReturn$False;
+    spec.threadPlayer = utils.nop;
+    spec.threadPlayer_ = utils.nop;
+    spec["?"] = utils.nop;
+    spec["??"] = utils.nop;
+&nbsp;
+    spec["!?"] = function($obj) {
+      $obj = utils.defaultValue$Nil($obj);
+      return $obj.value(this);
+    };
+&nbsp;
+    spec.isNil = utils.alwaysReturn$False;
+    spec.notNil = utils.alwaysReturn$True;
+    spec.isNumber = utils.alwaysReturn$False;
+    spec.isInteger = utils.alwaysReturn$False;
+    spec.isFloat = utils.alwaysReturn$False;
+    spec.isSequenceableCollection = utils.alwaysReturn$False;
+    spec.isCollection = utils.alwaysReturn$False;
+    spec.isArray = utils.alwaysReturn$False;
+    spec.isString = utils.alwaysReturn$False;
+    spec.containsSeqColl = utils.alwaysReturn$False;
+    spec.isValidUGenInput = utils.alwaysReturn$False;
+    spec.isException = utils.alwaysReturn$False;
+    spec.isFunction = utils.alwaysReturn$False;
+&nbsp;
+    spec.matchItem = function($item) {
+      $item = utils.defaultValue$Nil($item);
+      return this ["==="] ($item);
+    };
+&nbsp;
+    spec.trueAt = utils.alwaysReturn$False;
+&nbsp;
+    spec.falseAt = function($key) {
+      $key = utils.defaultValue$Nil($key);
+      return this.trueAt($key).not();
+    };
+&nbsp;
+    // TODO: implements pointsTo
+    // TODO: implements mutable
+    // TODO: implements frozen
+    // TODO: implements halt
+    // TODO: implements primitiveFailed
+    // TODO: implements reportError
+    // TODO: implements subclassResponsibility
+    spec._subclassResponsibility = function(methodName) {
+      throw new Error("RECEIVER " + String(this) + ": " +
+                      "'" + methodName + "' should have been implemented by subclass");
+    };
+&nbsp;
+    // TODO: implements doesNotUnderstand
+    spec._doesNotUnderstand = function(methodName) {
+      throw new Error("RECEIVER " + this.__str__() + ": " +
+                      "Message '" + methodName + "' not understood.");
+    };
+&nbsp;
+    // TODO: implements shouldNotImplement
+    // TODO: implements outOfContextReturn
+    // TODO: implements immutableError
+    // TODO: implements deprecated
+    // TODO: implements mustBeBoolean
+    // TODO: implements notYetImplemented
+    // TODO: implements dumpBackTrace
+    // TODO: implements getBackTrace
+    // TODO: implements throw
+&nbsp;
+    spec.species = function() {
+      return this.class();
+    };
+&nbsp;
+    spec.asCollection = function() {
+      return $SC.Array([ this ]);
+    };
+&nbsp;
+    spec.asSymbol = function() {
+      return this.asString().asSymbol();
+    };
+&nbsp;
+    spec.asString = function() {
+      return $SC.String(String(this));
+    };
+&nbsp;
+    // TODO: implements asCompileString
+    // TODO: implements cs
+    // TODO: implements printClassNameOn
+    // TODO: implements printOn
+    // TODO: implements storeOn
+    // TODO: implements storeParamsOn
+    // TODO: implements simplifyStoreArgs
+    // TODO: implements storeArgs
+    // TODO: implements storeModifiersOn
+&nbsp;
+    spec.as = function($aSimilarClass) {
+      $aSimilarClass = utils.defaultValue$Nil($aSimilarClass);
+      return $aSimilarClass.newFrom(this);
+    };
+&nbsp;
+    spec.dereference = utils.nop;
+&nbsp;
+    spec.reference = function() {
+      return $SC.Ref(this);
+    };
+&nbsp;
+    spec.asRef = function() {
+      return $SC.Ref(this);
+    };
+&nbsp;
+    spec.asArray = function() {
+      return this.asCollection().asArray();
+    };
+&nbsp;
+    spec.asSequenceableCollection = function() {
+      return this.asArray();
+    };
+&nbsp;
+    spec.rank = utils.alwaysReturn$Integer_0;
+&nbsp;
+    spec.deepCollect = function($depth, $function, $index, $rank) {
+      $function = utils.defaultValue$Nil($function);
+      return $function.value(this, $index, $rank);
+    };
+&nbsp;
+    spec.deepDo = function($depth, $function, $index, $rank) {
+      $function = utils.defaultValue$Nil($function);
+      $function.value(this, $index, $rank);
+      return this;
+    };
+&nbsp;
+    spec.slice = utils.nop;
+    spec.shape = utils.alwaysReturn$Nil;
+    spec.unbubble = utils.nop;
+&nbsp;
+    spec.bubble = function($depth, $levels) {
+      var levels, a;
+      $levels = utils.defaultValue$Integer($levels, 1);
+&nbsp;
+      levels = $levels.__int__();
+      if (levels &lt;= 1) {
+        a = [ this ];
+      } else {
+        a = [
+          this.bubble($depth, $SC.Integer(levels - 1))
+        ];
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.obtain = function($index, $default) {
+      $index   = utils.defaultValue$Nil($index);
+      $default = utils.defaultValue$Nil($default);
+&nbsp;
+      if ($index.__num__() === 0) {
+        return this;
+      } else {
+        return $default;
+      }
+    };
+&nbsp;
+    spec.instill = function($index, $item, $default) {
+      $index = utils.defaultValue$Nil($index);
+      $item  = utils.defaultValue$Nil($item);
+&nbsp;
+      if ($index.__num__() === 0) {
+        return $item;
+      } else {
+        return this.asArray().instill($index, $item, $default);
+      }
+    };
+&nbsp;
+    spec.addFunc = fn(function($$functions) {
+      return $SC.Class("FunctionList").new(this ["++"] ($$functions));
+    }, "*functions");
+&nbsp;
+    spec.removeFunc = function($function) {
+      if (this === $function) {
+        return $nil;
+      }
+      return this;
+    };
+&nbsp;
+    spec.replaceFunc = function($find, $replace) {
+      $replace = utils.defaultValue$Nil($replace);
+      if (this === $find) {
+        return $replace;
+      }
+      return this;
+    };
+&nbsp;
+    // TODO: implements addFuncTo
+    // TODO: implements removeFuncFrom
+&nbsp;
+    spec.while = function($body) {
+      var $this = this;
+      $body = utils.defaultValue$Nil($body);
+&nbsp;
+      $SC.Function(function() {
+        return $this.value();
+      }).while($SC.Function(function() {
+        return $body.value();
+      }));
+&nbsp;
+      return this;
+    };
+&nbsp;
+    spec.switch = function() {
+      var args, i, imax;
+&nbsp;
+      args = slice.call(arguments);
+      for (i = 0, imax = args.length &gt;&gt; 1; i &lt; imax; i++) {
+        if (bool(this ["=="] (args[i * 2]))) {
+          return args[i * 2 + 1].value();
+        }
+      }
+&nbsp;
+      if (args.length % 2 === 1) {
+        return args[args.length - 1].value();
+      }
+&nbsp;
+      return $nil;
+    };
+&nbsp;
+    spec.yield = <span class="fstat-no" title="function not covered" >function() {</span>
+      // TODO: implements yield
+    };
+&nbsp;
+    // TODO: implements alwaysYield
+    // TODO: implements yieldAndReset
+    // TODO: implements idle
+    // TODO: implements $initClass
+    // TODO: implements dependants
+    // TODO: implements changed
+    // TODO: implements addDependant
+    // TODO: implements removeDependant
+    // TODO: implements release
+    // TODO: implements releaseDependants
+    // TODO: implements update
+    // TODO: implements addUniqueMethod
+    // TODO: implements removeUniqueMethods
+    // TODO: implements removeUniqueMethod
+    // TODO: implements inspect
+    // TODO: implements inspectorClass
+    // TODO: implements inspector
+    // TODO: implements crash
+    // TODO: implements stackDepth
+    // TODO: implements dumpStack
+    // TODO: implements dumpDetailedBackTrace
+    // TODO: implements freeze
+&nbsp;
+    spec["&amp;"] = function($that) {
+      return this.bitAnd($that);
+    };
+&nbsp;
+    spec["|"] = function($that) {
+      return this.bitOr($that);
+    };
+&nbsp;
+    spec["%"] = function($that) {
+      return this.mod($that);
+    };
+&nbsp;
+    spec["**"] = function($that) {
+      return this.pow($that);
+    };
+&nbsp;
+    spec["&lt;&lt;"] = function($that) {
+      return this.leftShift($that);
+    };
+&nbsp;
+    spec["&gt;&gt;"] = function($that) {
+      return this.rightShift($that);
+    };
+&nbsp;
+    spec["+&gt;&gt;"] = function($that) {
+      return this.unsignedRightShift($that);
+    };
+&nbsp;
+    spec["&lt;!"] = function($that) {
+      return this.firstArg($that);
+    };
+&nbsp;
+    spec.asInt = function() {
+      return this.asInteger();
+    };
+&nbsp;
+    spec.blend = function($that, $blendFrac) {
+      $that      = utils.defaultValue$Nil($that);
+      $blendFrac = utils.defaultValue$Float($blendFrac, 0.5);
+      return this ["+"] ($blendFrac ["*"] ($that ["-"] (this)));
+    };
+&nbsp;
+    spec.blendAt = function($index, $method) {
+      var $iMin;
+      $index  = utils.defaultValue$Nil($index);
+      $method = utils.defaultValue$Symbol($method, "clipAt");
+&nbsp;
+      $iMin = $index.roundUp($int1).asInteger().__dec__();
+      return this.perform($method, $iMin).blend(
+        this.perform($method, $iMin.__inc__()),
+        $index.absdif($iMin)
+      );
+    };
+&nbsp;
+    spec.blendPut = function($index, $val, $method) {
+      var $iMin, $ratio;
+      $index  = utils.defaultValue$Nil($index);
+      $val    = utils.defaultValue$Nil($val);
+      $method = utils.defaultValue$Symbol($method, "wrapPut");
+&nbsp;
+      $iMin = $index.floor().asInteger();
+      $ratio = $index.absdif($iMin);
+      this.perform($method, $iMin, $val ["*"] ($int1 ["-"] ($ratio)));
+      this.perform($method, $iMin.__inc__(), $val ["*"] ($ratio));
+&nbsp;
+      return this;
+    };
+&nbsp;
+    spec.fuzzyEqual = function($that, $precision) {
+      $that      = utils.defaultValue$Nil($that);
+      $precision = utils.defaultValue$Float($precision, 1.0);
+&nbsp;
+      return $SC.Float(0.0).max(
+        $SC.Float(1.0) ["-"] (
+          (this ["-"] ($that).abs()) ["/"] ($precision)
+        )
+      );
+    };
+&nbsp;
+    spec.isUGen = utils.alwaysReturn$False;
+    spec.numChannels = utils.alwaysReturn$Integer_1;
+&nbsp;
+    spec.pair = function($that) {
+      $that = utils.defaultValue$Nil($that);
+      return $SC.Array([ this, $that ]);
+    };
+&nbsp;
+    spec.pairs = function($that) {
+      var $list;
+      $that = utils.defaultValue$Nil($that);
+&nbsp;
+      $list = $SC.Array();
+      this.asArray().do($SC.Function(function($a) {
+        $that.asArray().do($SC.Function(function($b) {
+          $list = $list.add($a.asArray() ["++"] ($b));
+        }));
+      }));
+&nbsp;
+      return $list;
+    };
+&nbsp;
+    spec.awake = function($beats) {
+      return this.next($beats);
+    };
+&nbsp;
+    spec.beats_ = utils.nop;
+    spec.clock_ = utils.nop;
+&nbsp;
+    spec.performBinaryOpOnSomething = function($aSelector) {
+      var aSelector;
+      $aSelector = utils.defaultValue$Nil($aSelector);
+&nbsp;
+      aSelector = $aSelector.__sym__();
+      if (aSelector === "==") {
+        return utils.falseInstance;
+      }
+      if (aSelector === "!=") {
+        return utils.trueInstance;
+      }
+&nbsp;
+      throw new Error("binary operator '" + aSelector + "' failed.");
+    };
+&nbsp;
+    spec.performBinaryOpOnSimpleNumber = function($aSelector, $thig, $adverb) {
+      return this.performBinaryOpOnSomething($aSelector, $thig, $adverb);
+    };
+&nbsp;
+    spec.performBinaryOpOnSignal  = spec.performBinaryOpOnSimpleNumber;
+    spec.performBinaryOpOnComplex = spec.performBinaryOpOnSimpleNumber;
+    spec.performBinaryOpOnSeqColl = spec.performBinaryOpOnSimpleNumber;
+    spec.performBinaryOpOnUGen    = spec.performBinaryOpOnSimpleNumber;
+&nbsp;
+    // TODO: implements writeDefFile
+&nbsp;
+    spec.isInputUGen = utils.alwaysReturn$False;
+    spec.isOutputUGen = utils.alwaysReturn$False;
+    spec.isControlUGen = utils.alwaysReturn$False;
+    spec.source = utils.nop;
+    spec.asUGenInput = utils.nop;
+    spec.asControlInput = utils.nop;
+&nbsp;
+    spec.asAudioRateInput = function() {
+      if (this.rate().__sym__() !== "audio") {
+        return $SC.Class("K2A").ar(this);
+      }
+      return this;
+    };
+&nbsp;
+    // TODO: implements slotSize
+    // TODO: implements slotAt
+    // TODO: implements slotPut
+    // TODO: implements slotKey
+    // TODO: implements slotIndex
+    // TODO: implements slotsDo
+    // TODO: implements slotValuesDo
+    // TODO: implements getSlots
+    // TODO: implements setSlots
+    // TODO: implements instVarSize
+    // TODO: implements instVarAt
+    // TODO: implements instVarPut
+    // TODO: implements writeArchive
+    // TODO: implements $readArchive
+    // TODO: implements asArchive
+    // TODO: implements initFromArchive
+    // TODO: implements archiveAsCompileString
+    // TODO: implements archiveAsObject
+    // TODO: implements checkCanArchive
+    // TODO: implements writeTextArchive
+    // TODO: implements $readTextArchive
+    // TODO: implements asTextArchive
+    // TODO: implements getContainedObjects
+    // TODO: implements writeBinaryArchive
+    // TODO: implements $readBinaryArchive
+    // TODO: implements asBinaryArchive
+    // TODO: implements genNext
+    // TODO: implements genCurrent
+    // TODO: implements $classRedirect
+    // TODO: implements help
   });
 &nbsp;
 })(sc);
@@ -956,7 +2309,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 24 2014 23:10:40 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 25 2014 19:28:25 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

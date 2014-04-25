@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Collections/Array.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(425 / 425)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(62 / 62)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(3 / 3)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(35 / 35)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(425 / 425)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -293,12 +293,741 @@
 75
 76
 77
-78</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291
+292
+293
+294
+295
+296
+297
+298
+299
+300
+301
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314
+315
+316
+317
+318
+319
+320
+321
+322
+323
+324
+325
+326
+327
+328
+329
+330
+331
+332
+333
+334
+335
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350
+351
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409
+410
+411
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625
+626
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681
+682
+683
+684
+685
+686
+687
+688
+689
+690
+691
+692
+693
+694
+695
+696
+697
+698
+699
+700
+701
+702
+703
+704
+705
+706
+707
+708
+709
+710</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">3</span>
@@ -306,59 +1035,517 @@
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">9</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">30</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-yes">42</span>
+<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-yes">39</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">16</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-yes">11</span>
+<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">7</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-yes">28</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">14</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">36</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15</span>
+<span class="cline-any cline-yes">35</span>
+<span class="cline-any cline-yes">35</span>
+<span class="cline-any cline-yes">84</span>
+<span class="cline-any cline-yes">62</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">35</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -367,6 +1554,83 @@
 <span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-yes">24</span>
+<span class="cline-any cline-yes">12</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">3</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -375,76 +1639,708 @@
 &nbsp;
   require("./ArrayedCollection");
 &nbsp;
+  var slice = [].slice;
   var $SC = sc.lang.$SC;
+  var rand = sc.libs.random;
+  var mathlib = sc.libs.mathlib;
 &nbsp;
-  function SCArray() {
-    this.__initializeWith__("ArrayedCollection");
-    this._class = $SC.Class("Array");
-    this._raw = [];
-  }
+  sc.lang.klass.refine("Array", function(spec, utils) {
+    var bool = utils.bool;
+    var SCArray = $SC.Class("Array");
 &nbsp;
-  sc.lang.klass.define("Array", "ArrayedCollection", {
-    constructor: SCArray,
-    NotYetImplemented: [
-      "$with",
-      "reverse",
-      "scramble",
-      "mirror",
-      "mirror1",
-      "mirror2",
-      "stutter",
-      "rotate",
-      "pyramid",
-      "pyramidg",
-      "sputter",
-      "while",
-      "lace",
-      "permute",
-      "allTuples",
-      "wrapExtend",
-      "foldExtend",
-      "clipExtend",
-      "slide",
-      "containsSeqColl",
-      "unlace",
-      "prUnlace",
-      "interlace",
-      "deinterlace",
-      "flop",
-      "multiChannelExpand",
-      "envirPairs",
-      "shift",
-      "powerset",
-      "source",
-      "asUGenInput",
-      "asControlInput",
-      "isValidUGenInput",
-      "numChannels",
-      "poll",
-      "dpoll",
-      "envAt",
-      "$newClear2D",
-      "$new2D",
-      "at2D",
-      "put2D",
-      "fill2D",
-      "atIdentityHash",
-      "atIdentityHashInPairs",
-      "asSpec",
-      "fork",
-      "madd",
-      "asRawOSC",
-      "printOn",
-      "storeOn",
-      "prUnarchive",
-    ]
+    spec.$with = function() {
+      return $SC.Array(slice.call(arguments));
+    };
+&nbsp;
+    spec.reverse = function() {
+      // &lt;-- _ArrayReverse --&gt;
+      return $SC.Array(this._.slice().reverse());
+    };
+&nbsp;
+    spec.scramble = function() {
+      var a, tmp, i, j, m;
+&nbsp;
+      // &lt;-- _ArrayScramble --&gt;
+      a = this._.slice();
+      m = a.length;
+      if (m &gt; 1) {
+        for (i = 0; m &gt; 0; ++i, --m) {
+          j = i + (rand.next() * m)|0;
+          tmp  = a[i];
+          a[i] = a[j];
+          a[j] = tmp;
+        }
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.mirror = function() {
+      var raw = this._;
+      var size, i, j, imax, a;
+&nbsp;
+      // &lt;-- _ArrayMirror --&gt;
+      size = raw.length * 2 - 1;
+      if (size &lt; 2) {
+        return $SC.Array(raw.slice(0));
+      }
+&nbsp;
+      a = new Array(size);
+      for (i = 0, imax = raw.length; i &lt; imax; ++i) {
+        a[i] = raw[i];
+      }
+      for (j = imax - 2, imax = size; i &lt; imax; ++i, --j) {
+        a[i] = raw[j];
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.mirror1 = function() {
+      var raw = this._;
+      var size, i, j, imax, a;
+&nbsp;
+      // &lt;-- _ArrayMirror1 --&gt;
+      size = raw.length * 2 - 2;
+      if (size &lt; 2) {
+        return $SC.Array(raw.slice(0));
+      }
+&nbsp;
+      a = new Array(size);
+      for (i = 0, imax = raw.length; i &lt; imax; ++i) {
+        a[i] = raw[i];
+      }
+      for (j = imax - 2, imax = size; i &lt; imax; ++i, --j) {
+        a[i] = raw[j];
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.mirror2 = function() {
+      var raw = this._;
+      var size, i, j, imax, a;
+&nbsp;
+      // &lt;-- _ArrayMirror2 --&gt;
+      size = raw.length * 2;
+      if (size &lt; 2) {
+        return $SC.Array(raw.slice(0));
+      }
+&nbsp;
+      a = new Array(size);
+      for (i = 0, imax = raw.length; i &lt; imax; ++i) {
+        a[i] = raw[i];
+      }
+      for (j = imax - 1, imax = size; i &lt; imax; ++i, --j) {
+        a[i] = raw[j];
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.stutter = function($n) {
+      var raw = this._;
+      var n, a, i, j, imax, k;
+      $n = utils.defaultValue$Integer($n, 2);
+&nbsp;
+      // &lt;-- _ArrayStutter --&gt;
+      n = Math.max(0, $n.__int__());
+      a = new Array(raw.length * n);
+      for (i = 0, j = 0, imax = raw.length; i &lt; imax; ++i) {
+        for (k = 0; k &lt; n; ++k, ++j) {
+          a[j] = raw[i];
+        }
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.rotate = function($n) {
+      var raw = this._;
+      var n, a, size, i, j;
+      $n = utils.defaultValue$Integer($n, 1);
+&nbsp;
+      // &lt;-- _ArrayRotate --&gt;
+      n = $n.__int__();
+      a = new Array(raw.length);
+      size = a.length;
+      n %= size;
+      if (n &lt; 0) {
+        n += size;
+      }
+      for (i = 0, j = n; i &lt; size; ++i) {
+        a[j] = raw[i];
+        if (++j &gt;= size) {
+          j = 0;
+        }
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.pyramid = function($patternType) {
+      var patternType;
+      var obj1, obj2, i, j, k, n, numslots, x;
+      $patternType = utils.defaultValue$Integer($patternType, 1);
+&nbsp;
+      obj1 = this._;
+      obj2 = [];
+&nbsp;
+      patternType = Math.max(1, Math.min($patternType.__int__(), 10));
+      x = numslots = obj1.length;
+&nbsp;
+      switch (patternType) {
+      case 1:
+        n = (x * x + x) &gt;&gt; 1;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = 0; j &lt;= i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 2:
+        n = (x * x + x) &gt;&gt; 1;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = numslots - 1 - i; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 3:
+        n = (x * x + x) &gt;&gt; 1;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = 0; j &lt;= numslots - 1 - i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 4:
+        n = (x * x + x) &gt;&gt; 1;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = i; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 5:
+        n = x * x;
+        for (i = k = 0; i &lt; numslots; ++i) {
+          for (j = 0; j &lt;= i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        for (i = 0; i &lt; numslots - 1; ++i) {
+          for (j = 0; j &lt;= numslots - 2 - i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 6:
+        n = x * x;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = numslots - 1 - i; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        for (i = 0; i &lt; numslots - 1; ++i) {
+          for (j = i + 1; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 7:
+        n = x * x + x - 1;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = 0; j &lt;= numslots - 1 - i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        for (i = 1; i &lt; numslots; ++i) {
+          for (j = 0; j &lt;= i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 8:
+        n = x * x + x - 1;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = i; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        for (i = 1; i &lt; numslots; ++i) {
+          for (j = numslots - 1 - i; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 9:
+        n = x * x;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = 0; j &lt;= i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        for (i = 0; i &lt; numslots - 1; ++i) {
+          for (j = i + 1; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      case 10:
+        n = x * x;
+        for (i = 0, k = 0; i &lt; numslots; ++i) {
+          for (j = numslots - 1 - i; j &lt;= numslots - 1; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        for (i = 0; i &lt; numslots - 1; ++i) {
+          for (j = 0; j &lt;= numslots - 2 - i; ++j, ++k) {
+            obj2[k] = obj1[j];
+          }
+        }
+        break;
+      }
+&nbsp;
+      return $SC.Array(obj2);
+    };
+&nbsp;
+    spec.pyramidg = function($patternType) {
+      var raw = this._;
+      var patternType;
+      var list = [], lastIndex, i;
+      $patternType = utils.defaultValue$Integer($patternType, 1);
+&nbsp;
+      patternType = Math.max(1, Math.min($patternType.__int__(), 10));
+      lastIndex = raw.length - 1;
+&nbsp;
+      switch (patternType) {
+      case 1:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        break;
+      case 2:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+        }
+        break;
+      case 3:
+        for (i = lastIndex; i &gt;= 0; --i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        break;
+      case 4:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+        }
+        break;
+      case 5:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        for (i = lastIndex - 1; i &gt;= 0; --i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        break;
+      case 6:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+        }
+        for (i = lastIndex - 1; i &gt;= 0; --i) {
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+        }
+        break;
+      case 7:
+        for (i = lastIndex; i &gt;= 0; --i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        for (i = 1; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        break;
+      case 8:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+        }
+        for (i = lastIndex - 1; i &gt;= 0; --i) {
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+        }
+        break;
+      case 9:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        for (i = 1; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+        }
+        break;
+      case 10:
+        for (i = 0; i &lt;= lastIndex; ++i) {
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+        }
+        for (i = lastIndex - 1; i &gt;= 0; --i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
+        }
+        break;
+      }
+&nbsp;
+      return $SC.Array(list);
+    };
+&nbsp;
+    spec.sputter = function($probability, $maxlen) {
+      var list, prob, maxlen, i, length;
+      $probability = utils.defaultValue$Float($probability, 0.25);
+      $maxlen      = utils.defaultValue$Float($maxlen, 100);
+&nbsp;
+      list   = [];
+      prob   = 1.0 - $probability.__num__();
+      maxlen = $maxlen.__int__();
+      i = 0;
+      length = this._.length;
+      while (i &lt; length &amp;&amp; list.length &lt; maxlen) {
+        list.push(this._[i]);
+        if (rand.next() &lt; prob) {
+          i += 1;
+        }
+      }
+&nbsp;
+      return $SC.Array(list);
+    };
+&nbsp;
+    spec.lace = function($length) {
+      var raw = this._;
+      var length, wrap = raw.length;
+      var a, i, $item;
+      $length = utils.defaultValue$Integer($length, wrap);
+&nbsp;
+      length = $length.__int__();
+      a = new Array(length);
+&nbsp;
+      for (i = 0; i &lt; length; ++i) {
+        $item = raw[i % wrap];
+        if (Array.isArray($item._)) {
+          a[i] = $item._[ ((i / wrap)|0) % $item._.length ];
+        } else {
+          a[i] = $item;
+        }
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.permute = function($nthPermutation) {
+      var raw = this._;
+      var obj1, obj2, size, $item;
+      var nthPermutation, i, imax, j;
+      $nthPermutation = utils.defaultValue$Integer($nthPermutation, 0);
+&nbsp;
+      obj1 = raw;
+      obj2 = raw.slice();
+      size = raw.length;
+      nthPermutation = $nthPermutation.__int__();
+&nbsp;
+      for (i = 0, imax = size - 1; i &lt; imax; ++i) {
+        j = i + nthPermutation % (size - i);
+        nthPermutation = (nthPermutation / (size - i))|0;
+&nbsp;
+        $item = obj2[i];
+        obj2[i] = obj2[j];
+        obj2[j] = $item;
+      }
+&nbsp;
+      return $SC.Array(obj2);
+    };
+&nbsp;
+    spec.allTuples = function($maxTuples) {
+      var maxSize;
+      var obj1, obj2, obj3, obj4, newSize, tupSize;
+      var i, j, k;
+      $maxTuples = utils.defaultValue$Integer($maxTuples, 16384);
+&nbsp;
+      maxSize = $maxTuples.__int__();
+&nbsp;
+      obj1 = this._;
+      newSize = 1;
+      tupSize = obj1.length;
+      for (i = 0; i &lt; tupSize; ++i) {
+        if (Array.isArray(obj1[i]._)) {
+          newSize *= obj1[i]._.length;
+        }
+      }
+      newSize = Math.min(newSize, maxSize);
+&nbsp;
+      obj2 = new Array(newSize);
+&nbsp;
+      for (i = 0; i &lt; newSize; ++i) {
+        k = i;
+        obj3 = new Array(tupSize);
+        for (j = tupSize - 1; j &gt;= 0; --j) {
+          if (Array.isArray(obj1[j]._)) {
+            obj4 = obj1[j]._;
+            obj3[j] = obj4[k % obj4.length];
+            k = (k / obj4.length)|0;
+          } else {
+            obj3[j] = obj1[j];
+          }
+        }
+        obj2[i] = $SC.Array(obj3);
+      }
+&nbsp;
+      return $SC.Array(obj2);
+    };
+&nbsp;
+    spec.wrapExtend = function($size) {
+      var raw = this._;
+      var size, a, i;
+      $size = utils.defaultValue$Nil($size);
+&nbsp;
+      size = Math.max(0, $size.__int__());
+      if (raw.length &lt; size) {
+        a = new Array(size);
+        for (i = 0; i &lt; size; ++i) {
+          a[i] = raw[i % raw.length];
+        }
+      } else {
+        a = raw.slice(0, size);
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.foldExtend = function($size) {
+      var raw = this._;
+      var size, a, i;
+      $size = utils.defaultValue$Nil($size);
+&nbsp;
+      size = Math.max(0, $size.__int__());
+&nbsp;
+      if (raw.length &lt; size) {
+        a = new Array(size);
+        for (i = 0; i &lt; size; ++i) {
+          a[i] = raw[mathlib.fold_idx(i, raw.length)];
+        }
+      } else {
+        a = raw.slice(0, size);
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.clipExtend = function($size) {
+      var raw = this._;
+      var size, a, i, imax, b;
+      $size = utils.defaultValue$Nil($size);
+&nbsp;
+      size = Math.max(0, $size.__int__());
+&nbsp;
+      if (raw.length &lt; size) {
+        a = new Array(size);
+        for (i = 0, imax = raw.length; i &lt; imax; ++i) {
+          a[i] = raw[i];
+        }
+        for (b = a[i - 1]; i &lt; size; ++i) {
+          a[i] = b;
+        }
+      } else {
+        a = raw.slice(0, size);
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    spec.slide = function($windowLength, $stepSize) {
+      var raw = this._;
+      var windowLength, stepSize;
+      var obj1, obj2, m, n, numwin, numslots;
+      var i, j, h, k;
+      $windowLength = utils.defaultValue$Integer($windowLength, 3);
+      $stepSize     = utils.defaultValue$Integer($stepSize    , 1);
+&nbsp;
+      windowLength = $windowLength.__int__();
+      stepSize = $stepSize.__int__();
+      obj1 = raw;
+      obj2 = [];
+      m = windowLength;
+      n = stepSize;
+      numwin = ((raw.length + n - m) / n)|0;
+      numslots = numwin * m;
+&nbsp;
+      for (i = h = k = 0; i &lt; numwin; ++i,h += n) {
+        for (j = h; j &lt; m + h; ++j) {
+          obj2[k++] = obj1[j];
+        }
+      }
+&nbsp;
+      return $SC.Array(obj2);
+    };
+&nbsp;
+    spec.containsSeqColl = function() {
+      var raw = this._;
+      var i, imax;
+&nbsp;
+      for (i = 0, imax = raw.length; i &lt; imax; ++i) {
+        if (bool(raw[i].isSequenceableCollection())) {
+          return $SC.True();
+        }
+      }
+&nbsp;
+      return $SC.False();
+    };
+&nbsp;
+    spec.unlace = function($clumpSize, $numChan, $clip) {
+      var raw = this._;
+      var clumpSize, numChan;
+      var a, b, size, i, j, k;
+      $clumpSize = utils.defaultValue$Integer($clumpSize, 2);
+      $numChan   = utils.defaultValue$Integer($numChan  , 1);
+      $clip      = utils.defaultValue$Boolean($clip, false);
+&nbsp;
+      clumpSize = $clumpSize.__int__();
+      numChan   = $numChan  .__int__();
+      size = (raw.length / clumpSize)|0;
+      size = size - (size % numChan);
+      if (size) {
+        a = new Array(clumpSize);
+        for (i = 0; i &lt; clumpSize; ++i) {
+          b = new Array(size);
+          for (j = 0; j &lt; size; j += numChan) {
+            for (k = 0; k &lt; numChan; ++k) {
+              b[j + k] = raw[i * numChan + k + j * clumpSize];
+            }
+          }
+          a[i] = $SC.Array(b);
+        }
+      } else {
+        a = [];
+      }
+&nbsp;
+      return $SC.Array(a);
+    };
+&nbsp;
+    // TODO: implements interlace
+    // TODO: implements deinterlace
+&nbsp;
+    spec.flop =  function() {
+      return this.multiChannelExpand();
+    };
+&nbsp;
+    spec.multiChannelExpand = function() {
+      var raw = this._;
+      var maxSize, size, obj1, obj2, obj3;
+      var i, j;
+&nbsp;
+      obj1 = raw;
+      maxSize = obj1.reduce(function(len, $elem) {
+        return Math.max(len, Array.isArray($elem._) ? $elem._.length : 1);
+      }, 0);
+&nbsp;
+      obj2 = new Array(maxSize);
+      size = obj1.length;
+&nbsp;
+      if (size === 0) {
+        obj2[0] = $SC.Array([]);
+      } else {
+        for (i = 0; i &lt; maxSize; ++i) {
+          obj3 = new Array(size);
+          for (j = 0; j &lt; size; ++j) {
+            if (Array.isArray(obj1[j]._)) {
+              obj3[j] = obj1[j]._[i % obj1[j]._.length];
+            } else {
+              obj3[j] = obj1[j];
+            }
+          }
+          obj2[i] = $SC.Array(obj3);
+        }
+      }
+&nbsp;
+      return $SC.Array(obj2);
+    };
+&nbsp;
+    // TODO: implements envirPairs
+&nbsp;
+    spec.shift = function($n, $filler) {
+      var $fill, $remain;
+      $n      = utils.defaultValue$Nil($n);
+      $filler = utils.defaultValue$Float($filler, 0.0);
+&nbsp;
+      $fill = SCArray.fill($n.abs(), $filler);
+      $remain = this.drop($n.neg());
+&nbsp;
+      if ($n &lt; 0) {
+        return $remain ["++"] ($fill);
+      }
+&nbsp;
+      return $fill ["++"] ($remain);
+    };
+&nbsp;
+    spec.powerset = function() {
+      var raw = this._;
+      var arrSize, powersize;
+      var result, elemArr, mod, i, j;
+&nbsp;
+      arrSize   = this.size().__int__();
+      powersize = Math.pow(2, arrSize);
+&nbsp;
+      result = [];
+      for (i = 0; i &lt; powersize; ++i) {
+        elemArr = [];
+        for (j = 0; j &lt; arrSize; ++j) {
+          mod = Math.pow(2, j);
+          if (((i / mod)|0) % 2) {
+            elemArr.push(raw[j]);
+          }
+        }
+        result[i] = $SC.Array(elemArr);
+      }
+&nbsp;
+      return $SC.Array(result);
+    };
+&nbsp;
+    // TODO: implements source
+&nbsp;
+    spec.asUGenInput = function($for) {
+      return this.collect($SC.Function(function($_) {
+        return $_.asUGenInput($for);
+      }));
+    };
+&nbsp;
+    spec.asAudioRateInput = function($for) {
+      return this.collect($SC.Function(function($_) {
+        return $_.asAudioRateInput($for);
+      }));
+    };
+&nbsp;
+    spec.asControlInput = function() {
+      return this.collect($SC.Function(function($_) {
+        return $_.asControlInput();
+      }));
+    };
+&nbsp;
+    spec.isValidUGenInput = utils.alwaysReturn$True;
+&nbsp;
+    spec.numChannels = function() {
+      return this.size();
+    };
+&nbsp;
+    // TODO: implements poll
+    // TODO: implements dpoll
+    // TODO: implements evnAt
+    // TODO: implements atIdentityHash
+    // TODO: implements atIdentityHashInPairs
+    // TODO: implements asSpec
+    // TODO: implements fork
+&nbsp;
+    spec.madd = function($mul, $add) {
+      $mul = utils.defaultValue$Float($mul, 1.0);
+      $add = utils.defaultValue$Float($add, 0.0);
+      return $SC.Class("MulAdd").new(this, $mul, $add);
+    };
+&nbsp;
+    // TODO: implements asRawOSC
+    // TODO: implements printOn
+    // TODO: implements storeOn
   });
-&nbsp;
-  $SC.Array = function(value) {
-    var instance = new SCArray();
-    instance._raw = value;
-    return instance;
-  };
 &nbsp;
 })(sc);
 &nbsp;</pre></td></tr>
@@ -452,7 +2348,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 24 2014 23:10:40 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 25 2014 19:28:25 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

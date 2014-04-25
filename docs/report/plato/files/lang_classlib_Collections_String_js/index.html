@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">128.43</p>
+      <p class="stat">126.54</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">139</p>
+      <p class="stat">274</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">6.67</p>
+      <p class="stat">48.34</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.49</p>
+      <p class="stat">1.68</p>
     </div>
   </div>
 </div>
@@ -97,136 +97,271 @@
 
   var $SC = sc.lang.$SC;
 
-  function SCString(value) {
-    this.__initializeWith__(&quot;RawArray&quot;);
-    this._class = $SC.Class(&quot;String&quot;);
-    this._raw = value;
-  }
+  sc.lang.klass.refine(&quot;String&quot;, function(spec, utils) {
 
-  sc.lang.klass.define(&quot;String&quot;, &quot;RawArray&quot;, {
-    constructor: SCString,
-    $new: function() {
+    spec.__str__ = function() {
+      return this.valueOf();
+    };
+
+    spec.__elem__ = function($item) {
+      if ($item.__tag !== sc.C.TAG_CHAR) {
+        throw new TypeError(&quot;Wrong type.&quot;);
+      }
+      return $item;
+    };
+
+    spec.valueOf = function() {
+      return this._.map(function(elem) {
+        return elem.__str__();
+      }).join(&quot;&quot;);
+    };
+
+    spec.toString = function() {
+      return this.valueOf();
+    };
+
+    // TODO: implements unixCmdActions
+    // TODO: implements unixCmdActions_
+
+    spec.$new = function() {
       throw new Error(&quot;String.new is illegal, should use literal.&quot;);
-    },
-    __tag__: function() {
-      return sc.C.TAG_STR;
-    },
-    __str__: function() {
-      return this._raw;
-    },
-    NotYetImplemented: [
-      // &quot;$initClass&quot;,
-      &quot;$doUnixCmdAction&quot;,
-      &quot;prUnixCmd&quot;,
-      &quot;unixCmd&quot;,
-      &quot;unixCmdGetStdOut&quot;,
-      &quot;asSymbol&quot;,
-      &quot;asInteger&quot;,
-      &quot;asFloat&quot;,
-      &quot;ascii&quot;,
-      &quot;stripRTF&quot;,
-      &quot;stripHTML&quot;,
-      &quot;$scDir&quot;,
-      &quot;compare&quot;,
-      &quot;hash&quot;,
-      &quot;performBinaryOpOnSimpleNumber&quot;,
-      &quot;performBinaryOpOnComplex&quot;,
-      &quot;multiChannelPerform&quot;,
-      &quot;isString&quot;,
-      &quot;asString&quot;,
-      &quot;asCompileString&quot;,
-      &quot;species&quot;,
-      &quot;postln&quot;,
-      &quot;post&quot;,
-      &quot;postcln&quot;,
-      &quot;postc&quot;,
-      &quot;postf&quot;,
-      &quot;format&quot;,
-      &quot;prFormat&quot;,
-      &quot;matchRegexp&quot;,
-      &quot;fformat&quot;,
-      &quot;die&quot;,
-      &quot;error&quot;,
-      &quot;warn&quot;,
-      &quot;inform&quot;,
-      &quot;catArgs&quot;,
-      &quot;scatArgs&quot;,
-      &quot;ccatArgs&quot;,
-      &quot;catList&quot;,
-      &quot;scatList&quot;,
-      &quot;ccatList&quot;,
-      &quot;split&quot;,
-      &quot;containsStringAt&quot;,
-      &quot;icontainsStringAt&quot;,
-      &quot;contains&quot;,
-      &quot;containsi&quot;,
-      &quot;findRegexp&quot;,
-      &quot;findAllRegexp&quot;,
-      &quot;find&quot;,
-      &quot;findBackwards&quot;,
-      &quot;endsWith&quot;,
-      &quot;beginsWith&quot;,
-      &quot;findAll&quot;,
-      &quot;replace&quot;,
-      &quot;escapeChar&quot;,
-      &quot;shellQuote&quot;,
-      &quot;quote&quot;,
-      &quot;tr&quot;,
-      &quot;insert&quot;,
-      &quot;wrapExtend&quot;,
-      &quot;zeroPad&quot;,
-      &quot;padLeft&quot;,
-      &quot;padRight&quot;,
-      &quot;underlined&quot;,
-      &quot;scramble&quot;,
-      &quot;rotate&quot;,
-      &quot;compile&quot;,
-      &quot;interpret&quot;,
-      &quot;interpretPrint&quot;,
-      &quot;$readNew&quot;,
-      &quot;prCat&quot;,
-      &quot;printOn&quot;,
-      &quot;storeOn&quot;,
-      &quot;inspectorClass&quot;,
-      &quot;standardizePath&quot;,
-      &quot;realPath&quot;,
-      &quot;withTrailingSlash&quot;,
-      &quot;withoutTrailingSlash&quot;,
-      &quot;absolutePath&quot;,
-      &quot;pathMatch&quot;,
-      &quot;load&quot;,
-      &quot;loadPaths&quot;,
-      &quot;loadRelative&quot;,
-      &quot;resolveRelative&quot;,
-      &quot;include&quot;,
-      &quot;exclude&quot;,
-      &quot;basename&quot;,
-      &quot;dirname&quot;,
-      &quot;splitext&quot;,
-      &quot;asRelativePath&quot;,
-      &quot;asAbsolutePath&quot;,
-      &quot;systemCmd&quot;,
-      &quot;gethostbyname&quot;,
-      &quot;getenv&quot;,
-      &quot;setenv&quot;,
-      &quot;unsetenv&quot;,
-      &quot;codegen_UGenCtorArg&quot;,
-      &quot;ugenCodeString&quot;,
-      &quot;asSecs&quot;,
-      &quot;speak&quot;,
-      &quot;toLower&quot;,
-      &quot;toUpper&quot;,
-      &quot;mkdir&quot;,
-      &quot;parseYAML&quot;,
-      &quot;parseYAMLFile&quot;,
-    ]
-  });
+    };
 
-  $SC.String = function(value) {
-    var instance = new SCString();
-    instance._raw = value;
-    return instance;
-  };
+    // TODO: implements $initClass
+    // TODO: implements $doUnixCmdAction
+    // TODO: implements unixCmd
+    // TODO: implements unixCmdGetStdOut
+
+    spec.asSymbol = function() {
+      return $SC.Symbol(this.__str__());
+    };
+
+    spec.asInteger = function() {
+      var m = /^[-+]?\d+/.exec(this.__str__());
+      return $SC.Integer(m ? m[0]|0 : 0);
+    };
+
+    spec.asFloat = function() {
+      var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
+      return $SC.Float(m ? +m[0] : 0);
+    };
+
+    spec.ascii = function() {
+      var raw = this.__str__();
+      var a, i, imax;
+
+      a = new Array(raw.length);
+      for (i = 0, imax = a.length; i &lt; imax; ++i) {
+        a[i] = $SC.Integer(raw.charCodeAt(i));
+      }
+
+      return $SC.Array(a);
+    };
+
+    // TODO: implements stripRTF
+    // TODO: implements stripHTML
+    // TODO: implements $scDir
+
+    spec.compare = function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, fn;
+      $aString    = utils.defaultValue$Nil($aString);
+      $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
+
+      if ($aString.__tag !== sc.C.TAG_STR) {
+        return utils.nilInstance;
+      }
+
+      araw = this._;
+      braw = $aString._;
+      length = Math.min(araw.length, braw.length);
+
+      if ($ignoreCase.__bool__()) {
+        fn = function(ch) {
+          return ch.toLowerCase();
+        };
+      } else {
+        fn = function(ch) {
+          return ch;
+        };
+      }
+      for (i = 0; i &lt; length; i++) {
+        a = fn(araw[i]._).charCodeAt(0);
+        b = fn(braw[i]._).charCodeAt(0);
+        cmp = a - b;
+        if (cmp !== 0) {
+          return $SC.Integer(cmp &lt; 0 ? -1 : +1);
+        }
+      }
+
+      if (araw.length &lt; braw.length) {
+        cmp = -1;
+      } else if (araw.length &gt; braw.length) {
+        cmp = 1;
+      }
+
+      return $SC.Integer(cmp);
+    };
+
+    spec[&quot;&lt;&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() &lt; 0
+      );
+    };
+
+    spec[&quot;&gt;&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() &gt; 0
+      );
+    };
+
+    spec[&quot;&lt;=&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() &lt;= 0
+      );
+    };
+
+    spec[&quot;&gt;=&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() &gt;= 0
+      );
+    };
+
+    spec[&quot;==&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() === 0
+      );
+    };
+
+    spec[&quot;!=&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, utils.falseInstance).valueOf() !== 0
+      );
+    };
+
+    // TODO: implements hash
+
+    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
+      $aNumber = utils.defaultValue$Nil($aNumber);
+      return $aNumber.asString().perform($aSelector, this);
+    };
+
+    spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
+      $aComplex = utils.defaultValue$Nil($aComplex);
+      return $aComplex.asString().perform($aSelector, this);
+    };
+
+    spec.multiChannelPerform = function() {
+      throw new Error(&quot;String:multiChannelPerform. Cannot expand strings.&quot;);
+    };
+
+    spec.isString = utils.alwaysReturn$True;
+
+    spec.asString = utils.nop;
+
+    spec.asCompileString = function() {
+      return $SC.String(&quot;\&quot;&quot; + this.__str__() + &quot;\&quot;&quot;);
+    };
+
+    spec.species = function() {
+      return $SC.Class(&quot;String&quot;);
+    };
+
+    // TODO: implements postln
+    // TODO: implements post
+    // TODO: implements postcln
+    // TODO: implements postc
+    // TODO: implements postf
+    // TODO: implements format
+    // TODO: implements matchRegexp
+    // TODO: implements fformat
+    // TODO: implements die
+    // TODO: implements error
+    // TODO: implements warn
+    // TODO: implements inform
+
+    spec[&quot;++&quot;] = function($anObject) {
+      return $SC.String(
+        this.toString() + $anObject.asString().toString()
+      );
+    };
+
+    spec[&quot;+&quot;] = function($anObject) {
+      return $SC.String(
+        this.toString() + &quot; &quot; + $anObject.asString().toString()
+      );
+    };
+
+    // TODO: implements catArgs
+    // TODO: implements scatArgs
+    // TODO: implements ccatArgs
+    // TODO: implements catList
+    // TODO: implements scatList
+    // TODO: implements ccatList
+    // TODO: implements split
+    // TODO: implements containsStringAt
+    // TODO: implements icontainsStringAt
+    // TODO: implements contains
+    // TODO: implements containsi
+    // TODO: implements findRegexp
+    // TODO: implements findAllRegexp
+    // TODO: implements find
+    // TODO: implements findBackwards
+    // TODO: implements endsWith
+    // TODO: implements beginsWith
+    // TODO: implements findAll
+    // TODO: implements replace
+    // TODO: implements escapeChar
+    // TODO: implements shellQuote
+    // TODO: implements quote
+    // TODO: implements tr
+    // TODO: implements insert
+    // TODO: implements wrapExtend
+    // TODO: implements zeroPad
+    // TODO: implements padLeft
+    // TODO: implements padRight
+    // TODO: implements underlined
+    // TODO: implements scramble
+    // TODO: implements rotate
+    // TODO: implements compile
+    // TODO: implements interpret
+    // TODO: implements interpretPrint
+    // TODO: implements $readNew
+    // TODO: implements printOn
+    // TODO: implements storeOn
+    // TODO: implements inspectorClass
+    // TODO: implements standardizePath
+    // TODO: implements realPath
+    // TODO: implements withTrailingSlash
+    // TODO: implements withoutTrailingSlash
+    // TODO: implements absolutePath
+    // TODO: implements pathMatch
+    // TODO: implements load
+    // TODO: implements loadPaths
+    // TODO: implements loadRelative
+    // TODO: implements resolveRelative
+    // TODO: implements include
+    // TODO: implements exclude
+    // TODO: implements basename
+    // TODO: implements dirname
+    // TODO: implements splittext
+    // TODO: implements +/+
+    // TODO: implements asRelativePath
+    // TODO: implements asAbsolutePath
+    // TODO: implements systemCmd
+    // TODO: implements gethostbyname
+    // TODO: implements getenv
+    // TODO: implements setenv
+    // TODO: implements unsetenv
+    // TODO: implements codegen_UGenCtorArg
+    // TODO: implements ugenCodeString
+    // TODO: implements asSecs
+    // TODO: implements speak
+    // TODO: implements toLower
+    // TODO: implements toUpper
+    // TODO: implements mkdir
+    // TODO: implements parseYAML
+    // TODO: implements parseYAMLFile
+  });
 
 })(sc);</textarea>
   </div>

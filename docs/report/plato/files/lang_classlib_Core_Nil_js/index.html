@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.16</p>
+      <p class="stat">125.19</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">89</p>
+      <p class="stat">182</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">7.78</p>
+      <p class="stat">19.75</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.32</p>
+      <p class="stat">1.59</p>
     </div>
   </div>
 </div>
@@ -95,88 +95,181 @@
 
   require(&quot;./Object&quot;);
 
+  var slice = [].slice;
   var $SC = sc.lang.$SC;
 
-  var nilInstance = null;
+  sc.lang.klass.refine(&quot;Nil&quot;, function(spec, utils) {
+    spec.__num__ = function() {
+      return 0;
+    };
 
-  function SCNil() {
-    if (nilInstance) {
-      return nilInstance;
-    }
-    this.__initializeWith__(&quot;Object&quot;);
-    this._class = $SC.Class(&quot;Nil&quot;);
-    this._raw = null;
-    nilInstance = this;
-  }
+    spec.__bool__ = function() {
+      return false;
+    };
 
-  sc.lang.klass.define(&quot;Nil&quot;, &quot;Object&quot;, {
-    constructor: SCNil,
-    $new: function() {
+    spec.__sym__ = function() {
+      return &quot;nil&quot;;
+    };
+
+    spec.toString = function() {
+      return &quot;nil&quot;;
+    };
+
+    spec.$new = function() {
       throw new Error(&quot;Nil.new is illegal, should use literal.&quot;);
-    },
-    __tag__: function() {
-      return sc.C.TAG_NIL;
-    },
-    NotYetImplemented: [
-      &quot;isNil&quot;,
-      &quot;notNil&quot;,
-      &quot;asBoolean&quot;,
-      &quot;booleanValue&quot;,
-      &quot;push&quot;,
-      &quot;appendStream&quot;,
-      &quot;pop&quot;,
-      &quot;source&quot;,
-      &quot;source_&quot;,
-      &quot;rate&quot;,
-      &quot;numChannels&quot;,
-      &quot;isPlaying&quot;,
-      &quot;do&quot;,
-      &quot;reverseDo&quot;,
-      &quot;pairsDo&quot;,
-      &quot;collect&quot;,
-      &quot;select&quot;,
-      &quot;reject&quot;,
-      &quot;detect&quot;,
-      &quot;collectAs&quot;,
-      &quot;selectAs&quot;,
-      &quot;rejectAs&quot;,
-      &quot;dependants&quot;,
-      &quot;changed&quot;,
-      &quot;addDependant&quot;,
-      &quot;removeDependant&quot;,
-      &quot;release&quot;,
-      &quot;update&quot;,
-      &quot;transformEvent&quot;,
-      &quot;awake&quot;,
-      &quot;play&quot;,
-      &quot;nextTimeOnGrid&quot;,
-      &quot;asQuant&quot;,
-      &quot;swapThisGroup&quot;,
-      &quot;performMsg&quot;,
-      &quot;printOn&quot;,
-      &quot;storeOn&quot;,
-      &quot;matchItem&quot;,
-      &quot;add&quot;,
-      &quot;addAll&quot;,
-      &quot;asCollection&quot;,
-      &quot;remove&quot;,
-      &quot;set&quot;,
-      &quot;get&quot;,
-      &quot;addFunc&quot;,
-      &quot;removeFunc&quot;,
-      &quot;replaceFunc&quot;,
-      &quot;seconds_&quot;,
-      &quot;throw&quot;,
-      &quot;handleError&quot;,
-      &quot;archiveAsCompileString&quot;,
-      &quot;asSpec&quot;,
-      &quot;superclassesDo&quot;,
-    ]
-  });
+    };
 
-  $SC.Nil = function() {
-    return new SCNil();
-  };
+    spec.isNil = utils.alwaysReturn$True;
+    spec.notNil = utils.alwaysReturn$False;
+
+    spec[&quot;?&quot;] = function($obj) {
+      return $obj;
+    };
+
+    spec[&quot;??&quot;] = function($obj) {
+      return $obj.value();
+    };
+
+    spec[&quot;!?&quot;] = utils.nop;
+
+    spec.asBoolean = utils.alwaysReturn$False;
+    spec.booleanValue = utils.alwaysReturn$False;
+
+    spec.push = function($function) {
+      $function = utils.defaultValue$Nil($function);
+      return $function.value();
+    };
+
+    spec.appendStream = function($stream) {
+      $stream = utils.defaultValue$Nil($stream);
+      return $stream;
+    };
+
+    spec.pop = utils.nop;
+    spec.source = utils.nop;
+    spec.source_ = utils.nop;
+
+    spec.rate = utils.nop;
+    spec.numChannels = utils.nop;
+    spec.isPlaying = utils.alwaysReturn$False;
+
+    spec.do = utils.nop;
+    spec.reverseDo = utils.nop;
+    spec.pairsDo = utils.nop;
+    spec.collect = utils.nop;
+    spec.select = utils.nop;
+    spec.reject = utils.nop;
+    spec.detect = utils.nop;
+    spec.collectAs = utils.nop;
+    spec.selectAs = utils.nop;
+    spec.rejectAs = utils.nop;
+
+    spec.dependants = function() {
+      return $SC.Class(&quot;IdentitySet&quot;).new();
+    };
+
+    spec.changed = utils.nop;
+    spec.addDependant = utils.nop;
+    spec.removeDependant = utils.nop;
+    spec.release = utils.nop;
+    spec.update = utils.nop;
+
+    spec.transformEvent = function($event) {
+      $event = utils.defaultValue$Nil($event);
+      return $event;
+    };
+
+    spec.awake = utils.alwaysReturn$Nil;
+
+    spec.play = utils.nop;
+
+    spec.nextTimeOnGrid = function($clock) {
+      $clock = utils.defaultValue$Nil($clock);
+
+      if ($clock === utils.nilInstance) {
+        return $clock;
+      }
+
+      return $SC.Function(function() {
+        return $clock.nextTimeOnGrid();
+      });
+    };
+
+    spec.asQuant = function() {
+      return $SC.Class(&quot;Quant&quot;).default();
+    };
+
+    spec.swapThisGroup = utils.nop;
+    spec.performMsg = utils.nop;
+
+    spec.printOn = function($stream) {
+      $stream = utils.defaultValue$Nil($stream);
+      $stream.putAll($SC.String(&quot;nil&quot;));
+      return this;
+    };
+
+    spec.storeOn = function($stream) {
+      $stream = utils.defaultValue$Nil($stream);
+      $stream.putAll($SC.String(&quot;nil&quot;));
+      return this;
+    };
+
+    spec.matchItem = utils.alwaysReturn$True;
+
+    spec.add = function($value) {
+      $value = utils.defaultValue$Nil($value);
+      return $SC.Array([ $value ]);
+    };
+
+    spec.addAll = function($array) {
+      $array = utils.defaultValue$Nil($array);
+      return $array.asArray();
+    };
+
+    spec[&quot;++&quot;] = function($array) {
+      $array = utils.defaultValue$Nil($array);
+      return $array.asArray();
+    };
+
+    spec.asCollection = function() {
+      return $SC.Array();
+    };
+
+    spec.remove = utils.nop;
+
+    spec.set = utils.nop;
+
+    spec.get = function($prevVal) {
+      $prevVal = utils.defaultValue$Nil($prevVal);
+      return $prevVal;
+    };
+
+    spec.addFunc = function() {
+      var functions = slice.call(arguments);
+      if (functions.length &lt;= 1) {
+        return functions[0];
+      }
+      return $SC.Class(&quot;FunctionList&quot;).new($SC.Array(functions));
+    };
+
+    spec.removeFunc = utils.nop;
+
+    spec.replaceFunc = utils.nop;
+    spec.seconds_ = utils.nop;
+    spec.throw = utils.nop;
+
+    // TODO: implements handleError
+
+    spec.archiveAsCompileString = utils.alwaysReturn$True;
+
+    spec.asSpec = function() {
+      return $SC.Class(&quot;ControlSpec&quot;).new();
+    };
+
+    spec.superclassesDo = utils.nop;
+
+    spec.shallowCopy = utils.nop;
+  });
 
 })(sc);</textarea>
   </div>

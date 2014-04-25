@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Collections/Dictionary.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(15 / 15)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(9 / 9)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(4 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(5 / 5)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(15 / 15)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(9 / 9)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -297,38 +297,17 @@
 79
 80
 81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+82</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">6</span>
-<span class="cline-any cline-yes">6</span>
-<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-yes">4</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -399,109 +378,85 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(sc) {
   "use strict";
 &nbsp;
   require("./Set");
 &nbsp;
-  var $SC = sc.lang.$SC;
-&nbsp;
   function SCDictionary() {
     this.__initializeWith__("Set");
-    this._class = $SC.Class("Dictionary");
-    this._raw = {};
+    this._ = {};
   }
 &nbsp;
-  sc.lang.klass.define("Dictionary", "Set", {
-    constructor: SCDictionary,
-    NotYetImplemented: [
-      "$newFrom",
-      "at",
-      "atFail",
-      "matchAt",
-      "trueAt",
-      "add",
-      "put",
-      "putAll",
-      "putPairs",
-      "getPairs",
-      "associationAt",
-      "associationAtFail",
-      "keys",
-      "values",
-      "includes",
-      "includesKey",
-      "removeAt",
-      "removeAtFail",
-      "remove",
-      "removeFail",
-      "keysValuesDo",
-      "keysValuesChange",
-      "do",
-      "keysDo",
-      "associationsDo",
-      "pairsDo",
-      "collect",
-      "select",
-      "reject",
-      "invert",
-      "merge",
-      "blend",
-      "findKeyForValue",
-      "sortedKeysValuesDo",
-      "choose",
-      "order",
-      "powerset",
-      "transformEvent",
-      "embedInStream",
-      "asSortedArray",
-      "asKeyValuePairs",
-      "keysValuesArrayDo",
-      "grow",
-      "fixCollisionsFrom",
-      "scanFor",
-      "storeItemsOn",
-      "printItemsOn",
-    ]
+  sc.lang.klass.define(SCDictionary, "Dictionary : Set", function() {
+    // TODO: implements $newFrom
+    // TODO: implements at
+    // TODO: implements atFail
+    // TODO: implements matchAt
+    // TODO: implements trueAt
+    // TODO: implements add
+    // TODO: implements put
+    // TODO: implements putAll
+    // TODO: implements putPairs
+    // TODO: implements getPairs
+    // TODO: implements associationAt
+    // TODO: implements associationAtFail
+    // TODO: implements keys
+    // TODO: implements values
+    // TODO: implements includes
+    // TODO: implements includesKey
+    // TODO: implements removeAt
+    // TODO: implements removeAtFail
+    // TODO: implements remove
+    // TODO: implements removeFail
+    // TODO: implements keysValuesDo
+    // TODO: implements keysValuesChange
+    // TODO: implements do
+    // TODO: implements keysDo
+    // TODO: implements associationsDo
+    // TODO: implements pairsDo
+    // TODO: implements collect
+    // TODO: implements select
+    // TODO: implements reject
+    // TODO: implements invert
+    // TODO: implements merge
+    // TODO: implements blend
+    // TODO: implements findKeyForValue
+    // TODO: implements sortedKeysValuesDo
+    // TODO: implements choose
+    // TODO: implements order
+    // TODO: implements powerset
+    // TODO: implements transformEvent
+    // TODO: implements embedInStream
+    // TODO: implements asSortedArray
+    // TODO: implements asKeyValuePairs
+    // TODO: implements keysValuesArrayDo
+    // TODO: implements grow
+    // TODO: implements fixCollisionsFrom
+    // TODO: implements scanFor
+    // TODO: implements storeItemsOn
+    // TODO: implements printItemsOn
   });
 &nbsp;
-  function IdentityDictionary() {
+  function SCIdentityDictionary() {
     this.__initializeWith__("Dictionary");
   }
 &nbsp;
-  sc.lang.klass.define("IdentityDictionary", "Dictionary", {
-    constructor: IdentityDictionary,
-    NotYetImplemented: [
-      "at",
-      "put",
-      "putGet",
-      "includesKey",
-      "findKeyForValue",
-      "scanFor",
-      "freezeAsParent",
-      "insertParent",
-      "storeItemsOn",
-      "doesNotUnderstand",
-      "nextTimeOnGrid",
-      "asQuant",
-      "timingOffset",
-    ]
+  sc.lang.klass.define(SCIdentityDictionary, "IdentityDictionary : Dictionary", function() {
+    // TODO: implements at
+    // TODO: implements put
+    // TODO: implements putGet
+    // TODO: implements includesKey
+    // TODO: implements findKeyForValue
+    // TODO: implements scanFor
+    // TODO: implements freezeAsParent
+    // TODO: implements insertParent
+    // TODO: implements storeItemsOn
+    // TODO: implements doesNotUnderstand
+    // TODO: implements nextTimeOnGrid
+    // TODO: implements asQuant
+    // TODO: implements timingOffset
   });
-&nbsp;
-  $SC.Dictionary = function(value) {
-    var instance = new SCDictionary();
-    instance._raw = value;
-    return instance;
-  };
 &nbsp;
 })(sc);
 &nbsp;</pre></td></tr>
@@ -509,7 +464,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Mar 24 2014 23:10:40 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Apr 25 2014 19:28:25 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

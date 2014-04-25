@@ -4,14 +4,14 @@
   require("./sc");
 
   var $SC = function(msg, rcv, args) {
-      var method;
+    var method;
 
-      method = rcv[msg];
-      if (method) {
-        return method.apply(rcv, args);
-      }
+    method = rcv[msg];
+    if (method) {
+      return method.apply(rcv, args);
+    }
 
-      throw new Error(String(rcv) + " cannot understand message '" + msg + "'");
+    throw new Error(String(rcv) + " cannot understand message '" + msg + "'");
   };
 
   /* istanbul ignore next */

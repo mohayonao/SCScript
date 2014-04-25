@@ -150,7 +150,9 @@
         error  = items.error;
       }
 
-      desc = sc.test.desc("#{0}.#{1}(#{2})", s(source), methodName, s(args).slice(2, -2));
+      desc = sc.test.desc(
+        "#{0}.#{1}(#{2})", s(source), methodName, s(args).slice(2, -2)
+      );
 
       if (isClassMethod) {
         instance = context.createInstance().class();
@@ -234,11 +236,15 @@
     var msg = fmt;
     if (Array.isArray(list)) {
       list.forEach(function(value, index) {
-        msg = msg.replace(new RegExp("@\\{" + index + "\\}", "g"), String(value));
+        msg = msg.replace(
+          new RegExp("@\\{" + index + "\\}", "g"), String(value)
+        );
       });
     }
-    Array.prototype.slice.call(arguments, 1).forEach(function(value, index) {
-      msg = msg.replace(new RegExp("#\\{" + index + "\\}", "g"), String(value));
+    [].slice.call(arguments, 1).forEach(function(value, index) {
+      msg = msg.replace(
+        new RegExp("#\\{" + index + "\\}", "g"), String(value)
+      );
     });
     return msg;
   };
@@ -314,7 +320,9 @@
 
   // for chai
   global.chai.use(function(chai, utils) {
-    utils.overwriteChainableMethod(chai.Assertion.prototype, "a", function(_super) {
+    var assertion_proto = chai.Assertion.prototype;
+
+    utils.overwriteChainableMethod(assertion_proto, "a", function(_super) {
       return function(type, msg) {
         var object, actual, article;
 
@@ -326,7 +334,9 @@
           }
           object = utils.flag(this, "object");
           actual = typeOf(object);
-          article = ~[ "A", "E", "I", "O", "U" ].indexOf(type.charAt(0)) ? "an " : "a ";
+          article = ~[
+            "A", "E", "I", "O", "U"
+          ].indexOf(type.charAt(0)) ? "an " : "a ";
           this.assert(
             actual === type,
             "expected " + actual + " to be " + article + type,
@@ -346,16 +356,16 @@
       };
     });
 
-    utils.addMethod(chai.Assertion.prototype, "with_message", function() {
+    utils.addMethod(assertion_proto, "with_message", function() {
       utils.flag(this, "message", sc.test.desc.apply(null, arguments));
     });
 
-    utils.addMethod(chai.Assertion.prototype, "expect", function(val, message) {
+    utils.addMethod(assertion_proto, "expect", function(val, message) {
       message = message || utils.flag(this, "message");
       return new chai.Assertion(val, message);
     });
 
-    utils.addMethod(chai.Assertion.prototype, "calledLastIn", function(seed) {
+    utils.addMethod(assertion_proto, "calledLastIn", function(seed) {
       var expected = utils.flag(this, "object").__seed;
       this.assert(
         seed === expected || (seed && seed.__seed === expected),
@@ -365,7 +375,7 @@
       );
     });
 
-    utils.addProperty(chai.Assertion.prototype, "js", function() {
+    utils.addProperty(assertion_proto, "js", function() {
       var obj = utils.flag(this, "object");
       if (Array.isArray(obj)) {
         utils.flag(this, "object", obj.map(function(x) {
@@ -374,7 +384,7 @@
       }
     });
 
-    utils.addProperty(chai.Assertion.prototype, "nop", function() {
+    utils.addProperty(assertion_proto, "nop", function() {
       this.assert(
         utils.flag(this, "object") === sc.lang.klass.utils.nop,
         "expected #{this} to be nop",
@@ -383,7 +393,7 @@
       );
     });
 
-    utils.addProperty(chai.Assertion.prototype, "nan", function() {
+    utils.addProperty(assertion_proto, "nan", function() {
       this.assert(
         isNaN(utils.flag(this, "object")),
         "expected #{this} to be NaN",

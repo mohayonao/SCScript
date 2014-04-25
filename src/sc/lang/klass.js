@@ -395,7 +395,6 @@
 
   $SC.Class = sc.lang.klass.get;
 
-
   var nilInstance = new SCNil();
 
   $SC.Nil = function() {
@@ -515,10 +514,10 @@
     alwaysReturn$Nil: $SC.Nil,
     alwaysReturn$True: $SC.True,
     alwaysReturn$False: $SC.False,
-    alwaysReturn$Integer_0: function () {
+    alwaysReturn$Integer_0: function() {
       return int0Instance;
     },
-    alwaysReturn$Integer_1: function () {
+    alwaysReturn$Integer_1: function() {
       return int1Instance;
     },
     defaultValue$Nil: function($obj) {

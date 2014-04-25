@@ -230,7 +230,7 @@ describe("SCNil", function() {
     var instance, test;
     var $event;
 
-    $event= sc.test.object();
+    $event = sc.test.object();
 
     instance = this.createInstance();
 

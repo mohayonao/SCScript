@@ -148,7 +148,6 @@ describe("SCAbstractFunction", function() {
     expect(instance.reverseComposeBinaryOp).to.be.calledLastIn(test);
   }));
 
-
   [
     "neg",
     "reciprocal",
@@ -307,34 +306,34 @@ describe("SCAbstractFunction", function() {
     }));
   });
   it("#rotate", sinon.test(function() {
-      var instance, test;
-      var $function;
+    var instance, test;
+    var $function;
 
-      $function = sc.test.object();
+    $function = sc.test.object();
 
-      instance = this.createInstance();
-      this.stub(instance, "composeBinaryOp", sc.test.func);
+    instance = this.createInstance();
+    this.stub(instance, "composeBinaryOp", sc.test.func);
 
-      test = instance.rotate($function);
-      expect(instance.composeBinaryOp).to.be.calledWith(
-        $SC.Symbol("rotate"), $function
-      );
-      expect(instance.composeBinaryOp).to.be.calledLastIn(test);
+    test = instance.rotate($function);
+    expect(instance.composeBinaryOp).to.be.calledWith(
+      $SC.Symbol("rotate"), $function
+    );
+    expect(instance.composeBinaryOp).to.be.calledLastIn(test);
   }));
   it("#dist", sinon.test(function() {
-      var instance, test;
-      var $function;
+    var instance, test;
+    var $function;
 
-      $function = sc.test.object();
+    $function = sc.test.object();
 
-      instance = this.createInstance();
-      this.stub(instance, "composeBinaryOp", sc.test.func);
+    instance = this.createInstance();
+    this.stub(instance, "composeBinaryOp", sc.test.func);
 
-      test = instance.dist($function);
-      expect(instance.composeBinaryOp).to.be.calledWith(
-        $SC.Symbol("dist"), $function
-      );
-      expect(instance.composeBinaryOp).to.be.calledLastIn(test);
+    test = instance.dist($function);
+    expect(instance.composeBinaryOp).to.be.calledWith(
+      $SC.Symbol("dist"), $function
+    );
+    expect(instance.composeBinaryOp).to.be.calledLastIn(test);
   }));
   it("#real", function() {
     var instance = this.createInstance();

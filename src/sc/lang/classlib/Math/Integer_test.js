@@ -303,7 +303,7 @@ describe("SCInteger", function() {
       [   0, [ 0, "\\a" ], "\\a" ],
       [   0, [ -1.5, +1.5 ], $SC.Float(0.0) ],
     ]);
- });
+  });
   it("#wrap", function() {
     testCase(this, [
       [ -20, [ -1, 2 ],  0 ],

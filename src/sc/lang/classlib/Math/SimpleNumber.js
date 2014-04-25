@@ -817,7 +817,6 @@
     spec.shallowCopy = utils.nop;
   });
 
-
   function clip_for_map($this, $inMin, $inMax, $outMin, $outMax, $clip) {
 
     switch ($clip.__sym__()) {

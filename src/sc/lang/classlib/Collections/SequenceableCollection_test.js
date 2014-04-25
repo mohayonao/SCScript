@@ -137,11 +137,11 @@ describe("SCSequenceableCollection", function() {
   });
   it("#wchoose", function() {
     testCase(this, [
-      [ [ 1, 2, 3, 4, 5 ], [ [0.1, 0.2, 0.3, 0.4 ] ], 4 ],
-      [ [ 1, 2, 3, 4, 5 ], [ [0.1, 0.2, 0.3, 0.4 ] ], 1 ],
-      [ [ 1, 2, 3, 4, 5 ], [ [0.1, 0.2, 0.3, 0.4 ] ], 2 ],
-      [ [ 1, 2, 3, 4, 5 ], [ [0.1, 0.2, 0.3, 0.4 ] ], 3 ],
-      [ [ 1, 2, 3, 4, 5 ], [ [0.1, 0.2, 0.3, 0.4 ] ], 3 ],
+      [ [ 1, 2, 3, 4, 5 ], [ [ 0.1, 0.2, 0.3, 0.4 ] ], 4 ],
+      [ [ 1, 2, 3, 4, 5 ], [ [ 0.1, 0.2, 0.3, 0.4 ] ], 1 ],
+      [ [ 1, 2, 3, 4, 5 ], [ [ 0.1, 0.2, 0.3, 0.4 ] ], 2 ],
+      [ [ 1, 2, 3, 4, 5 ], [ [ 0.1, 0.2, 0.3, 0.4 ] ], 3 ],
+      [ [ 1, 2, 3, 4, 5 ], [ [ 0.1, 0.2, 0.3, 0.4 ] ], 3 ],
     ], { randSeed: 0 });
   });
   it("#==", function() {
@@ -1338,7 +1338,7 @@ describe("SCSequenceableCollection", function() {
       $SC.Integer(1), $SC.Integer(3)
     );
     expect(test).to.equal(instance)
-      .that.is.a("SCArray").and.eqls([1, 4, 3, 2, 5]);
+      .that.is.a("SCArray").and.eqls([ 1, 4, 3, 2, 5 ]);
   });
   it.skip("#quickSortRange", function() {
   });

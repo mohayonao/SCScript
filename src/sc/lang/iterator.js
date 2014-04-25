@@ -296,7 +296,6 @@
     return iter;
   };
 
-
   iterator.array$do = function($array) {
     return js_array_iter($array._.slice());
   };

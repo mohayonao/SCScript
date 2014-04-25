@@ -20,7 +20,7 @@ describe("sc.libs.mathlib", function() {
       expected = items.pop();
       actual = mathlib[methodName].apply(null, items);
 
-      desc = sc.test.desc("#{0}(#{1})", methodName, ""+items);
+      desc = sc.test.desc("#{0}(#{1})", methodName, "" + items);
 
       if (opts.closeTo) {
         if (isFinite(actual)) {
@@ -124,29 +124,29 @@ describe("sc.libs.mathlib", function() {
   it("pow", function() {
     testCase(this, [
       [ 2, -2, 0.25 ],
-      [ 2 ,-1, 0.5 ],
+      [ 2, -1, 0.5 ],
       [ 2,  0, 1 ],
       [ 2,  1, 2 ],
-      [ 2 , 2, 4 ],
+      [ 2,  2, 4 ],
     ]);
   });
   it("min", function() {
     testCase(this, [
       [ 1, 0, 0 ],
-      [ 1 ,1, 1 ],
+      [ 1, 1, 1 ],
       [ 1, 2, 1 ],
       [ 0, 1, 0 ],
-      [ 1 ,1, 1 ],
+      [ 1, 1, 1 ],
       [ 2, 1, 1 ],
     ]);
   });
   it("max", function() {
     testCase(this, [
       [ 1, 0, 1 ],
-      [ 1 ,1, 1 ],
+      [ 1, 1, 1 ],
       [ 1, 2, 2 ],
       [ 0, 1, 1 ],
-      [ 1 ,1, 1 ],
+      [ 1, 1, 1 ],
       [ 2, 1, 2 ],
     ]);
   });
@@ -485,7 +485,7 @@ describe("sc.libs.mathlib", function() {
       [ +31.4,  0.0,  0.0 ],
       [ +31.4, +1.5,  1.5 ],
       [   2.0,  1.0,  1.0 ],
-      [ - 2.0,  1.0, -1.0 ],
+      [  -2.0,  1.0, -1.0 ],
     ]);
   });
   it("fold2", function() {
@@ -500,7 +500,7 @@ describe("sc.libs.mathlib", function() {
       [ +31.4,  0.0,  0.0 ],
       [ +31.4, +1.5,  1.4 ],
       [   2.0,  1.0,  0.0 ],
-      [ - 2.0,  1.0,  0.0 ],
+      [  -2.0,  1.0,  0.0 ],
     ], { closeTo: 1e-6 });
   });
   it("wrap2", function() {
@@ -515,7 +515,7 @@ describe("sc.libs.mathlib", function() {
       [ +31.4,  0.0,  0.0 ],
       [ +31.4, +1.5,  1.4 ],
       [   2.0,  1.0,  0.0 ],
-      [ - 2.0,  1.0,  0.0 ],
+      [  -2.0,  1.0,  0.0 ],
     ], { closeTo: 1e-6 });
   });
   it("excess", function() {
@@ -523,7 +523,7 @@ describe("sc.libs.mathlib", function() {
       [ -31.4, -1.5, -32.9 ],
       [ -31.4,  0.0, -31.4 ],
       [ -31.4, +1.5, -29.9 ],
-      [   0.0, -1.5, - 1.5 ],
+      [   0.0, -1.5,  -1.5 ],
       [   0.0,  0.0,   0.0 ],
       [   0.0, +1.5,   0.0 ],
       [ +31.4, -1.5,  29.9 ],
@@ -540,12 +540,12 @@ describe("sc.libs.mathlib", function() {
   it("rrand", function() {
     testCase(this, [
       [ 1, 2, 1.8575514554977 ],
-    ], { randSeed:0, closeTo: 1e-6 });
+    ], { randSeed: 0, closeTo: 1e-6 });
   });
   it("exprand", function() {
     testCase(this, [
       [ 1, 2, 1.8119605359594 ],
-    ], { randSeed:0, closeTo: 1e-6 });
+    ], { randSeed: 0, closeTo: 1e-6 });
   });
   it("clip", function() {
     testCase(this, [

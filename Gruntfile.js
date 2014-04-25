@@ -91,7 +91,7 @@ module.exports = function(grunt) {
     }
 
     grunt.config.data.jshint = {
-      options: grunt.file.readJSON(".jshint.json")
+      options: grunt.file.readJSON(".jshintrc")
     };
 
     if (files.length) {
@@ -103,7 +103,6 @@ module.exports = function(grunt) {
         options: {
           expr    : true,
           loopfunc: true,
-          maxlen  : 256,
           globals: {
             sc        : true,
             context   : true,
@@ -125,6 +124,30 @@ module.exports = function(grunt) {
     }
 
     grunt.task.run("jshint");
+  });
+
+  grunt.registerTask("jscs", [ "_jscs" ]);
+
+  grunt.registerTask("_jscs", function(filter) {
+    var list;
+
+    loadNpmTasksIfNeeded("grunt-jscs-checker");
+
+    list = grunt.file.expand([
+      "src/sc/**/*.js", "!src/sc/**/*_test.js"
+    ]);
+    if (filter) {
+      list = filterFiles(list, filter, false);
+    }
+
+    grunt.config.data.jscs = {
+      src: list,
+      options: {
+        config: ".jscsrc"
+      }
+    };
+
+    grunt.task.run("jscs");
   });
 
   grunt.registerTask("typo", function(filter) {
@@ -305,13 +328,15 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask("check", function(filter) {
-    grunt.task.run("typo:" + s(filter));
-    grunt.task.run("lint:" + s(filter));
-    grunt.task.run("test:" + s(filter) + ":nyan:text");
+    grunt.task.run("typo:"  + s(filter));
+    grunt.task.run("_jscs:" + s(filter));
+    grunt.task.run("lint:"  + s(filter));
+    grunt.task.run("test:"  + s(filter) + ":nyan:text");
   });
 
   grunt.registerTask("travis", function() {
     grunt.task.run("typo");
+    grunt.task.run("jscs");
     grunt.task.run("lint");
     grunt.task.run("test::list:lcovonly");
   });
@@ -414,7 +439,7 @@ module.exports = function(grunt) {
 
     grunt.config.data.plato = {
       options: {
-        jshint: grunt.file.readJSON(".jshint.json"),
+        jshint: grunt.file.readJSON(".jshintrc"),
         complexity: {
           logicalor : true,
           switchcase: true,

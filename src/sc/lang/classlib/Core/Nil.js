@@ -3,87 +3,180 @@
 
   require("./Object");
 
+  var slice = [].slice;
   var $SC = sc.lang.$SC;
 
-  var nilInstance = null;
+  sc.lang.klass.refine("Nil", function(spec, utils) {
+    spec.__num__ = function() {
+      return 0;
+    };
 
-  function SCNil() {
-    if (nilInstance) {
-      return nilInstance;
-    }
-    this.__initializeWith__("Object");
-    this._class = $SC.Class("Nil");
-    this._raw = null;
-    nilInstance = this;
-  }
+    spec.__bool__ = function() {
+      return false;
+    };
 
-  sc.lang.klass.define("Nil", "Object", {
-    constructor: SCNil,
-    $new: function() {
+    spec.__sym__ = function() {
+      return "nil";
+    };
+
+    spec.toString = function() {
+      return "nil";
+    };
+
+    spec.$new = function() {
       throw new Error("Nil.new is illegal, should use literal.");
-    },
-    __tag__: function() {
-      return sc.C.TAG_NIL;
-    },
-    NotYetImplemented: [
-      "isNil",
-      "notNil",
-      "asBoolean",
-      "booleanValue",
-      "push",
-      "appendStream",
-      "pop",
-      "source",
-      "source_",
-      "rate",
-      "numChannels",
-      "isPlaying",
-      "do",
-      "reverseDo",
-      "pairsDo",
-      "collect",
-      "select",
-      "reject",
-      "detect",
-      "collectAs",
-      "selectAs",
-      "rejectAs",
-      "dependants",
-      "changed",
-      "addDependant",
-      "removeDependant",
-      "release",
-      "update",
-      "transformEvent",
-      "awake",
-      "play",
-      "nextTimeOnGrid",
-      "asQuant",
-      "swapThisGroup",
-      "performMsg",
-      "printOn",
-      "storeOn",
-      "matchItem",
-      "add",
-      "addAll",
-      "asCollection",
-      "remove",
-      "set",
-      "get",
-      "addFunc",
-      "removeFunc",
-      "replaceFunc",
-      "seconds_",
-      "throw",
-      "handleError",
-      "archiveAsCompileString",
-      "asSpec",
-      "superclassesDo",
-    ]
-  });
+    };
 
-  $SC.Nil = function() {
-    return new SCNil();
-  };
+    spec.isNil = utils.alwaysReturn$True;
+    spec.notNil = utils.alwaysReturn$False;
+
+    spec["?"] = function($obj) {
+      return $obj;
+    };
+
+    spec["??"] = function($obj) {
+      return $obj.value();
+    };
+
+    spec["!?"] = utils.nop;
+
+    spec.asBoolean = utils.alwaysReturn$False;
+    spec.booleanValue = utils.alwaysReturn$False;
+
+    spec.push = function($function) {
+      $function = utils.defaultValue$Nil($function);
+      return $function.value();
+    };
+
+    spec.appendStream = function($stream) {
+      $stream = utils.defaultValue$Nil($stream);
+      return $stream;
+    };
+
+    spec.pop = utils.nop;
+    spec.source = utils.nop;
+    spec.source_ = utils.nop;
+
+    spec.rate = utils.nop;
+    spec.numChannels = utils.nop;
+    spec.isPlaying = utils.alwaysReturn$False;
+
+    spec.do = utils.nop;
+    spec.reverseDo = utils.nop;
+    spec.pairsDo = utils.nop;
+    spec.collect = utils.nop;
+    spec.select = utils.nop;
+    spec.reject = utils.nop;
+    spec.detect = utils.nop;
+    spec.collectAs = utils.nop;
+    spec.selectAs = utils.nop;
+    spec.rejectAs = utils.nop;
+
+    spec.dependants = function() {
+      return $SC.Class("IdentitySet").new();
+    };
+
+    spec.changed = utils.nop;
+    spec.addDependant = utils.nop;
+    spec.removeDependant = utils.nop;
+    spec.release = utils.nop;
+    spec.update = utils.nop;
+
+    spec.transformEvent = function($event) {
+      $event = utils.defaultValue$Nil($event);
+      return $event;
+    };
+
+    spec.awake = utils.alwaysReturn$Nil;
+
+    spec.play = utils.nop;
+
+    spec.nextTimeOnGrid = function($clock) {
+      $clock = utils.defaultValue$Nil($clock);
+
+      if ($clock === utils.nilInstance) {
+        return $clock;
+      }
+
+      return $SC.Function(function() {
+        return $clock.nextTimeOnGrid();
+      });
+    };
+
+    spec.asQuant = function() {
+      return $SC.Class("Quant").default();
+    };
+
+    spec.swapThisGroup = utils.nop;
+    spec.performMsg = utils.nop;
+
+    spec.printOn = function($stream) {
+      $stream = utils.defaultValue$Nil($stream);
+      $stream.putAll($SC.String("nil"));
+      return this;
+    };
+
+    spec.storeOn = function($stream) {
+      $stream = utils.defaultValue$Nil($stream);
+      $stream.putAll($SC.String("nil"));
+      return this;
+    };
+
+    spec.matchItem = utils.alwaysReturn$True;
+
+    spec.add = function($value) {
+      $value = utils.defaultValue$Nil($value);
+      return $SC.Array([ $value ]);
+    };
+
+    spec.addAll = function($array) {
+      $array = utils.defaultValue$Nil($array);
+      return $array.asArray();
+    };
+
+    spec["++"] = function($array) {
+      $array = utils.defaultValue$Nil($array);
+      return $array.asArray();
+    };
+
+    spec.asCollection = function() {
+      return $SC.Array();
+    };
+
+    spec.remove = utils.nop;
+
+    spec.set = utils.nop;
+
+    spec.get = function($prevVal) {
+      $prevVal = utils.defaultValue$Nil($prevVal);
+      return $prevVal;
+    };
+
+    spec.addFunc = function() {
+      var functions = slice.call(arguments);
+      if (functions.length <= 1) {
+        return functions[0];
+      }
+      return $SC.Class("FunctionList").new($SC.Array(functions));
+    };
+
+    spec.removeFunc = utils.nop;
+
+    spec.replaceFunc = utils.nop;
+    spec.seconds_ = utils.nop;
+    spec.throw = utils.nop;
+
+    // TODO: implements handleError
+
+    spec.archiveAsCompileString = utils.alwaysReturn$True;
+
+    spec.asSpec = function() {
+      return $SC.Class("ControlSpec").new();
+    };
+
+    spec.superclassesDo = utils.nop;
+
+    spec.shallowCopy = utils.nop;
+  });
 
 })(sc);

@@ -4,23 +4,55 @@ require("./Event");
 
 var $SC = sc.lang.$SC;
 
-describe("class Event", function() {
-  var Event;
+describe("SCEvent", function() {
+  var SCEvent;
   before(function() {
-    Event = $SC.Class("Event");
+    SCEvent = $SC.Class("Event");
+    this.createInstance = function() {
+      return SCEvent.new();
+    };
   });
-  describe(".new", function() {
-    it("should return instance of Event", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = Event.new();
-      var test = instance.isMemberOf(Event);
+  it("#valueOf", function() {
+    var instance, test;
 
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
-
-      expect(instance.js()).to.be.deep.equal({});
-
-      spy.restore();
-    }));
+    instance = this.createInstance();
+    test = instance.valueOf();
+    expect(test).to.be.a("JSObject").that.eqls({});
+  });
+  it.skip(".default", function() {
+  });
+  it.skip(".silent", function() {
+  });
+  it.skip(".addEventType", function() {
+  });
+  it.skip("#next", function() {
+  });
+  it.skip("#delta", function() {
+  });
+  it.skip("#play", function() {
+  });
+  it.skip("#isRest", function() {
+  });
+  it.skip("#isPlaying_", function() {
+  });
+  it.skip("#isRunning_", function() {
+  });
+  it.skip("#playAndDelta", function() {
+  });
+  it.skip("#synchWithQuant", function() {
+  });
+  it.skip("#asControlInput", function() {
+  });
+  it.skip("#asUGenInput", function() {
+  });
+  it.skip("#printOn", function() {
+  });
+  it.skip("#storeOn", function() {
+  });
+  it.skip("#$initClass", function() {
+  });
+  it.skip("#$makeDefaultSynthDef", function() {
+  });
+  it.skip("#$makeParentEvents", function() {
   });
 });

@@ -3,6 +3,7 @@
 
   sc.lang = {};
   sc.lang.$SC = {};
+  sc.libs = {};
 
   function SCScript(fn) {
     return fn(sc.lang.$SC);

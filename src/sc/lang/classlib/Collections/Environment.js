@@ -7,22 +7,19 @@
     this.__initializeWith__("IdentityDictionary");
   }
 
-  sc.lang.klass.define("Environment", "IdentityDictionary", {
-    constructor: SCEnvironment,
-    NotYetImplemented: [
-      "$make",
-      "$use",
-      "make",
-      "use",
-      "eventAt",
-      "composeEvents",
-      "$pop",
-      "$push",
-      "pop",
-      "push",
-      "linkDoc",
-      "unlinkDoc",
-    ]
+  sc.lang.klass.define(SCEnvironment, "Environment : IdentityDictionary", function() {
+    // TODO: implements $make
+    // TODO: implements $use
+    // TODO: implements make
+    // TODO: implements use
+    // TODO: implements eventAt
+    // TODO: implements composeEvents
+    // TODO: implements $pop
+    // TODO: implements $push
+    // TODO: implements pop
+    // TODO: implements push
+    // TODO: implements linkDoc
+    // TODO: implements unlinkDoc
   });
 
 })(sc);

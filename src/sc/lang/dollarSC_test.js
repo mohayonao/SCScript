@@ -7,7 +7,9 @@ var $SC = sc.lang.$SC;
 describe("sc.lang.$SC", function() {
   it("should execute with arguments when given message is understood", function() {
     var obj = {
-      msg: function(a, b) { return a + b; }
+      msg: function(a, b) {
+        return a + b;
+      }
     };
     var spy = sinon.spy(obj, "msg");
     var test = $SC("msg", obj, [ 1, 2 ]);

@@ -91,7 +91,7 @@ module.exports = function(grunt) {
     }
 
     grunt.config.data.jshint = {
-      options: grunt.file.readJSON(".jshint.json")
+      options: grunt.file.readJSON(".jshintrc")
     };
 
     if (files.length) {
@@ -101,13 +101,14 @@ module.exports = function(grunt) {
     if (tests.length) {
       grunt.config.data.jshint.test = {
         options: {
-          expr: true,
+          expr    : true,
           loopfunc: true,
           globals: {
             sc        : true,
             context   : true,
             describe  : true,
             it        : true,
+            chai      : true,
             sinon     : true,
             expect    : true,
             before    : true,
@@ -123,6 +124,30 @@ module.exports = function(grunt) {
     }
 
     grunt.task.run("jshint");
+  });
+
+  grunt.registerTask("jscs", [ "_jscs" ]);
+
+  grunt.registerTask("_jscs", function(filter) {
+    var list;
+
+    loadNpmTasksIfNeeded("grunt-jscs-checker");
+
+    list = grunt.file.expand([
+      "src/sc/**/*.js", "!src/sc/**/*_test.js"
+    ]);
+    if (filter) {
+      list = filterFiles(list, filter, false);
+    }
+
+    grunt.config.data.jscs = {
+      src: list,
+      options: {
+        config: ".jscsrc"
+      }
+    };
+
+    grunt.task.run("jscs");
   });
 
   grunt.registerTask("typo", function(filter) {
@@ -254,11 +279,10 @@ module.exports = function(grunt) {
     clearRequireCache();
 
     global.expect = chai.expect;
+    global.chai = chai;
     global.sinon = sinon;
     global.sc = { VERSION: grunt.config.data.pkg.version };
     global.sc.C = require("./src/const");
-
-    require("./src/sc/test/utils");
 
     if (cover) {
       coverageVar = "$$cov_" + Date.now() + "$$";
@@ -267,6 +291,8 @@ module.exports = function(grunt) {
       istanbul.hook.hookRequire(function(file) { return matchFn[file]; }, transformer);
       global[coverageVar] = {};
     }
+
+    require("./src/sc/test/utils");
 
     if (!reporter) {
       reporter = "spec";
@@ -302,13 +328,15 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask("check", function(filter) {
-    grunt.task.run("typo:" + s(filter));
-    grunt.task.run("lint:" + s(filter));
-    grunt.task.run("test:" + s(filter) + ":nyan:text");
+    grunt.task.run("typo:"  + s(filter));
+    grunt.task.run("_jscs:" + s(filter));
+    grunt.task.run("lint:"  + s(filter));
+    grunt.task.run("test:"  + s(filter) + ":nyan:text");
   });
 
   grunt.registerTask("travis", function() {
     grunt.task.run("typo");
+    grunt.task.run("jscs");
     grunt.task.run("lint");
     grunt.task.run("test::list:lcovonly");
   });
@@ -362,9 +390,6 @@ module.exports = function(grunt) {
     });
     tmpl = tmpl.replace("#{TESTS}", tests.join("\n"));
 
-    consts = grunt.file.read("src/const.js").trim();
-    tmpl = tmpl.replace("#{CONSTS}", consts);
-
     grunt.file.write("docs/report/test/index.html", tmpl);
   }
 
@@ -414,7 +439,7 @@ module.exports = function(grunt) {
 
     grunt.config.data.plato = {
       options: {
-        jshint: grunt.file.readJSON(".jshint.json"),
+        jshint: grunt.file.readJSON(".jshintrc"),
         complexity: {
           logicalor : true,
           switchcase: true,

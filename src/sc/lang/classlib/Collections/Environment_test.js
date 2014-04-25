@@ -4,23 +4,43 @@ require("./Environment");
 
 var $SC = sc.lang.$SC;
 
-describe("class Environment", function() {
-  var Environment;
+describe("SCEnvironment", function() {
+  var SCEnvironment;
   before(function() {
-    Environment = $SC.Class("Environment");
+    SCEnvironment = $SC.Class("Environment");
+    this.createInstance = function() {
+      return SCEnvironment.new();
+    };
   });
-  describe(".new", function() {
-    it("should return instance of Environment", sinon.test(function() {
-      var spy = this.spy($SC, "Boolean");
-      var instance = Environment.new();
-      var test = instance.isMemberOf(Environment);
+  it("#valueOf", function() {
+    var instance, test;
 
-      expect(spy).to.be.calledWith(true);
-      expect(spy).to.be.returned(test);
-
-      expect(instance.js()).to.be.deep.equal({});
-
-      spy.restore();
-    }));
+    instance = this.createInstance();
+    test = instance.valueOf();
+    expect(test).to.be.a("JSObject").that.eqls({});
+  });
+  it.skip(".make", function() {
+  });
+  it.skip(".use", function() {
+  });
+  it.skip("#make", function() {
+  });
+  it.skip("#use", function() {
+  });
+  it.skip("#eventAt", function() {
+  });
+  it.skip("#composeEvents", function() {
+  });
+  it.skip("#$pop", function() {
+  });
+  it.skip("#$push", function() {
+  });
+  it.skip("#pop", function() {
+  });
+  it.skip("#push", function() {
+  });
+  it.skip("#linkDoc", function() {
+  });
+  it.skip("#unlinkDoc", function() {
   });
 });

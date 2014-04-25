@@ -503,7 +503,7 @@ describe("SCCollection", function() {
 
     $elem1 = sc.test.object({ perform: this.spy() });
     $elem2 = sc.test.object({ perform: this.spy() });
-    $elem3 = sc.test.object({ perform: this.spy()});
+    $elem3 = sc.test.object({ perform: this.spy() });
     $selector = sc.test.object();
     $arg1     = sc.test.object();
     $arg2     = sc.test.object();
@@ -970,7 +970,7 @@ describe("SCCollection", function() {
     it("#deepDo.depth:nil", function() {
       var instance, test;
 
-      instance = this.createInstance([ 1, [ 2, 3, 4 ], [[ 5 ]]]);
+      instance = this.createInstance([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
 
       test = instance.deepDo($SC.Nil(), $function);
       expect(test).to.equal(instance);
@@ -980,32 +980,32 @@ describe("SCCollection", function() {
     it("#deepDo.depth:0", function() {
       var instance, test;
 
-      instance = this.createInstance([ 1, [ 2, 3, 4 ], [[ 5 ]]]);
+      instance = this.createInstance([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
 
       test = instance.deepDo($SC.Integer(0), $function);
       expect(test).to.equal(instance);
       expect($result).to.be.a("SCArray")
-        .that.eqls([[ 1, [ 2, 3, 4 ], [[ 5 ]]]]);
+        .that.eqls([ [ 1, [ 2, 3, 4 ], [ [ 5 ] ] ] ]);
     });
     it("#deepDo.depth:1", function() {
       var instance, test;
 
-      instance = this.createInstance([ 1, [ 2, 3, 4 ], [[ 5 ]]]);
+      instance = this.createInstance([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
 
       test = instance.deepDo($SC.Integer(1), $function);
       expect(test).to.equal(instance);
       expect($result).to.be.a("SCArray")
-        .that.eqls([ 1, [ 2, 3, 4 ], [[ 5 ]]]);
+        .that.eqls([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
     });
     it("#deepDo.depth:2", function() {
       var instance, test;
 
-      instance = this.createInstance([ 1, [ 2, 3, 4 ], [[ 5 ]]]);
+      instance = this.createInstance([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
 
       test = instance.deepDo($SC.Integer(2), $function);
       expect(test).to.equal(instance);
       expect($result).to.be.a("SCArray")
-        .that.eqls([ 1, 2, 3, 4, [ 5 ]]);
+        .that.eqls([ 1, 2, 3, 4, [ 5 ] ]);
     });
   });
   it("#invert", function() {

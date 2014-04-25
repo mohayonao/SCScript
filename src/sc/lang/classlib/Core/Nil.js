@@ -43,7 +43,6 @@
     spec.asBoolean = utils.alwaysReturn$False;
     spec.booleanValue = utils.alwaysReturn$False;
 
-
     spec.push = function($function) {
       $function = utils.defaultValue$Nil($function);
       return $function.value();

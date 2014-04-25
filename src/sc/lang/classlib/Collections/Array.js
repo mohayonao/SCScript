@@ -281,70 +281,70 @@
       switch (patternType) {
       case 1:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
         break;
       case 2:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex-i, lastIndex+1)));
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         break;
       case 3:
         for (i = lastIndex; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
         break;
       case 4:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex+1)));
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 5:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
-        for (i = lastIndex-1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+        for (i = lastIndex - 1; i >= 0; --i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
         break;
       case 6:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex-i, lastIndex+1)));
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
-        for (i = lastIndex-1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(lastIndex-i, lastIndex+1)));
+        for (i = lastIndex - 1; i >= 0; --i) {
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         break;
       case 7:
         for (i = lastIndex; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
         for (i = 1; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
         break;
       case 8:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex+1)));
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
         }
         for (i = lastIndex - 1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(i, lastIndex+1)));
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 9:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
         for (i = 1; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex+1)));
+          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 10:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex-i, lastIndex+1)));
+          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
-        for (i = lastIndex-1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i+1)));
+        for (i = lastIndex - 1; i >= 0; --i) {
+          list.push($SC.Array(raw.slice(0, i + 1)));
         }
         break;
       }
@@ -439,7 +439,7 @@
       for (i = 0; i < newSize; ++i) {
         k = i;
         obj3 = new Array(tupSize);
-        for (j = tupSize - 1; j >=0; --j) {
+        for (j = tupSize - 1; j >= 0; --j) {
           if (Array.isArray(obj1[j]._)) {
             obj4 = obj1[j]._;
             obj3[j] = obj4[k % obj4.length];
@@ -500,10 +500,10 @@
 
       if (raw.length < size) {
         a = new Array(size);
-        for (i = 0, imax = raw.length; i< imax; ++i) {
+        for (i = 0, imax = raw.length; i < imax; ++i) {
           a[i] = raw[i];
         }
-        for (b = a[i-1]; i < size; ++i) {
+        for (b = a[i - 1]; i < size; ++i) {
           a[i] = b;
         }
       } else {

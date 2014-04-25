@@ -417,14 +417,18 @@ describe("SCArrayedCollection", function() {
     testCase(this, [
       {
         source: [ 1, 2, 3, 4, 5 ],
-        args  : [ function($item) { return $item.odd(); } ],
+        args  : [ function($item) {
+          return $item.odd();
+        } ],
         result: this,
         after : [ 4, 2 ]
       },
       {
         source   : [ 1, 2, 3, 4, 5 ],
         immutable: true,
-        args  : [ function($item) { return $item.odd(); } ],
+        args  : [ function($item) {
+          return $item.odd();
+        } ],
         error : "immutable"
       },
     ]);
@@ -503,7 +507,7 @@ describe("SCArrayedCollection", function() {
   it("#getSlots", sinon.test(function() {
     var instance, test;
 
-    instance = this.createInstance([1, 2, 3]);
+    instance = this.createInstance([ 1, 2, 3 ]);
     this.stub(instance, "copy", sc.test.func);
 
     test = instance.getSlots();
@@ -516,7 +520,7 @@ describe("SCArrayedCollection", function() {
     spy = this.spy(sc.test.func);
     $array = sc.test.object();
 
-    instance = this.createInstance([1, 2, 3]);
+    instance = this.createInstance([ 1, 2, 3 ]);
     instance.overWrite = spy;
 
     test = instance.setSlots($array);
@@ -527,7 +531,9 @@ describe("SCArrayedCollection", function() {
     testCase(this, [
       {
         source: [ 1, 2, 3, 4, 5 ],
-        args  : [ 2, function($item, $index) { return $item.div($index); } ],
+        args  : [ 2, function($item, $index) {
+          return $item.div($index);
+        } ],
         result: this,
         after : [ 1, 2, (3/2)|0, 4, 5 ]
       }

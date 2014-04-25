@@ -37,7 +37,7 @@
     };
 
     spec.toString = function() {
-      return String(""+ this._);
+      return String("" + this._);
     };
 
     spec.$new = function() {
@@ -399,4 +399,3 @@
   });
 
 })(sc);
-

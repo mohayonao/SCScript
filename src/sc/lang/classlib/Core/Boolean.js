@@ -51,7 +51,6 @@
     spec.shallowCopy = utils.nop;
   });
 
-
   sc.lang.klass.refine("True", function(spec, utils) {
     spec.$new = function() {
       throw new Error("True.new is illegal, should use literal.");

@@ -788,7 +788,7 @@ describe("SCSimpleNumber", function() {
   });
   it("#moddif", function() {
     testCase(this, [
-      [ 0.75, [] , 0.25 ],
+      [ 0.75, [], 0.25 ],
     ]);
   });
   it("#lcurve", function() {

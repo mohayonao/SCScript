@@ -9,8 +9,6 @@
   "quotmark": true,
   "undef"   : true,
   "strict"  : true,
-  "trailing": true,
-  "maxlen"  : 100,
   "newcap"  : true,
   "unused"  : true,
   "node"    : true,

@@ -79,9 +79,11 @@ describe("SCCollection", function() {
   it(".fill3D", function() {
     var test;
 
-    test = SCCollection.fill3D.call(SCArray, $int3, $int3, $int3, $SC.Function(function($i, $j, $k) {
-      return $i ["*"] ($int100) ["+"] ($j ["*"] ($int10)) ["+"] ($k);
-    }));
+    test = SCCollection.fill3D.call(
+      SCArray, $int3, $int3, $int3, $SC.Function(function($i, $j, $k) {
+        return $i ["*"] ($int100) ["+"] ($j ["*"] ($int10)) ["+"] ($k);
+      })
+    );
     expect(test).to.be.a("SCArray").that.eqls([
       [ [   0,   1,   2 ], [  10,  11,  12 ], [  20,  21 , 22 ] ],
       [ [ 100, 101, 102 ], [ 110, 111, 112 ], [ 120, 121, 122 ] ],

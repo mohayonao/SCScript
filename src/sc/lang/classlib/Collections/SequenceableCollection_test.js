@@ -1248,7 +1248,8 @@ describe("SCSequenceableCollection", function() {
     spy = this.spy(sc.test.func);
     $arg1 = sc.test.object();
     $arg2 = sc.test.object();
-    this.stub(sc.lang.klass.utils, "getMethod").withArgs("Object", "multiChannelPerform").returns(spy);
+    this.stub(sc.lang.klass.utils, "getMethod")
+      .withArgs("Object", "multiChannelPerform").returns(spy);
 
     instance = this.createInstance();
     test = instance.multiChannelPerform($arg1, $arg2);

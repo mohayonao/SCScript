@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/parser.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/parser.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">95.48</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">2325</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">209.63</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">24.97</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./sc&quot;);
+
+  var parser = {};
+
+  var Token = parser.Token = {
+    BooleanLiteral: &quot;Boolean&quot;,
+    CharLiteral: &quot;Char&quot;,
+    EOF: &quot;&lt;EOF&gt;&quot;,
+    FloatLiteral: &quot;Float&quot;,
+    Identifier: &quot;Identifier&quot;,
+    IntegerLiteral: &quot;Integer&quot;,
+    Keyword: &quot;Keyword&quot;,
+    Label: &quot;Label&quot;,
+    NilLiteral: &quot;Nil&quot;,
+    Punctuator: &quot;Punctuator&quot;,
+    StringLiteral: &quot;String&quot;,
+    SymbolLiteral: &quot;Symbol&quot;
+  };
+
+  var Syntax = parser.Syntax = {
+    AssignmentExpression: &quot;AssignmentExpression&quot;,
+    BinaryExpression: &quot;BinaryExpression&quot;,
+    BlockExpression: &quot;BlockExpression&quot;,
+    CallExpression: &quot;CallExpression&quot;,
+    FunctionExpression: &quot;FunctionExpression&quot;,
+    GlobalExpression: &quot;GlobalExpression&quot;,
+    Identifier: &quot;Identifier&quot;,
+    ListExpression: &quot;ListExpression&quot;,
+    ListIndexer: &quot;ListIndexer&quot;,
+    Label: &quot;Label&quot;,
+    Literal: &quot;Literal&quot;,
+    MemberExpression: &quot;MemberExpression&quot;,
+    ObjectExpression: &quot;ObjectExpression&quot;,
+    Program: &quot;Program&quot;,
+    RangeExpression: &quot;RangeExpression&quot;,
+    ThisExpression: &quot;ThisExpression&quot;,
+    UnaryExpression: &quot;UnaryExpression&quot;,
+    VariableDeclaration: &quot;VariableDeclaration&quot;,
+    VariableDeclarator: &quot;VariableDeclarator&quot;
+  };
+
+  var Message = parser.Message = {
+    ArgumentAlreadyDeclared: &quot;argument &#039;%0&#039; already declared&quot;,
+    InvalidLHSInAssignment: &quot;invalid left-hand side in assignment&quot;,
+    NotImplemented: &quot;not implemented %0&quot;,
+    UnexpectedEOS: &quot;unexpected end of input&quot;,
+    UnexpectedIdentifier: &quot;unexpected identifier&quot;,
+    UnexpectedChar: &quot;unexpected char&quot;,
+    UnexpectedLabel: &quot;unexpected label&quot;,
+    UnexpectedNumber: &quot;unexpected number&quot;,
+    UnexpectedString: &quot;unexpected string&quot;,
+    UnexpectedSymbol: &quot;unexpected symbol&quot;,
+    UnexpectedToken: &quot;unexpected token %0&quot;,
+    VariableAlreadyDeclared: &quot;variable &#039;%0&#039; already declared&quot;,
+    VariableNotDefined: &quot;variable &#039;%0&#039; not defined&quot;
+  };
+
+  var Keywords = parser.Keywords = {
+    var: &quot;keyword&quot;,
+    arg: &quot;keyword&quot;,
+    const: &quot;keyword&quot;,
+    this: &quot;function&quot;,
+    thisThread: &quot;function&quot;,
+    thisProcess: &quot;function&quot;,
+    thisFunction: &quot;function&quot;,
+    thisFunctionDef: &quot;function&quot;,
+  };
+
+  var binaryPrecedenceDefaults = {
+    &quot;?&quot;  : 1,
+    &quot;??&quot; : 1,
+    &quot;!?&quot; : 1,
+    &quot;-&gt;&quot; : 2,
+    &quot;||&quot; : 3,
+    &quot;&amp;&amp;&quot; : 4,
+    &quot;|&quot;  : 5,
+    &quot;&amp;&quot;  : 6,
+    &quot;==&quot; : 7,
+    &quot;!=&quot; : 7,
+    &quot;===&quot;: 7,
+    &quot;!==&quot;: 7,
+    &quot;&lt;&quot;  : 8,
+    &quot;&gt;&quot;  : 8,
+    &quot;&lt;=&quot; : 8,
+    &quot;&gt;=&quot; : 8,
+    &quot;&lt;&lt;&quot; : 9,
+    &quot;&gt;&gt;&quot; : 9,
+    &quot;+&gt;&gt;&quot;: 9,
+    &quot;+&quot;  : 10,
+    &quot;-&quot;  : 10,
+    &quot;*&quot;  : 11,
+    &quot;/&quot;  : 11,
+    &quot;%&quot;  : 11,
+    &quot;!&quot;  : 12,
+  };
+
+  function q(str) {
+    return &quot;&#039;&quot; + str + &quot;&#039;&quot;;
+  }
+
+  function char2num(ch) {
+    var n = ch.charCodeAt(0);
+
+    if (48 &lt;= n &amp;&amp; n &lt;= 57) {
+      return n - 48;
+    }
+    if (65 &lt;= n &amp;&amp; n &lt;= 90) {
+      return n - 55;
+    }
+    return n - 87; // if (97 &lt;= n &amp;&amp; n &lt;= 122)
+  }
+
+  function isNumber(ch) {
+    return &quot;0&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;9&quot;;
+  }
+
+  function Scope(parser) {
+    this.parser = parser;
+    this.stack = [];
+  }
+
+  Scope.prototype.add = function(type, id) {
+    var peek = this.stack[this.stack.length - 1];
+    var vars, args, declared;
+
+    vars = peek.vars;
+    args = peek.args;
+    declared = peek.declared;
+
+    switch (type) {
+    case &quot;var&quot;:
+      if (args[id] || vars[id]) {
+        this.parser.throwError({}, Message.VariableAlreadyDeclared, id);
+      } else {
+        vars[id] = true;
+        delete declared[id];
+      }
+      break;
+    case &quot;arg&quot;:
+      if (args[id]) {
+        this.parser.throwError({}, Message.ArgumentAlreadyDeclared, id);
+      }
+      args[id] = true;
+      delete declared[id];
+      break;
+    }
+  };
+
+  Scope.prototype.begin = function() {
+    var peek = this.stack[this.stack.length - 1];
+    var declared = {};
+
+    if (peek) {
+      Array.prototype.concat.apply([], [
+        peek.declared, peek.args, peek.vars
+      ].map(Object.keys)).forEach(function(key) {
+        declared[key] = true;
+      });
+    }
+
+    this.stack.push({ vars: {}, args: {}, declared: declared });
+  };
+
+  Scope.prototype.end = function() {
+    this.stack.pop();
+  };
+
+  function LocationMarker(parser) {
+    this.parser = parser;
+    this.marker = [
+      parser.index,
+      parser.lineNumber,
+      parser.index - parser.lineStart
+    ];
+  }
+
+  LocationMarker.prototype.apply = function(node) {
+    var parser = this.parser;
+    var marker = this.marker;
+
+    /* istanbul ignore else */
+    if (this.parser.opts.range) {
+      node.range = [ marker[0], parser.index ];
+    }
+    /* istanbul ignore else */
+    if (this.parser.opts.loc) {
+      node.loc = {
+        start: {
+          line: marker[1],
+          column: marker[2]
+        },
+        end: {
+          line: parser.lineNumber,
+          column: parser.index - parser.lineStart
+        }
+      };
+    }
+  };
+
+  function SCParser(source, opts) {
+    /* istanbul ignore next */
+    if (typeof source !== &quot;string&quot;) {
+      if (typeof source === &quot;undefined&quot;) {
+        source = &quot;&quot;;
+      }
+      source = String(source);
+    }
+    source = source.replace(/\r\n?/g, &quot;\n&quot;);
+    this.source = source;
+    this.opts = opts;
+    this.length = source.length;
+    this.index = 0;
+    this.lineNumber = this.length ? 1 : 0;
+    this.lineStart = 0;
+    this.reverted = null;
+    this.scope = new Scope(this);
+    this.marker = [];
+    this.tokens = opts.tokens ? [] : null;
+    this.errors = opts.tolerant ? [] : null;
+    this.state = {
+      closedFunction: false,
+      disallowNotMember: false,
+      disallowGenerator: false,
+      innerElements: false,
+      immutableList: false,
+      underscore: []
+    };
+  }
+
+  SCParser.prototype.parse = function() {
+    return this.parseProgram();
+  };
+
+  SCParser.prototype.skipComment = function() {
+    var source = this.source;
+    var length = this.length;
+    var index = this.index;
+    var lineNumber = this.lineNumber;
+    var lineStart = this.lineStart;
+    var ch, depth;
+
+    LOOP: while (index &lt; length) {
+      ch = source.charAt(index);
+      switch (ch) {
+
+      case &quot; &quot;:
+      case &quot;\t&quot;:
+        index += 1;
+        continue LOOP;
+        /* falls through */
+
+      case &quot;\n&quot;:
+        index += 1;
+        lineNumber += 1;
+        lineStart = index;
+        continue LOOP;
+        /* falls through */
+
+      case &quot;/&quot;:
+        ch = source.charAt(index + 1);
+        switch (ch) {
+        case &quot;/&quot;:
+          // line comment
+          index += 2;
+          while (index &lt; length) {
+            ch = source.charAt(index);
+            index += 1;
+            if (ch === &quot;\n&quot;) {
+              lineNumber += 1;
+              lineStart = index;
+              break;
+            }
+          }
+          break;
+
+        case &quot;*&quot;:
+          // block comment
+          depth = 1;
+          index += 2;
+          while (index &lt; length) {
+            ch = source.charAt(index);
+            switch (ch) {
+            case &quot;/&quot;:
+              ch = source.charAt(index + 1);
+              if (ch === &quot;*&quot;) {
+                depth += 1;
+                index += 1;
+              }
+              break;
+            case &quot;*&quot;:
+              ch = source.charAt(index + 1);
+              if (ch === &quot;/&quot;) {
+                depth -= 1;
+                index += 1;
+                if (depth === 0) {
+                  index += 1;
+                  continue LOOP;
+                }
+              }
+              break;
+            case &quot;\n&quot;:
+              lineNumber += 1;
+              lineStart = index;
+              break;
+            }
+            index += 1;
+          }
+          this.throwError({}, Message.UnexpectedToken, &quot;ILLEGAL&quot;);
+          break;
+
+        default:
+          break LOOP;
+        }
+        break;
+
+      default:
+        break LOOP;
+      }
+    }
+
+    this.index = index;
+    this.lineNumber = lineNumber;
+    this.lineStart = lineStart;
+  };
+
+  SCParser.prototype.collectToken = function() {
+    var loc, token, source, t;
+
+    this.skipComment();
+
+    loc = {
+      start: {
+        line: this.lineNumber,
+        column: this.index - this.lineStart
+      }
+    };
+
+    token = this.advance();
+
+    loc.end = {
+      line: this.lineNumber,
+      column: this.index - this.lineStart
+    };
+
+    if (token.type !== Token.EOF) {
+      source = this.source;
+      t = {
+        type: token.type,
+        value: source.slice(token.range[0], token.range[1])
+      };
+      if (this.opts.range) {
+        t.range = [ token.range[0], token.range[1] ];
+      }
+      if (this.opts.loc) {
+        t.loc = loc;
+      }
+      this.tokens.push(t);
+    }
+
+    return token;
+  };
+
+  SCParser.prototype.advance = function() {
+    var ch, token;
+
+    this.skipComment();
+
+    if (this.length &lt;= this.index) {
+      return this.EOFToken();
+    }
+
+    ch = this.source.charAt(this.index);
+
+    // Symbol literal starts with back slash
+    if (ch === &quot;\\&quot;) {
+      return this.scanSymbolLiteral();
+    }
+
+    // Char literal starts with dollar
+    if (ch === &quot;$&quot;) {
+      return this.scanCharLiteral();
+    }
+
+    // String literal starts with single quote or double quote
+    if (ch === &quot;&#039;&quot; || ch === &quot;\&quot;&quot;) {
+      return this.scanStringLiteral();
+    }
+
+    // for partial application
+    if (ch === &quot;_&quot;) {
+      return this.scanUnderscore();
+    }
+
+    if (ch === &quot;-&quot;) {
+      token = this.scanNegativeNumericLiteral();
+      if (token) {
+        return token;
+      }
+    }
+
+    // Identifier starts with alphabet
+    if ((&quot;A&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;Z&quot;) || (&quot;a&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;z&quot;)) {
+      return this.scanIdentifier();
+    }
+
+    // Number literal starts with number
+    if (isNumber(ch)) {
+      return this.scanNumericLiteral();
+    }
+
+    return this.scanPunctuator();
+  };
+
+  SCParser.prototype.expect = function(value) {
+    var token = this.lex();
+    if (token.type !== Token.Punctuator || token.value !== value) {
+      this.throwUnexpected(token, value);
+    }
+  };
+
+  SCParser.prototype.peek = function() {
+    var index, lineNumber, lineStart;
+
+    index = this.index;
+    lineNumber = this.lineNumber;
+    lineStart = this.lineStart;
+
+    if (this.opts.tokens) {
+      this.lookahead = this.collectToken();
+    } else {
+      this.lookahead = this.advance();
+    }
+
+    this.index = index;
+    this.lineNumber = lineNumber;
+    this.lineStart = lineStart;
+  };
+
+  SCParser.prototype.lex = function() {
+    var token = this.lookahead;
+
+    this.index = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart = token.lineStart;
+
+    if (this.opts.tokens) {
+      this.lookahead = this.collectToken();
+    } else {
+      this.lookahead = this.advance();
+    }
+
+    this.index = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart = token.lineStart;
+
+    return token;
+  };
+
+  SCParser.prototype.EOFToken = function() {
+    return {
+      type: Token.EOF,
+      value: &quot;&lt;EOF&gt;&quot;,
+      lineNumber: this.lineNumber,
+      lineStart: this.lineStart,
+      range: [ this.index, this.index ]
+    };
+  };
+
+  SCParser.prototype.restore = function(saved) {
+    this.lookahead  = saved[0];
+    this.index      = saved[1];
+    this.lineNumber = saved[2];
+    this.lineStart  = saved[3];
+    if (this.tokens) {
+      this.tokens.pop();
+    }
+  };
+
+  SCParser.prototype.save = function() {
+    return [ this.lookahead, this.index, this.lineNumber, this.lineStart ];
+  };
+
+  SCParser.prototype.scanCharLiteral = function() {
+    var start, value;
+
+    start = this.index;
+    value = this.source.charAt(this.index + 1);
+
+    this.index += 2;
+
+    return {
+      type : Token.CharLiteral,
+      value: value,
+      lineNumber: this.lineNumber,
+      lineStart : this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  SCParser.prototype.scanIdentifier = function() {
+    var source = this.source.slice(this.index);
+    var start = this.index;
+    var value, type;
+
+    value = /^[a-zA-Z][a-zA-Z0-9_]*/.exec(source)[0];
+
+    this.index += value.length;
+
+    if (this.source.charAt(this.index) === &quot;:&quot;) {
+      this.index += 1;
+      return {
+        type: Token.Label,
+        value: value,
+        lineNumber: this.lineNumber,
+        lineStart: this.lineStart,
+        range: [ start, this.index ]
+      };
+    } else if (this.isKeyword(value)) {
+      type = Token.Keyword;
+    } else {
+      switch (value) {
+      case &quot;inf&quot;:
+        type = Token.FloatLiteral;
+        value = &quot;Infinity&quot;;
+        break;
+      case &quot;pi&quot;:
+        type = Token.FloatLiteral;
+        value = &quot;Math.PI&quot;;
+        break;
+      case &quot;nil&quot;:
+        type = Token.NilLiteral;
+        value = &quot;null&quot;;
+        break;
+      case &quot;true&quot;:
+      case &quot;false&quot;:
+        type = Token.BooleanLiteral;
+        break;
+      default:
+        type = Token.Identifier;
+        break;
+      }
+    }
+
+    return {
+      type: type,
+      value: value,
+      lineNumber: this.lineNumber,
+      lineStart: this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  SCParser.prototype.scanNumericLiteral = function(neg) {
+    return this.scanNAryNumberLiteral(neg) || this.scanDecimalNumberLiteral(neg);
+  };
+
+  SCParser.prototype.scanNegativeNumericLiteral = function() {
+    var token, ch1, ch2, ch3;
+    var start, value = null;
+
+    start = this.index;
+    ch1 = this.source.charAt(this.index + 1);
+
+    if (isNumber(ch1)) {
+      this.index += 1;
+      token = this.scanNumericLiteral(true);
+      token.range[0] = start;
+      return token;
+    }
+
+    ch2 = this.source.charAt(this.index + 2);
+    ch3 = this.source.charAt(this.index + 3);
+
+    if (ch1 + ch2 === &quot;pi&quot;) {
+      this.index += 3;
+      value = -Math.PI;
+    } else if (ch1 + ch2 + ch3 === &quot;inf&quot;) {
+      this.index += 4;
+      value = -Infinity;
+    }
+
+    if (value !== null) {
+      return {
+        type : Token.FloatLiteral,
+        value: value,
+        lineNumber: this.lineNumber,
+        lineStart : this.lineStart,
+        range: [ start, this.index ]
+      };
+    }
+
+    return null;
+  };
+
+  SCParser.prototype.scanNAryNumberLiteral = function(neg) {
+    var re, start, items;
+    var base, integer, frac, pi;
+    var x, i, imax;
+    var value, type;
+
+    re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (!items) {
+      return;
+    }
+
+    base    = items[1].replace(/^0+(?=\d)/g, &quot;&quot;)|0;
+    integer = items[2].replace(/(^0+(?=\d)|_)/g, &quot;&quot;);
+    frac    = items[3] &amp;&amp; items[3].replace(/_/g, &quot;&quot;);
+
+    if (!frac &amp;&amp; base &lt; 26 &amp;&amp; integer.substr(-2) === &quot;pi&quot;) {
+      integer = integer.substr(0, integer.length - 2);
+      pi = true;
+    }
+
+    type  = Token.IntegerLiteral;
+    value = 0;
+
+    for (i = 0, imax = integer.length; i &lt; imax; ++i) {
+      value *= base;
+      x = char2num(integer[i]);
+      if (x &gt;= base) {
+        this.throwError({}, Message.UnexpectedToken, integer[i]);
+      }
+      value += x;
+    }
+
+    if (frac) {
+      type = Token.FloatLiteral;
+      for (i = 0, imax = frac.length; i &lt; imax; ++i) {
+        x = char2num(frac[i]);
+        if (x &gt;= base) {
+          this.throwError({}, Message.UnexpectedToken, integer[i]);
+        }
+        value += x * Math.pow(base, -(i + 1));
+      }
+    }
+
+    if (neg) {
+      value *= -1;
+    }
+
+    if (pi) {
+      type = Token.FloatLiteral;
+      value = &quot;(&quot; + value + &quot; * Math.PI)&quot;;
+    }
+
+    this.index += items[0].length;
+
+    return {
+      type : type,
+      value: String(value),
+      lineNumber: this.lineNumber,
+      lineStart : this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  SCParser.prototype.scanDecimalNumberLiteral = function(neg) {
+    var re, start, items, integer, frac, pi;
+    var value, type;
+
+    re = /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    integer = items[1];
+    frac    = items[2];
+    pi      = items[3];
+
+    type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
+    value = +integer.replace(/(^0+(?=\d)|_)/g, &quot;&quot;);
+
+    if (neg) {
+      value *= -1;
+    }
+
+    if (pi) {
+      value = &quot;(&quot; + value + &quot; * Math.PI)&quot;;
+    }
+
+    this.index += items[0].length;
+
+    return {
+      type : type,
+      value: String(value),
+      lineNumber: this.lineNumber,
+      lineStart : this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  SCParser.prototype.scanPunctuator = function() {
+    var re, start, items;
+
+    re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%&lt;=&gt;!?&amp;|@]+)/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (items) {
+      this.index += items[0].length;
+      return {
+        type : Token.Punctuator,
+        value: items[0],
+        lineNumber: this.lineNumber,
+        lineStart : this.lineStart,
+        range: [ start, this.index ]
+      };
+    }
+
+    this.throwError({}, Message.UnexpectedToken, this.source.charAt(this.index));
+
+    this.index = this.length;
+
+    return this.EOFToken();
+  };
+
+  SCParser.prototype.scanStringLiteral = function() {
+    var source, start;
+    var length, index;
+    var quote, ch, value, type;
+
+    source = this.source;
+    length = this.length;
+    index  = start = this.index;
+    quote  = source.charAt(start);
+    type   = (quote === &#039;&quot;&#039;) ? Token.StringLiteral : Token.SymbolLiteral;
+
+    index += 1;
+    while (index &lt; length) {
+      ch = source.charAt(index);
+      index += 1;
+      if (ch === quote) {
+        value = source.substr(start, index - start);
+        value = value.replace(/\n/g, &quot;\\n&quot;);
+        this.index = index;
+        return {
+          type : type,
+          value: value,
+          lineNumber: this.lineNumber,
+          lineStart : this.lineStart,
+          range: [ start, this.index ]
+        };
+      } else if (ch === &quot;\n&quot;) {
+        this.lineNumber += 1;
+        this.lineStart = index;
+      } else if (ch === &quot;\\&quot;) {
+        index += 1;
+      }
+    }
+
+    this.index = index;
+    this.throwError({}, Message.UnexpectedToken, &quot;ILLEGAL&quot;);
+
+    return this.EOFToken();
+  };
+
+  SCParser.prototype.scanSymbolLiteral = function() {
+    var re, start, items;
+    var value;
+
+    re = /^\\([a-z_]\w*)?/i;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    value = items[1];
+
+    this.index += items[0].length;
+
+    return {
+      type : Token.SymbolLiteral,
+      value: value,
+      lineNumber: this.lineNumber,
+      lineStart : this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  SCParser.prototype.scanUnderscore = function() {
+    var start = this.index;
+
+    this.index += 1;
+
+    return {
+      type: Token.Identifier,
+      value: &quot;_&quot;,
+      lineNumber: this.lineNumber,
+      lineStart: this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  SCParser.prototype.createAssignmentExpression = function(operator, left, right, remain) {
+    var node = {
+      type: Syntax.AssignmentExpression,
+      operator: operator,
+      left: left,
+      right: right
+    };
+    if (remain) {
+      node.remain = remain;
+    }
+    return node;
+  };
+
+  SCParser.prototype.createBinaryExpression = function(operator, left, right) {
+    var node = {
+      type: Syntax.BinaryExpression,
+      operator: operator.value,
+      left: left,
+      right: right
+    };
+    if (operator.adverb) {
+      node.adverb = operator.adverb;
+    }
+    return node;
+  };
+
+  SCParser.prototype.createBlockExpression = function(body) {
+    return {
+      type: Syntax.BlockExpression,
+      body: body
+    };
+  };
+
+  SCParser.prototype.createCallExpression = function(callee, args) {
+    return {
+      type: Syntax.CallExpression,
+      callee: callee,
+      args: args
+    };
+  };
+
+  SCParser.prototype.createGlobalExpression = function(id) {
+    return {
+      type: Syntax.GlobalExpression,
+      id: id
+    };
+  };
+
+  SCParser.prototype.createFunctionExpression = function(args, body, closed, partial, blocklist) {
+    var node;
+
+    node = {
+      type: Syntax.FunctionExpression,
+      body: body
+    };
+    if (args) {
+      node.args = args;
+    }
+    if (closed) {
+      node.closed = true;
+    }
+    if (partial) {
+      node.partial = true;
+    }
+    if (blocklist) {
+      node.blocklist = true;
+    }
+    return node;
+  };
+
+  SCParser.prototype.createIdentifier = function(name) {
+    return {
+      type: Syntax.Identifier,
+      name: name
+    };
+  };
+
+  SCParser.prototype.createLabel = function(name) {
+    return {
+      type: Syntax.Label,
+      name: name
+    };
+  };
+
+  SCParser.prototype.createListExpression = function(elements, immutable) {
+    var node = {
+      type: Syntax.ListExpression,
+      elements: elements
+    };
+    if (immutable) {
+      node.immutable = !!immutable;
+    }
+    return node;
+  };
+
+  SCParser.prototype.createListIndexer = function(first, second, last) {
+    return {
+      type: Syntax.ListIndexer,
+      first: first,
+      second: second,
+      last: last
+    };
+  };
+
+  SCParser.prototype.createLiteral = function(token) {
+    return {
+      type: Syntax.Literal,
+      value: token.value,
+      valueType: token.type
+    };
+  };
+
+  SCParser.prototype.createLocationMarker = function() {
+    if (this.opts.loc || this.opts.range) {
+      this.skipComment();
+      return new LocationMarker(this);
+    }
+  };
+
+  SCParser.prototype.createMemberExpression = function(accessor, object, property) {
+    return {
+      type: Syntax.MemberExpression,
+      computed: accessor === &quot;[&quot;,
+      object: object,
+      property: property
+    };
+  };
+
+  SCParser.prototype.createObjectExpression = function(elements) {
+    return {
+      type: Syntax.ObjectExpression,
+      elements: elements
+    };
+  };
+
+  SCParser.prototype.createProgram = function(body) {
+    return {
+      type: Syntax.Program,
+      body: body
+    };
+  };
+
+  SCParser.prototype.createRangeExpression = function(first, second, last, generator) {
+    var node = {
+      type: Syntax.RangeExpression,
+      first: first,
+      second: second,
+      last: last
+    };
+    if (generator) {
+      node.generator = true;
+    }
+    return node;
+  };
+
+  SCParser.prototype.createThisExpression = function(name) {
+    return {
+      type: Syntax.ThisExpression,
+      name: name
+    };
+  };
+
+  SCParser.prototype.createUnaryExpression = function(operator, arg) {
+    return {
+      type: Syntax.UnaryExpression,
+      operator: operator,
+      arg: arg
+    };
+  };
+
+  SCParser.prototype.createVariableDeclaration = function(declarations, kind) {
+    return {
+      type: Syntax.VariableDeclaration,
+      declarations: declarations,
+      kind: kind
+    };
+  };
+
+  SCParser.prototype.createVariableDeclarator = function(id, init) {
+    var node = {
+      type: Syntax.VariableDeclarator,
+      id: id
+    };
+    if (init) {
+      node.init = init;
+    }
+    return node;
+  };
+
+  SCParser.prototype.isClassName = function(node) {
+    var name, ch;
+
+    if (node.type === Syntax.Identifier) {
+      name = node.value || node.name;
+      ch = name.charAt(0);
+      return &quot;A&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;Z&quot;;
+    }
+
+    return false;
+  };
+
+  SCParser.prototype.isKeyword = function(value) {
+    return !!Keywords[value] || false;
+  };
+
+  SCParser.prototype.isLeftHandSide = function(expr) {
+    switch (expr.type) {
+    case Syntax.Identifier:
+    case Syntax.MemberExpression:
+    case Syntax.GlobalExpression:
+      return true;
+    }
+    return false;
+  };
+
+
+  SCParser.prototype.match = function(value) {
+    var token = this.lookahead;
+    return token.type === Token.Punctuator &amp;&amp; token.value === value;
+  };
+
+  SCParser.prototype.matchAny = function(list) {
+    var value, i, imax;
+
+    if (this.lookahead.type === Token.Punctuator) {
+      value = this.lookahead.value;
+      for (i = 0, imax = list.length; i &lt; imax; ++i) {
+        if (list[i] === value) {
+          return value;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  SCParser.prototype.matchKeyword = function(value) {
+    var token = this.lookahead;
+    return token.type === Token.Keyword &amp;&amp; token.value === value;
+  };
+
+  SCParser.prototype.withScope = function(fn) {
+    var result;
+
+    this.scope.begin();
+    result = fn.call(this);
+    this.scope.end();
+
+    return result;
+  };
+
+  // 1. Program
+  SCParser.prototype.parseProgram = function() {
+    var node;
+
+    this.skipComment();
+    this.markStart();
+    this.peek();
+
+    node = this.withScope(function() {
+      var body;
+
+      body = this.parseFunctionBody(&quot;&quot;);
+      if (body.length === 1 &amp;&amp; body[0].type === Syntax.BlockExpression) {
+        body = body[0].body;
+      }
+
+      return this.createProgram(body);
+    });
+
+    return this.markEnd(node);
+  };
+
+  // 2. Function
+  // 2.1 Function Expression
+  SCParser.prototype.parseFunctionExpression = function(closed, blocklist) {
+    var node;
+
+    node = this.withScope(function() {
+      var args, body;
+
+      if (this.match(&quot;|&quot;)) {
+        args = this.parseFunctionArgument(&quot;|&quot;);
+      } else if (this.matchKeyword(&quot;arg&quot;)) {
+        args = this.parseFunctionArgument(&quot;;&quot;);
+      }
+      body = this.parseFunctionBody(&quot;}&quot;);
+
+      return this.createFunctionExpression(args, body, closed, false, blocklist);
+    });
+
+    return node;
+  };
+
+  // 2.2 Function Argument
+  SCParser.prototype.parseFunctionArgument = function(expect) {
+    var args = { list: [] }, lookahead;
+
+    this.lex();
+
+    if (!this.match(&quot;...&quot;)) {
+      do {
+        args.list.push(this.parseFunctionArgumentElement());
+        if (!this.match(&quot;,&quot;)) {
+          break;
+        }
+        this.lex();
+      } while (this.lookahead.type !== Token.EOF);
+    }
+
+    if (this.match(&quot;...&quot;)) {
+      this.lex();
+      lookahead = this.lookahead;
+      args.remain = this.parseVariableIdentifier();
+      this.scope.add(&quot;arg&quot;, args.remain.name);
+    }
+
+    this.expect(expect);
+
+    return args;
+  };
+
+  SCParser.prototype.parseFunctionArgumentElement = function() {
+    var init = null, id;
+
+    this.skipComment();
+    this.markStart();
+    id = this.parseVariableIdentifier();
+    this.scope.add(&quot;arg&quot;, id.name);
+
+    if (this.match(&quot;=&quot;)) {
+      this.lex();
+      init = this.parseUnaryExpression();
+    }
+
+    return this.markEnd(this.createVariableDeclarator(id, init));
+  };
+
+  // 2.3 Function Body
+  SCParser.prototype.parseFunctionBody = function(match) {
+    var elements = [];
+
+    while (this.matchKeyword(&quot;var&quot;)) {
+      elements.push(this.parseVariableDeclaration());
+    }
+
+    while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(match)) {
+      elements.push(this.parseExpression());
+      if (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(match)) {
+        this.expect(&quot;;&quot;);
+      } else {
+        break;
+      }
+    }
+
+    return elements;
+  };
+
+  // 3. Variable Declarations
+  SCParser.prototype.parseVariableDeclaration = function() {
+    var declaration;
+
+    this.skipComment();
+    this.markStart();
+
+    this.lex(); // var
+
+    declaration = this.markEnd(
+      this.createVariableDeclaration(
+        this.parseVariableDeclarationList(), &quot;var&quot;
+      )
+    );
+
+    this.expect(&quot;;&quot;);
+
+    return declaration;
+  };
+
+  SCParser.prototype.parseVariableDeclarationList = function() {
+    var list = [];
+
+    do {
+      list.push(this.parseVariableDeclarationElement());
+      if (!this.match(&quot;,&quot;)) {
+        break;
+      }
+      this.lex();
+    } while (this.lookahead.type !== Token.EOF);
+
+    return list;
+  };
+
+  SCParser.prototype.parseVariableDeclarationElement = function() {
+    var init = null, id;
+
+    this.skipComment();
+    this.markStart();
+    id = this.parseVariableIdentifier();
+    this.scope.add(&quot;var&quot;, id.name);
+
+    if (this.match(&quot;=&quot;)) {
+      this.lex();
+      init = this.parseAssignmentExpression();
+    }
+
+    return this.markEnd(this.createVariableDeclarator(id, init));
+  };
+
+  // 4. Expression
+  SCParser.prototype.parseExpression = function(node) {
+    return this.parseAssignmentExpression(node);
+  };
+
+  // 4.1 Expressions
+  SCParser.prototype.parseExpressions = function(node) {
+    var nodes = [];
+
+    if (node) {
+      nodes.push(node);
+      this.lex();
+    }
+
+    while (this.lookahead.type !== Token.EOF &amp;&amp; !this.matchAny([ &quot;,&quot;, &quot;)&quot;, &quot;]&quot;, &quot;..&quot; ])) {
+      this.skipComment();
+      this.markStart();
+      node = this.parseAssignmentExpression();
+      this.markEnd(node);
+      nodes.push(node);
+      if (this.match(&quot;;&quot;)) {
+        this.lex();
+      }
+    }
+
+    if (nodes.length === 0) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return nodes.length === 1 ? nodes[0] : nodes;
+  };
+
+  // 4.2 Assignment Expression
+  SCParser.prototype.parseAssignmentExpression = function(node) {
+    var token, left, right;
+    var sharp, destructuringAssignment;
+    var marker, saved;
+
+    if (node) {
+      return this.parsePartialExpression(node);
+    }
+
+    token = this.lookahead;
+
+    this.skipComment();
+    marker = this.createLocationMarker();
+    this.markStart();
+
+    saved = this.save();
+
+    if (this.match(&quot;#&quot;)) {
+      sharp = true;
+      token = this.lex();
+      if (this.matchAny([ &quot;[&quot;, &quot;{&quot; ])) {
+        // this.revert(token);
+        this.restore(saved);
+      } else {
+        destructuringAssignment = true;
+        left = this.parseDestructuringAssignmentLeft();
+        token = this.lookahead;
+        this.expect(&quot;=&quot;);
+
+        right = this.parseAssignmentExpression();
+        node = this.createAssignmentExpression(
+          token.value, left.list, right, left.remain
+        );
+      }
+    }
+
+    if (!destructuringAssignment) {
+      node = left = this.parsePartialExpression();
+
+      if (this.match(&quot;=&quot;)) {
+        if (!this.isLeftHandSide(left)) {
+          this.throwError({}, Message.InvalidLHSInAssignment);
+        }
+
+        token = this.lex();
+        right = this.parseAssignmentExpression();
+        node = this.createAssignmentExpression(
+          token.value, left, right
+        );
+      }
+    }
+
+    return this.markEnd(node);
+  };
+
+  SCParser.prototype.parseDestructuringAssignmentLeft = function() {
+    var params = { list: [] }, element;
+
+    do {
+      element = this.parseLeftHandSideExpression();
+      if (!this.isLeftHandSide(element)) {
+        this.throwError({}, Message.InvalidLHSInAssignment);
+      }
+      params.list.push(element);
+      if (this.match(&quot;,&quot;)) {
+        this.lex();
+      } else if (this.match(&quot;...&quot;)) {
+        this.lex();
+        params.remain = this.parseLeftHandSideExpression();
+        if (!this.isLeftHandSide(params.remain)) {
+          this.throwError({}, Message.InvalidLHSInAssignment);
+        }
+        break;
+      }
+    } while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(&quot;=&quot;));
+
+    return params;
+  };
+
+  // 4.3 Partial Expression
+  SCParser.prototype.parsePartialExpression = function(node) {
+    var underscore;
+
+    if (this.state.innerElements) {
+      node = this.parseBinaryExpression(node);
+    } else {
+      underscore = this.state.underscore;
+      this.state.underscore = [];
+
+      node = this.parseBinaryExpression(node);
+
+      if (this.state.underscore.length) {
+        node = this.withScope(function() {
+          var args, i, imax;
+
+          args = new Array(this.state.underscore.length);
+          for (i = 0, imax = args.length; i &lt; imax; ++i) {
+            args[i] = this.state.underscore[i];
+            this.scope.add(&quot;arg&quot;, this.state.underscore[i].name);
+          }
+
+          return this.createFunctionExpression(
+            { list: args }, [ node ], false, true, false
+          );
+        });
+      }
+
+      this.state.underscore = underscore;
+    }
+
+    return node;
+  };
+
+  // 4.4 Conditional Expression
+  // 4.5 Binary Expression
+  SCParser.prototype.parseBinaryExpression = function(node) {
+    var marker, markers, expr, token, prec, stack;
+    var left, operator, right, i;
+
+    this.skipComment();
+
+    marker = this.createLocationMarker();
+    left = this.parseUnaryExpression(node);
+
+    token = this.lookahead;
+    prec = this.binaryPrecedence(token);
+    if (prec === 0) {
+      if (node) {
+        return this.parseUnaryExpression(node);
+      }
+      return left;
+    }
+    this.lex();
+
+    token.prec = prec;
+    token.adverb = this.parseAdverb();
+
+    markers = [ marker, this.createLocationMarker() ];
+    right = this.parseUnaryExpression();
+
+    stack = [ left, token, right ];
+
+    while ((prec = this.binaryPrecedence(this.lookahead)) &gt; 0) {
+      // Reduce: make a binary expression from the three topmost entries.
+      while ((stack.length &gt; 2) &amp;&amp; (prec &lt;= stack[stack.length - 2].prec)) {
+        right = stack.pop();
+        operator = stack.pop();
+        left = stack.pop();
+        expr = this.createBinaryExpression(operator, left, right);
+        markers.pop();
+
+        marker = markers.pop();
+        /* istanbul ignore else */
+        if (marker) {
+          marker.apply(expr);
+        }
+        stack.push(expr);
+        markers.push(marker);
+      }
+
+      // Shift.
+      token = this.lex();
+      token.prec = prec;
+      token.adverb = this.parseAdverb();
+
+      stack.push(token);
+      markers.push(this.createLocationMarker());
+      expr = this.parseUnaryExpression();
+      stack.push(expr);
+    }
+
+    // Final reduce to clean-up the stack.
+    i = stack.length - 1;
+    expr = stack[i];
+    markers.pop();
+    while (i &gt; 1) {
+      expr = this.createBinaryExpression(stack[i - 1], stack[i - 2], expr);
+      i -= 2;
+      marker = markers.pop();
+      /* istanbul ignore else */
+      if (marker) {
+        marker.apply(expr);
+      }
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.binaryPrecedence = function(token) {
+    var table, prec = 0;
+
+    if (this.opts.binaryPrecedence) {
+      if (typeof this.opts.binaryPrecedence === &quot;object&quot;) {
+        table = this.opts.binaryPrecedence;
+      } else {
+        table = binaryPrecedenceDefaults;
+      }
+    } else {
+      table = {};
+    }
+    switch (token.type) {
+    case Token.Punctuator:
+      if (token.value !== &quot;=&quot;) {
+        if (table.hasOwnProperty(token.value)) {
+          prec = table[token.value];
+        } else if (/^[-+*\/%&lt;=&gt;!?&amp;|@]+$/.test(token.value)) {
+          prec = 255;
+        }
+      }
+      break;
+    case Token.Label:
+      prec = 255;
+      break;
+    }
+
+    return prec;
+  };
+
+  SCParser.prototype.parseAdverb = function() {
+    var adverb, lookahead;
+
+    if (this.match(&quot;.&quot;)) {
+      this.lex();
+
+      lookahead = this.lookahead;
+      adverb = this.parsePrimaryExpression();
+
+      if (adverb.type === Syntax.Identifier || adverb.type === Syntax.Literal) {
+        return adverb;
+      }
+
+      this.throwUnexpected(lookahead);
+    }
+
+    return null;
+  };
+
+  // 4.6 Unary Expressions
+  SCParser.prototype.parseUnaryExpression = function(node) {
+    var token, expr;
+
+    this.markStart();
+
+    if (this.match(&quot;`&quot;)) {
+      token = this.lex();
+      expr = this.parseUnaryExpression();
+      expr = this.createUnaryExpression(token.value, expr);
+    } else {
+      expr = this.parseLeftHandSideExpression(node);
+    }
+
+    return this.markEnd(expr);
+  };
+
+  // 4.7 LeftHandSide Expressions
+  SCParser.prototype.parseLeftHandSideExpression = function(node) {
+    var marker, expr, args, m, prev, lookahead, closedFunction, disallowNotMember;
+    var disallowGenerator, blocklist;
+
+    this.skipComment();
+
+    marker = this.createLocationMarker();
+    disallowNotMember = this.state.disallowNotMember;
+    this.state.disallowNotMember = false;
+    expr = this.parsePrimaryExpression(node);
+    this.state.disallowNotMember = disallowNotMember;
+
+    blocklist = false;
+
+    while ((m = this.matchAny([ &quot;(&quot;, &quot;{&quot;, &quot;#&quot;, &quot;[&quot;, &quot;.&quot; ])) !== null) {
+      lookahead = this.lookahead;
+      if ((prev === &quot;{&quot; &amp;&amp; (m !== &quot;#&quot; &amp;&amp; m !== &quot;{&quot;)) || (prev === &quot;(&quot; &amp;&amp; m === &quot;(&quot;)) {
+        this.throwUnexpected(lookahead);
+      }
+      switch (m) {
+      case &quot;(&quot;:
+        if (this.isClassName(expr)) {
+          expr = this.createMemberExpression(
+            &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;new&quot;))
+          );
+          /* istanbul ignore else */
+          if (marker) {
+            marker.apply(expr);
+          }
+        }
+        node = this.parseCallArgument();
+        expr = this.createCallExpression(expr, node);
+        break;
+      case &quot;#&quot;:
+        closedFunction = this.state.closedFunction;
+        this.state.closedFunction = true;
+        this.lex();
+        if (!this.match(&quot;{&quot;)) {
+          this.throwUnexpected(this.lookahead);
+        }
+        m = &quot;{&quot;;
+        /* falls through */
+      case &quot;{&quot;:
+        if (expr.type === Syntax.MemberExpression &amp;&amp; !expr.computed) {
+          expr = this.createCallExpression(expr, { list: [] });
+        } else if (expr.type === Syntax.Identifier) {
+          if (this.isClassName(expr)) {
+            expr = this.createMemberExpression(
+              &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;new&quot;))
+            );
+            /* istanbul ignore else */
+            if (marker) {
+              marker.apply(expr);
+            }
+          }
+          expr = this.createCallExpression(expr, { list: [] });
+        } else if (expr.type !== Syntax.CallExpression) {
+          this.throwUnexpected(lookahead);
+        }
+        lookahead = this.lookahead;
+        disallowGenerator = this.state.disallowGenerator;
+        this.state.disallowGenerator = true;
+        disallowNotMember = this.state.disallowNotMember;
+        this.state.disallowNotMember = true;
+        node = this.parseBraces(true);
+        this.state.disallowNotMember = disallowNotMember;
+        this.state.disallowGenerator = disallowGenerator;
+        this.state.closedFunction = closedFunction;
+        args = expr.args;
+        if (args &amp;&amp; !args.expand &amp;&amp; !args.keywords) {
+          args.list.push(node);
+        } else {
+          this.throwUnexpected(lookahead);
+        }
+        break;
+      case &quot;[&quot;:
+        if (expr.type === Syntax.CallExpression) {
+          this.throwUnexpected(this.lookahead);
+        }
+        if (this.isClassName(expr)) {
+          expr = this.createMemberExpression(
+            &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;newFrom&quot;))
+          );
+          /* istanbul ignore else */
+          if (marker) {
+            marker.apply(expr);
+          }
+          disallowNotMember = this.state.disallowNotMember;
+          this.state.disallowNotMember = true;
+          this.markStart();
+          node = this.markEnd(this.parseLeftHandSideExpression());
+          this.state.disallowNotMember = disallowNotMember;
+          expr = this.createCallExpression(expr, { list: [ node ] });
+        } else {
+          node = this.parseListIndexer();
+          expr = this.createMemberExpression(&quot;[&quot;, expr, node);
+        }
+        break;
+      case &quot;.&quot;:
+        this.lex();
+        if (this.match(&quot;(&quot;)) {
+          expr = this.createMemberExpression(
+            &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;value&quot;))
+          );
+          /* istanbul ignore else */
+          if (marker) {
+            marker.apply(expr);
+          }
+          node = this.parseCallArgument();
+          expr = this.createCallExpression(expr, node);
+        } else if (this.match(&quot;[&quot;)) {
+          node = this.parseListIndexer();
+          expr = this.createMemberExpression(&quot;[&quot;, expr, node);
+        } else {
+          node = this.parseProperty();
+          expr = this.createMemberExpression(&quot;.&quot;, expr, node);
+        }
+        break;
+      }
+      /* istanbul ignore else */
+      if (marker) {
+        marker.apply(expr);
+      }
+      prev = m;
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseCallArgument = function() {
+    var args, node, key, value, hasKeyword, lookahead;
+
+    args = { list: [] };
+    hasKeyword = false;
+
+    this.expect(&quot;(&quot;);
+
+    while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(&quot;)&quot;)) {
+      lookahead = this.lookahead;
+      if (!hasKeyword) {
+        if (this.match(&quot;*&quot;)) {
+          this.lex();
+          args.expand = this.parseExpressions();
+          hasKeyword = true;
+        } else if (lookahead.type === Token.Label) {
+          key = this.lex().value;
+          value = this.parseExpressions();
+          args.keywords = {};
+          args.keywords[key] = value;
+          hasKeyword = true;
+        } else {
+          node = this.parseExpressions();
+          args.list.push(node);
+        }
+      } else {
+        if (lookahead.type !== Token.Label) {
+          this.throwUnexpected(lookahead);
+        }
+        key = this.lex().value;
+        value = this.parseExpressions();
+        if (!args.keywords) {
+          args.keywords = {};
+        }
+        args.keywords[key] = value;
+      }
+      if (this.match(&quot;)&quot;)) {
+        break;
+      }
+      this.expect(&quot;,&quot;);
+    }
+
+    this.expect(&quot;)&quot;);
+
+    return args;
+  };
+
+  SCParser.prototype.parseListIndexer = function() {
+    var first = null, second = null, last = null;
+    var node = null;
+
+    this.expect(&quot;[&quot;);
+
+    if (!this.match(&quot;]&quot;)) {
+      this.markStart();
+
+      if (this.match(&quot;..&quot;)) {
+        // [..A]
+        this.lex();
+        if (!this.match(&quot;]&quot;)) {
+          last = this.parseExpressions();
+          node = this.markEnd(this.createListIndexer(null, null, last));
+        } else {
+          node = this.markEnd(this.createListIndexer(null, null, null));
+        }
+      } else {
+        if (!this.match(&quot;,&quot;)) {
+          first = this.parseExpressions();
+        } else {
+          this.throwUnexpected(this.lookahead);
+        }
+        if (this.match(&quot;..&quot;)) {
+          this.lex();
+          if (!this.match(&quot;]&quot;)) {
+            // [A..B]
+            last = this.parseExpressions();
+          }
+          node = this.markEnd(this.createListIndexer(first, null, last));
+        } else if (this.match(&quot;,&quot;)) {
+          this.lex();
+          second = this.parseExpressions();
+          if (this.match(&quot;..&quot;)) {
+            // [A, B..C]
+            this.lex();
+            if (!this.match(&quot;]&quot;)) {
+              last = this.parseExpressions();
+            }
+          } else {
+            this.throwUnexpected(this.lookahead);
+          }
+          node = this.markEnd(this.createListIndexer(first, second, last));
+        } else {
+          // [A]
+          node = this.markEnd(first);
+        }
+      }
+    }
+
+    this.expect(&quot;]&quot;);
+
+    if (node === null) {
+      this.throwUnexpected({ value: &quot;]&quot; });
+    }
+
+    return node;
+  };
+
+  SCParser.prototype.parseProperty = function() {
+    var token;
+
+    this.skipComment();
+    this.markStart();
+    token = this.lex();
+
+    if (token.type !== Token.Identifier || this.isClassName(token)) {
+      this.throwUnexpected(token);
+    }
+
+    return this.markEnd(this.createIdentifier(token.value));
+  };
+
+  // 4.8 Primary Expressions
+  SCParser.prototype.parsePrimaryExpression = function(node) {
+    var expr, token, lookahead, closedFunction, disallowGenerator;
+
+    if (node) {
+      return node;
+    }
+
+    this.skipComment();
+    this.markStart();
+
+    if (this.match(&quot;~&quot;)) {
+      this.lex();
+      expr = this.createGlobalExpression(this.parseIdentifier());
+    } else {
+      lookahead = this.lookahead;
+
+      switch (this.matchAny([ &quot;(&quot;, &quot;{&quot;, &quot;[&quot;, &quot;#&quot; ]) || this.lookahead.type) {
+      case &quot;(&quot;:
+        expr = this.parseParentheses();
+        break;
+      case &quot;{&quot;:
+        expr = this.parseBraces();
+        break;
+      case &quot;[&quot;:
+        expr = this.parseListInitialiser();
+        break;
+      case &quot;#&quot;:
+        this.lex();
+        switch (this.matchAny([ &quot;[&quot;, &quot;{&quot; ])) {
+        case &quot;[&quot;:
+          if (this.state.immutableList) {
+            this.throwUnexpected(lookahead);
+          }
+          this.state.immutableList = true;
+          expr = this.parseListInitialiser();
+          this.state.immutableList = false;
+          break;
+        case &quot;{&quot;:
+          disallowGenerator = this.state.disallowGenerator;
+          this.state.disallowGenerator = true;
+          closedFunction = this.state.closedFunction;
+          this.state.closedFunction = true;
+          expr = this.parseBraces();
+          this.state.closedFunction = closedFunction;
+          this.state.disallowGenerator = disallowGenerator;
+          break;
+        default:
+          expr = {};
+          this.throwUnexpected(this.lookahead);
+          break;
+        }
+        break;
+      case Token.Keyword:
+        if (Keywords[this.lookahead.value] === &quot;keyword&quot;) {
+          this.throwUnexpected(this.lookahead);
+        }
+        expr = this.createThisExpression(this.lex().value);
+        break;
+      case Token.Identifier:
+        lookahead = this.lookahead;
+        expr = this.parseIdentifier();
+        if (expr.name === &quot;_&quot;) {
+          expr.name += this.state.underscore.length.toString();
+          this.state.underscore.push(expr);
+        }
+        break;
+      case Token.BooleanLiteral:
+      case Token.CharLiteral:
+      case Token.FloatLiteral:
+      case Token.IntegerLiteral:
+      case Token.NilLiteral:
+      case Token.SymbolLiteral:
+        expr = this.createLiteral(this.lex());
+        break;
+      case Token.StringLiteral:
+        token = this.lex();
+        if (token.value.charAt(0) === &#039;&quot;&#039; &amp;&amp; token.value.indexOf(&quot;#{&quot;) !== -1) {
+          expr = this.parseInterpolatedString(token);
+        } else {
+          expr = this.createLiteral(token);
+        }
+        break;
+      }
+    }
+
+    if (!expr) {
+      expr = {};
+      this.throwUnexpected(this.lex());
+    }
+
+    return this.markEnd(expr);
+  };
+
+  SCParser.prototype.parseInterpolatedString = function(token) {
+    var value, len, items;
+    var i, j, ch, depth, code, parser;
+
+    value = token.value.substr(1, token.value.length - 2);
+    len = value.length;
+    items = [];
+
+    i = 0;
+
+    do {
+      j = i;
+      LOOP1: while (j &lt; len) {
+        ch = value.charAt(j);
+        switch (ch) {
+        case &quot;#&quot;:
+          if (value.charAt(j + 1) === &quot;{&quot;) {
+            break LOOP1;
+          }
+          break;
+        case &quot;\\&quot;:
+          j += 1;
+          break;
+        }
+        j += 1;
+      }
+
+      if (j &gt;= len) {
+        break;
+      }
+      code = value.substr(i, j - i);
+      if (code) {
+        items.push(q(code));
+      }
+      i = j + 2;
+      j = i;
+      depth = 0;
+      LOOP2: while (j &lt; len) {
+        ch = value.charAt(j);
+        switch (ch) {
+        case &quot;}&quot;:
+          if (depth === 0) {
+            code = value.substr(i, j - i);
+            if (code) {
+              items.push(&quot;(&quot; + code + &quot;).asString&quot;);
+            }
+            break LOOP2;
+          }
+          depth -= 1;
+          break;
+        case &quot;{&quot;:
+          depth += 1;
+          break;
+        }
+        j += 1;
+      }
+      i = j + 1;
+    } while (i &lt; len);
+
+    if (i &lt; len) {
+      items.push(q(value.substr(i)));
+    }
+
+    code = items.join(&quot;++&quot;);
+    parser = new SCParser(code, {});
+    parser.peek();
+
+    return parser.parseExpression();
+  };
+
+  // ( ... )
+  SCParser.prototype.parseParentheses = function() {
+    var marker, node, expr, generator;
+
+    this.skipComment();
+
+    marker = this.createLocationMarker();
+    this.expect(&quot;(&quot;);
+
+    if (this.match(&quot;:&quot;)) {
+      this.lex();
+      generator = true;
+    }
+
+    if (this.lookahead.type === Token.Label) {
+      expr = this.parseObjectInitialiser();
+    } else if (this.matchKeyword(&quot;var&quot;)) {
+      expr = this.withScope(function() {
+        var body;
+        body = this.parseFunctionBody(&quot;)&quot;);
+        return this.createBlockExpression(body);
+      });
+    } else if (this.match(&quot;..&quot;)) {
+      expr = this.parseRangeInitialiser(null, generator);
+    } else if (this.match(&quot;)&quot;)) {
+      expr = this.createObjectExpression([]);
+    } else {
+      node = this.parseExpression();
+      if (this.matchAny([ &quot;,&quot;, &quot;..&quot; ])) {
+        expr = this.parseRangeInitialiser(node, generator);
+      } else if (this.match(&quot;:&quot;)) {
+        expr = this.parseObjectInitialiser(node);
+      } else if (this.match(&quot;;&quot;)) {
+        expr = this.parseExpressions(node);
+        if (this.matchAny([ &quot;,&quot;, &quot;..&quot; ])) {
+          expr = this.parseRangeInitialiser(expr, generator);
+        }
+        marker = null;
+      } else {
+        expr = this.parseExpression(node);
+        marker = null;
+      }
+    }
+
+    this.expect(&quot;)&quot;);
+
+    /* istanbul ignore else */
+    if (marker) {
+      marker.apply(expr);
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseObjectInitialiser = function(node) {
+    var elements = [], innerElements;
+
+    innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    if (node) {
+      this.expect(&quot;:&quot;);
+    } else {
+      node = this.parseLabel();
+    }
+    elements.push(node, this.parseExpression());
+
+    if (this.match(&quot;,&quot;)) {
+      this.lex();
+    }
+
+    while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(&quot;)&quot;)) {
+      if (this.lookahead.type === Token.Label) {
+        node = this.parseLabel();
+      } else {
+        node = this.parseExpression();
+      }
+      elements.push(node);
+      if (node.type !== Syntax.Label) {
+        this.expect(&quot;:&quot;);
+      }
+      elements.push(this.parseExpression());
+      if (!this.match(&quot;)&quot;)) {
+        this.expect(&quot;,&quot;);
+      }
+    }
+
+    this.state.innerElements = innerElements;
+
+    return this.createObjectExpression(elements);
+  };
+
+  SCParser.prototype.parseRangeInitialiser = function(node, generator) {
+    var first = null, second = null, last = null;
+    var innerElements;
+
+    innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    if (node === null) {
+      // (..last)
+      this.expect(&quot;..&quot;);
+      if (this.match(&quot;)&quot;)) {
+        this.throwUnexpected(this.lookahead);
+      }
+      last = this.parseExpressions();
+    } else {
+      first = node;
+      if (this.match(&quot;,&quot;)) {
+        // (first, second .. last)
+        this.lex();
+        second = this.parseExpressions();
+        if (Array.isArray(second) &amp;&amp; second.length === 0) {
+          this.throwUnexpected(this.lookahead);
+        }
+        this.expect(&quot;..&quot;);
+        if (!this.match(&quot;)&quot;)) {
+          last = this.parseExpressions();
+        } else if (!generator) {
+          this.throwUnexpected(this.lookahead);
+        }
+      } else {
+        // (first..last)
+        this.lex();
+        if (!this.match(&quot;)&quot;)) {
+          last = this.parseExpressions();
+        } else if (!generator) {
+          this.throwUnexpected(this.lookahead);
+        }
+      }
+    }
+
+    this.state.innerElements = innerElements;
+
+    return this.createRangeExpression(first, second, last, generator);
+  };
+
+  SCParser.prototype.parseListInitialiser = function() {
+    var elements, innerElements;
+
+    elements = [];
+
+    innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    this.expect(&quot;[&quot;);
+
+    while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(&quot;]&quot;)) {
+      if (this.lookahead.type === Token.Label) {
+        elements.push(this.parseLabel());
+        elements.push(this.parseExpression());
+      } else {
+        elements.push(this.parseExpression());
+        if (this.match(&quot;:&quot;)) {
+          this.lex();
+          elements.push(this.parseExpression());
+        }
+      }
+      if (!this.match(&quot;]&quot;)) {
+        this.expect(&quot;,&quot;);
+      }
+    }
+
+    this.expect(&quot;]&quot;);
+
+    this.state.innerElements = innerElements;
+
+    return this.createListExpression(elements, this.state.immutableList);
+  };
+
+  // { ... }
+  SCParser.prototype.parseBraces = function(blocklist) {
+    var expr;
+
+    this.skipComment();
+    this.markStart();
+
+    this.expect(&quot;{&quot;);
+
+    if (this.match(&quot;:&quot;)) {
+      if (!this.state.disallowGenerator) {
+        this.lex();
+        expr = this.parseGeneratorInitialiser();
+      } else {
+        expr = {};
+        this.throwUnexpected(this.lookahead);
+      }
+    } else {
+      expr = this.parseFunctionExpression(this.state.closedFunction, blocklist);
+    }
+
+    this.expect(&quot;}&quot;);
+
+    return this.markEnd(expr);
+  };
+
+  SCParser.prototype.parseGeneratorInitialiser = function() {
+    this.throwError({}, Message.NotImplemented, &quot;generator literal&quot;);
+
+    this.parseExpression();
+    this.expect(&quot;,&quot;);
+
+    while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(&quot;}&quot;)) {
+      this.parseExpression();
+      if (!this.match(&quot;}&quot;)) {
+        this.expect(&quot;,&quot;);
+      }
+    }
+
+    return this.createLiteral({ value: &quot;null&quot;, valueType: Token.NilLiteral });
+  };
+
+  SCParser.prototype.parseLabel = function() {
+    this.skipComment();
+    this.markStart();
+    return this.markEnd(this.createLabel(this.lex().value));
+  };
+
+  SCParser.prototype.parseIdentifier = function() {
+    var expr;
+
+    this.skipComment();
+    this.markStart();
+
+    if (this.lookahead.type !== Syntax.Identifier) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    expr = this.lex();
+
+    return this.markEnd(this.createIdentifier(expr.value));
+  };
+
+  SCParser.prototype.parseVariableIdentifier = function() {
+    var token, value, ch;
+
+    this.skipComment();
+    this.markStart();
+
+    token = this.lex();
+    value = token.value;
+
+    if (token.type !== Token.Identifier) {
+      this.throwUnexpected(token);
+    } else {
+      ch = value.charAt(0);
+      if ((&quot;A&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;Z&quot;) || ch === &quot;_&quot;) {
+        this.throwUnexpected(token);
+      }
+    }
+
+    return this.markEnd(this.createIdentifier(value));
+  };
+
+  SCParser.prototype.markStart = function() {
+    /* istanbul ignore else */
+    if (this.opts.loc) {
+      this.marker.push(
+        this.index - this.lineStart,
+        this.lineNumber
+      );
+    }
+    /* istanbul ignore else */
+    if (this.opts.range) {
+      this.marker.push(
+        this.index
+      );
+    }
+  };
+
+  SCParser.prototype.markEnd = function(node) {
+    if (Array.isArray(node) || node.range || node.loc) {
+      /* istanbul ignore else */
+      if (this.opts.range) {
+        this.marker.pop();
+      }
+      /* istanbul ignore else */
+      if (this.opts.loc) {
+        this.marker.pop();
+        this.marker.pop();
+      }
+    } else {
+      /* istanbul ignore else */
+      if (this.opts.range) {
+        node.range = [ this.marker.pop(), this.index ];
+      }
+      /* istanbul ignore else */
+      if (this.opts.loc) {
+        node.loc = {
+          start: {
+            line: this.marker.pop(),
+            column: this.marker.pop()
+          },
+          end: {
+            line: this.lineNumber,
+            column: this.index - this.lineStart
+          }
+        };
+      }
+    }
+    return node;
+  };
+
+  SCParser.prototype.markTouch = function(node) {
+    /* istanbul ignore else */
+    if (this.opts.range) {
+      node.range = [ this.index, this.index ];
+    }
+    /* istanbul ignore else */
+    if (this.opts.loc) {
+      node.loc = {
+        start: {
+          line: this.lineNumber,
+          column: this.index - this.lineStart
+        },
+        end: {
+          line: this.lineNumber,
+          column: this.index - this.lineStart
+        }
+      };
+    }
+    return node;
+  };
+
+  SCParser.prototype.throwError = function(token, messageFormat) {
+    var args, message;
+    var error, index, lineNumber, column;
+    var prev;
+
+    args = Array.prototype.slice.call(arguments, 2);
+    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
+      return args[index];
+    });
+
+    if (typeof token.lineNumber === &quot;number&quot;) {
+      index = token.range[0];
+      lineNumber = token.lineNumber;
+      column = token.range[0] - token.lineStart + 1;
+    } else {
+      index = this.index;
+      lineNumber = this.lineNumber;
+      column = this.index - this.lineStart + 1;
+    }
+
+    error = new Error(&quot;Line &quot; + lineNumber + &quot;: &quot; + message);
+    error.index = index;
+    error.lineNumber = lineNumber;
+    error.column = column;
+    error.description = message;
+
+    if (this.errors) {
+      prev = this.errors[this.errors.length - 1];
+      if (!(prev &amp;&amp; error.index === prev.index)) {
+        this.errors.push(error);
+      }
+    } else {
+      throw error;
+    }
+  };
+
+  SCParser.prototype.throwUnexpected = function(token) {
+    switch (token.type) {
+    case Token.EOF:
+      this.throwError(token, Message.UnexpectedEOS);
+      break;
+    case Token.FloatLiteral:
+    case Token.IntegerLiteral:
+      this.throwError(token, Message.UnexpectedNumber);
+      break;
+    case Token.CharLiteral:
+      this.throwError(token, Message.UnexpectedChar);
+      break;
+    case Token.StringLiteral:
+      this.throwError(token, Message.UnexpectedString);
+      break;
+    case Token.SymbolLiteral:
+      this.throwError(token, Message.UnexpectedSymbol);
+      break;
+    case Token.Identifier:
+      this.throwError(token, Message.UnexpectedIdentifier);
+      break;
+    default:
+      this.throwError(token, Message.UnexpectedToken, token.value);
+      break;
+    }
+  };
+
+  parser.parse = function(source, opts) {
+    var instance, ast;
+
+    opts = opts || /* istanbul ignore next */ {};
+
+    instance = new SCParser(source, opts);
+    ast = instance.parse();
+
+    if (!!opts.tokens &amp;&amp; typeof instance.tokens !== &quot;undefined&quot;) {
+      ast.tokens = instance.tokens;
+    }
+    if (!!opts.tolerant &amp;&amp; typeof instance.errors !== &quot;undefined&quot;) {
+      ast.errors = instance.errors;
+    }
+
+    return ast;
+  };
+
+  sc.lang.parser = parser;
+
+  var SCScript = sc.SCScript;
+
+  SCScript.tokenize = function(source, opts) {
+    opts = opts || /* istanbul ignore next */ {};
+    opts.tokens = true;
+    return parser.parse(source, opts).tokens || /* istanbul ignore next */ [];
+  };
+
+  SCScript.parse = parser.parse;
+
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

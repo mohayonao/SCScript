@@ -148,7 +148,8 @@ describe("SCChar", function() {
   });
   it("#isPrint", function() {
     var instance, test;
-    var trueCase = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    var trueCase = " !\"#$%&'()*+,-./0123456789:;<=>?@" +
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
     for (var i = 0, ch; i < 128; i++) {
       ch = fromCharCode(i);
@@ -172,7 +173,8 @@ describe("SCChar", function() {
   });
   it("#isControl", function() {
     var instance, test;
-    var falseCase = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    var falseCase = " !\"#$%&'()*+,-./0123456789:;<=>?@" +
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
     for (var i = 0, ch; i < 128; i++) {
       ch = fromCharCode(i);
@@ -244,7 +246,8 @@ describe("SCChar", function() {
   });
   it("#isFileSafe", function() {
     var instance, test;
-    var trueCase = " !#$%&'()*+,-.0123456789;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    var trueCase = " !#$%&'()*+,-.0123456789;<=>?@" +
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
     for (var i = 0, ch; i < 128; i++) {
       ch = fromCharCode(i);

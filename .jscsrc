@@ -13,7 +13,6 @@
   "requireBlocksOnNewline": true,
   "requireSpacesInsideObjectBrackets": "all",
   "requireSpacesInsideArrayBrackets": "all",
-  "disallowSpaceAfterObjectKeys": true,
   "requireCommaBeforeLineBreak": true,
   "requireOperatorBeforeLineBreak": [
     "?", "/", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="
@@ -23,7 +22,7 @@
   ],
   "requireRightStickedOperators": [ "!" ],
   "disallowRightStickedOperators": [
-    "?", "*", ":", "=", "==", "===", "!=","!==", ">", ">=", "<", "<="
+    "?", "*", "=", "==", "===", "!=","!==", ">", ">=", "<", "<="
   ],
   "disallowSpaceAfterPrefixUnaryOperators": [ "++", "--", "+", "-", "~", "!" ],
   "disallowSpaceBeforePostfixUnaryOperators": [ "++", "--" ],
@@ -33,7 +32,6 @@
   "requireSpaceAfterBinaryOperators": [
     "+", "-", "*", "=", "==", "===", "!=","!=="
   ],
-  "disallowMultipleLineBreaks": true,
   "validateLineBreaks": "LF",
   "validateQuoteMarks": { "mark": "\"", "escape": true },
   "validateIndentation": 2,

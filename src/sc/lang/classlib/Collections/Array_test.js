@@ -704,13 +704,19 @@ describe("SCArray", function() {
     var $for;
 
     $elem1 = sc.test.object({
-      asUGenInput: this.spy(function () { return $ugen1; })
+      asUGenInput: this.spy(function() {
+        return $ugen1;
+      })
     });
     $elem2 = sc.test.object({
-      asUGenInput: this.spy(function () { return $ugen2; })
+      asUGenInput: this.spy(function() {
+        return $ugen2;
+      })
     });
     $elem3 = sc.test.object({
-      asUGenInput: this.spy(function () { return $ugen3; })
+      asUGenInput: this.spy(function() {
+        return $ugen3;
+      })
     });
     $ugen1 = sc.test.object();
     $ugen2 = sc.test.object();
@@ -732,13 +738,19 @@ describe("SCArray", function() {
     var $for;
 
     $elem1 = sc.test.object({
-      asAudioRateInput: this.spy(function () { return $ugen1; })
+      asAudioRateInput: this.spy(function() {
+        return $ugen1;
+      })
     });
     $elem2 = sc.test.object({
-      asAudioRateInput: this.spy(function () { return $ugen2; })
+      asAudioRateInput: this.spy(function() {
+        return $ugen2;
+      })
     });
     $elem3 = sc.test.object({
-      asAudioRateInput: this.spy(function () { return $ugen3; })
+      asAudioRateInput: this.spy(function() {
+        return $ugen3;
+      })
     });
     $ugen1 = sc.test.object();
     $ugen2 = sc.test.object();
@@ -759,13 +771,19 @@ describe("SCArray", function() {
     var $ugen1, $ugen2, $ugen3;
 
     $elem1 = sc.test.object({
-      asControlInput: this.spy(function () { return $ugen1; })
+      asControlInput: this.spy(function() {
+        return $ugen1;
+      })
     });
     $elem2 = sc.test.object({
-      asControlInput: this.spy(function () { return $ugen2; })
+      asControlInput: this.spy(function() {
+        return $ugen2;
+      })
     });
     $elem3 = sc.test.object({
-      asControlInput: this.spy(function () { return $ugen3; })
+      asControlInput: this.spy(function() {
+        return $ugen3;
+      })
     });
     $ugen1 = sc.test.object();
     $ugen2 = sc.test.object();

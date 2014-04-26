@@ -133,9 +133,7 @@ module.exports = function(grunt) {
 
     loadNpmTasksIfNeeded("grunt-jscs-checker");
 
-    list = grunt.file.expand([
-      "src/sc/**/*.js", "!src/sc/**/*_test.js"
-    ]);
+    list = grunt.file.expand("src/sc/**/*.js");
     if (filter) {
       list = filterFiles(list, filter, false);
     }

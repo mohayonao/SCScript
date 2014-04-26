@@ -553,7 +553,9 @@ describe("SCAbstractFunction", function() {
     expect(instance.composeNAryOp.args[0][0])
       .to.be.a("SCSymbol").that.equal("bilin");
     expect(instance.composeNAryOp.args[0][1])
-      .to.be.a("SCArray").that.eqls([ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]);
+      .to.be.a("SCArray").that.eqls([
+        $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
+      ]);
     expect(instance.composeNAryOp).to.be.calledLastIn(test);
   }));
   it("#biexp", sinon.test(function() {
@@ -575,7 +577,9 @@ describe("SCAbstractFunction", function() {
     expect(instance.composeNAryOp.args[0][0])
       .to.be.a("SCSymbol").that.equal("biexp");
     expect(instance.composeNAryOp.args[0][1])
-      .to.be.a("SCArray").that.eqls([ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]);
+      .to.be.a("SCArray").that.eqls([
+        $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
+      ]);
     expect(instance.composeNAryOp).to.be.calledLastIn(test);
   }));
   it("#moddif", sinon.test(function() {

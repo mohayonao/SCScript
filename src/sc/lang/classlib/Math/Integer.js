@@ -2,29 +2,11 @@
   "use strict";
 
   require("./SimpleNumber");
+  require("./bop");
 
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
   var mathlib = sc.libs.mathlib;
-
-  function prOpInt(selector, type1, type2) {
-    var func = mathlib[selector];
-
-    return function($aNumber, $adverb) {
-      var tag = $aNumber.__tag;
-
-      switch (tag) {
-      case sc.C.TAG_INT:
-        return type1(func(this._, $aNumber._));
-      case sc.C.TAG_FLOAT:
-        return type2(func(this._, $aNumber._));
-      }
-
-      return $aNumber.performBinaryOpOnSimpleNumber(
-        $SC.Symbol(selector), this, $adverb
-      );
-    };
-  }
 
   sc.lang.klass.refine("Integer", function(spec, utils) {
     var $int1 = utils.int1Instance;
@@ -91,7 +73,7 @@
       [ "rrand"   , $SC.Integer, $SC.Float   ],
       [ "exprand" , $SC.Float  , $SC.Float   ],
     ].forEach(function(items) {
-      spec[items[0]] = prOpInt.apply(null, items);
+      spec[items[0]] = sc.lang.classlib.bop.apply(null, items);
     });
 
     spec.wrap2 = function($aNumber, $adverb) {

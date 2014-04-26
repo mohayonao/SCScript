@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.11" };
+var sc = { VERSION: "0.0.12" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -1398,6 +1398,13 @@ var sc = { VERSION: "0.0.11" };
   };
 
   sc.lang.iterator = iterator;
+
+})(sc);
+
+// src/sc/lang/classlib.js
+(function(sc) {
+
+  sc.lang.classlib = {};
 
 })(sc);
 
@@ -4001,14 +4008,13 @@ var sc = { VERSION: "0.0.11" };
 
 })(sc);
 
-// src/sc/lang/classlib/Math/Integer.js
+// src/sc/lang/classlib/Math/bop.js
 (function(sc) {
 
   var $SC = sc.lang.$SC;
-  var iterator = sc.lang.iterator;
   var mathlib = sc.libs.mathlib;
 
-  function prOpInt(selector, type1, type2) {
+  sc.lang.classlib.bop = function(selector, type1, type2) {
     var func = mathlib[selector];
 
     return function($aNumber, $adverb) {
@@ -4025,7 +4031,16 @@ var sc = { VERSION: "0.0.11" };
         $SC.Symbol(selector), this, $adverb
       );
     };
-  }
+  };
+
+})(sc);
+
+// src/sc/lang/classlib/Math/Integer.js
+(function(sc) {
+
+  var $SC = sc.lang.$SC;
+  var iterator = sc.lang.iterator;
+  var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Integer", function(spec, utils) {
     var $int1 = utils.int1Instance;
@@ -4092,7 +4107,7 @@ var sc = { VERSION: "0.0.11" };
       [ "rrand"   , $SC.Integer, $SC.Float   ],
       [ "exprand" , $SC.Float  , $SC.Float   ],
     ].forEach(function(items) {
-      spec[items[0]] = prOpInt.apply(null, items);
+      spec[items[0]] = sc.lang.classlib.bop.apply(null, items);
     });
 
     spec.wrap2 = function($aNumber, $adverb) {
@@ -4408,25 +4423,6 @@ var sc = { VERSION: "0.0.11" };
   var iterator = sc.lang.iterator;
   var mathlib = sc.libs.mathlib;
 
-  function prOpFloat(selector, type1, type2) {
-    var func = mathlib[selector];
-
-    return function($aNumber, $adverb) {
-      var tag = $aNumber.__tag;
-
-      switch (tag) {
-      case 770:
-        return type1(func(this._, $aNumber._));
-      case 777:
-        return type2(func(this._, $aNumber._));
-      }
-
-      return $aNumber.performBinaryOpOnSimpleNumber(
-        $SC.Symbol(selector), this, $adverb
-      );
-    };
-  }
-
   sc.lang.klass.refine("Float", function(spec, utils) {
     spec.toString = function() {
       var raw = this._;
@@ -4495,7 +4491,7 @@ var sc = { VERSION: "0.0.11" };
       [ "rrand"   , $SC.Float, $SC.Float ],
       [ "exprand" , $SC.Float, $SC.Float ],
     ].forEach(function(items) {
-      spec[items[0]] = prOpFloat.apply(null, items);
+      spec[items[0]] = sc.lang.classlib.bop.apply(null, items);
     });
 
     spec.clip = function($lo, $hi) {

@@ -1,0 +1,76 @@
+<!DOCTYPE>
+<html style="height:100%">
+  <head>
+    <meta charset="utf-8">
+    <title>ParserTest - SCScript</title>
+    <style>
+      .elem {
+        box-sizing: border-box;
+        font-family: Monaco, Consolas, "Lucida Console", monospace;
+        font-size: 12px;
+        outline: none;
+        border: 0;
+        overflow: auto;
+      }
+      #header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 32px;
+        margin: 0;
+        padding: 8px;
+        color: #eaa8bf;
+        background: #1c1c1c;
+        opacity: 0.9;
+      }
+      #source {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 100%;
+        margin: 32px 0 0;
+        padding: 10px;
+        color: #f7fcfe;
+        background: #0f1d33;
+        resize: none;
+      }
+      #results {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 50%;
+        height: 100%;
+        margin: 32px 0 0;
+        padding: 10px;
+        color: #f7fcfe;
+        background: #3c0b11;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      #selector {
+        position: fixed;
+        right: 20px;
+      }
+      #selector a {
+        color: #f7fcfe;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source" class="elem">// ParserTest - SCScript</textarea>
+    <pre id="results" class="elem"></pre>
+    <div id="header" class="elem">
+      <span id="message"></span>
+      <div id="selector">
+        <a href="javascript:void(0)">CODE</a>
+        <a href="javascript:void(0)">AST</a>
+        <a href="javascript:void(0)">TOKEN</a>
+      </div>
+    </div>
+    <script src="../assets/jquery.min.js"></script>
+    <script src="../build/scscript.js"></script>
+    <script src="./parse.js"></script>
+  </body>
+</html>

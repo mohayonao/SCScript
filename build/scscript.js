@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.12" };
+var sc = { VERSION: "0.0.13" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -10232,9 +10232,9 @@ var sc = { VERSION: "0.0.12" };
   var parser = {};
 
   var Token = parser.Token = {
-    BooleanLiteral: "Boolean",
     CharLiteral: "Char",
     EOF: "<EOF>",
+    FalseLiteral: "False",
     FloatLiteral: "Float",
     Identifier: "Identifier",
     IntegerLiteral: "Integer",
@@ -10243,7 +10243,8 @@ var sc = { VERSION: "0.0.12" };
     NilLiteral: "Nil",
     Punctuator: "Punctuator",
     StringLiteral: "String",
-    SymbolLiteral: "Symbol"
+    SymbolLiteral: "Symbol",
+    TrueLiteral: "True"
   };
 
   var Syntax = parser.Syntax = {
@@ -10255,13 +10256,10 @@ var sc = { VERSION: "0.0.12" };
     GlobalExpression: "GlobalExpression",
     Identifier: "Identifier",
     ListExpression: "ListExpression",
-    ListIndexer: "ListIndexer",
     Label: "Label",
     Literal: "Literal",
-    MemberExpression: "MemberExpression",
     ObjectExpression: "ObjectExpression",
     Program: "Program",
-    RangeExpression: "RangeExpression",
     ThisExpression: "ThisExpression",
     UnaryExpression: "UnaryExpression",
     VariableDeclaration: "VariableDeclaration",
@@ -10322,10 +10320,6 @@ var sc = { VERSION: "0.0.12" };
     "%"  : 11,
     "!"  : 12,
   };
-
-  function q(str) {
-    return "'" + str + "'";
-  }
 
   function char2num(ch) {
     var n = ch.charCodeAt(0);
@@ -10448,7 +10442,6 @@ var sc = { VERSION: "0.0.12" };
     this.errors = opts.tolerant ? [] : null;
     this.state = {
       closedFunction: false,
-      disallowNotMember: false,
       disallowGenerator: false,
       innerElements: false,
       immutableList: false,
@@ -10761,8 +10754,10 @@ var sc = { VERSION: "0.0.12" };
         value = "null";
         break;
       case "true":
+        type = Token.TrueLiteral;
+        break;
       case "false":
-        type = Token.BooleanLiteral;
+        type = Token.FalseLiteral;
         break;
       default:
         type = Token.Identifier;
@@ -10873,14 +10868,20 @@ var sc = { VERSION: "0.0.12" };
 
     if (pi) {
       type = Token.FloatLiteral;
-      value = "(" + value + " * Math.PI)";
+      value = value + " * Math.PI";
+    }
+
+    if (type === Token.FloatLiteral && value === (value|0)) {
+      value = value + ".0";
+    } else {
+      value = String(value);
     }
 
     this.index += items[0].length;
 
     return {
       type : type,
-      value: String(value),
+      value: value,
       lineNumber: this.lineNumber,
       lineStart : this.lineStart,
       range: [ start, this.index ]
@@ -10907,14 +10908,20 @@ var sc = { VERSION: "0.0.12" };
     }
 
     if (pi) {
-      value = "(" + value + " * Math.PI)";
+      value = value + " * Math.PI";
+    }
+
+    if (type === Token.FloatLiteral && value === (value|0)) {
+      value = value + ".0";
+    } else {
+      value = String(value);
     }
 
     this.index += items[0].length;
 
     return {
       type : type,
-      value: String(value),
+      value: value,
       lineNumber: this.lineNumber,
       lineStart : this.lineStart,
       range: [ start, this.index ]
@@ -10962,7 +10969,7 @@ var sc = { VERSION: "0.0.12" };
       ch = source.charAt(index);
       index += 1;
       if (ch === quote) {
-        value = source.substr(start, index - start);
+        value = source.substr(start + 1, index - start - 2);
         value = value.replace(/\n/g, "\\n");
         this.index = index;
         return {
@@ -11054,12 +11061,21 @@ var sc = { VERSION: "0.0.12" };
     };
   };
 
-  SCParser.prototype.createCallExpression = function(callee, args) {
-    return {
+  SCParser.prototype.createCallExpression = function(callee, method, args, stamp) {
+    var node;
+
+    node = {
       type: Syntax.CallExpression,
       callee: callee,
-      args: args
+      method: method,
+      args  : args,
     };
+
+    if (stamp) {
+      node.stamp = stamp;
+    }
+
+    return node;
   };
 
   SCParser.prototype.createGlobalExpression = function(id) {
@@ -11116,15 +11132,6 @@ var sc = { VERSION: "0.0.12" };
     return node;
   };
 
-  SCParser.prototype.createListIndexer = function(first, second, last) {
-    return {
-      type: Syntax.ListIndexer,
-      first: first,
-      second: second,
-      last: last
-    };
-  };
-
   SCParser.prototype.createLiteral = function(token) {
     return {
       type: Syntax.Literal,
@@ -11140,15 +11147,6 @@ var sc = { VERSION: "0.0.12" };
     }
   };
 
-  SCParser.prototype.createMemberExpression = function(accessor, object, property) {
-    return {
-      type: Syntax.MemberExpression,
-      computed: accessor === "[",
-      object: object,
-      property: property
-    };
-  };
-
   SCParser.prototype.createObjectExpression = function(elements) {
     return {
       type: Syntax.ObjectExpression,
@@ -11161,19 +11159,6 @@ var sc = { VERSION: "0.0.12" };
       type: Syntax.Program,
       body: body
     };
-  };
-
-  SCParser.prototype.createRangeExpression = function(first, second, last, generator) {
-    var node = {
-      type: Syntax.RangeExpression,
-      first: first,
-      second: second,
-      last: last
-    };
-    if (generator) {
-      node.generator = true;
-    }
-    return node;
   };
 
   SCParser.prototype.createThisExpression = function(name) {
@@ -11229,7 +11214,6 @@ var sc = { VERSION: "0.0.12" };
   SCParser.prototype.isLeftHandSide = function(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
-    case Syntax.MemberExpression:
     case Syntax.GlobalExpression:
       return true;
     }
@@ -11352,7 +11336,7 @@ var sc = { VERSION: "0.0.12" };
 
     if (this.match("=")) {
       this.lex();
-      init = this.parseUnaryExpression();
+      init = this.parseUnaryExpression(); // literal or immurable array of literals
     }
 
     return this.markEnd(this.createVariableDeclarator(id, init));
@@ -11482,7 +11466,6 @@ var sc = { VERSION: "0.0.12" };
       sharp = true;
       token = this.lex();
       if (this.matchAny([ "[", "{" ])) {
-        // this.revert(token);
         this.restore(saved);
       } else {
         destructuringAssignment = true;
@@ -11501,19 +11484,49 @@ var sc = { VERSION: "0.0.12" };
       node = left = this.parsePartialExpression();
 
       if (this.match("=")) {
-        if (!this.isLeftHandSide(left)) {
-          this.throwError({}, Message.InvalidLHSInAssignment);
-        }
+        if (node.type === Syntax.CallExpression) {
+          token = this.lex();
+          right = this.parseAssignmentExpression();
+          left.method.name = this.getAssignMethod(left.method.name);
+          left.args.list = node.args.list.concat(right);
+          /* istanbul ignore else */
+          if (this.opts.range) {
+            left.range[1] = this.index;
+          }
+          /* istanbul ignore else */
+          if (this.opts.loc) {
+            left.loc.end = {
+              line: this.lineNumber,
+              column: this.index - this.lineStart
+            };
+          }
+          node = left;
+        } else {
+          // TODO: fix
+          if (!this.isLeftHandSide(left)) {
+            this.throwError({}, Message.InvalidLHSInAssignment);
+          }
 
-        token = this.lex();
-        right = this.parseAssignmentExpression();
-        node = this.createAssignmentExpression(
-          token.value, left, right
-        );
+          token = this.lex();
+          right = this.parseAssignmentExpression();
+          node  = this.createAssignmentExpression(
+            token.value, left, right
+          );
+        }
       }
     }
 
     return this.markEnd(node);
+  };
+
+  SCParser.prototype.getAssignMethod = function(methodName) {
+    switch (methodName) {
+    case "at":
+      return "put";
+    case "copySeries":
+      return "putSeries";
+    }
+    return methodName + "_";
   };
 
   SCParser.prototype.parseDestructuringAssignmentLeft = function() {
@@ -11542,7 +11555,7 @@ var sc = { VERSION: "0.0.12" };
 
   // 4.3 Partial Expression
   SCParser.prototype.parsePartialExpression = function(node) {
-    var underscore;
+    var underscore, x, y;
 
     if (this.state.innerElements) {
       node = this.parseBinaryExpression(node);
@@ -11558,7 +11571,17 @@ var sc = { VERSION: "0.0.12" };
 
           args = new Array(this.state.underscore.length);
           for (i = 0, imax = args.length; i < imax; ++i) {
-            args[i] = this.state.underscore[i];
+            x = this.state.underscore[i];
+            y = this.createVariableDeclarator(x);
+            /* istanbul ignore else */
+            if (x.range) {
+              y.range = x.range;
+            }
+            /* istanbul ignore else */
+            if (x.loc) {
+              y.loc = x.loc;
+            }
+            args[i] = y;
             this.scope.add("arg", this.state.underscore[i].name);
           }
 
@@ -11688,7 +11711,15 @@ var sc = { VERSION: "0.0.12" };
       lookahead = this.lookahead;
       adverb = this.parsePrimaryExpression();
 
-      if (adverb.type === Syntax.Identifier || adverb.type === Syntax.Literal) {
+      if (adverb.type === Syntax.Literal) {
+        return adverb;
+      }
+
+      if (adverb.type === Syntax.Identifier) {
+        adverb.type = Syntax.Literal;
+        adverb.value = adverb.name;
+        adverb.valueType = Token.SymbolLiteral;
+        delete adverb.name;
         return adverb;
       }
 
@@ -11717,16 +11748,14 @@ var sc = { VERSION: "0.0.12" };
 
   // 4.7 LeftHandSide Expressions
   SCParser.prototype.parseLeftHandSideExpression = function(node) {
-    var marker, expr, args, m, prev, lookahead, closedFunction, disallowNotMember;
+    var marker, expr, args, m, prev, lookahead, closedFunction;
     var disallowGenerator, blocklist;
+    var method;
 
     this.skipComment();
 
     marker = this.createLocationMarker();
-    disallowNotMember = this.state.disallowNotMember;
-    this.state.disallowNotMember = false;
     expr = this.parsePrimaryExpression(node);
-    this.state.disallowNotMember = disallowNotMember;
 
     blocklist = false;
 
@@ -11738,16 +11767,27 @@ var sc = { VERSION: "0.0.12" };
       switch (m) {
       case "(":
         if (this.isClassName(expr)) {
-          expr = this.createMemberExpression(
-            ".", expr, this.markTouch(this.createIdentifier("new"))
-          );
-          /* istanbul ignore else */
-          if (marker) {
-            marker.apply(expr);
+          method = this.markTouch(this.createIdentifier("new"));
+          args   = this.parseCallArgument();
+          expr   = this.createCallExpression(expr, method, args, "(");
+        } else {
+          if (expr.type !== Syntax.Identifier) {
+            this.throwUnexpected(this.lookahead);
           }
+          args = this.parseCallArgument();
+
+          method = expr;
+          expr   = args.list.shift();
+          if (!expr) {
+            if (args.expand) {
+              expr = args.expand;
+              delete args.expand;
+            } else {
+              this.throwUnexpected(lookahead);
+            }
+          }
+          expr = this.createCallExpression(expr, method, args, "("); // TODO: max(0, 1)  .. (?
         }
-        node = this.parseCallArgument();
-        expr = this.createCallExpression(expr, node);
         break;
       case "#":
         closedFunction = this.state.closedFunction;
@@ -11759,79 +11799,72 @@ var sc = { VERSION: "0.0.12" };
         m = "{";
         /* falls through */
       case "{":
-        if (expr.type === Syntax.MemberExpression && !expr.computed) {
-          expr = this.createCallExpression(expr, { list: [] });
-        } else if (expr.type === Syntax.Identifier) {
+        if (expr.type === Syntax.CallExpression && expr.stamp && expr.stamp !== "(") {
+          this.throwUnexpected(this.lookahead);
+        }
+        if (expr.type === Syntax.Identifier) {
           if (this.isClassName(expr)) {
-            expr = this.createMemberExpression(
-              ".", expr, this.markTouch(this.createIdentifier("new"))
-            );
-            /* istanbul ignore else */
-            if (marker) {
-              marker.apply(expr);
-            }
+            method = this.markTouch(this.createIdentifier("new"));
+            expr   = this.createCallExpression(expr, method, { list: [] }, m);
+          } else {
+            expr = this.createCallExpression(null, expr, { list: [] });
           }
-          expr = this.createCallExpression(expr, { list: [] });
-        } else if (expr.type !== Syntax.CallExpression) {
-          this.throwUnexpected(lookahead);
         }
         lookahead = this.lookahead;
         disallowGenerator = this.state.disallowGenerator;
         this.state.disallowGenerator = true;
-        disallowNotMember = this.state.disallowNotMember;
-        this.state.disallowNotMember = true;
         node = this.parseBraces(true);
-        this.state.disallowNotMember = disallowNotMember;
         this.state.disallowGenerator = disallowGenerator;
         this.state.closedFunction = closedFunction;
-        args = expr.args;
-        if (args && !args.expand && !args.keywords) {
-          args.list.push(node);
+
+        // TODO: refactoring
+        if (expr.callee === null) {
+          expr.callee = node;
+          node = expr;
         } else {
-          this.throwUnexpected(lookahead);
+          expr.args.list.push(node);
         }
+
         break;
       case "[":
-        if (expr.type === Syntax.CallExpression) {
+        if (expr.type === Syntax.CallExpression && expr.stamp === "(") {
           this.throwUnexpected(this.lookahead);
         }
         if (this.isClassName(expr)) {
-          expr = this.createMemberExpression(
-            ".", expr, this.markTouch(this.createIdentifier("newFrom"))
-          );
-          /* istanbul ignore else */
-          if (marker) {
-            marker.apply(expr);
-          }
-          disallowNotMember = this.state.disallowNotMember;
-          this.state.disallowNotMember = true;
-          this.markStart();
-          node = this.markEnd(this.parseLeftHandSideExpression());
-          this.state.disallowNotMember = disallowNotMember;
-          expr = this.createCallExpression(expr, { list: [ node ] });
+          expr = this.parseLeftHandSideNewFrom(expr);
         } else {
-          node = this.parseListIndexer();
-          expr = this.createMemberExpression("[", expr, node);
+          expr = this.parseLeftHandSideListAt(expr);
         }
         break;
       case ".":
         this.lex();
         if (this.match("(")) {
-          expr = this.createMemberExpression(
-            ".", expr, this.markTouch(this.createIdentifier("value"))
-          );
-          /* istanbul ignore else */
-          if (marker) {
-            marker.apply(expr);
-          }
-          node = this.parseCallArgument();
-          expr = this.createCallExpression(expr, node);
+          method = this.markTouch(this.createIdentifier("value"));
+          args   = this.parseCallArgument();
+          expr   = this.createCallExpression(expr, method, args, ".");
         } else if (this.match("[")) {
-          node = this.parseListIndexer();
-          expr = this.createMemberExpression("[", expr, node);
+           // TODO: fix
+          var expr0;
+          method = this.markTouch(this.createIdentifier("value"));
+          expr0  = expr;
+          expr   = this.markTouch(this.createCallExpression(expr, method, { list: [] }, "."));
+          /* istanbul ignore else */
+          if (this.opts.range) {
+            expr.range[0] = expr0.range[0];
+          }
+          /* istanbul ignore else */
+          if (this.opts.loc) {
+            expr.loc.start = expr0.loc.start;
+          }
+          expr = this.parseLeftHandSideListAt(expr);
         } else {
-          node = this.parseProperty();
-          expr = this.createMemberExpression(".", expr, node);
+          method = this.parseProperty();
+          if (this.match("(")) {
+            args = this.parseCallArgument();
+            expr = this.createCallExpression(expr, method, args);
+          } else {
+            expr = this.createCallExpression(expr, method, { list: [] });
+          }
         }
         break;
       }
@@ -11843,6 +11876,36 @@ var sc = { VERSION: "0.0.12" };
     }
 
     return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideNewFrom = function(expr) {
+    var node, method;
+
+    method = this.markTouch(this.createIdentifier("newFrom"));
+
+    this.skipComment();
+    this.markStart();
+
+    node = this.markEnd(this.parseListInitialiser());
+
+    return this.createCallExpression(expr, method, { list: [ node ] }, "[");
+  };
+
+  SCParser.prototype.parseLeftHandSideListAt = function(expr) {
+    var indexes, method;
+
+    method = this.markTouch(this.createIdentifier("at"));
+
+    indexes = this.parseListIndexer();
+    if (indexes) {
+      if (indexes.length === 3) {
+        method.name = "copySeries";
+      }
+    } else {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return this.createCallExpression(expr, method, { list: indexes }, "[");
   };
 
   SCParser.prototype.parseCallArgument = function() {
@@ -11899,16 +11962,15 @@ var sc = { VERSION: "0.0.12" };
     this.expect("[");
 
     if (!this.match("]")) {
-      this.markStart();
 
       if (this.match("..")) {
         // [..A]
         this.lex();
         if (!this.match("]")) {
           last = this.parseExpressions();
-          node = this.markEnd(this.createListIndexer(null, null, last));
+          node = [ null, null, last ];
         } else {
-          node = this.markEnd(this.createListIndexer(null, null, null));
+          node = [ null, null, null ];
         }
       } else {
         if (!this.match(",")) {
@@ -11922,7 +11984,7 @@ var sc = { VERSION: "0.0.12" };
             // [A..B]
             last = this.parseExpressions();
           }
-          node = this.markEnd(this.createListIndexer(first, null, last));
+          node = [ first, null, last ];
         } else if (this.match(",")) {
           this.lex();
           second = this.parseExpressions();
@@ -11935,10 +11997,10 @@ var sc = { VERSION: "0.0.12" };
           } else {
             this.throwUnexpected(this.lookahead);
           }
-          node = this.markEnd(this.createListIndexer(first, second, last));
+          node = [ first, second, last ];
         } else {
           // [A]
-          node = this.markEnd(first);
+          node = [ first ];
         }
       }
     }
@@ -12029,22 +12091,23 @@ var sc = { VERSION: "0.0.12" };
         lookahead = this.lookahead;
         expr = this.parseIdentifier();
         if (expr.name === "_") {
-          expr.name += this.state.underscore.length.toString();
+          expr.name = "$_" + this.state.underscore.length.toString();
           this.state.underscore.push(expr);
         }
         break;
-      case Token.BooleanLiteral:
       case Token.CharLiteral:
       case Token.FloatLiteral:
+      case Token.FalseLiteral:
       case Token.IntegerLiteral:
       case Token.NilLiteral:
       case Token.SymbolLiteral:
+      case Token.TrueLiteral:
         expr = this.createLiteral(this.lex());
         break;
       case Token.StringLiteral:
         token = this.lex();
-        if (token.value.charAt(0) === '"' && token.value.indexOf("#{") !== -1) {
-          expr = this.parseInterpolatedString(token);
+        if (this.isInterpolatedString(token.value)) {
+          expr = this.parseInterpolatedString(token.value);
         } else {
           expr = this.createLiteral(token);
         }
@@ -12060,11 +12123,15 @@ var sc = { VERSION: "0.0.12" };
     return this.markEnd(expr);
   };
 
-  SCParser.prototype.parseInterpolatedString = function(token) {
-    var value, len, items;
+  SCParser.prototype.isInterpolatedString = function(value) {
+    var re = /(^|[^\x5c])#\{/;
+    return re.test(value);
+  };
+
+  SCParser.prototype.parseInterpolatedString = function(value) {
+    var len, items;
     var i, j, ch, depth, code, parser;
 
-    value = token.value.substr(1, token.value.length - 2);
     len = value.length;
     items = [];
 
@@ -12092,7 +12159,7 @@ var sc = { VERSION: "0.0.12" };
       }
       code = value.substr(i, j - i);
       if (code) {
-        items.push(q(code));
+        items.push('"' + code + '"');
       }
       i = j + 2;
       j = i;
@@ -12120,7 +12187,7 @@ var sc = { VERSION: "0.0.12" };
     } while (i < len);
 
     if (i < len) {
-      items.push(q(value.substr(i)));
+      items.push('"' + value.substr(i) + '"');
     }
 
     code = items.join("++");
@@ -12153,19 +12220,19 @@ var sc = { VERSION: "0.0.12" };
         return this.createBlockExpression(body);
       });
     } else if (this.match("..")) {
-      expr = this.parseRangeInitialiser(null, generator);
+      expr = this.parseSeriesInitialiser(null, generator);
     } else if (this.match(")")) {
       expr = this.createObjectExpression([]);
     } else {
       node = this.parseExpression();
       if (this.matchAny([ ",", ".." ])) {
-        expr = this.parseRangeInitialiser(node, generator);
+        expr = this.parseSeriesInitialiser(node, generator);
       } else if (this.match(":")) {
         expr = this.parseObjectInitialiser(node);
       } else if (this.match(";")) {
         expr = this.parseExpressions(node);
         if (this.matchAny([ ",", ".." ])) {
-          expr = this.parseRangeInitialiser(expr, generator);
+          expr = this.parseSeriesInitialiser(expr, generator);
         }
         marker = null;
       } else {
@@ -12193,7 +12260,7 @@ var sc = { VERSION: "0.0.12" };
     if (node) {
       this.expect(":");
     } else {
-      node = this.parseLabel();
+      node = this.parseLabelAsSymbol();
     }
     elements.push(node, this.parseExpression());
 
@@ -12203,15 +12270,12 @@ var sc = { VERSION: "0.0.12" };
 
     while (this.lookahead.type !== Token.EOF && !this.match(")")) {
       if (this.lookahead.type === Token.Label) {
-        node = this.parseLabel();
+        node = this.parseLabelAsSymbol();
       } else {
         node = this.parseExpression();
-      }
-      elements.push(node);
-      if (node.type !== Syntax.Label) {
         this.expect(":");
       }
-      elements.push(this.parseExpression());
+      elements.push(node, this.parseExpression());
       if (!this.match(")")) {
         this.expect(",");
       }
@@ -12222,20 +12286,32 @@ var sc = { VERSION: "0.0.12" };
     return this.createObjectExpression(elements);
   };
 
-  SCParser.prototype.parseRangeInitialiser = function(node, generator) {
+  SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
     var first = null, second = null, last = null;
-    var innerElements;
+    var method, innerElements;
 
     innerElements = this.state.innerElements;
     this.state.innerElements = true;
 
+    method = this.markTouch(this.createIdentifier(
+      generator ? "seriesIter" : "series"
+    ));
+
     if (node === null) {
       // (..last)
+      first = this.markTouch({
+        type: Syntax.Literal,
+        value: "0",
+        valueType: Token.IntegerLiteral
+      });
       this.expect("..");
       if (this.match(")")) {
-        this.throwUnexpected(this.lookahead);
+        if (!generator) {
+          this.throwUnexpected(this.lookahead);
+        }
+      } else {
+        last = this.parseExpressions();
       }
-      last = this.parseExpressions();
     } else {
       first = node;
       if (this.match(",")) {
@@ -12264,7 +12340,7 @@ var sc = { VERSION: "0.0.12" };
 
     this.state.innerElements = innerElements;
 
-    return this.createRangeExpression(first, second, last, generator);
+    return this.createCallExpression(first, method, { list: [ second, last ] });
   };
 
   SCParser.prototype.parseListInitialiser = function() {
@@ -12279,8 +12355,7 @@ var sc = { VERSION: "0.0.12" };
 
     while (this.lookahead.type !== Token.EOF && !this.match("]")) {
       if (this.lookahead.type === Token.Label) {
-        elements.push(this.parseLabel());
-        elements.push(this.parseExpression());
+        elements.push(this.parseLabelAsSymbol(), this.parseExpression());
       } else {
         elements.push(this.parseExpression());
         if (this.match(":")) {
@@ -12346,6 +12421,28 @@ var sc = { VERSION: "0.0.12" };
     this.skipComment();
     this.markStart();
     return this.markEnd(this.createLabel(this.lex().value));
+  };
+
+  SCParser.prototype.parseLabelAsSymbol = function() {
+    var label, node;
+
+    label = this.parseLabel();
+    node  = {
+      type: Syntax.Literal,
+      value: label.name,
+      valueType: Token.SymbolLiteral
+    };
+
+    /* istanbul ignore else */
+    if (label.range) {
+      node.range = label.range;
+    }
+    /* istanbul ignore else */
+    if (label.loc) {
+      node.loc = label.loc;
+    }
+
+    return node;
   };
 
   SCParser.prototype.parseIdentifier = function() {
@@ -12482,7 +12579,7 @@ var sc = { VERSION: "0.0.12" };
 
     if (this.errors) {
       prev = this.errors[this.errors.length - 1];
-      if (!(prev && error.index === prev.index)) {
+      if (!(prev && error.index <= prev.index)) {
         this.errors.push(error);
       }
     } else {
@@ -12546,6 +12643,957 @@ var sc = { VERSION: "0.0.12" };
   };
 
   SCScript.parse = parser.parse;
+
+})(sc);
+
+// src/sc/lang/codegen.js
+(function(sc) {
+
+  var codegen = {};
+  var Syntax  = sc.lang.parser.Syntax;
+  var Token   = sc.lang.parser.Token;
+  var Message = sc.lang.parser.Message;
+  var SegmentedMethod = {
+    idle : true,
+    sleep: true,
+    wait : true,
+    yield: true
+  };
+
+  function Scope(codegen) {
+    this.codegen = codegen;
+    this.stack = [];
+  }
+
+  Scope.prototype.add = function(type, id, scope) {
+    var peek = this.stack[this.stack.length - 1];
+    var vars, args, declared, stmt, indent;
+
+    if (scope) {
+      vars = scope.vars;
+      args = scope.args;
+      declared = scope.declared;
+      stmt = scope.stmt;
+      indent = scope.indent;
+    } else {
+      vars = peek.vars;
+      args = peek.args;
+      declared = peek.declared;
+      stmt = peek.stmt;
+      indent = peek.indent;
+    }
+
+    switch (type) {
+    case "var":
+      if (args[id]) {
+        this.codegen.throwError(Message.VariableAlreadyDeclared, id);
+      } else if (vars[id]) {
+        if (id.charAt(0) !== "_") {
+          this.codegen.throwError(Message.VariableAlreadyDeclared, id);
+        }
+      } else {
+        vars[id] = true;
+        delete declared[id];
+        if (stmt.vars.length === 0) {
+          stmt.head.push(indent, "var ");
+          stmt.vars.push(this.codegen.id(id));
+          if (id.charAt(0) !== "_") {
+            stmt.vars.push(" = $SC.Nil()");
+          }
+          stmt.tail.push(";", "\n");
+        } else {
+          stmt.vars.push(
+            ", ", this.codegen.id(id)
+          );
+          if (id.charAt(0) !== "_") {
+            stmt.vars.push(" = $SC.Nil()");
+          }
+        }
+        if (scope) {
+          peek.declared[id] = true;
+        }
+      }
+      break;
+    case "arg":
+      if (args[id]) {
+        this.codegen.throwError(Message.ArgumentAlreadyDeclared, id);
+      }
+      args[id] = true;
+      delete declared[id];
+      break;
+    }
+  };
+
+  Scope.prototype.begin = function(stream, args) {
+    var peek = this.stack[this.stack.length - 1];
+    var declared = {};
+    var stmt = { head: [], vars: [], tail: [] };
+    var i, imax;
+
+    if (peek) {
+      Array.prototype.concat.apply([], [
+        peek.declared, peek.args, peek.vars
+      ].map(Object.keys)).forEach(function(key) {
+        declared[key] = true;
+      });
+    }
+
+    this.stack.push({
+      vars: {}, args: {}, declared: declared, indent: this.codegen.base, stmt: stmt
+    });
+
+    for (i = 0, imax = args.length; i < imax; i++) {
+      this.add("arg", args[i]);
+    }
+
+    stream.push(stmt.head, stmt.vars, stmt.tail);
+  };
+
+  Scope.prototype.end = function() {
+    this.stack.pop();
+  };
+
+  Scope.prototype.find = function(id) {
+    var peek = this.stack[this.stack.length - 1];
+    return peek.vars[id] || peek.args[id] || peek.declared[id];
+  };
+
+  Scope.prototype.peek = function() {
+    return this.stack[this.stack.length - 1];
+  };
+
+  function CodeGen(opts) {
+    this.opts = opts || {};
+    this.base = "";
+    this.state = {
+      calledSegmentedMethod: false,
+      syncBlockScope: null
+    };
+    this.scope = new Scope(this);
+    if (typeof this.opts.bare === "undefined") {
+      this.opts.bare = false;
+    }
+  }
+
+  CodeGen.prototype.toSourceNodeWhenNeeded = function(generated) {
+    if (Array.isArray(generated)) {
+      return this.flattenToString(generated);
+    }
+    return generated;
+  };
+
+  CodeGen.prototype.flattenToString = function(list) {
+    var i, imax, e, result = "";
+    for (i = 0, imax = list.length; i < imax; ++i) {
+      e = list[i];
+      result += Array.isArray(e) ? this.flattenToString(e) : e;
+    }
+    return result;
+  };
+
+  CodeGen.prototype.addIndent = function(stmt) {
+    return [ this.base, stmt ];
+  };
+
+  CodeGen.prototype.id = function(id) {
+    var ch = id.charAt(0);
+
+    if (ch !== "_" && ch !== "$") {
+      id = "$" + id;
+    }
+
+    return id;
+  };
+
+  CodeGen.prototype.isClassName = function(node) {
+    var ch0;
+
+    ch0 = node.name.charAt(0);
+    return "A" <= ch0 && ch0 <= "Z";
+  };
+
+  CodeGen.prototype.isInterpreterVariable = function(node) {
+    var name, found;
+
+    name = node.name;
+    found = this.scope.find(name);
+    if (name.length === 1 && "a" <= name && name <= "z") {
+      if (!found) {
+        return true;
+      }
+    }
+    if (!found) {
+      this.throwError(Message.VariableNotDefined, name);
+    }
+
+    return false;
+  };
+
+  CodeGen.prototype.isSegmentedBlock = function(node) {
+    if (node.type === Syntax.CallExpression && this.isSegmentedMethod(node)) {
+      return true;
+    }
+    return Object.keys(node).some(function(key) {
+      if (key !== "range" && key !== "loc") {
+        if (typeof node[key] === "object") {
+          return this.isSegmentedBlock(node[key]);
+        }
+      }
+      return false;
+    }, this);
+  };
+
+  CodeGen.prototype.isSegmentedMethod = function(node) {
+    return !!SegmentedMethod[node.method.name];
+  };
+
+  CodeGen.prototype.withFunction = function(result, args, body) {
+    var braces, base, stmtCount;
+    var i, imax;
+
+    braces = { open: [ "{" ], close: [ "}" ] };
+
+    result.push("function(");
+    for (i = 0, imax = args.length; i < imax; i++) {
+      if (i) {
+        result.push(", ");
+      }
+      result.push(this.id(args[i]));
+    }
+    result.push(") ");
+
+    result.push(braces.open);
+
+    base = this.base;
+    this.base += "  ";
+
+    this.scope.begin(result, args);
+
+    stmtCount = body.call(this, result);
+    if (stmtCount === 0) {
+      result.push(this.base, "return $SC.Nil();");
+      stmtCount += 1;
+    }
+
+    this.scope.end();
+
+    this.base = base;
+
+    result.push(braces.close);
+
+    braces.open.push("\n");
+    braces.close.unshift("\n", this.base);
+  };
+
+  CodeGen.prototype.withIndent = function(fn) {
+    var base, result;
+
+    base = this.base;
+    this.base += "  ";
+    result = fn.call(this, this.base);
+    this.base = base;
+
+    return result;
+  };
+
+  CodeGen.prototype.generate = function(node, opts) {
+    var result, i, imax;
+
+    if (Array.isArray(node)) {
+      result = [];
+      result.push("(");
+      for (i = 0, imax = node.length; i < imax; ++i) {
+        if (i) {
+          result.push(", ");
+        }
+        result.push(this.generate(node[i], opts));
+      }
+      result.push(")");
+    } else if (node && node.type) {
+      result = this[node.type].call(this, node, opts);
+    } else {
+      result = node;
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.throwError = function(messageFormat) {
+    var args, message;
+
+    args = Array.prototype.slice.call(arguments, 1);
+    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
+      return args[index];
+    });
+
+    throw new Error(message);
+  };
+
+  CodeGen.prototype.AssignmentExpression = function(node) {
+    var result;
+
+    if (!Array.isArray(node.left)) {
+      result = this.genSingleAssignment(node);
+    } else {
+      result = this.genDestructuringAssignment(node);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genSingleAssignment = function(node) {
+    var result = [];
+    var opts;
+
+    opts = { right: node.right, used: false };
+
+    result.push(this.generate(node.left, opts));
+
+    if (!opts.used) {
+      result.push(" " + node.operator + " ", this.generate(opts.right));
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.genDestructuringAssignment = function(node) {
+    var result = [];
+    var elements = node.left;
+    var i, imax;
+
+    this.scope.add("var", "_ref");
+
+    result.push("(_ref = ", this.generate(node.right));
+
+    for (i = 0, imax = elements.length; i < imax; ++i) {
+      result.push(
+        this.assign(elements[i], node.operator, "_ref.at($SC.Integer(" + i + "))")
+      );
+    }
+
+    if (node.remain) {
+      result.push(
+        this.assign(node.remain, node.operator, "_ref.copyToEnd($SC.Integer(" + imax + "))")
+      );
+    }
+
+    result.push(", _ref)");
+
+    return result;
+  };
+
+  CodeGen.prototype.assign = function(left, operator, right) {
+    var result = [];
+    var opts;
+
+    opts = { right: right, used: false };
+
+    result.push(", ", this.generate(left, opts));
+
+    if (!opts.used) {
+      result.push(" " + operator + " ", right);
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.BinaryExpression = function(node) {
+    var result;
+
+    switch (node.operator) {
+    case "===":
+    case "!==":
+      result = this.genEqualityOperator(node);
+      break;
+    default:
+      result = this.genBinaryExpression(node);
+      break;
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genEqualityOperator = function(node) {
+    return [
+      "$SC.Boolean(",
+      this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
+      ")"
+    ];
+  };
+
+  CodeGen.prototype.genBinaryExpression = function(node) {
+    var result, operator, ch;
+
+    result   = [ this.generate(node.left) ];
+    operator = node.operator;
+
+    ch = operator.charCodeAt(0);
+
+    if (0x61 <= ch && ch <= 0x7a) {
+      result.push(".", operator);
+    } else {
+      result.push(" ['", operator, "'] ");
+    }
+
+    result.push("(", this.generate(node.right));
+    if (node.adverb) {
+      result.push(", ", this.generate(node.adverb));
+    }
+    result.push(")");
+
+    return result;
+  };
+
+  CodeGen.prototype.BlockExpression = function(node) {
+    var result = [];
+    var elements;
+
+    elements = node.body;
+
+    result.push("(");
+    this.withFunction(result, [], function() {
+      var stmt, stmtCount, i, imax;
+
+      for (i = stmtCount = 0, imax = elements.length; i < imax; ++i) {
+        if (stmtCount) {
+          result.push("\n");
+        }
+        stmt = this.generate(elements[i]);
+        if (i === imax - 1) {
+          stmt = [ "return ", stmt ];
+        }
+        result.push([ this.addIndent(stmt), ";" ]);
+        stmtCount += 1;
+      }
+
+      return stmtCount;
+    });
+    result.push(")()");
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.CallExpression = function(node) {
+    var result;
+
+    if (this.isSegmentedMethod(node)) {
+      this.state.calledSegmentedMethod = true;
+    }
+
+    if (!node.args.expand) {
+      result = this.genNormalCall(node);
+    } else {
+      result = this.genExpandCall(node);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genNormalCall = function(node) {
+    var args = [];
+    var list, i, imax;
+
+    list = node.args.list;
+
+    for (i = 0, imax = list.length; i < imax; ++i) {
+      if (i) {
+        args.push(", ");
+      }
+      args.push(this.generate(list[i]));
+    }
+
+    args.push(this.insertKeywordArguments(node.args.keywords, !!imax));
+
+    return [
+      this.generate(node.callee), ".", node.method.name, "(", args, ")"
+    ];
+  };
+
+  CodeGen.prototype.genExpandCall = function(node) {
+    var result;
+    var list, i, imax;
+
+    this.scope.add("var", "_ref");
+
+    result = [
+      "(_ref = ",
+      this.generate(node.callee),
+      ", _ref." + node.method.name + ".apply(_ref, ",
+      "["
+    ];
+
+    list = node.args.list;
+
+    if (list.length) {
+      result.push(" ");
+      for (i = 0, imax = list.length; i < imax; ++i) {
+        if (i) {
+          result.push(", ");
+        }
+        result.push(this.generate(list[i]));
+      }
+      result.push(" ");
+    }
+
+    result.push(
+      "].concat(",
+      this.generate(node.args.expand),
+      ".asArray()._"
+    );
+
+    result.push(this.insertKeywordArguments(node.args.keywords, true));
+
+    result.push(")");
+    result.push("))");
+
+    return result;
+  };
+
+  CodeGen.prototype.insertKeywordArguments = function(keywords, with_comma) {
+    var result = [];
+
+    if (keywords) {
+      if (with_comma) {
+        result.push(", ");
+      }
+      result.push("{ ");
+      Object.keys(keywords).forEach(function(key, i) {
+        if (i) {
+          result.push(", ");
+        }
+        result.push(key, ": ", this.generate(keywords[key]));
+      }, this);
+      result.push(" }");
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.GlobalExpression = function(node) {
+    var result;
+
+    result = "$SC.Global." + node.id.name;
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.FunctionExpression = function(node) {
+    var result, info;
+
+    info = this.getInformationOfFunction(node);
+
+    if (!this.isSegmentedBlock(node)) {
+      result = this.genSimpleFunction(node, info.args);
+    } else {
+      result = this.genSegmentedFunction(node, info.args);
+    }
+
+    result.push(this.genFunctionMetadata(info), ")");
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.getInformationOfFunction = function(node) {
+    var args     = [];
+    var defaults = [];
+    var remain   = null;
+    var list, i, imax;
+
+    if (node.args) {
+      list = node.args.list;
+      for (i = 0, imax = list.length; i < imax; ++i) {
+        args.push(list[i].id.name);
+        defaults.push(list[i].id.name, list[i].init);
+      }
+      if (node.args.remain) {
+        remain = node.args.remain.name;
+        args.push(remain);
+      }
+    }
+
+    if (node.partial) {
+      defaults = [];
+    }
+
+    return { args: args, remain: remain, defaults: defaults, closed: node.closed };
+  };
+
+  CodeGen.prototype.genSimpleFunction = function(node, args) {
+    var result = [];
+
+    result.push("$SC.Function(");
+
+    this.withFunction(result, args, function() {
+      var stmt, i, imax;
+      var count, elements = node.body;
+
+      for (i = count = 0, imax = elements.length; i < imax; ++i) {
+        if (count) {
+          result.push("\n");
+        }
+        stmt = this.generate(elements[i]);
+        if (stmt.length) {
+          if (i === imax - 1) {
+            stmt = [ "return ", stmt ];
+          }
+          result.push([ this.addIndent(stmt), ";" ]);
+          count += 1;
+        }
+      }
+
+      return count;
+    });
+
+    return result;
+  };
+
+  CodeGen.prototype.genSegmentedFunction = function(node, args) {
+    var result;
+    var fargs;
+
+    result = [ "$SC.SegFunction(" ];
+
+    fargs = args.map(function(_, i) {
+      return "_arg" + i;
+    });
+
+    this.withFunction(result, [], function() {
+      var fragments = [], syncBlockScope;
+      var closureVars = args;
+      var elements = node.body;
+      var i, imax;
+
+      for (i = 0, imax = closureVars.length; i < imax; ++i) {
+        this.scope.add("var", closureVars[i]);
+      }
+
+      syncBlockScope = this.state.syncBlockScope;
+      this.state.syncBlockScope = this.scope.peek();
+
+      fragments.push("return [");
+      this.withIndent(function() {
+        var i = 0, imax = elements.length;
+
+        fragments.push("\n");
+
+        var loop = function() {
+          var stmt;
+          var count = 0;
+          var j, jmax;
+
+          while (i < imax) {
+            if (i === 0) {
+              if (args.length) {
+                stmt = [];
+                for (j = 0, jmax = args.length; j < jmax; ++j) {
+                  if (j) {
+                    stmt.push("; ");
+                  }
+                  stmt.push("$" + args[j] + " = " + fargs[j]);
+                }
+                fragments.push([ this.addIndent(stmt), ";", "\n" ]);
+              }
+            } else if (count) {
+              fragments.push("\n");
+            }
+            this.state.calledSegmentedMethod = false;
+            stmt = this.generate(elements[i]);
+            if (stmt.length) {
+              if (i === imax - 1 || this.state.calledSegmentedMethod) {
+                stmt = [ "return ", stmt ];
+              }
+              fragments.push([ this.addIndent(stmt), ";" ]);
+              count += 1;
+            }
+            i += 1;
+            if (this.state.calledSegmentedMethod) {
+              break;
+            }
+          }
+
+          return count;
+        };
+
+        while (i < imax) {
+          if (i) {
+            fragments.push(",", "\n");
+            fragments.push(this.base);
+            this.withFunction(fragments, [], loop);
+          } else {
+            fragments.push(this.base);
+            this.withFunction(fragments, fargs, loop);
+          }
+        }
+        fragments.push("\n");
+      });
+      fragments.push(this.addIndent("];"));
+
+      result.push([ this.addIndent(fragments) ]);
+
+      this.state.syncBlockScope = syncBlockScope;
+
+      return 1;
+    });
+
+    return result;
+  };
+
+  CodeGen.prototype.genFunctionMetadata = function(info) {
+    var defaults, remain, closed;
+    var result;
+    var i, imax;
+
+    defaults = info.defaults;
+    remain   = info.remain;
+    closed   = info.closed;
+
+    if (defaults.length === 0 && !remain && !closed) {
+      return [];
+    }
+
+    result = [ ", '" ];
+
+    for (i = 0, imax = defaults.length; i < imax; i += 2) {
+      if (i) {
+        result.push("; ");
+      }
+      result.push(defaults[i]);
+      if (defaults[i + 1]) {
+        result.push("=", defaults[i + 1].value); // TODO #[]
+      }
+    }
+    if (remain) {
+      if (i) {
+        result.push("; ");
+      }
+      result.push("*" + remain);
+    }
+    result.push("'");
+
+    if (closed) {
+      result.push(", true");
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.Identifier = function(node, opts) {
+    var result;
+
+    if (this.isClassName(node)) {
+      result = "$SC.Class('" + node.name + "')";
+    } else if (this.isInterpreterVariable(node)) {
+      result = this.genInterpreterVariable(node, opts);
+    } else {
+      result = this.id(node.name);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genInterpreterVariable = function(node, opts) {
+    var name;
+
+    if (opts) {
+      // setter
+      name = [
+        "$this." + node.name + "_(", this.generate(opts.right), ")"
+      ];
+      opts.used = true;
+    } else {
+      // getter
+      name = "$this." + node.name + "()";
+    }
+
+    return name;
+  };
+
+  CodeGen.prototype.ListExpression = function(node) {
+    var result;
+    var elements, i, imax;
+
+    result = [
+      "$SC.Array(["
+    ];
+
+    elements = node.elements;
+
+    if (elements.length) {
+      result.push(" ");
+      for (i = 0, imax = elements.length; i < imax; ++i) {
+        if (i !== 0) {
+          result.push(", ");
+        }
+        result.push(this.generate(elements[i]));
+      }
+      result.push(" ");
+    }
+
+    result.push("]");
+
+    if (node.immutable) {
+      result.push(", ", "true");
+    }
+
+    result.push(")");
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.Literal = function(node) {
+    var result;
+
+    switch (node.valueType) {
+    case Token.IntegerLiteral:
+      result = "$SC.Integer(" + node.value + ")";
+      break;
+    case Token.FloatLiteral:
+      result = "$SC.Float(" + node.value + ")";
+      break;
+    case Token.CharLiteral:
+      result = "$SC.Char('" + node.value + "')";
+      break;
+    case Token.SymbolLiteral:
+      result = "$SC.Symbol('" + node.value + "')";
+      break;
+    case Token.StringLiteral:
+      result = "$SC.String('" + node.value + "')";
+      break;
+    case Token.TrueLiteral:
+      result = "$SC.True()";
+      break;
+    case Token.FalseLiteral:
+      result = "$SC.False()";
+      break;
+    default:
+      result = "$SC.Nil()";
+      break;
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.ObjectExpression = function(node) {
+    var result;
+    var elements, i, imax;
+
+    result = [ "$SC.Event(" ];
+
+    elements = node.elements;
+
+    if (elements.length) {
+      result.push("[ ");
+      for (i = 0, imax = elements.length; i < imax; ++i) {
+        if (i) {
+          result.push(", ");
+        }
+        result.push(this.generate(elements[i]));
+      }
+      result.push(" ]");
+    }
+    result.push(")");
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.Program = function(node) {
+    var result = [];
+
+    if (node.body.length) {
+      if (!this.opts.bare) {
+        result.push("SCScript");
+      }
+      result.push("(");
+      this.withFunction(result, [ "this", "SC" ], function() {
+        var elements = node.body;
+        var stmt, stmtCount, i, imax;
+
+        for (i = stmtCount = 0, imax = elements.length; i < imax; ++i) {
+          if (stmtCount) {
+            result.push("\n");
+          }
+          stmt = this.generate(elements[i]);
+          if (stmt.length) {
+            if (i === imax - 1) {
+              stmt = [ "return ", stmt ];
+            }
+            result.push([ this.addIndent(stmt), ";" ]);
+            stmtCount += 1;
+          }
+        }
+
+        return stmtCount;
+      });
+      result.push(")");
+      if (!this.opts.bare) {
+        result.push(";");
+      }
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.ThisExpression = function(node) {
+    var result;
+
+    if (node.name === "this") {
+      result = "$this";
+    } else {
+      result = [ "$this." + node.name + "()" ];
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.UnaryExpression = function(node) {
+    var result;
+
+    /* istanbul ignore else */
+    if (node.operator === "`") {
+      result = [ "$SC.Ref(", this.generate(node.arg), ")" ];
+    } else {
+      throw new Error("Unknown UnaryExpression: " + node.operator);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.VariableDeclaration = function(node) {
+    var result = [];
+    var declarations, count;
+    var i, imax;
+
+    declarations = node.declarations;
+    for (i = count = 0, imax = declarations.length; i < imax; ++i) {
+      if (count) {
+        result.push(", ");
+      }
+
+      this.scope.add("var", declarations[i].id.name, this.state.syncBlockScope);
+      if (declarations[i].init) {
+        result.push(
+          this.id(declarations[i].id.name),
+          " = ",
+          this.generate(declarations[i].init)
+        );
+        count += 1;
+      }
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  codegen.compile = function(ast, opts) {
+    return new CodeGen(opts).generate(ast);
+  };
+
+  var SCScript = sc.SCScript;
+
+  SCScript.compile = function(source, opts) {
+    return new CodeGen(opts).generate(sc.lang.parser.parse(source, opts));
+  };
+
+  sc.lang.codegen = codegen;
 
 })(sc);
 

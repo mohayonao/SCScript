@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">120.62</p>
+      <p class="stat">120.46</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">228</p>
+      <p class="stat">210</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">34.26</p>
+      <p class="stat">30.09</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.33</p>
+      <p class="stat">2.15</p>
     </div>
   </div>
 </div>
@@ -94,29 +94,11 @@
   &quot;use strict&quot;;
 
   require(&quot;./SimpleNumber&quot;);
+  require(&quot;./bop&quot;);
 
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
   var mathlib = sc.libs.mathlib;
-
-  function prOpFloat(selector, type1, type2) {
-    var func = mathlib[selector];
-
-    return function($aNumber, $adverb) {
-      var tag = $aNumber.__tag;
-
-      switch (tag) {
-      case sc.C.TAG_INT:
-        return type1(func(this._, $aNumber._));
-      case sc.C.TAG_FLOAT:
-        return type2(func(this._, $aNumber._));
-      }
-
-      return $aNumber.performBinaryOpOnSimpleNumber(
-        $SC.Symbol(selector), this, $adverb
-      );
-    };
-  }
 
   sc.lang.klass.refine(&quot;Float&quot;, function(spec, utils) {
     spec.toString = function() {
@@ -186,7 +168,7 @@
       [ &quot;rrand&quot;   , $SC.Float, $SC.Float ],
       [ &quot;exprand&quot; , $SC.Float, $SC.Float ],
     ].forEach(function(items) {
-      spec[items[0]] = prOpFloat.apply(null, items);
+      spec[items[0]] = sc.lang.classlib.bop.apply(null, items);
     });
 
     spec.clip = function($lo, $hi) {

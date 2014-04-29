@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/codegen.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/codegen.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">103.66</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">953</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">133.07</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">10.29</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./sc&quot;);
+  require(&quot;./parser&quot;);
+
+  var codegen = {};
+  var Syntax  = sc.lang.parser.Syntax;
+  var Token   = sc.lang.parser.Token;
+  var Message = sc.lang.parser.Message;
+  var SegmentedMethod = {
+    idle : true,
+    sleep: true,
+    wait : true,
+    yield: true
+  };
+
+  function Scope(codegen) {
+    this.codegen = codegen;
+    this.stack = [];
+  }
+
+  Scope.prototype.add = function(type, id, scope) {
+    var peek = this.stack[this.stack.length - 1];
+    var vars, args, declared, stmt, indent;
+
+    if (scope) {
+      vars = scope.vars;
+      args = scope.args;
+      declared = scope.declared;
+      stmt = scope.stmt;
+      indent = scope.indent;
+    } else {
+      vars = peek.vars;
+      args = peek.args;
+      declared = peek.declared;
+      stmt = peek.stmt;
+      indent = peek.indent;
+    }
+
+    switch (type) {
+    case &quot;var&quot;:
+      if (args[id]) {
+        this.codegen.throwError(Message.VariableAlreadyDeclared, id);
+      } else if (vars[id]) {
+        if (id.charAt(0) !== &quot;_&quot;) {
+          this.codegen.throwError(Message.VariableAlreadyDeclared, id);
+        }
+      } else {
+        vars[id] = true;
+        delete declared[id];
+        if (stmt.vars.length === 0) {
+          stmt.head.push(indent, &quot;var &quot;);
+          stmt.vars.push(this.codegen.id(id));
+          if (id.charAt(0) !== &quot;_&quot;) {
+            stmt.vars.push(&quot; = $SC.Nil()&quot;);
+          }
+          stmt.tail.push(&quot;;&quot;, &quot;\n&quot;);
+        } else {
+          stmt.vars.push(
+            &quot;, &quot;, this.codegen.id(id)
+          );
+          if (id.charAt(0) !== &quot;_&quot;) {
+            stmt.vars.push(&quot; = $SC.Nil()&quot;);
+          }
+        }
+        if (scope) {
+          peek.declared[id] = true;
+        }
+      }
+      break;
+    case &quot;arg&quot;:
+      if (args[id]) {
+        this.codegen.throwError(Message.ArgumentAlreadyDeclared, id);
+      }
+      args[id] = true;
+      delete declared[id];
+      break;
+    }
+  };
+
+  Scope.prototype.begin = function(stream, args) {
+    var peek = this.stack[this.stack.length - 1];
+    var declared = {};
+    var stmt = { head: [], vars: [], tail: [] };
+    var i, imax;
+
+    if (peek) {
+      Array.prototype.concat.apply([], [
+        peek.declared, peek.args, peek.vars
+      ].map(Object.keys)).forEach(function(key) {
+        declared[key] = true;
+      });
+    }
+
+    this.stack.push({
+      vars: {}, args: {}, declared: declared, indent: this.codegen.base, stmt: stmt
+    });
+
+    for (i = 0, imax = args.length; i &lt; imax; i++) {
+      this.add(&quot;arg&quot;, args[i]);
+    }
+
+    stream.push(stmt.head, stmt.vars, stmt.tail);
+  };
+
+  Scope.prototype.end = function() {
+    this.stack.pop();
+  };
+
+  Scope.prototype.find = function(id) {
+    var peek = this.stack[this.stack.length - 1];
+    return peek.vars[id] || peek.args[id] || peek.declared[id];
+  };
+
+  Scope.prototype.peek = function() {
+    return this.stack[this.stack.length - 1];
+  };
+
+  function CodeGen(opts) {
+    this.opts = opts || {};
+    this.base = &quot;&quot;;
+    this.state = {
+      calledSegmentedMethod: false,
+      syncBlockScope: null
+    };
+    this.scope = new Scope(this);
+    if (typeof this.opts.bare === &quot;undefined&quot;) {
+      this.opts.bare = false;
+    }
+  }
+
+  CodeGen.prototype.toSourceNodeWhenNeeded = function(generated) {
+    if (Array.isArray(generated)) {
+      return this.flattenToString(generated);
+    }
+    return generated;
+  };
+
+  CodeGen.prototype.flattenToString = function(list) {
+    var i, imax, e, result = &quot;&quot;;
+    for (i = 0, imax = list.length; i &lt; imax; ++i) {
+      e = list[i];
+      result += Array.isArray(e) ? this.flattenToString(e) : e;
+    }
+    return result;
+  };
+
+  CodeGen.prototype.addIndent = function(stmt) {
+    return [ this.base, stmt ];
+  };
+
+  CodeGen.prototype.id = function(id) {
+    var ch = id.charAt(0);
+
+    if (ch !== &quot;_&quot; &amp;&amp; ch !== &quot;$&quot;) {
+      id = &quot;$&quot; + id;
+    }
+
+    return id;
+  };
+
+  CodeGen.prototype.isClassName = function(node) {
+    var ch0;
+
+    ch0 = node.name.charAt(0);
+    return &quot;A&quot; &lt;= ch0 &amp;&amp; ch0 &lt;= &quot;Z&quot;;
+  };
+
+  CodeGen.prototype.isInterpreterVariable = function(node) {
+    var name, found;
+
+    name = node.name;
+    found = this.scope.find(name);
+    if (name.length === 1 &amp;&amp; &quot;a&quot; &lt;= name &amp;&amp; name &lt;= &quot;z&quot;) {
+      if (!found) {
+        return true;
+      }
+    }
+    if (!found) {
+      this.throwError(Message.VariableNotDefined, name);
+    }
+
+    return false;
+  };
+
+  CodeGen.prototype.isSegmentedBlock = function(node) {
+    if (node.type === Syntax.CallExpression &amp;&amp; this.isSegmentedMethod(node)) {
+      return true;
+    }
+    return Object.keys(node).some(function(key) {
+      if (key !== &quot;range&quot; &amp;&amp; key !== &quot;loc&quot;) {
+        if (typeof node[key] === &quot;object&quot;) {
+          return this.isSegmentedBlock(node[key]);
+        }
+      }
+      return false;
+    }, this);
+  };
+
+  CodeGen.prototype.isSegmentedMethod = function(node) {
+    return !!SegmentedMethod[node.method.name];
+  };
+
+  CodeGen.prototype.withFunction = function(result, args, body) {
+    var braces, base, stmtCount;
+    var i, imax;
+
+    braces = { open: [ &quot;{&quot; ], close: [ &quot;}&quot; ] };
+
+    result.push(&quot;function(&quot;);
+    for (i = 0, imax = args.length; i &lt; imax; i++) {
+      if (i) {
+        result.push(&quot;, &quot;);
+      }
+      result.push(this.id(args[i]));
+    }
+    result.push(&quot;) &quot;);
+
+    result.push(braces.open);
+
+    base = this.base;
+    this.base += &quot;  &quot;;
+
+    this.scope.begin(result, args);
+
+    stmtCount = body.call(this, result);
+    if (stmtCount === 0) {
+      result.push(this.base, &quot;return $SC.Nil();&quot;);
+      stmtCount += 1;
+    }
+
+    this.scope.end();
+
+    this.base = base;
+
+    result.push(braces.close);
+
+    braces.open.push(&quot;\n&quot;);
+    braces.close.unshift(&quot;\n&quot;, this.base);
+  };
+
+  CodeGen.prototype.withIndent = function(fn) {
+    var base, result;
+
+    base = this.base;
+    this.base += &quot;  &quot;;
+    result = fn.call(this, this.base);
+    this.base = base;
+
+    return result;
+  };
+
+  CodeGen.prototype.generate = function(node, opts) {
+    var result, i, imax;
+
+    if (Array.isArray(node)) {
+      result = [];
+      result.push(&quot;(&quot;);
+      for (i = 0, imax = node.length; i &lt; imax; ++i) {
+        if (i) {
+          result.push(&quot;, &quot;);
+        }
+        result.push(this.generate(node[i], opts));
+      }
+      result.push(&quot;)&quot;);
+    } else if (node &amp;&amp; node.type) {
+      result = this[node.type].call(this, node, opts);
+    } else {
+      result = node;
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.throwError = function(messageFormat) {
+    var args, message;
+
+    args = Array.prototype.slice.call(arguments, 1);
+    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
+      return args[index];
+    });
+
+    throw new Error(message);
+  };
+
+  CodeGen.prototype.AssignmentExpression = function(node) {
+    var result;
+
+    if (!Array.isArray(node.left)) {
+      result = this.genSingleAssignment(node);
+    } else {
+      result = this.genDestructuringAssignment(node);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genSingleAssignment = function(node) {
+    var result = [];
+    var opts;
+
+    opts = { right: node.right, used: false };
+
+    result.push(this.generate(node.left, opts));
+
+    if (!opts.used) {
+      result.push(&quot; &quot; + node.operator + &quot; &quot;, this.generate(opts.right));
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.genDestructuringAssignment = function(node) {
+    var result = [];
+    var elements = node.left;
+    var i, imax;
+
+    this.scope.add(&quot;var&quot;, &quot;_ref&quot;);
+
+    result.push(&quot;(_ref = &quot;, this.generate(node.right));
+
+    for (i = 0, imax = elements.length; i &lt; imax; ++i) {
+      result.push(
+        this.assign(elements[i], node.operator, &quot;_ref.at($SC.Integer(&quot; + i + &quot;))&quot;)
+      );
+    }
+
+    if (node.remain) {
+      result.push(
+        this.assign(node.remain, node.operator, &quot;_ref.copyToEnd($SC.Integer(&quot; + imax + &quot;))&quot;)
+      );
+    }
+
+    result.push(&quot;, _ref)&quot;);
+
+    return result;
+  };
+
+  CodeGen.prototype.assign = function(left, operator, right) {
+    var result = [];
+    var opts;
+
+    opts = { right: right, used: false };
+
+    result.push(&quot;, &quot;, this.generate(left, opts));
+
+    if (!opts.used) {
+      result.push(&quot; &quot; + operator + &quot; &quot;, right);
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.BinaryExpression = function(node) {
+    var result;
+
+    switch (node.operator) {
+    case &quot;===&quot;:
+    case &quot;!==&quot;:
+      result = this.genEqualityOperator(node);
+      break;
+    default:
+      result = this.genBinaryExpression(node);
+      break;
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genEqualityOperator = function(node) {
+    return [
+      &quot;$SC.Boolean(&quot;,
+      this.generate(node.left), &quot; &quot; + node.operator + &quot; &quot;, this.generate(node.right),
+      &quot;)&quot;
+    ];
+  };
+
+  CodeGen.prototype.genBinaryExpression = function(node) {
+    var result, operator, ch;
+
+    result   = [ this.generate(node.left) ];
+    operator = node.operator;
+
+    ch = operator.charCodeAt(0);
+
+    if (0x61 &lt;= ch &amp;&amp; ch &lt;= 0x7a) {
+      result.push(&quot;.&quot;, operator);
+    } else {
+      result.push(&quot; [&#039;&quot;, operator, &quot;&#039;] &quot;);
+    }
+
+    result.push(&quot;(&quot;, this.generate(node.right));
+    if (node.adverb) {
+      result.push(&quot;, &quot;, this.generate(node.adverb));
+    }
+    result.push(&quot;)&quot;);
+
+    return result;
+  };
+
+  CodeGen.prototype.BlockExpression = function(node) {
+    var result = [];
+    var elements;
+
+    elements = node.body;
+
+    result.push(&quot;(&quot;);
+    this.withFunction(result, [], function() {
+      var stmt, stmtCount, i, imax;
+
+      for (i = stmtCount = 0, imax = elements.length; i &lt; imax; ++i) {
+        if (stmtCount) {
+          result.push(&quot;\n&quot;);
+        }
+        stmt = this.generate(elements[i]);
+        if (i === imax - 1) {
+          stmt = [ &quot;return &quot;, stmt ];
+        }
+        result.push([ this.addIndent(stmt), &quot;;&quot; ]);
+        stmtCount += 1;
+      }
+
+      return stmtCount;
+    });
+    result.push(&quot;)()&quot;);
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.CallExpression = function(node) {
+    var result;
+
+    if (this.isSegmentedMethod(node)) {
+      this.state.calledSegmentedMethod = true;
+    }
+
+    if (!node.args.expand) {
+      result = this.genNormalCall(node);
+    } else {
+      result = this.genExpandCall(node);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genNormalCall = function(node) {
+    var args = [];
+    var list, i, imax;
+
+    list = node.args.list;
+
+    for (i = 0, imax = list.length; i &lt; imax; ++i) {
+      if (i) {
+        args.push(&quot;, &quot;);
+      }
+      args.push(this.generate(list[i]));
+    }
+
+    args.push(this.insertKeywordArguments(node.args.keywords, !!imax));
+
+    return [
+      this.generate(node.callee), &quot;.&quot;, node.method.name, &quot;(&quot;, args, &quot;)&quot;
+    ];
+  };
+
+  CodeGen.prototype.genExpandCall = function(node) {
+    var result;
+    var list, i, imax;
+
+    this.scope.add(&quot;var&quot;, &quot;_ref&quot;);
+
+    result = [
+      &quot;(_ref = &quot;,
+      this.generate(node.callee),
+      &quot;, _ref.&quot; + node.method.name + &quot;.apply(_ref, &quot;,
+      &quot;[&quot;
+    ];
+
+    list = node.args.list;
+
+    if (list.length) {
+      result.push(&quot; &quot;);
+      for (i = 0, imax = list.length; i &lt; imax; ++i) {
+        if (i) {
+          result.push(&quot;, &quot;);
+        }
+        result.push(this.generate(list[i]));
+      }
+      result.push(&quot; &quot;);
+    }
+
+    result.push(
+      &quot;].concat(&quot;,
+      this.generate(node.args.expand),
+      &quot;.asArray()._&quot;
+    );
+
+    result.push(this.insertKeywordArguments(node.args.keywords, true));
+
+    result.push(&quot;)&quot;);
+    result.push(&quot;))&quot;);
+
+    return result;
+  };
+
+  CodeGen.prototype.insertKeywordArguments = function(keywords, with_comma) {
+    var result = [];
+
+    if (keywords) {
+      if (with_comma) {
+        result.push(&quot;, &quot;);
+      }
+      result.push(&quot;{ &quot;);
+      Object.keys(keywords).forEach(function(key, i) {
+        if (i) {
+          result.push(&quot;, &quot;);
+        }
+        result.push(key, &quot;: &quot;, this.generate(keywords[key]));
+      }, this);
+      result.push(&quot; }&quot;);
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.GlobalExpression = function(node) {
+    var result;
+
+    result = &quot;$SC.Global.&quot; + node.id.name;
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.FunctionExpression = function(node) {
+    var result, info;
+
+    info = this.getInformationOfFunction(node);
+
+    if (!this.isSegmentedBlock(node)) {
+      result = this.genSimpleFunction(node, info.args);
+    } else {
+      result = this.genSegmentedFunction(node, info.args);
+    }
+
+    result.push(this.genFunctionMetadata(info), &quot;)&quot;);
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.getInformationOfFunction = function(node) {
+    var args     = [];
+    var defaults = [];
+    var remain   = null;
+    var list, i, imax;
+
+    if (node.args) {
+      list = node.args.list;
+      for (i = 0, imax = list.length; i &lt; imax; ++i) {
+        args.push(list[i].id.name);
+        defaults.push(list[i].id.name, list[i].init);
+      }
+      if (node.args.remain) {
+        remain = node.args.remain.name;
+        args.push(remain);
+      }
+    }
+
+    if (node.partial) {
+      defaults = [];
+    }
+
+    return { args: args, remain: remain, defaults: defaults, closed: node.closed };
+  };
+
+  CodeGen.prototype.genSimpleFunction = function(node, args) {
+    var result = [];
+
+    result.push(&quot;$SC.Function(&quot;);
+
+    this.withFunction(result, args, function() {
+      var stmt, i, imax;
+      var count, elements = node.body;
+
+      for (i = count = 0, imax = elements.length; i &lt; imax; ++i) {
+        if (count) {
+          result.push(&quot;\n&quot;);
+        }
+        stmt = this.generate(elements[i]);
+        if (stmt.length) {
+          if (i === imax - 1) {
+            stmt = [ &quot;return &quot;, stmt ];
+          }
+          result.push([ this.addIndent(stmt), &quot;;&quot; ]);
+          count += 1;
+        }
+      }
+
+      return count;
+    });
+
+    return result;
+  };
+
+  CodeGen.prototype.genSegmentedFunction = function(node, args) {
+    var result;
+    var fargs;
+
+    result = [ &quot;$SC.SegFunction(&quot; ];
+
+    fargs = args.map(function(_, i) {
+      return &quot;_arg&quot; + i;
+    });
+
+    this.withFunction(result, [], function() {
+      var fragments = [], syncBlockScope;
+      var closureVars = args;
+      var elements = node.body;
+      var i, imax;
+
+      for (i = 0, imax = closureVars.length; i &lt; imax; ++i) {
+        this.scope.add(&quot;var&quot;, closureVars[i]);
+      }
+
+      syncBlockScope = this.state.syncBlockScope;
+      this.state.syncBlockScope = this.scope.peek();
+
+      fragments.push(&quot;return [&quot;);
+      this.withIndent(function() {
+        var i = 0, imax = elements.length;
+
+        fragments.push(&quot;\n&quot;);
+
+        var loop = function() {
+          var stmt;
+          var count = 0;
+          var j, jmax;
+
+          while (i &lt; imax) {
+            if (i === 0) {
+              if (args.length) {
+                stmt = [];
+                for (j = 0, jmax = args.length; j &lt; jmax; ++j) {
+                  if (j) {
+                    stmt.push(&quot;; &quot;);
+                  }
+                  stmt.push(&quot;$&quot; + args[j] + &quot; = &quot; + fargs[j]);
+                }
+                fragments.push([ this.addIndent(stmt), &quot;;&quot;, &quot;\n&quot; ]);
+              }
+            } else if (count) {
+              fragments.push(&quot;\n&quot;);
+            }
+            this.state.calledSegmentedMethod = false;
+            stmt = this.generate(elements[i]);
+            if (stmt.length) {
+              if (i === imax - 1 || this.state.calledSegmentedMethod) {
+                stmt = [ &quot;return &quot;, stmt ];
+              }
+              fragments.push([ this.addIndent(stmt), &quot;;&quot; ]);
+              count += 1;
+            }
+            i += 1;
+            if (this.state.calledSegmentedMethod) {
+              break;
+            }
+          }
+
+          return count;
+        };
+
+        while (i &lt; imax) {
+          if (i) {
+            fragments.push(&quot;,&quot;, &quot;\n&quot;);
+            fragments.push(this.base);
+            this.withFunction(fragments, [], loop);
+          } else {
+            fragments.push(this.base);
+            this.withFunction(fragments, fargs, loop);
+          }
+        }
+        fragments.push(&quot;\n&quot;);
+      });
+      fragments.push(this.addIndent(&quot;];&quot;));
+
+      result.push([ this.addIndent(fragments) ]);
+
+      this.state.syncBlockScope = syncBlockScope;
+
+      return 1;
+    });
+
+    return result;
+  };
+
+  CodeGen.prototype.genFunctionMetadata = function(info) {
+    var defaults, remain, closed;
+    var result;
+    var i, imax;
+
+    defaults = info.defaults;
+    remain   = info.remain;
+    closed   = info.closed;
+
+    if (defaults.length === 0 &amp;&amp; !remain &amp;&amp; !closed) {
+      return [];
+    }
+
+    result = [ &quot;, &#039;&quot; ];
+
+    for (i = 0, imax = defaults.length; i &lt; imax; i += 2) {
+      if (i) {
+        result.push(&quot;; &quot;);
+      }
+      result.push(defaults[i]);
+      if (defaults[i + 1]) {
+        result.push(&quot;=&quot;, defaults[i + 1].value); // TODO #[]
+      }
+    }
+    if (remain) {
+      if (i) {
+        result.push(&quot;; &quot;);
+      }
+      result.push(&quot;*&quot; + remain);
+    }
+    result.push(&quot;&#039;&quot;);
+
+    if (closed) {
+      result.push(&quot;, true&quot;);
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.Identifier = function(node, opts) {
+    var result;
+
+    if (this.isClassName(node)) {
+      result = &quot;$SC.Class(&#039;&quot; + node.name + &quot;&#039;)&quot;;
+    } else if (this.isInterpreterVariable(node)) {
+      result = this.genInterpreterVariable(node, opts);
+    } else {
+      result = this.id(node.name);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.genInterpreterVariable = function(node, opts) {
+    var name;
+
+    if (opts) {
+      // setter
+      name = [
+        &quot;$this.&quot; + node.name + &quot;_(&quot;, this.generate(opts.right), &quot;)&quot;
+      ];
+      opts.used = true;
+    } else {
+      // getter
+      name = &quot;$this.&quot; + node.name + &quot;()&quot;;
+    }
+
+    return name;
+  };
+
+  CodeGen.prototype.ListExpression = function(node) {
+    var result;
+    var elements, i, imax;
+
+    result = [
+      &quot;$SC.Array([&quot;
+    ];
+
+    elements = node.elements;
+
+    if (elements.length) {
+      result.push(&quot; &quot;);
+      for (i = 0, imax = elements.length; i &lt; imax; ++i) {
+        if (i !== 0) {
+          result.push(&quot;, &quot;);
+        }
+        result.push(this.generate(elements[i]));
+      }
+      result.push(&quot; &quot;);
+    }
+
+    result.push(&quot;]&quot;);
+
+    if (node.immutable) {
+      result.push(&quot;, &quot;, &quot;true&quot;);
+    }
+
+    result.push(&quot;)&quot;);
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.Literal = function(node) {
+    var result;
+
+    switch (node.valueType) {
+    case Token.IntegerLiteral:
+      result = &quot;$SC.Integer(&quot; + node.value + &quot;)&quot;;
+      break;
+    case Token.FloatLiteral:
+      result = &quot;$SC.Float(&quot; + node.value + &quot;)&quot;;
+      break;
+    case Token.CharLiteral:
+      result = &quot;$SC.Char(&#039;&quot; + node.value + &quot;&#039;)&quot;;
+      break;
+    case Token.SymbolLiteral:
+      result = &quot;$SC.Symbol(&#039;&quot; + node.value + &quot;&#039;)&quot;;
+      break;
+    case Token.StringLiteral:
+      result = &quot;$SC.String(&#039;&quot; + node.value + &quot;&#039;)&quot;;
+      break;
+    case Token.TrueLiteral:
+      result = &quot;$SC.True()&quot;;
+      break;
+    case Token.FalseLiteral:
+      result = &quot;$SC.False()&quot;;
+      break;
+    default:
+      result = &quot;$SC.Nil()&quot;;
+      break;
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.ObjectExpression = function(node) {
+    var result;
+    var elements, i, imax;
+
+    result = [ &quot;$SC.Event(&quot; ];
+
+    elements = node.elements;
+
+    if (elements.length) {
+      result.push(&quot;[ &quot;);
+      for (i = 0, imax = elements.length; i &lt; imax; ++i) {
+        if (i) {
+          result.push(&quot;, &quot;);
+        }
+        result.push(this.generate(elements[i]));
+      }
+      result.push(&quot; ]&quot;);
+    }
+    result.push(&quot;)&quot;);
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.Program = function(node) {
+    var result = [];
+
+    if (node.body.length) {
+      if (!this.opts.bare) {
+        result.push(&quot;SCScript&quot;);
+      }
+      result.push(&quot;(&quot;);
+      this.withFunction(result, [ &quot;this&quot;, &quot;SC&quot; ], function() {
+        var elements = node.body;
+        var stmt, stmtCount, i, imax;
+
+        for (i = stmtCount = 0, imax = elements.length; i &lt; imax; ++i) {
+          if (stmtCount) {
+            result.push(&quot;\n&quot;);
+          }
+          stmt = this.generate(elements[i]);
+          if (stmt.length) {
+            if (i === imax - 1) {
+              stmt = [ &quot;return &quot;, stmt ];
+            }
+            result.push([ this.addIndent(stmt), &quot;;&quot; ]);
+            stmtCount += 1;
+          }
+        }
+
+        return stmtCount;
+      });
+      result.push(&quot;)&quot;);
+      if (!this.opts.bare) {
+        result.push(&quot;;&quot;);
+      }
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.ThisExpression = function(node) {
+    var result;
+
+    if (node.name === &quot;this&quot;) {
+      result = &quot;$this&quot;;
+    } else {
+      result = [ &quot;$this.&quot; + node.name + &quot;()&quot; ];
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.UnaryExpression = function(node) {
+    var result;
+
+    /* istanbul ignore else */
+    if (node.operator === &quot;`&quot;) {
+      result = [ &quot;$SC.Ref(&quot;, this.generate(node.arg), &quot;)&quot; ];
+    } else {
+      throw new Error(&quot;Unknown UnaryExpression: &quot; + node.operator);
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.VariableDeclaration = function(node) {
+    var result = [];
+    var declarations, count;
+    var i, imax;
+
+    declarations = node.declarations;
+    for (i = count = 0, imax = declarations.length; i &lt; imax; ++i) {
+      if (count) {
+        result.push(&quot;, &quot;);
+      }
+
+      this.scope.add(&quot;var&quot;, declarations[i].id.name, this.state.syncBlockScope);
+      if (declarations[i].init) {
+        result.push(
+          this.id(declarations[i].id.name),
+          &quot; = &quot;,
+          this.generate(declarations[i].init)
+        );
+        count += 1;
+      }
+    }
+
+    return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  codegen.compile = function(ast, opts) {
+    return new CodeGen(opts).generate(ast);
+  };
+
+  var SCScript = sc.SCScript;
+
+  SCScript.compile = function(source, opts) {
+    return new CodeGen(opts).generate(sc.lang.parser.parse(source, opts));
+  };
+
+  sc.lang.codegen = codegen;
+
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

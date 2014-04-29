@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">95.48</p>
+      <p class="stat">94.83</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">2325</p>
+      <p class="stat">2422</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">209.63</p>
+      <p class="stat">214.33</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">24.97</p>
+      <p class="stat">25.94</p>
     </div>
   </div>
 </div>
@@ -98,9 +98,9 @@
   var parser = {};
 
   var Token = parser.Token = {
-    BooleanLiteral: &quot;Boolean&quot;,
     CharLiteral: &quot;Char&quot;,
     EOF: &quot;&lt;EOF&gt;&quot;,
+    FalseLiteral: &quot;False&quot;,
     FloatLiteral: &quot;Float&quot;,
     Identifier: &quot;Identifier&quot;,
     IntegerLiteral: &quot;Integer&quot;,
@@ -109,7 +109,8 @@
     NilLiteral: &quot;Nil&quot;,
     Punctuator: &quot;Punctuator&quot;,
     StringLiteral: &quot;String&quot;,
-    SymbolLiteral: &quot;Symbol&quot;
+    SymbolLiteral: &quot;Symbol&quot;,
+    TrueLiteral: &quot;True&quot;
   };
 
   var Syntax = parser.Syntax = {
@@ -121,13 +122,10 @@
     GlobalExpression: &quot;GlobalExpression&quot;,
     Identifier: &quot;Identifier&quot;,
     ListExpression: &quot;ListExpression&quot;,
-    ListIndexer: &quot;ListIndexer&quot;,
     Label: &quot;Label&quot;,
     Literal: &quot;Literal&quot;,
-    MemberExpression: &quot;MemberExpression&quot;,
     ObjectExpression: &quot;ObjectExpression&quot;,
     Program: &quot;Program&quot;,
-    RangeExpression: &quot;RangeExpression&quot;,
     ThisExpression: &quot;ThisExpression&quot;,
     UnaryExpression: &quot;UnaryExpression&quot;,
     VariableDeclaration: &quot;VariableDeclaration&quot;,
@@ -188,10 +186,6 @@
     &quot;%&quot;  : 11,
     &quot;!&quot;  : 12,
   };
-
-  function q(str) {
-    return &quot;&#039;&quot; + str + &quot;&#039;&quot;;
-  }
 
   function char2num(ch) {
     var n = ch.charCodeAt(0);
@@ -314,7 +308,6 @@
     this.errors = opts.tolerant ? [] : null;
     this.state = {
       closedFunction: false,
-      disallowNotMember: false,
       disallowGenerator: false,
       innerElements: false,
       immutableList: false,
@@ -627,8 +620,10 @@
         value = &quot;null&quot;;
         break;
       case &quot;true&quot;:
+        type = Token.TrueLiteral;
+        break;
       case &quot;false&quot;:
-        type = Token.BooleanLiteral;
+        type = Token.FalseLiteral;
         break;
       default:
         type = Token.Identifier;
@@ -739,14 +734,20 @@
 
     if (pi) {
       type = Token.FloatLiteral;
-      value = &quot;(&quot; + value + &quot; * Math.PI)&quot;;
+      value = value + &quot; * Math.PI&quot;;
+    }
+
+    if (type === Token.FloatLiteral &amp;&amp; value === (value|0)) {
+      value = value + &quot;.0&quot;;
+    } else {
+      value = String(value);
     }
 
     this.index += items[0].length;
 
     return {
       type : type,
-      value: String(value),
+      value: value,
       lineNumber: this.lineNumber,
       lineStart : this.lineStart,
       range: [ start, this.index ]
@@ -773,14 +774,20 @@
     }
 
     if (pi) {
-      value = &quot;(&quot; + value + &quot; * Math.PI)&quot;;
+      value = value + &quot; * Math.PI&quot;;
+    }
+
+    if (type === Token.FloatLiteral &amp;&amp; value === (value|0)) {
+      value = value + &quot;.0&quot;;
+    } else {
+      value = String(value);
     }
 
     this.index += items[0].length;
 
     return {
       type : type,
-      value: String(value),
+      value: value,
       lineNumber: this.lineNumber,
       lineStart : this.lineStart,
       range: [ start, this.index ]
@@ -828,7 +835,7 @@
       ch = source.charAt(index);
       index += 1;
       if (ch === quote) {
-        value = source.substr(start, index - start);
+        value = source.substr(start + 1, index - start - 2);
         value = value.replace(/\n/g, &quot;\\n&quot;);
         this.index = index;
         return {
@@ -920,12 +927,21 @@
     };
   };
 
-  SCParser.prototype.createCallExpression = function(callee, args) {
-    return {
+  SCParser.prototype.createCallExpression = function(callee, method, args, stamp) {
+    var node;
+
+    node = {
       type: Syntax.CallExpression,
       callee: callee,
-      args: args
+      method: method,
+      args  : args,
     };
+
+    if (stamp) {
+      node.stamp = stamp;
+    }
+
+    return node;
   };
 
   SCParser.prototype.createGlobalExpression = function(id) {
@@ -982,15 +998,6 @@
     return node;
   };
 
-  SCParser.prototype.createListIndexer = function(first, second, last) {
-    return {
-      type: Syntax.ListIndexer,
-      first: first,
-      second: second,
-      last: last
-    };
-  };
-
   SCParser.prototype.createLiteral = function(token) {
     return {
       type: Syntax.Literal,
@@ -1006,15 +1013,6 @@
     }
   };
 
-  SCParser.prototype.createMemberExpression = function(accessor, object, property) {
-    return {
-      type: Syntax.MemberExpression,
-      computed: accessor === &quot;[&quot;,
-      object: object,
-      property: property
-    };
-  };
-
   SCParser.prototype.createObjectExpression = function(elements) {
     return {
       type: Syntax.ObjectExpression,
@@ -1027,19 +1025,6 @@
       type: Syntax.Program,
       body: body
     };
-  };
-
-  SCParser.prototype.createRangeExpression = function(first, second, last, generator) {
-    var node = {
-      type: Syntax.RangeExpression,
-      first: first,
-      second: second,
-      last: last
-    };
-    if (generator) {
-      node.generator = true;
-    }
-    return node;
   };
 
   SCParser.prototype.createThisExpression = function(name) {
@@ -1095,7 +1080,6 @@
   SCParser.prototype.isLeftHandSide = function(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
-    case Syntax.MemberExpression:
     case Syntax.GlobalExpression:
       return true;
     }
@@ -1219,7 +1203,7 @@
 
     if (this.match(&quot;=&quot;)) {
       this.lex();
-      init = this.parseUnaryExpression();
+      init = this.parseUnaryExpression(); // literal or immurable array of literals
     }
 
     return this.markEnd(this.createVariableDeclarator(id, init));
@@ -1349,7 +1333,6 @@
       sharp = true;
       token = this.lex();
       if (this.matchAny([ &quot;[&quot;, &quot;{&quot; ])) {
-        // this.revert(token);
         this.restore(saved);
       } else {
         destructuringAssignment = true;
@@ -1368,19 +1351,49 @@
       node = left = this.parsePartialExpression();
 
       if (this.match(&quot;=&quot;)) {
-        if (!this.isLeftHandSide(left)) {
-          this.throwError({}, Message.InvalidLHSInAssignment);
-        }
+        if (node.type === Syntax.CallExpression) {
+          token = this.lex();
+          right = this.parseAssignmentExpression();
+          left.method.name = this.getAssignMethod(left.method.name);
+          left.args.list = node.args.list.concat(right);
+          /* istanbul ignore else */
+          if (this.opts.range) {
+            left.range[1] = this.index;
+          }
+          /* istanbul ignore else */
+          if (this.opts.loc) {
+            left.loc.end = {
+              line: this.lineNumber,
+              column: this.index - this.lineStart
+            };
+          }
+          node = left;
+        } else {
+          // TODO: fix
+          if (!this.isLeftHandSide(left)) {
+            this.throwError({}, Message.InvalidLHSInAssignment);
+          }
 
-        token = this.lex();
-        right = this.parseAssignmentExpression();
-        node = this.createAssignmentExpression(
-          token.value, left, right
-        );
+          token = this.lex();
+          right = this.parseAssignmentExpression();
+          node  = this.createAssignmentExpression(
+            token.value, left, right
+          );
+        }
       }
     }
 
     return this.markEnd(node);
+  };
+
+  SCParser.prototype.getAssignMethod = function(methodName) {
+    switch (methodName) {
+    case &quot;at&quot;:
+      return &quot;put&quot;;
+    case &quot;copySeries&quot;:
+      return &quot;putSeries&quot;;
+    }
+    return methodName + &quot;_&quot;;
   };
 
   SCParser.prototype.parseDestructuringAssignmentLeft = function() {
@@ -1409,7 +1422,7 @@
 
   // 4.3 Partial Expression
   SCParser.prototype.parsePartialExpression = function(node) {
-    var underscore;
+    var underscore, x, y;
 
     if (this.state.innerElements) {
       node = this.parseBinaryExpression(node);
@@ -1425,7 +1438,17 @@
 
           args = new Array(this.state.underscore.length);
           for (i = 0, imax = args.length; i &lt; imax; ++i) {
-            args[i] = this.state.underscore[i];
+            x = this.state.underscore[i];
+            y = this.createVariableDeclarator(x);
+            /* istanbul ignore else */
+            if (x.range) {
+              y.range = x.range;
+            }
+            /* istanbul ignore else */
+            if (x.loc) {
+              y.loc = x.loc;
+            }
+            args[i] = y;
             this.scope.add(&quot;arg&quot;, this.state.underscore[i].name);
           }
 
@@ -1555,7 +1578,15 @@
       lookahead = this.lookahead;
       adverb = this.parsePrimaryExpression();
 
-      if (adverb.type === Syntax.Identifier || adverb.type === Syntax.Literal) {
+      if (adverb.type === Syntax.Literal) {
+        return adverb;
+      }
+
+      if (adverb.type === Syntax.Identifier) {
+        adverb.type = Syntax.Literal;
+        adverb.value = adverb.name;
+        adverb.valueType = Token.SymbolLiteral;
+        delete adverb.name;
         return adverb;
       }
 
@@ -1584,16 +1615,14 @@
 
   // 4.7 LeftHandSide Expressions
   SCParser.prototype.parseLeftHandSideExpression = function(node) {
-    var marker, expr, args, m, prev, lookahead, closedFunction, disallowNotMember;
+    var marker, expr, args, m, prev, lookahead, closedFunction;
     var disallowGenerator, blocklist;
+    var method;
 
     this.skipComment();
 
     marker = this.createLocationMarker();
-    disallowNotMember = this.state.disallowNotMember;
-    this.state.disallowNotMember = false;
     expr = this.parsePrimaryExpression(node);
-    this.state.disallowNotMember = disallowNotMember;
 
     blocklist = false;
 
@@ -1605,16 +1634,27 @@
       switch (m) {
       case &quot;(&quot;:
         if (this.isClassName(expr)) {
-          expr = this.createMemberExpression(
-            &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;new&quot;))
-          );
-          /* istanbul ignore else */
-          if (marker) {
-            marker.apply(expr);
+          method = this.markTouch(this.createIdentifier(&quot;new&quot;));
+          args   = this.parseCallArgument();
+          expr   = this.createCallExpression(expr, method, args, &quot;(&quot;);
+        } else {
+          if (expr.type !== Syntax.Identifier) {
+            this.throwUnexpected(this.lookahead);
           }
+          args = this.parseCallArgument();
+
+          method = expr;
+          expr   = args.list.shift();
+          if (!expr) {
+            if (args.expand) {
+              expr = args.expand;
+              delete args.expand;
+            } else {
+              this.throwUnexpected(lookahead);
+            }
+          }
+          expr = this.createCallExpression(expr, method, args, &quot;(&quot;); // TODO: max(0, 1)  .. (?
         }
-        node = this.parseCallArgument();
-        expr = this.createCallExpression(expr, node);
         break;
       case &quot;#&quot;:
         closedFunction = this.state.closedFunction;
@@ -1626,79 +1666,72 @@
         m = &quot;{&quot;;
         /* falls through */
       case &quot;{&quot;:
-        if (expr.type === Syntax.MemberExpression &amp;&amp; !expr.computed) {
-          expr = this.createCallExpression(expr, { list: [] });
-        } else if (expr.type === Syntax.Identifier) {
+        if (expr.type === Syntax.CallExpression &amp;&amp; expr.stamp &amp;&amp; expr.stamp !== &quot;(&quot;) {
+          this.throwUnexpected(this.lookahead);
+        }
+        if (expr.type === Syntax.Identifier) {
           if (this.isClassName(expr)) {
-            expr = this.createMemberExpression(
-              &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;new&quot;))
-            );
-            /* istanbul ignore else */
-            if (marker) {
-              marker.apply(expr);
-            }
+            method = this.markTouch(this.createIdentifier(&quot;new&quot;));
+            expr   = this.createCallExpression(expr, method, { list: [] }, m);
+          } else {
+            expr = this.createCallExpression(null, expr, { list: [] });
           }
-          expr = this.createCallExpression(expr, { list: [] });
-        } else if (expr.type !== Syntax.CallExpression) {
-          this.throwUnexpected(lookahead);
         }
         lookahead = this.lookahead;
         disallowGenerator = this.state.disallowGenerator;
         this.state.disallowGenerator = true;
-        disallowNotMember = this.state.disallowNotMember;
-        this.state.disallowNotMember = true;
         node = this.parseBraces(true);
-        this.state.disallowNotMember = disallowNotMember;
         this.state.disallowGenerator = disallowGenerator;
         this.state.closedFunction = closedFunction;
-        args = expr.args;
-        if (args &amp;&amp; !args.expand &amp;&amp; !args.keywords) {
-          args.list.push(node);
+
+        // TODO: refactoring
+        if (expr.callee === null) {
+          expr.callee = node;
+          node = expr;
         } else {
-          this.throwUnexpected(lookahead);
+          expr.args.list.push(node);
         }
+
         break;
       case &quot;[&quot;:
-        if (expr.type === Syntax.CallExpression) {
+        if (expr.type === Syntax.CallExpression &amp;&amp; expr.stamp === &quot;(&quot;) {
           this.throwUnexpected(this.lookahead);
         }
         if (this.isClassName(expr)) {
-          expr = this.createMemberExpression(
-            &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;newFrom&quot;))
-          );
-          /* istanbul ignore else */
-          if (marker) {
-            marker.apply(expr);
-          }
-          disallowNotMember = this.state.disallowNotMember;
-          this.state.disallowNotMember = true;
-          this.markStart();
-          node = this.markEnd(this.parseLeftHandSideExpression());
-          this.state.disallowNotMember = disallowNotMember;
-          expr = this.createCallExpression(expr, { list: [ node ] });
+          expr = this.parseLeftHandSideNewFrom(expr);
         } else {
-          node = this.parseListIndexer();
-          expr = this.createMemberExpression(&quot;[&quot;, expr, node);
+          expr = this.parseLeftHandSideListAt(expr);
         }
         break;
       case &quot;.&quot;:
         this.lex();
         if (this.match(&quot;(&quot;)) {
-          expr = this.createMemberExpression(
-            &quot;.&quot;, expr, this.markTouch(this.createIdentifier(&quot;value&quot;))
-          );
-          /* istanbul ignore else */
-          if (marker) {
-            marker.apply(expr);
-          }
-          node = this.parseCallArgument();
-          expr = this.createCallExpression(expr, node);
+          method = this.markTouch(this.createIdentifier(&quot;value&quot;));
+          args   = this.parseCallArgument();
+          expr   = this.createCallExpression(expr, method, args, &quot;.&quot;);
         } else if (this.match(&quot;[&quot;)) {
-          node = this.parseListIndexer();
-          expr = this.createMemberExpression(&quot;[&quot;, expr, node);
+           // TODO: fix
+          var expr0;
+          method = this.markTouch(this.createIdentifier(&quot;value&quot;));
+          expr0  = expr;
+          expr   = this.markTouch(this.createCallExpression(expr, method, { list: [] }, &quot;.&quot;));
+          /* istanbul ignore else */
+          if (this.opts.range) {
+            expr.range[0] = expr0.range[0];
+          }
+          /* istanbul ignore else */
+          if (this.opts.loc) {
+            expr.loc.start = expr0.loc.start;
+          }
+          expr = this.parseLeftHandSideListAt(expr);
         } else {
-          node = this.parseProperty();
-          expr = this.createMemberExpression(&quot;.&quot;, expr, node);
+          method = this.parseProperty();
+          if (this.match(&quot;(&quot;)) {
+            args = this.parseCallArgument();
+            expr = this.createCallExpression(expr, method, args);
+          } else {
+            expr = this.createCallExpression(expr, method, { list: [] });
+          }
         }
         break;
       }
@@ -1710,6 +1743,36 @@
     }
 
     return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideNewFrom = function(expr) {
+    var node, method;
+
+    method = this.markTouch(this.createIdentifier(&quot;newFrom&quot;));
+
+    this.skipComment();
+    this.markStart();
+
+    node = this.markEnd(this.parseListInitialiser());
+
+    return this.createCallExpression(expr, method, { list: [ node ] }, &quot;[&quot;);
+  };
+
+  SCParser.prototype.parseLeftHandSideListAt = function(expr) {
+    var indexes, method;
+
+    method = this.markTouch(this.createIdentifier(&quot;at&quot;));
+
+    indexes = this.parseListIndexer();
+    if (indexes) {
+      if (indexes.length === 3) {
+        method.name = &quot;copySeries&quot;;
+      }
+    } else {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return this.createCallExpression(expr, method, { list: indexes }, &quot;[&quot;);
   };
 
   SCParser.prototype.parseCallArgument = function() {
@@ -1766,16 +1829,15 @@
     this.expect(&quot;[&quot;);
 
     if (!this.match(&quot;]&quot;)) {
-      this.markStart();
 
       if (this.match(&quot;..&quot;)) {
         // [..A]
         this.lex();
         if (!this.match(&quot;]&quot;)) {
           last = this.parseExpressions();
-          node = this.markEnd(this.createListIndexer(null, null, last));
+          node = [ null, null, last ];
         } else {
-          node = this.markEnd(this.createListIndexer(null, null, null));
+          node = [ null, null, null ];
         }
       } else {
         if (!this.match(&quot;,&quot;)) {
@@ -1789,7 +1851,7 @@
             // [A..B]
             last = this.parseExpressions();
           }
-          node = this.markEnd(this.createListIndexer(first, null, last));
+          node = [ first, null, last ];
         } else if (this.match(&quot;,&quot;)) {
           this.lex();
           second = this.parseExpressions();
@@ -1802,10 +1864,10 @@
           } else {
             this.throwUnexpected(this.lookahead);
           }
-          node = this.markEnd(this.createListIndexer(first, second, last));
+          node = [ first, second, last ];
         } else {
           // [A]
-          node = this.markEnd(first);
+          node = [ first ];
         }
       }
     }
@@ -1896,22 +1958,23 @@
         lookahead = this.lookahead;
         expr = this.parseIdentifier();
         if (expr.name === &quot;_&quot;) {
-          expr.name += this.state.underscore.length.toString();
+          expr.name = &quot;$_&quot; + this.state.underscore.length.toString();
           this.state.underscore.push(expr);
         }
         break;
-      case Token.BooleanLiteral:
       case Token.CharLiteral:
       case Token.FloatLiteral:
+      case Token.FalseLiteral:
       case Token.IntegerLiteral:
       case Token.NilLiteral:
       case Token.SymbolLiteral:
+      case Token.TrueLiteral:
         expr = this.createLiteral(this.lex());
         break;
       case Token.StringLiteral:
         token = this.lex();
-        if (token.value.charAt(0) === &#039;&quot;&#039; &amp;&amp; token.value.indexOf(&quot;#{&quot;) !== -1) {
-          expr = this.parseInterpolatedString(token);
+        if (this.isInterpolatedString(token.value)) {
+          expr = this.parseInterpolatedString(token.value);
         } else {
           expr = this.createLiteral(token);
         }
@@ -1927,11 +1990,15 @@
     return this.markEnd(expr);
   };
 
-  SCParser.prototype.parseInterpolatedString = function(token) {
-    var value, len, items;
+  SCParser.prototype.isInterpolatedString = function(value) {
+    var re = /(^|[^\x5c])#\{/;
+    return re.test(value);
+  };
+
+  SCParser.prototype.parseInterpolatedString = function(value) {
+    var len, items;
     var i, j, ch, depth, code, parser;
 
-    value = token.value.substr(1, token.value.length - 2);
     len = value.length;
     items = [];
 
@@ -1959,7 +2026,7 @@
       }
       code = value.substr(i, j - i);
       if (code) {
-        items.push(q(code));
+        items.push(&#039;&quot;&#039; + code + &#039;&quot;&#039;);
       }
       i = j + 2;
       j = i;
@@ -1987,7 +2054,7 @@
     } while (i &lt; len);
 
     if (i &lt; len) {
-      items.push(q(value.substr(i)));
+      items.push(&#039;&quot;&#039; + value.substr(i) + &#039;&quot;&#039;);
     }
 
     code = items.join(&quot;++&quot;);
@@ -2020,19 +2087,19 @@
         return this.createBlockExpression(body);
       });
     } else if (this.match(&quot;..&quot;)) {
-      expr = this.parseRangeInitialiser(null, generator);
+      expr = this.parseSeriesInitialiser(null, generator);
     } else if (this.match(&quot;)&quot;)) {
       expr = this.createObjectExpression([]);
     } else {
       node = this.parseExpression();
       if (this.matchAny([ &quot;,&quot;, &quot;..&quot; ])) {
-        expr = this.parseRangeInitialiser(node, generator);
+        expr = this.parseSeriesInitialiser(node, generator);
       } else if (this.match(&quot;:&quot;)) {
         expr = this.parseObjectInitialiser(node);
       } else if (this.match(&quot;;&quot;)) {
         expr = this.parseExpressions(node);
         if (this.matchAny([ &quot;,&quot;, &quot;..&quot; ])) {
-          expr = this.parseRangeInitialiser(expr, generator);
+          expr = this.parseSeriesInitialiser(expr, generator);
         }
         marker = null;
       } else {
@@ -2060,7 +2127,7 @@
     if (node) {
       this.expect(&quot;:&quot;);
     } else {
-      node = this.parseLabel();
+      node = this.parseLabelAsSymbol();
     }
     elements.push(node, this.parseExpression());
 
@@ -2070,15 +2137,12 @@
 
     while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(&quot;)&quot;)) {
       if (this.lookahead.type === Token.Label) {
-        node = this.parseLabel();
+        node = this.parseLabelAsSymbol();
       } else {
         node = this.parseExpression();
-      }
-      elements.push(node);
-      if (node.type !== Syntax.Label) {
         this.expect(&quot;:&quot;);
       }
-      elements.push(this.parseExpression());
+      elements.push(node, this.parseExpression());
       if (!this.match(&quot;)&quot;)) {
         this.expect(&quot;,&quot;);
       }
@@ -2089,20 +2153,32 @@
     return this.createObjectExpression(elements);
   };
 
-  SCParser.prototype.parseRangeInitialiser = function(node, generator) {
+  SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
     var first = null, second = null, last = null;
-    var innerElements;
+    var method, innerElements;
 
     innerElements = this.state.innerElements;
     this.state.innerElements = true;
 
+    method = this.markTouch(this.createIdentifier(
+      generator ? &quot;seriesIter&quot; : &quot;series&quot;
+    ));
+
     if (node === null) {
       // (..last)
+      first = this.markTouch({
+        type: Syntax.Literal,
+        value: &quot;0&quot;,
+        valueType: Token.IntegerLiteral
+      });
       this.expect(&quot;..&quot;);
       if (this.match(&quot;)&quot;)) {
-        this.throwUnexpected(this.lookahead);
+        if (!generator) {
+          this.throwUnexpected(this.lookahead);
+        }
+      } else {
+        last = this.parseExpressions();
       }
-      last = this.parseExpressions();
     } else {
       first = node;
       if (this.match(&quot;,&quot;)) {
@@ -2131,7 +2207,7 @@
 
     this.state.innerElements = innerElements;
 
-    return this.createRangeExpression(first, second, last, generator);
+    return this.createCallExpression(first, method, { list: [ second, last ] });
   };
 
   SCParser.prototype.parseListInitialiser = function() {
@@ -2146,8 +2222,7 @@
 
     while (this.lookahead.type !== Token.EOF &amp;&amp; !this.match(&quot;]&quot;)) {
       if (this.lookahead.type === Token.Label) {
-        elements.push(this.parseLabel());
-        elements.push(this.parseExpression());
+        elements.push(this.parseLabelAsSymbol(), this.parseExpression());
       } else {
         elements.push(this.parseExpression());
         if (this.match(&quot;:&quot;)) {
@@ -2213,6 +2288,28 @@
     this.skipComment();
     this.markStart();
     return this.markEnd(this.createLabel(this.lex().value));
+  };
+
+  SCParser.prototype.parseLabelAsSymbol = function() {
+    var label, node;
+
+    label = this.parseLabel();
+    node  = {
+      type: Syntax.Literal,
+      value: label.name,
+      valueType: Token.SymbolLiteral
+    };
+
+    /* istanbul ignore else */
+    if (label.range) {
+      node.range = label.range;
+    }
+    /* istanbul ignore else */
+    if (label.loc) {
+      node.loc = label.loc;
+    }
+
+    return node;
   };
 
   SCParser.prototype.parseIdentifier = function() {
@@ -2349,7 +2446,7 @@
 
     if (this.errors) {
       prev = this.errors[this.errors.length - 1];
-      if (!(prev &amp;&amp; error.index === prev.index)) {
+      if (!(prev &amp;&amp; error.index &lt;= prev.index)) {
         this.errors.push(error);
       }
     } else {

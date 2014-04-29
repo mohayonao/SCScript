@@ -1,5 +1,6 @@
 {
   "sc/test/parser-test-case": [
-    "sc/lang/parser"
+    "sc/lang/parser",
+    "sc/lang/codegen"
   ]
 }

@@ -6,12 +6,9 @@
   var Token  = sc.lang.parser.Token;
   var Syntax = sc.lang.parser.Syntax;
 
-  var q = function(str) {
-    return "'" + str + "'";
-  };
-
   var cases = {
     "": {
+      compiled: "",
       ast: {
         type: Syntax.Program,
         body: [],
@@ -23,6 +20,7 @@
       }
     },
     "    \n\t": {
+      compiled: "",
       ast: {
         type: Syntax.Program,
         body: [],
@@ -34,6 +32,7 @@
       }
     },
     "// single line comment\n": {
+      compiled: "",
       ast: {
         type: Syntax.Program,
         body: [],
@@ -45,6 +44,7 @@
       }
     },
     "/*\n/* / * */\n*/": {
+      compiled: "",
       ast: {
         type: Syntax.Program,
         body: [],
@@ -56,12 +56,17 @@
       }
     },
     "-10pi": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Float(-10 * Math.PI);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.Literal,
-            value: "(-10 * Math.PI)",
+            value: "-10 * Math.PI",
             valueType: Token.FloatLiteral,
             range: [ 0, 5 ],
             loc: {
@@ -77,7 +82,85 @@
         }
       }
     },
-    "`100": {
+    "nil": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Nil();",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.Literal,
+            value: "null",
+            valueType: Token.NilLiteral,
+            range: [ 0, 3 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 3 }
+            }
+          }
+        ],
+        range: [ 0, 3 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 3 }
+        }
+      }
+    },
+    "true && false": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.True() ['&&'] ($SC.False());",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.BinaryExpression,
+            operator: "&&",
+            left: {
+              type: Syntax.Literal,
+              value: "true",
+              valueType: Token.TrueLiteral,
+              range: [ 0, 4 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 4 }
+              }
+            },
+            right: {
+              type: Syntax.Literal,
+              value: "false",
+              valueType: Token.FalseLiteral,
+              range: [ 8, 13 ],
+              loc: {
+                start: { line: 1, column: 8 },
+                end  : { line: 1, column: 13 }
+              }
+            },
+            range: [ 0, 13 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 13 }
+            }
+          }
+        ],
+        range: [ 0, 13 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 13 }
+        }
+      }
+    },
+    "`$a": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Ref($SC.Char('a'));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -86,29 +169,34 @@
             operator: "`",
             arg: {
               type: Syntax.Literal,
-              value: "100",
-              valueType: Token.IntegerLiteral,
-              range: [ 1, 4 ],
+              value: "a",
+              valueType: Token.CharLiteral,
+              range: [ 1, 3 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 4 }
+                end  : { line: 1, column: 3 }
               }
             },
-            range: [ 0, 4 ],
+            range: [ 0, 3 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 4 }
+              end  : { line: 1, column: 3 }
             }
           }
         ],
-        range: [ 0, 4 ],
+        range: [ 0, 3 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 4 }
+          end  : { line: 1, column: 3 }
         }
       }
     },
     "a -.f b": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a() ['-'] ($this.b(), $SC.Symbol('f'));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -116,8 +204,9 @@
             type: Syntax.BinaryExpression,
             operator: "-",
             adverb  : {
-              type: Syntax.Identifier,
-              name: "f",
+              type: Syntax.Literal,
+              value: "f",
+              valueType: Token.SymbolLiteral,
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
@@ -157,6 +246,11 @@
       }
     },
     "a /.1 b": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a() ['/'] ($this.b(), $SC.Integer(1));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -206,6 +300,11 @@
       }
     },
     "a max:.1 b": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().max($this.b(), $SC.Integer(1));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -255,6 +354,11 @@
       }
     },
     "[ 0, 0.5 ]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Array([ $SC.Integer(0), $SC.Float(0.5) ]);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -297,6 +401,11 @@
       }
     },
     "#[ 0, 0.5 ]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Array([ $SC.Integer(0), $SC.Float(0.5) ], true);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -340,6 +449,11 @@
       }
     },
     "#[ [] ]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Array([ $SC.Array([], true) ], true);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -376,7 +490,14 @@
     "#[ #[] ]": {
       ast: new Error("unexpected token #")
     },
-    "[ a: 1, 2: 3]": {
+    "[ a: 1, 2: 3 ]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Array([",
+        "    $SC.Symbol('a'), $SC.Integer(1), $SC.Integer(2), $SC.Integer(3)",
+        "  ]);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -384,8 +505,9 @@
             type: Syntax.ListExpression,
             elements: [
               {
-                type: Syntax.Label,
-                name: "a",
+                type: Syntax.Literal,
+                value: "a",
+                valueType: Token.SymbolLiteral,
                 range: [ 2, 4 ],
                 loc: {
                   start: { line: 1, column: 2 },
@@ -423,21 +545,26 @@
                 }
               }
             ],
-            range: [ 0, 13 ],
+            range: [ 0, 14 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 13 }
+              end  : { line: 1, column: 14 }
             }
           }
         ],
-        range: [ 0, 13 ],
+        range: [ 0, 14 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end  : { line: 1, column: 14 }
         }
       }
     },
     "a = 2pi": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a_($SC.Float(2 * Math.PI));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -455,7 +582,7 @@
             },
             right: {
               type: Syntax.Literal,
-              value: "(2 * Math.PI)",
+              value: "2 * Math.PI",
               valueType: Token.FloatLiteral,
               range: [ 4, 7 ],
               loc: {
@@ -478,6 +605,15 @@
       }
     },
     "#a, b = c": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = $this.c(),",
+        "    $this.a_(_ref.at($SC.Integer(0))),",
+        "    $this.b_(_ref.at($SC.Integer(1))),",
+        "  _ref);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -528,6 +664,16 @@
       }
     },
     "#a, b ... c = d": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = $this.d(),",
+        "    $this.a_(_ref.at($SC.Integer(0))),",
+        "    $this.b_(_ref.at($SC.Integer(1))),",
+        "    $this.c_(_ref.copyToEnd($SC.Integer(2))),",
+        "  _ref);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -587,6 +733,19 @@
       }
     },
     "#a, b = #c, d = [ 0, 1 ]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = ",
+        "    (_ref = $SC.Array([ $SC.Integer(0), $SC.Integer(1) ]),",
+        "      $this.c_(_ref.at($SC.Integer(0))),",
+        "      $this.d_(_ref.at($SC.Integer(1))),",
+        "    _ref),",
+        "    $this.a_(_ref.at($SC.Integer(0))),",
+        "    $this.b_(_ref.at($SC.Integer(1))),",
+        "  _ref);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -686,65 +845,2031 @@
         }
       }
     },
-    "a.b.c = 1": {
+    "1.neg": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(1).neg();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.MemberExpression,
-                computed: false,
-                object: {
-                  type: Syntax.Identifier,
-                  name: "a",
-                  range: [ 0, 1 ],
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "1",
+              valueType: Token.IntegerLiteral,
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "neg",
+              range: [ 2, 5 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            args: {
+              list: []
+            },
+            range: [ 0, 5 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 5 }
+            }
+          },
+        ],
+        range: [ 0, 5 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 5 }
+        }
+      }
+    },
+    "a.b.c = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().b().c_($SC.Integer(1));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.CallExpression,
+              callee: {
+                type: Syntax.Identifier,
+                name: "a",
+                range: [ 0, 1 ],
+                loc: {
+                  start: { line: 1, column: 0 },
+                  end  : { line: 1, column: 1 }
+                }
+              },
+              method: {
+                type: Syntax.Identifier,
+                name: "b",
+                range: [ 2, 3 ],
+                loc: {
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 3 }
+                }
+              },
+              args: {
+                list: []
+              },
+              range: [ 0, 3 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "c_",
+              range: [ 4, 5 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 8, 9 ],
                   loc: {
-                    start: { line: 1, column: 0 },
-                    end  : { line: 1, column: 1 }
+                    start: { line: 1, column: 8 },
+                    end  : { line: 1, column: 9 }
+                  }
+                }
+              ]
+            },
+            range: [ 0, 9 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 9 }
+            }
+          }
+        ],
+        range: [ 0, 9 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 9 }
+        }
+      }
+    },
+    "a[0]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().at($SC.Integer(0));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "at",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "0",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                }
+              ]
+            },
+            range: [ 0, 4 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 4 }
+            }
+          }
+        ],
+        range: [ 0, 4 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 4 }
+        }
+      },
+    },
+    "a[..10]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().copySeries(null, null, $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 4, 6 ],
+                  loc: {
+                    start: { line: 1, column: 4 },
+                    end  : { line: 1, column: 6 }
                   }
                 },
-                property: {
-                  type: Syntax.Identifier,
-                  name: "b",
+              ]
+            },
+            range: [ 0, 7 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 7 }
+            }
+          },
+        ],
+        range: [ 0, 7 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 7 }
+        }
+      }
+    },
+    "a[2..]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().copySeries($SC.Integer(2), null, null);",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
                     end  : { line: 1, column: 3 }
                   }
                 },
-                range: [ 0, 3 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 3 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "c",
-                range: [ 4, 5 ],
-                loc: {
-                  start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
-                }
-              },
-              range: [ 0, 5 ],
+                null,
+                null,
+              ]
+            },
+            range: [ 0, 6 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 6 }
+            }
+          }
+        ],
+        range: [ 0, 6 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 6 }
+        }
+      }
+    },
+    "a[2..10]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().copySeries($SC.Integer(2), null, $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 5 }
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 7 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 7 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 8 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 8 }
+            }
+          }
+        ],
+        range: [ 0, 8 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 8 }
+        }
+      }
+    },
+    "a[2, 4..]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().copySeries($SC.Integer(2), $SC.Integer(4), null);",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+                null,
+              ]
+            },
+            range: [ 0, 9 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 9 }
+            }
+          }
+        ],
+        range: [ 0, 9 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 9 }
+        }
+      }
+    },
+    "a[2, 4..10]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().copySeries($SC.Integer(2), $SC.Integer(4), $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 8, 10 ],
+                  loc: {
+                    start: { line: 1, column: 8 },
+                    end  : { line: 1, column: 10 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 11 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 11 }
+            }
+          }
+        ],
+        range: [ 0, 11 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 11 }
+        }
+      }
+    },
+    "a[..]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().copySeries(null, null, null);",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                null,
+                null,
+              ]
+            },
+            range: [ 0, 5 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 5 }
+            }
+          },
+        ],
+        range: [ 0, 5 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 5 }
+        }
+      }
+    },
+    "a[0] = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().put($SC.Integer(0), $SC.Integer(1));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "put",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "0",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 7, 8 ],
+                  loc: {
+                    start: { line: 1, column: 7 },
+                    end  : { line: 1, column: 8 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 8 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 8 }
+            }
+          }
+        ],
+        range: [ 0, 8 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 8 }
+        }
+      }
+    },
+    "a[..10] = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().putSeries(",
+        "    null, null, $SC.Integer(10), $SC.Integer(1)",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "putSeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 4, 6 ],
+                  loc: {
+                    start: { line: 1, column: 4 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 10, 11 ],
+                  loc: {
+                    start: { line: 1, column: 10 },
+                    end  : { line: 1, column: 11 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 11 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 11 }
+            }
+          }
+        ],
+        range: [ 0, 11 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 11 }
+        }
+      }
+    },
+    "a[2..] = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().putSeries(",
+        "    $SC.Integer(2), null, null, $SC.Integer(1)",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "putSeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                null,
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 9, 10 ],
+                  loc: {
+                    start: { line: 1, column: 9 },
+                    end  : { line: 1, column: 10 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 10 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 10 }
+            }
+          }
+        ],
+        range: [ 0, 10 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 10 }
+        }
+      }
+    },
+    "a[2..10] = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().putSeries(",
+        "    $SC.Integer(2), null, $SC.Integer(10), $SC.Integer(1)",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "putSeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 7 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 7 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 11, 12 ],
+                  loc: {
+                    start: { line: 1, column: 11 },
+                    end  : { line: 1, column: 12 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 12 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 12 }
+            }
+          }
+        ],
+        range: [ 0, 12 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 12 }
+        }
+      }
+    },
+    "a[2, 4..] = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().putSeries(",
+        "    $SC.Integer(2), $SC.Integer(4), null, $SC.Integer(1)",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "putSeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 12, 13 ],
+                  loc: {
+                    start: { line: 1, column: 12 },
+                    end  : { line: 1, column: 13 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 13 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 13 }
+            }
+          }
+        ],
+        range: [ 0, 13 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 13 }
+        }
+      }
+    },
+    "a[2, 4..10] = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().putSeries(",
+        "    $SC.Integer(2), $SC.Integer(4), $SC.Integer(10), $SC.Integer(1)",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "putSeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "2",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 2, 3 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 8, 10 ],
+                  loc: {
+                    start: { line: 1, column: 8 },
+                    end  : { line: 1, column: 10 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 14, 15 ],
+                  loc: {
+                    start: { line: 1, column: 14 },
+                    end  : { line: 1, column: 15 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 15 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 15 }
+            }
+          }
+        ],
+        range: [ 0, 15 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 15 }
+        }
+      }
+    },
+    "a[..] = 1": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().putSeries(",
+        "    null, null, null, $SC.Integer(1)",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "putSeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                null,
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 8, 9 ],
+                  loc: {
+                    start: { line: 1, column: 8 },
+                    end  : { line: 1, column: 9 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 9 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 9 }
+            }
+          }
+        ],
+        range: [ 0, 9 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 9 }
+        }
+      }
+    },
+    "a[0;1,2;3..4;5]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().copySeries(",
+        "    ($SC.Integer(0), $SC.Integer(1)),",
+        "    ($SC.Integer(2), $SC.Integer(3)),",
+        "    ($SC.Integer(4), $SC.Integer(5))",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                [
+                  {
+                    type: Syntax.Literal,
+                    value: "0",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 2, 3 ],
+                    loc: {
+                      start: { line: 1, column: 2 },
+                      end  : { line: 1, column: 3 }
+                    }
+                  },
+                  {
+                    type: Syntax.Literal,
+                    value: "1",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 4, 5 ],
+                    loc: {
+                      start: { line: 1, column: 4 },
+                      end  : { line: 1, column: 5 }
+                    }
+                  },
+                ],
+                [
+                  {
+                    type: Syntax.Literal,
+                    value: "2",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 6, 7 ],
+                    loc: {
+                      start: { line: 1, column: 6 },
+                      end  : { line: 1, column: 7 }
+                    }
+                  },
+                  {
+                    type: Syntax.Literal,
+                    value: "3",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 8, 9 ],
+                    loc: {
+                      start: { line: 1, column: 8 },
+                      end  : { line: 1, column: 9 }
+                    }
+                  },
+                ],
+                [
+                  {
+                    type: Syntax.Literal,
+                    value: "4",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 11, 12 ],
+                    loc: {
+                      start: { line: 1, column: 11 },
+                      end  : { line: 1, column: 12 }
+                    }
+                  },
+                  {
+                    type: Syntax.Literal,
+                    value: "5",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 13, 14 ],
+                    loc: {
+                      start: { line: 1, column: 13 },
+                      end  : { line: 1, column: 14 }
+                    }
+                  },
+                ]
+              ]
+            },
+            range: [ 0, 15 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 15 }
+            }
+          }
+        ],
+        range: [ 0, 15 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 15 }
+        }
+      }
+    },
+    "a[b[c=0;1]=0;1]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().at(",
+        "    ($this.b().put(",
+        "      ($this.c_($SC.Integer(0)), $SC.Integer(1)), $SC.Integer(0)",
+        "    ), $SC.Integer(1))",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "at",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                [
+                  {
+                    type: Syntax.CallExpression,
+                    stamp: "[",
+                    callee: {
+                      type: Syntax.Identifier,
+                      name: "b",
+                      range: [ 2, 3 ],
+                      loc: {
+                        start: { line: 1, column: 2 },
+                        end  : { line: 1, column: 3 }
+                      }
+                    },
+                    method: {
+                      type: Syntax.Identifier,
+                      name: "put",
+                      range: [ 3, 3 ],
+                      loc: {
+                        start: { line: 1, column: 3 },
+                        end  : { line: 1, column: 3 }
+                      }
+                    },
+                    args: {
+                      list: [
+                        [
+                          {
+                            type: Syntax.AssignmentExpression,
+                            operator: "=",
+                            left: {
+                              type: Syntax.Identifier,
+                              name: "c",
+                              range: [ 4, 5 ],
+                              loc: {
+                                start: { line: 1, column: 4 },
+                                end  : { line: 1, column: 5 }
+                              }
+                            },
+                            right: {
+                              type: Syntax.Literal,
+                              value: "0",
+                              valueType: Token.IntegerLiteral,
+                              range: [ 6, 7 ],
+                              loc: {
+                                start: { line: 1, column: 6 },
+                                end  : { line: 1, column: 7 }
+                              }
+                            },
+                            range: [ 4, 7 ],
+                            loc: {
+                              start: { line: 1, column: 4 },
+                              end  : { line: 1, column: 7 }
+                            }
+                          },
+                          {
+                            type: Syntax.Literal,
+                            value: "1",
+                            valueType: Token.IntegerLiteral,
+                            range: [ 8, 9 ],
+                            loc: {
+                              start: { line: 1, column: 8 },
+                              end  : { line: 1, column: 9 }
+                            }
+                          }
+                        ],
+                        {
+                          type: Syntax.Literal,
+                          value: "0",
+                          valueType: Token.IntegerLiteral,
+                          range: [ 11, 12 ],
+                          loc: {
+                            start: { line: 1, column: 11 },
+                            end  : { line: 1, column: 12 }
+                          }
+                        }
+                      ]
+                    },
+                    range: [ 2, 12 ],
+                    loc: {
+                      start: { line: 1, column: 2 },
+                      end  : { line: 1, column: 12 }
+                    }
+                  },
+                  {
+                    type: Syntax.Literal,
+                    value: "1",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 13, 14 ],
+                    loc: {
+                      start: { line: 1, column: 13 },
+                      end  : { line: 1, column: 14 }
+                    }
+                  }
+                ]
+              ]
+            },
+            range: [ 0, 15 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 15 }
+            }
+          }
+        ],
+        range: [ 0, 15 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 15 }
+        }
+      }
+    },
+    "(..10)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(0).series(null, $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "series",
+              range: [ 1, 1 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 3, 5 ],
+                  loc: {
+                    start: { line: 1, column: 3 },
+                    end  : { line: 1, column: 5 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 6 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 6 }
+            }
+          }
+        ],
+        range: [ 0, 6 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 6 }
+        }
+      }
+    },
+    "(2..10)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(2).series(null, $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "2",
+              valueType: Token.IntegerLiteral,
+              range: [ 1, 2 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "series",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 4, 6 ],
+                  loc: {
+                    start: { line: 1, column: 4 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 7 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 7 }
+            }
+          }
+        ],
+        range: [ 0, 7 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 7 }
+        }
+      }
+    },
+    "(2, 4..10)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(2).series($SC.Integer(4), $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "2",
+              valueType: Token.IntegerLiteral,
+              range: [ 1, 2 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "series",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 4, 5 ],
+                  loc: {
+                    start: { line: 1, column: 4 },
+                    end  : { line: 1, column: 5 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 7, 9 ],
+                  loc: {
+                    start: { line: 1, column: 7 },
+                    end  : { line: 1, column: 9 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 10 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 10 }
+            }
+          }
+        ],
+        range: [ 0, 10 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 10 }
+        }
+      }
+    },
+    "(0;1, 2;3..4;5)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return ($SC.Integer(0), $SC.Integer(1)).series(",
+        "    ($SC.Integer(2), $SC.Integer(3)), ($SC.Integer(4), $SC.Integer(5))",
+        "  );",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: [
+              {
+                type: Syntax.Literal,
+                value: "0",
+                valueType: Token.IntegerLiteral,
+                range: [ 1, 2 ],
+                loc: {
+                  start: { line: 1, column: 1 },
+                  end  : { line: 1, column: 2 }
+                }
+              },
+              {
+                type: Syntax.Literal,
+                value: "1",
+                valueType: Token.IntegerLiteral,
+                range: [ 3, 4 ],
+                loc: {
+                  start: { line: 1, column: 3 },
+                  end  : { line: 1, column: 4 }
+                }
+              },
+            ],
+            method: {
+              type: Syntax.Identifier,
+              name: "series",
+              range: [ 4, 4 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 4 }
+              }
+            },
+            args: {
+              list: [
+                [
+                  {
+                    type: Syntax.Literal,
+                    value: "2",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 6, 7 ],
+                    loc: {
+                      start: { line: 1, column: 6 },
+                      end  : { line: 1, column: 7 }
+                    }
+                  },
+                  {
+                    type: Syntax.Literal,
+                    value: "3",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 8, 9 ],
+                    loc: {
+                      start: { line: 1, column: 8 },
+                      end  : { line: 1, column: 9 }
+                    }
+                  },
+                ],
+                [
+                  {
+                    type: Syntax.Literal,
+                    value: "4",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 11, 12 ],
+                    loc: {
+                      start: { line: 1, column: 11 },
+                      end  : { line: 1, column: 12 }
+                    }
+                  },
+                  {
+                    type: Syntax.Literal,
+                    value: "5",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 13, 14 ],
+                    loc: {
+                      start: { line: 1, column: 13 },
+                      end  : { line: 1, column: 14 }
+                    }
+                  },
+                ],
+              ]
+            },
+            range: [ 0, 15 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 15 }
+            }
+          }
+        ],
+        range: [ 0, 15 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 15 }
+        }
+      }
+    },
+    "(:..)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(0).seriesIter(null, null);",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "seriesIter",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                null,
+              ]
+            },
+            range: [ 0, 5 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 5 }
+            }
+          }
+        ],
+        range: [ 0, 5 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 5 }
+        }
+      }
+    },
+    "(:..10)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(0).seriesIter(null, $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "seriesIter",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 4, 6 ],
+                  loc: {
+                    start: { line: 1, column: 4 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 7 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 7 }
+            }
+          }
+        ],
+        range: [ 0, 7 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 7 }
+        }
+      }
+    },
+    "(:2..)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(2).seriesIter(null, null);",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "2",
+              valueType: Token.IntegerLiteral,
+              range: [ 2, 3 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "seriesIter",
+              range: [ 3, 3 ],
+              loc: {
+                start: { line: 1, column: 3 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                null,
+              ]
+            },
+            range: [ 0, 6 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 6 }
+            }
+          }
+        ],
+        range: [ 0, 6 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 6 }
+        }
+      }
+    },
+    "(:2..10)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(2).seriesIter(null, $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "2",
+              valueType: Token.IntegerLiteral,
+              range: [ 2, 3 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "seriesIter",
+              range: [ 3, 3 ],
+              loc: {
+                start: { line: 1, column: 3 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 7 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 7 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 8 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 8 }
+            }
+          }
+        ],
+        range: [ 0, 8 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 8 }
+        }
+      }
+    },
+    "(:2, 4..)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(2).seriesIter($SC.Integer(4), null);",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "2",
+              valueType: Token.IntegerLiteral,
+              range: [ 2, 3 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "seriesIter",
+              range: [ 3, 3 ],
+              loc: {
+                start: { line: 1, column: 3 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+                null,
+              ]
+            },
+            range: [ 0, 9 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 9 }
+            }
+          }
+        ],
+        range: [ 0, 9 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 9 }
+        }
+      }
+    },
+    "(:2, 4..10)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(2).seriesIter($SC.Integer(4), $SC.Integer(10));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.Literal,
+              value: "2",
+              valueType: Token.IntegerLiteral,
+              range: [ 2, 3 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "seriesIter",
+              range: [ 3, 3 ],
+              loc: {
+                start: { line: 1, column: 3 },
+                end  : { line: 1, column: 3 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 8, 10 ],
+                  loc: {
+                    start: { line: 1, column: 8 },
+                    end  : { line: 1, column: 10 }
+                  }
+                },
+              ]
+            },
+            range: [ 0, 11 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 11 }
+            }
+          }
+        ],
+        range: [ 0, 11 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 11 }
+        }
+      }
+    },
+    "5 === 5.0": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Boolean($SC.Integer(5) === $SC.Float(5.0));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.BinaryExpression,
+            operator: "===",
+            left: {
+              type: Syntax.Literal,
+              value: "5",
+              valueType: Token.IntegerLiteral,
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
               type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 8, 9 ],
+              value: "5.0",
+              valueType: Token.FloatLiteral,
+              range: [ 6, 9 ],
               loc: {
-                start: { line: 1, column: 8 },
+                start: { line: 1, column: 6 },
                 end  : { line: 1, column: 9 }
               }
             },
@@ -762,48 +2887,81 @@
         }
       }
     },
-    "a[0] = 1": {
+    "5 !== 5.0": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Boolean($SC.Integer(5) !== $SC.Float(5.0));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
+            type: Syntax.BinaryExpression,
+            operator: "!==",
             left: {
-              type: Syntax.MemberExpression,
-              computed: true,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.Literal,
-                value: "0",
-                valueType: Token.IntegerLiteral,
-                range: [ 2, 3 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
-                }
-              },
-              range: [ 0, 4 ],
+              type: Syntax.Literal,
+              value: "5",
+              valueType: Token.IntegerLiteral,
+              range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 4 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
               type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 7, 8 ],
+              value: "5.0",
+              valueType: Token.FloatLiteral,
+              range: [ 6, 9 ],
               loc: {
-                start: { line: 1, column: 7 },
+                start: { line: 1, column: 6 },
+                end  : { line: 1, column: 9 }
+              }
+            },
+            range: [ 0, 9 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 9 }
+            }
+          }
+        ],
+        range: [ 0, 9 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 9 }
+        }
+      }
+    },
+    "5 == 5.0": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(5) ['=='] ($SC.Float(5.0));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.BinaryExpression,
+            operator: "==",
+            left: {
+              type: Syntax.Literal,
+              value: "5",
+              valueType: Token.IntegerLiteral,
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            right: {
+              type: Syntax.Literal,
+              value: "5.0",
+              valueType: Token.FloatLiteral,
+              range: [ 5, 8 ],
+              loc: {
+                start: { line: 1, column: 5 },
                 end  : { line: 1, column: 8 }
               }
             },
@@ -821,1527 +2979,14 @@
         }
       }
     },
-    "a[5..10] = 1": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.MemberExpression,
-              computed: true,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.ListIndexer,
-                first: {
-                  type: Syntax.Literal,
-                  value: "5",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 2, 3 ],
-                  loc: {
-                    start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
-                  }
-                },
-                second: null,
-                last: {
-                  type: Syntax.Literal,
-                  value: "10",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 5, 7 ],
-                  loc: {
-                    start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 7 }
-                  }
-                },
-                range: [ 2, 7 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 7 }
-                }
-              },
-              range: [ 0, 8 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 8 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 11, 12 ],
-              loc: {
-                start: { line: 1, column: 11 },
-                end  : { line: 1, column: 12 }
-              }
-            },
-            range: [ 0, 12 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 12 }
-            }
-          }
-        ],
-        range: [ 0, 12 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 12 }
-        }
-      }
-    },
-    "a[7,9..13] = 1": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.MemberExpression,
-              computed: true,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.ListIndexer,
-                first: {
-                  type: Syntax.Literal,
-                  value: "7",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 2, 3 ],
-                  loc: {
-                    start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
-                  }
-                },
-                second: {
-                  type: Syntax.Literal,
-                  value: "9",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
-                  }
-                },
-                last: {
-                  type: Syntax.Literal,
-                  value: "13",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 7, 9 ],
-                  loc: {
-                    start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 9 }
-                  }
-                },
-                range: [ 2, 9 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 9 }
-                }
-              },
-              range: [ 0, 10 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 10 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 13, 14 ],
-              loc: {
-                start: { line: 1, column: 13 },
-                end  : { line: 1, column: 14 }
-              }
-            },
-            range: [ 0, 14 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 14 }
-            }
-          }
-        ],
-        range: [ 0, 14 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 14 }
-        }
-      }
-    },
-    "a[..5] = 1": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.MemberExpression,
-              computed: true,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.ListIndexer,
-                first: null,
-                second: null,
-                last: {
-                  type: Syntax.Literal,
-                  value: "5",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
-                  }
-                },
-                range: [ 2, 5 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 5 }
-                }
-              },
-              range: [ 0, 6 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 6 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 9, 10 ],
-              loc: {
-                start: { line: 1, column: 9 },
-                end  : { line: 1, column: 10 }
-              }
-            },
-            range: [ 0, 10 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 }
-            }
-          }
-        ],
-        range: [ 0, 10 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 }
-        }
-      }
-    },
-    "a[12..] = 1": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.MemberExpression,
-              computed: true,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.ListIndexer,
-                first: {
-                  type: Syntax.Literal,
-                  value: "12",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 2, 4 ],
-                  loc: {
-                    start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 4 }
-                  }
-                },
-                second: null,
-                last: null,
-                range: [ 2, 6 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 6 }
-                }
-              },
-              range: [ 0, 7 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 7 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 10, 11 ],
-              loc: {
-                start: { line: 1, column: 10 },
-                end  : { line: 1, column: 11 }
-              }
-            },
-            range: [ 0, 11 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 11 }
-            }
-          }
-        ],
-        range: [ 0, 11 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 11 }
-        }
-      }
-    },
-    "a[1,3..] = 1": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.MemberExpression,
-              computed: true,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.ListIndexer,
-                first: {
-                  type: Syntax.Literal,
-                  value: "1",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 2, 3 ],
-                  loc: {
-                    start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
-                  }
-                },
-                second: {
-                  type: Syntax.Literal,
-                  value: "3",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
-                  }
-                },
-                last: null,
-                range: [ 2, 7 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 7 }
-                }
-              },
-              range: [ 0, 8 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 8 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 11, 12 ],
-              loc: {
-                start: { line: 1, column: 11 },
-                end  : { line: 1, column: 12 }
-              }
-            },
-            range: [ 0, 12 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 12 }
-            }
-          }
-        ],
-        range: [ 0, 12 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 12 }
-        }
-      }
-    },
-    "a[..] = 1": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.MemberExpression,
-              computed: true,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.ListIndexer,
-                first: null,
-                second: null,
-                last: null,
-                range: [ 2, 4 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 4 }
-                }
-              },
-              range: [ 0, 5 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 5 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 8, 9 ],
-              loc: {
-                start: { line: 1, column: 8 },
-                end  : { line: 1, column: 9 }
-              }
-            },
-            range: [ 0, 9 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
-            }
-          }
-        ],
-        range: [ 0, 9 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
-        }
-      }
-    },
-    "a[..]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: null,
-              second: null,
-              last: null,
-              range: [ 2, 4 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 4 }
-              }
-            },
-            range: [ 0, 5 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
-            }
-          }
-        ],
-        range: [ 0, 5 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 5 }
-        }
-      }
-    },
-    "a[..3]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: null,
-              second: null,
-              last: {
-                type: Syntax.Literal,
-                value: "3",
-                valueType: Token.IntegerLiteral,
-                range: [ 4, 5 ],
-                loc: {
-                  start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
-                }
-              },
-              range: [ 2, 5 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 5 }
-              }
-            },
-            range: [ 0, 6 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
-            }
-          }
-        ],
-        range: [ 0, 6 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
-        }
-      }
-    },
-    "a[3..]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: {
-                type: Syntax.Literal,
-                value: "3",
-                valueType: Token.IntegerLiteral,
-                range: [ 2, 3 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
-                }
-              },
-              second: null,
-              last: null,
-              range: [ 2, 5 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 5 }
-              }
-            },
-            range: [ 0, 6 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
-            }
-          }
-        ],
-        range: [ 0, 6 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
-        }
-      }
-    },
-    "a[2..4]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: {
-                type: Syntax.Literal,
-                value: "2",
-                valueType: Token.IntegerLiteral,
-                range: [ 2, 3 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
-                }
-              },
-              second: null,
-              last: {
-                type: Syntax.Literal,
-                value: "4",
-                valueType: Token.IntegerLiteral,
-                range: [ 5, 6 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 6 }
-                }
-              },
-              range: [ 2, 6 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 6 }
-              }
-            },
-            range: [ 0, 7 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
-            }
-          }
-        ],
-        range: [ 0, 7 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
-        }
-      }
-    },
-    "a[4..2]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: {
-                type: Syntax.Literal,
-                value: "4",
-                valueType: Token.IntegerLiteral,
-                range: [ 2, 3 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
-                }
-              },
-              second: null,
-              last: {
-                type: Syntax.Literal,
-                value: "2",
-                valueType: Token.IntegerLiteral,
-                range: [ 5, 6 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 6 }
-                }
-              },
-              range: [ 2, 6 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 6 }
-              }
-            },
-            range: [ 0, 7 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
-            }
-          }
-        ],
-        range: [ 0, 7 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
-        }
-      }
-    },
-    "a[0, 2..]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: {
-                type: Syntax.Literal,
-                value: "0",
-                valueType: Token.IntegerLiteral,
-                range: [ 2, 3 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
-                }
-              },
-              second: {
-                type: Syntax.Literal,
-                value: "2",
-                valueType: Token.IntegerLiteral,
-                range: [ 5, 6 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 6 }
-                }
-              },
-              last: null,
-              range: [ 2, 8 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 8 }
-              }
-            },
-            range: [ 0, 9 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
-            }
-          }
-        ],
-        range: [ 0, 9 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
-        }
-      }
-    },
-    "a[0, -2..]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: {
-                type: Syntax.Literal,
-                value: "0",
-                valueType: Token.IntegerLiteral,
-                range: [ 2, 3 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
-                }
-              },
-              second: {
-                type: Syntax.Literal,
-                value: "-2",
-                valueType: Token.IntegerLiteral,
-                range: [ 5, 7 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 7 }
-                }
-              },
-              last: null,
-              range: [ 2, 9 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 9 }
-              }
-            },
-            range: [ 0, 10 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 }
-            }
-          }
-        ],
-        range: [ 0, 10 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 }
-        }
-      }
-    },
-    "a[0;1,2;3..4;5]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: [
-                {
-                  type: Syntax.Literal,
-                  value: "0",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 2, 3 ],
-                  loc: {
-                    start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
-                  }
-                },
-                {
-                  type: Syntax.Literal,
-                  value: "1",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
-                  }
-                }
-              ],
-              second: [
-                {
-                  type: Syntax.Literal,
-                  value: "2",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 6, 7 ],
-                  loc: {
-                    start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 7 }
-                  }
-                },
-                {
-                  type: Syntax.Literal,
-                  value: "3",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 8, 9 ],
-                  loc: {
-                    start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 9 }
-                  }
-                }
-              ],
-              last: [
-                {
-                  type: Syntax.Literal,
-                  value: "4",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 11, 12 ],
-                  loc: {
-                    start: { line: 1, column: 11 },
-                    end  : { line: 1, column: 12 }
-                  }
-                },
-                {
-                  type: Syntax.Literal,
-                  value: "5",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 13, 14 ],
-                  loc: {
-                    start: { line: 1, column: 13 },
-                    end  : { line: 1, column: 14 }
-                  }
-                }
-              ],
-              range: [ 2, 14 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end  : { line: 1, column: 14 }
-              }
-            },
-            range: [ 0, 15 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
-            }
-          }
-        ],
-        range: [ 0, 15 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
-        }
-      }
-    },
-    "a[b[c=0;1]=0;1]": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
-              }
-            },
-            property: [
-              {
-                type: Syntax.AssignmentExpression,
-                operator: "=",
-                left: {
-                  type: Syntax.MemberExpression,
-                  computed: true,
-                  object: {
-                    type: Syntax.Identifier,
-                    name: "b",
-                    range: [ 2, 3 ],
-                    loc: {
-                      start: { line: 1, column: 2 },
-                      end  : { line: 1, column: 3 }
-                    }
-                  },
-                  property: [
-                    {
-                      type: Syntax.AssignmentExpression,
-                      operator: "=",
-                      left: {
-                        type: Syntax.Identifier,
-                        name: "c",
-                        range: [ 4, 5 ],
-                        loc: {
-                          start: { line: 1, column: 4 },
-                          end  : { line: 1, column: 5 }
-                        }
-                      },
-                      right: {
-                        type: Syntax.Literal,
-                        value: "0",
-                        valueType: Token.IntegerLiteral,
-                        range: [ 6, 7 ],
-                        loc: {
-                          start: { line: 1, column: 6 },
-                          end  : { line: 1, column: 7 }
-                        }
-                      },
-                      range: [ 4, 7 ],
-                      loc: {
-                        start: { line: 1, column: 4 },
-                        end  : { line: 1, column: 7 }
-                      }
-                    },
-                    {
-                      type: Syntax.Literal,
-                      value: "1",
-                      valueType: Token.IntegerLiteral,
-                      range: [ 8, 9 ],
-                      loc: {
-                        start: { line: 1, column: 8 },
-                        end  : { line: 1, column: 9 }
-                      }
-                    }
-                  ],
-                  range: [ 2, 10 ],
-                  loc: {
-                    start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 10 }
-                  }
-                },
-                right: {
-                  type: Syntax.Literal,
-                  value: "0",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 11, 12 ],
-                  loc: {
-                    start: { line: 1, column: 11 },
-                    end  : { line: 1, column: 12 }
-                  }
-                },
-                range: [ 2, 12 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 12 }
-                }
-              },
-              {
-                type: Syntax.Literal,
-                value: "1",
-                valueType: Token.IntegerLiteral,
-                range: [ 13, 14 ],
-                loc: {
-                  start: { line: 1, column: 13 },
-                  end  : { line: 1, column: 14 }
-                }
-              }
-            ],
-            range: [ 0, 15 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
-            }
-          }
-        ],
-        range: [ 0, 15 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
-        }
-      }
-    },
-    "(..10)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: null,
-            second: null,
-            last: {
-              type: Syntax.Literal,
-              value: "10",
-              valueType: Token.IntegerLiteral,
-              range: [ 3, 5 ],
-              loc: {
-                start: { line: 1, column: 3 },
-                end  : { line: 1, column: 5 }
-              }
-            },
-            range: [ 0, 6 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
-            }
-          }
-        ],
-        range: [ 0, 6 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
-        }
-      }
-    },
-    "(1..16)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 1, 2 ],
-              loc: {
-                start: { line: 1, column: 1 },
-                end  : { line: 1, column: 2 }
-              }
-            },
-            second: null,
-            last: {
-              type: Syntax.Literal,
-              value: "16",
-              valueType: Token.IntegerLiteral,
-              range: [ 4, 6 ],
-              loc: {
-                start: { line: 1, column: 4 },
-                end  : { line: 1, column: 6 }
-              }
-            },
-            range: [ 0, 7 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
-            }
-          }
-        ],
-        range: [ 0, 7 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
-        }
-      }
-    },
-    "(16..1)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: {
-              type: Syntax.Literal,
-              value: "16",
-              valueType: Token.IntegerLiteral,
-              range: [ 1, 3 ],
-              loc: {
-                start: { line: 1, column: 1 },
-                end  : { line: 1, column: 3 }
-              }
-            },
-            second: null,
-            last: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 5, 6 ],
-              loc: {
-                start: { line: 1, column: 5 },
-                end  : { line: 1, column: 6 }
-              }
-            },
-            range: [ 0, 7 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
-            }
-          }
-        ],
-        range: [ 0, 7 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
-        }
-      }
-    },
-    "(1, 3..11)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: {
-              type: Syntax.Literal,
-              value: "1",
-              valueType: Token.IntegerLiteral,
-              range: [ 1, 2 ],
-              loc: {
-                start: { line: 1, column: 1 },
-                end  : { line: 1, column: 2 }
-              }
-            },
-            second: {
-              type: Syntax.Literal,
-              value: "3",
-              valueType: Token.IntegerLiteral,
-              range: [ 4, 5 ],
-              loc: {
-                start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
-              }
-            },
-            last: {
-              type: Syntax.Literal,
-              value: "11",
-              valueType: Token.IntegerLiteral,
-              range: [ 7, 9 ],
-              loc: {
-                start: { line: 1, column: 7 },
-                end  : { line: 1, column: 9 }
-              }
-            },
-            range: [ 0, 10 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 }
-            }
-          }
-        ],
-        range: [ 0, 10 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 }
-        }
-      }
-    },
-    "(..20)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: null,
-            second: null,
-            last: {
-              type: Syntax.Literal,
-              value: "20",
-              valueType: Token.IntegerLiteral,
-              range: [ 3, 5 ],
-              loc: {
-                start: { line: 1, column: 3 },
-                end  : { line: 1, column: 5 }
-              }
-            },
-            range: [ 0, 6 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
-            }
-          }
-        ],
-        range: [ 0, 6 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
-        }
-      }
-    },
-    "(a..20)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 1, 2 ],
-              loc: {
-                start: { line: 1, column: 1 },
-                end  : { line: 1, column: 2 }
-              }
-            },
-            second: null,
-            last: {
-              type: Syntax.Literal,
-              value: "20",
-              valueType: Token.IntegerLiteral,
-              range: [ 4, 6 ],
-              loc: {
-                start: { line: 1, column: 4 },
-                end  : { line: 1, column: 6 }
-              }
-            },
-            range: [ 0, 7 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
-            }
-          }
-        ],
-        range: [ 0, 7 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
-        }
-      }
-    },
-    "(0;1,2;3..4;5)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: [
-              {
-                type: Syntax.Literal,
-                value: "0",
-                valueType: Token.IntegerLiteral,
-                range: [ 1, 2 ],
-                loc: {
-                  start: { line: 1, column: 1 },
-                  end: { line: 1, column: 2 }
-                }
-              },
-              {
-                type: Syntax.Literal,
-                value: "1",
-                valueType: Token.IntegerLiteral,
-                range: [ 3, 4 ],
-                loc: {
-                  start: { line: 1, column: 3 },
-                  end: { line: 1, column: 4 }
-                }
-              }
-            ],
-            second: [
-              {
-                type: Syntax.Literal,
-                value: "2",
-                valueType: Token.IntegerLiteral,
-                range: [ 5, 6 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
-                }
-              },
-              {
-                type: Syntax.Literal,
-                value: "3",
-                valueType: Token.IntegerLiteral,
-                range: [ 7, 8 ],
-                loc: {
-                  start: { line: 1, column: 7 },
-                  end: { line: 1, column: 8 }
-                }
-              }
-            ],
-            last: [
-              {
-                type: Syntax.Literal,
-                value: "4",
-                valueType: Token.IntegerLiteral,
-                range: [ 10, 11 ],
-                loc: {
-                  start: { line: 1, column: 10 },
-                  end: { line: 1, column: 11 }
-                }
-              },
-              {
-                type: Syntax.Literal,
-                value: "5",
-                valueType: Token.IntegerLiteral,
-                range: [ 12, 13 ],
-                loc: {
-                  start: { line: 1, column: 12 },
-                  end: { line: 1, column: 13 }
-                }
-              }
-            ],
-            range: [ 0, 14 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 14 }
-            }
-          }
-        ],
-        range: [ 0, 14 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 14 }
-        }
-      }
-    },
-    "(:0..)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: {
-              type: Syntax.Literal,
-              value: "0",
-              valueType: Token.IntegerLiteral,
-              range: [ 2, 3 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end: { line: 1, column: 3 }
-              }
-            },
-            second: null,
-            last: null,
-            generator: true,
-            range: [ 0, 6 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 6 }
-            }
-          }
-        ],
-        range: [ 0, 6 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 6 }
-        }
-      }
-    },
-    "(:0, 2..)": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.RangeExpression,
-            first: {
-              type: Syntax.Literal,
-              value: "0",
-              valueType: Token.IntegerLiteral,
-              range: [ 2, 3 ],
-              loc: {
-                start: { line: 1, column: 2 },
-                end: { line: 1, column: 3 }
-              }
-            },
-            second: {
-              type: Syntax.Literal,
-              value: "2",
-              valueType: Token.IntegerLiteral,
-              range: [ 5, 6 ],
-              loc: {
-                start: { line: 1, column: 5 },
-                end: { line: 1, column: 6 }
-              }
-            },
-            last: null,
-            generator: true,
-            range: [ 0, 9 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 9 }
-            }
-          }
-        ],
-        range: [ 0, 9 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 9 }
-        }
-      }
-    },
-    "5 !== 5.0": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.BinaryExpression,
-            operator: "!==",
-            left: {
-              type: Syntax.Literal,
-              value: "5",
-              valueType: Token.IntegerLiteral,
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "5",
-              valueType: Token.FloatLiteral,
-              range: [ 6, 9 ],
-              loc: {
-                start: { line: 1, column: 6 },
-                end: { line: 1, column: 9 }
-              }
-            },
-            range: [ 0, 9 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 9 }
-            }
-          }
-        ],
-        range: [ 0, 9 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 9 }
-        }
-      }
-    },
-    "5 == 5.0": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.BinaryExpression,
-            operator: "==",
-            left: {
-              type: Syntax.Literal,
-              value: "5",
-              valueType: Token.IntegerLiteral,
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "5",
-              valueType: Token.FloatLiteral,
-              range: [ 5, 8 ],
-              loc: {
-                start: { line: 1, column: 5 },
-                end: { line: 1, column: 8 }
-              }
-            },
-            range: [ 0, 8 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 8 }
-            }
-          }
-        ],
-        range: [ 0, 8 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 8 }
-        }
-      }
-    },
     "{ arg a, b, c=3; }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function($a, $b, $c) {",
+        "    return $SC.Nil();",
+        "  }, 'a; b; c=3');",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2357,13 +3002,13 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end: { line: 1, column: 7 }
+                      end  : { line: 1, column: 7 }
                     }
                   },
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 7 }
+                    end  : { line: 1, column: 7 }
                   }
                 },
                 {
@@ -2374,13 +3019,13 @@
                     range: [ 9, 10 ],
                     loc: {
                       start: { line: 1, column: 9 },
-                      end: { line: 1, column: 10 }
+                      end  : { line: 1, column: 10 }
                     }
                   },
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end: { line: 1, column: 10 }
+                    end  : { line: 1, column: 10 }
                   }
                 },
                 {
@@ -2391,7 +3036,7 @@
                     range: [ 12, 13 ],
                     loc: {
                       start: { line: 1, column: 12 },
-                      end: { line: 1, column: 13 }
+                      end  : { line: 1, column: 13 }
                     }
                   },
                   init: {
@@ -2401,13 +3046,13 @@
                     range: [ 14, 15 ],
                     loc: {
                       start: { line: 1, column: 14 },
-                      end: { line: 1, column: 15 }
+                      end  : { line: 1, column: 15 }
                     }
                   },
                   range: [ 12, 15 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end: { line: 1, column: 15 }
+                    end  : { line: 1, column: 15 }
                   }
                 }
               ]
@@ -2416,18 +3061,25 @@
             range: [ 0, 18 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 18 }
+              end  : { line: 1, column: 18 }
             }
           }
         ],
         range: [ 0, 18 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 18 }
+          end  : { line: 1, column: 18 }
         }
       }
     },
     "{ arg a, b, c ... d; }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function($a, $b, $c, $d) {",
+        "    return $SC.Nil();",
+        "  }, 'a; b; c; *d');",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2443,13 +3095,13 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end: { line: 1, column: 7 }
+                      end  : { line: 1, column: 7 }
                     }
                   },
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 7 }
+                    end  : { line: 1, column: 7 }
                   }
                 },
                 {
@@ -2460,13 +3112,13 @@
                     range: [ 9, 10 ],
                     loc: {
                       start: { line: 1, column: 9 },
-                      end: { line: 1, column: 10 }
+                      end  : { line: 1, column: 10 }
                     }
                   },
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end: { line: 1, column: 10 }
+                    end  : { line: 1, column: 10 }
                   }
                 },
                 {
@@ -2477,13 +3129,13 @@
                     range: [ 12, 13 ],
                     loc: {
                       start: { line: 1, column: 12 },
-                      end: { line: 1, column: 13 }
+                      end  : { line: 1, column: 13 }
                     }
                   },
                   range: [ 12, 13 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end: { line: 1, column: 13 }
+                    end  : { line: 1, column: 13 }
                   }
                 }
               ],
@@ -2493,7 +3145,7 @@
                 range: [ 18, 19 ],
                 loc: {
                   start: { line: 1, column: 18 },
-                  end: { line: 1, column: 19 }
+                  end  : { line: 1, column: 19 }
                 }
               }
             },
@@ -2501,18 +3153,25 @@
             range: [ 0, 22 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 22 }
+              end  : { line: 1, column: 22 }
             }
           }
         ],
         range: [ 0, 22 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 22 }
+          end  : { line: 1, column: 22 }
         }
       }
     },
     "{ arg ...args; }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function($args) {",
+        "    return $SC.Nil();",
+        "  }, '*args');",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2526,7 +3185,7 @@
                 range: [ 9, 13 ],
                 loc: {
                   start: { line: 1, column: 9 },
-                  end: { line: 1, column: 13 }
+                  end  : { line: 1, column: 13 }
                 }
               }
             },
@@ -2534,18 +3193,25 @@
             range: [ 0, 16 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 16 }
+              end  : { line: 1, column: 16 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 16 }
+          end  : { line: 1, column: 16 }
         }
       }
     },
     "{ |x = 1| x }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function($x) {",
+        "    return $x;",
+        "  }, 'x=1');",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2561,7 +3227,7 @@
                     range: [ 3, 4 ],
                     loc: {
                       start: { line: 1, column: 3 },
-                      end: { line: 1, column: 4 }
+                      end  : { line: 1, column: 4 }
                     }
                   },
                   init: {
@@ -2571,13 +3237,13 @@
                     range: [ 7, 8 ],
                     loc: {
                       start: { line: 1, column: 7 },
-                      end: { line: 1, column: 8 }
+                      end  : { line: 1, column: 8 }
                     }
                   },
                   range: [ 3, 8 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end: { line: 1, column: 8 }
+                    end  : { line: 1, column: 8 }
                   }
                 }
               ]
@@ -2589,25 +3255,34 @@
                 range: [ 10, 11 ],
                 loc: {
                   start: { line: 1, column: 10 },
-                  end: { line: 1, column: 11 }
+                  end  : { line: 1, column: 11 }
                 }
               }
             ],
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 13 }
+              end  : { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 13 }
+          end  : { line: 1, column: 13 }
         }
       }
     },
     "{ a; b; c }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function() {",
+        "    $this.a();",
+        "    $this.b();",
+        "    return $this.c();",
+        "  });",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2620,7 +3295,7 @@
                 range: [ 2, 3 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end: { line: 1, column: 3 }
+                  end  : { line: 1, column: 3 }
                 }
               },
               {
@@ -2629,7 +3304,7 @@
                 range: [ 5, 6 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
+                  end  : { line: 1, column: 6 }
                 }
               },
               {
@@ -2638,25 +3313,34 @@
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end: { line: 1, column: 9 }
+                  end  : { line: 1, column: 9 }
                 }
               }
             ],
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 11 }
+              end  : { line: 1, column: 11 }
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 11 }
+          end  : { line: 1, column: 11 }
         }
       }
     },
     "{|x=1| var a = x * x; a * a; }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function($x) {",
+        "    var $a = $SC.Nil();",
+        "    $a = $x ['*'] ($x);",
+        "    return $a ['*'] ($a);",
+        "  }, 'x=1');",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2672,7 +3356,7 @@
                     range: [ 2, 3 ],
                     loc: {
                       start: { line: 1, column: 2 },
-                      end: { line: 1, column: 3 }
+                      end  : { line: 1, column: 3 }
                     }
                   },
                   init: {
@@ -2682,13 +3366,13 @@
                     range: [ 4, 5 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end: { line: 1, column: 5 }
+                      end  : { line: 1, column: 5 }
                     }
                   },
                   range: [ 2, 5 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end: { line: 1, column: 5 }
+                    end  : { line: 1, column: 5 }
                   }
                 }
               ]
@@ -2706,7 +3390,7 @@
                       range: [ 11, 12 ],
                       loc: {
                         start: { line: 1, column: 11 },
-                        end: { line: 1, column: 12 }
+                        end  : { line: 1, column: 12 }
                       }
                     },
                     init: {
@@ -2718,7 +3402,7 @@
                         range: [ 15, 16 ],
                         loc: {
                           start: { line: 1, column: 15 },
-                          end: { line: 1, column: 16 }
+                          end  : { line: 1, column: 16 }
                         }
                       },
                       right: {
@@ -2727,26 +3411,26 @@
                         range: [ 19, 20 ],
                         loc: {
                           start: { line: 1, column: 19 },
-                          end: { line: 1, column: 20 }
+                          end  : { line: 1, column: 20 }
                         }
                       },
                       range: [ 15, 20 ],
                       loc: {
                         start: { line: 1, column: 15 },
-                        end: { line: 1, column: 20 }
+                        end  : { line: 1, column: 20 }
                       }
                     },
                     range: [ 11, 20 ],
                     loc: {
                       start: { line: 1, column: 11 },
-                      end: { line: 1, column: 20 }
+                      end  : { line: 1, column: 20 }
                     }
                   }
                 ],
                 range: [ 7, 20 ],
                 loc: {
                   start: { line: 1, column: 7 },
-                  end: { line: 1, column: 20 }
+                  end  : { line: 1, column: 20 }
                 }
               },
               {
@@ -2758,7 +3442,7 @@
                   range: [ 22, 23 ],
                   loc: {
                     start: { line: 1, column: 22 },
-                    end: { line: 1, column: 23 }
+                    end  : { line: 1, column: 23 }
                   }
                 },
                 right: {
@@ -2767,31 +3451,38 @@
                   range: [ 26, 27 ],
                   loc: {
                     start: { line: 1, column: 26 },
-                    end: { line: 1, column: 27 }
+                    end  : { line: 1, column: 27 }
                   }
                 },
                 range: [ 22, 27 ],
                 loc: {
                   start: { line: 1, column: 22 },
-                  end: { line: 1, column: 27 }
+                  end  : { line: 1, column: 27 }
                 }
               }
             ],
             range: [ 0, 30 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 30 }
+              end  : { line: 1, column: 30 }
             }
           }
         ],
         range: [ 0, 30 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 30 }
+          end  : { line: 1, column: 30 }
         }
       }
     },
     "a = #{}": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a_($SC.Function(function() {",
+        "    return $SC.Nil();",
+        "  }, '', true));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2804,7 +3495,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
@@ -2814,24 +3505,30 @@
               range: [ 5, 7 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end: { line: 1, column: 7 }
+                end  : { line: 1, column: 7 }
               }
             },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 7 }
+              end  : { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 7 }
+          end  : { line: 1, column: 7 }
         }
       }
     },
     "var level=0, slope=1, curve=1;": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var $level = $SC.Nil(), $slope = $SC.Nil(), $curve = $SC.Nil();",
+        "  return $level = $SC.Integer(0), $slope = $SC.Integer(1), $curve = $SC.Integer(1);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2847,7 +3544,7 @@
                   range: [ 4, 9 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end: { line: 1, column: 9 }
+                    end  : { line: 1, column: 9 }
                   }
                 },
                 init: {
@@ -2857,13 +3554,13 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end: { line: 1, column: 11 }
+                    end  : { line: 1, column: 11 }
                   }
                 },
                 range: [ 4, 11 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end: { line: 1, column: 11 }
+                  end  : { line: 1, column: 11 }
                 }
               },
               {
@@ -2874,7 +3571,7 @@
                   range: [ 13, 18 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end: { line: 1, column: 18 }
+                    end  : { line: 1, column: 18 }
                   }
                 },
                 init: {
@@ -2884,13 +3581,13 @@
                   range: [ 19, 20 ],
                   loc: {
                     start: { line: 1, column: 19 },
-                    end: { line: 1, column: 20 }
+                    end  : { line: 1, column: 20 }
                   }
                 },
                 range: [ 13, 20 ],
                 loc: {
                   start: { line: 1, column: 13 },
-                  end: { line: 1, column: 20 }
+                  end  : { line: 1, column: 20 }
                 }
               },
               {
@@ -2901,7 +3598,7 @@
                   range: [ 22, 27 ],
                   loc: {
                     start: { line: 1, column: 22 },
-                    end: { line: 1, column: 27 }
+                    end  : { line: 1, column: 27 }
                   }
                 },
                 init: {
@@ -2911,31 +3608,214 @@
                   range: [ 28, 29 ],
                   loc: {
                     start: { line: 1, column: 28 },
-                    end: { line: 1, column: 29 }
+                    end  : { line: 1, column: 29 }
                   }
                 },
                 range: [ 22, 29 ],
                 loc: {
                   start: { line: 1, column: 22 },
-                  end: { line: 1, column: 29 }
+                  end  : { line: 1, column: 29 }
                 }
               }
             ],
             range: [ 0, 29 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 29 }
+              end  : { line: 1, column: 29 }
             }
           }
         ],
         range: [ 0, 30 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 30 }
+          end  : { line: 1, column: 30 }
+        }
+      }
+    },
+    "var a, b; a=nil;": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var $a = $SC.Nil(), $b = $SC.Nil();",
+        "  return $a = $SC.Nil();",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.VariableDeclaration,
+            kind: "var",
+            declarations: [
+              {
+                type: Syntax.VariableDeclarator,
+                id: {
+                  type: Syntax.Identifier,
+                  name: "a",
+                  range: [ 4, 5 ],
+                  loc: {
+                    start: { line: 1, column: 4 },
+                    end  : { line: 1, column: 5 }
+                  }
+                },
+                range: [ 4, 5 ],
+                loc: {
+                  start: { line: 1, column: 4 },
+                  end  : { line: 1, column: 5 }
+                }
+              },
+              {
+                type: Syntax.VariableDeclarator,
+                id: {
+                  type: Syntax.Identifier,
+                  name: "b",
+                  range: [ 7, 8 ],
+                  loc: {
+                    start: { line: 1, column: 7 },
+                    end  : { line: 1, column: 8 }
+                  }
+                },
+                range: [ 7, 8 ],
+                loc: {
+                  start: { line: 1, column: 7 },
+                  end  : { line: 1, column: 8 }
+                }
+              },
+            ],
+            range: [ 0, 8 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 8 }
+            }
+          },
+          {
+            type: Syntax.AssignmentExpression,
+            operator: "=",
+            left: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 10, 11 ],
+              loc: {
+                start: { line: 1, column: 10 },
+                end  : { line: 1, column: 11 }
+              }
+            },
+            right: {
+              type: Syntax.Literal,
+              value: "null",
+              valueType: Token.NilLiteral,
+              range: [ 12, 15 ],
+              loc: {
+                start: { line: 1, column: 12 },
+                end  : { line: 1, column: 15 }
+              }
+            },
+            range: [ 10, 15 ],
+            loc: {
+              start: { line: 1, column: 10 },
+              end  : { line: 1, column: 15 }
+            }
+          },
+        ],
+        range: [ 0, 16 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 16 }
+        }
+      },
+    },
+    "var a; #a = [];": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var $a = $SC.Nil(), _ref;",
+        "  return (_ref = $SC.Array([]), $a = _ref.at($SC.Integer(0)), _ref);",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.VariableDeclaration,
+            kind: "var",
+            declarations: [
+              {
+                type: Syntax.VariableDeclarator,
+                id: {
+                  type: Syntax.Identifier,
+                  name: "a",
+                  range: [ 4, 5 ],
+                  loc: {
+                    start: { line: 1, column: 4 },
+                    end  : { line: 1, column: 5 }
+                  }
+                },
+                range: [ 4, 5 ],
+                loc: {
+                  start: { line: 1, column: 4 },
+                  end  : { line: 1, column: 5 }
+                }
+              },
+            ],
+            range: [ 0, 5 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 5 }
+            }
+          },
+          {
+            type: Syntax.AssignmentExpression,
+            operator: "=",
+            left: [
+              {
+                type: Syntax.Identifier,
+                name: "a",
+                range: [ 8, 9 ],
+                loc: {
+                  start: { line: 1, column: 8 },
+                  end  : { line: 1, column: 9 }
+                }
+              },
+            ],
+            right: {
+              type: Syntax.ListExpression,
+              elements: [],
+              range: [ 12, 14 ],
+              loc: {
+                start: { line: 1, column: 12 },
+                end  : { line: 1, column: 14 }
+              }
+            },
+            range: [ 7, 14 ],
+            loc: {
+              start: { line: 1, column: 7 },
+              end  : { line: 1, column: 14 }
+            }
+          },
+        ],
+        range: [ 0, 15 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 15 }
         }
       }
     },
     "{ |x, y| var a; a = x + y; x.wait; a }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.SegFunction(function() {",
+        "    var $x = $SC.Nil(), $y = $SC.Nil(), $a = $SC.Nil();", // $x, $y, $a = $SC.Nil()
+        "    return [",
+        "      function(_arg0, _arg1) {",
+        "        $x = _arg0; $y = _arg1;",
+        "        $a = $x ['+'] ($y);",
+        "        return $x.wait();",
+        "      },",
+        "      function() {",
+        "        return $a;",
+        "      }",
+        "    ];",
+        "  }, 'x; y');",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -2951,13 +3831,13 @@
                     range: [ 3, 4 ],
                     loc: {
                       start: { line: 1, column: 3 },
-                      end: { line: 1, column: 4 }
+                      end  : { line: 1, column: 4 }
                     }
                   },
                   range: [ 3, 4 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end: { line: 1, column: 4 }
+                    end  : { line: 1, column: 4 }
                   }
                 },
                 {
@@ -2968,13 +3848,13 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end: { line: 1, column: 7 }
+                      end  : { line: 1, column: 7 }
                     }
                   },
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 7 }
+                    end  : { line: 1, column: 7 }
                   }
                 }
               ]
@@ -2992,20 +3872,20 @@
                       range: [ 13, 14 ],
                       loc: {
                         start: { line: 1, column: 13 },
-                        end: { line: 1, column: 14 }
+                        end  : { line: 1, column: 14 }
                       }
                     },
                     range: [ 13, 14 ],
                     loc: {
                       start: { line: 1, column: 13 },
-                      end: { line: 1, column: 14 }
+                      end  : { line: 1, column: 14 }
                     }
                   }
                 ],
                 range: [ 9, 14 ],
                 loc: {
                   start: { line: 1, column: 9 },
-                  end: { line: 1, column: 14 }
+                  end  : { line: 1, column: 14 }
                 }
               },
               {
@@ -3017,7 +3897,7 @@
                   range: [ 16, 17 ],
                   loc: {
                     start: { line: 1, column: 16 },
-                    end: { line: 1, column: 17 }
+                    end  : { line: 1, column: 17 }
                   }
                 },
                 right: {
@@ -3029,7 +3909,7 @@
                     range: [ 20, 21 ],
                     loc: {
                       start: { line: 1, column: 20 },
-                      end: { line: 1, column: 21 }
+                      end  : { line: 1, column: 21 }
                     }
                   },
                   right: {
@@ -3038,46 +3918,48 @@
                     range: [ 24, 25 ],
                     loc: {
                       start: { line: 1, column: 24 },
-                      end: { line: 1, column: 25 }
+                      end  : { line: 1, column: 25 }
                     }
                   },
                   range: [ 20, 25 ],
                   loc: {
                     start: { line: 1, column: 20 },
-                    end: { line: 1, column: 25 }
+                    end  : { line: 1, column: 25 }
                   }
                 },
                 range: [ 16, 25 ],
                 loc: {
                   start: { line: 1, column: 16 },
-                  end: { line: 1, column: 25 }
+                  end  : { line: 1, column: 25 }
                 }
               },
               {
-                type: Syntax.MemberExpression,
-                computed: false,
-                object: {
+                type: Syntax.CallExpression,
+                callee: {
                   type: Syntax.Identifier,
                   name: "x",
                   range: [ 27, 28 ],
                   loc: {
                     start: { line: 1, column: 27 },
-                    end: { line: 1, column: 28 }
+                    end  : { line: 1, column: 28 }
                   }
                 },
-                property: {
+                method: {
                   type: Syntax.Identifier,
                   name: "wait",
                   range: [ 29, 33 ],
                   loc: {
                     start: { line: 1, column: 29 },
-                    end: { line: 1, column: 33 }
+                    end  : { line: 1, column: 33 }
                   }
+                },
+                args: {
+                  list: []
                 },
                 range: [ 27, 33 ],
                 loc: {
                   start: { line: 1, column: 27 },
-                  end: { line: 1, column: 33 }
+                  end  : { line: 1, column: 33 }
                 }
               },
               {
@@ -3086,25 +3968,45 @@
                 range: [ 35, 36 ],
                 loc: {
                   start: { line: 1, column: 35 },
-                  end: { line: 1, column: 36 }
+                  end  : { line: 1, column: 36 }
                 }
               }
             ],
             range: [ 0, 38 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 38 }
+              end  : { line: 1, column: 38 }
             }
           }
         ],
         range: [ 0, 38 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 38 }
+          end  : { line: 1, column: 38 }
         }
       }
     },
     "{ if (true) { 1.wait }; 0 }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.SegFunction(function() {",
+        "    return [",
+        "      function() {",
+        "        return $SC.True().if($SC.SegFunction(function() {",
+        "          return [",
+        "            function() {",
+        "              return $SC.Integer(1).wait();",
+        "            }",
+        "          ];",
+        "        }));",
+        "      },",
+        "      function() {",
+        "        return $SC.Integer(0);",
+        "      }",
+        "    ];",
+        "  });",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -3113,56 +4015,59 @@
             body: [
               {
                 type: Syntax.CallExpression,
+                stamp: "(",
                 callee: {
+                  type: Syntax.Literal,
+                  value: "true",
+                  valueType: Token.TrueLiteral,
+                  range: [ 6, 10 ],
+                  loc: {
+                    start: { line: 1, column: 6 },
+                    end  : { line: 1, column: 10 }
+                  }
+                },
+                method: {
                   type: Syntax.Identifier,
                   name: "if",
                   range: [ 2, 4 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end: { line: 1, column: 4 }
+                    end  : { line: 1, column: 4 }
                   }
                 },
                 args: {
                   list: [
                     {
-                      type: Syntax.Literal,
-                      value: "true",
-                      valueType: Token.BooleanLiteral,
-                      range: [ 6, 10 ],
-                      loc: {
-                        start: { line: 1, column: 6 },
-                        end: { line: 1, column: 10 }
-                      }
-                    },
-                    {
                       type: Syntax.FunctionExpression,
                       body: [
                         {
-                          type: Syntax.MemberExpression,
-                          computed: false,
-                          object: {
+                          type: Syntax.CallExpression,
+                          callee: {
                             type: Syntax.Literal,
                             value: "1",
                             valueType: Token.IntegerLiteral,
                             range: [ 14, 15 ],
                             loc: {
                               start: { line: 1, column: 14 },
-                              end: { line: 1, column: 15 }
+                              end  : { line: 1, column: 15 }
                             }
                           },
-                          property: {
+                          method: {
                             type: Syntax.Identifier,
                             name: "wait",
                             range: [ 16, 20 ],
                             loc: {
                               start: { line: 1, column: 16 },
-                              end: { line: 1, column: 20 }
+                              end  : { line: 1, column: 20 }
                             }
+                          },
+                          args: {
+                            list: []
                           },
                           range: [ 14, 20 ],
                           loc: {
                             start: { line: 1, column: 14 },
-                            end: { line: 1, column: 20 }
+                            end  : { line: 1, column: 20 }
                           }
                         }
                       ],
@@ -3170,7 +4075,7 @@
                       range: [ 12, 22 ],
                       loc: {
                         start: { line: 1, column: 12 },
-                        end: { line: 1, column: 22 }
+                        end  : { line: 1, column: 22 }
                       }
                     }
                   ]
@@ -3178,7 +4083,7 @@
                 range: [ 2, 22 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end: { line: 1, column: 22 }
+                  end  : { line: 1, column: 22 }
                 }
               },
               {
@@ -3188,25 +4093,39 @@
                 range: [ 24, 25 ],
                 loc: {
                   start: { line: 1, column: 24 },
-                  end: { line: 1, column: 25 }
+                  end  : { line: 1, column: 25 }
                 }
               }
             ],
             range: [ 0, 27 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 27 }
+              end  : { line: 1, column: 27 }
             }
           }
         ],
         range: [ 0, 27 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 27 }
+          end  : { line: 1, column: 27 }
         }
       }
     },
     "{ wait(1); 0 }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.SegFunction(function() {",
+        "    return [",
+        "      function() {",
+        "        return $SC.Integer(1).wait();",
+        "      },",
+        "      function() {",
+        "        return $SC.Integer(0);",
+        "      }",
+        "    ];",
+        "  });",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -3215,33 +4134,33 @@
             body: [
               {
                 type: Syntax.CallExpression,
+                stamp: "(",
                 callee: {
+                  type: Syntax.Literal,
+                  value: "1",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 7, 8 ],
+                  loc: {
+                    start: { line: 1, column: 7 },
+                    end  : { line: 1, column: 8 }
+                  }
+                },
+                method: {
                   type: Syntax.Identifier,
                   name: "wait",
                   range: [ 2, 6 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end: { line: 1, column: 6 }
+                    end  : { line: 1, column: 6 }
                   }
                 },
                 args: {
-                  list: [
-                    {
-                      type: Syntax.Literal,
-                      value: "1",
-                      valueType: Token.IntegerLiteral,
-                      range: [ 7, 8 ],
-                      loc: {
-                        start: { line: 1, column: 7 },
-                        end: { line: 1, column: 8 }
-                      }
-                    }
-                  ]
+                  list: []
                 },
                 range: [ 2, 9 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end: { line: 1, column: 9 }
+                  end  : { line: 1, column: 9 }
                 }
               },
               {
@@ -3251,51 +4170,62 @@
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end: { line: 1, column: 12 }
+                  end  : { line: 1, column: 12 }
                 }
               }
             ],
             range: [ 0, 14 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 14 }
+              end  : { line: 1, column: 14 }
             }
           }
         ],
         range: [ 0, 14 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 14 }
+          end  : { line: 1, column: 14 }
         }
       }
     },
     "max(0, 1, 2, *a, a: 5, b: 6)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = $SC.Integer(0),",
+        "    _ref.max.apply(_ref, [",
+        "      $SC.Integer(1), $SC.Integer(2)",
+        "    ].concat($this.a().asArray()._, { a: $SC.Integer(5), b: $SC.Integer(6) })",
+        "  ));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+              range: [ 4, 5 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
               list: [
-                {
-                  type: Syntax.Literal,
-                  value: "0",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
-                  }
-                },
                 {
                   type: Syntax.Literal,
                   value: "1",
@@ -3303,7 +4233,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end: { line: 1, column: 8 }
+                    end  : { line: 1, column: 8 }
                   }
                 },
                 {
@@ -3313,7 +4243,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end: { line: 1, column: 11 }
+                    end  : { line: 1, column: 11 }
                   }
                 }
               ],
@@ -3323,7 +4253,7 @@
                 range: [ 14, 15 ],
                 loc: {
                   start: { line: 1, column: 14 },
-                  end: { line: 1, column: 15 }
+                  end  : { line: 1, column: 15 }
                 }
               },
               keywords: {
@@ -3334,7 +4264,7 @@
                   range: [ 20, 21 ],
                   loc: {
                     start: { line: 1, column: 20 },
-                    end: { line: 1, column: 21 }
+                    end  : { line: 1, column: 21 }
                   }
                 },
                 b: {
@@ -3344,7 +4274,7 @@
                   range: [ 26, 27 ],
                   loc: {
                     start: { line: 1, column: 26 },
-                    end: { line: 1, column: 27 }
+                    end  : { line: 1, column: 27 }
                   }
                 }
               }
@@ -3352,44 +4282,53 @@
             range: [ 0, 28 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 28 }
+              end  : { line: 1, column: 28 }
             }
           }
         ],
         range: [ 0, 28 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 28 }
+          end  : { line: 1, column: 28 }
         }
       }
     },
     "max(1, 2, *a)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = $SC.Integer(1), _ref.max.apply(_ref, [",
+        "    $SC.Integer(2) ",
+        "  ].concat($this.a().asArray()._)));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Literal,
+              value: "1",
+              valueType: Token.IntegerLiteral,
+              range: [ 4, 5 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
               list: [
-                {
-                  type: Syntax.Literal,
-                  value: "1",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
-                  }
-                },
                 {
                   type: Syntax.Literal,
                   value: "2",
@@ -3397,7 +4336,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end: { line: 1, column: 8 }
+                    end  : { line: 1, column: 8 }
                   }
                 }
               ],
@@ -3407,51 +4346,57 @@
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end: { line: 1, column: 12 }
+                  end  : { line: 1, column: 12 }
                 }
               }
             },
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 13 }
+              end  : { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 13 }
+          end  : { line: 1, column: 13 }
         }
       }
     },
     "max(1, 2, a: 5)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(1).max($SC.Integer(2), { a: $SC.Integer(5) });",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Literal,
+              value: "1",
+              valueType: Token.IntegerLiteral,
+              range: [ 4, 5 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
               list: [
-                {
-                  type: Syntax.Literal,
-                  value: "1",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
-                  }
-                },
                 {
                   type: Syntax.Literal,
                   value: "2",
@@ -3459,7 +4404,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end: { line: 1, column: 8 }
+                    end  : { line: 1, column: 8 }
                   }
                 }
               ],
@@ -3471,7 +4416,7 @@
                   range: [ 13, 14 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end: { line: 1, column: 14 }
+                    end  : { line: 1, column: 14 }
                   }
                 }
               }
@@ -3479,52 +4424,59 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 15 }
+              end  : { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 15 }
+          end  : { line: 1, column: 15 }
         }
       }
     },
     "max(0, *a, a: 3)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [",
+        "  ].concat($this.a().asArray()._, { a: $SC.Integer(3) })));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+              range: [ 4, 5 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
-              list: [
-                {
-                  type: Syntax.Literal,
-                  value: "0",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
-                  }
-                }
-              ],
+              list: [],
               expand: {
                 type: Syntax.Identifier,
                 name: "a",
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end: { line: 1, column: 9 }
+                  end  : { line: 1, column: 9 }
                 }
               },
               keywords: {
@@ -3535,7 +4487,7 @@
                   range: [ 14, 15 ],
                   loc: {
                     start: { line: 1, column: 14 },
-                    end: { line: 1, column: 15 }
+                    end  : { line: 1, column: 15 }
                   }
                 }
               }
@@ -3543,97 +4495,109 @@
             range: [ 0, 16 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 16 }
+              end  : { line: 1, column: 16 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 16 }
+          end  : { line: 1, column: 16 }
         }
       }
     },
     "max(0, *a)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [",
+        "  ].concat($this.a().asArray()._)));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+              range: [ 4, 5 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
-              list: [
-                {
-                  type: Syntax.Literal,
-                  value: "0",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
-                  }
-                }
-              ],
+              list: [],
               expand: {
                 type: Syntax.Identifier,
                 name: "a",
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end: { line: 1, column: 9 }
+                  end  : { line: 1, column: 9 }
                 }
               }
             },
             range: [ 0, 10 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 10 }
+              end  : { line: 1, column: 10 }
             }
           }
         ],
         range: [ 0, 10 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 10 }
+          end  : { line: 1, column: 10 }
         }
       }
     },
     "max(0, a: 1)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(0).max({ a: $SC.Integer(1) });",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+              range: [ 4, 5 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
-              list: [
-                {
-                  type: Syntax.Literal,
-                  value: "0",
-                  valueType: Token.IntegerLiteral,
-                  range: [ 4, 5 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
-                  }
-                }
-              ],
+              list: [],
               keywords: {
                 a: {
                   type: Syntax.Literal,
@@ -3642,7 +4606,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end: { line: 1, column: 11 }
+                    end  : { line: 1, column: 11 }
                   }
                 }
               }
@@ -3650,43 +4614,49 @@
             range: [ 0, 12 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 12 }
+              end  : { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 12 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 12 }
+          end  : { line: 1, column: 12 }
         }
       }
     },
     "max(*a, a: 2)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().max({ a: $SC.Integer(2) });",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 5, 6 ],
+              loc: {
+                start: { line: 1, column: 5 },
+                end  : { line: 1, column: 6 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
               list: [],
-              expand: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 5, 6 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
-                }
-              },
               keywords: {
                 a: {
                   type: Syntax.Literal,
@@ -3695,7 +4665,7 @@
                   range: [ 11, 12 ],
                   loc: {
                     start: { line: 1, column: 11 },
-                    end: { line: 1, column: 12 }
+                    end  : { line: 1, column: 12 }
                   }
                 }
               }
@@ -3703,129 +4673,116 @@
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 13 }
+              end  : { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 13 }
+          end  : { line: 1, column: 13 }
         }
       }
     },
     "max(*a)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().max();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 5, 6 ],
+              loc: {
+                start: { line: 1, column: 5 },
+                end  : { line: 1, column: 6 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
-              list: [],
-              expand: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 5, 6 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
-                }
-              }
+              list: []
             },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 7 }
+              end  : { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 7 }
-        }
-      }
-    },
-    "max()": { // TODO: throw error
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.CallExpression,
-            callee: {
-              type: Syntax.Identifier,
-              name: "max",
-              range: [ 0, 3 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
-              }
-            },
-            args: {
-              list: []
-            },
-            range: [ 0, 5 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 5 }
-            }
-          }
-        ],
-        range: [ 0, 5 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 5 }
+          end  : { line: 1, column: 7 }
         }
       }
     },
     "max(0; 1, 2; 3, 4; 5, a: 6; 7, b: 8; 9)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return ($SC.Integer(0), $SC.Integer(1)).max(",
+        "    ($SC.Integer(2), $SC.Integer(3)),",
+        "    ($SC.Integer(4), $SC.Integer(5)),",
+        "    {",
+        "      a: ($SC.Integer(6), $SC.Integer(7)),",
+        "      b: ($SC.Integer(8), $SC.Integer(9))",
+        "    }",
+        "  );",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
-            callee: {
+            stamp: "(",
+            callee: [
+              {
+                type: Syntax.Literal,
+                value: "0",
+                valueType: Token.IntegerLiteral,
+                range: [ 4, 5 ],
+                loc: {
+                  start: { line: 1, column: 4 },
+                  end  : { line: 1, column: 5 }
+                }
+              },
+              {
+                type: Syntax.Literal,
+                value: "1",
+                valueType: Token.IntegerLiteral,
+                range: [ 7, 8 ],
+                loc: {
+                  start: { line: 1, column: 7 },
+                  end  : { line: 1, column: 8 }
+                }
+              }
+            ],
+            method: {
               type: Syntax.Identifier,
               name: "max",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
               list: [
-                [
-                  {
-                    type: Syntax.Literal,
-                    value: "0",
-                    valueType: Token.IntegerLiteral,
-                    range: [ 4, 5 ],
-                    loc: {
-                      start: { line: 1, column: 4 },
-                      end: { line: 1, column: 5 }
-                    }
-                  },
-                  {
-                    type: Syntax.Literal,
-                    value: "1",
-                    valueType: Token.IntegerLiteral,
-                    range: [ 7, 8 ],
-                    loc: {
-                      start: { line: 1, column: 7 },
-                      end: { line: 1, column: 8 }
-                    }
-                  }
-                ],
                 [
                   {
                     type: Syntax.Literal,
@@ -3834,7 +4791,7 @@
                     range: [ 10, 11 ],
                     loc: {
                       start: { line: 1, column: 10 },
-                      end: { line: 1, column: 11 }
+                      end  : { line: 1, column: 11 }
                     }
                   },
                   {
@@ -3844,7 +4801,7 @@
                     range: [ 13, 14 ],
                     loc: {
                       start: { line: 1, column: 13 },
-                      end: { line: 1, column: 14 }
+                      end  : { line: 1, column: 14 }
                     }
                   }
                 ],
@@ -3856,7 +4813,7 @@
                     range: [ 16, 17 ],
                     loc: {
                       start: { line: 1, column: 16 },
-                      end: { line: 1, column: 17 }
+                      end  : { line: 1, column: 17 }
                     }
                   },
                   {
@@ -3866,7 +4823,7 @@
                     range: [ 19, 20 ],
                     loc: {
                       start: { line: 1, column: 19 },
-                      end: { line: 1, column: 20 }
+                      end  : { line: 1, column: 20 }
                     }
                   }
                 ]
@@ -3880,7 +4837,7 @@
                     range: [ 25, 26 ],
                     loc: {
                       start: { line: 1, column: 25 },
-                      end: { line: 1, column: 26 }
+                      end  : { line: 1, column: 26 }
                     }
                   },
                   {
@@ -3890,7 +4847,7 @@
                     range: [ 28, 29 ],
                     loc: {
                       start: { line: 1, column: 28 },
-                      end: { line: 1, column: 29 }
+                      end  : { line: 1, column: 29 }
                     }
                   }
                 ],
@@ -3902,7 +4859,7 @@
                     range: [ 34, 35 ],
                     loc: {
                       start: { line: 1, column: 34 },
-                      end: { line: 1, column: 35 }
+                      end  : { line: 1, column: 35 }
                     }
                   },
                   {
@@ -3912,7 +4869,7 @@
                     range: [ 37, 38 ],
                     loc: {
                       start: { line: 1, column: 37 },
-                      end: { line: 1, column: 38 }
+                      end  : { line: 1, column: 38 }
                     }
                   }
                 ]
@@ -3921,18 +4878,23 @@
             range: [ 0, 39 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 39 }
+              end  : { line: 1, column: 39 }
             }
           }
         ],
         range: [ 0, 39 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 39 }
+          end  : { line: 1, column: 39 }
         }
       }
     },
     "a = (1; 2; 3)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a_(($SC.Integer(1), $SC.Integer(2), $SC.Integer(3)));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -3945,7 +4907,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: [
@@ -3956,7 +4918,7 @@
                 range: [ 5, 6 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
+                  end  : { line: 1, column: 6 }
                 }
               },
               {
@@ -3966,7 +4928,7 @@
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end: { line: 1, column: 9 }
+                  end  : { line: 1, column: 9 }
                 }
               },
               {
@@ -3976,25 +4938,34 @@
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end: { line: 1, column: 12 }
+                  end  : { line: 1, column: 12 }
                 }
               }
             ],
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 13 }
+              end  : { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 13 }
+          end  : { line: 1, column: 13 }
         }
       }
     },
     "a = (var a = 1; a)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a_((function() {",
+        "    var $a = $SC.Nil();",
+        "    $a = $SC.Integer(1);",
+        "    return $a;",
+        "  })());",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -4007,7 +4978,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
@@ -4025,7 +4996,7 @@
                         range: [ 9, 10 ],
                         loc: {
                           start: { line: 1, column: 9 },
-                          end: { line: 1, column: 10 }
+                          end  : { line: 1, column: 10 }
                         }
                       },
                       init: {
@@ -4035,20 +5006,20 @@
                         range: [ 13, 14 ],
                         loc: {
                           start: { line: 1, column: 13 },
-                          end: { line: 1, column: 14 }
+                          end  : { line: 1, column: 14 }
                         }
                       },
                       range: [ 9, 14 ],
                       loc: {
                         start: { line: 1, column: 9 },
-                        end: { line: 1, column: 14 }
+                        end  : { line: 1, column: 14 }
                       }
                     }
                   ],
                   range: [ 5, 14 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end: { line: 1, column: 14 }
+                    end  : { line: 1, column: 14 }
                   }
                 },
                 {
@@ -4057,79 +5028,77 @@
                   range: [ 16, 17 ],
                   loc: {
                     start: { line: 1, column: 16 },
-                    end: { line: 1, column: 17 }
+                    end  : { line: 1, column: 17 }
                   }
                 }
               ],
               range: [ 4, 18 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end: { line: 1, column: 18 }
+                end  : { line: 1, column: 18 }
               }
             },
             range: [ 0, 18 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 18 }
+              end  : { line: 1, column: 18 }
             }
           }
         ],
         range: [ 0, 18 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 18 }
+          end  : { line: 1, column: 18 }
         }
       }
     },
     "a.midicps.min(220)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().midicps().min($SC.Integer(220));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.MemberExpression,
-                computed: false,
-                object: {
-                  type: Syntax.Identifier,
-                  name: "a",
-                  range: [ 0, 1 ],
-                  loc: {
-                    start: { line: 1, column: 0 },
-                    end: { line: 1, column: 1 }
-                  }
-                },
-                property: {
-                  type: Syntax.Identifier,
-                  name: "midicps",
-                  range: [ 2, 9 ],
-                  loc: {
-                    start: { line: 1, column: 2 },
-                    end: { line: 1, column: 9 }
-                  }
-                },
-                range: [ 0, 9 ],
+              type: Syntax.CallExpression,
+              callee: {
+                type: Syntax.Identifier,
+                name: "a",
+                range: [ 0, 1 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end: { line: 1, column: 9 }
+                  end  : { line: 1, column: 1 }
                 }
               },
-              property: {
+              method: {
                 type: Syntax.Identifier,
-                name: "min",
-                range: [ 10, 13 ],
+                name: "midicps",
+                range: [ 2, 9 ],
                 loc: {
-                  start: { line: 1, column: 10 },
-                  end: { line: 1, column: 13 }
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 9 }
                 }
               },
-              range: [ 0, 13 ],
+              args: {
+                list: []
+              },
+              range: [ 0, 9 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 13 }
+                end  : { line: 1, column: 9 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "min",
+              range: [ 10, 13 ],
+              loc: {
+                start: { line: 1, column: 10 },
+                end  : { line: 1, column: 13 }
               }
             },
             args: {
@@ -4141,7 +5110,7 @@
                   range: [ 14, 17 ],
                   loc: {
                     start: { line: 1, column: 14 },
-                    end: { line: 1, column: 17 }
+                    end  : { line: 1, column: 17 }
                   }
                 }
               ]
@@ -4149,48 +5118,45 @@
             range: [ 0, 18 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 18 }
+              end  : { line: 1, column: 18 }
             }
           }
         ],
         range: [ 0, 18 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 18 }
+          end  : { line: 1, column: 18 }
         }
       }
     },
     "Point(3, 4)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Class('Point').new($SC.Integer(3), $SC.Integer(4));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "Point",
-                range: [ 0, 5 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 5 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "new",
-                range: [ 5, 5 ],
-                loc: {
-                  start: { line: 1, column: 5 },
-                  end: { line: 1, column: 5 }
-                }
-              },
+              type: Syntax.Identifier,
+              name: "Point",
               range: [ 0, 5 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 5 }
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "new",
+              range: [ 5, 5 ],
+              loc: {
+                start: { line: 1, column: 5 },
+                end  : { line: 1, column: 5 }
               }
             },
             args: {
@@ -4202,7 +5168,7 @@
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 7 }
+                    end  : { line: 1, column: 7 }
                   }
                 },
                 {
@@ -4212,7 +5178,7 @@
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end: { line: 1, column: 10 }
+                    end  : { line: 1, column: 10 }
                   }
                 }
               ]
@@ -4220,48 +5186,44 @@
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 11 }
+              end  : { line: 1, column: 11 }
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 11 }
+          end  : { line: 1, column: 11 }
         }
       }
     },
     "Point.new(3, 4)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Class('Point').new($SC.Integer(3), $SC.Integer(4));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "Point",
-                range: [ 0, 5 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 5 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "new",
-                range: [ 6, 9 ],
-                loc: {
-                  start: { line: 1, column: 6 },
-                  end: { line: 1, column: 9 }
-                }
-              },
-              range: [ 0, 9 ],
+              type: Syntax.Identifier,
+              name: "Point",
+              range: [ 0, 5 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 9 }
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "new",
+              range: [ 6, 9 ],
+              loc: {
+                start: { line: 1, column: 6 },
+                end  : { line: 1, column: 9 }
               }
             },
             args: {
@@ -4273,7 +5235,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end: { line: 1, column: 11 }
+                    end  : { line: 1, column: 11 }
                   }
                 },
                 {
@@ -4283,7 +5245,7 @@
                   range: [ 13, 14 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end: { line: 1, column: 14 }
+                    end  : { line: 1, column: 14 }
                   }
                 }
               ]
@@ -4291,87 +5253,93 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 15 }
+              end  : { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 15 }
+          end  : { line: 1, column: 15 }
         }
       }
     },
     "Point.new": {
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.MemberExpression,
-            computed: false,
-            object: {
-              type: Syntax.Identifier,
-              name: "Point",
-              range: [ 0, 5 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 5 }
-              }
-            },
-            property: {
-              type: Syntax.Identifier,
-              name: "new",
-              range: [ 6, 9 ],
-              loc: {
-                start: { line: 1, column: 6 },
-                end: { line: 1, column: 9 }
-              }
-            },
-            range: [ 0, 9 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 9 }
-            }
-          }
-        ],
-        range: [ 0, 9 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 9 }
-        }
-      }
-    },
-    "Routine  {|i| i.postln}": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Class('Point').new();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "Routine",
-                range: [ 0, 7 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 7 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "new",
-                range: [ 7, 7 ],
-                loc: {
-                  start: { line: 1, column: 7 },
-                  end: { line: 1, column: 7 }
-                }
-              },
+              type: Syntax.Identifier,
+              name: "Point",
+              range: [ 0, 5 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 5 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "new",
+              range: [ 6, 9 ],
+              loc: {
+                start: { line: 1, column: 6 },
+                end  : { line: 1, column: 9 }
+              }
+            },
+            args: {
+              list: []
+            },
+            range: [ 0, 9 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 9 }
+            }
+          }
+        ],
+        range: [ 0, 9 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 9 }
+        }
+      }
+    },
+    "Routine  {|i| i.postln}": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Class('Routine').new($SC.Function(function($i) {",
+        "    return $i.postln();",
+        "  }, 'i'));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: "{",
+            callee: {
+              type: Syntax.Identifier,
+              name: "Routine",
               range: [ 0, 7 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 7 }
+                end  : { line: 1, column: 7 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "new",
+              range: [ 7, 7 ],
+              loc: {
+                start: { line: 1, column: 7 },
+                end  : { line: 1, column: 7 }
               }
             },
             args: {
@@ -4388,43 +5356,45 @@
                           range: [ 11, 12 ],
                           loc: {
                             start: { line: 1, column: 11 },
-                            end: { line: 1, column: 12 }
+                            end  : { line: 1, column: 12 }
                           }
                         },
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end: { line: 1, column: 12 }
+                          end  : { line: 1, column: 12 }
                         }
                       }
                     ]
                   },
                   body: [
                     {
-                      type: Syntax.MemberExpression,
-                      computed: false,
-                      object: {
+                      type: Syntax.CallExpression,
+                      callee: {
                         type: Syntax.Identifier,
                         name: "i",
                         range: [ 14, 15 ],
                         loc: {
                           start: { line: 1, column: 14 },
-                          end: { line: 1, column: 15 }
+                          end  : { line: 1, column: 15 }
                         }
                       },
-                      property: {
+                      method: {
                         type: Syntax.Identifier,
                         name: "postln",
                         range: [ 16, 22 ],
                         loc: {
                           start: { line: 1, column: 16 },
-                          end: { line: 1, column: 22 }
+                          end  : { line: 1, column: 22 }
                         }
+                      },
+                      args: {
+                        list: []
                       },
                       range: [ 14, 22 ],
                       loc: {
                         start: { line: 1, column: 14 },
-                        end: { line: 1, column: 22 }
+                        end  : { line: 1, column: 22 }
                       }
                     }
                   ],
@@ -4432,7 +5402,7 @@
                   range: [ 9, 23 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end: { line: 1, column: 23 }
+                    end  : { line: 1, column: 23 }
                   }
                 }
               ]
@@ -4440,48 +5410,47 @@
             range: [ 0, 23 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 23 }
+              end  : { line: 1, column: 23 }
             }
           }
         ],
         range: [ 0, 23 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 23 }
+          end  : { line: 1, column: 23 }
         }
       }
     },
     "Set[3, 4, 5]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Class('Set').newFrom($SC.Array([",
+        "    $SC.Integer(3), $SC.Integer(4), $SC.Integer(5)",
+        "  ]));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "[",
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "Set",
-                range: [ 0, 3 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 3 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "newFrom",
-                range: [ 3, 3 ],
-                loc: {
-                  start: { line: 1, column: 3 },
-                  end: { line: 1, column: 3 }
-                }
-              },
+              type: Syntax.Identifier,
+              name: "Set",
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
+                end  : { line: 1, column: 3 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "newFrom",
+              range: [ 3, 3 ],
+              loc: {
+                start: { line: 1, column: 3 },
+                end  : { line: 1, column: 3 }
               }
             },
             args: {
@@ -4496,7 +5465,7 @@
                       range: [ 4, 5 ],
                       loc: {
                         start: { line: 1, column: 4 },
-                        end: { line: 1, column: 5 }
+                        end  : { line: 1, column: 5 }
                       }
                     },
                     {
@@ -4506,7 +5475,7 @@
                       range: [ 7, 8 ],
                       loc: {
                         start: { line: 1, column: 7 },
-                        end: { line: 1, column: 8 }
+                        end  : { line: 1, column: 8 }
                       }
                     },
                     {
@@ -4516,14 +5485,14 @@
                       range: [ 10, 11 ],
                       loc: {
                         start: { line: 1, column: 10 },
-                        end: { line: 1, column: 11 }
+                        end  : { line: 1, column: 11 }
                       }
                     }
                   ],
                   range: [ 3, 12 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end: { line: 1, column: 12 }
+                    end  : { line: 1, column: 12 }
                   }
                 }
               ]
@@ -4531,147 +5500,268 @@
             range: [ 0, 12 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 12 }
+              end  : { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 12 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 12 }
+          end  : { line: 1, column: 12 }
         }
       }
     },
-    "Set [1, 2].value": {
+    "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Class('Array').newFrom($SC.Array([ ",
+        "    $SC.Integer(1), $SC.Integer(2)",
+        "  ])).at($SC.Integer(0));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
+              type: Syntax.CallExpression,
+              stamp: "[",
+              callee: {
                 type: Syntax.Identifier,
-                name: "Set",
-                range: [ 0, 3 ],
+                name: "Array",
+                range: [ 0, 5 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end: { line: 1, column: 3 }
+                  end  : { line: 1, column: 5 }
                 }
               },
-              property: {
+              method: {
                 type: Syntax.Identifier,
                 name: "newFrom",
-                range: [ 3, 3 ],
+                range: [ 5, 5 ],
                 loc: {
-                  start: { line: 1, column: 3 },
-                  end: { line: 1, column: 3 }
+                  start: { line: 1, column: 5 },
+                  end  : { line: 1, column: 5 }
                 }
               },
-              range: [ 0, 3 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 3 }
-              }
-            },
-            args: {
-              list: [
-                {
-                  type: Syntax.MemberExpression,
-                  computed: false,
-                  object: {
+              args: {
+                list: [
+                  {
                     type: Syntax.ListExpression,
                     elements: [
                       {
                         type: Syntax.Literal,
                         value: "1",
                         valueType: Token.IntegerLiteral,
-                        range: [ 5, 6 ],
+                        range: [ 8, 9 ],
                         loc: {
-                          start: { line: 1, column: 5 },
-                          end: { line: 1, column: 6 }
+                          start: { line: 1, column: 8 },
+                          end  : { line: 1, column: 9 }
                         }
                       },
                       {
                         type: Syntax.Literal,
                         value: "2",
                         valueType: Token.IntegerLiteral,
-                        range: [ 8, 9 ],
+                        range: [ 11, 12 ],
                         loc: {
-                          start: { line: 1, column: 8 },
-                          end: { line: 1, column: 9 }
+                          start: { line: 1, column: 11 },
+                          end  : { line: 1, column: 12 }
                         }
-                      }
+                      },
                     ],
-                    range: [ 4, 10 ],
+                    range: [ 6, 14 ],
                     loc: {
-                      start: { line: 1, column: 4 },
-                      end: { line: 1, column: 10 }
+                      start: { line: 1, column: 6 },
+                      end  : { line: 1, column: 14 }
                     }
-                  },
-                  property: {
-                    type: Syntax.Identifier,
-                    name: "value",
-                    range: [ 11, 16 ],
-                    loc: {
-                      start: { line: 1, column: 11 },
-                      end: { line: 1, column: 16 }
-                    }
-                  },
-                  range: [ 4, 16 ],
+                  }
+                ]
+              },
+              range: [ 0, 14 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 14 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "at",
+              range: [ 15, 17 ],
+              loc: {
+                start: { line: 1, column: 15 },
+                end  : { line: 1, column: 17 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "0",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 18, 19 ],
                   loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 16 }
+                    start: { line: 1, column: 18 },
+                    end  : { line: 1, column: 19 }
                   }
                 }
               ]
             },
-            range: [ 0, 16 ],
+            range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 16 }
+              end  : { line: 1, column: 20 }
             }
           }
         ],
-        range: [ 0, 16 ],
+        range: [ 0, 20 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 16 }
+          end  : { line: 1, column: 20 }
         }
       }
     },
-    "a.(0, 1)": {
+    "Array [ 1, 2 ][0]": { // (Array [ 1, 2 ])[0]
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Class('Array').newFrom($SC.Array([",
+        "    $SC.Integer(1), $SC.Integer(2)",
+        "  ])).at($SC.Integer(0));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "[",
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
+              type: Syntax.CallExpression,
+              stamp: "[",
+              callee: {
                 type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
+                name: "Array",
+                range: [ 0, 5 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end: { line: 1, column: 1 }
+                  end  : { line: 1, column: 5 }
                 }
               },
-              property: {
+              method: {
                 type: Syntax.Identifier,
-                name: "value",
-                range: [ 2, 2 ],
+                name: "newFrom",
+                range: [ 5, 5 ],
                 loc: {
-                  start: { line: 1, column: 2 },
-                  end: { line: 1, column: 2 }
+                  start: { line: 1, column: 5 },
+                  end  : { line: 1, column: 5 }
                 }
               },
-              range: [ 0, 2 ],
+              args: {
+                list: [
+                  {
+                    type: Syntax.ListExpression,
+                    elements: [
+                      {
+                        type: Syntax.Literal,
+                        value: "1",
+                        valueType: Token.IntegerLiteral,
+                        range: [ 8, 9 ],
+                        loc: {
+                          start: { line: 1, column: 8 },
+                          end  : { line: 1, column: 9 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "2",
+                        valueType: Token.IntegerLiteral,
+                        range: [ 11, 12 ],
+                        loc: {
+                          start: { line: 1, column: 11 },
+                          end  : { line: 1, column: 12 }
+                        }
+                      },
+                    ],
+                    range: [ 6, 14 ],
+                    loc: {
+                      start: { line: 1, column: 6 },
+                      end  : { line: 1, column: 14 }
+                    }
+                  }
+                ]
+              },
+              range: [ 0, 14 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 2 }
+                end  : { line: 1, column: 14 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "at",
+              range: [ 14, 14 ],
+              loc: {
+                start: { line: 1, column: 14 },
+                end  : { line: 1, column: 14 }
+              }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "0",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 15, 16 ],
+                  loc: {
+                    start: { line: 1, column: 15 },
+                    end  : { line: 1, column: 16 }
+                  }
+                }
+              ]
+            },
+            range: [ 0, 17 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 17 }
+            }
+          }
+        ],
+        range: [ 0, 17 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 17 }
+        }
+      }
+    },
+    "a.(0, 1)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().value($SC.Integer(0), $SC.Integer(1));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: ".",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "value",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
               }
             },
             args: {
@@ -4683,7 +5773,7 @@
                   range: [ 3, 4 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end: { line: 1, column: 4 }
+                    end  : { line: 1, column: 4 }
                   }
                 },
                 {
@@ -4693,7 +5783,7 @@
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 7 }
+                    end  : { line: 1, column: 7 }
                   }
                 }
               ]
@@ -4701,190 +5791,297 @@
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 8 }
+              end  : { line: 1, column: 8 }
             }
           }
         ],
         range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 8 }
+          end  : { line: 1, column: 8 }
         }
       }
     },
     "a.[0]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().value().at($SC.Integer(0));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.CallExpression,
+              stamp: ".",
+              callee: {
+                type: Syntax.Identifier,
+                name: "a",
+                range: [ 0, 1 ],
+                loc: {
+                  start: { line: 1, column: 0 },
+                  end  : { line: 1, column: 1 }
+                }
+              },
+              method: {
+                type: Syntax.Identifier,
+                name: "value",
+                range: [ 2, 2 ],
+                loc: {
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 2 }
+                }
+              },
+              args: {
+                list: []
+              },
+              range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 2 }
               }
             },
-            property: {
-              type: Syntax.Literal,
-              value: "0",
-              valueType: Token.IntegerLiteral,
-              range: [ 3, 4 ],
+            method: {
+              type: Syntax.Identifier,
+              name: "at",
+              range: [ 2, 2 ],
               loc: {
-                start: { line: 1, column: 3 },
-                end: { line: 1, column: 4 }
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
               }
+            },
+            args: {
+              list: [
+                {
+                  type: Syntax.Literal,
+                  value: "0",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 3, 4 ],
+                  loc: {
+                    start: { line: 1, column: 3 },
+                    end  : { line: 1, column: 4 }
+                  }
+                }
+              ]
             },
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 5 }
+              end  : { line: 1, column: 5 }
             }
           }
         ],
         range: [ 0, 5 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 5 }
+          end  : { line: 1, column: 5 }
         }
       }
     },
     "a.[0;1]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().value().at(($SC.Integer(0), $SC.Integer(1)));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
-              }
-            },
-            property: [
-              {
-                type: Syntax.Literal,
-                value: "0",
-                valueType: Token.IntegerLiteral,
-                range: [ 3, 4 ],
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.CallExpression,
+              stamp: ".",
+              callee: {
+                type: Syntax.Identifier,
+                name: "a",
+                range: [ 0, 1 ],
                 loc: {
-                  start: { line: 1, column: 3 },
-                  end: { line: 1, column: 4 }
+                  start: { line: 1, column: 0 },
+                  end  : { line: 1, column: 1 }
                 }
               },
-              {
-                type: Syntax.Literal,
-                value: "1",
-                valueType: Token.IntegerLiteral,
-                range: [ 5, 6 ],
+              method: {
+                type: Syntax.Identifier,
+                name: "value",
+                range: [ 2, 2 ],
                 loc: {
-                  start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 2 }
                 }
+              },
+              args: {
+                list: []
+              },
+              range: [ 0, 2 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 2 }
               }
-            ],
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "at",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            args: {
+              list: [
+                [
+                  {
+                    type: Syntax.Literal,
+                    value: "0",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 3, 4 ],
+                    loc: {
+                      start: { line: 1, column: 3 },
+                      end  : { line: 1, column: 4 }
+                    }
+                  },
+                  {
+                    type: Syntax.Literal,
+                    value: "1",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 5, 6 ],
+                    loc: {
+                      start: { line: 1, column: 5 },
+                      end  : { line: 1, column: 6 }
+                    }
+                  }
+                ]
+              ]
+            },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 7 }
+              end  : { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 7 }
+          end  : { line: 1, column: 7 }
         }
       }
     },
     "a.[..5]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().value().copySeries(null, null, $SC.Integer(5));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.MemberExpression,
-            computed: true,
-            object: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 0, 1 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
-              }
-            },
-            property: {
-              type: Syntax.ListIndexer,
-              first: null,
-              second: null,
-              last: {
-                type: Syntax.Literal,
-                value: "5",
-                valueType: Token.IntegerLiteral,
-                range: [ 5, 6 ],
+            type: Syntax.CallExpression,
+            stamp: "[",
+            callee: {
+              type: Syntax.CallExpression,
+              stamp: ".",
+              callee: {
+                type: Syntax.Identifier,
+                name: "a",
+                range: [ 0, 1 ],
                 loc: {
-                  start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
+                  start: { line: 1, column: 0 },
+                  end  : { line: 1, column: 1 }
                 }
               },
-              range: [ 3, 6 ],
+              method: {
+                type: Syntax.Identifier,
+                name: "value",
+                range: [ 2, 2 ],
+                loc: {
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 2 }
+                }
+              },
+              args: {
+                list: []
+              },
+              range: [ 0, 2 ],
               loc: {
-                start: { line: 1, column: 3 },
-                end: { line: 1, column: 6 }
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 2 }
               }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "copySeries",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            args: {
+              list: [
+                null,
+                null,
+                {
+                  type: Syntax.Literal,
+                  value: "5",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
+                  }
+                }
+              ]
             },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 7 }
+              end  : { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 7 }
+          end  : { line: 1, column: 7 }
         }
       }
     },
     "a.value(*[])": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var _ref;",
+        "  return (_ref = $this.a(), _ref.value.apply(_ref, [",
+        "  ].concat($SC.Array([]).asArray()._)));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "value",
-                range: [ 2, 7 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end: { line: 1, column: 7 }
-                }
-              },
-              range: [ 0, 7 ],
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 7 }
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "value",
+              range: [ 2, 7 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 7 }
               }
             },
             args: {
@@ -4895,69 +6092,79 @@
                 range: [ 9, 11 ],
                 loc: {
                   start: { line: 1, column: 9 },
-                  end: { line: 1, column: 11 }
+                  end  : { line: 1, column: 11 }
                 }
               }
             },
             range: [ 0, 12 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 12 }
+              end  : { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 12 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 12 }
+          end  : { line: 1, column: 12 }
         }
       }
     },
     "if (x<3) {\\abc} {\\def}": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.x() ['<'] ($SC.Integer(3)).if($SC.Function(function() {",
+        "    return $SC.Symbol('abc');",
+        "  }), $SC.Function(function() {",
+        "    return $SC.Symbol('def');",
+        "  }));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
+            stamp: "(",
             callee: {
+              type: Syntax.BinaryExpression,
+              operator: "<",
+              left: {
+                type: Syntax.Identifier,
+                name: "x",
+                range: [ 4, 5 ],
+                loc: {
+                  start: { line: 1, column: 4 },
+                  end  : { line: 1, column: 5 }
+                }
+              },
+              right: {
+                type: Syntax.Literal,
+                value: "3",
+                valueType: Token.IntegerLiteral,
+                range: [ 6, 7 ],
+                loc: {
+                  start: { line: 1, column: 6 },
+                  end  : { line: 1, column: 7 }
+                }
+              },
+              range: [ 4, 7 ],
+              loc: {
+                start: { line: 1, column: 4 },
+                end  : { line: 1, column: 7 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "if",
               range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 2 }
+                end  : { line: 1, column: 2 }
               }
             },
             args: {
               list: [
-                {
-                  type: Syntax.BinaryExpression,
-                  operator: "<",
-                  left: {
-                    type: Syntax.Identifier,
-                    name: "x",
-                    range: [ 4, 5 ],
-                    loc: {
-                      start: { line: 1, column: 4 },
-                      end: { line: 1, column: 5 }
-                    }
-                  },
-                  right: {
-                    type: Syntax.Literal,
-                    value: "3",
-                    valueType: Token.IntegerLiteral,
-                    range: [ 6, 7 ],
-                    loc: {
-                      start: { line: 1, column: 6 },
-                      end: { line: 1, column: 7 }
-                    }
-                  },
-                  range: [ 4, 7 ],
-                  loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 7 }
-                  }
-                },
                 {
                   type: Syntax.FunctionExpression,
                   body: [
@@ -4968,7 +6175,7 @@
                       range: [ 10, 14 ],
                       loc: {
                         start: { line: 1, column: 10 },
-                        end: { line: 1, column: 14 }
+                        end  : { line: 1, column: 14 }
                       }
                     }
                   ],
@@ -4976,7 +6183,7 @@
                   range: [ 9, 15 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end: { line: 1, column: 15 }
+                    end  : { line: 1, column: 15 }
                   }
                 },
                 {
@@ -4989,7 +6196,7 @@
                       range: [ 17, 21 ],
                       loc: {
                         start: { line: 1, column: 17 },
-                        end: { line: 1, column: 21 }
+                        end  : { line: 1, column: 21 }
                       }
                     }
                   ],
@@ -4997,7 +6204,7 @@
                   range: [ 16, 22 ],
                   loc: {
                     start: { line: 1, column: 16 },
-                    end: { line: 1, column: 22 }
+                    end  : { line: 1, column: 22 }
                   }
                 }
               ]
@@ -5005,48 +6212,46 @@
             range: [ 0, 22 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 22 }
+              end  : { line: 1, column: 22 }
             }
           }
         ],
         range: [ 0, 22 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 22 }
+          end  : { line: 1, column: 22 }
         }
       }
     },
     "z.do  {|x| x.play }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.z().do($SC.Function(function($x) {",
+        "    return $x.play();",
+        "  }, 'x'));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "z",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "do",
-                range: [ 2, 4 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end: { line: 1, column: 4 }
-                }
-              },
-              range: [ 0, 4 ],
+              type: Syntax.Identifier,
+              name: "z",
+              range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 4 }
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "do",
+              range: [ 2, 4 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 4 }
               }
             },
             args: {
@@ -5063,43 +6268,45 @@
                           range: [ 8, 9 ],
                           loc: {
                             start: { line: 1, column: 8 },
-                            end: { line: 1, column: 9 }
+                            end  : { line: 1, column: 9 }
                           }
                         },
                         range: [ 8, 9 ],
                         loc: {
                           start: { line: 1, column: 8 },
-                          end: { line: 1, column: 9 }
+                          end  : { line: 1, column: 9 }
                         }
                       }
                     ]
                   },
                   body: [
                     {
-                      type: Syntax.MemberExpression,
-                      computed: false,
-                      object: {
+                      type: Syntax.CallExpression,
+                      callee: {
                         type: Syntax.Identifier,
                         name: "x",
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end: { line: 1, column: 12 }
+                          end  : { line: 1, column: 12 }
                         }
                       },
-                      property: {
+                      method: {
                         type: Syntax.Identifier,
                         name: "play",
                         range: [ 13, 17 ],
                         loc: {
                           start: { line: 1, column: 13 },
-                          end: { line: 1, column: 17 }
+                          end  : { line: 1, column: 17 }
                         }
+                      },
+                      args: {
+                        list: []
                       },
                       range: [ 11, 17 ],
                       loc: {
                         start: { line: 1, column: 11 },
-                        end: { line: 1, column: 17 }
+                        end  : { line: 1, column: 17 }
                       }
                     }
                   ],
@@ -5107,7 +6314,7 @@
                   range: [ 6, 19 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 19 }
+                    end  : { line: 1, column: 19 }
                   }
                 }
               ]
@@ -5115,48 +6322,46 @@
             range: [ 0, 19 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 19 }
+              end  : { line: 1, column: 19 }
             }
           }
         ],
         range: [ 0, 19 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 19 }
+          end  : { line: 1, column: 19 }
         }
       }
     },
     "z.do #{|x| x.play }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.z().do($SC.Function(function($x) {",
+        "    return $x.play();",
+        "  }, 'x', true));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "z",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "do",
-                range: [ 2, 4 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end: { line: 1, column: 4 }
-                }
-              },
-              range: [ 0, 4 ],
+              type: Syntax.Identifier,
+              name: "z",
+              range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 4 }
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "do",
+              range: [ 2, 4 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 4 }
               }
             },
             args: {
@@ -5173,43 +6378,45 @@
                           range: [ 8, 9 ],
                           loc: {
                             start: { line: 1, column: 8 },
-                            end: { line: 1, column: 9 }
+                            end  : { line: 1, column: 9 }
                           }
                         },
                         range: [ 8, 9 ],
                         loc: {
                           start: { line: 1, column: 8 },
-                          end: { line: 1, column: 9 }
+                          end  : { line: 1, column: 9 }
                         }
                       }
                     ]
                   },
                   body: [
                     {
-                      type: Syntax.MemberExpression,
-                      computed: false,
-                      object: {
+                      type: Syntax.CallExpression,
+                      callee: {
                         type: Syntax.Identifier,
                         name: "x",
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end: { line: 1, column: 12 }
+                          end  : { line: 1, column: 12 }
                         }
                       },
-                      property: {
+                      method: {
                         type: Syntax.Identifier,
                         name: "play",
                         range: [ 13, 17 ],
                         loc: {
                           start: { line: 1, column: 13 },
-                          end: { line: 1, column: 17 }
+                          end  : { line: 1, column: 17 }
                         }
+                      },
+                      args: {
+                        list: []
                       },
                       range: [ 11, 17 ],
                       loc: {
                         start: { line: 1, column: 11 },
-                        end: { line: 1, column: 17 }
+                        end  : { line: 1, column: 17 }
                       }
                     }
                   ],
@@ -5218,7 +6425,7 @@
                   range: [ 6, 19 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 19 }
+                    end  : { line: 1, column: 19 }
                   }
                 }
               ]
@@ -5226,118 +6433,138 @@
             range: [ 0, 19 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 19 }
+              end  : { line: 1, column: 19 }
             }
           }
         ],
         range: [ 0, 19 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 19 }
+          end  : { line: 1, column: 19 }
         }
       }
     },
     "loop { 'x'.postln; 1.wait }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.SegFunction(function() {",
+        "    return [",
+        "      function() {",
+        "        $SC.Symbol('x').postln();",
+        "        return $SC.Integer(1).wait();",
+        "      }",
+        "    ];",
+        "  }).loop();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
+              type: Syntax.FunctionExpression,
+              body: [
+                {
+                  type: Syntax.CallExpression,
+                  callee: {
+                    type: Syntax.Literal,
+                    value: "x",
+                    valueType: Token.SymbolLiteral,
+                    range: [ 7, 10 ],
+                    loc: {
+                      start: { line: 1, column: 7 },
+                      end  : { line: 1, column: 10 }
+                    }
+                  },
+                  method: {
+                    type: Syntax.Identifier,
+                    name: "postln",
+                    range: [ 11, 17 ],
+                    loc: {
+                      start: { line: 1, column: 11 },
+                      end  : { line: 1, column: 17 }
+                    }
+                  },
+                  args: {
+                    list: []
+                  },
+                  range: [ 7, 17 ],
+                  loc: {
+                    start: { line: 1, column: 7 },
+                    end  : { line: 1, column: 17 }
+                  }
+                },
+                {
+                  type: Syntax.CallExpression,
+                  callee: {
+                    type: Syntax.Literal,
+                    value: "1",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 19, 20 ],
+                    loc: {
+                      start: { line: 1, column: 19 },
+                      end  : { line: 1, column: 20 }
+                    }
+                  },
+                  method: {
+                    type: Syntax.Identifier,
+                    name: "wait",
+                    range: [ 21, 25 ],
+                    loc: {
+                      start: { line: 1, column: 21 },
+                      end  : { line: 1, column: 25 }
+                    }
+                  },
+                  args: {
+                    list: []
+                  },
+                  range: [ 19, 25 ],
+                  loc: {
+                    start: { line: 1, column: 19 },
+                    end  : { line: 1, column: 25 }
+                  }
+                }
+              ],
+              blocklist: true,
+              range: [ 5, 27 ],
+              loc: {
+                start: { line: 1, column: 5 },
+                end  : { line: 1, column: 27 }
+              }
+            },
+            method: {
               type: Syntax.Identifier,
               name: "loop",
               range: [ 0, 4 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 4 }
+                end  : { line: 1, column: 4 }
               }
             },
             args: {
-              list: [
-                {
-                  type: Syntax.FunctionExpression,
-                  body: [
-                    {
-                      type: Syntax.MemberExpression,
-                      computed: false,
-                      object: {
-                        type: Syntax.Literal,
-                        value: q("x"),
-                        valueType: Token.SymbolLiteral,
-                        range: [ 7, 10 ],
-                        loc: {
-                          start: { line: 1, column: 7 },
-                          end: { line: 1, column: 10 }
-                        }
-                      },
-                      property: {
-                        type: Syntax.Identifier,
-                        name: "postln",
-                        range: [ 11, 17 ],
-                        loc: {
-                          start: { line: 1, column: 11 },
-                          end: { line: 1, column: 17 }
-                        }
-                      },
-                      range: [ 7, 17 ],
-                      loc: {
-                        start: { line: 1, column: 7 },
-                        end: { line: 1, column: 17 }
-                      }
-                    },
-                    {
-                      type: Syntax.MemberExpression,
-                      computed: false,
-                      object: {
-                        type: Syntax.Literal,
-                        value: "1",
-                        valueType: Token.IntegerLiteral,
-                        range: [ 19, 20 ],
-                        loc: {
-                          start: { line: 1, column: 19 },
-                          end: { line: 1, column: 20 }
-                        }
-                      },
-                      property: {
-                        type: Syntax.Identifier,
-                        name: "wait",
-                        range: [ 21, 25 ],
-                        loc: {
-                          start: { line: 1, column: 21 },
-                          end: { line: 1, column: 25 }
-                        }
-                      },
-                      range: [ 19, 25 ],
-                      loc: {
-                        start: { line: 1, column: 19 },
-                        end: { line: 1, column: 25 }
-                      }
-                    }
-                  ],
-                  blocklist: true,
-                  range: [ 5, 27 ],
-                  loc: {
-                    start: { line: 1, column: 5 },
-                    end: { line: 1, column: 27 }
-                  }
-                }
-              ]
+              list: []
             },
             range: [ 0, 27 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 27 }
+              end  : { line: 1, column: 27 }
             }
           }
         ],
         range: [ 0, 27 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 27 }
+          end  : { line: 1, column: 27 }
         }
       }
     },
     "~a = 0": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Global.a = $SC.Integer(0);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5352,13 +6579,13 @@
                 range: [ 1, 2 ],
                 loc: {
                   start: { line: 1, column: 1 },
-                  end: { line: 1, column: 2 }
+                  end  : { line: 1, column: 2 }
                 }
               },
               range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 2 }
+                end  : { line: 1, column: 2 }
               }
             },
             right: {
@@ -5368,24 +6595,29 @@
               range: [ 5, 6 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end: { line: 1, column: 6 }
+                end  : { line: 1, column: 6 }
               }
             },
             range: [ 0, 6 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 6 }
+              end  : { line: 1, column: 6 }
             }
           }
         ],
         range: [ 0, 6 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 6 }
+          end  : { line: 1, column: 6 }
         }
       }
     },
     "()": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Event();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5395,18 +6627,23 @@
             range: [ 0, 2 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 2 }
+              end  : { line: 1, column: 2 }
             }
           }
         ],
         range: [ 0, 2 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 2 }
+          end  : { line: 1, column: 2 }
         }
       }
     },
     "( \\answer : 42 )": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Event([ $SC.Symbol('answer'), $SC.Integer(42) ]);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5420,7 +6657,7 @@
                 range: [ 2, 9 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end: { line: 1, column: 9 }
+                  end  : { line: 1, column: 9 }
                 }
               },
               {
@@ -5430,25 +6667,34 @@
                 range: [ 12, 14 ],
                 loc: {
                   start: { line: 1, column: 12 },
-                  end: { line: 1, column: 14 }
+                  end  : { line: 1, column: 14 }
                 }
               }
             ],
             range: [ 0, 16 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 16 }
+              end  : { line: 1, column: 16 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 16 }
+          end  : { line: 1, column: 16 }
         }
       }
     },
-    "x = ( a: 1, b: 2, c: 3 )": {
+    "x = ( a: 1, b: 2, 3: 4 )": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.x_($SC.Event([",
+        "    $SC.Symbol('a'), $SC.Integer(1),",
+        "    $SC.Symbol('b'), $SC.Integer(2),",
+        "    $SC.Integer(3), $SC.Integer(4)",
+        "  ]));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5461,19 +6707,20 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
               type: Syntax.ObjectExpression,
               elements: [
                 {
-                  type: Syntax.Label,
-                  name: "a",
+                  type: Syntax.Literal,
+                  value: "a",
+                  valueType: Token.SymbolLiteral,
                   range: [ 6, 8 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 8 }
+                    end  : { line: 1, column: 8 }
                   }
                 },
                 {
@@ -5483,16 +6730,17 @@
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end: { line: 1, column: 10 }
+                    end  : { line: 1, column: 10 }
                   }
                 },
                 {
-                  type: Syntax.Label,
-                  name: "b",
+                  type: Syntax.Literal,
+                  value: "b",
+                  valueType: Token.SymbolLiteral,
                   range: [ 12, 14 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end: { line: 1, column: 14 }
+                    end  : { line: 1, column: 14 }
                   }
                 },
                 {
@@ -5502,50 +6750,60 @@
                   range: [ 15, 16 ],
                   loc: {
                     start: { line: 1, column: 15 },
-                    end: { line: 1, column: 16 }
-                  }
-                },
-                {
-                  type: Syntax.Label,
-                  name: "c",
-                  range: [ 18, 20 ],
-                  loc: {
-                    start: { line: 1, column: 18 },
-                    end: { line: 1, column: 20 }
+                    end  : { line: 1, column: 16 }
                   }
                 },
                 {
                   type: Syntax.Literal,
                   value: "3",
                   valueType: Token.IntegerLiteral,
+                  range: [ 18, 19 ],
+                  loc: {
+                    start: { line: 1, column: 18 },
+                    end  : { line: 1, column: 19 }
+                  }
+                },
+                {
+                  type: Syntax.Literal,
+                  value: "4",
+                  valueType: Token.IntegerLiteral,
                   range: [ 21, 22 ],
                   loc: {
                     start: { line: 1, column: 21 },
-                    end: { line: 1, column: 22 }
+                    end  : { line: 1, column: 22 }
                   }
                 }
               ],
               range: [ 4, 24 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end: { line: 1, column: 24 }
+                end  : { line: 1, column: 24 }
               }
             },
             range: [ 0, 24 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 24 }
+              end  : { line: 1, column: 24 }
             }
           }
         ],
         range: [ 0, 24 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 24 }
+          end  : { line: 1, column: 24 }
         }
       }
     },
     "x = ( a : 1, b : 2, c : 3 )": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.x_($SC.Event([",
+        "    $this.a(), $SC.Integer(1),",
+        "    $this.b(), $SC.Integer(2),",
+        "    $this.c(), $SC.Integer(3)",
+        "  ]));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5558,7 +6816,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
@@ -5570,7 +6828,7 @@
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end: { line: 1, column: 7 }
+                    end  : { line: 1, column: 7 }
                   }
                 },
                 {
@@ -5580,7 +6838,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end: { line: 1, column: 11 }
+                    end  : { line: 1, column: 11 }
                   }
                 },
                 {
@@ -5589,7 +6847,7 @@
                   range: [ 13, 14 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end: { line: 1, column: 14 }
+                    end  : { line: 1, column: 14 }
                   }
                 },
                 {
@@ -5599,7 +6857,7 @@
                   range: [ 17, 18 ],
                   loc: {
                     start: { line: 1, column: 17 },
-                    end: { line: 1, column: 18 }
+                    end  : { line: 1, column: 18 }
                   }
                 },
                 {
@@ -5608,7 +6866,7 @@
                   range: [ 20, 21 ],
                   loc: {
                     start: { line: 1, column: 20 },
-                    end: { line: 1, column: 21 }
+                    end  : { line: 1, column: 21 }
                   }
                 },
                 {
@@ -5618,31 +6876,39 @@
                   range: [ 24, 25 ],
                   loc: {
                     start: { line: 1, column: 24 },
-                    end: { line: 1, column: 25 }
+                    end  : { line: 1, column: 25 }
                   }
                 }
               ],
               range: [ 4, 27 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end: { line: 1, column: 27 }
+                end  : { line: 1, column: 27 }
               }
             },
             range: [ 0, 27 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 27 }
+              end  : { line: 1, column: 27 }
             }
           }
         ],
         range: [ 0, 27 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 27 }
+          end  : { line: 1, column: 27 }
         }
       }
     },
     "x = (1 + 2: 3, 4: 5)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.x_($SC.Event([",
+        "    $SC.Integer(1) ['+'] ($SC.Integer(2)), $SC.Integer(3),",
+        "    $SC.Integer(4), $SC.Integer(5)",
+        "  ]));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5655,7 +6921,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
@@ -5671,7 +6937,7 @@
                     range: [ 5, 6 ],
                     loc: {
                       start: { line: 1, column: 5 },
-                      end: { line: 1, column: 6 }
+                      end  : { line: 1, column: 6 }
                     }
                   },
                   right: {
@@ -5681,13 +6947,13 @@
                     range: [ 9, 10 ],
                     loc: {
                       start: { line: 1, column: 9 },
-                      end: { line: 1, column: 10 }
+                      end  : { line: 1, column: 10 }
                     }
                   },
                   range: [ 5, 10 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end: { line: 1, column: 10 }
+                    end  : { line: 1, column: 10 }
                   }
                 },
                 {
@@ -5697,7 +6963,7 @@
                   range: [ 12, 13 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end: { line: 1, column: 13 }
+                    end  : { line: 1, column: 13 }
                   }
                 },
                 {
@@ -5707,7 +6973,7 @@
                   range: [ 15, 16 ],
                   loc: {
                     start: { line: 1, column: 15 },
-                    end: { line: 1, column: 16 }
+                    end  : { line: 1, column: 16 }
                   }
                 },
                 {
@@ -5717,31 +6983,38 @@
                   range: [ 18, 19 ],
                   loc: {
                     start: { line: 1, column: 18 },
-                    end: { line: 1, column: 19 }
+                    end  : { line: 1, column: 19 }
                   }
                 }
               ],
               range: [ 4, 20 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end: { line: 1, column: 20 }
+                end  : { line: 1, column: 20 }
               }
             },
             range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 20 }
+              end  : { line: 1, column: 20 }
             }
           }
         ],
         range: [ 0, 20 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 20 }
+          end  : { line: 1, column: 20 }
         }
       }
     },
     "f = _ + _": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.f_($SC.Function(function($_0, $_1) {",
+        "    return $_0 ['+'] ($_1);",
+        "  }));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5754,7 +7027,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 1 }
+                end  : { line: 1, column: 1 }
               }
             },
             right: {
@@ -5762,21 +7035,37 @@
               args: {
                 list: [
                   {
-                    type: Syntax.Identifier,
-                    name: "_0",
+                    type: Syntax.VariableDeclarator,
+                    id: {
+                      type: Syntax.Identifier,
+                      name: "$_0",
+                      range: [ 4, 5 ],
+                      loc: {
+                        start: { line: 1, column: 4 },
+                        end  : { line: 1, column: 5 }
+                      }
+                    },
                     range: [ 4, 5 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end: { line: 1, column: 5 }
+                      end  : { line: 1, column: 5 }
                     }
                   },
                   {
-                    type: Syntax.Identifier,
-                    name: "_1",
+                    type: Syntax.VariableDeclarator,
+                    id: {
+                      type: Syntax.Identifier,
+                      name: "$_1",
+                      range: [ 8, 9 ],
+                      loc: {
+                        start: { line: 1, column: 8 },
+                        end  : { line: 1, column: 9 }
+                      }
+                    },
                     range: [ 8, 9 ],
                     loc: {
                       start: { line: 1, column: 8 },
-                      end: { line: 1, column: 9 }
+                      end  : { line: 1, column: 9 }
                     }
                   }
                 ]
@@ -5787,26 +7076,26 @@
                   operator: "+",
                   left: {
                     type: Syntax.Identifier,
-                    name: "_0",
+                    name: "$_0",
                     range: [ 4, 5 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end: { line: 1, column: 5 }
+                      end  : { line: 1, column: 5 }
                     }
                   },
                   right: {
                     type: Syntax.Identifier,
-                    name: "_1",
+                    name: "$_1",
                     range: [ 8, 9 ],
                     loc: {
                       start: { line: 1, column: 8 },
-                      end: { line: 1, column: 9 }
+                      end  : { line: 1, column: 9 }
                     }
                   },
                   range: [ 4, 9 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end: { line: 1, column: 9 }
+                    end  : { line: 1, column: 9 }
                   }
                 }
               ],
@@ -5814,24 +7103,31 @@
               range: [ 4, 9 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end: { line: 1, column: 9 }
+                end  : { line: 1, column: 9 }
               }
             },
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 9 }
+              end  : { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 9 }
+          end  : { line: 1, column: 9 }
         }
       }
     },
-    "[_, _]": {
+    "[ _, _ ]": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function($_0, $_1) {",
+        "    return $SC.Array([ $_0, $_1 ]);",
+        "  });",
+        "});"
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5840,21 +7136,37 @@
             args: {
               list: [
                 {
-                  type: Syntax.Identifier,
-                  name: "_0",
-                  range: [ 1, 2 ],
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "$_0",
+                    range: [ 2, 3 ],
+                    loc: {
+                      start: { line: 1, column: 2 },
+                      end  : { line: 1, column: 3 }
+                    }
+                  },
+                  range: [ 2, 3 ],
                   loc: {
-                    start: { line: 1, column: 1 },
-                    end: { line: 1, column: 2 }
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 3 }
                   }
                 },
                 {
-                  type: Syntax.Identifier,
-                  name: "_1",
-                  range: [ 4, 5 ],
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "$_1",
+                    range: [ 5, 6 ],
+                    loc: {
+                      start: { line: 1, column: 5 },
+                      end  : { line: 1, column: 6 }
+                    }
+                  },
+                  range: [ 5, 6 ],
                   loc: {
-                    start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
+                    start: { line: 1, column: 5 },
+                    end  : { line: 1, column: 6 }
                   }
                 }
               ]
@@ -5865,46 +7177,52 @@
                 elements: [
                   {
                     type: Syntax.Identifier,
-                    name: "_0",
-                    range: [ 1, 2 ],
+                    name: "$_0",
+                    range: [ 2, 3 ],
                     loc: {
-                      start: { line: 1, column: 1 },
-                      end: { line: 1, column: 2 }
+                      start: { line: 1, column: 2 },
+                      end  : { line: 1, column: 3 }
                     }
                   },
                   {
                     type: Syntax.Identifier,
-                    name: "_1",
-                    range: [ 4, 5 ],
+                    name: "$_1",
+                    range: [ 5, 6 ],
                     loc: {
-                      start: { line: 1, column: 4 },
-                      end: { line: 1, column: 5 }
+                      start: { line: 1, column: 5 },
+                      end  : { line: 1, column: 6 }
                     }
                   }
                 ],
-                range: [ 0, 6 ],
+                range: [ 0, 8 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end: { line: 1, column: 6 }
+                  end  : { line: 1, column: 8 }
                 }
               }
             ],
             partial: true,
-            range: [ 0, 6 ],
+            range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 6 }
+              end  : { line: 1, column: 8 }
             }
           }
         ],
-        range: [ 0, 6 ],
+        range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 6 }
+          end  : { line: 1, column: 8 }
         }
       }
     },
     "var a; var b;": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var $a = $SC.Nil(), $b = $SC.Nil();",
+        "  return $SC.Nil();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5920,20 +7238,20 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
+                    end  : { line: 1, column: 5 }
                   }
                 },
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end: { line: 1, column: 5 }
+                  end  : { line: 1, column: 5 }
                 }
               }
             ],
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 5 }
+              end  : { line: 1, column: 5 }
             }
           },
           {
@@ -5948,31 +7266,37 @@
                   range: [ 11, 12 ],
                   loc: {
                     start: { line: 1, column: 11 },
-                    end: { line: 1, column: 12 }
+                    end  : { line: 1, column: 12 }
                   }
                 },
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end: { line: 1, column: 12 }
+                  end  : { line: 1, column: 12 }
                 }
               }
             ],
             range: [ 7, 12 ],
             loc: {
               start: { line: 1, column: 7 },
-              end: { line: 1, column: 12 }
+              end  : { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 13 }
+          end  : { line: 1, column: 13 }
         }
       }
     },
     "var a; a = 10;": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var $a = $SC.Nil();",
+        "  return $a = $SC.Integer(10);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -5988,20 +7312,20 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
+                    end  : { line: 1, column: 5 }
                   }
                 },
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end: { line: 1, column: 5 }
+                  end  : { line: 1, column: 5 }
                 }
               }
             ],
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 5 }
+              end  : { line: 1, column: 5 }
             }
           },
           {
@@ -6013,7 +7337,7 @@
               range: [ 7, 8 ],
               loc: {
                 start: { line: 1, column: 7 },
-                end: { line: 1, column: 8 }
+                end  : { line: 1, column: 8 }
               }
             },
             right: {
@@ -6023,24 +7347,30 @@
               range: [ 11, 13 ],
               loc: {
                 start: { line: 1, column: 11 },
-                end: { line: 1, column: 13 }
+                end  : { line: 1, column: 13 }
               }
             },
             range: [ 7, 13 ],
             loc: {
               start: { line: 1, column: 7 },
-              end: { line: 1, column: 13 }
+              end  : { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 14 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 14 }
+          end  : { line: 1, column: 14 }
         }
       }
     },
     "(var a; a = 10;)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var $a = $SC.Nil();",
+        "  return $a = $SC.Integer(10);",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -6056,20 +7386,20 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end: { line: 1, column: 6 }
+                    end  : { line: 1, column: 6 }
                   }
                 },
                 range: [ 5, 6 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
+                  end  : { line: 1, column: 6 }
                 }
               }
             ],
             range: [ 1, 6 ],
             loc: {
               start: { line: 1, column: 1 },
-              end: { line: 1, column: 6 }
+              end  : { line: 1, column: 6 }
             }
           },
           {
@@ -6081,7 +7411,7 @@
               range: [ 8, 9 ],
               loc: {
                 start: { line: 1, column: 8 },
-                end: { line: 1, column: 9 }
+                end  : { line: 1, column: 9 }
               }
             },
             right: {
@@ -6091,24 +7421,34 @@
               range: [ 12, 14 ],
               loc: {
                 start: { line: 1, column: 12 },
-                end: { line: 1, column: 14 }
+                end  : { line: 1, column: 14 }
               }
             },
             range: [ 8, 14 ],
             loc: {
               start: { line: 1, column: 8 },
-              end: { line: 1, column: 14 }
+              end  : { line: 1, column: 14 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 16 }
+          end  : { line: 1, column: 16 }
         }
       }
     },
     "var a = { var a; a }; a": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  var $a = $SC.Nil();",
+        "  $a = $SC.Function(function() {",
+        "    var $a = $SC.Nil();",
+        "    return $a;",
+        "  });",
+        "  return $a;",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -6124,7 +7464,7 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end: { line: 1, column: 5 }
+                    end  : { line: 1, column: 5 }
                   }
                 },
                 init: {
@@ -6142,20 +7482,20 @@
                             range: [ 14, 15 ],
                             loc: {
                               start: { line: 1, column: 14 },
-                              end: { line: 1, column: 15 }
+                              end  : { line: 1, column: 15 }
                             }
                           },
                           range: [ 14, 15 ],
                           loc: {
                             start: { line: 1, column: 14 },
-                            end: { line: 1, column: 15 }
+                            end  : { line: 1, column: 15 }
                           }
                         }
                       ],
                       range: [ 10, 15 ],
                       loc: {
                         start: { line: 1, column: 10 },
-                        end: { line: 1, column: 15 }
+                        end  : { line: 1, column: 15 }
                       }
                     },
                     {
@@ -6164,27 +7504,27 @@
                       range: [ 17, 18 ],
                       loc: {
                         start: { line: 1, column: 17 },
-                        end: { line: 1, column: 18 }
+                        end  : { line: 1, column: 18 }
                       }
                     }
                   ],
                   range: [ 8, 20 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end: { line: 1, column: 20 }
+                    end  : { line: 1, column: 20 }
                   }
                 },
                 range: [ 4, 20 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end: { line: 1, column: 20 }
+                  end  : { line: 1, column: 20 }
                 }
               }
             ],
             range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 20 }
+              end  : { line: 1, column: 20 }
             }
           },
           {
@@ -6193,87 +7533,117 @@
             range: [ 22, 23 ],
             loc: {
               start: { line: 1, column: 22 },
-              end: { line: 1, column: 23 }
+              end  : { line: 1, column: 23 }
             }
           }
         ],
         range: [ 0, 23 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 23 }
+          end  : { line: 1, column: 23 }
         }
       }
     },
-    "thisProcess.platform;": {
+    "this": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this;",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.MemberExpression,
-            computed: false,
-            object: {
-              type: Syntax.ThisExpression,
-              name: "thisProcess",
-              range: [ 0, 11 ],
-              loc: {
-                start: { line: 1, column: 0 },
-                end: { line: 1, column: 11 }
-              }
-            },
-            property: {
-              type: Syntax.Identifier,
-              name: "platform",
-              range: [ 12, 20 ],
-              loc: {
-                start: { line: 1, column: 12 },
-                end: { line: 1, column: 20 }
-              }
-            },
-            range: [ 0, 20 ],
+            type: Syntax.ThisExpression,
+            name: "this",
+            range: [ 0, 4 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 20 }
+              end  : { line: 1, column: 4 }
             }
           }
         ],
-        range: [ 0, 21 ],
+        range: [ 0, 4 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 21 }
+          end  : { line: 1, column: 4 }
         }
       }
     },
-    "a.(Class)": {
+    "thisProcess.platform;": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.thisProcess().platform();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
-                type: Syntax.Identifier,
-                name: "a",
-                range: [ 0, 1 ],
-                loc: {
-                  start: { line: 1, column: 0 },
-                  end: { line: 1, column: 1 }
-                }
-              },
-              property: {
-                type: Syntax.Identifier,
-                name: "value",
-                range: [ 2, 2 ],
-                loc: {
-                  start: { line: 1, column: 2 },
-                  end: { line: 1, column: 2 }
-                }
-              },
-              range: [ 0, 2 ],
+              type: Syntax.ThisExpression,
+              name: "thisProcess",
+              range: [ 0, 11 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end: { line: 1, column: 2 }
+                end  : { line: 1, column: 11 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "platform",
+              range: [ 12, 20 ],
+              loc: {
+                start: { line: 1, column: 12 },
+                end  : { line: 1, column: 20 }
+              }
+            },
+            args: {
+              list: []
+            },
+            range: [ 0, 20 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 20 }
+            }
+          }
+        ],
+        range: [ 0, 21 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 21 }
+        }
+      }
+    },
+    "a.(Class)": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().value($SC.Class('Class'));",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: ".",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "value",
+              range: [ 2, 2 ],
+              loc: {
+                start: { line: 1, column: 2 },
+                end  : { line: 1, column: 2 }
               }
             },
             args: {
@@ -6284,7 +7654,7 @@
                   range: [ 3, 8 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end: { line: 1, column: 8 }
+                    end  : { line: 1, column: 8 }
                   }
                 }
               ]
@@ -6292,56 +7662,72 @@
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 9 }
+              end  : { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 9 }
+          end  : { line: 1, column: 9 }
         }
       }
     },
     '"#{69.midicps}"': {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Integer(69).midicps().asString();",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.MemberExpression,
-            computed: false,
-            object: {
-              type: Syntax.MemberExpression,
-              computed: false,
-              object: {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.CallExpression,
+              callee: {
                 type: Syntax.Literal,
                 value: "69",
                 valueType: Token.IntegerLiteral
               },
-              property: {
+              method: {
                 type: Syntax.Identifier,
                 name: "midicps",
+              },
+              args: {
+                list: []
               }
             },
-            property: {
+            method: {
               type: Syntax.Identifier,
               name: "asString",
+            },
+            args: {
+              list: []
             },
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 15 }
+              end  : { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 15 }
+          end  : { line: 1, column: 15 }
         }
       }
     },
     '"\\#{}##{{69.midicps}.value}#{}hz"': {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.String('\\#{}#') ['++'] ($SC.Function(function() {",
+        "    return $SC.Integer(69).midicps();",
+        "  }).value().asString()) ['++'] ($SC.String('hz'));",
+        "});",
+      ],
       ast: {
         type: Syntax.Program,
         body: [
@@ -6353,60 +7739,66 @@
               operator: "++",
               left: {
                 type: Syntax.Literal,
-                value: "'\\#{}#'",
-                valueType: Token.SymbolLiteral
+                value: "\\#{}#",
+                valueType: Token.StringLiteral
               },
               right: {
-                type: Syntax.MemberExpression,
-                computed: false,
-                object: {
-                  type: Syntax.MemberExpression,
-                  computed: false,
-                  object: {
+                type: Syntax.CallExpression,
+                callee: {
+                  type: Syntax.CallExpression,
+                  callee: {
                     type: Syntax.FunctionExpression,
                     body: [
                       {
-                        type: Syntax.MemberExpression,
-                        computed: false,
-                        object: {
+                        type: Syntax.CallExpression,
+                        callee: {
                           type: Syntax.Literal,
                           value: "69",
                           valueType: Token.IntegerLiteral
                         },
-                        property: {
+                        method: {
                           type: Syntax.Identifier,
                           name: "midicps"
+                        },
+                        args: {
+                          list: []
                         }
                       }
                     ]
                   },
-                  property: {
+                  method: {
                     type: Syntax.Identifier,
                     name: "value"
+                  },
+                  args: {
+                    list: []
                   }
                 },
-                property: {
+                method: {
                   type: Syntax.Identifier,
                   name: "asString"
+                },
+                args: {
+                  list: []
                 }
               }
             },
             right: {
               type: Syntax.Literal,
-              value: "'hz'",
-              valueType: Token.SymbolLiteral
+              value: "hz",
+              valueType: Token.StringLiteral
             },
             range: [ 0, 33 ],
             loc: {
               start: { line: 1, column: 0 },
-              end: { line: 1, column: 33 }
+              end  : { line: 1, column: 33 }
             }
           }
         ],
         range: [ 0, 33 ],
         loc: {
           start: { line: 1, column: 0 },
-          end: { line: 1, column: 33 }
+          end  : { line: 1, column: 33 }
         }
       }
     },

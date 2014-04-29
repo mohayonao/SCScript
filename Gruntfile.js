@@ -114,7 +114,8 @@ module.exports = function(grunt) {
             before    : true,
             beforeEach: true,
             afterEach : true,
-            after     : true
+            after     : true,
+            esprima   : true
           }
         },
         files: {
@@ -250,6 +251,7 @@ module.exports = function(grunt) {
     var chai = require("chai");
     var sinon = require("sinon");
     var istanbul = require("istanbul");
+    var esprima = require("esprima");
 
     var mocha, done, tstFiles;
     var matchFn, coverageVar, instrumenter, transformer;
@@ -279,6 +281,7 @@ module.exports = function(grunt) {
     global.expect = chai.expect;
     global.chai = chai;
     global.sinon = sinon;
+    global.esprima = esprima;
     global.sc = { VERSION: grunt.config.data.pkg.version };
     global.sc.C = require("./src/const");
 
@@ -378,7 +381,7 @@ module.exports = function(grunt) {
   }
 
   function makeBrowserTest() {
-    var tmpl, tests, consts;
+    var tmpl, tests;
 
     tmpl = grunt.file.read("assets/index.tmpl");
 

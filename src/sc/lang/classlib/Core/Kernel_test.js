@@ -1,8 +1,10 @@
-"use strict";
+(function() {
+  "use strict";
 
-require("./Kernel");
+  require("./Kernel");
 
-describe("class Kernel", function() {
-  it.skip("write later", function() {
+  describe("class Kernel", function() {
+    it.skip("write later", function() {
+    });
   });
-});
+})();

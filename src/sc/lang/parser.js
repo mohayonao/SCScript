@@ -2,70 +2,15 @@
   "use strict";
 
   require("./sc");
+  require("./compiler");
+
 
   var parser = {};
 
-  var Token = parser.Token = {
-    CharLiteral: "Char",
-    EOF: "<EOF>",
-    FalseLiteral: "False",
-    FloatLiteral: "Float",
-    Identifier: "Identifier",
-    IntegerLiteral: "Integer",
-    Keyword: "Keyword",
-    Label: "Label",
-    NilLiteral: "Nil",
-    Punctuator: "Punctuator",
-    StringLiteral: "String",
-    SymbolLiteral: "Symbol",
-    TrueLiteral: "True"
-  };
-
-  var Syntax = parser.Syntax = {
-    AssignmentExpression: "AssignmentExpression",
-    BinaryExpression: "BinaryExpression",
-    BlockExpression: "BlockExpression",
-    CallExpression: "CallExpression",
-    FunctionExpression: "FunctionExpression",
-    GlobalExpression: "GlobalExpression",
-    Identifier: "Identifier",
-    ListExpression: "ListExpression",
-    Label: "Label",
-    Literal: "Literal",
-    ObjectExpression: "ObjectExpression",
-    Program: "Program",
-    ThisExpression: "ThisExpression",
-    UnaryExpression: "UnaryExpression",
-    VariableDeclaration: "VariableDeclaration",
-    VariableDeclarator: "VariableDeclarator"
-  };
-
-  var Message = parser.Message = {
-    ArgumentAlreadyDeclared: "argument '%0' already declared",
-    InvalidLHSInAssignment: "invalid left-hand side in assignment",
-    NotImplemented: "not implemented %0",
-    UnexpectedEOS: "unexpected end of input",
-    UnexpectedIdentifier: "unexpected identifier",
-    UnexpectedChar: "unexpected char",
-    UnexpectedLabel: "unexpected label",
-    UnexpectedNumber: "unexpected number",
-    UnexpectedString: "unexpected string",
-    UnexpectedSymbol: "unexpected symbol",
-    UnexpectedToken: "unexpected token %0",
-    VariableAlreadyDeclared: "variable '%0' already declared",
-    VariableNotDefined: "variable '%0' not defined"
-  };
-
-  var Keywords = parser.Keywords = {
-    var: "keyword",
-    arg: "keyword",
-    const: "keyword",
-    this: "function",
-    thisThread: "function",
-    thisProcess: "function",
-    thisFunction: "function",
-    thisFunctionDef: "function",
-  };
+  var Token    = sc.lang.compiler.Token;
+  var Syntax   = sc.lang.compiler.Syntax;
+  var Message  = sc.lang.compiler.Message;
+  var Keywords = sc.lang.compiler.Keywords;
 
   var binaryPrecedenceDefaults = {
     "?"  : 1,
@@ -111,56 +56,17 @@
     return "0" <= ch && ch <= "9";
   }
 
-  function Scope(parser) {
-    this.parser = parser;
-    this.stack = [];
-  }
+  var Scope = sc.lang.compiler.Scope.inheritWith({
+    begin: function() {
+      var declared = this.getDeclaredVariable();
 
-  Scope.prototype.add = function(type, id) {
-    var peek = this.stack[this.stack.length - 1];
-    var vars, args, declared;
-
-    vars = peek.vars;
-    args = peek.args;
-    declared = peek.declared;
-
-    switch (type) {
-    case "var":
-      if (args[id] || vars[id]) {
-        this.parser.throwError({}, Message.VariableAlreadyDeclared, id);
-      } else {
-        vars[id] = true;
-        delete declared[id];
-      }
-      break;
-    case "arg":
-      if (args[id]) {
-        this.parser.throwError({}, Message.ArgumentAlreadyDeclared, id);
-      }
-      args[id] = true;
-      delete declared[id];
-      break;
-    }
-  };
-
-  Scope.prototype.begin = function() {
-    var peek = this.stack[this.stack.length - 1];
-    var declared = {};
-
-    if (peek) {
-      Array.prototype.concat.apply([], [
-        peek.declared, peek.args, peek.vars
-      ].map(Object.keys)).forEach(function(key) {
-        declared[key] = true;
+      this.stack.push({
+        vars: {},
+        args: {},
+        declared: declared
       });
     }
-
-    this.stack.push({ vars: {}, args: {}, declared: declared });
-  };
-
-  Scope.prototype.end = function() {
-    this.stack.pop();
-  };
+  });
 
   function LocationMarker(parser) {
     this.parser = parser;

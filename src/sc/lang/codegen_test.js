@@ -2,21 +2,21 @@
   "use strict";
 
   require("./codegen");
-  require("../test/parser-test-case");
+  require("./compiler_test");
+
+  var codegen  = sc.lang.codegen;
+  var Syntax   = sc.lang.compiler.Syntax;
+  var Token    = sc.lang.compiler.Message;
+  var SCScript = sc.SCScript;
 
   describe("sc.lang.codegen", function() {
-    var codegen = sc.lang.codegen;
-    var Syntax = sc.lang.parser.Syntax;
-    var Token  = sc.lang.parser.Message;
-    var SCScript = sc.SCScript;
-
     function s(str) {
       str = JSON.stringify(str);
       return '"' + str.substr(1, str.length - 2) + '"';
     }
 
     describe("compile", function() {
-      var cases = sc.test.parser.cases;
+      var cases = sc.test.compiler.cases;
 
       Object.keys(cases).forEach(function(source) {
         var items, compiled, ast, mocha_it;
@@ -38,11 +38,16 @@
         if (!Array.isArray(compiled)) {
           compiled = [ compiled ];
         }
-        compiled = esprima.parse(compiled.join("\n"));
 
         mocha_it(s(source), function() {
-          var code = codegen.compile(ast);
-          var test = esprima.parse(code);
+          var code, test;
+
+          code = compiled.join("\n");
+          expect(function() {
+            esprima.parse(code);
+          }).to.not.throw();
+
+          test = codegen.compile(ast).split("\n");
           expect(test).to.eqls(compiled);
         });
       });

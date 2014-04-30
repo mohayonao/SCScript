@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.13" };
+var sc = { VERSION: "0.0.14" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -10226,12 +10226,12 @@ var sc = { VERSION: "0.0.13" };
 
 })(sc);
 
-// src/sc/lang/parser.js
+// src/sc/lang/compiler.js
 (function(sc) {
 
-  var parser = {};
+  var compiler = {};
 
-  var Token = parser.Token = {
+  compiler.Token = {
     CharLiteral: "Char",
     EOF: "<EOF>",
     FalseLiteral: "False",
@@ -10247,7 +10247,7 @@ var sc = { VERSION: "0.0.13" };
     TrueLiteral: "True"
   };
 
-  var Syntax = parser.Syntax = {
+  compiler.Syntax = {
     AssignmentExpression: "AssignmentExpression",
     BinaryExpression: "BinaryExpression",
     BlockExpression: "BlockExpression",
@@ -10266,7 +10266,7 @@ var sc = { VERSION: "0.0.13" };
     VariableDeclarator: "VariableDeclarator"
   };
 
-  var Message = parser.Message = {
+  var Message = compiler.Message = {
     ArgumentAlreadyDeclared: "argument '%0' already declared",
     InvalidLHSInAssignment: "invalid left-hand side in assignment",
     NotImplemented: "not implemented %0",
@@ -10282,7 +10282,7 @@ var sc = { VERSION: "0.0.13" };
     VariableNotDefined: "variable '%0' not defined"
   };
 
-  var Keywords = parser.Keywords = {
+  compiler.Keywords = {
     var: "keyword",
     arg: "keyword",
     const: "keyword",
@@ -10292,6 +10292,120 @@ var sc = { VERSION: "0.0.13" };
     thisFunction: "function",
     thisFunctionDef: "function",
   };
+
+  var Scope = (function() {
+    function Scope(parent) {
+      this.parent = parent;
+      this.stack  = [];
+    }
+
+    Scope.prototype.add = function(type, id, scope) {
+      var peek = this.stack[this.stack.length - 1];
+      var vars, args, declared, stmt, indent;
+
+      if (scope) {
+        vars = scope.vars;
+        args = scope.args;
+        declared = scope.declared;
+        stmt = scope.stmt;
+        indent = scope.indent;
+      } else {
+        vars = peek.vars;
+        args = peek.args;
+        declared = peek.declared;
+        stmt = peek.stmt;
+        indent = peek.indent;
+      }
+
+      if (args[id]) {
+        this.parent.throwError({}, Message.ArgumentAlreadyDeclared, id);
+      }
+
+      if (vars[id] && id.charAt(0) !== "_") {
+        this.parent.throwError({}, Message.VariableAlreadyDeclared, id);
+      }
+
+      switch (type) {
+      case "var":
+        if (!vars[id]) {
+          this.add_delegate(stmt, id, indent, peek, scope);
+          vars[id] = true;
+          delete declared[id];
+        }
+        break;
+      case "arg":
+        args[id] = true;
+        delete declared[id];
+        break;
+      }
+    };
+
+    Scope.prototype.add_delegate = function() {
+    };
+
+    Scope.prototype.end = function() {
+      this.stack.pop();
+    };
+
+    Scope.prototype.getDeclaredVariable = function() {
+      var peek = this.stack[this.stack.length - 1];
+      var declared = {};
+
+      if (peek) {
+        Array.prototype.concat.apply([], [
+          peek.declared, peek.args, peek.vars
+        ].map(Object.keys)).forEach(function(key) {
+          declared[key] = true;
+        });
+      }
+
+      return declared;
+    };
+
+    Scope.prototype.find = function(id) {
+      var peek = this.stack[this.stack.length - 1];
+      return peek.vars[id] || peek.args[id] || peek.declared[id];
+    };
+
+    Scope.prototype.peek = function() {
+      return this.stack[this.stack.length - 1];
+    };
+
+    Scope.inheritWith = function(methods) {
+      var f = function Scope(parent) {
+        this.parent = parent;
+        this.stack  = [];
+      };
+
+      function F() {}
+      F.prototype = Scope.prototype;
+      f.prototype = new F();
+
+      Object.keys(methods).forEach(function(key) {
+        f.prototype[key] = methods[key];
+      });
+
+      return f;
+    };
+
+    return Scope;
+  })();
+
+  compiler.Scope = Scope;
+
+  sc.lang.compiler = compiler;
+
+})(sc);
+
+// src/sc/lang/parser.js
+(function(sc) {
+
+  var parser = {};
+
+  var Token    = sc.lang.compiler.Token;
+  var Syntax   = sc.lang.compiler.Syntax;
+  var Message  = sc.lang.compiler.Message;
+  var Keywords = sc.lang.compiler.Keywords;
 
   var binaryPrecedenceDefaults = {
     "?"  : 1,
@@ -10337,56 +10451,17 @@ var sc = { VERSION: "0.0.13" };
     return "0" <= ch && ch <= "9";
   }
 
-  function Scope(parser) {
-    this.parser = parser;
-    this.stack = [];
-  }
+  var Scope = sc.lang.compiler.Scope.inheritWith({
+    begin: function() {
+      var declared = this.getDeclaredVariable();
 
-  Scope.prototype.add = function(type, id) {
-    var peek = this.stack[this.stack.length - 1];
-    var vars, args, declared;
-
-    vars = peek.vars;
-    args = peek.args;
-    declared = peek.declared;
-
-    switch (type) {
-    case "var":
-      if (args[id] || vars[id]) {
-        this.parser.throwError({}, Message.VariableAlreadyDeclared, id);
-      } else {
-        vars[id] = true;
-        delete declared[id];
-      }
-      break;
-    case "arg":
-      if (args[id]) {
-        this.parser.throwError({}, Message.ArgumentAlreadyDeclared, id);
-      }
-      args[id] = true;
-      delete declared[id];
-      break;
-    }
-  };
-
-  Scope.prototype.begin = function() {
-    var peek = this.stack[this.stack.length - 1];
-    var declared = {};
-
-    if (peek) {
-      Array.prototype.concat.apply([], [
-        peek.declared, peek.args, peek.vars
-      ].map(Object.keys)).forEach(function(key) {
-        declared[key] = true;
+      this.stack.push({
+        vars: {},
+        args: {},
+        declared: declared
       });
     }
-
-    this.stack.push({ vars: {}, args: {}, declared: declared });
-  };
-
-  Scope.prototype.end = function() {
-    this.stack.pop();
-  };
+  });
 
   function LocationMarker(parser) {
     this.parser = parser;
@@ -12650,9 +12725,9 @@ var sc = { VERSION: "0.0.13" };
 (function(sc) {
 
   var codegen = {};
-  var Syntax  = sc.lang.parser.Syntax;
-  var Token   = sc.lang.parser.Token;
-  var Message = sc.lang.parser.Message;
+  var Syntax  = sc.lang.compiler.Syntax;
+  var Token   = sc.lang.compiler.Token;
+  var Message = sc.lang.compiler.Message;
   var SegmentedMethod = {
     idle : true,
     sleep: true,
@@ -12660,107 +12735,53 @@ var sc = { VERSION: "0.0.13" };
     yield: true
   };
 
-  function Scope(codegen) {
-    this.codegen = codegen;
-    this.stack = [];
-  }
-
-  Scope.prototype.add = function(type, id, scope) {
-    var peek = this.stack[this.stack.length - 1];
-    var vars, args, declared, stmt, indent;
-
-    if (scope) {
-      vars = scope.vars;
-      args = scope.args;
-      declared = scope.declared;
-      stmt = scope.stmt;
-      indent = scope.indent;
-    } else {
-      vars = peek.vars;
-      args = peek.args;
-      declared = peek.declared;
-      stmt = peek.stmt;
-      indent = peek.indent;
-    }
-
-    switch (type) {
-    case "var":
-      if (args[id]) {
-        this.codegen.throwError(Message.VariableAlreadyDeclared, id);
-      } else if (vars[id]) {
-        if (id.charAt(0) !== "_") {
-          this.codegen.throwError(Message.VariableAlreadyDeclared, id);
-        }
+  var Scope = sc.lang.compiler.Scope.inheritWith({
+    add_delegate: function(stmt, id, indent, peek, scope) {
+      if (stmt.vars.length === 0) {
+        this._addNewVariableStatement(stmt, id, indent);
       } else {
-        vars[id] = true;
-        delete declared[id];
-        if (stmt.vars.length === 0) {
-          stmt.head.push(indent, "var ");
-          stmt.vars.push(this.codegen.id(id));
-          if (id.charAt(0) !== "_") {
-            stmt.vars.push(" = $SC.Nil()");
-          }
-          stmt.tail.push(";", "\n");
-        } else {
-          stmt.vars.push(
-            ", ", this.codegen.id(id)
-          );
-          if (id.charAt(0) !== "_") {
-            stmt.vars.push(" = $SC.Nil()");
-          }
-        }
-        if (scope) {
-          peek.declared[id] = true;
-        }
+        this._appendVariable(stmt, id);
       }
-      break;
-    case "arg":
-      if (args[id]) {
-        this.codegen.throwError(Message.ArgumentAlreadyDeclared, id);
+      if (scope) {
+        peek.declared[id] = true;
       }
-      args[id] = true;
-      delete declared[id];
-      break;
-    }
-  };
+    },
+    _addNewVariableStatement: function(stmt, id, indent) {
+      stmt.head.push(indent, "var ");
+      stmt.vars.push(this.parent.id(id));
+      if (id.charAt(0) !== "_") {
+        stmt.vars.push(" = $SC.Nil()");
+      }
+      stmt.tail.push(";", "\n");
+    },
+    _appendVariable: function(stmt, id) {
+      stmt.vars.push(
+        ", ", this.parent.id(id)
+      );
+      if (id.charAt(0) !== "_") {
+        stmt.vars.push(" = $SC.Nil()");
+      }
+    },
+    begin: function(stream, args) {
+      var declared = this.getDeclaredVariable();
+      var stmt = { head: [], vars: [], tail: [] };
+      var i, imax;
 
-  Scope.prototype.begin = function(stream, args) {
-    var peek = this.stack[this.stack.length - 1];
-    var declared = {};
-    var stmt = { head: [], vars: [], tail: [] };
-    var i, imax;
-
-    if (peek) {
-      Array.prototype.concat.apply([], [
-        peek.declared, peek.args, peek.vars
-      ].map(Object.keys)).forEach(function(key) {
-        declared[key] = true;
+      this.stack.push({
+        vars    : {},
+        args    : {},
+        declared: declared,
+        indent  : this.parent.base,
+        stmt    : stmt
       });
+
+      for (i = 0, imax = args.length; i < imax; i++) {
+        this.add("arg", args[i]);
+      }
+
+      stream.push(stmt.head, stmt.vars, stmt.tail);
     }
-
-    this.stack.push({
-      vars: {}, args: {}, declared: declared, indent: this.codegen.base, stmt: stmt
-    });
-
-    for (i = 0, imax = args.length; i < imax; i++) {
-      this.add("arg", args[i]);
-    }
-
-    stream.push(stmt.head, stmt.vars, stmt.tail);
-  };
-
-  Scope.prototype.end = function() {
-    this.stack.pop();
-  };
-
-  Scope.prototype.find = function(id) {
-    var peek = this.stack[this.stack.length - 1];
-    return peek.vars[id] || peek.args[id] || peek.declared[id];
-  };
-
-  Scope.prototype.peek = function() {
-    return this.stack[this.stack.length - 1];
-  };
+  });
 
   function CodeGen(opts) {
     this.opts = opts || {};
@@ -12823,7 +12844,7 @@ var sc = { VERSION: "0.0.13" };
       }
     }
     if (!found) {
-      this.throwError(Message.VariableNotDefined, name);
+      this.throwError(null, Message.VariableNotDefined, name);
     }
 
     return false;
@@ -12918,7 +12939,7 @@ var sc = { VERSION: "0.0.13" };
     return result;
   };
 
-  CodeGen.prototype.throwError = function(messageFormat) {
+  CodeGen.prototype.throwError = function(obj, messageFormat) {
     var args, message;
 
     args = Array.prototype.slice.call(arguments, 1);
@@ -12963,21 +12984,30 @@ var sc = { VERSION: "0.0.13" };
 
     this.scope.add("var", "_ref");
 
-    result.push("(_ref = ", this.generate(node.right));
+    result.push("(_ref = ", this.generate(node.right), ",");
 
-    for (i = 0, imax = elements.length; i < imax; ++i) {
-      result.push(
-        this.assign(elements[i], node.operator, "_ref.at($SC.Integer(" + i + "))")
-      );
-    }
+    this.withIndent(function() {
+      result.push("\n");
+      for (i = 0, imax = elements.length; i < imax; ++i) {
+        if (i) {
+          result.push(",\n");
+        }
+        result.push(
+          this.base,
+          this.assign(elements[i], node.operator, "_ref.at($SC.Integer(" + i + "))")
+        );
+      }
 
-    if (node.remain) {
-      result.push(
-        this.assign(node.remain, node.operator, "_ref.copyToEnd($SC.Integer(" + imax + "))")
-      );
-    }
+      if (node.remain) {
+        result.push(
+          ",\n",
+          this.base,
+          this.assign(node.remain, node.operator, "_ref.copyToEnd($SC.Integer(" + imax + "))")
+        );
+      }
+    });
 
-    result.push(", _ref)");
+    result.push(",\n", this.base, "_ref)");
 
     return result;
   };
@@ -12988,7 +13018,7 @@ var sc = { VERSION: "0.0.13" };
 
     opts = { right: right, used: false };
 
-    result.push(", ", this.generate(left, opts));
+    result.push(this.generate(left, opts));
 
     if (!opts.used) {
       result.push(" " + operator + " ", right);
@@ -13111,7 +13141,6 @@ var sc = { VERSION: "0.0.13" };
 
   CodeGen.prototype.genExpandCall = function(node) {
     var result;
-    var list, i, imax;
 
     this.scope.add("var", "_ref");
 
@@ -13119,32 +13148,11 @@ var sc = { VERSION: "0.0.13" };
       "(_ref = ",
       this.generate(node.callee),
       ", _ref." + node.method.name + ".apply(_ref, ",
-      "["
+      this.insertElements(node.args.list), ".concat(",
+      this.generate(node.args.expand), ".asArray()._",
+      this.insertKeywordArguments(node.args.keywords, true),
+      ")))"
     ];
-
-    list = node.args.list;
-
-    if (list.length) {
-      result.push(" ");
-      for (i = 0, imax = list.length; i < imax; ++i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(this.generate(list[i]));
-      }
-      result.push(" ");
-    }
-
-    result.push(
-      "].concat(",
-      this.generate(node.args.expand),
-      ".asArray()._"
-    );
-
-    result.push(this.insertKeywordArguments(node.args.keywords, true));
-
-    result.push(")");
-    result.push("))");
 
     return result;
   };
@@ -13410,26 +13418,11 @@ var sc = { VERSION: "0.0.13" };
 
   CodeGen.prototype.ListExpression = function(node) {
     var result;
-    var elements, i, imax;
 
     result = [
-      "$SC.Array(["
+      "$SC.Array(",
+      this.insertElements(node.elements),
     ];
-
-    elements = node.elements;
-
-    if (elements.length) {
-      result.push(" ");
-      for (i = 0, imax = elements.length; i < imax; ++i) {
-        if (i !== 0) {
-          result.push(", ");
-        }
-        result.push(this.generate(elements[i]));
-      }
-      result.push(" ");
-    }
-
-    result.push("]");
 
     if (node.immutable) {
       result.push(", ", "true");
@@ -13475,23 +13468,10 @@ var sc = { VERSION: "0.0.13" };
 
   CodeGen.prototype.ObjectExpression = function(node) {
     var result;
-    var elements, i, imax;
 
-    result = [ "$SC.Event(" ];
-
-    elements = node.elements;
-
-    if (elements.length) {
-      result.push("[ ");
-      for (i = 0, imax = elements.length; i < imax; ++i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(this.generate(elements[i]));
-      }
-      result.push(" ]");
-    }
-    result.push(")");
+    result = [
+      "$SC.Event(", this.insertElements(node.elements), ")"
+    ];
 
     return this.toSourceNodeWhenNeeded(result, node);
   };
@@ -13581,6 +13561,31 @@ var sc = { VERSION: "0.0.13" };
     }
 
     return this.toSourceNodeWhenNeeded(result, node);
+  };
+
+  CodeGen.prototype.insertElements = function(elements) {
+    var result;
+    var i, imax;
+
+    result = [];
+
+    result.push("[");
+    if (elements.length) {
+      this.withIndent(function() {
+        result.push("\n");
+        for (i = 0, imax = elements.length; i < imax; ++i) {
+          if (i) {
+            result.push("\n");
+          }
+          result.push(this.base, this.generate(elements[i]), ",");
+        }
+        result.push("\n");
+      });
+      result.push(this.base);
+    }
+    result.push("]");
+
+    return result;
   };
 
   codegen.compile = function(ast, opts) {

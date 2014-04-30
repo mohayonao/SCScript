@@ -2,12 +2,12 @@
   "use strict";
 
   require("./parser");
-  require("../test/parser-test-case");
+  require("./compiler_test");
 
   var SCScript = sc.SCScript;
-  var Syntax  = sc.lang.parser.Syntax;
-  var Token   = sc.lang.parser.Token;
-  var Message = sc.lang.parser.Message;
+  var Syntax  = sc.lang.compiler.Syntax;
+  var Token   = sc.lang.compiler.Token;
+  var Message = sc.lang.compiler.Message;
 
   describe("sc.lang.parser", function() {
     function s(str) {
@@ -521,7 +521,7 @@
       });
     });
     describe("parse", function() {
-      var cases = sc.test.parser.cases;
+      var cases = sc.test.compiler.cases;
       Object.keys(cases).forEach(function(source) {
         var items = cases[source];
         var mocha_it, result, test;

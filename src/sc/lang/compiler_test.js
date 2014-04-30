@@ -1,10 +1,10 @@
 (function(sc) {
   "use strict";
 
-  require("../lang/parser");
+  require("../lang/compiler");
 
-  var Token  = sc.lang.parser.Token;
-  var Syntax = sc.lang.parser.Syntax;
+  var Token  = sc.lang.compiler.Token;
+  var Syntax = sc.lang.compiler.Syntax;
 
   var cases = {
     "": {
@@ -356,7 +356,10 @@
     "[ 0, 0.5 ]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Array([ $SC.Integer(0), $SC.Float(0.5) ]);",
+        "  return $SC.Array([",
+        "    $SC.Integer(0),",
+        "    $SC.Float(0.5),",
+        "  ]);",
         "});",
       ],
       ast: {
@@ -403,7 +406,10 @@
     "#[ 0, 0.5 ]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Array([ $SC.Integer(0), $SC.Float(0.5) ], true);",
+        "  return $SC.Array([",
+        "    $SC.Integer(0),",
+        "    $SC.Float(0.5),",
+        "  ], true);",
         "});",
       ],
       ast: {
@@ -451,7 +457,9 @@
     "#[ [] ]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Array([ $SC.Array([], true) ], true);",
+        "  return $SC.Array([",
+        "    $SC.Array([], true),",
+        "  ], true);",
         "});",
       ],
       ast: {
@@ -494,7 +502,10 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  return $SC.Array([",
-        "    $SC.Symbol('a'), $SC.Integer(1), $SC.Integer(2), $SC.Integer(3)",
+        "    $SC.Symbol('a'),",
+        "    $SC.Integer(1),",
+        "    $SC.Integer(2),",
+        "    $SC.Integer(3),",
         "  ]);",
         "});",
       ],
@@ -736,11 +747,13 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  var _ref;",
-        "  return (_ref = ",
-        "    (_ref = $SC.Array([ $SC.Integer(0), $SC.Integer(1) ]),",
-        "      $this.c_(_ref.at($SC.Integer(0))),",
-        "      $this.d_(_ref.at($SC.Integer(1))),",
-        "    _ref),",
+        "  return (_ref = (_ref = $SC.Array([",
+        "    $SC.Integer(0),",
+        "    $SC.Integer(1),",
+        "  ]),",
+        "    $this.c_(_ref.at($SC.Integer(0))),",
+        "    $this.d_(_ref.at($SC.Integer(1))),",
+        "  _ref),",
         "    $this.a_(_ref.at($SC.Integer(0))),",
         "    $this.b_(_ref.at($SC.Integer(1))),",
         "  _ref);",
@@ -1485,9 +1498,9 @@
     "a[..10] = 1": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().putSeries(",
-        "    null, null, $SC.Integer(10), $SC.Integer(1)",
-        "  );",
+        "  return $this.a().putSeries(" +
+          "null, null, $SC.Integer(10), $SC.Integer(1)" +
+          ");",
         "});",
       ],
       ast: {
@@ -1557,9 +1570,9 @@
     "a[2..] = 1": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().putSeries(",
-        "    $SC.Integer(2), null, null, $SC.Integer(1)",
-        "  );",
+        "  return $this.a().putSeries(" +
+          "$SC.Integer(2), null, null, $SC.Integer(1)" +
+          ");",
         "});",
       ],
       ast: {
@@ -1629,9 +1642,9 @@
     "a[2..10] = 1": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().putSeries(",
-        "    $SC.Integer(2), null, $SC.Integer(10), $SC.Integer(1)",
-        "  );",
+        "  return $this.a().putSeries(" +
+          "$SC.Integer(2), null, $SC.Integer(10), $SC.Integer(1)" +
+          ");",
         "});",
       ],
       ast: {
@@ -1710,9 +1723,9 @@
     "a[2, 4..] = 1": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().putSeries(",
-        "    $SC.Integer(2), $SC.Integer(4), null, $SC.Integer(1)",
-        "  );",
+        "  return $this.a().putSeries(" +
+          "$SC.Integer(2), $SC.Integer(4), null, $SC.Integer(1)" +
+          ");",
         "});",
       ],
       ast: {
@@ -1791,9 +1804,9 @@
     "a[2, 4..10] = 1": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().putSeries(",
-        "    $SC.Integer(2), $SC.Integer(4), $SC.Integer(10), $SC.Integer(1)",
-        "  );",
+        "  return $this.a().putSeries(" +
+          "$SC.Integer(2), $SC.Integer(4), $SC.Integer(10), $SC.Integer(1)" +
+          ");",
         "});",
       ],
       ast: {
@@ -1881,9 +1894,9 @@
     "a[..] = 1": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().putSeries(",
-        "    null, null, null, $SC.Integer(1)",
-        "  );",
+        "  return $this.a().putSeries(" +
+          "null, null, null, $SC.Integer(1)" +
+          ");",
         "});",
       ],
       ast: {
@@ -1944,11 +1957,11 @@
     "a[0;1,2;3..4;5]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().copySeries(",
-        "    ($SC.Integer(0), $SC.Integer(1)),",
-        "    ($SC.Integer(2), $SC.Integer(3)),",
-        "    ($SC.Integer(4), $SC.Integer(5))",
-        "  );",
+        "  return $this.a().copySeries(" +
+          "($SC.Integer(0), $SC.Integer(1)), " +
+          "($SC.Integer(2), $SC.Integer(3)), " +
+          "($SC.Integer(4), $SC.Integer(5))" +
+          ");",
         "});",
       ],
       ast: {
@@ -2062,11 +2075,11 @@
     "a[b[c=0;1]=0;1]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().at(",
-        "    ($this.b().put(",
-        "      ($this.c_($SC.Integer(0)), $SC.Integer(1)), $SC.Integer(0)",
-        "    ), $SC.Integer(1))",
-        "  );",
+        "  return $this.a().at(" +
+          "($this.b().put(" +
+          "($this.c_($SC.Integer(0)), $SC.Integer(1)), $SC.Integer(0)" +
+          "), $SC.Integer(1))" +
+          ");",
         "});",
       ],
       ast: {
@@ -2393,9 +2406,9 @@
     "(0;1, 2;3..4;5)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return ($SC.Integer(0), $SC.Integer(1)).series(",
-        "    ($SC.Integer(2), $SC.Integer(3)), ($SC.Integer(4), $SC.Integer(5))",
-        "  );",
+        "  return ($SC.Integer(0), $SC.Integer(1)).series(" +
+          "($SC.Integer(2), $SC.Integer(3)), ($SC.Integer(4), $SC.Integer(5))" +
+          ");",
         "});",
       ],
       ast: {
@@ -3727,7 +3740,9 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  var $a = $SC.Nil(), _ref;",
-        "  return (_ref = $SC.Array([]), $a = _ref.at($SC.Integer(0)), _ref);",
+        "  return (_ref = $SC.Array([]),",
+        "    $a = _ref.at($SC.Integer(0)),",
+        "  _ref);",
         "});",
       ],
       ast: {
@@ -4192,11 +4207,10 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  var _ref;",
-        "  return (_ref = $SC.Integer(0),",
-        "    _ref.max.apply(_ref, [",
-        "      $SC.Integer(1), $SC.Integer(2)",
-        "    ].concat($this.a().asArray()._, { a: $SC.Integer(5), b: $SC.Integer(6) })",
-        "  ));",
+        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [",
+        "    $SC.Integer(1),",
+        "    $SC.Integer(2),",
+        "  ].concat($this.a().asArray()._, { a: $SC.Integer(5), b: $SC.Integer(6) })));",
         "});",
       ],
       ast: {
@@ -4298,7 +4312,7 @@
         "SCScript(function($this, $SC) {",
         "  var _ref;",
         "  return (_ref = $SC.Integer(1), _ref.max.apply(_ref, [",
-        "    $SC.Integer(2) ",
+        "    $SC.Integer(2),",
         "  ].concat($this.a().asArray()._)));",
         "});",
       ],
@@ -4439,8 +4453,8 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  var _ref;",
-        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [",
-        "  ].concat($this.a().asArray()._, { a: $SC.Integer(3) })));",
+        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [" +
+          "].concat($this.a().asArray()._, { a: $SC.Integer(3) })));",
         "});",
       ],
       ast: {
@@ -4510,8 +4524,8 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  var _ref;",
-        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [",
-        "  ].concat($this.a().asArray()._)));",
+        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [" +
+          "].concat($this.a().asArray()._)));",
         "});",
       ],
       ast: {
@@ -4734,14 +4748,10 @@
     "max(0; 1, 2; 3, 4; 5, a: 6; 7, b: 8; 9)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return ($SC.Integer(0), $SC.Integer(1)).max(",
-        "    ($SC.Integer(2), $SC.Integer(3)),",
-        "    ($SC.Integer(4), $SC.Integer(5)),",
-        "    {",
-        "      a: ($SC.Integer(6), $SC.Integer(7)),",
-        "      b: ($SC.Integer(8), $SC.Integer(9))",
-        "    }",
-        "  );",
+        "  return ($SC.Integer(0), $SC.Integer(1)).max(" +
+          "($SC.Integer(2), $SC.Integer(3)), " +
+          "($SC.Integer(4), $SC.Integer(5)), " +
+          "{ a: ($SC.Integer(6), $SC.Integer(7)), b: ($SC.Integer(8), $SC.Integer(9)) });",
         "});",
       ],
       ast: {
@@ -5425,7 +5435,9 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  return $SC.Class('Set').newFrom($SC.Array([",
-        "    $SC.Integer(3), $SC.Integer(4), $SC.Integer(5)",
+        "    $SC.Integer(3),",
+        "    $SC.Integer(4),",
+        "    $SC.Integer(5),",
         "  ]));",
         "});",
       ],
@@ -5514,8 +5526,9 @@
     "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Array').newFrom($SC.Array([ ",
-        "    $SC.Integer(1), $SC.Integer(2)",
+        "  return $SC.Class('Array').newFrom($SC.Array([",
+        "    $SC.Integer(1),",
+        "    $SC.Integer(2),",
         "  ])).at($SC.Integer(0));",
         "});",
       ],
@@ -5626,7 +5639,8 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  return $SC.Class('Array').newFrom($SC.Array([",
-        "    $SC.Integer(1), $SC.Integer(2)",
+        "    $SC.Integer(1),",
+        "    $SC.Integer(2),",
         "  ])).at($SC.Integer(0));",
         "});",
       ],
@@ -6057,8 +6071,8 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  var _ref;",
-        "  return (_ref = $this.a(), _ref.value.apply(_ref, [",
-        "  ].concat($SC.Array([]).asArray()._)));",
+        "  return (_ref = $this.a(), _ref.value.apply(_ref, [" +
+          "].concat($SC.Array([]).asArray()._)));",
         "});",
       ],
       ast: {
@@ -6615,7 +6629,7 @@
     "()": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Event();",
+        "  return $SC.Event([]);",
         "});",
       ],
       ast: {
@@ -6641,7 +6655,10 @@
     "( \\answer : 42 )": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Event([ $SC.Symbol('answer'), $SC.Integer(42) ]);",
+        "  return $SC.Event([",
+        "    $SC.Symbol('answer'),",
+        "    $SC.Integer(42),",
+        "  ]);",
         "});",
       ],
       ast: {
@@ -6689,9 +6706,12 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  return $this.x_($SC.Event([",
-        "    $SC.Symbol('a'), $SC.Integer(1),",
-        "    $SC.Symbol('b'), $SC.Integer(2),",
-        "    $SC.Integer(3), $SC.Integer(4)",
+        "    $SC.Symbol('a'),",
+        "    $SC.Integer(1),",
+        "    $SC.Symbol('b'),",
+        "    $SC.Integer(2),",
+        "    $SC.Integer(3),",
+        "    $SC.Integer(4),",
         "  ]));",
         "});",
       ],
@@ -6798,9 +6818,12 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  return $this.x_($SC.Event([",
-        "    $this.a(), $SC.Integer(1),",
-        "    $this.b(), $SC.Integer(2),",
-        "    $this.c(), $SC.Integer(3)",
+        "    $this.a(),",
+        "    $SC.Integer(1),",
+        "    $this.b(),",
+        "    $SC.Integer(2),",
+        "    $this.c(),",
+        "    $SC.Integer(3),",
         "  ]));",
         "});",
       ],
@@ -6904,8 +6927,10 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  return $this.x_($SC.Event([",
-        "    $SC.Integer(1) ['+'] ($SC.Integer(2)), $SC.Integer(3),",
-        "    $SC.Integer(4), $SC.Integer(5)",
+        "    $SC.Integer(1) ['+'] ($SC.Integer(2)),",
+        "    $SC.Integer(3),",
+        "    $SC.Integer(4),",
+        "    $SC.Integer(5),",
         "  ]));",
         "});",
       ],
@@ -7124,7 +7149,10 @@
       compiled: [
         "SCScript(function($this, $SC) {",
         "  return $SC.Function(function($_0, $_1) {",
-        "    return $SC.Array([ $_0, $_1 ]);",
+        "    return $SC.Array([",
+        "      $_0,",
+        "      $_1,",
+        "    ]);",
         "  });",
         "});"
       ],
@@ -7804,7 +7832,7 @@
     },
   };
 
-  sc.test.parser = {
+  sc.test.compiler = {
     cases: cases
   };
 

@@ -68,10 +68,7 @@
   };
 
   var Scope = (function() {
-    function Scope(parent) {
-      this.parent = parent;
-      this.stack  = [];
-    }
+    function Scope() {}
 
     Scope.prototype.add = function(type, id, scope) {
       var peek = this.stack[this.stack.length - 1];
@@ -146,7 +143,7 @@
     };
 
     Scope.inheritWith = function(methods) {
-      var f = function Scope(parent) {
+      var f = function(parent) {
         this.parent = parent;
         this.stack  = [];
       };

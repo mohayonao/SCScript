@@ -15,6 +15,8 @@
     yield: true
   };
 
+  var gen = {};
+
   var Scope = sc.lang.compiler.Scope.inheritWith({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
@@ -28,7 +30,7 @@
     },
     _addNewVariableStatement: function(stmt, id, indent) {
       stmt.head.push(indent, "var ");
-      stmt.vars.push(this.parent.id(id));
+      stmt.vars.push($id(id));
       if (id.charAt(0) !== "_") {
         stmt.vars.push(" = $SC.Nil()");
       }
@@ -36,7 +38,7 @@
     },
     _appendVariable: function(stmt, id) {
       stmt.vars.push(
-        ", ", this.parent.id(id)
+        ", ", $id(id)
       );
       if (id.charAt(0) !== "_") {
         stmt.vars.push(" = $SC.Nil()");
@@ -96,94 +98,57 @@
     return [ this.base, stmt ];
   };
 
-  CodeGen.prototype.id = function(id) {
-    var ch = id.charAt(0);
+  CodeGen.prototype.generate = function(node, opts) {
+    var result;
 
-    if (ch !== "_" && ch !== "$") {
-      id = "$" + id;
+    if (Array.isArray(node)) {
+      result = [
+        "(", this.stitchWith(node, ", ", function(item) {
+          return this.generate(item, opts);
+        }), ")"
+      ];
+    } else if (node && node.type) {
+      result = gen[node.type].call(this, node, opts);
+      result = this.toSourceNodeWhenNeeded(result, node);
+    } else if (typeof node === "string") {
+      result = $id(node);
+    } else {
+      result = node;
     }
 
-    return id;
+    return result;
   };
 
-  CodeGen.prototype.isClassName = function(node) {
-    var ch0;
+  CodeGen.prototype.withFunction = function(args, fn) {
+    var result;
+    var argItems, base, body;
 
-    ch0 = node.name.charAt(0);
-    return "A" <= ch0 && ch0 <= "Z";
-  };
+    argItems = this.stitchWith(args, ", ", function(item) {
+      return this.generate(item);
+    });
 
-  CodeGen.prototype.isInterpreterVariable = function(node) {
-    var name, found;
-
-    name = node.name;
-    found = this.scope.find(name);
-    if (name.length === 1 && "a" <= name && name <= "z") {
-      if (!found) {
-        return true;
-      }
-    }
-    if (!found) {
-      this.throwError(null, Message.VariableNotDefined, name);
-    }
-
-    return false;
-  };
-
-  CodeGen.prototype.isSegmentedBlock = function(node) {
-    if (node.type === Syntax.CallExpression && this.isSegmentedMethod(node)) {
-      return true;
-    }
-    return Object.keys(node).some(function(key) {
-      if (key !== "range" && key !== "loc") {
-        if (typeof node[key] === "object") {
-          return this.isSegmentedBlock(node[key]);
-        }
-      }
-      return false;
-    }, this);
-  };
-
-  CodeGen.prototype.isSegmentedMethod = function(node) {
-    return !!SegmentedMethod[node.method.name];
-  };
-
-  CodeGen.prototype.withFunction = function(result, args, body) {
-    var braces, base, stmtCount;
-    var i, imax;
-
-    braces = { open: [ "{" ], close: [ "}" ] };
-
-    result.push("function(");
-    for (i = 0, imax = args.length; i < imax; i++) {
-      if (i) {
-        result.push(", ");
-      }
-      result.push(this.id(args[i]));
-    }
-    result.push(") ");
-
-    result.push(braces.open);
+    result = [ "function(", argItems, ") {\n" ];
 
     base = this.base;
     this.base += "  ";
 
     this.scope.begin(result, args);
 
-    stmtCount = body.call(this, result);
-    if (stmtCount === 0) {
+    body = fn.call(this);
+
+    if (body.length) {
+      result.push(body);
+    } else {
       result.push(this.base, "return $SC.Nil();");
-      stmtCount += 1;
     }
 
     this.scope.end();
 
     this.base = base;
 
-    result.push(braces.close);
+    result.push("\n", this.base, "}");
 
-    braces.open.push("\n");
-    braces.close.unshift("\n", this.base);
+    return result;
   };
 
   CodeGen.prototype.withIndent = function(fn) {
@@ -191,29 +156,65 @@
 
     base = this.base;
     this.base += "  ";
-    result = fn.call(this, this.base);
+    result = fn.call(this);
     this.base = base;
 
     return result;
   };
 
-  CodeGen.prototype.generate = function(node, opts) {
-    var result, i, imax;
+  CodeGen.prototype.insertArrayElement = function(elements) {
+    var result, items;
 
-    if (Array.isArray(node)) {
-      result = [];
-      result.push("(");
-      for (i = 0, imax = node.length; i < imax; ++i) {
+    result = [ "[", "]" ];
+
+    if (elements.length) {
+      items = this.withIndent(function() {
+        return this.stitchWith(elements, "\n", function(item) {
+          return [ this.base, this.generate(item), "," ];
+        });
+      });
+      result.splice(1, 0, "\n", items, "\n", this.base);
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.insertKeyValueElement = function(keyValues, with_comma) {
+    var result = [];
+
+    if (keyValues) {
+      if (with_comma) {
+        result.push(", ");
+      }
+      result.push("{ ");
+      Object.keys(keyValues).forEach(function(key, i) {
         if (i) {
           result.push(", ");
         }
-        result.push(this.generate(node[i], opts));
+        result.push(key, ": ", this.generate(keyValues[key]));
+      }, this);
+      result.push(" }");
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.stitchWith = function(elements, bond, fn) {
+    var result, item;
+    var count, i, imax;
+
+    result = [];
+    for (i = count = 0, imax = elements.length; i < imax; ++i) {
+      if (count) {
+        result.push(bond);
       }
-      result.push(")");
-    } else if (node && node.type) {
-      result = this[node.type].call(this, node, opts);
-    } else {
-      result = node;
+
+      item = fn.call(this, elements[i], i);
+
+      if (typeof item !== "undefined") {
+        result.push(item);
+        count += 1;
+      }
     }
 
     return result;
@@ -230,19 +231,20 @@
     throw new Error(message);
   };
 
-  CodeGen.prototype.AssignmentExpression = function(node) {
-    var result;
 
-    if (!Array.isArray(node.left)) {
-      result = this.genSingleAssignment(node);
+  gen.AssignmentExpression = function(node) {
+    var fn;
+
+    if (Array.isArray(node.left)) {
+      fn = gen._DestructuringAssignment;
     } else {
-      result = this.genDestructuringAssignment(node);
+      fn = gen._SimpleAssignment;
     }
 
-    return this.toSourceNodeWhenNeeded(result, node);
+    return fn.call(this, node);
   };
 
-  CodeGen.prototype.genSingleAssignment = function(node) {
+  gen._SimpleAssignment = function(node) {
     var result = [];
     var opts;
 
@@ -257,42 +259,43 @@
     return result;
   };
 
-  CodeGen.prototype.genDestructuringAssignment = function(node) {
-    var result = [];
+  gen._DestructuringAssignment = function(node) {
     var elements = node.left;
-    var i, imax;
+    var operator = node.operator;
+    var assignments;
 
     this.scope.add("var", "_ref");
 
-    result.push("(_ref = ", this.generate(node.right), ",");
+    assignments = this.withIndent(function() {
+      var result, lastUsedIndex;
 
-    this.withIndent(function() {
-      result.push("\n");
-      for (i = 0, imax = elements.length; i < imax; ++i) {
-        if (i) {
-          result.push(",\n");
-        }
-        result.push(
-          this.base,
-          this.assign(elements[i], node.operator, "_ref.at($SC.Integer(" + i + "))")
-        );
-      }
+      lastUsedIndex = elements.length;
+
+      result = [
+        this.stitchWith(elements, ",\n", function(item, i) {
+          return [ this.base, gen._assign.call(
+            this,  item, operator, "_ref.at($SC.Integer(" + i + "))"
+          ) ];
+        })
+      ];
 
       if (node.remain) {
-        result.push(
-          ",\n",
-          this.base,
-          this.assign(node.remain, node.operator, "_ref.copyToEnd($SC.Integer(" + imax + "))")
-        );
+        result.push(",\n", this.base, gen._assign.call(
+          this, node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
+        ));
       }
+
+      return result;
     });
 
-    result.push(",\n", this.base, "_ref)");
-
-    return result;
+    return [
+      "(_ref = ", this.generate(node.right), ",\n",
+      assignments , ",\n",
+      this.base, "_ref)"
+    ];
   };
 
-  CodeGen.prototype.assign = function(left, operator, right) {
+  gen._assign = function(left, operator, right) {
     var result = [];
     var opts;
 
@@ -307,23 +310,20 @@
     return result;
   };
 
-  CodeGen.prototype.BinaryExpression = function(node) {
-    var result;
+  gen.BinaryExpression = function(node) {
+    var operator = node.operator;
+    var fn;
 
-    switch (node.operator) {
-    case "===":
-    case "!==":
-      result = this.genEqualityOperator(node);
-      break;
-    default:
-      result = this.genBinaryExpression(node);
-      break;
+    if (operator === "===" || operator === "!==") {
+      fn = gen._EqualityOperator;
+    } else {
+      fn = gen._BinaryExpression;
     }
 
-    return this.toSourceNodeWhenNeeded(result, node);
+    return fn.call(this, node);
   };
 
-  CodeGen.prototype.genEqualityOperator = function(node) {
+  gen._EqualityOperator = function(node) {
     return [
       "$SC.Boolean(",
       this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
@@ -331,7 +331,7 @@
     ];
   };
 
-  CodeGen.prototype.genBinaryExpression = function(node) {
+  gen._BinaryExpression = function(node) {
     var result, operator, ch;
 
     result   = [ this.generate(node.left) ];
@@ -354,72 +354,51 @@
     return result;
   };
 
-  CodeGen.prototype.BlockExpression = function(node) {
-    var result = [];
-    var elements;
-
-    elements = node.body;
-
-    result.push("(");
-    this.withFunction(result, [], function() {
-      var stmt, stmtCount, i, imax;
-
-      for (i = stmtCount = 0, imax = elements.length; i < imax; ++i) {
-        if (stmtCount) {
-          result.push("\n");
-        }
-        stmt = this.generate(elements[i]);
-        if (i === imax - 1) {
-          stmt = [ "return ", stmt ];
-        }
-        result.push([ this.addIndent(stmt), ";" ]);
-        stmtCount += 1;
-      }
-
-      return stmtCount;
+  gen.BlockExpression = function(node) {
+    var body = this.withFunction([], function() {
+      return gen._Statements.call(this, node.body);
     });
-    result.push(")()");
 
-    return this.toSourceNodeWhenNeeded(result, node);
+    return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.CallExpression = function(node) {
-    var result;
+  gen.CallExpression = function(node) {
+    var fn;
 
-    if (this.isSegmentedMethod(node)) {
+    if (isSegmentedMethod(node)) {
       this.state.calledSegmentedMethod = true;
     }
 
-    if (!node.args.expand) {
-      result = this.genNormalCall(node);
+    if (node.args.expand) {
+      fn = gen._ExpandCall;
     } else {
-      result = this.genExpandCall(node);
+      fn = gen._NormalCall;
     }
 
-    return this.toSourceNodeWhenNeeded(result, node);
+    return fn.call(this, node);
   };
 
-  CodeGen.prototype.genNormalCall = function(node) {
-    var args = [];
-    var list, i, imax;
+  gen._NormalCall = function(node) {
+    var args;
+    var list;
+    var hasActualArgument;
 
     list = node.args.list;
+    hasActualArgument = !!list.length;
 
-    for (i = 0, imax = list.length; i < imax; ++i) {
-      if (i) {
-        args.push(", ");
-      }
-      args.push(this.generate(list[i]));
-    }
-
-    args.push(this.insertKeywordArguments(node.args.keywords, !!imax));
+    args = [
+      this.stitchWith(list, ", ", function(item) {
+        return this.generate(item);
+      }),
+      this.insertKeyValueElement(node.args.keywords, hasActualArgument)
+    ];
 
     return [
       this.generate(node.callee), ".", node.method.name, "(", args, ")"
     ];
   };
 
-  CodeGen.prototype.genExpandCall = function(node) {
+  gen._ExpandCall = function(node) {
     var result;
 
     this.scope.add("var", "_ref");
@@ -428,60 +407,302 @@
       "(_ref = ",
       this.generate(node.callee),
       ", _ref." + node.method.name + ".apply(_ref, ",
-      this.insertElements(node.args.list), ".concat(",
+      this.insertArrayElement(node.args.list), ".concat(",
       this.generate(node.args.expand), ".asArray()._",
-      this.insertKeywordArguments(node.args.keywords, true),
+      this.insertKeyValueElement(node.args.keywords, true),
       ")))"
     ];
 
     return result;
   };
 
-  CodeGen.prototype.insertKeywordArguments = function(keywords, with_comma) {
-    var result = [];
+  gen.GlobalExpression = function(node) {
+    return "$SC.Global." + node.id.name;
+  };
 
-    if (keywords) {
-      if (with_comma) {
-        result.push(", ");
+  gen.FunctionExpression = function(node) {
+    var fn, info;
+
+    info = getInformationOfFunction(node);
+
+    if (!isSegmentedBlock(node)) {
+      fn = gen._SimpleFunction;
+    } else {
+      fn = gen._SegmentedFunction;
+    }
+
+    return [
+      fn.call(this, node, info.args),
+      genFunctionMetadata(info), ")"
+    ];
+  };
+
+  gen._SimpleFunction = function(node, args) {
+    var body;
+
+    body = this.withFunction(args, function() {
+      return gen._Statements.call(this, node.body);
+    });
+
+    return [ "$SC.Function(", body ];
+  };
+
+  gen._SegmentedFunction = function(node, args) {
+    var fargs;
+    var body;
+
+    fargs = args.map(function(_, i) {
+      return "_arg" + i;
+    });
+
+    body = this.withFunction([], function() {
+      var result = [];
+      var fragments = [], syncBlockScope;
+      var closureVars = args;
+      var elements = node.body;
+      var i, imax;
+      var functionBodies;
+
+      for (i = 0, imax = closureVars.length; i < imax; ++i) {
+        this.scope.add("var", closureVars[i]);
       }
-      result.push("{ ");
-      Object.keys(keywords).forEach(function(key, i) {
-        if (i) {
-          result.push(", ");
+
+      syncBlockScope = this.state.syncBlockScope;
+      this.state.syncBlockScope = this.scope.peek();
+
+      var assignArguments = function(item, i) {
+        return "$" + args[i] + " = " + fargs[i];
+      };
+
+      functionBodies = this.withIndent(function() {
+        var fragments = [];
+        var i = 0, imax = elements.length;
+        var lastIndex = imax - 1;
+
+        fragments.push("\n");
+
+        var loop = function() {
+          var fragments = [];
+          var stmt;
+          var count = 0;
+
+          while (i < imax) {
+            if (i === 0) {
+              if (args.length) {
+                stmt = this.stitchWith(args, "; ", assignArguments);
+                fragments.push([ this.addIndent(stmt), ";", "\n" ]);
+              }
+            } else if (count) {
+              fragments.push("\n");
+            }
+
+            this.state.calledSegmentedMethod = false;
+            stmt = this.generate(elements[i]);
+
+            if (stmt.length) {
+              if (i === lastIndex || this.state.calledSegmentedMethod) {
+                stmt = [ "return ", stmt ];
+              }
+              fragments.push([ this.addIndent(stmt), ";" ]);
+              count += 1;
+            }
+
+            i += 1;
+            if (this.state.calledSegmentedMethod) {
+              break;
+            }
+          }
+
+          return fragments;
+        };
+
+        while (i < imax) {
+          if (i) {
+            fragments.push(",", "\n", this.base, this.withFunction([], loop));
+          } else {
+            fragments.push(this.base, this.withFunction(fargs, loop));
+          }
         }
-        result.push(key, ": ", this.generate(keywords[key]));
-      }, this);
-      result.push(" }");
+
+        fragments.push("\n");
+
+        return fragments;
+      });
+
+      fragments.push("return [", functionBodies, this.addIndent("];"));
+
+      result.push([ this.addIndent(fragments) ]);
+
+      this.state.syncBlockScope = syncBlockScope;
+
+      return result;
+    });
+
+    return [ "$SC.SegFunction(", body ];
+  };
+
+  gen.Identifier = function(node, opts) {
+    var name = node.name;
+
+    if (isClassName(name)) {
+      return "$SC.Class('" + name + "')";
+    }
+
+    if (this.scope.find(name)) {
+      return $id(name);
+    }
+
+    if (name.length === 1) {
+      return gen._InterpreterVariable.call(this, node, opts);
+    }
+
+    this.throwError(null, Message.VariableNotDefined, name);
+  };
+
+  gen._InterpreterVariable = function(node, opts) {
+    var name;
+
+    if (opts) {
+      // setter
+      name = [
+        "$this." + node.name + "_(", this.generate(opts.right), ")"
+      ];
+      opts.used = true;
+    } else {
+      // getter
+      name = "$this." + node.name + "()";
+    }
+
+    return name;
+  };
+
+  gen.ListExpression = function(node) {
+    var result;
+
+    result = [
+      "$SC.Array(",
+      this.insertArrayElement(node.elements),
+    ];
+
+    if (node.immutable) {
+      result.push(", ", "true");
+    }
+
+    result.push(")");
+
+    return result;
+  };
+
+  gen.Literal = function(node) {
+    switch (node.valueType) {
+    case Token.IntegerLiteral:
+      return "$SC.Integer(" + node.value + ")";
+    case Token.FloatLiteral:
+      return "$SC.Float(" + node.value + ")";
+    case Token.CharLiteral:
+      return "$SC.Char('" + node.value + "')";
+    case Token.SymbolLiteral:
+      return "$SC.Symbol('" + node.value + "')";
+    case Token.StringLiteral:
+      return "$SC.String('" + node.value + "')";
+    case Token.TrueLiteral:
+      return "$SC.True()";
+    case Token.FalseLiteral:
+      return "$SC.False()";
+    }
+
+    return "$SC.Nil()";
+  };
+
+  gen.ObjectExpression = function(node) {
+    return [
+      "$SC.Event(", this.insertArrayElement(node.elements), ")"
+    ];
+  };
+
+  gen.Program = function(node) {
+    var result, body;
+
+    if (node.body.length) {
+      body = this.withFunction([ "this", "SC" ], function() {
+        return gen._Statements.call(this ,node.body);
+      });
+
+      result = [ "(", body, ")" ];
+
+      if (!this.opts.bare) {
+        result = [ "SCScript", result, ";" ];
+      }
+    } else {
+      result = [];
     }
 
     return result;
   };
 
-  CodeGen.prototype.GlobalExpression = function(node) {
-    var result;
-
-    result = "$SC.Global." + node.id.name;
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.FunctionExpression = function(node) {
-    var result, info;
-
-    info = this.getInformationOfFunction(node);
-
-    if (!this.isSegmentedBlock(node)) {
-      result = this.genSimpleFunction(node, info.args);
-    } else {
-      result = this.genSegmentedFunction(node, info.args);
+  gen.ThisExpression = function(node) {
+    if (node.name === "this") {
+      return "$this";
     }
 
-    result.push(this.genFunctionMetadata(info), ")");
-
-    return this.toSourceNodeWhenNeeded(result, node);
+    return [ "$this." + node.name + "()" ];
   };
 
-  CodeGen.prototype.getInformationOfFunction = function(node) {
+  gen.UnaryExpression = function(node) {
+    /* istanbul ignore else */
+    if (node.operator === "`") {
+      return [ "$SC.Ref(", this.generate(node.arg), ")" ];
+    }
+
+    /* istanbul ignore next */
+    throw new Error("Unknown UnaryExpression: " + node.operator);
+  };
+
+  gen.VariableDeclaration = function(node) {
+    var scope = this.state.syncBlockScope;
+
+    return this.stitchWith(node.declarations, ", ", function(item) {
+      this.scope.add("var", item.id.name, scope);
+
+      if (!item.init) {
+        return;
+      }
+
+      return [ this.generate(item.id), " = ", this.generate(item.init) ];
+    });
+  };
+
+  gen._Statements = function(elements) {
+    var lastIndex = elements.length - 1;
+
+    return this.stitchWith(elements, "\n", function(item, i) {
+      var stmt;
+
+      stmt = this.generate(item);
+
+      if (stmt.length === 0) {
+        return;
+      }
+
+      if (i === lastIndex) {
+        stmt = [ "return ", stmt ];
+      }
+
+      return [ this.addIndent(stmt), ";" ];
+    });
+  };
+
+  var $id = function(id) {
+    var ch = id.charAt(0);
+
+    if (ch !== "_" && ch !== "$") {
+      id = "$" + id;
+    }
+
+    return id;
+  };
+
+  var getInformationOfFunction = function(node) {
     var args     = [];
     var defaults = [];
     var remain   = null;
@@ -506,127 +727,30 @@
     return { args: args, remain: remain, defaults: defaults, closed: node.closed };
   };
 
-  CodeGen.prototype.genSimpleFunction = function(node, args) {
-    var result = [];
-
-    result.push("$SC.Function(");
-
-    this.withFunction(result, args, function() {
-      var stmt, i, imax;
-      var count, elements = node.body;
-
-      for (i = count = 0, imax = elements.length; i < imax; ++i) {
-        if (count) {
-          result.push("\n");
-        }
-        stmt = this.generate(elements[i]);
-        if (stmt.length) {
-          if (i === imax - 1) {
-            stmt = [ "return ", stmt ];
-          }
-          result.push([ this.addIndent(stmt), ";" ]);
-          count += 1;
-        }
-      }
-
-      return count;
-    });
-
-    return result;
+  var isClassName = function(name) {
+    var ch0 = name.charAt(0);
+    return "A" <= ch0 && ch0 <= "Z";
   };
 
-  CodeGen.prototype.genSegmentedFunction = function(node, args) {
-    var result;
-    var fargs;
-
-    result = [ "$SC.SegFunction(" ];
-
-    fargs = args.map(function(_, i) {
-      return "_arg" + i;
-    });
-
-    this.withFunction(result, [], function() {
-      var fragments = [], syncBlockScope;
-      var closureVars = args;
-      var elements = node.body;
-      var i, imax;
-
-      for (i = 0, imax = closureVars.length; i < imax; ++i) {
-        this.scope.add("var", closureVars[i]);
-      }
-
-      syncBlockScope = this.state.syncBlockScope;
-      this.state.syncBlockScope = this.scope.peek();
-
-      fragments.push("return [");
-      this.withIndent(function() {
-        var i = 0, imax = elements.length;
-
-        fragments.push("\n");
-
-        var loop = function() {
-          var stmt;
-          var count = 0;
-          var j, jmax;
-
-          while (i < imax) {
-            if (i === 0) {
-              if (args.length) {
-                stmt = [];
-                for (j = 0, jmax = args.length; j < jmax; ++j) {
-                  if (j) {
-                    stmt.push("; ");
-                  }
-                  stmt.push("$" + args[j] + " = " + fargs[j]);
-                }
-                fragments.push([ this.addIndent(stmt), ";", "\n" ]);
-              }
-            } else if (count) {
-              fragments.push("\n");
-            }
-            this.state.calledSegmentedMethod = false;
-            stmt = this.generate(elements[i]);
-            if (stmt.length) {
-              if (i === imax - 1 || this.state.calledSegmentedMethod) {
-                stmt = [ "return ", stmt ];
-              }
-              fragments.push([ this.addIndent(stmt), ";" ]);
-              count += 1;
-            }
-            i += 1;
-            if (this.state.calledSegmentedMethod) {
-              break;
-            }
-          }
-
-          return count;
-        };
-
-        while (i < imax) {
-          if (i) {
-            fragments.push(",", "\n");
-            fragments.push(this.base);
-            this.withFunction(fragments, [], loop);
-          } else {
-            fragments.push(this.base);
-            this.withFunction(fragments, fargs, loop);
-          }
+  var isSegmentedBlock = function(node) {
+    if (node.type === Syntax.CallExpression && isSegmentedMethod(node)) {
+      return true;
+    }
+    return Object.keys(node).some(function(key) {
+      if (key !== "range" && key !== "loc") {
+        if (typeof node[key] === "object") {
+          return isSegmentedBlock(node[key]);
         }
-        fragments.push("\n");
-      });
-      fragments.push(this.addIndent("];"));
-
-      result.push([ this.addIndent(fragments) ]);
-
-      this.state.syncBlockScope = syncBlockScope;
-
-      return 1;
-    });
-
-    return result;
+      }
+      return false;
+    }, this);
   };
 
-  CodeGen.prototype.genFunctionMetadata = function(info) {
+  var isSegmentedMethod = function(node) {
+    return !!SegmentedMethod[node.method.name];
+  };
+
+  var genFunctionMetadata = function(info) {
     var defaults, remain, closed;
     var result;
     var i, imax;
@@ -661,209 +785,6 @@
     if (closed) {
       result.push(", true");
     }
-
-    return result;
-  };
-
-  CodeGen.prototype.Identifier = function(node, opts) {
-    var result;
-
-    if (this.isClassName(node)) {
-      result = "$SC.Class('" + node.name + "')";
-    } else if (this.isInterpreterVariable(node)) {
-      result = this.genInterpreterVariable(node, opts);
-    } else {
-      result = this.id(node.name);
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.genInterpreterVariable = function(node, opts) {
-    var name;
-
-    if (opts) {
-      // setter
-      name = [
-        "$this." + node.name + "_(", this.generate(opts.right), ")"
-      ];
-      opts.used = true;
-    } else {
-      // getter
-      name = "$this." + node.name + "()";
-    }
-
-    return name;
-  };
-
-  CodeGen.prototype.ListExpression = function(node) {
-    var result;
-
-    result = [
-      "$SC.Array(",
-      this.insertElements(node.elements),
-    ];
-
-    if (node.immutable) {
-      result.push(", ", "true");
-    }
-
-    result.push(")");
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.Literal = function(node) {
-    var result;
-
-    switch (node.valueType) {
-    case Token.IntegerLiteral:
-      result = "$SC.Integer(" + node.value + ")";
-      break;
-    case Token.FloatLiteral:
-      result = "$SC.Float(" + node.value + ")";
-      break;
-    case Token.CharLiteral:
-      result = "$SC.Char('" + node.value + "')";
-      break;
-    case Token.SymbolLiteral:
-      result = "$SC.Symbol('" + node.value + "')";
-      break;
-    case Token.StringLiteral:
-      result = "$SC.String('" + node.value + "')";
-      break;
-    case Token.TrueLiteral:
-      result = "$SC.True()";
-      break;
-    case Token.FalseLiteral:
-      result = "$SC.False()";
-      break;
-    default:
-      result = "$SC.Nil()";
-      break;
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.ObjectExpression = function(node) {
-    var result;
-
-    result = [
-      "$SC.Event(", this.insertElements(node.elements), ")"
-    ];
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.Program = function(node) {
-    var result = [];
-
-    if (node.body.length) {
-      if (!this.opts.bare) {
-        result.push("SCScript");
-      }
-      result.push("(");
-      this.withFunction(result, [ "this", "SC" ], function() {
-        var elements = node.body;
-        var stmt, stmtCount, i, imax;
-
-        for (i = stmtCount = 0, imax = elements.length; i < imax; ++i) {
-          if (stmtCount) {
-            result.push("\n");
-          }
-          stmt = this.generate(elements[i]);
-          if (stmt.length) {
-            if (i === imax - 1) {
-              stmt = [ "return ", stmt ];
-            }
-            result.push([ this.addIndent(stmt), ";" ]);
-            stmtCount += 1;
-          }
-        }
-
-        return stmtCount;
-      });
-      result.push(")");
-      if (!this.opts.bare) {
-        result.push(";");
-      }
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.ThisExpression = function(node) {
-    var result;
-
-    if (node.name === "this") {
-      result = "$this";
-    } else {
-      result = [ "$this." + node.name + "()" ];
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.UnaryExpression = function(node) {
-    var result;
-
-    /* istanbul ignore else */
-    if (node.operator === "`") {
-      result = [ "$SC.Ref(", this.generate(node.arg), ")" ];
-    } else {
-      throw new Error("Unknown UnaryExpression: " + node.operator);
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.VariableDeclaration = function(node) {
-    var result = [];
-    var declarations, count;
-    var i, imax;
-
-    declarations = node.declarations;
-    for (i = count = 0, imax = declarations.length; i < imax; ++i) {
-      if (count) {
-        result.push(", ");
-      }
-
-      this.scope.add("var", declarations[i].id.name, this.state.syncBlockScope);
-      if (declarations[i].init) {
-        result.push(
-          this.id(declarations[i].id.name),
-          " = ",
-          this.generate(declarations[i].init)
-        );
-        count += 1;
-      }
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.insertElements = function(elements) {
-    var result;
-    var i, imax;
-
-    result = [];
-
-    result.push("[");
-    if (elements.length) {
-      this.withIndent(function() {
-        result.push("\n");
-        for (i = 0, imax = elements.length; i < imax; ++i) {
-          if (i) {
-            result.push("\n");
-          }
-          result.push(this.base, this.generate(elements[i]), ",");
-        }
-        result.push("\n");
-      });
-      result.push(this.base);
-    }
-    result.push("]");
 
     return result;
   };

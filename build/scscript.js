@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.15" };
+var sc = { VERSION: "0.0.16" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -194,23 +194,23 @@ var sc = { VERSION: "0.0.15" };
 
   mathlib.leftShift = function(a, b) {
     if (b < 0) {
-      return (a|0) >> (-b|0);
+      return a >> -b;
     }
-    return (a|0) << (b|0);
+    return a << b;
   };
 
   mathlib.rightShift = function(a, b) {
     if (b < 0) {
-      return (a|0) << (-b|0);
+      return a << -b;
     }
-    return (a|0) >> (b|0);
+    return a >> b;
   };
 
   mathlib.unsignedRightShift = function(a, b) {
     if (b < 0) {
-      return (a|0) << (-b|0);
+      return (a << -b) >>> 0;
     }
-    return (a|0) >> (b|0);
+    return a >>> b;
   };
 
   mathlib.ring1 = function(a, b) {
@@ -509,27 +509,19 @@ var sc = { VERSION: "0.0.15" };
 
     wrapper = function() {
       var given, args;
-      var dict, keys, name, index;
       var i, imax;
 
       given = slice.call(arguments);
-      args  = [];
+      args  = new Array(argNames.length);
 
       if (isDictionary(given[given.length - 1])) {
-        dict = given.pop();
-        keys = Object.keys(dict);
-        for (i = 0, imax = keys.length; i < imax; ++i) {
-          name  = keys[i];
-          index = argNames.indexOf(name);
-          if (index !== -1) {
-            args[index] = dict[name];
-          }
-        }
+        setKeywordArguments(args, argNames, given.pop());
       }
 
       for (i = 0, imax = Math.min(argNames.length, given.length); i < imax; ++i) {
         args[i] = given[i];
       }
+
       if (remain) {
         args.push($SC.Array(given.slice(argNames.length)));
       }
@@ -542,6 +534,20 @@ var sc = { VERSION: "0.0.15" };
 
   var isDictionary = function(obj) {
     return !!(obj && obj.constructor === Object);
+  };
+
+  var setKeywordArguments = function(args, argNames, dict) {
+    var keys, name, index;
+    var i, imax;
+
+    keys = Object.keys(dict);
+    for (i = 0, imax = keys.length; i < imax; ++i) {
+      name  = keys[i];
+      index = argNames.indexOf(name);
+      if (index !== -1) {
+        args[index] = dict[name];
+      }
+    }
   };
 
   sc.lang.fn = fn;
@@ -610,9 +616,7 @@ var sc = { VERSION: "0.0.15" };
     });
   };
 
-  sc.lang.klass.define = function(constructor, className, spec) {
-    var items, superClassName, ch0, metaClass, newClass;
-
+  var throwIfInvalidArgument = function(constructor, className) {
     if (typeof constructor !== "function") {
       throw new Error(
         "sc.lang.klass.define: " +
@@ -626,12 +630,11 @@ var sc = { VERSION: "0.0.15" };
           "second argument must be a string, but got: " + String(className)
       );
     }
+  };
 
-    items = className.split(":");
-    className = items[0].trim();
-    superClassName = (items[1] || "Object").trim();
+  var throwIfInvalidClassName = function(className, superClassName) {
+    var ch0 = className.charCodeAt(0);
 
-    ch0 = className.charCodeAt(0);
     if (ch0 < 0x41 || 0x5a < ch0) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
@@ -653,23 +656,41 @@ var sc = { VERSION: "0.0.15" };
             "superclass '" + superClassName + "' is not registered."
         );
       }
+    }
+  };
+
+  sc.lang.klass.define = function(constructor, className, spec) {
+    var items, superClassName, metaClass, newClass;
+    var mproto, cproto;
+
+    throwIfInvalidArgument(constructor, className);
+
+    items = className.split(":");
+    className      = items[0].trim();
+    superClassName = (items[1] || "Object").trim();
+
+    throwIfInvalidClassName(className, superClassName);
+
+    if (className !== "Object") {
       extend(constructor, metaClasses[superClassName]);
     }
 
     metaClass = constructor.metaClass;
+    mproto    = metaClass._MetaSpec.prototype;
+    cproto    = constructor.prototype;
 
     spec = spec || {};
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, {});
+    def(className, spec, mproto, cproto, {});
+
+    newClass = new metaClass._MetaSpec();
+    newClass._name = className;
+    newClass._Spec = constructor;
+    cproto.__class = newClass;
+    cproto.__Spec  = constructor;
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = "Meta_" + className;
-
-    newClass = new metaClass._MetaSpec();
-    newClass._name = className;
-    newClass._Spec = metaClass._Spec;
-    newClass._Spec.prototype.__class = newClass;
-    newClass._Spec.prototype.__Spec  = newClass._Spec;
 
     classes["Meta_" + className] = metaClass;
     classes[className] = newClass;
@@ -1110,6 +1131,20 @@ var sc = { VERSION: "0.0.15" };
     return null;
   };
 
+  var nop_iter = {
+    next: __stop__
+  };
+
+  var one_shot_iter = function(value) {
+    var iter = {
+      next: function() {
+        iter.next = __stop__;
+        return value;
+      }
+    };
+    return iter;
+  };
+
   // TODO: async function
   iterator.execute = function(iter, $function) {
     var $item, ret, i = 0;
@@ -1127,15 +1162,7 @@ var sc = { VERSION: "0.0.15" };
     }
   };
 
-  iterator.object$do = function($obj) {
-    var iter = {
-      next: function() {
-        iter.next = __stop__;
-        return $obj;
-      }
-    };
-    return iter;
-  };
+  iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
     var $nil = utils.nilInstance;
@@ -1152,45 +1179,43 @@ var sc = { VERSION: "0.0.15" };
     return iter;
   };
 
-  var sc_numeric_iter = function($start, $end, $step) {
-    var iter, $i = $start;
-
-    if (bool($i ["=="] ($end))) {
-      iter = {
-        next: function() {
+  var sc_incremental_iter = function($start, $end, $step) {
+    var $i = $start, iter = {
+      next: function() {
+        var $ret = $i;
+        $i = $i ["+"] ($step);
+        if ($i > $end) {
           iter.next = __stop__;
-          return $start;
         }
-      };
-    } else if ($i < $end && $step > 0) {
-      iter = {
-        next: function() {
-          var $ret = $i;
-          $i = $i ["+"] ($step);
-          if ($i > $end) {
-            iter.next = __stop__;
-          }
-          return $ret;
-        }
-      };
-    } else if ($i > $end && $step < 0) {
-      iter = {
-        next: function() {
-          var $ret = $i;
-          $i = $i ["+"] ($step);
-          if ($i < $end) {
-            iter.next = __stop__;
-          }
-          return $ret;
-        }
-      };
-    } else {
-      iter = {
-        next: __stop__
-      };
-    }
-
+        return $ret;
+      }
+    };
     return iter;
+  };
+
+  var sc_decremental_iter = function($start, $end, $step) {
+    var $i = $start, iter = {
+      next: function() {
+        var $ret = $i;
+        $i = $i ["+"] ($step);
+        if ($i < $end) {
+          iter.next = __stop__;
+        }
+        return $ret;
+      }
+    };
+    return iter;
+  };
+
+  var sc_numeric_iter = function($start, $end, $step) {
+    if ($start.valueOf() === $end.valueOf()) {
+      return one_shot_iter($start);
+    } else if ($start < $end && $step > 0) {
+      return sc_incremental_iter($start, $end, $step);
+    } else if ($start > $end && $step < 0) {
+      return sc_decremental_iter($start, $end, $step);
+    }
+    return nop_iter;
   };
 
   iterator.number$do = function($end) {
@@ -1239,154 +1264,148 @@ var sc = { VERSION: "0.0.15" };
     return sc_numeric_iter($start, $end, $step);
   };
 
-  var js_numeric_iter = function(start, end, step, type) {
-    var iter, i = start;
-
-    if (i === end) {
-      iter = {
-        next: function() {
+  var js_incremental_iter = function(start, end, step, type) {
+    var i = start, iter = {
+      next: function() {
+        var ret = i;
+        i += step;
+        if (i > end) {
           iter.next = __stop__;
-          return type(start);
         }
-      };
-    } else if (i < end && step > 0) {
-      iter = {
-        next: function() {
-          var ret = i;
-          i += step;
-          if (i > end) {
-            iter.next = __stop__;
-          }
-          return type(ret);
-        }
-      };
-    } else if (i > end && step < 0) {
-      iter = {
-        next: function() {
-          var ret = i;
-          i += step;
-          if (i < end) {
-            iter.next = __stop__;
-          }
-          return type(ret);
-        }
-      };
-    } else {
-      iter = {
-        next: __stop__
-      };
-    }
-
+        return type(ret);
+      }
+    };
     return iter;
+  };
+
+  var js_decremental_iter = function(start, end, step, type) {
+    var i = start, iter = {
+      next: function() {
+        var ret = i;
+        i += step;
+        if (i < end) {
+          iter.next = __stop__;
+        }
+        return type(ret);
+      }
+    };
+    return iter;
+  };
+
+  var js_numeric_iter = function(start, end, step, type) {
+    if (start === end) {
+      return one_shot_iter(type(start));
+    } else if (start < end && step > 0) {
+      return js_incremental_iter(start, end, step, type);
+    } else if (start > end && step < 0) {
+      return js_decremental_iter(start, end, step, type);
+    }
+    return nop_iter;
+  };
+
+  var js_numeric_iter$do = function($endval, type) {
+    var end = type($endval.__num__()).valueOf();
+    return js_numeric_iter(0, end - 1, +1, type);
+  };
+
+  var js_numeric_iter$reverseDo = function($startval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = (start|0) - start;
+    return js_numeric_iter(start - 1, end, -1, type);
+  };
+
+  var js_numeric_iter$for = function($startval, $endval, type) {
+    $startval = utils.defaultValue$Nil($startval);
+    $endval   = utils.defaultValue$Nil($endval);
+
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = (start <= end) ? +1 : -1;
+
+    return js_numeric_iter(start, end, step, type);
+  };
+
+  var js_numeric_iter$forBy = function($startval, $endval, $stepval, type) {
+    $endval  = utils.defaultValue$Nil($endval);
+    $stepval = utils.defaultValue$Nil($stepval);
+
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = type($stepval .__num__()).valueOf();
+
+    return js_numeric_iter(start, end, step, type);
+  };
+
+  var js_numeric_iter$forSeries = function($startval, $second, $last, type) {
+    $second = utils.defaultValue$Nil($second);
+    $last   = utils.defaultValue$Nil($last);
+
+    var start  = type($startval.__num__()).valueOf();
+    var second = type($second  .__num__()).valueOf();
+    var end    = type($last    .__num__()).valueOf();
+    var step = second - start;
+
+    return js_numeric_iter(start, end, step, type);
   };
 
   iterator.integer$do = function($endval) {
-    var end = $endval.__int__();
-    return js_numeric_iter(0, end - 1, +1, $SC.Integer);
+    return js_numeric_iter$do($endval, $SC.Integer);
   };
 
   iterator.integer$reverseDo = function($startval) {
-    var start = $startval.__int__();
-    return js_numeric_iter(start - 1, 0, -1, $SC.Integer);
+    return js_numeric_iter$reverseDo($startval, $SC.Integer);
   };
 
   iterator.integer$for = function($startval, $endval) {
-    $endval = utils.defaultValue$Nil($endval);
-
-    var start = $startval.__int__();
-    var end   = $endval  .__int__();
-    var step  = (start <= end) ? +1 : -1;
-
-    return js_numeric_iter(start, end, step, $SC.Integer);
+    return js_numeric_iter$for($startval, $endval, $SC.Integer);
   };
 
   iterator.integer$forBy = function($startval, $endval, $stepval) {
-    $endval  = utils.defaultValue$Nil($endval);
-    $stepval = utils.defaultValue$Nil($stepval);
-
-    var start = $startval.__int__();
-    var end   = $endval  .__int__();
-    var step  = $stepval .__int__();
-
-    return js_numeric_iter(start, end, step, $SC.Integer);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Integer);
   };
 
   iterator.integer$forSeries = function($startval, $second, $last) {
-    $second = utils.defaultValue$Nil($second);
-    $last   = utils.defaultValue$Nil($last);
-
-    var start  = $startval.__int__();
-    var second = $second  .__int__();
-    var end    = $last    .__int__();
-    var step   = second - start;
-
-    return js_numeric_iter(start, end, step, $SC.Integer);
+    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Integer);
   };
 
   iterator.float$do = function($endval) {
-    var end = $endval.__num__();
-    return js_numeric_iter(0, end - 1, +1, $SC.Float);
+    return js_numeric_iter$do($endval, $SC.Float);
   };
 
   iterator.float$reverseDo = function($startval) {
-    var start = $startval.__num__();
-    var end   = (start|0) - start;
-    return js_numeric_iter(start - 1, end, -1, $SC.Float);
+    return js_numeric_iter$reverseDo($startval, $SC.Float);
   };
 
   iterator.float$for = function($startval, $endval) {
-    $endval = utils.defaultValue$Nil($endval);
-
-    var start = $startval.__num__();
-    var end   = $endval  .__num__();
-    var step  = (start <= end) ? +1 : -1;
-
-    return js_numeric_iter(start, end, step, $SC.Float);
+    return js_numeric_iter$for($startval, $endval, $SC.Float);
   };
 
   iterator.float$forBy = function($startval, $endval, $stepval) {
-    $endval  = utils.defaultValue$Nil($endval);
-    $stepval = utils.defaultValue$Nil($stepval);
-
-    var start = $startval.__num__();
-    var end   = $endval  .__num__();
-    var step  = $stepval .__num__();
-
-    return js_numeric_iter(start, end, step, $SC.Float);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Float);
   };
 
   iterator.float$forSeries = function($startval, $second, $last) {
-    $second = utils.defaultValue$Nil($second);
-    $last   = utils.defaultValue$Nil($last);
+    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Float);
+  };
 
-    var start  = $startval.__num__();
-    var second = $second  .__num__();
-    var end    = $last    .__num__();
-    var step = second - start;
-
-    return js_numeric_iter(start, end, step, $SC.Float);
+  var list_iter = function(list) {
+    var i = 0, iter = {
+      next: function() {
+        var $ret = list[i++];
+        if (i >= list.length) {
+          iter.next = __stop__;
+        }
+        return $ret;
+      }
+    };
+    return iter;
   };
 
   var js_array_iter = function(list) {
-    var iter, index = 0;
-
     if (list.length) {
-      iter = {
-        next: function() {
-          var $ret = list[index++];
-          if (index >= list.length) {
-            iter.next = __stop__;
-          }
-          return $ret;
-        }
-      };
-    } else {
-      iter = {
-        next: __stop__
-      };
+      return list_iter(list);
     }
-
-    return iter;
+    return nop_iter;
   };
 
   iterator.array$do = function($array) {
@@ -10529,92 +10548,90 @@ var sc = { VERSION: "0.0.15" };
     var source = this.source;
     var length = this.length;
     var index = this.index;
-    var lineNumber = this.lineNumber;
-    var lineStart = this.lineStart;
-    var ch, depth;
+    var ch;
 
     LOOP: while (index < length) {
       ch = source.charAt(index);
-      switch (ch) {
 
-      case " ":
-      case "\t":
+      if (ch === " " || ch === "\t") {
         index += 1;
-        continue LOOP;
-        /* falls through */
-
-      case "\n":
-        index += 1;
-        lineNumber += 1;
-        lineStart = index;
-        continue LOOP;
-        /* falls through */
-
-      case "/":
-        ch = source.charAt(index + 1);
-        switch (ch) {
-        case "/":
-          // line comment
-          index += 2;
-          while (index < length) {
-            ch = source.charAt(index);
-            index += 1;
-            if (ch === "\n") {
-              lineNumber += 1;
-              lineStart = index;
-              break;
-            }
-          }
-          break;
-
-        case "*":
-          // block comment
-          depth = 1;
-          index += 2;
-          while (index < length) {
-            ch = source.charAt(index);
-            switch (ch) {
-            case "/":
-              ch = source.charAt(index + 1);
-              if (ch === "*") {
-                depth += 1;
-                index += 1;
-              }
-              break;
-            case "*":
-              ch = source.charAt(index + 1);
-              if (ch === "/") {
-                depth -= 1;
-                index += 1;
-                if (depth === 0) {
-                  index += 1;
-                  continue LOOP;
-                }
-              }
-              break;
-            case "\n":
-              lineNumber += 1;
-              lineStart = index;
-              break;
-            }
-            index += 1;
-          }
-          this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-          break;
-
-        default:
-          break LOOP;
-        }
-        break;
-
-      default:
-        break LOOP;
+        continue;
       }
+
+      if (ch === "\n") {
+        index += 1;
+        this.lineNumber += 1;
+        this.lineStart = index;
+        continue;
+      }
+
+      if (ch === "/") {
+        ch = source.charAt(index + 1);
+        if (ch === "/") {
+          index = this.skipLineComment(index + 2);
+          continue;
+        }
+        if (ch === "*") {
+          index = this.skipBlockComment(index + 2);
+          continue;
+        }
+      }
+
+      break;
     }
 
     this.index = index;
-    this.lineNumber = lineNumber;
-    this.lineStart = lineStart;
+  };
+
+  SCParser.prototype.skipLineComment = function(index) {
+    var source = this.source;
+    var length = this.length;
+    var ch;
+
+    while (index < length) {
+      ch = source.charAt(index);
+      index += 1;
+      if (ch === "\n") {
+        this.lineNumber += 1;
+        this.lineStart = index;
+        break;
+      }
+    }
+
+    return index;
+  };
+
+  SCParser.prototype.skipBlockComment = function(index) {
+    var source = this.source;
+    var length = this.length;
+    var ch, depth;
+
+    depth = 1;
+    while (index < length) {
+      ch = source.charAt(index);
+
+      if (ch === "\n") {
+        this.lineNumber += 1;
+        this.lineStart = index;
+      } else {
+        ch = ch + source.charAt(index + 1);
+        if (ch === "/*") {
+          depth += 1;
+          index += 1;
+        } else if (ch === "*/") {
+          depth -= 1;
+          index += 1;
+          if (depth === 0) {
+            return index + 1;
+          }
+        }
+      }
+
+      index += 1;
+    }
+    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+
+    return index;
   };
 
   SCParser.prototype.collectToken = function() {
@@ -10730,8 +10747,13 @@ var sc = { VERSION: "0.0.15" };
     this.lineStart = lineStart;
   };
 
-  SCParser.prototype.lex = function() {
+  SCParser.prototype.lex = function(saved) {
+    var that = this;
     var token = this.lookahead;
+
+    if (saved) {
+      saved = [ this.lookahead, this.index, this.lineNumber, this.lineStart ];
+    }
 
     this.index = token.range[1];
     this.lineNumber = token.lineNumber;
@@ -10747,6 +10769,18 @@ var sc = { VERSION: "0.0.15" };
     this.lineNumber = token.lineNumber;
     this.lineStart = token.lineStart;
 
+    if (saved) {
+      token.restore = function() {
+        that.lookahead  = saved[0];
+        that.index      = saved[1];
+        that.lineNumber = saved[2];
+        that.lineStart  = saved[3];
+        if (that.tokens) {
+          that.tokens.pop();
+        }
+      };
+    }
+
     return token;
   };
 
@@ -10758,20 +10792,6 @@ var sc = { VERSION: "0.0.15" };
       lineStart: this.lineStart,
       range: [ this.index, this.index ]
     };
-  };
-
-  SCParser.prototype.restore = function(saved) {
-    this.lookahead  = saved[0];
-    this.index      = saved[1];
-    this.lineNumber = saved[2];
-    this.lineStart  = saved[3];
-    if (this.tokens) {
-      this.tokens.pop();
-    }
-  };
-
-  SCParser.prototype.save = function() {
-    return [ this.lookahead, this.index, this.lineNumber, this.lineStart ];
   };
 
   SCParser.prototype.scanCharLiteral = function() {
@@ -10891,7 +10911,6 @@ var sc = { VERSION: "0.0.15" };
   SCParser.prototype.scanNAryNumberLiteral = function(neg) {
     var re, start, items;
     var base, integer, frac, pi;
-    var x, i, imax;
     var value, type;
 
     re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
@@ -10912,26 +10931,11 @@ var sc = { VERSION: "0.0.15" };
     }
 
     type  = Token.IntegerLiteral;
-    value = 0;
-
-    for (i = 0, imax = integer.length; i < imax; ++i) {
-      value *= base;
-      x = char2num(integer[i]);
-      if (x >= base) {
-        this.throwError({}, Message.UnexpectedToken, integer[i]);
-      }
-      value += x;
-    }
+    value = this.calcNBasedInteger(integer, base);
 
     if (frac) {
       type = Token.FloatLiteral;
-      for (i = 0, imax = frac.length; i < imax; ++i) {
-        x = char2num(frac[i]);
-        if (x >= base) {
-          this.throwError({}, Message.UnexpectedToken, integer[i]);
-        }
-        value += x * Math.pow(base, -(i + 1));
-      }
+      value += this.calcNBasedFrac(frac, base);
     }
 
     if (neg) {
@@ -10958,6 +10962,35 @@ var sc = { VERSION: "0.0.15" };
       lineStart : this.lineStart,
       range: [ start, this.index ]
     };
+  };
+
+  SCParser.prototype.char2num = function(ch, base) {
+    var x = char2num(ch, base);
+    if (x >= base) {
+      this.throwError({}, Message.UnexpectedToken, ch);
+    }
+    return x;
+  };
+
+  SCParser.prototype.calcNBasedInteger = function(integer, base) {
+    var value, i, imax;
+
+    for (i = value = 0, imax = integer.length; i < imax; ++i) {
+      value *= base;
+      value += this.char2num(integer[i], base);
+    }
+
+    return value;
+  };
+
+  SCParser.prototype.calcNBasedFrac = function(frac, base) {
+    var value, i, imax;
+
+    for (i = value = 0, imax = frac.length; i < imax; ++i) {
+      value += this.char2num(frac[i], base) * Math.pow(base, -(i + 1));
+    }
+
+    return value;
   };
 
   SCParser.prototype.scanDecimalNumberLiteral = function(neg) {
@@ -11292,9 +11325,17 @@ var sc = { VERSION: "0.0.15" };
     return false;
   };
 
-  SCParser.prototype.match = function(value) {
+  SCParser.prototype._match = function(value, type) {
     var token = this.lookahead;
-    return token.type === Token.Punctuator && token.value === value;
+    return token.type === type && token.value === value;
+  };
+
+  SCParser.prototype.match = function(value) {
+    return this._match(value, Token.Punctuator);
+  };
+
+  SCParser.prototype.matchKeyword = function(value) {
+    return this._match(value, Token.Keyword);
   };
 
   SCParser.prototype.matchAny = function(list) {
@@ -11310,11 +11351,6 @@ var sc = { VERSION: "0.0.15" };
     }
 
     return null;
-  };
-
-  SCParser.prototype.matchKeyword = function(value) {
-    var token = this.lookahead;
-    return token.type === Token.Keyword && token.value === value;
   };
 
   SCParser.prototype.withScope = function(fn) {
@@ -11398,20 +11434,25 @@ var sc = { VERSION: "0.0.15" };
     return args;
   };
 
-  SCParser.prototype.parseFunctionArgumentElement = function() {
+  SCParser.prototype._parseArgVarElement = function(type, method) {
     var init = null, id;
 
     this.skipComment();
     this.markStart();
     id = this.parseVariableIdentifier();
-    this.scope.add("arg", id.name);
+    this.scope.add(type, id.name);
 
     if (this.match("=")) {
       this.lex();
-      init = this.parseUnaryExpression(); // literal or immurable array of literals
+      init = this[method]();
     }
 
     return this.markEnd(this.createVariableDeclarator(id, init));
+  };
+
+  SCParser.prototype.parseFunctionArgumentElement = function() {
+     // literal or immurable array of literals
+    return this._parseArgVarElement("arg", "parseUnaryExpression");
   };
 
   // 2.3 Function Body
@@ -11469,19 +11510,7 @@ var sc = { VERSION: "0.0.15" };
   };
 
   SCParser.prototype.parseVariableDeclarationElement = function() {
-    var init = null, id;
-
-    this.skipComment();
-    this.markStart();
-    id = this.parseVariableIdentifier();
-    this.scope.add("var", id.name);
-
-    if (this.match("=")) {
-      this.lex();
-      init = this.parseAssignmentExpression();
-    }
-
-    return this.markEnd(this.createVariableDeclarator(id, init));
+    return this._parseArgVarElement("var", "parseAssignmentExpression");
   };
 
   // 4. Expression
@@ -11518,77 +11547,84 @@ var sc = { VERSION: "0.0.15" };
 
   // 4.2 Assignment Expression
   SCParser.prototype.parseAssignmentExpression = function(node) {
-    var token, left, right;
-    var sharp, destructuringAssignment;
-    var marker, saved;
+    var token;
 
     if (node) {
       return this.parsePartialExpression(node);
     }
 
-    token = this.lookahead;
-
     this.skipComment();
-    marker = this.createLocationMarker();
     this.markStart();
 
-    saved = this.save();
-
     if (this.match("#")) {
-      sharp = true;
-      token = this.lex();
+      token = this.lex(true);
       if (this.matchAny([ "[", "{" ])) {
-        this.restore(saved);
+        token.restore();
       } else {
-        destructuringAssignment = true;
-        left = this.parseDestructuringAssignmentLeft();
-        token = this.lookahead;
-        this.expect("=");
+        node = this.parseDestructuringAssignmentExpression();
+      }
+    }
 
+    if (!node) {
+      node = this.parseSimpleAssignmentExpression();
+    }
+
+    return this.markEnd(node);
+  };
+
+  SCParser.prototype.parseDestructuringAssignmentExpression = function() {
+    var node, left, right, token;
+
+    left = this.parseDestructuringAssignmentLeft();
+    token = this.lookahead;
+    this.expect("=");
+
+    right = this.parseAssignmentExpression();
+    node = this.createAssignmentExpression(
+      token.value, left.list, right, left.remain
+    );
+
+    return node;
+  };
+
+  SCParser.prototype.parseSimpleAssignmentExpression = function() {
+    var node, left, right, token;
+
+    node = left = this.parsePartialExpression();
+
+    if (this.match("=")) {
+      if (node.type === Syntax.CallExpression) {
+        token = this.lex();
         right = this.parseAssignmentExpression();
-        node = this.createAssignmentExpression(
-          token.value, left.list, right, left.remain
+        left.method.name = this.getAssignMethod(left.method.name);
+        left.args.list = node.args.list.concat(right);
+        /* istanbul ignore else */
+        if (this.opts.range) {
+          left.range[1] = this.index;
+        }
+        /* istanbul ignore else */
+        if (this.opts.loc) {
+          left.loc.end = {
+            line: this.lineNumber,
+            column: this.index - this.lineStart
+          };
+        }
+        node = left;
+      } else {
+        // TODO: fix
+        if (!this.isLeftHandSide(left)) {
+          this.throwError({}, Message.InvalidLHSInAssignment);
+        }
+
+        token = this.lex();
+        right = this.parseAssignmentExpression();
+        node  = this.createAssignmentExpression(
+          token.value, left, right
         );
       }
     }
 
-    if (!destructuringAssignment) {
-      node = left = this.parsePartialExpression();
-
-      if (this.match("=")) {
-        if (node.type === Syntax.CallExpression) {
-          token = this.lex();
-          right = this.parseAssignmentExpression();
-          left.method.name = this.getAssignMethod(left.method.name);
-          left.args.list = node.args.list.concat(right);
-          /* istanbul ignore else */
-          if (this.opts.range) {
-            left.range[1] = this.index;
-          }
-          /* istanbul ignore else */
-          if (this.opts.loc) {
-            left.loc.end = {
-              line: this.lineNumber,
-              column: this.index - this.lineStart
-            };
-          }
-          node = left;
-        } else {
-          // TODO: fix
-          if (!this.isLeftHandSide(left)) {
-            this.throwError({}, Message.InvalidLHSInAssignment);
-          }
-
-          token = this.lex();
-          right = this.parseAssignmentExpression();
-          node  = this.createAssignmentExpression(
-            token.value, left, right
-          );
-        }
-      }
-    }
-
-    return this.markEnd(node);
+    return node;
   };
 
   SCParser.prototype.getAssignMethod = function(methodName) {
@@ -11672,15 +11708,14 @@ var sc = { VERSION: "0.0.15" };
   // 4.4 Conditional Expression
   // 4.5 Binary Expression
   SCParser.prototype.parseBinaryExpression = function(node) {
-    var marker, markers, expr, token, prec, stack;
-    var left, operator, right, i;
+    var marker, left, token, prec;
 
     this.skipComment();
 
     marker = this.createLocationMarker();
-    left = this.parseUnaryExpression(node);
+    left   = this.parseUnaryExpression(node);
+    token  = this.lookahead;
 
-    token = this.lookahead;
     prec = this.binaryPrecedence(token);
     if (prec === 0) {
       if (node) {
@@ -11693,17 +11728,26 @@ var sc = { VERSION: "0.0.15" };
     token.prec = prec;
     token.adverb = this.parseAdverb();
 
+    return this.sortByBinaryPrecedence(left, token, marker);
+  };
+
+  SCParser.prototype.sortByBinaryPrecedence = function(left, operator, marker) {
+    var expr;
+    var prec, token;
+    var markers, i;
+    var right, stack;
+
     markers = [ marker, this.createLocationMarker() ];
     right = this.parseUnaryExpression();
 
-    stack = [ left, token, right ];
+    stack = [ left, operator, right ];
 
     while ((prec = this.binaryPrecedence(this.lookahead)) > 0) {
       // Reduce: make a binary expression from the three topmost entries.
       while ((stack.length > 2) && (prec <= stack[stack.length - 2].prec)) {
-        right = stack.pop();
+        right    = stack.pop();
         operator = stack.pop();
-        left = stack.pop();
+        left     = stack.pop();
         expr = this.createBinaryExpression(operator, left, right);
         markers.pop();
 
@@ -11820,9 +11864,8 @@ var sc = { VERSION: "0.0.15" };
 
   // 4.7 LeftHandSide Expressions
   SCParser.prototype.parseLeftHandSideExpression = function(node) {
-    var marker, expr, args, m, prev, lookahead, closedFunction;
-    var disallowGenerator, blocklist;
-    var method;
+    var marker, expr, prev, lookahead;
+    var blocklist, stamp;
 
     this.skipComment();
 
@@ -11831,120 +11874,135 @@ var sc = { VERSION: "0.0.15" };
 
     blocklist = false;
 
-    while ((m = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
+    while ((stamp = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
       lookahead = this.lookahead;
-      if ((prev === "{" && (m !== "#" && m !== "{")) || (prev === "(" && m === "(")) {
+      if ((prev === "{" && (stamp !== "#" && stamp !== "{")) || (prev === "(" && stamp === "(")) {
         this.throwUnexpected(lookahead);
       }
-      switch (m) {
+      switch (stamp) {
       case "(":
-        if (this.isClassName(expr)) {
-          method = this.markTouch(this.createIdentifier("new"));
-          args   = this.parseCallArgument();
-          expr   = this.createCallExpression(expr, method, args, "(");
-        } else {
-          if (expr.type !== Syntax.Identifier) {
-            this.throwUnexpected(this.lookahead);
-          }
-          args = this.parseCallArgument();
-
-          method = expr;
-          expr   = args.list.shift();
-          if (!expr) {
-            if (args.expand) {
-              expr = args.expand;
-              delete args.expand;
-            } else {
-              this.throwUnexpected(lookahead);
-            }
-          }
-          expr = this.createCallExpression(expr, method, args, "("); // TODO: max(0, 1)  .. (?
-        }
+        expr = this.parseLeftHandSideParenthesis(expr);
         break;
       case "#":
-        closedFunction = this.state.closedFunction;
-        this.state.closedFunction = true;
-        this.lex();
-        if (!this.match("{")) {
-          this.throwUnexpected(this.lookahead);
-        }
-        m = "{";
-        /* falls through */
+        expr = this.parseLeftHandSideClosedBrace(expr);
+        break;
       case "{":
-        if (expr.type === Syntax.CallExpression && expr.stamp && expr.stamp !== "(") {
-          this.throwUnexpected(this.lookahead);
-        }
-        if (expr.type === Syntax.Identifier) {
-          if (this.isClassName(expr)) {
-            method = this.markTouch(this.createIdentifier("new"));
-            expr   = this.createCallExpression(expr, method, { list: [] }, m);
-          } else {
-            expr = this.createCallExpression(null, expr, { list: [] });
-          }
-        }
-        lookahead = this.lookahead;
-        disallowGenerator = this.state.disallowGenerator;
-        this.state.disallowGenerator = true;
-        node = this.parseBraces(true);
-        this.state.disallowGenerator = disallowGenerator;
-        this.state.closedFunction = closedFunction;
-
-        // TODO: refactoring
-        if (expr.callee === null) {
-          expr.callee = node;
-          node = expr;
-        } else {
-          expr.args.list.push(node);
-        }
-
+        expr = this.parseLeftHandSideBrace(expr);
         break;
       case "[":
-        if (expr.type === Syntax.CallExpression && expr.stamp === "(") {
-          this.throwUnexpected(this.lookahead);
-        }
-        if (this.isClassName(expr)) {
-          expr = this.parseLeftHandSideNewFrom(expr);
-        } else {
-          expr = this.parseLeftHandSideListAt(expr);
-        }
+        expr = this.parseLeftHandSideBracket(expr);
         break;
       case ".":
-        this.lex();
-        if (this.match("(")) {
-          method = this.markTouch(this.createIdentifier("value"));
-          args   = this.parseCallArgument();
-          expr   = this.createCallExpression(expr, method, args, ".");
-        } else if (this.match("[")) {
-           // TODO: fix
-          var expr0;
-          method = this.markTouch(this.createIdentifier("value"));
-          expr0  = expr;
-          expr   = this.markTouch(this.createCallExpression(expr, method, { list: [] }, "."));
-          /* istanbul ignore else */
-          if (this.opts.range) {
-            expr.range[0] = expr0.range[0];
-          }
-          /* istanbul ignore else */
-          if (this.opts.loc) {
-            expr.loc.start = expr0.loc.start;
-          }
-          expr = this.parseLeftHandSideListAt(expr);
-        } else {
-          method = this.parseProperty();
-          if (this.match("(")) {
-            args = this.parseCallArgument();
-            expr = this.createCallExpression(expr, method, args);
-          } else {
-            expr = this.createCallExpression(expr, method, { list: [] });
-          }
-        }
+        expr = this.parseLeftHandSideDot(expr);
         break;
       }
+
       /* istanbul ignore else */
       if (marker) {
         marker.apply(expr);
       }
-      prev = m;
+      prev = stamp;
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideParenthesis = function(expr) {
+    if (this.isClassName(expr)) {
+      return this.parseLeftHandSideClassNew(expr);
+    }
+
+    return this.parseLeftHandSideMethodCall(expr);
+  };
+
+  SCParser.prototype.parseLeftHandSideClassNew = function(expr) {
+    var method, args;
+
+    method = this.markTouch(this.createIdentifier("new"));
+    args   = this.parseCallArgument();
+
+    return this.createCallExpression(expr, method, args, "(");
+  };
+
+  SCParser.prototype.parseLeftHandSideMethodCall = function(expr) {
+    var method, args, lookahead;
+
+    if (expr.type !== Syntax.Identifier) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    lookahead = this.lookahead;
+    args      = this.parseCallArgument();
+
+    method = expr;
+    expr   = args.list.shift();
+
+    if (!expr) {
+      if (args.expand) {
+        expr = args.expand;
+        delete args.expand;
+      } else {
+        this.throwUnexpected(lookahead);
+      }
+    }
+
+    // max(0, 1) -> 0.max(1)
+    return this.createCallExpression(expr, method, args, "(");
+  };
+
+  SCParser.prototype.parseLeftHandSideClosedBrace = function(expr) {
+    this.lex();
+    if (!this.match("{")) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    this.state.closedFunction = true;
+    expr = this.parseLeftHandSideBrace(expr);
+    this.state.closedFunction = false;
+
+    return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideBrace = function(expr) {
+    var method, lookahead, disallowGenerator, node;
+
+    if (expr.type === Syntax.CallExpression && expr.stamp && expr.stamp !== "(") {
+      this.throwUnexpected(this.lookahead);
+    }
+    if (expr.type === Syntax.Identifier) {
+      if (this.isClassName(expr)) {
+        method = this.markTouch(this.createIdentifier("new"));
+        expr   = this.createCallExpression(expr, method, { list: [] }, "{");
+      } else {
+        expr = this.createCallExpression(null, expr, { list: [] });
+      }
+    }
+    lookahead = this.lookahead;
+    disallowGenerator = this.state.disallowGenerator;
+    this.state.disallowGenerator = true;
+    node = this.parseBraces(true);
+    this.state.disallowGenerator = disallowGenerator;
+
+    // TODO: refactoring
+    if (expr.callee === null) {
+      expr.callee = node;
+      node = expr;
+    } else {
+      expr.args.list.push(node);
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideBracket = function(expr) {
+    if (expr.type === Syntax.CallExpression && expr.stamp === "(") {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    if (this.isClassName(expr)) {
+      expr = this.parseLeftHandSideNewFrom(expr);
+    } else {
+      expr = this.parseLeftHandSideListAt(expr);
     }
 
     return expr;
@@ -11980,8 +12038,61 @@ var sc = { VERSION: "0.0.15" };
     return this.createCallExpression(expr, method, { list: indexes }, "[");
   };
 
+  SCParser.prototype.parseLeftHandSideDot = function(expr) {
+    var method, args;
+
+    this.lex();
+
+    if (this.match("(")) {
+      // expr.()
+      return this.parseLeftHandSideDotValue(expr);
+    } else if (this.match("[")) {
+      // expr.[0]
+      return this.parseLeftHandSideDotBracket(expr);
+    }
+
+    method = this.parseProperty();
+    if (this.match("(")) {
+      // expr.method(args)
+      args = this.parseCallArgument();
+      return this.createCallExpression(expr, method, args);
+    }
+
+    // expr.method
+    return this.createCallExpression(expr, method, { list: [] });
+  };
+
+  SCParser.prototype.parseLeftHandSideDotValue = function(expr) {
+    var method, args;
+
+    method = this.markTouch(this.createIdentifier("value"));
+    args   = this.parseCallArgument();
+
+    return this.createCallExpression(expr, method, args, ".");
+  };
+
+  SCParser.prototype.parseLeftHandSideDotBracket = function(expr) {
+    var save, method;
+
+    save   = expr;
+    method = this.markTouch(this.createIdentifier("value"));
+    expr   = this.markTouch(this.createCallExpression(expr, method, { list: [] }, "."));
+
+    /* istanbul ignore else */
+    if (this.opts.range) {
+      expr.range[0] = save.range[0];
+    }
+
+    /* istanbul ignore else */
+    if (this.opts.loc) {
+      expr.loc.start = save.loc.start;
+    }
+
+    return this.parseLeftHandSideListAt(expr);
+  };
+
   SCParser.prototype.parseCallArgument = function() {
-    var args, node, key, value, hasKeyword, lookahead;
+    var args, node, hasKeyword, lookahead;
 
     args = { list: [] };
     hasKeyword = false;
@@ -11996,10 +12107,7 @@ var sc = { VERSION: "0.0.15" };
           args.expand = this.parseExpressions();
           hasKeyword = true;
         } else if (lookahead.type === Token.Label) {
-          key = this.lex().value;
-          value = this.parseExpressions();
-          args.keywords = {};
-          args.keywords[key] = value;
+          this.parseCallArgumentKeyword(args);
           hasKeyword = true;
         } else {
           node = this.parseExpressions();
@@ -12009,12 +12117,7 @@ var sc = { VERSION: "0.0.15" };
         if (lookahead.type !== Token.Label) {
           this.throwUnexpected(lookahead);
         }
-        key = this.lex().value;
-        value = this.parseExpressions();
-        if (!args.keywords) {
-          args.keywords = {};
-        }
-        args.keywords[key] = value;
+        this.parseCallArgumentKeyword(args);
       }
       if (this.match(")")) {
         break;
@@ -12027,53 +12130,29 @@ var sc = { VERSION: "0.0.15" };
     return args;
   };
 
+  SCParser.prototype.parseCallArgumentKeyword = function(args) {
+    var key, value;
+
+    key = this.lex().value;
+    value = this.parseExpressions();
+    if (!args.keywords) {
+      args.keywords = {};
+    }
+    args.keywords[key] = value;
+  };
+
   SCParser.prototype.parseListIndexer = function() {
-    var first = null, second = null, last = null;
     var node = null;
 
     this.expect("[");
 
     if (!this.match("]")) {
-
       if (this.match("..")) {
-        // [..A]
-        this.lex();
-        if (!this.match("]")) {
-          last = this.parseExpressions();
-          node = [ null, null, last ];
-        } else {
-          node = [ null, null, null ];
-        }
+        // [..last] / [..]
+        node = this.parseListIndexerWithoutFirst();
       } else {
-        if (!this.match(",")) {
-          first = this.parseExpressions();
-        } else {
-          this.throwUnexpected(this.lookahead);
-        }
-        if (this.match("..")) {
-          this.lex();
-          if (!this.match("]")) {
-            // [A..B]
-            last = this.parseExpressions();
-          }
-          node = [ first, null, last ];
-        } else if (this.match(",")) {
-          this.lex();
-          second = this.parseExpressions();
-          if (this.match("..")) {
-            // [A, B..C]
-            this.lex();
-            if (!this.match("]")) {
-              last = this.parseExpressions();
-            }
-          } else {
-            this.throwUnexpected(this.lookahead);
-          }
-          node = [ first, second, last ];
-        } else {
-          // [A]
-          node = [ first ];
-        }
+        // [first] / [first..last] / [first, second..last]
+        node = this.parseListIndexerWithFirst();
       }
     }
 
@@ -12084,6 +12163,73 @@ var sc = { VERSION: "0.0.15" };
     }
 
     return node;
+  };
+
+  SCParser.prototype.parseListIndexerWithoutFirst = function() {
+    var last;
+
+    this.lex();
+
+    if (!this.match("]")) {
+      last = this.parseExpressions();
+
+      // [..last]
+      return [ null, null, last ];
+    }
+
+    // [..]
+    return [ null, null, null ];
+  };
+
+  SCParser.prototype.parseListIndexerWithFirst = function() {
+    var first = null;
+
+    if (!this.match(",")) {
+      first = this.parseExpressions();
+    } else {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    if (this.match("..")) {
+      return this.parseListIndexerWithoutSecond(first);
+    } else if (this.match(",")) {
+      return this.parseListIndexerWithSecond(first);
+    }
+
+    // [first]
+    return [ first ];
+  };
+
+  SCParser.prototype.parseListIndexerWithoutSecond = function(first) {
+    var last = null;
+
+    this.lex();
+
+    if (!this.match("]")) {
+      last = this.parseExpressions();
+    }
+
+    // [first..last]
+    return [ first, null, last ];
+  };
+
+  SCParser.prototype.parseListIndexerWithSecond = function(first) {
+    var second, last = null;
+
+    this.lex();
+
+    second = this.parseExpressions();
+    if (this.match("..")) {
+      this.lex();
+      if (!this.match("]")) {
+        last = this.parseExpressions();
+      }
+    } else {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    // [first, second..last]
+    return [ first, second, last ];
   };
 
   SCParser.prototype.parseProperty = function() {
@@ -12102,7 +12248,7 @@ var sc = { VERSION: "0.0.15" };
 
   // 4.8 Primary Expressions
   SCParser.prototype.parsePrimaryExpression = function(node) {
-    var expr, token, lookahead, closedFunction, disallowGenerator;
+    var expr;
 
     if (node) {
       return node;
@@ -12115,7 +12261,6 @@ var sc = { VERSION: "0.0.15" };
       this.lex();
       expr = this.createGlobalExpression(this.parseIdentifier());
     } else {
-      lookahead = this.lookahead;
 
       switch (this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type) {
       case "(":
@@ -12128,44 +12273,13 @@ var sc = { VERSION: "0.0.15" };
         expr = this.parseListInitialiser();
         break;
       case "#":
-        this.lex();
-        switch (this.matchAny([ "[", "{" ])) {
-        case "[":
-          if (this.state.immutableList) {
-            this.throwUnexpected(lookahead);
-          }
-          this.state.immutableList = true;
-          expr = this.parseListInitialiser();
-          this.state.immutableList = false;
-          break;
-        case "{":
-          disallowGenerator = this.state.disallowGenerator;
-          this.state.disallowGenerator = true;
-          closedFunction = this.state.closedFunction;
-          this.state.closedFunction = true;
-          expr = this.parseBraces();
-          this.state.closedFunction = closedFunction;
-          this.state.disallowGenerator = disallowGenerator;
-          break;
-        default:
-          expr = {};
-          this.throwUnexpected(this.lookahead);
-          break;
-        }
+        expr = this.parsePrimaryHashedExpression();
         break;
       case Token.Keyword:
-        if (Keywords[this.lookahead.value] === "keyword") {
-          this.throwUnexpected(this.lookahead);
-        }
-        expr = this.createThisExpression(this.lex().value);
+        expr = this.parsePrimaryKeywordExpression();
         break;
       case Token.Identifier:
-        lookahead = this.lookahead;
-        expr = this.parseIdentifier();
-        if (expr.name === "_") {
-          expr.name = "$_" + this.state.underscore.length.toString();
-          this.state.underscore.push(expr);
-        }
+        expr = this.parsePrimaryIdentifier();
         break;
       case Token.CharLiteral:
       case Token.FloatLiteral:
@@ -12177,12 +12291,7 @@ var sc = { VERSION: "0.0.15" };
         expr = this.createLiteral(this.lex());
         break;
       case Token.StringLiteral:
-        token = this.lex();
-        if (this.isInterpolatedString(token.value)) {
-          expr = this.parseInterpolatedString(token.value);
-        } else {
-          expr = this.createLiteral(token);
-        }
+        expr = this.parsePrimaryStringExpression();
         break;
       }
     }
@@ -12195,71 +12304,130 @@ var sc = { VERSION: "0.0.15" };
     return this.markEnd(expr);
   };
 
+  SCParser.prototype.parsePrimaryHashedExpression = function() {
+    var expr, lookahead;
+
+    lookahead = this.lookahead;
+
+    this.lex();
+
+    switch (this.matchAny([ "[", "{" ])) {
+    case "[":
+      expr = this.parsePrimaryImmutableListExpression(lookahead);
+      break;
+    case "{":
+      expr = this.parsePrimaryClosedFunctionExpression();
+      break;
+    default:
+      expr = {};
+      this.throwUnexpected(this.lookahead);
+      break;
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parsePrimaryImmutableListExpression = function(lookahead) {
+    var expr;
+
+    if (this.state.immutableList) {
+      this.throwUnexpected(lookahead);
+    }
+
+    this.state.immutableList = true;
+    expr = this.parseListInitialiser();
+    this.state.immutableList = false;
+
+    return expr;
+  };
+
+  SCParser.prototype.parsePrimaryClosedFunctionExpression = function() {
+    var expr, disallowGenerator, closedFunction;
+
+    disallowGenerator = this.state.disallowGenerator;
+    closedFunction    = this.state.closedFunction;
+
+    this.state.disallowGenerator = true;
+    this.state.closedFunction    = true;
+    expr = this.parseBraces();
+    this.state.closedFunction    = closedFunction;
+    this.state.disallowGenerator = disallowGenerator;
+
+    return expr;
+  };
+
+  SCParser.prototype.parsePrimaryKeywordExpression = function() {
+    if (Keywords[this.lookahead.value] === "keyword") {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return this.createThisExpression(this.lex().value);
+  };
+
+  SCParser.prototype.parsePrimaryIdentifier = function() {
+    var expr, lookahead;
+
+    lookahead = this.lookahead;
+
+    expr = this.parseIdentifier();
+
+    if (expr.name === "_") {
+      expr.name = "$_" + this.state.underscore.length.toString();
+      this.state.underscore.push(expr);
+    }
+
+    return expr;
+  };
+
   SCParser.prototype.isInterpolatedString = function(value) {
     var re = /(^|[^\x5c])#\{/;
     return re.test(value);
   };
 
+  SCParser.prototype.parsePrimaryStringExpression = function() {
+    var token;
+
+    token = this.lex();
+
+    if (this.isInterpolatedString(token.value)) {
+      return this.parseInterpolatedString(token.value);
+    }
+
+    return this.createLiteral(token);
+  };
+
   SCParser.prototype.parseInterpolatedString = function(value) {
     var len, items;
-    var i, j, ch, depth, code, parser;
+    var index1, index2, code, parser;
 
     len = value.length;
     items = [];
 
-    i = 0;
+    index1 = 0;
 
     do {
-      j = i;
-      LOOP1: while (j < len) {
-        ch = value.charAt(j);
-        switch (ch) {
-        case "#":
-          if (value.charAt(j + 1) === "{") {
-            break LOOP1;
-          }
-          break;
-        case "\\":
-          j += 1;
-          break;
-        }
-        j += 1;
-      }
-
-      if (j >= len) {
+      index2 = findString$InterpolatedString(value, index1);
+      if (index2 >= len) {
         break;
       }
-      code = value.substr(i, j - i);
+      code = value.substr(index1, index2 - index1);
       if (code) {
         items.push('"' + code + '"');
       }
-      i = j + 2;
-      j = i;
-      depth = 0;
-      LOOP2: while (j < len) {
-        ch = value.charAt(j);
-        switch (ch) {
-        case "}":
-          if (depth === 0) {
-            code = value.substr(i, j - i);
-            if (code) {
-              items.push("(" + code + ").asString");
-            }
-            break LOOP2;
-          }
-          depth -= 1;
-          break;
-        case "{":
-          depth += 1;
-          break;
-        }
-        j += 1;
-      }
-      i = j + 1;
-    } while (i < len);
 
-    if (i < len) {
-      items.push('"' + value.substr(i) + '"');
+      index1 = index2 + 2;
+      index2 = findExpression$InterpolatedString(value, index1, items);
+
+      code = value.substr(index1, index2 - index1);
+      if (code) {
+        items.push("(" + code + ").asString");
+      }
+
+      index1 = index2 + 1;
+    } while (index1 < len);
+
+    if (index1 < len) {
+      items.push('"' + value.substr(index1) + '"');
     }
 
     code = items.join("++");
@@ -12269,9 +12437,51 @@ var sc = { VERSION: "0.0.15" };
     return parser.parseExpression();
   };
 
+  var findString$InterpolatedString = function(value, index) {
+    var len, ch;
+
+    len = value.length;
+
+    while (index < len) {
+      ch = value.charAt(index);
+      if (ch === "#") {
+        if (value.charAt(index + 1) === "{") {
+          break;
+        }
+      } else if (ch === "\\") {
+        index += 1;
+      }
+      index += 1;
+    }
+
+    return index;
+  };
+
+  var findExpression$InterpolatedString = function(value, index) {
+    var len, depth, ch;
+
+    len = value.length;
+
+    depth = 0;
+    while (index < len) {
+      ch = value.charAt(index);
+      if (ch === "}") {
+        if (depth === 0) {
+          break;
+        }
+        depth -= 1;
+      } else if (ch === "{") {
+        depth += 1;
+      }
+      index += 1;
+    }
+
+    return index;
+  };
+
   // ( ... )
   SCParser.prototype.parseParentheses = function() {
-    var marker, node, expr, generator;
+    var marker, expr, generator, items;
 
     this.skipComment();
 
@@ -12296,21 +12506,9 @@ var sc = { VERSION: "0.0.15" };
     } else if (this.match(")")) {
       expr = this.createObjectExpression([]);
     } else {
-      node = this.parseExpression();
-      if (this.matchAny([ ",", ".." ])) {
-        expr = this.parseSeriesInitialiser(node, generator);
-      } else if (this.match(":")) {
-        expr = this.parseObjectInitialiser(node);
-      } else if (this.match(";")) {
-        expr = this.parseExpressions(node);
-        if (this.matchAny([ ",", ".." ])) {
-          expr = this.parseSeriesInitialiser(expr, generator);
-        }
-        marker = null;
-      } else {
-        expr = this.parseExpression(node);
-        marker = null;
-      }
+      items = this.parseParenthesesGuess(generator, marker);
+      expr   = items[0];
+      marker = items[1];
     }
 
     this.expect(")");
@@ -12321,6 +12519,28 @@ var sc = { VERSION: "0.0.15" };
     }
 
     return expr;
+  };
+
+  SCParser.prototype.parseParenthesesGuess = function(generator, marker) {
+    var node, expr;
+
+    node = this.parseExpression();
+    if (this.matchAny([ ",", ".." ])) {
+      expr = this.parseSeriesInitialiser(node, generator);
+    } else if (this.match(":")) {
+      expr = this.parseObjectInitialiser(node);
+    } else if (this.match(";")) {
+      expr = this.parseExpressions(node);
+      if (this.matchAny([ ",", ".." ])) {
+        expr = this.parseSeriesInitialiser(expr, generator);
+      }
+      marker = null;
+    } else {
+      expr = this.parseExpression(node);
+      marker = null;
+    }
+
+    return [ expr, marker ];
   };
 
   SCParser.prototype.parseObjectInitialiser = function(node) {
@@ -12359,8 +12579,8 @@ var sc = { VERSION: "0.0.15" };
   };
 
   SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
-    var first = null, second = null, last = null;
     var method, innerElements;
+    var items = [];
 
     innerElements = this.state.innerElements;
     this.state.innerElements = true;
@@ -12370,49 +12590,67 @@ var sc = { VERSION: "0.0.15" };
     ));
 
     if (node === null) {
-      // (..last)
-      first = this.markTouch({
-        type: Syntax.Literal,
-        value: "0",
-        valueType: Token.IntegerLiteral
-      });
-      this.expect("..");
-      if (this.match(")")) {
-        if (!generator) {
-          this.throwUnexpected(this.lookahead);
-        }
-      } else {
-        last = this.parseExpressions();
-      }
+      // (..), (..last)
+      items = this.parseSeriesInitialiserWithoutFirst(generator);
     } else {
-      first = node;
-      if (this.match(",")) {
-        // (first, second .. last)
-        this.lex();
-        second = this.parseExpressions();
-        if (Array.isArray(second) && second.length === 0) {
-          this.throwUnexpected(this.lookahead);
-        }
-        this.expect("..");
-        if (!this.match(")")) {
-          last = this.parseExpressions();
-        } else if (!generator) {
-          this.throwUnexpected(this.lookahead);
-        }
-      } else {
-        // (first..last)
-        this.lex();
-        if (!this.match(")")) {
-          last = this.parseExpressions();
-        } else if (!generator) {
-          this.throwUnexpected(this.lookahead);
-        }
-      }
+      items = this.parseSeriesInitialiserWithFirst(node, generator);
     }
 
     this.state.innerElements = innerElements;
 
-    return this.createCallExpression(first, method, { list: [ second, last ] });
+    return this.createCallExpression(items.shift(), method, { list: items });
+  };
+
+  SCParser.prototype.parseSeriesInitialiserWithoutFirst = function(generator) {
+    var first, last = null;
+
+    // (..last)
+    first = this.markTouch({
+      type: Syntax.Literal,
+      value: "0",
+      valueType: Token.IntegerLiteral
+    });
+
+    this.expect("..");
+    if (this.match(")")) {
+      if (!generator) {
+        this.throwUnexpected(this.lookahead);
+      }
+    } else {
+      last = this.parseExpressions();
+    }
+
+    return [ first, null, last ];
+  };
+
+  SCParser.prototype.parseSeriesInitialiserWithFirst = function(node, generator) {
+    var first, second = null, last = null;
+
+    first = node;
+    if (this.match(",")) {
+      // (first, second .. last)
+      this.lex();
+      second = this.parseExpressions();
+      if (Array.isArray(second) && second.length === 0) {
+        this.throwUnexpected(this.lookahead);
+      }
+      this.expect("..");
+      if (!this.match(")")) {
+        last = this.parseExpressions();
+      } else if (!generator) {
+        this.throwUnexpected(this.lookahead);
+      }
+    } else {
+      // (first..last)
+      this.lex();
+      if (!this.match(")")) {
+        last = this.parseExpressions();
+      } else if (!generator) {
+        this.throwUnexpected(this.lookahead);
+      }
+    }
+
+    return [ first, second, last ];
   };
 
   SCParser.prototype.parseListInitialiser = function() {
@@ -12732,8 +12970,6 @@ var sc = { VERSION: "0.0.15" };
     yield: true
   };
 
-  var gen = {};
-
   var Scope = sc.lang.compiler.Scope.inheritWith({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
@@ -12825,7 +13061,7 @@ var sc = { VERSION: "0.0.15" };
         }), ")"
       ];
     } else if (node && node.type) {
-      result = gen[node.type].call(this, node, opts);
+      result = this[node.type](node, opts);
       result = this.toSourceNodeWhenNeeded(result, node);
     } else if (typeof node === "string") {
       result = $id(node);
@@ -12948,19 +13184,15 @@ var sc = { VERSION: "0.0.15" };
     throw new Error(message);
   };
 
-  gen.AssignmentExpression = function(node) {
-    var fn;
-
+  CodeGen.prototype.AssignmentExpression = function(node) {
     if (Array.isArray(node.left)) {
-      fn = gen._DestructuringAssignment;
-    } else {
-      fn = gen._SimpleAssignment;
+      return this._DestructuringAssignment(node);
     }
 
-    return fn.call(this, node);
+    return this._SimpleAssignment(node);
   };
 
-  gen._SimpleAssignment = function(node) {
+  CodeGen.prototype._SimpleAssignment = function(node) {
     var result = [];
     var opts;
 
@@ -12975,7 +13207,7 @@ var sc = { VERSION: "0.0.15" };
     return result;
   };
 
-  gen._DestructuringAssignment = function(node) {
+  CodeGen.prototype._DestructuringAssignment = function(node) {
     var elements = node.left;
     var operator = node.operator;
     var assignments;
@@ -12989,15 +13221,15 @@ var sc = { VERSION: "0.0.15" };
 
       result = [
         this.stitchWith(elements, ",\n", function(item, i) {
-          return [ this.base, gen._assign.call(
-            this,  item, operator, "_ref.at($SC.Integer(" + i + "))"
+          return [ this.base, this._assign(
+            item, operator, "_ref.at($SC.Integer(" + i + "))"
           ) ];
         })
       ];
 
       if (node.remain) {
-        result.push(",\n", this.base, gen._assign.call(
-          this, node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
+        result.push(",\n", this.base, this._assign(
+          node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
         ));
       }
 
@@ -13011,7 +13243,7 @@ var sc = { VERSION: "0.0.15" };
     ];
   };
 
-  gen._assign = function(left, operator, right) {
+  CodeGen.prototype._assign = function(left, operator, right) {
     var result = [];
     var opts;
 
@@ -13026,20 +13258,17 @@ var sc = { VERSION: "0.0.15" };
     return result;
   };
 
-  gen.BinaryExpression = function(node) {
+  CodeGen.prototype.BinaryExpression = function(node) {
     var operator = node.operator;
-    var fn;
 
     if (operator === "===" || operator === "!==") {
-      fn = gen._EqualityOperator;
-    } else {
-      fn = gen._BinaryExpression;
+      return this._EqualityOperator(node);
     }
 
-    return fn.call(this, node);
+    return this._BinaryExpression(node);
   };
 
-  gen._EqualityOperator = function(node) {
+  CodeGen.prototype._EqualityOperator = function(node) {
     return [
       "$SC.Boolean(",
       this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
@@ -13047,7 +13276,7 @@ var sc = { VERSION: "0.0.15" };
     ];
   };
 
-  gen._BinaryExpression = function(node) {
+  CodeGen.prototype._BinaryExpression = function(node) {
     var result, operator, ch;
 
     result   = [ this.generate(node.left) ];
@@ -13070,31 +13299,27 @@ var sc = { VERSION: "0.0.15" };
     return result;
   };
 
-  gen.BlockExpression = function(node) {
+  CodeGen.prototype.BlockExpression = function(node) {
     var body = this.withFunction([], function() {
-      return gen._Statements.call(this, node.body);
+      return this._Statements(node.body);
     });
 
     return [ "(", body, ")()" ];
   };
 
-  gen.CallExpression = function(node) {
-    var fn;
-
+  CodeGen.prototype.CallExpression = function(node) {
     if (isSegmentedMethod(node)) {
       this.state.calledSegmentedMethod = true;
     }
 
     if (node.args.expand) {
-      fn = gen._ExpandCall;
-    } else {
-      fn = gen._NormalCall;
+      return this._ExpandCall(node);
     }
 
-    return fn.call(this, node);
+    return this._SimpleCall(node);
   };
 
-  gen._NormalCall = function(node) {
+  CodeGen.prototype._SimpleCall = function(node) {
     var args;
     var list;
     var hasActualArgument;
@@ -13114,7 +13339,7 @@ var sc = { VERSION: "0.0.15" };
     ];
   };
 
-  gen._ExpandCall = function(node) {
+  CodeGen.prototype._ExpandCall = function(node) {
     var result;
 
     this.scope.add("var", "_ref");
@@ -13132,19 +13357,19 @@ var sc = { VERSION: "0.0.15" };
     return result;
   };
 
-  gen.GlobalExpression = function(node) {
+  CodeGen.prototype.GlobalExpression = function(node) {
     return "$SC.Global." + node.id.name;
   };
 
-  gen.FunctionExpression = function(node) {
+  CodeGen.prototype.FunctionExpression = function(node) {
     var fn, info;
 
     info = getInformationOfFunction(node);
 
     if (!isSegmentedBlock(node)) {
-      fn = gen._SimpleFunction;
+      fn = CodeGen.prototype._SimpleFunction;
     } else {
-      fn = gen._SegmentedFunction;
+      fn = CodeGen.prototype._SegmentedFunction;
     }
 
     return [
@@ -13153,17 +13378,17 @@ var sc = { VERSION: "0.0.15" };
     ];
   };
 
-  gen._SimpleFunction = function(node, args) {
+  CodeGen.prototype._SimpleFunction = function(node, args) {
     var body;
 
     body = this.withFunction(args, function() {
-      return gen._Statements.call(this, node.body);
+      return this._Statements(node.body);
     });
 
     return [ "$SC.Function(", body ];
   };
 
-  gen._SegmentedFunction = function(node, args) {
+  CodeGen.prototype._SegmentedFunction = function(node, args) {
     var fargs;
     var body;
 
@@ -13257,7 +13482,7 @@ var sc = { VERSION: "0.0.15" };
     return [ "$SC.SegFunction(", body ];
   };
 
-  gen.Identifier = function(node, opts) {
+  CodeGen.prototype.Identifier = function(node, opts) {
     var name = node.name;
 
     if (isClassName(name)) {
@@ -13269,13 +13494,13 @@ var sc = { VERSION: "0.0.15" };
     }
 
     if (name.length === 1) {
-      return gen._InterpreterVariable.call(this, node, opts);
+      return this._InterpreterVariable(node, opts);
     }
 
     this.throwError(null, Message.VariableNotDefined, name);
   };
 
-  gen._InterpreterVariable = function(node, opts) {
+  CodeGen.prototype._InterpreterVariable = function(node, opts) {
     var name;
 
     if (opts) {
@@ -13292,7 +13517,7 @@ var sc = { VERSION: "0.0.15" };
     return name;
   };
 
-  gen.ListExpression = function(node) {
+  CodeGen.prototype.ListExpression = function(node) {
     var result;
 
     result = [
@@ -13309,7 +13534,7 @@ var sc = { VERSION: "0.0.15" };
     return result;
   };
 
-  gen.Literal = function(node) {
+  CodeGen.prototype.Literal = function(node) {
     switch (node.valueType) {
     case Token.IntegerLiteral:
       return "$SC.Integer(" + node.value + ")";
@@ -13330,18 +13555,18 @@ var sc = { VERSION: "0.0.15" };
     return "$SC.Nil()";
   };
 
-  gen.ObjectExpression = function(node) {
+  CodeGen.prototype.ObjectExpression = function(node) {
     return [
       "$SC.Event(", this.insertArrayElement(node.elements), ")"
     ];
   };
 
-  gen.Program = function(node) {
+  CodeGen.prototype.Program = function(node) {
     var result, body;
 
     if (node.body.length) {
       body = this.withFunction([ "this", "SC" ], function() {
-        return gen._Statements.call(this ,node.body);
+        return this._Statements(node.body);
       });
 
       result = [ "(", body, ")" ];
@@ -13356,7 +13581,7 @@ var sc = { VERSION: "0.0.15" };
     return result;
   };
 
-  gen.ThisExpression = function(node) {
+  CodeGen.prototype.ThisExpression = function(node) {
     if (node.name === "this") {
       return "$this";
     }
@@ -13364,7 +13589,7 @@ var sc = { VERSION: "0.0.15" };
     return [ "$this." + node.name + "()" ];
   };
 
-  gen.UnaryExpression = function(node) {
+  CodeGen.prototype.UnaryExpression = function(node) {
     /* istanbul ignore else */
     if (node.operator === "`") {
       return [ "$SC.Ref(", this.generate(node.arg), ")" ];
@@ -13374,7 +13599,7 @@ var sc = { VERSION: "0.0.15" };
     throw new Error("Unknown UnaryExpression: " + node.operator);
   };
 
-  gen.VariableDeclaration = function(node) {
+  CodeGen.prototype.VariableDeclaration = function(node) {
     var scope = this.state.syncBlockScope;
 
     return this.stitchWith(node.declarations, ", ", function(item) {
@@ -13388,7 +13613,7 @@ var sc = { VERSION: "0.0.15" };
     });
   };
 
-  gen._Statements = function(elements) {
+  CodeGen.prototype._Statements = function(elements) {
     var lastIndex = elements.length - 1;
 
     return this.stitchWith(elements, "\n", function(item, i) {

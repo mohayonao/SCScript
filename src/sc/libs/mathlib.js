@@ -116,23 +116,23 @@
 
   mathlib.leftShift = function(a, b) {
     if (b < 0) {
-      return (a|0) >> (-b|0);
+      return a >> -b;
     }
-    return (a|0) << (b|0);
+    return a << b;
   };
 
   mathlib.rightShift = function(a, b) {
     if (b < 0) {
-      return (a|0) << (-b|0);
+      return a << -b;
     }
-    return (a|0) >> (b|0);
+    return a >> b;
   };
 
   mathlib.unsignedRightShift = function(a, b) {
     if (b < 0) {
-      return (a|0) << (-b|0);
+      return (a << -b) >>> 0;
     }
-    return (a|0) >> (b|0);
+    return a >>> b;
   };
 
   mathlib.ring1 = function(a, b) {

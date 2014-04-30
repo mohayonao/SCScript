@@ -15,8 +15,6 @@
     yield: true
   };
 
-  var gen = {};
-
   var Scope = sc.lang.compiler.Scope.inheritWith({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
@@ -108,7 +106,7 @@
         }), ")"
       ];
     } else if (node && node.type) {
-      result = gen[node.type].call(this, node, opts);
+      result = this[node.type](node, opts);
       result = this.toSourceNodeWhenNeeded(result, node);
     } else if (typeof node === "string") {
       result = $id(node);
@@ -232,19 +230,15 @@
   };
 
 
-  gen.AssignmentExpression = function(node) {
-    var fn;
-
+  CodeGen.prototype.AssignmentExpression = function(node) {
     if (Array.isArray(node.left)) {
-      fn = gen._DestructuringAssignment;
-    } else {
-      fn = gen._SimpleAssignment;
+      return this._DestructuringAssignment(node);
     }
 
-    return fn.call(this, node);
+    return this._SimpleAssignment(node);
   };
 
-  gen._SimpleAssignment = function(node) {
+  CodeGen.prototype._SimpleAssignment = function(node) {
     var result = [];
     var opts;
 
@@ -259,7 +253,7 @@
     return result;
   };
 
-  gen._DestructuringAssignment = function(node) {
+  CodeGen.prototype._DestructuringAssignment = function(node) {
     var elements = node.left;
     var operator = node.operator;
     var assignments;
@@ -273,15 +267,15 @@
 
       result = [
         this.stitchWith(elements, ",\n", function(item, i) {
-          return [ this.base, gen._assign.call(
-            this,  item, operator, "_ref.at($SC.Integer(" + i + "))"
+          return [ this.base, this._assign(
+            item, operator, "_ref.at($SC.Integer(" + i + "))"
           ) ];
         })
       ];
 
       if (node.remain) {
-        result.push(",\n", this.base, gen._assign.call(
-          this, node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
+        result.push(",\n", this.base, this._assign(
+          node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
         ));
       }
 
@@ -295,7 +289,7 @@
     ];
   };
 
-  gen._assign = function(left, operator, right) {
+  CodeGen.prototype._assign = function(left, operator, right) {
     var result = [];
     var opts;
 
@@ -310,20 +304,17 @@
     return result;
   };
 
-  gen.BinaryExpression = function(node) {
+  CodeGen.prototype.BinaryExpression = function(node) {
     var operator = node.operator;
-    var fn;
 
     if (operator === "===" || operator === "!==") {
-      fn = gen._EqualityOperator;
-    } else {
-      fn = gen._BinaryExpression;
+      return this._EqualityOperator(node);
     }
 
-    return fn.call(this, node);
+    return this._BinaryExpression(node);
   };
 
-  gen._EqualityOperator = function(node) {
+  CodeGen.prototype._EqualityOperator = function(node) {
     return [
       "$SC.Boolean(",
       this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
@@ -331,7 +322,7 @@
     ];
   };
 
-  gen._BinaryExpression = function(node) {
+  CodeGen.prototype._BinaryExpression = function(node) {
     var result, operator, ch;
 
     result   = [ this.generate(node.left) ];
@@ -354,31 +345,27 @@
     return result;
   };
 
-  gen.BlockExpression = function(node) {
+  CodeGen.prototype.BlockExpression = function(node) {
     var body = this.withFunction([], function() {
-      return gen._Statements.call(this, node.body);
+      return this._Statements(node.body);
     });
 
     return [ "(", body, ")()" ];
   };
 
-  gen.CallExpression = function(node) {
-    var fn;
-
+  CodeGen.prototype.CallExpression = function(node) {
     if (isSegmentedMethod(node)) {
       this.state.calledSegmentedMethod = true;
     }
 
     if (node.args.expand) {
-      fn = gen._ExpandCall;
-    } else {
-      fn = gen._NormalCall;
+      return this._ExpandCall(node);
     }
 
-    return fn.call(this, node);
+    return this._SimpleCall(node);
   };
 
-  gen._NormalCall = function(node) {
+  CodeGen.prototype._SimpleCall = function(node) {
     var args;
     var list;
     var hasActualArgument;
@@ -398,7 +385,7 @@
     ];
   };
 
-  gen._ExpandCall = function(node) {
+  CodeGen.prototype._ExpandCall = function(node) {
     var result;
 
     this.scope.add("var", "_ref");
@@ -416,19 +403,19 @@
     return result;
   };
 
-  gen.GlobalExpression = function(node) {
+  CodeGen.prototype.GlobalExpression = function(node) {
     return "$SC.Global." + node.id.name;
   };
 
-  gen.FunctionExpression = function(node) {
+  CodeGen.prototype.FunctionExpression = function(node) {
     var fn, info;
 
     info = getInformationOfFunction(node);
 
     if (!isSegmentedBlock(node)) {
-      fn = gen._SimpleFunction;
+      fn = CodeGen.prototype._SimpleFunction;
     } else {
-      fn = gen._SegmentedFunction;
+      fn = CodeGen.prototype._SegmentedFunction;
     }
 
     return [
@@ -437,17 +424,17 @@
     ];
   };
 
-  gen._SimpleFunction = function(node, args) {
+  CodeGen.prototype._SimpleFunction = function(node, args) {
     var body;
 
     body = this.withFunction(args, function() {
-      return gen._Statements.call(this, node.body);
+      return this._Statements(node.body);
     });
 
     return [ "$SC.Function(", body ];
   };
 
-  gen._SegmentedFunction = function(node, args) {
+  CodeGen.prototype._SegmentedFunction = function(node, args) {
     var fargs;
     var body;
 
@@ -541,7 +528,7 @@
     return [ "$SC.SegFunction(", body ];
   };
 
-  gen.Identifier = function(node, opts) {
+  CodeGen.prototype.Identifier = function(node, opts) {
     var name = node.name;
 
     if (isClassName(name)) {
@@ -553,13 +540,13 @@
     }
 
     if (name.length === 1) {
-      return gen._InterpreterVariable.call(this, node, opts);
+      return this._InterpreterVariable(node, opts);
     }
 
     this.throwError(null, Message.VariableNotDefined, name);
   };
 
-  gen._InterpreterVariable = function(node, opts) {
+  CodeGen.prototype._InterpreterVariable = function(node, opts) {
     var name;
 
     if (opts) {
@@ -576,7 +563,7 @@
     return name;
   };
 
-  gen.ListExpression = function(node) {
+  CodeGen.prototype.ListExpression = function(node) {
     var result;
 
     result = [
@@ -593,7 +580,7 @@
     return result;
   };
 
-  gen.Literal = function(node) {
+  CodeGen.prototype.Literal = function(node) {
     switch (node.valueType) {
     case Token.IntegerLiteral:
       return "$SC.Integer(" + node.value + ")";
@@ -614,18 +601,18 @@
     return "$SC.Nil()";
   };
 
-  gen.ObjectExpression = function(node) {
+  CodeGen.prototype.ObjectExpression = function(node) {
     return [
       "$SC.Event(", this.insertArrayElement(node.elements), ")"
     ];
   };
 
-  gen.Program = function(node) {
+  CodeGen.prototype.Program = function(node) {
     var result, body;
 
     if (node.body.length) {
       body = this.withFunction([ "this", "SC" ], function() {
-        return gen._Statements.call(this ,node.body);
+        return this._Statements(node.body);
       });
 
       result = [ "(", body, ")" ];
@@ -640,7 +627,7 @@
     return result;
   };
 
-  gen.ThisExpression = function(node) {
+  CodeGen.prototype.ThisExpression = function(node) {
     if (node.name === "this") {
       return "$this";
     }
@@ -648,7 +635,7 @@
     return [ "$this." + node.name + "()" ];
   };
 
-  gen.UnaryExpression = function(node) {
+  CodeGen.prototype.UnaryExpression = function(node) {
     /* istanbul ignore else */
     if (node.operator === "`") {
       return [ "$SC.Ref(", this.generate(node.arg), ")" ];
@@ -658,7 +645,7 @@
     throw new Error("Unknown UnaryExpression: " + node.operator);
   };
 
-  gen.VariableDeclaration = function(node) {
+  CodeGen.prototype.VariableDeclaration = function(node) {
     var scope = this.state.syncBlockScope;
 
     return this.stitchWith(node.declarations, ", ", function(item) {
@@ -672,7 +659,7 @@
     });
   };
 
-  gen._Statements = function(elements) {
+  CodeGen.prototype._Statements = function(elements) {
     var lastIndex = elements.length - 1;
 
     return this.stitchWith(elements, "\n", function(item, i) {

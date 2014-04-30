@@ -63,9 +63,7 @@
     });
   };
 
-  sc.lang.klass.define = function(constructor, className, spec) {
-    var items, superClassName, ch0, metaClass, newClass;
-
+  var throwIfInvalidArgument = function(constructor, className) {
     if (typeof constructor !== "function") {
       throw new Error(
         "sc.lang.klass.define: " +
@@ -79,12 +77,11 @@
           "second argument must be a string, but got: " + String(className)
       );
     }
+  };
 
-    items = className.split(":");
-    className = items[0].trim();
-    superClassName = (items[1] || "Object").trim();
+  var throwIfInvalidClassName = function(className, superClassName) {
+    var ch0 = className.charCodeAt(0);
 
-    ch0 = className.charCodeAt(0);
     if (ch0 < 0x41 || 0x5a < ch0) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
@@ -106,23 +103,41 @@
             "superclass '" + superClassName + "' is not registered."
         );
       }
+    }
+  };
+
+  sc.lang.klass.define = function(constructor, className, spec) {
+    var items, superClassName, metaClass, newClass;
+    var mproto, cproto;
+
+    throwIfInvalidArgument(constructor, className);
+
+    items = className.split(":");
+    className      = items[0].trim();
+    superClassName = (items[1] || "Object").trim();
+
+    throwIfInvalidClassName(className, superClassName);
+
+    if (className !== "Object") {
       extend(constructor, metaClasses[superClassName]);
     }
 
     metaClass = constructor.metaClass;
+    mproto    = metaClass._MetaSpec.prototype;
+    cproto    = constructor.prototype;
 
     spec = spec || {};
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, {});
+    def(className, spec, mproto, cproto, {});
+
+    newClass = new metaClass._MetaSpec();
+    newClass._name = className;
+    newClass._Spec = constructor;
+    cproto.__class = newClass;
+    cproto.__Spec  = constructor;
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = "Meta_" + className;
-
-    newClass = new metaClass._MetaSpec();
-    newClass._name = className;
-    newClass._Spec = metaClass._Spec;
-    newClass._Spec.prototype.__class = newClass;
-    newClass._Spec.prototype.__Spec  = newClass._Spec;
 
     classes["Meta_" + className] = metaClass;
     classes[className] = newClass;

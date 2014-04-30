@@ -8,7 +8,7 @@
   describe("SCStream", function() {
     var SCStream;
     before(function() {
-      SCStream = $SC.Class("Stream");
+      SCStream = $SC("Stream");
       this.createInstance = function() {
         return SCStream.new();
       };
@@ -93,7 +93,7 @@
   describe("SCPauseStream", function() {
     var SCPauseStream;
     before(function() {
-      SCPauseStream = $SC.Class("PauseStream");
+      SCPauseStream = $SC("PauseStream");
       this.createInstance = function() {
         return SCPauseStream.new();
       };
@@ -154,7 +154,7 @@
   describe("SCTask", function() {
     var SCTask;
     before(function() {
-      SCTask = $SC.Class("Task");
+      SCTask = $SC("Task");
       this.createInstance = function() {
         return SCTask.new();
       };

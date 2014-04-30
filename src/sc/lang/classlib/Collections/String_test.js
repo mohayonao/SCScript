@@ -10,7 +10,7 @@
   describe("SCString", function() {
     var SCString;
     before(function() {
-      SCString = $SC.Class("String");
+      SCString = $SC("String");
       this.createInstance = function(str) {
         return $SC.String(str || "str");
       };

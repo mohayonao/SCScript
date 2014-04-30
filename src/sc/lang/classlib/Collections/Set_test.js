@@ -8,7 +8,7 @@
   describe("SCSet", function() {
     var SCSet;
     before(function() {
-      SCSet = $SC.Class("Set");
+      SCSet = $SC("Set");
       this.createInstance = function() {
         return SCSet.new();
       };

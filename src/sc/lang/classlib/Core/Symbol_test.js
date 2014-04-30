@@ -10,7 +10,7 @@
   describe("SCSymbol", function() {
     var SCSymbol;
     before(function() {
-      SCSymbol = $SC.Class("Symbol");
+      SCSymbol = $SC("Symbol");
       this.createInstance = function(value) {
         return $SC.Symbol(value || "sym");
       };

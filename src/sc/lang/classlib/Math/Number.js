@@ -7,7 +7,7 @@
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Number", function(spec, utils) {
-    spec.isNumber = utils.alwaysReturn$True;
+    spec.isNumber = utils.alwaysReturn$true;
 
     spec["+"] = function() {
       return this._subclassResponsibility("+");

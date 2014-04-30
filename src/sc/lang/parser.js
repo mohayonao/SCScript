@@ -56,7 +56,7 @@
     return "0" <= ch && ch <= "9";
   }
 
-  var Scope = sc.lang.compiler.Scope.inheritWith({
+  var Scope = sc.lang.compiler.Scope({
     begin: function() {
       var declared = this.getDeclaredVariable();
 
@@ -2533,15 +2533,5 @@
   };
 
   sc.lang.parser = parser;
-
-  var SCScript = sc.SCScript;
-
-  SCScript.tokenize = function(source, opts) {
-    opts = opts || /* istanbul ignore next */ {};
-    opts.tokens = true;
-    return parser.parse(source, opts).tokens || /* istanbul ignore next */ [];
-  };
-
-  SCScript.parse = parser.parse;
 
 })(sc);

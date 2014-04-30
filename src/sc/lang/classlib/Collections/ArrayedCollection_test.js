@@ -12,7 +12,7 @@
   describe("SCArrayedCollection", function() {
     var SCArrayedCollection;
     before(function() {
-      SCArrayedCollection = $SC.Class("ArrayedCollection");
+      SCArrayedCollection = $SC("ArrayedCollection");
       this.createInstance = function(source, immutable) {
         var instance = $SC.Array((source || []).map($), !!immutable);
         var testMethod = this.test.title.substr(1);
@@ -1230,7 +1230,7 @@
   describe("SCRawArray", function() {
     var SCRawArray;
     before(function() {
-      SCRawArray = $SC.Class("RawArray");
+      SCRawArray = $SC("RawArray");
       this.createInstance = function() {
         return SCRawArray.new();
       };

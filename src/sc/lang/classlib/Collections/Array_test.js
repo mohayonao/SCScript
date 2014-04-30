@@ -11,7 +11,7 @@
   describe("SCArray", function() {
     var SCArray;
     before(function() {
-      SCArray = $SC.Class("Array");
+      SCArray = $SC("Array");
       this.createInstance = function(source) {
         return $SC.Array((source || []).map($));
       };
@@ -835,7 +835,7 @@
       spy = this.spy(sc.test.func);
       $mul = sc.test.object();
       $add = sc.test.object();
-      this.stub($SC, "Class").withArgs("MulAdd").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("MulAdd").returns(sc.test.object({
         new: spy
       }));
 

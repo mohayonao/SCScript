@@ -12,7 +12,7 @@
   describe("SCObject", function() {
     var SCObject;
     before(function() {
-      SCObject = $SC.Class("Object");
+      SCObject = $SC("Object");
       this.createInstance = function(instance) {
         var testMethod;
         if (!instance) {
@@ -403,7 +403,7 @@
 
       spy = this.spy(sc.test.func);
       $obj = sc.test.object();
-      this.stub($SC, "Class").withArgs("Association").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Association").returns(sc.test.object({
         new: spy
       }));
 
@@ -440,7 +440,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("OneShotStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("OneShotStream").returns(sc.test.object({
         new: spy
       }));
 
@@ -924,7 +924,7 @@
       var $elem, $arg1, $arg2;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("FunctionList").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("FunctionList").returns(sc.test.object({
         new: spy
       }));
       $elem = sc.test.object();
@@ -1401,7 +1401,7 @@
       var instance, test, spy, rate;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("K2A").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("K2A").returns(sc.test.object({
         ar: spy
       }));
 

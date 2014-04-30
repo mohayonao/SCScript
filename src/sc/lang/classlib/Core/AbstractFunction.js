@@ -9,19 +9,19 @@
 
   sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
     spec.composeUnaryOp = function($aSelector) {
-      return $SC.Class("UnaryOpFunction").new($aSelector, this);
+      return $SC("UnaryOpFunction").new($aSelector, this);
     };
 
     spec.composeBinaryOp = function($aSelector, $something, $adverb) {
-      return $SC.Class("BinaryOpFunction").new($aSelector, this, $something, $adverb);
+      return $SC("BinaryOpFunction").new($aSelector, this, $something, $adverb);
     };
 
     spec.reverseComposeBinaryOp = function($aSelector, $something, $adverb) {
-      return $SC.Class("BinaryOpFunction").new($aSelector, $something, this, $adverb);
+      return $SC("BinaryOpFunction").new($aSelector, $something, this, $adverb);
     };
 
     spec.composeNAryOp = function($aSelector, $anArgList) {
-      return $SC.Class("NAryOpFunction").new($aSelector, this, $anArgList);
+      return $SC("NAryOpFunction").new($aSelector, this, $anArgList);
     };
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
@@ -619,7 +619,7 @@
       $result = this.value($for);
 
       if ($result.rate().__sym__() !== "audio") {
-        return $SC.Class("K2A").ar($result);
+        return $SC("K2A").ar($result);
       }
 
       return $result;
@@ -629,7 +629,7 @@
       return this.value();
     };
 
-    spec.isValidUGenInput = utils.alwaysReturn$True;
+    spec.isValidUGenInput = utils.alwaysReturn$true;
   });
 
   function SCUnaryOpFunction(args) {
@@ -730,6 +730,7 @@
   }
 
   sc.lang.klass.define(SCFunctionList, "FunctionList : AbstractFunction", function(spec, utils) {
+    var $int_0 = utils.$int_0;
 
     spec.array = function() {
       return this.$array;
@@ -759,7 +760,7 @@
       this.$array.remove($function);
 
       if (this.$array.size() < 2) {
-        return this.$array.at(utils.int0Instance);
+        return this.$array.at($int_0);
       }
 
       return this;

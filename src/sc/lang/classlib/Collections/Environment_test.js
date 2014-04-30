@@ -8,7 +8,7 @@
   describe("SCEnvironment", function() {
     var SCEnvironment;
     before(function() {
-      SCEnvironment = $SC.Class("Environment");
+      SCEnvironment = $SC("Environment");
       this.createInstance = function() {
         return SCEnvironment.new();
       };

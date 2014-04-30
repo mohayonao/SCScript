@@ -29,7 +29,7 @@
       throw new Error("Float.new is illegal, should use literal.");
     };
 
-    spec.isFloat = utils.alwaysReturn$True;
+    spec.isFloat = utils.alwaysReturn$true;
     spec.asFloat = utils.nop;
 
     [

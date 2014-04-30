@@ -7,11 +7,13 @@
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Collection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.$newFrom = function($aCollection) {
       var $newCollection;
@@ -40,7 +42,7 @@
       $size     = utils.defaultValue$Nil($size);
       $function = utils.defaultValue$Nil($function);
 
-      if (bool($size.isSequenceableCollection())) {
+      if (BOOL($size.isSequenceableCollection())) {
         return this.fillND($size, $function);
       }
 
@@ -117,14 +119,14 @@
       $n = $dimensions.first();
       $obj = $this.new($n);
       $argIndex = $args.size();
-      $args = $args ["++"] ($int0);
+      $args = $args ["++"] ($int_0);
 
       if ($dimensions.size().__int__() <= 1) {
         $n.do($SC.Function(function($i) {
           $obj.add($function.valueArray($args.put($argIndex, $i)));
         }));
       } else {
-        $dimensions = $dimensions.drop($int1);
+        $dimensions = $dimensions.drop($int_1);
         $n.do($SC.Function(function($i) {
           $obj = $obj.add(fillND($this, $dimensions, $function, $args.put($argIndex, $i)));
         }));
@@ -147,19 +149,19 @@
       var $res = null;
 
       if ($aCollection.class() !== this.class()) {
-        return utils.falseInstance;
+        return $false;
       }
       if (this.size() !== $aCollection.size()) {
-        return utils.falseInstance;
+        return $false;
       }
       this.do($SC.Function(function($item) {
-        if (!bool($aCollection.includes($item))) {
-          $res = utils.falseInstance;
+        if (!BOOL($aCollection.includes($item))) {
+          $res = $false;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     // TODO: implements hash
@@ -199,7 +201,7 @@
     };
 
     spec.asCollection = utils.nop;
-    spec.isCollection = utils.alwaysReturn$True;
+    spec.isCollection = utils.alwaysReturn$true;
 
     spec.add = function() {
       return this._subclassResponsibility("add");
@@ -244,7 +246,7 @@
       $removedItems = this.class().new();
       $copy = this.copy();
       $copy.do($SC.Function(function($item) {
-        if (bool($function.value($item))) {
+        if (BOOL($function.value($item))) {
           $this.remove($item);
           $removedItems = $removedItems.add($item);
         }
@@ -284,12 +286,12 @@
 
       this.do($SC.Function(function($item2) {
         if ($item1 === $item2) {
-          $res = utils.trueInstance;
+          $res = $true;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.includesEqual = function($item1) {
@@ -297,13 +299,13 @@
       $item1 = utils.defaultValue$Nil($item1);
 
       this.do($SC.Function(function($item2) {
-        if (bool( $item1 ["=="] ($item2) )) {
-          $res = utils.trueInstance;
+        if (BOOL( $item1 ["=="] ($item2) )) {
+          $res = $true;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.includesAny = function($aCollection) {
@@ -311,13 +313,13 @@
       $aCollection = utils.defaultValue$Nil($aCollection);
 
       $aCollection.do($SC.Function(function($item) {
-        if (bool($this.includes($item))) {
-          $res = utils.trueInstance;
+        if (BOOL($this.includes($item))) {
+          $res = $true;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.includesAll = function($aCollection) {
@@ -325,13 +327,13 @@
       $aCollection = utils.defaultValue$Nil($aCollection);
 
       $aCollection.do($SC.Function(function($item) {
-        if (!bool($this.includes($item))) {
-          $res = utils.falseInstance;
+        if (!BOOL($this.includes($item))) {
+          $res = $false;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     spec.matchItem = function($item) {
@@ -370,7 +372,7 @@
 
       $res = $class.new(this.size());
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $res.add($elem);
         }
       }));
@@ -385,7 +387,7 @@
 
       $res = $class.new(this.size());
       this.do($SC.Function(function($elem, $i) {
-        if (!bool($function.value($elem, $i))) {
+        if (!BOOL($function.value($elem, $i))) {
           $res = $res.add($elem);
         }
       }));
@@ -398,7 +400,7 @@
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $elem;
           return sc.C.LOOP_BREAK;
         }
@@ -412,7 +414,7 @@
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $i;
           return sc.C.LOOP_BREAK;
         }
@@ -474,7 +476,7 @@
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $elem;
         } else {
           return sc.C.LOOP_BREAK;
@@ -489,7 +491,7 @@
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $i;
         } else {
           return sc.C.LOOP_BREAK;
@@ -532,7 +534,7 @@
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           sum++;
         }
       }));
@@ -545,7 +547,7 @@
       $obj = utils.defaultValue$Nil($obj);
 
       this.do($SC.Function(function($elem) {
-        if (bool($elem ["=="] ($obj))) {
+        if (BOOL($elem ["=="] ($obj))) {
           sum++;
         }
       }));
@@ -558,13 +560,13 @@
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
-          $res = utils.trueInstance;
+        if (BOOL($function.value($elem, $i))) {
+          $res = $true;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.every = function($function) {
@@ -572,20 +574,20 @@
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (!bool($function.value($elem, $i))) {
-          $res = utils.falseInstance;
+        if (!BOOL($function.value($elem, $i))) {
+          $res = $false;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     spec.sum = function($function) {
       var $sum;
       $function = utils.defaultValue$Nil($function);
 
-      $sum = $int0;
+      $sum = $int_0;
       if ($function === $nil) {
         this.do($SC.Function(function($elem) {
           $sum = $sum ["+"] ($elem);
@@ -607,7 +609,7 @@
       var $product;
       $function = utils.defaultValue$Nil($function);
 
-      $product = $int1;
+      $product = $int_1;
       if ($function === $nil) {
         this.do($SC.Function(function($elem) {
           $product = $product ["*"] ($elem);
@@ -624,10 +626,10 @@
     spec.sumabs = function() {
       var $sum;
 
-      $sum = $int0;
+      $sum = $int_0;
       this.do($SC.Function(function($elem) {
-        if (bool($elem.isSequenceableCollection())) {
-          $elem = $elem.at($int0);
+        if (BOOL($elem.isSequenceableCollection())) {
+          $elem = $elem.at($int_0);
         }
         $sum = $sum ["+"] ($elem.abs());
       }));
@@ -828,7 +830,7 @@
 
       this.do($SC.Function(function($sublist) {
         var sz;
-        if (bool($sublist.isCollection())) {
+        if (BOOL($sublist.isCollection())) {
           sz = $sublist.maxSizeAtDepth($SC.Integer(rank - 1));
         } else {
           sz = 1;
@@ -847,7 +849,7 @@
 
       $res = $max;
       this.do($SC.Function(function($elem) {
-        if (bool($elem.isCollection())) {
+        if (BOOL($elem.isCollection())) {
           $res = $res.max($elem.maxDepth($max.__inc__()));
         }
       }));
@@ -906,7 +908,7 @@
       var $index;
       $axis = utils.defaultValue$Nil($axis);
 
-      if (bool(this.isEmpty())) {
+      if (BOOL(this.isEmpty())) {
         return this.species().new();
       }
       if ($axis !== $nil) {
@@ -924,7 +926,7 @@
 
       $result = this.species().new();
       this.do($SC.Function(function($item) {
-        if (bool($that.includes($item))) {
+        if (BOOL($that.includes($item))) {
           $result = $result.add($item);
         }
       }));
@@ -938,7 +940,7 @@
 
       $result = this.copy();
       $that.do($SC.Function(function($item) {
-        if (!bool($result.includes($item))) {
+        if (!BOOL($result.includes($item))) {
           $result = $result.add($item);
         }
       }));
@@ -956,12 +958,12 @@
 
       $result = this.species().new();
       $this.do($SC.Function(function($item) {
-        if (!bool($that.includes($item))) {
+        if (!BOOL($that.includes($item))) {
           $result = $result.add($item);
         }
       }));
       $that.do($SC.Function(function($item) {
-        if (!bool($this.includes($item))) {
+        if (!BOOL($this.includes($item))) {
           $result = $result.add($item);
         }
       }));
@@ -979,19 +981,19 @@
     };
 
     spec.asBag = function() {
-      return $SC.Class("Bag").new(this.size()).addAll(this);
+      return $SC("Bag").new(this.size()).addAll(this);
     };
 
     spec.asList = function() {
-      return $SC.Class("List").new(this.size()).addAll(this);
+      return $SC("List").new(this.size()).addAll(this);
     };
 
     spec.asSet = function() {
-      return $SC.Class("Set").new(this.size()).addAll(this);
+      return $SC("Set").new(this.size()).addAll(this);
     };
 
     spec.asSortedList = function($function) {
-      return $SC.Class("SortedList").new(this.size(), $function).addAll(this);
+      return $SC("SortedList").new(this.size(), $function).addAll(this);
     };
 
     // TODO: implements powerset

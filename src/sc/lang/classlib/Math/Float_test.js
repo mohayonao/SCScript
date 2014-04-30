@@ -11,7 +11,7 @@
   describe("SCFloat", function() {
     var SCFloat;
     before(function() {
-      SCFloat = $SC.Class("Float");
+      SCFloat = $SC("Float");
       this.createInstance = function(value) {
         return $SC.Float(typeof value === "undefined" ? 0 : value);
       };

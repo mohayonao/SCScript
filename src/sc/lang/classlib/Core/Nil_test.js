@@ -8,7 +8,7 @@
   describe("SCNil", function() {
     var SCNil;
     before(function() {
-      SCNil = $SC.Class("Nil");
+      SCNil = $SC("Nil");
       this.createInstance = function() {
         return $SC.Nil();
       };
@@ -198,7 +198,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("IdentitySet").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("IdentitySet").returns(sc.test.object({
         new: spy
       }));
 
@@ -275,7 +275,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("Quant").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Quant").returns(sc.test.object({
         "default": spy
       }));
 
@@ -391,7 +391,7 @@
       var instance, test, stub;
       var $arg1, $arg2, $arg3;
 
-      stub = this.stub($SC, "Class");
+      stub = this.stub(sc.lang.klass, "get");
       stub.withArgs("FunctionList").returns(sc.test.object({
         new: function(arg) {
           return arg;
@@ -440,7 +440,7 @@
       var instance, test, spy, stub;
 
       spy = this.spy(sc.test.func);
-      stub = this.stub($SC, "Class");
+      stub = this.stub(sc.lang.klass, "get");
       stub.withArgs("ControlSpec").returns(sc.test.object({
         new: spy
       }));

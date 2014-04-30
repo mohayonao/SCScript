@@ -6,6 +6,8 @@
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("String", function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
 
     spec.__str__ = function() {
       return this.valueOf();
@@ -76,7 +78,7 @@
       $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
 
       if ($aString.__tag !== sc.C.TAG_STR) {
-        return utils.nilInstance;
+        return $nil;
       }
 
       araw = this._;
@@ -112,37 +114,37 @@
 
     spec["<"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() < 0
+        this.compare($aString, $false).valueOf() < 0
       );
     };
 
     spec[">"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() > 0
+        this.compare($aString, $false).valueOf() > 0
       );
     };
 
     spec["<="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() <= 0
+        this.compare($aString, $false).valueOf() <= 0
       );
     };
 
     spec[">="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() >= 0
+        this.compare($aString, $false).valueOf() >= 0
       );
     };
 
     spec["=="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() === 0
+        this.compare($aString, $false).valueOf() === 0
       );
     };
 
     spec["!="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() !== 0
+        this.compare($aString, $false).valueOf() !== 0
       );
     };
 
@@ -162,7 +164,7 @@
       throw new Error("String:multiChannelPerform. Cannot expand strings.");
     };
 
-    spec.isString = utils.alwaysReturn$True;
+    spec.isString = utils.alwaysReturn$true;
 
     spec.asString = utils.nop;
 
@@ -171,7 +173,7 @@
     };
 
     spec.species = function() {
-      return $SC.Class("String");
+      return $SC("String");
     };
 
     // TODO: implements postln

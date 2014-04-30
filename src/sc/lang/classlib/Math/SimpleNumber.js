@@ -27,10 +27,10 @@
   }
 
   sc.lang.klass.refine("SimpleNumber", function(spec, utils) {
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Float;
 
@@ -61,7 +61,7 @@
       return $SC.Boolean(!isNaN(this._));
     };
 
-    spec.numChannels = utils.alwaysReturn$Integer_1;
+    spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.magnitude = function() {
       return this.abs();
@@ -299,7 +299,7 @@
     };
 
     spec.binaryValue = function() {
-      return this._ > 0 ? $int1 : $int0;
+      return this._ > 0 ? $int_1 : $int_0;
     };
 
     spec.rectWindow = function() {
@@ -375,7 +375,7 @@
     spec.bitTest = function($bit) {
       $bit = utils.defaultValue$Nil($bit);
       return $SC.Boolean(
-        this.bitAnd($int1.leftShift($bit)).valueOf() !== 0
+        this.bitAnd($int_1.leftShift($bit)).valueOf() !== 0
       );
     };
 
@@ -755,9 +755,9 @@
 
     spec.asAudioRateInput = function() {
       if (this._ === 0) {
-        return $SC.Class("Silent").ar();
+        return $SC("Silent").ar();
       }
-      return $SC.Class("DC").ar(this);
+      return $SC("DC").ar(this);
     };
 
     spec.madd = function($mul, $add) {

@@ -3,9 +3,10 @@
 
   require("./Object");
 
-  var $SC = sc.lang.$SC;
-  var fn = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
+  var fn    = sc.lang.fn;
   var utils = sc.lang.klass.utils;
+  var $nil  = utils.$nil;
 
   sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
     spec.composeUnaryOp = function($aSelector) {
@@ -301,7 +302,6 @@
     };
 
     spec.max = function($function, $adverb) {
-      $function = utils.defaultValue$Integer($function, 0);
       return this.composeBinaryOp($SC.Symbol("max"), $function, $adverb);
     };
 
@@ -502,97 +502,75 @@
       return this.composeNAryOp($SC.Symbol("fold"), $SC.Array([ $lo, $hi ]));
     };
 
-    spec.blend = function($that, $blendFrac) {
-      $blendFrac = utils.defaultValue$Float($blendFrac, 0.5);
+    spec.blend = fn(function($that, $blendFrac) {
       return this.composeNAryOp(
         $SC.Symbol("blend"), $SC.Array([ $that, $blendFrac ])
       );
-    };
+    }, "that; blendFrac=0.5");
 
-    spec.linlin = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.linlin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("linlin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.linexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.linexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("linexp"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.explin = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.explin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("explin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.expexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.expexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("expexp"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.lincurve = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
+    spec.lincurve = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("lincurve"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
       );
-    };
+    }, "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.curvelin = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
+    spec.curvelin = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("curvelin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
       );
-    };
+    }, "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.bilin = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.bilin = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("bilin"), $SC.Array([
           $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
         ])
       );
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.biexp = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.biexp = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("biexp"), $SC.Array([
           $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
         ])
       );
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.moddif = function($function, $mod) {
-      $function = utils.defaultValue$Float($function, 0.0);
-      $mod      = utils.defaultValue$Float($mod     , 1.0);
+    spec.moddif = fn(function($function, $mod) {
       return this.composeNAryOp(
         $SC.Symbol("moddif"), $SC.Array([ $function, $mod ])
       );
-    };
+    }, "function; mod");
 
-    spec.degreeToKey = function($scale, $stepsPerOctave) {
-      $stepsPerOctave = utils.defaultValue$Integer($stepsPerOctave, 12);
+    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
       return this.composeNAryOp(
         $SC.Symbol("degreeToKey"), $SC.Array([ $scale, $stepsPerOctave ])
       );
-    };
+    }, "scale; stepsPerOctave=12");
 
     spec.degrad = function() {
       return this.composeUnaryOp($SC.Symbol("degrad"));
@@ -634,8 +612,8 @@
 
   function SCUnaryOpFunction(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$selector = utils.defaultValue$Nil(args[0]);
-    this.$a        = utils.defaultValue$Nil(args[1]);
+    this.$selector = args[0] || /* istanbul ignore next */ $nil;
+    this.$a        = args[1] || /* istanbul ignore next */ $nil;
   }
 
   sc.lang.klass.define(SCUnaryOpFunction, "UnaryOpFunction : AbstractFunction", function(spec) {
@@ -661,10 +639,10 @@
 
   function SCBinaryOpFunction(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$selector = utils.defaultValue$Nil(args[0]);
-    this.$a        = utils.defaultValue$Nil(args[1]);
-    this.$b        = utils.defaultValue$Nil(args[2]);
-    this.$adverb   = utils.defaultValue$Nil(args[3]);
+    this.$selector = args[0] || /* istanbul ignore next */ $nil;
+    this.$a        = args[1] || /* istanbul ignore next */ $nil;
+    this.$b        = args[2] || /* istanbul ignore next */ $nil;
+    this.$adverb   = args[3] || /* istanbul ignore next */ $nil;
   }
 
   sc.lang.klass.define(SCBinaryOpFunction, "BinaryOpFunction : AbstractFunction", function(spec) {
@@ -691,9 +669,9 @@
 
   function SCNAryOpFunction(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$selector = utils.defaultValue$Nil(args[0]);
-    this.$a        = utils.defaultValue$Nil(args[1]);
-    this.$arglist  = utils.defaultValue$Nil(args[2]);
+    this.$selector = args[0] || /* istanbul ignore next */ $nil;
+    this.$a        = args[1] || /* istanbul ignore next */ $nil;
+    this.$arglist  = args[2] || /* istanbul ignore next */ $nil;
   }
 
   sc.lang.klass.define(SCNAryOpFunction, "NAryOpFunction : AbstractFunction", function(spec) {
@@ -725,7 +703,7 @@
 
   function SCFunctionList(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$array   = utils.defaultValue$Nil(args[0]);
+    this.$array   = args[0] || /* istanbul ignore next */ $nil;
     this._flopped = false;
   }
 
@@ -736,11 +714,10 @@
       return this.$array;
     };
 
-    spec.array_ = function($value) {
-      $value = utils.defaultValue$Nil($value);
+    spec.array_ = fn(function($value) {
       this.$array = $value;
       return this;
-    };
+    }, "value");
 
     spec.flopped = function() {
       return $SC.Boolean(this._flopped);

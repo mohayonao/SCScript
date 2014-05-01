@@ -4,12 +4,14 @@
   require("./ArrayedCollection");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
-  var rand = sc.libs.random;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
+  var rand  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Array", function(spec, utils) {
     var BOOL    = utils.BOOL;
+    var $nil    = utils.$nil;
     var SCArray = $SC("Array");
 
     spec.$with = function() {
@@ -102,10 +104,9 @@
       return $SC.Array(a);
     };
 
-    spec.stutter = function($n) {
+    spec.stutter = fn(function($n) {
       var raw = this._;
       var n, a, i, j, imax, k;
-      $n = utils.defaultValue$Integer($n, 2);
 
       // <-- _ArrayStutter -->
       n = Math.max(0, $n.__int__());
@@ -117,12 +118,11 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "n=2");
 
-    spec.rotate = function($n) {
+    spec.rotate = fn(function($n) {
       var raw = this._;
       var n, a, size, i, j;
-      $n = utils.defaultValue$Integer($n, 1);
 
       // <-- _ArrayRotate -->
       n = $n.__int__();
@@ -140,12 +140,11 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "n=1");
 
-    spec.pyramid = function($patternType) {
+    spec.pyramid = fn(function($patternType) {
       var patternType;
       var obj1, obj2, i, j, k, n, numslots, x;
-      $patternType = utils.defaultValue$Integer($patternType, 1);
 
       obj1 = this._;
       obj2 = [];
@@ -267,13 +266,12 @@
       }
 
       return $SC.Array(obj2);
-    };
+    }, "n=1");
 
-    spec.pyramidg = function($patternType) {
+    spec.pyramidg = fn(function($patternType) {
       var raw = this._;
       var patternType;
       var list = [], lastIndex, i;
-      $patternType = utils.defaultValue$Integer($patternType, 1);
 
       patternType = Math.max(1, Math.min($patternType.__int__(), 10));
       lastIndex = raw.length - 1;
@@ -350,12 +348,10 @@
       }
 
       return $SC.Array(list);
-    };
+    }, "n=1");
 
-    spec.sputter = function($probability, $maxlen) {
+    spec.sputter = fn(function($probability, $maxlen) {
       var list, prob, maxlen, i, length;
-      $probability = utils.defaultValue$Float($probability, 0.25);
-      $maxlen      = utils.defaultValue$Float($maxlen, 100);
 
       list   = [];
       prob   = 1.0 - $probability.__num__();
@@ -370,13 +366,16 @@
       }
 
       return $SC.Array(list);
-    };
+    }, "probability=0.25; maxlen=100");
 
-    spec.lace = function($length) {
+    spec.lace = fn(function($length) {
       var raw = this._;
       var length, wrap = raw.length;
       var a, i, $item;
-      $length = utils.defaultValue$Integer($length, wrap);
+
+      if ($length === $nil) {
+        $length = $SC.Integer(wrap);
+      }
 
       length = $length.__int__();
       a = new Array(length);
@@ -391,13 +390,12 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "length");
 
-    spec.permute = function($nthPermutation) {
+    spec.permute = fn(function($nthPermutation) {
       var raw = this._;
       var obj1, obj2, size, $item;
       var nthPermutation, i, imax, j;
-      $nthPermutation = utils.defaultValue$Integer($nthPermutation, 0);
 
       obj1 = raw;
       obj2 = raw.slice();
@@ -414,13 +412,12 @@
       }
 
       return $SC.Array(obj2);
-    };
+    }, "nthPermutation=0");
 
-    spec.allTuples = function($maxTuples) {
+    spec.allTuples = fn(function($maxTuples) {
       var maxSize;
       var obj1, obj2, obj3, obj4, newSize, tupSize;
       var i, j, k;
-      $maxTuples = utils.defaultValue$Integer($maxTuples, 16384);
 
       maxSize = $maxTuples.__int__();
 
@@ -452,12 +449,11 @@
       }
 
       return $SC.Array(obj2);
-    };
+    }, "maxTuples=16384");
 
-    spec.wrapExtend = function($size) {
+    spec.wrapExtend = fn(function($size) {
       var raw = this._;
       var size, a, i;
-      $size = utils.defaultValue$Nil($size);
 
       size = Math.max(0, $size.__int__());
       if (raw.length < size) {
@@ -470,12 +466,11 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "size");
 
-    spec.foldExtend = function($size) {
+    spec.foldExtend = fn(function($size) {
       var raw = this._;
       var size, a, i;
-      $size = utils.defaultValue$Nil($size);
 
       size = Math.max(0, $size.__int__());
 
@@ -489,12 +484,11 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "size");
 
-    spec.clipExtend = function($size) {
+    spec.clipExtend = fn(function($size) {
       var raw = this._;
       var size, a, i, imax, b;
-      $size = utils.defaultValue$Nil($size);
 
       size = Math.max(0, $size.__int__());
 
@@ -511,15 +505,13 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "size");
 
-    spec.slide = function($windowLength, $stepSize) {
+    spec.slide = fn(function($windowLength, $stepSize) {
       var raw = this._;
       var windowLength, stepSize;
       var obj1, obj2, m, n, numwin, numslots;
       var i, j, h, k;
-      $windowLength = utils.defaultValue$Integer($windowLength, 3);
-      $stepSize     = utils.defaultValue$Integer($stepSize    , 1);
 
       windowLength = $windowLength.__int__();
       stepSize = $stepSize.__int__();
@@ -537,7 +529,7 @@
       }
 
       return $SC.Array(obj2);
-    };
+    }, "windowLength=3; stepSize=1");
 
     spec.containsSeqColl = function() {
       var raw = this._;
@@ -552,13 +544,10 @@
       return $SC.False();
     };
 
-    spec.unlace = function($clumpSize, $numChan, $clip) {
+    spec.unlace = fn(function($clumpSize, $numChan) {
       var raw = this._;
       var clumpSize, numChan;
       var a, b, size, i, j, k;
-      $clumpSize = utils.defaultValue$Integer($clumpSize, 2);
-      $numChan   = utils.defaultValue$Integer($numChan  , 1);
-      $clip      = utils.defaultValue$Boolean($clip, false);
 
       clumpSize = $clumpSize.__int__();
       numChan   = $numChan  .__int__();
@@ -580,7 +569,7 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "clumpSize=2; numChan=1");
 
     // TODO: implements interlace
     // TODO: implements deinterlace
@@ -623,10 +612,8 @@
 
     // TODO: implements envirPairs
 
-    spec.shift = function($n, $filler) {
+    spec.shift = fn(function($n, $filler) {
       var $fill, $remain;
-      $n      = utils.defaultValue$Nil($n);
-      $filler = utils.defaultValue$Float($filler, 0.0);
 
       $fill = SCArray.fill($n.abs(), $filler);
       $remain = this.drop($n.neg());
@@ -636,7 +623,7 @@
       }
 
       return $fill ["++"] ($remain);
-    };
+    }, "n; fillter=0.0");
 
     spec.powerset = function() {
       var raw = this._;
@@ -695,11 +682,9 @@
     // TODO: implements asSpec
     // TODO: implements fork
 
-    spec.madd = function($mul, $add) {
-      $mul = utils.defaultValue$Float($mul, 1.0);
-      $add = utils.defaultValue$Float($add, 0.0);
+    spec.madd = fn(function($mul, $add) {
       return $SC("MulAdd").new(this, $mul, $add);
-    };
+    }, "mul=1.0; add=0.0");
 
     // TODO: implements asRawOSC
     // TODO: implements printOn

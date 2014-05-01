@@ -4,8 +4,8 @@
   require("../../classlib");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
-  var fn = sc.lang.fn;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
     var BOOL   = utils.BOOL;
@@ -61,8 +61,6 @@
     spec.flatSize = utils.alwaysReturn$int_1;
 
     spec.do = function($function) {
-      $function = utils.defaultValue$Nil($function);
-
       sc.lang.iterator.execute(
         sc.lang.iterator.object$do(this),
         $function
@@ -71,28 +69,24 @@
       return this;
     };
 
-    spec.generate = function($function, $state) {
-      $state = utils.defaultValue$Nil($state);
-
+    spec.generate = fn(function($function, $state) {
       this.do($function);
 
       return $state;
-    };
+    }, "function; state");
 
     // already defined: class
     // already defined: isKindOf
     // already defined: isMemberOf
 
-    spec.respondsTo = function($aSymbol) {
-      $aSymbol = utils.defaultValue$Nil($aSymbol);
+    spec.respondsTo = fn(function($aSymbol) {
       return $SC.Boolean(typeof this[$aSymbol.__sym__()] === "function");
-    };
+    }, "aSymbol");
 
     // TODO: implements performMsg
 
     spec.perform = function($selector) {
       var selector, method;
-      $selector = utils.defaultValue$Nil($selector);
 
       selector = $selector.__sym__();
       method = this[selector];
@@ -106,8 +100,6 @@
 
     spec.performList = function($selector, $arglist) {
       var selector, method;
-      $selector = utils.defaultValue$Nil($selector);
-      $arglist  = utils.defaultValue$Nil($arglist);
 
       selector = $selector.__sym__();
       method = this[selector];
@@ -166,11 +158,10 @@
     // TODO: implements copyImmutable
     // TODO: implements deepCopy
 
-    spec.dup = function($n) {
+    spec.dup = fn(function($n) {
       var $this = this;
       var $array, i, imax;
 
-      $n = utils.defaultValue$Integer($n, 2);
       if (BOOL($n.isSequenceableCollection())) {
         return SCArray.fillND($n, $SC.Function(function() {
           return $this.copy();
@@ -183,7 +174,7 @@
       }
 
       return $array;
-    };
+    }, "n=2");
 
     spec["!"] = function($n) {
       return this.dup($n);
@@ -228,12 +219,10 @@
     spec.next = utils.nop;
     spec.reset = utils.nop;
 
-    spec.first = function($inval) {
-      $inval = utils.defaultValue$Nil($inval);
-
+    spec.first = fn(function($inval) {
       this.reset();
       return this.next($inval);
-    };
+    }, "inval");
 
     spec.iter = function() {
       return $SC("OneShotStream").new(this);
@@ -260,10 +249,9 @@
 
     spec.eventAt = utils.alwaysReturn$nil;
 
-    spec.composeEvents = function($event) {
-      $event = utils.defaultValue$Nil($event);
+    spec.composeEvents = fn(function($event) {
       return $event.copy();
-    };
+    }, "event");
 
     spec.finishEvent = utils.nop;
     spec.atLimit = utils.alwaysReturn$false;
@@ -274,7 +262,6 @@
     spec["??"] = utils.nop;
 
     spec["!?"] = function($obj) {
-      $obj = utils.defaultValue$Nil($obj);
       return $obj.value(this);
     };
 
@@ -292,17 +279,15 @@
     spec.isException = utils.alwaysReturn$false;
     spec.isFunction = utils.alwaysReturn$false;
 
-    spec.matchItem = function($item) {
-      $item = utils.defaultValue$Nil($item);
+    spec.matchItem = fn(function($item) {
       return this ["==="] ($item);
-    };
+    }, "item");
 
     spec.trueAt = utils.alwaysReturn$false;
 
-    spec.falseAt = function($key) {
-      $key = utils.defaultValue$Nil($key);
+    spec.falseAt = fn(function($key) {
       return this.trueAt($key).not();
-    };
+    }, "key");
 
     // TODO: implements pointsTo
     // TODO: implements mutable
@@ -358,10 +343,9 @@
     // TODO: implements storeArgs
     // TODO: implements storeModifiersOn
 
-    spec.as = function($aSimilarClass) {
-      $aSimilarClass = utils.defaultValue$Nil($aSimilarClass);
+    spec.as = fn(function($aSimilarClass) {
       return $aSimilarClass.newFrom(this);
-    };
+    }, "aSimilarClass");
 
     spec.dereference = utils.nop;
 
@@ -383,24 +367,21 @@
 
     spec.rank = utils.alwaysReturn$int_0;
 
-    spec.deepCollect = function($depth, $function, $index, $rank) {
-      $function = utils.defaultValue$Nil($function);
+    spec.deepCollect = fn(function($depth, $function, $index, $rank) {
       return $function.value(this, $index, $rank);
-    };
+    }, "depth; function; index; rank");
 
-    spec.deepDo = function($depth, $function, $index, $rank) {
-      $function = utils.defaultValue$Nil($function);
+    spec.deepDo = fn(function($depth, $function, $index, $rank) {
       $function.value(this, $index, $rank);
       return this;
-    };
+    }, "depth; function; index; rank");
 
     spec.slice = utils.nop;
     spec.shape = utils.alwaysReturn$nil;
     spec.unbubble = utils.nop;
 
-    spec.bubble = function($depth, $levels) {
+    spec.bubble = fn(function($depth, $levels) {
       var levels, a;
-      $levels = utils.defaultValue$Integer($levels, 1);
 
       levels = $levels.__int__();
       if (levels <= 1) {
@@ -412,29 +393,23 @@
       }
 
       return $SC.Array(a);
-    };
+    }, "depth; levels");
 
-    spec.obtain = function($index, $default) {
-      $index   = utils.defaultValue$Nil($index);
-      $default = utils.defaultValue$Nil($default);
-
+    spec.obtain = fn(function($index, $default) {
       if ($index.__num__() === 0) {
         return this;
       } else {
         return $default;
       }
-    };
+    }, "index; defaults");
 
-    spec.instill = function($index, $item, $default) {
-      $index = utils.defaultValue$Nil($index);
-      $item  = utils.defaultValue$Nil($item);
-
+    spec.instill = fn(function($index, $item, $default) {
       if ($index.__num__() === 0) {
         return $item;
       } else {
         return this.asArray().instill($index, $item, $default);
       }
-    };
+    }, "index; item; default");
 
     spec.addFunc = fn(function($$functions) {
       return $SC("FunctionList").new(this ["++"] ($$functions));
@@ -447,20 +422,18 @@
       return this;
     };
 
-    spec.replaceFunc = function($find, $replace) {
-      $replace = utils.defaultValue$Nil($replace);
+    spec.replaceFunc = fn(function($find, $replace) {
       if (this === $find) {
         return $replace;
       }
       return this;
-    };
+    }, "find; replace");
 
     // TODO: implements addFuncTo
     // TODO: implements removeFuncFrom
 
-    spec.while = function($body) {
+    spec.while = fn(function($body) {
       var $this = this;
-      $body = utils.defaultValue$Nil($body);
 
       $SC.Function(function() {
         return $this.value();
@@ -469,7 +442,7 @@
       }));
 
       return this;
-    };
+    }, "body");
 
     spec.switch = function() {
       var args, i, imax;
@@ -551,29 +524,22 @@
       return this.asInteger();
     };
 
-    spec.blend = function($that, $blendFrac) {
-      $that      = utils.defaultValue$Nil($that);
-      $blendFrac = utils.defaultValue$Float($blendFrac, 0.5);
+    spec.blend = fn(function($that, $blendFrac) {
       return this ["+"] ($blendFrac ["*"] ($that ["-"] (this)));
-    };
+    }, "that; blendFrac=0.5");
 
-    spec.blendAt = function($index, $method) {
+    spec.blendAt = fn(function($index, $method) {
       var $iMin;
-      $index  = utils.defaultValue$Nil($index);
-      $method = utils.defaultValue$Symbol($method, "clipAt");
 
       $iMin = $index.roundUp($int_1).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
         $index.absdif($iMin)
       );
-    };
+    }, "index; method=\\clipAt");
 
-    spec.blendPut = function($index, $val, $method) {
+    spec.blendPut = fn(function($index, $val, $method) {
       var $iMin, $ratio;
-      $index  = utils.defaultValue$Nil($index);
-      $val    = utils.defaultValue$Nil($val);
-      $method = utils.defaultValue$Symbol($method, "wrapPut");
 
       $iMin = $index.floor().asInteger();
       $ratio = $index.absdif($iMin);
@@ -581,30 +547,25 @@
       this.perform($method, $iMin.__inc__(), $val ["*"] ($ratio));
 
       return this;
-    };
+    }, "index; val; method=\\wrapPut");
 
-    spec.fuzzyEqual = function($that, $precision) {
-      $that      = utils.defaultValue$Nil($that);
-      $precision = utils.defaultValue$Float($precision, 1.0);
-
+    spec.fuzzyEqual = fn(function($that, $precision) {
       return $SC.Float(0.0).max(
         $SC.Float(1.0) ["-"] (
           (this ["-"] ($that).abs()) ["/"] ($precision)
         )
       );
-    };
+    }, "that; precision=1.0");
 
     spec.isUGen = utils.alwaysReturn$false;
     spec.numChannels = utils.alwaysReturn$int_1;
 
-    spec.pair = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.pair = fn(function($that) {
       return $SC.Array([ this, $that ]);
-    };
+    }, "that");
 
-    spec.pairs = function($that) {
+    spec.pairs = fn(function($that) {
       var $list;
-      $that = utils.defaultValue$Nil($that);
 
       $list = $SC.Array();
       this.asArray().do($SC.Function(function($a) {
@@ -614,18 +575,17 @@
       }));
 
       return $list;
-    };
+    }, "that");
 
-    spec.awake = function($beats) {
+    spec.awake = fn(function($beats) {
       return this.next($beats);
-    };
+    }, "beats");
 
     spec.beats_ = utils.nop;
     spec.clock_ = utils.nop;
 
     spec.performBinaryOpOnSomething = function($aSelector) {
       var aSelector;
-      $aSelector = utils.defaultValue$Nil($aSelector);
 
       aSelector = $aSelector.__sym__();
       if (aSelector === "==") {

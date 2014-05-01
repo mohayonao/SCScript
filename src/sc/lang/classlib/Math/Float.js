@@ -4,9 +4,10 @@
   require("./SimpleNumber");
   require("./bop");
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
-  var mathlib = sc.libs.mathlib;
+  var mathlib  = sc.libs.mathlib;
 
   sc.lang.klass.refine("Float", function(spec, utils) {
     spec.toString = function() {
@@ -79,10 +80,7 @@
       spec[items[0]] = sc.lang.classlib.bop.apply(null, items);
     });
 
-    spec.clip = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.clip = fn(function($lo, $hi) {
       // <-- _ClipFloat -->
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -94,12 +92,9 @@
       return $SC.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.wrap = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -111,12 +106,9 @@
       return $SC.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.fold = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.fold = fn(function($lo, $hi) {
       // <-- _FoldFloat -->
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -128,7 +120,7 @@
       return $SC.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
     // TODO: implements coin
     // TODO: implements xrand2
@@ -160,23 +152,23 @@
       );
     };
 
-    spec.$from32Bits = function($word) {
+    spec.$from32Bits = fn(function($word) {
       // <-- _From32Bits -->
       return $SC.Float(
         new Float32Array(
           new Int32Array([ $word.__num__() ]).buffer
         )[0]
       );
-    };
+    }, "word");
 
-    spec.$from64Bits = function($hiWord, $loWord) {
+    spec.$from64Bits = fn(function($hiWord, $loWord) {
       // <-- _From64Bits -->
       return $SC.Float(
         new Float64Array(
           new Int32Array([ $loWord.__num__(), $hiWord.__num__() ]).buffer
         )[0]
       );
-    };
+    }, "hiWord; loWord");
 
     spec.do = function($function) {
       iterator.execute(

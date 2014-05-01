@@ -421,6 +421,21 @@
     ];
   };
 
+  var format_argument = function(node) {
+    switch (node.valueType) {
+    case Token.NilLiteral   : return "nil";
+    case Token.TrueLiteral  : return "true";
+    case Token.FalseLiteral : return "false";
+    case Token.CharLiteral  : return "$" + node.value;
+    case Token.SymbolLiteral: return "\\" + node.value;
+    }
+    switch (node.value) {
+    case "Infinity" : return "inf";
+    case "-Infinity": return "-inf";
+    }
+    return node.value;
+  };
+
   CodeGen.prototype._FunctionMetadata = function(info) {
     var keys, vals;
     var args, result;
@@ -436,7 +451,13 @@
       var result = [ keys[i] ];
 
       if (vals[i]) {
-        result.push("=", vals[i].value); // TODO #[]
+        if (vals[i].type === Syntax.ListExpression) {
+          result.push("=[ ", this.stitchWith(vals[i].elements, ", ", function(item) {
+            return format_argument(item);
+          }), " ]");
+        } else {
+          result.push("=", format_argument(vals[i]));
+        }
       }
 
       return result;

@@ -4,7 +4,8 @@
   require("./Collection");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
     var BOOL   = utils.BOOL;
@@ -26,11 +27,8 @@
       return this.foldAt($index);
     };
 
-    spec.$series = function($size, $start, $step) {
+    spec.$series = fn(function($size, $start, $step) {
       var $obj, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $start = utils.defaultValue$Integer($start, 0);
-      $step  = utils.defaultValue$Integer($step, 1);
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
@@ -38,13 +36,10 @@
       }
 
       return $obj;
-    };
+    }, "size; start=0; step=1");
 
-    spec.$geom = function($size, $start, $grow) {
+    spec.$geom = fn(function($size, $start, $grow) {
       var $obj, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $start = utils.defaultValue$Nil($start);
-      $grow  = utils.defaultValue$Nil($grow);
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
@@ -53,13 +48,10 @@
       }
 
       return $obj;
-    };
+    }, "size; start; grow");
 
-    spec.$fib = function($size, $a, $b) {
+    spec.$fib = fn(function($size, $a, $b) {
       var $obj, $temp, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $a = utils.defaultValue$Float($a, 0.0);
-      $b = utils.defaultValue$Float($b, 1.0);
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
@@ -70,17 +62,14 @@
       }
 
       return $obj;
-    };
+    }, "size; a=0.0; b=1.0");
 
     // TODO: implements $rand
     // TODO: implements $rand2
     // TODO: implements $linrand
 
-    spec.$interpolation = function($size, $start, $end) {
+    spec.$interpolation = fn(function($size, $start, $end) {
       var $obj, $step, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $start = utils.defaultValue$Float($start, 0.0);
-      $end   = utils.defaultValue$Float($end  , 1.0);
 
       $obj = this.new($size);
       if ($size.__int__() === 1) {
@@ -93,11 +82,10 @@
       }
 
       return $obj;
-    };
+    }, "size; start=0.0; end=1.0");
 
     spec["++"] = function($aSequenceableCollection) {
       var $newlist;
-      $aSequenceableCollection = utils.defaultValue$Nil($aSequenceableCollection);
 
       $newlist = this.species().new(this.size() ["+"] ($aSequenceableCollection.size()));
       $newlist = $newlist.addAll(this).addAll($aSequenceableCollection);
@@ -113,14 +101,12 @@
       return this.at(this.size().rand());
     };
 
-    spec.wchoose = function($weights) {
-      $weights = utils.defaultValue$Nil($weights);
+    spec.wchoose = fn(function($weights) {
       return this.at($weights.windex());
-    };
+    }, "weights");
 
     spec["=="] = function($aCollection) {
       var $res = null;
-      $aCollection = utils.defaultValue$Nil($aCollection);
 
       if ($aCollection.class() !== this.class()) {
         return $false;
@@ -140,10 +126,8 @@
 
     // TODO: implements hash
 
-    spec.copyRange = function($start, $end) {
+    spec.copyRange = fn(function($start, $end) {
       var $newColl, i, end;
-      $start = utils.defaultValue$Nil($start);
-      $end   = utils.defaultValue$Nil($end);
 
       i = $start.__int__();
       end = $end.__int__();
@@ -153,11 +137,10 @@
       }
 
       return $newColl;
-    };
+    }, "start; end");
 
-    spec.keep = function($n) {
+    spec.keep = fn(function($n) {
       var n, size;
-      $n = utils.defaultValue$Nil($n);
 
       n = $n.__int__();
       if (n >= 0) {
@@ -166,11 +149,10 @@
       size = this.size().__int__();
 
       return this.copyRange($SC.Integer(size + n), $SC.Integer(size - 1));
-    };
+    }, "n");
 
-    spec.drop = function($n) {
+    spec.drop = fn(function($n) {
       var n, size;
-      $n = utils.defaultValue$Nil($n);
 
       n = $n.__int__();
       size = this.size().__int__();
@@ -179,19 +161,18 @@
       }
 
       return this.copyRange($int_0, $SC.Integer(size + n - 1));
-    };
+    }, "n");
 
-    spec.copyToEnd = function($start) {
+    spec.copyToEnd = fn(function($start) {
       return this.copyRange($start, $SC.Integer(this.size().__int__() - 1));
-    };
+    }, "start");
 
-    spec.copyFromStart = function($end) {
+    spec.copyFromStart = fn(function($end) {
       return this.copyRange($int_0, $end);
-    };
+    }, "end");
 
-    spec.indexOf = function($item) {
+    spec.indexOf = fn(function($item) {
       var $ret = null;
-      $item = utils.defaultValue$Nil($item);
 
       this.do($SC.Function(function($elem, $i) {
         if ($item === $elem) {
@@ -201,11 +182,10 @@
       }));
 
       return $ret || $nil;
-    };
+    }, "item");
 
-    spec.indicesOfEqual = function($item) {
+    spec.indicesOfEqual = fn(function($item) {
       var indices = [];
-      $item = utils.defaultValue$Nil($item);
 
       this.do($SC.Function(function($elem, $i) {
         if ($item === $elem) {
@@ -214,13 +194,11 @@
       }));
 
       return indices.length ? $SC.Array(indices) : $nil;
-    };
+    }, "item");
 
-    spec.find = function($sublist, $offset) {
+    spec.find = fn(function($sublist, $offset) {
       var $subSize_1, $first, $index;
       var size, offset, i, imax;
-      $sublist = utils.defaultValue$Nil($sublist);
-      $offset  = utils.defaultValue$Integer($offset, 0);
 
       $subSize_1 = $sublist.size().__dec__();
       $first = $sublist.first();
@@ -237,12 +215,10 @@
       }
 
       return $nil;
-    };
+    }, "sublist; offset=0");
 
-    spec.findAll = function($arr, $offset) {
+    spec.findAll = fn(function($arr, $offset) {
       var $this = this, $indices, $i;
-      $arr    = utils.defaultValue$Nil($arr);
-      $offset = utils.defaultValue$Integer($offset, 0);
 
       $indices = $nil;
       $i = $int_0;
@@ -253,18 +229,16 @@
       }
 
       return $indices;
-    };
+    }, "arr; offset=0");
 
-    spec.indexOfGreaterThan = function($val) {
-      $val = utils.defaultValue$Nil($val);
+    spec.indexOfGreaterThan = fn(function($val) {
       return this.detectIndex($SC.Function(function($item) {
         return $SC.Boolean($item > $val);
       }));
-    };
+    }, "val");
 
-    spec.indexIn = function($val) {
+    spec.indexIn = fn(function($val) {
       var $i, $j;
-      $val = utils.defaultValue$Nil($val);
 
       $j = this.indexOfGreaterThan($val);
       if ($j === $nil) {
@@ -281,11 +255,10 @@
       }
 
       return $j;
-    };
+    }, "val");
 
-    spec.indexInBetween = function($val) {
+    spec.indexInBetween = fn(function($val) {
       var $a, $b, $div, $i;
-      $val = utils.defaultValue$Nil($val);
 
       if (BOOL(this.isEmpty())) {
         return $nil;
@@ -308,11 +281,10 @@
       // }
 
       return (($val ["-"] ($a)) ["/"] ($div)) ["+"] ($i.__dec__());
-    };
+    }, "val");
 
-    spec.isSeries = function($step) {
+    spec.isSeries = fn(function($step) {
       var $res = null;
-      $step = utils.defaultValue$Nil($step);
 
       if (this.size() <= 1) {
         return $true;
@@ -328,11 +300,10 @@
       }));
 
       return $res || $true;
-    };
+    }, "step");
 
-    spec.resamp0 = function($newSize) {
+    spec.resamp0 = fn(function($newSize) {
       var $this = this, $factor;
-      $newSize = utils.defaultValue$Nil($newSize);
 
       $factor = (
         this.size().__dec__()
@@ -343,11 +314,10 @@
       return this.species().fill($newSize, $SC.Function(function($i) {
         return $this.at($i ["*"] ($factor).round($SC.Float(1.0)).asInteger());
       }));
-    };
+    }, "newSize");
 
-    spec.resamp1 = function($newSize) {
+    spec.resamp1 = fn(function($newSize) {
       var $this = this, $factor;
-      $newSize = utils.defaultValue$Nil($newSize);
 
       $factor = (
         this.size().__dec__()
@@ -358,11 +328,10 @@
       return this.species().fill($newSize, $SC.Function(function($i) {
         return $this.blendAt($i ["*"] ($factor));
       }));
-    };
+    }, "newSize");
 
-    spec.remove = function($item) {
+    spec.remove = fn(function($item) {
       var $index;
-      $item = utils.defaultValue$Nil($item);
 
       $index = this.indexOf($item);
       if ($index !== $nil) {
@@ -370,21 +339,19 @@
       }
 
       return $nil;
-    };
+    }, "item");
 
-    spec.removing = function($item) {
+    spec.removing = fn(function($item) {
       var $coll;
-      $item = utils.defaultValue$Nil($item);
 
       $coll = this.copy();
       $coll.remove($item);
 
       return $coll;
-    };
+    }, "item");
 
-    spec.take = function($item) {
+    spec.take = fn(function($item) {
       var $index;
-      $item = utils.defaultValue$Nil($item);
 
       $index = this.indexOf($item);
       if ($index !== $nil) {
@@ -392,7 +359,7 @@
       }
 
       return $nil;
-    };
+    }, "item");
 
     spec.lastIndex = function() {
       var size = this.size().__int__();
@@ -448,7 +415,7 @@
       return this.last();
     };
 
-    spec.putFirst = function($obj) {
+    spec.putFirst = fn(function($obj) {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -456,9 +423,9 @@
       }
 
       return this;
-    };
+    }, "obj");
 
-    spec.putLast = function($obj) {
+    spec.putLast = fn(function($obj) {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -466,12 +433,10 @@
       }
 
       return this;
-    };
+    }, "obj");
 
-    spec.obtain = function($index, $default) {
+    spec.obtain = fn(function($index, $default) {
       var $res;
-      $index   = utils.defaultValue$Nil($index);
-      $default = utils.defaultValue$Nil($default);
 
       $res = this.at($index);
       if ($res === $nil) {
@@ -479,13 +444,10 @@
       }
 
       return $res;
-    };
+    }, "index; default");
 
-    spec.instill = function($index, $item, $default) {
+    spec.instill = fn(function($index, $item, $default) {
       var $res;
-      $index   = utils.defaultValue$Nil($index);
-      $item    = utils.defaultValue$Nil($item);
-      $default = utils.defaultValue$Nil($default);
 
       if ($index.__num__() >= this.size()) {
         $res = this.extend($index.__inc__(), $default);
@@ -494,11 +456,10 @@
       }
 
       return $res.put($index, $item);
-    };
+    }, "index; item; default");
 
     spec.pairsDo = function($function) {
       var $this = this, $int2 = $SC.Integer(2);
-      $function = utils.defaultValue$Nil($function);
 
       $int_0.forBy(this.size() ["-"] ($int2), $int2, $SC.Function(function($i) {
         return $function.value($this.at($i), $this.at($i.__inc__()), $i);
@@ -514,7 +475,6 @@
     spec.doAdjacentPairs = function($function) {
       var $i;
       var size, i, imax;
-      $function = utils.defaultValue$Nil($function);
 
       size = this.size().__int__();
       for (i = 0, imax = size - 1; i < imax; ++i) {
@@ -525,9 +485,8 @@
       return this;
     };
 
-    spec.separate = function($function) {
+    spec.separate = fn(function($function) {
       var $this = this, $list, $sublist;
-      $function = utils.defaultValue$Boolean($function, true);
 
       $list = $SC.Array();
       $sublist = this.species().new();
@@ -544,11 +503,10 @@
       $list = $list.add($sublist);
 
       return $list;
-    };
+    }, "function=true");
 
     spec.delimit = function($function) {
       var $this = this, $list, $sublist;
-      $function = utils.defaultValue$Nil($function);
 
       $list = $SC.Array();
       $sublist = this.species().new();
@@ -565,9 +523,8 @@
       return $list;
     };
 
-    spec.clump = function($groupSize) {
+    spec.clump = fn(function($groupSize) {
       var $this = this, $list, $sublist;
-      $groupSize = utils.defaultValue$Nil($groupSize);
 
       $list = $SC.Array();
       $sublist = this.species().new($groupSize);
@@ -583,11 +540,10 @@
       }
 
       return $list;
-    };
+    }, "groupSize");
 
-    spec.clumps = function($groupSizeList) {
+    spec.clumps = fn(function($groupSizeList) {
       var $this = this, $list, $subSize, $sublist, i = 0;
-      $groupSizeList = utils.defaultValue$Nil($groupSizeList);
 
       $list = $SC.Array();
       $subSize = $groupSizeList.at($int_0);
@@ -605,21 +561,19 @@
       }
 
       return $list;
-    };
+    }, "groupSizeList");
 
-    spec.curdle = function($probability) {
-      $probability = utils.defaultValue$Nil($probability);
+    spec.curdle = fn(function($probability) {
       return this.separate($SC.Function(function() {
         return $probability.coin();
       }));
-    };
+    }, "probability");
 
-    spec.flatten = function($numLevels) {
-      $numLevels = utils.defaultValue$Integer($numLevels, 1);
+    spec.flatten = fn(function($numLevels) {
       return this._flatten($numLevels.__num__());
-    };
+    }, "numLevels=1");
 
-    spec._flatten = function(numLevels) {
+    spec._flatten = fn(function(numLevels) {
       var $list;
 
       if (numLevels <= 0) {
@@ -637,13 +591,13 @@
       }));
 
       return $list;
-    };
+    }, "numLevels");
 
     spec.flat = function() {
       return this._flat(this.species().new(this.flatSize()));
     };
 
-    spec._flat = function($list) {
+    spec._flat = fn(function($list) {
       this.do($SC.Function(function($item) {
         if ($item._flat) {
           $list = $item._flat($list);
@@ -652,12 +606,11 @@
         }
       }));
       return $list;
-    };
+    }, "list");
 
-    spec.flatIf = function($func) {
-      $func = utils.defaultValue$Nil($func);
+    spec.flatIf = fn(function($func) {
       return this._flatIf($func);
-    };
+    }, "func");
 
     spec._flatIf = function($func) {
       var $list;
@@ -710,9 +663,8 @@
       return $list;
     };
 
-    spec.flopWith = function($func) {
+    spec.flopWith = fn(function($func) {
       var $this = this, $maxsize;
-      $func = utils.defaultValue$Nil($func);
 
       $maxsize = this.maxValue($SC.Function(function($sublist) {
         if (BOOL($sublist.isSequenceableCollection())) {
@@ -730,7 +682,7 @@
           }
         })));
       }));
-    };
+    }, "func");
 
     // TODO: implements flopTogether
     // TODO: implements flopDeep
@@ -1224,17 +1176,13 @@
     };
 
     spec.performBinaryOp = function($aSelector, $theOperand, $adverb) {
-      $theOperand = utils.defaultValue$Nil($theOperand);
       return $theOperand.performBinaryOpOnSeqColl($aSelector, this, $adverb);
     };
 
     spec.performBinaryOpOnSeqColl = function($aSelector, $theOperand, $adverb) {
       var adverb;
-      $aSelector  = utils.defaultValue$Nil($aSelector);
-      $theOperand = utils.defaultValue$Nil($theOperand);
-      $adverb     = utils.defaultValue$Nil($adverb);
 
-      if ($adverb === $nil) {
+      if ($adverb === $nil || !$adverb) {
         return _performBinaryOpOnSeqColl_adverb_nil(
           this, $aSelector, $theOperand
         );
@@ -1384,14 +1332,12 @@
     }
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
-      $aNumber = utils.defaultValue$Nil($aNumber);
       return this.collect($SC.Function(function($item) {
         return $aNumber.perform($aSelector, $item, $adverb);
       }));
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
-      $aComplex = utils.defaultValue$Nil($aComplex);
       return this.collect($SC.Function(function($item) {
         return $aComplex.perform($aSelector, $item, $adverb);
       }));
@@ -1611,17 +1557,15 @@
     // TODO: implements quickSort
     // TODO: implements order
 
-    spec.swap = function($i, $j) {
+    spec.swap = fn(function($i, $j) {
       var $temp;
-      $i = utils.defaultValue$Nil($i);
-      $j = utils.defaultValue$Nil($j);
 
       $temp = this.at($i);
       this.put($i, this.at($j));
       this.put($j, $temp);
 
       return this;
-    };
+    }, "i; j");
 
     // TODO: implements quickSortRange
     // TODO: implements mergeSort
@@ -1635,18 +1579,15 @@
     // TODO: implements $streamContensts
     // TODO: implements $streamContenstsLimit
 
-    spec.wrapAt = function($index) {
-      $index = utils.defaultValue$Nil($index);
+    spec.wrapAt = fn(function($index) {
       $index = $index ["%"] (this.size());
       return this.at($index);
-    };
+    }, "index");
 
-    spec.wrapPut = function($index, $value) {
-      $index = utils.defaultValue$Nil($index);
-      $value = utils.defaultValue$Nil($value);
+    spec.wrapPut = fn(function($index, $value) {
       $index = $index ["%"] (this.size());
       return this.put($index, $value);
-    };
+    }, "index; value");
 
     // TODO: implements reduce
     // TODO: implements join

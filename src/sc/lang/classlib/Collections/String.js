@@ -3,6 +3,7 @@
 
   require("./ArrayedCollection");
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("String", function(spec, utils) {
@@ -72,10 +73,8 @@
     // TODO: implements stripHTML
     // TODO: implements $scDir
 
-    spec.compare = function($aString, $ignoreCase) {
-      var araw, braw, length, i, a, b, cmp, fn;
-      $aString    = utils.defaultValue$Nil($aString);
-      $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
+    spec.compare = fn(function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, func;
 
       if ($aString.__tag !== sc.C.TAG_STR) {
         return $nil;
@@ -86,17 +85,17 @@
       length = Math.min(araw.length, braw.length);
 
       if ($ignoreCase.__bool__()) {
-        fn = function(ch) {
+        func = function(ch) {
           return ch.toLowerCase();
         };
       } else {
-        fn = function(ch) {
+        func = function(ch) {
           return ch;
         };
       }
       for (i = 0; i < length; i++) {
-        a = fn(araw[i]._).charCodeAt(0);
-        b = fn(braw[i]._).charCodeAt(0);
+        a = func(araw[i]._).charCodeAt(0);
+        b = func(braw[i]._).charCodeAt(0);
         cmp = a - b;
         if (cmp !== 0) {
           return $SC.Integer(cmp < 0 ? -1 : +1);
@@ -110,7 +109,7 @@
       }
 
       return $SC.Integer(cmp);
-    };
+    }, "aString; ignoreCase=false");
 
     spec["<"] = function($aString) {
       return $SC.Boolean(
@@ -151,12 +150,10 @@
     // TODO: implements hash
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
-      $aNumber = utils.defaultValue$Nil($aNumber);
       return $aNumber.asString().perform($aSelector, this);
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
-      $aComplex = utils.defaultValue$Nil($aComplex);
       return $aComplex.asString().perform($aSelector, this);
     };
 

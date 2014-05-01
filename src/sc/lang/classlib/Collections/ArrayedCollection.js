@@ -4,11 +4,11 @@
   require("./SequenceableCollection");
 
   var slice = [].slice;
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
-  var fn = sc.lang.fn;
-  var rand = sc.libs.random;
-  var mathlib = sc.libs.mathlib;
+  var rand     = sc.libs.random;
+  var mathlib  = sc.libs.mathlib;
 
   sc.lang.klass.refine("ArrayedCollection", function(spec, utils) {
     var BOOL   = utils.BOOL;
@@ -41,11 +41,9 @@
 
     // TODO: implements maxSize
 
-    spec.swap = function($a, $b) {
+    spec.swap = fn(function($a, $b) {
       var raw = this._;
       var a, b, len, tmp;
-      $a = utils.defaultValue$Nil($a);
-      $b = utils.defaultValue$Nil($b);
 
       this._ThrowIfImmutable();
 
@@ -62,11 +60,10 @@
       raw[a] = tmp;
 
       return this;
-    };
+    }, "a; b");
 
-    spec.at = function($index) {
+    spec.at = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -81,11 +78,10 @@
       i = $index.__int__();
 
       return this._[i] || $nil;
-    };
+    }, "index");
 
-    spec.clipAt = function($index) {
+    spec.clipAt = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -97,11 +93,10 @@
       i = mathlib.clip_idx($index.__int__(), this._.length);
 
       return this._[i];
-    };
+    }, "index");
 
-    spec.wrapAt = function($index) {
+    spec.wrapAt = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -113,11 +108,10 @@
       i = mathlib.wrap_idx($index.__int__(), this._.length);
 
       return this._[i];
-    };
+    }, "index");
 
-    spec.foldAt = function($index) {
+    spec.foldAt = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -129,11 +123,10 @@
       i = mathlib.fold_idx($index.__int__(), this._.length);
 
       return this._[i];
-    };
+    }, "index");
 
-    spec.put = function($index, $item) {
+    spec.put = fn(function($index, $item) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       this._ThrowIfImmutable();
 
@@ -154,12 +147,9 @@
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.clipPut = function($index, $item) {
-      $index = utils.defaultValue$Nil($index);
-      $item = utils.defaultValue$Nil($item);
-
+    spec.clipPut = fn(function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -171,12 +161,9 @@
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.wrapPut = function($index, $item) {
-      $index = utils.defaultValue$Nil($index);
-      $item = utils.defaultValue$Nil($item);
-
+    spec.wrapPut = fn(function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -188,12 +175,9 @@
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.foldPut = function($index, $item) {
-      $index = utils.defaultValue$Nil($index);
-      $item = utils.defaultValue$Nil($item);
-
+    spec.foldPut = fn(function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -205,12 +189,11 @@
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.removeAt = function($index) {
+    spec.removeAt = fn(function($index) {
       var raw = this._;
       var index;
-      $index = utils.defaultValue$Nil($index);
 
       this._ThrowIfImmutable();
 
@@ -220,12 +203,11 @@
       }
 
       return raw.splice(index, 1)[0];
-    };
+    }, "index");
 
-    spec.takeAt = function($index) {
+    spec.takeAt = fn(function($index) {
       var raw = this._;
       var index, ret, instead;
-      $index = utils.defaultValue$Nil($index);
 
       this._ThrowIfImmutable();
 
@@ -241,20 +223,18 @@
       }
 
       return ret;
-    };
+    }, "index");
 
-    spec.indexOf = function($item) {
+    spec.indexOf = fn(function($item) {
       var index;
-      $item = utils.defaultValue$Nil($item);
 
       index = this._.indexOf($item);
       return index === -1 ? $nil : $SC.Integer(index);
-    };
+    }, "item");
 
-    spec.indexOfGreaterThan = function($val) {
+    spec.indexOfGreaterThan = fn(function($val) {
       var raw = this._;
       var val, i, imax = raw.length;
-      $val = utils.defaultValue$Nil($val);
 
       val = $val.__num__();
       for (i = 0; i < imax; ++i) {
@@ -264,12 +244,11 @@
       }
 
       return $nil;
-    };
+    }, "val");
 
-    spec.takeThese = function($func) {
+    spec.takeThese = fn(function($func) {
       var raw = this._;
       var i = 0, $i;
-      $func = utils.defaultValue$Nil($func);
 
       $i = $SC.Integer(i);
       while (i < raw.length) {
@@ -281,12 +260,10 @@
       }
 
       return this;
-    };
+    }, "func");
 
-    spec.replace = function($find, $replace) {
+    spec.replace = fn(function($find, $replace) {
       var $index, $out, $array;
-      $find    = utils.defaultValue$Nil($find);
-      $replace = utils.defaultValue$Nil($replace);
 
       this._ThrowIfImmutable();
 
@@ -302,7 +279,7 @@
       }));
 
       return $out ["++"] ($array);
-    };
+    }, "find; replace");
 
     spec.slotSize = function() {
       return this.size();
@@ -327,34 +304,29 @@
     };
 
     spec.setSlots = function($array) {
-      $array = utils.defaultValue$Nil($array);
       return this.overWrite($array);
     };
 
-    spec.atModify = function($index, $function) {
+    spec.atModify = fn(function($index, $function) {
       this.put($index, $function.value(this.at($index), $index));
       return this;
-    };
+    }, "index; function");
 
-    spec.atInc = function($index, $inc) {
-      $inc = utils.defaultValue$Integer($inc, 1);
+    spec.atInc = fn(function($index, $inc) {
       this.put($index, this.at($index) ["+"] ($inc));
       return this;
-    };
+    }, "index; inc=1");
 
-    spec.atDec = function($index, $dec) {
-      $dec = utils.defaultValue$Integer($dec, 1);
+    spec.atDec = fn(function($index, $dec) {
       this.put($index, this.at($index) ["-"] ($dec));
       return this;
-    };
+    }, "index; dec=1");
 
     spec.isArray = utils.alwaysReturn$true;
     spec.asArray = utils.nop;
 
-    spec.copyRange = function($start, $end) {
+    spec.copyRange = fn(function($start, $end) {
       var start, end, instance, raw;
-      $start = utils.defaultValue$Nil($start);
-      $end = utils.defaultValue$Nil($end);
 
       if ($start === $nil) {
         start = 0;
@@ -371,13 +343,10 @@
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
-    };
+    }, "start; end");
 
-    spec.copySeries = function($first, $second, $last) {
+    spec.copySeries = fn(function($first, $second, $last) {
       var i, first, second, last, step, instance, raw;
-      $first = utils.defaultValue$Nil($first);
-      $second = utils.defaultValue$Nil($second);
-      $last = utils.defaultValue$Nil($last);
 
       raw = [];
       if ($first === $nil) {
@@ -411,14 +380,10 @@
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
-    };
+    }, "first; second; last");
 
-    spec.putSeries = function($first, $second, $last, $value) {
+    spec.putSeries = fn(function($first, $second, $last, $value) {
       var i, first, second, last, step;
-      $first = utils.defaultValue$Nil($first);
-      $second = utils.defaultValue$Nil($second);
-      $last = utils.defaultValue$Nil($last);
-      $value = utils.defaultValue$Nil($value);
 
       this._ThrowIfImmutable();
 
@@ -453,20 +418,17 @@
       }
 
       return this;
-    };
+    }, "first; second; last; value");
 
-    spec.add = function($item) {
-      $item = utils.defaultValue$Nil($item);
-
+    spec.add = fn(function($item) {
       this._ThrowIfImmutable();
       this._.push(this.__elem__($item));
 
       return this;
-    };
+    }, "item");
 
-    spec.addAll = function($aCollection) {
+    spec.addAll = fn(function($aCollection) {
       var $this = this;
-      $aCollection = utils.defaultValue$Nil($aCollection);
 
       this._ThrowIfImmutable();
 
@@ -479,12 +441,10 @@
       }
 
       return this;
-    };
+    }, "aCollection");
 
-    spec.putEach = function($keys, $values) {
+    spec.putEach = fn(function($keys, $values) {
       var keys, values, i, imax;
-      $keys   = utils.defaultValue$Nil($keys);
-      $values = utils.defaultValue$Nil($values);
 
       this._ThrowIfImmutable();
 
@@ -498,13 +458,10 @@
       }
 
       return this;
-    };
+    }, "keys; values");
 
-    spec.extend = function($size, $item) {
+    spec.extend = fn(function($size, $item) {
       var instance, raw, size, i;
-
-      $size = utils.defaultValue$Nil($size);
-      $item = utils.defaultValue$Nil($item);
 
       raw  = this._.slice();
       size = $size.__int__();
@@ -519,13 +476,10 @@
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
+    }, "size; item");
 
-    };
-
-    spec.insert = function($index, $item) {
+    spec.insert = fn(function($index, $item) {
       var index;
-      $index = utils.defaultValue$Nil($index);
-      $item  = utils.defaultValue$Nil($item);
 
       this._ThrowIfImmutable();
 
@@ -533,15 +487,14 @@
       this._.splice(index, 0, this.__elem__($item));
 
       return this;
-    };
+    }, "index; item");
 
     spec.move = function($fromIndex, $toIndex) {
       return this.insert($toIndex, this.removeAt($fromIndex));
     };
 
-    spec.addFirst = function($item) {
+    spec.addFirst = fn(function($item) {
       var instance, raw;
-      $item = utils.defaultValue$Nil($item);
 
       raw = this._.slice();
       raw.unshift(this.__elem__($item));
@@ -549,17 +502,15 @@
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
-    };
+    }, "item");
 
-    spec.addIfNotNil = function($item) {
-      $item = utils.defaultValue$Nil($item);
-
+    spec.addIfNotNil = fn(function($item) {
       if ($item === $nil) {
         return this;
       }
 
       return this.addFirst(this.__elem__($item));
-    };
+    }, "item");
 
     spec.pop = function() {
       if (this._.length === 0) {
@@ -586,10 +537,8 @@
     // TODO: implements grow
     // TODO: implements growClear
 
-    spec.seriesFill = function($start, $step) {
+    spec.seriesFill = fn(function($start, $step) {
       var i, imax;
-      $start = utils.defaultValue$Nil($start);
-      $step  = utils.defaultValue$Nil($step);
 
       for (i = 0, imax = this._.length; i < imax; ++i) {
         this.put($SC.Integer(i), $start);
@@ -597,11 +546,10 @@
       }
 
       return this;
-    };
+    }, "start; step");
 
-    spec.fill = function($value) {
+    spec.fill = fn(function($value) {
       var raw, i, imax;
-      $value = utils.defaultValue$Nil($value);
 
       this._ThrowIfImmutable();
 
@@ -613,7 +561,7 @@
       }
 
       return this;
-    };
+    }, "value");
 
     spec.do = function($function) {
       iterator.execute(
@@ -660,33 +608,31 @@
       return this ["*"] (this.sum().reciprocal());
     };
 
-    spec.normalize = function($min, $max) {
+    spec.normalize = fn(function($min, $max) {
       var $minItem, $maxItem;
-      $min = utils.defaultValue$Float($min, 0.0);
-      $max = utils.defaultValue$Float($max, 1.0);
 
       $minItem = this.minItem();
       $maxItem = this.maxItem();
       return this.collect($SC.Function(function($el) {
         return $el.linlin($minItem, $maxItem, $min, $max);
       }));
-    };
+    }, "min=0.0; max=1.0");
 
     // TODO: implements asciiPlot
     // TODO: implements perfectShuffle
     // TODO: implements performInPlace
 
-    spec.clipExtend = function($length) {
+    spec.clipExtend = fn(function($length) {
       var last = this._[this._.length - 1] || $nil;
       return this.extend($length, last);
-    };
+    }, "length");
 
     spec.rank = function() {
       return $int_1 ["+"] (this.first().rank());
     };
 
     spec.shape = function() {
-      return $SC.Array([ this.size() ]) ["++"] (this.at(0).shape());
+      return $SC.Array([ this.size() ]) ["++"] (this.at($int_0).shape());
     };
 
     spec.reshape = function() {
@@ -708,10 +654,8 @@
       return $result;
     };
 
-    spec.reshapeLike = function($another, $indexing) {
+    spec.reshapeLike = fn(function($another, $indexing) {
       var $index, $flat;
-      $another  = utils.defaultValue$Nil($another);
-      $indexing = utils.defaultValue$Symbol($indexing, "wrapAt");
 
       $index = $int_0;
       $flat  = this.flat();
@@ -721,34 +665,28 @@
         $index = $index.__inc__();
         return $item;
       }));
-    };
+    }, "another; indexing=\\wrapAt");
 
     // TODO: implements deepCollect
     // TODO: implements deepDo
 
-    spec.unbubble = function($depth, $levels) {
-      $depth  = utils.defaultValue$Integer($depth , 0);
-      $levels = utils.defaultValue$Integer($levels, 1);
-
+    spec.unbubble = fn(function($depth, $levels) {
       if ($depth.__num__() <= 0) {
         if (this.size().__int__() > 1) {
           return this;
         }
         if ($levels.__int__() <= 1) {
-          return this.at(0);
+          return this.at($int_0);
         }
-        return this.at(0).unbubble($depth, $levels.__dec__());
+        return this.at($int_0).unbubble($depth, $levels.__dec__());
       }
 
       return this.collect($SC.Function(function($item) {
         return $item.unbubble($depth.__dec__());
       }));
-    };
+    }, "depth=0; levels=1");
 
-    spec.bubble = function($depth, $levels) {
-      $depth  = utils.defaultValue$Integer($depth , 0);
-      $levels = utils.defaultValue$Integer($levels, 1);
-
+    spec.bubble = fn(function($depth, $levels) {
       if ($depth.__int__() <= 0) {
         if ($levels.__int__() <= 1) {
           return $SC.Array([ this ]);
@@ -759,7 +697,7 @@
       return this.collect($SC.Function(function($item) {
         return $item.bubble($depth.__dec__(), $levels);
       }));
-    };
+    }, "depth=0; levels=1");
 
     spec.slice = fn(function($$cuts) {
       var $firstCut, $list;
@@ -770,7 +708,7 @@
         return this.copy();
       }
 
-      $firstCut = $$cuts.at(0);
+      $firstCut = $$cuts.at($int_0);
       if ($firstCut === $nil) {
         $list = this.copy();
       } else {

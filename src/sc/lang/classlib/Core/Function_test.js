@@ -11,8 +11,8 @@
   describe("SCFunction", function() {
     var SCFunction, SCObject;
     before(function() {
-      SCFunction = $SC.Class("Function");
-      SCObject = $SC.Class("Object");
+      SCFunction = $SC("Function");
+      SCObject = $SC("Object");
       this.createInstance = function(func) {
         return $SC.Function(func || function() {
         });
@@ -136,7 +136,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("Routine").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Routine").returns(sc.test.object({
         new: spy
       }));
 
@@ -152,7 +152,7 @@
 
       spy = this.spy(sc.test.func);
       $n = $SC.Integer(3);
-      this.stub($SC.Class("Array"), "fill", spy);
+      this.stub($SC("Array"), "fill", spy);
 
       instance = this.createInstance();
       test = instance.dup($n);
@@ -228,7 +228,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("Routine").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Routine").returns(sc.test.object({
         new: spy
       }));
 
@@ -242,7 +242,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("Prout").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Prout").returns(sc.test.object({
         new: spy
       }));
 

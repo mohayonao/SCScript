@@ -40,7 +40,7 @@
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.while = function() {
       var msg = "While was called with a fixed (unchanging) Boolean as the condition. ";
@@ -61,7 +61,7 @@
       return $trueFunc.value();
     };
 
-    spec.not = utils.alwaysReturn$False;
+    spec.not = utils.alwaysReturn$false;
 
     spec["&&"] = function($that) {
       return $that.value();
@@ -80,8 +80,8 @@
       return $that.value().not();
     };
 
-    spec.asInteger = utils.alwaysReturn$Integer_1;
-    spec.binaryValue = utils.alwaysReturn$Integer_1;
+    spec.asInteger = utils.alwaysReturn$int_1;
+    spec.binaryValue = utils.alwaysReturn$int_1;
   });
 
   sc.lang.klass.refine("False", function(spec, utils) {
@@ -93,7 +93,7 @@
       return $falseFunc.value();
     };
 
-    spec.not = utils.alwaysReturn$True;
+    spec.not = utils.alwaysReturn$true;
 
     spec["&&"] = utils.nop;
 
@@ -108,9 +108,9 @@
       return $that.value();
     };
 
-    spec.nand = utils.alwaysReturn$True;
-    spec.asInteger = utils.alwaysReturn$Integer_0;
-    spec.binaryValue = utils.alwaysReturn$Integer_0;
+    spec.nand = utils.alwaysReturn$true;
+    spec.asInteger = utils.alwaysReturn$int_0;
+    spec.binaryValue = utils.alwaysReturn$int_0;
   });
 
 })(sc);

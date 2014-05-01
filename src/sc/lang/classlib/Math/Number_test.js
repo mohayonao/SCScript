@@ -9,7 +9,7 @@
   describe("SCNumber", function() {
     var SCNumber;
     before(function() {
-      SCNumber = $SC.Class("Number");
+      SCNumber = $SC("Number");
       this.createInstance = function(value) {
         var instance = $SC.Float(typeof value === "undefined" ? 0 : value);
         var testMethod = this.test.title.substr(1);

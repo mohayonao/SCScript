@@ -5142,7 +5142,7 @@
     "Point(3, 4)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Point').new($SC.Integer(3), $SC.Integer(4));",
+        "  return $SC('Point').new($SC.Integer(3), $SC.Integer(4));",
         "});",
       ],
       ast: {
@@ -5210,7 +5210,7 @@
     "Point.new(3, 4)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Point').new($SC.Integer(3), $SC.Integer(4));",
+        "  return $SC('Point').new($SC.Integer(3), $SC.Integer(4));",
         "});",
       ],
       ast: {
@@ -5277,7 +5277,7 @@
     "Point.new": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Point').new();",
+        "  return $SC('Point').new();",
         "});",
       ],
       ast: {
@@ -5323,7 +5323,7 @@
     "Routine  {|i| i.postln}": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Routine').new($SC.Function(function($i) {",
+        "  return $SC('Routine').new($SC.Function(function($i) {",
         "    return $i.postln();",
         "  }, 'i'));",
         "});",
@@ -5434,7 +5434,7 @@
     "Set[3, 4, 5]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Set').newFrom($SC.Array([",
+        "  return $SC('Set').newFrom($SC.Array([",
         "    $SC.Integer(3),",
         "    $SC.Integer(4),",
         "    $SC.Integer(5),",
@@ -5526,7 +5526,7 @@
     "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Array').newFrom($SC.Array([",
+        "  return $SC('Array').newFrom($SC.Array([",
         "    $SC.Integer(1),",
         "    $SC.Integer(2),",
         "  ])).at($SC.Integer(0));",
@@ -5638,7 +5638,7 @@
     "Array [ 1, 2 ][0]": { // (Array [ 1, 2 ])[0]
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Class('Array').newFrom($SC.Array([",
+        "  return $SC('Array').newFrom($SC.Array([",
         "    $SC.Integer(1),",
         "    $SC.Integer(2),",
         "  ])).at($SC.Integer(0));",
@@ -7647,7 +7647,7 @@
     "a.(Class)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().value($SC.Class('Class'));",
+        "  return $this.a().value($SC('Class'));",
         "});",
       ],
       ast: {

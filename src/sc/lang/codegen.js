@@ -15,7 +15,7 @@
     yield: true
   };
 
-  var Scope = sc.lang.compiler.Scope.inheritWith({
+  var Scope = sc.lang.compiler.Scope({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
@@ -184,14 +184,11 @@
       if (with_comma) {
         result.push(", ");
       }
-      result.push("{ ");
-      Object.keys(keyValues).forEach(function(key, i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(key, ": ", this.generate(keyValues[key]));
-      }, this);
-      result.push(" }");
+      result.push(
+        "{ ", this.stitchWith(Object.keys(keyValues), ", ", function(key) {
+          return [ key, ": ", this.generate(keyValues[key]) ];
+        }), " }"
+      );
     }
 
     return result;
@@ -267,16 +264,16 @@
 
       result = [
         this.stitchWith(elements, ",\n", function(item, i) {
-          return [ this.base, this._assign(
+          return this.addIndent(this._Assign(
             item, operator, "_ref.at($SC.Integer(" + i + "))"
-          ) ];
+          ));
         })
       ];
 
       if (node.remain) {
-        result.push(",\n", this.base, this._assign(
+        result.push(",\n", this.addIndent(this._Assign(
           node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
-        ));
+        )));
       }
 
       return result;
@@ -285,11 +282,11 @@
     return [
       "(_ref = ", this.generate(node.right), ",\n",
       assignments , ",\n",
-      this.base, "_ref)"
+      this.addIndent("_ref)")
     ];
   };
 
-  CodeGen.prototype._assign = function(left, operator, right) {
+  CodeGen.prototype._Assign = function(left, operator, right) {
     var result = [];
     var opts;
 
@@ -420,8 +417,46 @@
 
     return [
       fn.call(this, node, info.args),
-      genFunctionMetadata(info), ")"
+      this._FunctionMetadata(info), ")"
     ];
+  };
+
+  CodeGen.prototype._FunctionMetadata = function(info) {
+    var keys, vals;
+    var args, result;
+
+    keys = info.keys;
+    vals = info.vals;
+
+    if (keys.length === 0 && !info.remain && !info.closed) {
+      return [];
+    }
+
+    args = this.stitchWith(keys, "; ", function(item, i) {
+      var result = [ keys[i] ];
+
+      if (vals[i]) {
+        result.push("=", vals[i].value); // TODO #[]
+      }
+
+      return result;
+    });
+
+    result = [ ", '", args ];
+
+    if (info.remain) {
+      if (keys.length) {
+        result.push("; ");
+      }
+      result.push("*" + info.remain);
+    }
+    result.push("'");
+
+    if (info.closed) {
+      result.push(", true");
+    }
+
+    return result;
   };
 
   CodeGen.prototype._SimpleFunction = function(node, args) {
@@ -435,31 +470,29 @@
   };
 
   CodeGen.prototype._SegmentedFunction = function(node, args) {
-    var fargs;
-    var body;
+    var fargs, body, assignArguments;
 
     fargs = args.map(function(_, i) {
       return "_arg" + i;
     });
 
+    assignArguments = function(item, i) {
+      return "$" + args[i] + " = " + fargs[i];
+    };
+
     body = this.withFunction([], function() {
       var result = [];
       var fragments = [], syncBlockScope;
-      var closureVars = args;
       var elements = node.body;
       var i, imax;
       var functionBodies;
 
-      for (i = 0, imax = closureVars.length; i < imax; ++i) {
-        this.scope.add("var", closureVars[i]);
+      for (i = 0, imax = args.length; i < imax; ++i) {
+        this.scope.add("var", args[i]);
       }
 
       syncBlockScope = this.state.syncBlockScope;
       this.state.syncBlockScope = this.scope.peek();
-
-      var assignArguments = function(item, i) {
-        return "$" + args[i] + " = " + fargs[i];
-      };
 
       functionBodies = this.withIndent(function() {
         var fragments = [];
@@ -505,9 +538,9 @@
 
         while (i < imax) {
           if (i) {
-            fragments.push(",", "\n", this.base, this.withFunction([], loop));
+            fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
           } else {
-            fragments.push(this.base, this.withFunction(fargs, loop));
+            fragments.push(this.addIndent(this.withFunction(fargs, loop)));
           }
         }
 
@@ -532,7 +565,7 @@
     var name = node.name;
 
     if (isClassName(name)) {
-      return "$SC.Class('" + name + "')";
+      return "$SC('" + name + "')";
     }
 
     if (this.scope.find(name)) {
@@ -690,16 +723,20 @@
   };
 
   var getInformationOfFunction = function(node) {
-    var args     = [];
-    var defaults = [];
-    var remain   = null;
+    var args = [];
+    var keys, vals, remain;
     var list, i, imax;
+
+    keys = [];
+    vals = [];
+    remain = null;
 
     if (node.args) {
       list = node.args.list;
       for (i = 0, imax = list.length; i < imax; ++i) {
         args.push(list[i].id.name);
-        defaults.push(list[i].id.name, list[i].init);
+        keys.push(list[i].id.name);
+        vals.push(list[i].init);
       }
       if (node.args.remain) {
         remain = node.args.remain.name;
@@ -708,10 +745,16 @@
     }
 
     if (node.partial) {
-      defaults = [];
+      keys = [];
     }
 
-    return { args: args, remain: remain, defaults: defaults, closed: node.closed };
+    return {
+      args  : args,
+      keys  : keys,
+      vals  : vals,
+      remain: remain,
+      closed: node.closed
+    };
   };
 
   var isClassName = function(name) {
@@ -719,71 +762,28 @@
     return "A" <= ch0 && ch0 <= "Z";
   };
 
+  var isNode = function(node, key) {
+    return key !== "range" && key !== "loc" && typeof node[key] === "object";
+  };
+
   var isSegmentedBlock = function(node) {
-    if (node.type === Syntax.CallExpression && isSegmentedMethod(node)) {
+    if (isSegmentedMethod(node)) {
       return true;
     }
     return Object.keys(node).some(function(key) {
-      if (key !== "range" && key !== "loc") {
-        if (typeof node[key] === "object") {
-          return isSegmentedBlock(node[key]);
-        }
+      if (isNode(node, key)) {
+        return isSegmentedBlock(node[key]);
       }
       return false;
-    }, this);
+    });
   };
 
   var isSegmentedMethod = function(node) {
-    return !!SegmentedMethod[node.method.name];
-  };
-
-  var genFunctionMetadata = function(info) {
-    var defaults, remain, closed;
-    var result;
-    var i, imax;
-
-    defaults = info.defaults;
-    remain   = info.remain;
-    closed   = info.closed;
-
-    if (defaults.length === 0 && !remain && !closed) {
-      return [];
-    }
-
-    result = [ ", '" ];
-
-    for (i = 0, imax = defaults.length; i < imax; i += 2) {
-      if (i) {
-        result.push("; ");
-      }
-      result.push(defaults[i]);
-      if (defaults[i + 1]) {
-        result.push("=", defaults[i + 1].value); // TODO #[]
-      }
-    }
-    if (remain) {
-      if (i) {
-        result.push("; ");
-      }
-      result.push("*" + remain);
-    }
-    result.push("'");
-
-    if (closed) {
-      result.push(", true");
-    }
-
-    return result;
+    return node.type === Syntax.CallExpression && !!SegmentedMethod[node.method.name];
   };
 
   codegen.compile = function(ast, opts) {
     return new CodeGen(opts).generate(ast);
-  };
-
-  var SCScript = sc.SCScript;
-
-  SCScript.compile = function(source, opts) {
-    return new CodeGen(opts).generate(sc.lang.parser.parse(source, opts));
   };
 
   sc.lang.codegen = codegen;

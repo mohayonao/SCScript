@@ -9,8 +9,8 @@
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Array", function(spec, utils) {
-    var bool = utils.bool;
-    var SCArray = $SC.Class("Array");
+    var BOOL    = utils.BOOL;
+    var SCArray = $SC("Array");
 
     spec.$with = function() {
       return $SC.Array(slice.call(arguments));
@@ -544,7 +544,7 @@
       var i, imax;
 
       for (i = 0, imax = raw.length; i < imax; ++i) {
-        if (bool(raw[i].isSequenceableCollection())) {
+        if (BOOL(raw[i].isSequenceableCollection())) {
           return $SC.True();
         }
       }
@@ -681,7 +681,7 @@
       }));
     };
 
-    spec.isValidUGenInput = utils.alwaysReturn$True;
+    spec.isValidUGenInput = utils.alwaysReturn$true;
 
     spec.numChannels = function() {
       return this.size();
@@ -698,7 +698,7 @@
     spec.madd = function($mul, $add) {
       $mul = utils.defaultValue$Float($mul, 1.0);
       $add = utils.defaultValue$Float($add, 0.0);
-      return $SC.Class("MulAdd").new(this, $mul, $add);
+      return $SC("MulAdd").new(this, $mul, $add);
     };
 
     // TODO: implements asRawOSC

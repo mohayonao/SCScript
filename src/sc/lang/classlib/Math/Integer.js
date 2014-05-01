@@ -9,8 +9,9 @@
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Integer", function(spec, utils) {
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Integer;
 
@@ -26,7 +27,7 @@
       throw new Error("Integer.new is illegal, should use literal.");
     };
 
-    spec.isInteger = utils.alwaysReturn$True;
+    spec.isInteger = utils.alwaysReturn$true;
 
     // TODO: implements hash
 
@@ -182,7 +183,7 @@
 
     spec.xrand = function($exclude) {
       $exclude = utils.defaultValue$Integer($exclude, 0);
-      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int1)) ["%"] (this);
+      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int_1)) ["%"] (this);
     };
 
     spec.xrand2 = function($exclude) {
@@ -228,7 +229,7 @@
       $function = utils.defaultValue$Nil($function);
       $class    = utils.defaultValue$Nil($class);
 
-      if ($class === utils.nilInstance) {
+      if ($class === $nil) {
         $class = SCArray;
       }
 
@@ -270,7 +271,7 @@
 
     spec.to = function($hi, $step) {
       $step = utils.defaultValue$Integer($step, 1);
-      return $SC.Class("Interval").new(this, $hi, $step);
+      return $SC("Interval").new(this, $hi, $step);
     };
 
     spec.asAscii = function() {
@@ -316,7 +317,7 @@
       $numDigits = utils.defaultValue$Nil($numDigits);
 
       $num = this;
-      if ($numDigits === utils.nilInstance) {
+      if ($numDigits === $nil) {
         $numDigits = (
           this.log() ["/"] ($base.log() ["+"] ($SC.Float(1e-10)))
         ).asInteger().__inc__();

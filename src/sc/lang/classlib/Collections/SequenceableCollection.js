@@ -7,10 +7,12 @@
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
 
     spec["|@|"] = function($index) {
       return this.clipAt($index);
@@ -121,19 +123,19 @@
       $aCollection = utils.defaultValue$Nil($aCollection);
 
       if ($aCollection.class() !== this.class()) {
-        return utils.falseInstance;
+        return $false;
       }
       if (this.size() !== $aCollection.size()) {
-        return utils.falseInstance;
+        return $false;
       }
       this.do($SC.Function(function($item, $i) {
-        if (bool($item ["!="] ($aCollection.at($i)))) {
-          $res = utils.falseInstance;
+        if (BOOL($item ["!="] ($aCollection.at($i)))) {
+          $res = $false;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     // TODO: implements hash
@@ -159,7 +161,7 @@
 
       n = $n.__int__();
       if (n >= 0) {
-        return this.copyRange($int0, $SC.Integer(n - 1));
+        return this.copyRange($int_0, $SC.Integer(n - 1));
       }
       size = this.size().__int__();
 
@@ -176,7 +178,7 @@
         return this.copyRange($n, $SC.Integer(size - 1));
       }
 
-      return this.copyRange($int0, $SC.Integer(size + n - 1));
+      return this.copyRange($int_0, $SC.Integer(size + n - 1));
     };
 
     spec.copyToEnd = function($start) {
@@ -184,7 +186,7 @@
     };
 
     spec.copyFromStart = function($end) {
-      return this.copyRange($int0, $end);
+      return this.copyRange($int_0, $end);
     };
 
     spec.indexOf = function($item) {
@@ -227,8 +229,8 @@
       offset = $offset.__int__();
       for (i = 0, imax = size - offset; i < imax; ++i) {
         $index = $SC.Integer(i + offset);
-        if (bool(this.at($index) ["=="] ($first))) {
-          if (bool(this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist))) {
+        if (BOOL(this.at($index) ["=="] ($first))) {
+          if (BOOL(this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist))) {
             return $index;
           }
         }
@@ -243,7 +245,7 @@
       $offset = utils.defaultValue$Integer($offset, 0);
 
       $indices = $nil;
-      $i = $int0;
+      $i = $int_0;
 
       while (($i = $this.find($arr, $offset)) !== $nil) {
         $indices = $indices.add($i);
@@ -268,7 +270,7 @@
       if ($j === $nil) {
         return this.size().__dec__();
       }
-      if ($j === $int0) {
+      if ($j === $int_0) {
         return $j;
       }
 
@@ -285,7 +287,7 @@
       var $a, $b, $div, $i;
       $val = utils.defaultValue$Nil($val);
 
-      if (bool(this.isEmpty())) {
+      if (BOOL(this.isEmpty())) {
         return $nil;
       }
       $i = this.indexOfGreaterThan($val);
@@ -293,7 +295,7 @@
       if ($i === $nil) {
         return this.size().__dec__();
       }
-      if ($i === $int0) {
+      if ($i === $int_0) {
         return $i;
       }
 
@@ -301,7 +303,7 @@
       $b = this.at($i);
       $div = $b ["-"] ($a);
 
-      // if (bool($div ["=="] ($int0))) {
+      // if (BOOL($div ["=="] ($int_0))) {
       //   return $i;
       // }
 
@@ -313,19 +315,19 @@
       $step = utils.defaultValue$Nil($step);
 
       if (this.size() <= 1) {
-        return utils.trueInstance;
+        return $true;
       }
       this.doAdjacentPairs($SC.Function(function($a, $b) {
         var $diff = $b ["-"] ($a);
         if ($step === $nil) {
           $step = $diff;
-        } else if (bool($step ["!="] ($diff))) {
-          $res = utils.falseInstance;
+        } else if (BOOL($step ["!="] ($diff))) {
+          $res = $false;
           return sc.C.LOOP_BREAK;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     spec.resamp0 = function($newSize) {
@@ -335,7 +337,7 @@
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int1)
+        ($newSize.__dec__()).max($int_1)
       );
 
       return this.species().fill($newSize, $SC.Function(function($i) {
@@ -350,7 +352,7 @@
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int1)
+        ($newSize.__dec__()).max($int_1)
       );
 
       return this.species().fill($newSize, $SC.Function(function($i) {
@@ -416,7 +418,7 @@
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.at($int0);
+        return this.at($int_0);
       }
 
       return $nil;
@@ -450,7 +452,7 @@
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.put($int0, $obj);
+        return this.put($int_0, $obj);
       }
 
       return this;
@@ -498,7 +500,7 @@
       var $this = this, $int2 = $SC.Integer(2);
       $function = utils.defaultValue$Nil($function);
 
-      $int0.forBy(this.size() ["-"] ($int2), $int2, $SC.Function(function($i) {
+      $int_0.forBy(this.size() ["-"] ($int2), $int2, $SC.Function(function($i) {
         return $function.value($this.at($i), $this.at($i.__inc__()), $i);
       }));
 
@@ -531,12 +533,12 @@
       $sublist = this.species().new();
       this.doAdjacentPairs($SC.Function(function($a, $b, $i) {
         $sublist = $sublist.add($a);
-        if (bool($function.value($a, $b, $i))) {
+        if (BOOL($function.value($a, $b, $i))) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         }
       }));
-      if (bool(this.notEmpty())) {
+      if (BOOL(this.notEmpty())) {
         $sublist = $sublist.add(this.last());
       }
       $list = $list.add($sublist);
@@ -551,7 +553,7 @@
       $list = $SC.Array();
       $sublist = this.species().new();
       this.do($SC.Function(function($item, $i) {
-        if (bool($function.value($item, $i))) {
+        if (BOOL($function.value($item, $i))) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         } else {
@@ -588,7 +590,7 @@
       $groupSizeList = utils.defaultValue$Nil($groupSizeList);
 
       $list = $SC.Array();
-      $subSize = $groupSizeList.at($int0);
+      $subSize = $groupSizeList.at($int_0);
       $sublist = this.species().new($subSize);
       this.do($SC.Function(function($item) {
         $sublist = $sublist.add($item);
@@ -662,7 +664,7 @@
 
       $list = this.species().new(this.size());
       this.do($SC.Function(function($item, $i) {
-        if ($item._flatIf && bool($func.value($item, $i))) {
+        if ($item._flatIf && BOOL($func.value($item, $i))) {
           $list = $list.addAll($item._flatIf($func));
         } else {
           $list = $list.add($item);
@@ -676,13 +678,13 @@
       var $this = this, $list, $size, $maxsize;
 
       $size = this.size();
-      $maxsize = $int0;
+      $maxsize = $int_0;
       this.do($SC.Function(function($sublist) {
         var $sz;
-        if (bool($sublist.isSequenceableCollection())) {
+        if (BOOL($sublist.isSequenceableCollection())) {
           $sz = $sublist.size();
         } else {
-          $sz = $int1;
+          $sz = $int_1;
         }
         if ($sz > $maxsize) {
           $maxsize = $sz;
@@ -694,7 +696,7 @@
       }));
 
       this.do($SC.Function(function($isublist) {
-        if (bool($isublist.isSequenceableCollection())) {
+        if (BOOL($isublist.isSequenceableCollection())) {
           $list.do($SC.Function(function($jsublist, $j) {
             $jsublist.add($isublist.wrapAt($j));
           }));
@@ -713,15 +715,15 @@
       $func = utils.defaultValue$Nil($func);
 
       $maxsize = this.maxValue($SC.Function(function($sublist) {
-        if (bool($sublist.isSequenceableCollection())) {
+        if (BOOL($sublist.isSequenceableCollection())) {
           return $sublist.size();
         }
-        return $int1;
+        return $int_1;
       }));
 
       return this.species().fill($maxsize, $SC.Function(function($i) {
         return $func.valueArray($this.collect($SC.Function(function($sublist) {
-          if (bool($sublist.isSequenceableCollection())) {
+          if (BOOL($sublist.isSequenceableCollection())) {
             return $sublist.wrapAt($i);
           } else {
             return $sublist;
@@ -751,7 +753,7 @@
     // TODO: implements sumRhythmDivisions
     // TODO: implements convertOneRhythm
 
-    spec.isSequenceableCollection = utils.alwaysReturn$True;
+    spec.isSequenceableCollection = utils.alwaysReturn$true;
 
     spec.containsSeqColl = function() {
       return this.any($SC.Function(function($_) {
@@ -1237,7 +1239,7 @@
           this, $aSelector, $theOperand
         );
       }
-      if (bool($adverb.isInteger())) {
+      if (BOOL($adverb.isInteger())) {
         return _performBinaryOpOnSeqColl_adverb_int(
           this, $aSelector, $theOperand, $adverb.valueOf()
         );

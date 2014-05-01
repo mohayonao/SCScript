@@ -8,7 +8,7 @@
   describe("SCEvent", function() {
     var SCEvent;
     before(function() {
-      SCEvent = $SC.Class("Event");
+      SCEvent = $SC("Event");
       this.createInstance = function() {
         return SCEvent.new();
       };

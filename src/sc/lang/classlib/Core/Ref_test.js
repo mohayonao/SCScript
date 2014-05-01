@@ -8,7 +8,7 @@
   describe("SCRef", function() {
     var SCRef, $nil;
     before(function() {
-      SCRef = $SC.Class("Ref");
+      SCRef = $SC("Ref");
       $nil = $SC.Nil();
       this.createInstance = function(_value) {
         return SCRef.new(_value || $nil);

@@ -7,8 +7,9 @@
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
-    var bool = utils.bool;
-    var SCArray = $SC.Class("Array");
+    var BOOL = utils.BOOL;
+    var $nil = utils.$nil;
+    var SCArray = $SC("Array");
 
     // TODO: implements def
 
@@ -16,12 +17,12 @@
       throw new Error("Function.new is illegal, should use literal.");
     };
 
-    spec.isFunction = utils.alwaysReturn$True;
+    spec.isFunction = utils.alwaysReturn$true;
 
     // TODO: implements isClosed
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
-    spec.archiveAsObject = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    spec.archiveAsObject = utils.alwaysReturn$true;
 
     // TODO: implements checkCanArchive
 
@@ -57,7 +58,7 @@
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $SC.Class("Routine").new(this);
+      return $SC("Routine").new(this);
     };
 
     spec.dup = function($n) {
@@ -88,7 +89,7 @@
       args.unshift(this);
 
       for (i = 0, imax = args.length >> 1; i < imax; ++i) {
-        if (bool(args[i * 2].value())) {
+        if (BOOL(args[i * 2].value())) {
           return args[i * 2 + 1].value();
         }
       }
@@ -97,15 +98,15 @@
         return args[args.length - 1].value();
       }
 
-      return utils.nilInstance;
+      return $nil;
     };
 
     spec.r = function() {
-      return $SC.Class("Routine").new(this);
+      return $SC("Routine").new(this);
     };
 
     spec.p = function() {
-      return $SC.Class("Prout").new(this);
+      return $SC("Prout").new(this);
     };
 
     // TODO: implements matchItem

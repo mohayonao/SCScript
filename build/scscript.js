@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.16" };
+var sc = { VERSION: "0.0.17" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -459,15 +459,8 @@ var sc = { VERSION: "0.0.16" };
 // src/sc/lang/dollarSC.js
 (function(sc) {
 
-  var $SC = function(msg, rcv, args) {
-    var method;
-
-    method = rcv[msg];
-    if (method) {
-      return method.apply(rcv, args);
-    }
-
-    throw new Error(String(rcv) + " cannot understand message '" + msg + "'");
+  var $SC = function(name) {
+    return sc.lang.klass.get(name);
   };
 
   /* istanbul ignore next */
@@ -479,9 +472,7 @@ var sc = { VERSION: "0.0.16" };
   $SC.Char = shouldBeImplementedInClassLib;
   $SC.Array = shouldBeImplementedInClassLib;
   $SC.String = shouldBeImplementedInClassLib;
-  $SC.Dictionary = shouldBeImplementedInClassLib;
   $SC.Function = shouldBeImplementedInClassLib;
-  $SC.Routine = shouldBeImplementedInClassLib;
   $SC.Ref = shouldBeImplementedInClassLib;
   $SC.Symbol = shouldBeImplementedInClassLib;
   $SC.Boolean = shouldBeImplementedInClassLib;
@@ -557,14 +548,12 @@ var sc = { VERSION: "0.0.16" };
 // src/sc/lang/klass.js
 (function(sc) {
 
-  sc.lang.klass = {};
-
   var slice = [].slice;
   var $SC = sc.lang.$SC;
 
+  var klass       = {};
   var metaClasses = {};
-  var classes = {};
-  var utils = {};
+  var classes     = klass.classes = {};
 
   var createClassInstance = function(MetaSpec) {
     var instance = new SCClass();
@@ -586,9 +575,13 @@ var sc = { VERSION: "0.0.16" };
     constructor.metaClass = createClassInstance(MetaSpec);
   };
 
-  var def = function(className, fn, classMethods, instanceMethods, opts) {
+  var def = function(className, constructor, fn, opts) {
+    var classMethods, instanceMethods, setMethod, spec;
 
-    var setMethod = function(methods, methodName, func) {
+    classMethods    = constructor.metaClass._MetaSpec.prototype;
+    instanceMethods = constructor.prototype;
+
+    setMethod = function(methods, methodName, func) {
       var bond;
       if (methods.hasOwnProperty(methodName) && !opts.force) {
         bond = methods === classMethods ? "." : "#";
@@ -600,9 +593,8 @@ var sc = { VERSION: "0.0.16" };
       methods[methodName] = func;
     };
 
-    var spec = {};
     if (typeof fn === "function") {
-      fn(spec, utils);
+      fn(spec = {}, klass.utils);
     } else {
       spec = fn;
     }
@@ -659,34 +651,16 @@ var sc = { VERSION: "0.0.16" };
     }
   };
 
-  sc.lang.klass.define = function(constructor, className, spec) {
-    var items, superClassName, metaClass, newClass;
-    var mproto, cproto;
-
-    throwIfInvalidArgument(constructor, className);
-
-    items = className.split(":");
-    className      = items[0].trim();
-    superClassName = (items[1] || "Object").trim();
-
-    throwIfInvalidClassName(className, superClassName);
-
-    if (className !== "Object") {
-      extend(constructor, metaClasses[superClassName]);
-    }
+  var buildClass = function(className, constructor) {
+    var newClass, metaClass;
 
     metaClass = constructor.metaClass;
-    mproto    = metaClass._MetaSpec.prototype;
-    cproto    = constructor.prototype;
-
-    spec = spec || {};
-    def(className, spec, mproto, cproto, {});
 
     newClass = new metaClass._MetaSpec();
     newClass._name = className;
     newClass._Spec = constructor;
-    cproto.__class = newClass;
-    cproto.__Spec  = constructor;
+    constructor.prototype.__class = newClass;
+    constructor.prototype.__Spec  = constructor;
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
@@ -702,8 +676,30 @@ var sc = { VERSION: "0.0.16" };
     metaClasses[className] = metaClass;
   };
 
-  sc.lang.klass.refine = function(className, spec, opts) {
-    var metaClass;
+  klass.define = function(constructor, className, fn) {
+    var items, superClassName;
+
+    throwIfInvalidArgument(constructor, className);
+
+    items = className.split(":");
+    className      = items[0].trim();
+    superClassName = (items[1] || "Object").trim();
+
+    throwIfInvalidClassName(className, superClassName);
+
+    if (className !== "Object") {
+      extend(constructor, metaClasses[superClassName]);
+    }
+
+    fn = fn || {};
+
+    def(className, constructor, fn, {});
+
+    buildClass(className, constructor);
+  };
+
+  klass.refine = function(className, fn, opts) {
+    var constructor;
 
     if (!metaClasses.hasOwnProperty(className)) {
       throw new Error(
@@ -711,11 +707,13 @@ var sc = { VERSION: "0.0.16" };
           "class '" + className + "' is not registered."
       );
     }
-    metaClass = metaClasses[className];
-    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts || {});
+
+    constructor = metaClasses[className]._Spec;
+
+    def(className, constructor, fn, opts || {});
   };
 
-  sc.lang.klass.get = function(name) {
+  klass.get = function(name) {
     if (!classes[name]) {
       throw new Error(
         "sc.lang.klass.get: " +
@@ -725,7 +723,7 @@ var sc = { VERSION: "0.0.16" };
     return classes[name];
   };
 
-  sc.lang.klass.exists = function(name) {
+  klass.exists = function(name) {
     return !!classes[name];
   };
 
@@ -741,96 +739,8 @@ var sc = { VERSION: "0.0.16" };
     this._isMetaClass = false;
   }
 
-  function SCNil() {
-    this.__initializeWith__("Object");
-    this._ = null;
-  }
-
-  function SCSymbol() {
-    this.__initializeWith__("Object");
-    this._ = "";
-  }
-
-  function SCBoolean() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCTrue() {
-    this.__initializeWith__("Boolean");
-    this._ = true;
-  }
-
-  function SCFalse() {
-    this.__initializeWith__("Boolean");
-    this._ = false;
-  }
-
-  function SCMagnitude() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCChar() {
-    this.__initializeWith__("Magnitude");
-    this._ = "\0";
-  }
-
-  function SCNumber() {
-    this.__initializeWith__("Magnitude");
-  }
-
-  function SCSimpleNumber() {
-    this.__initializeWith__("Number");
-  }
-
-  function SCInteger() {
-    this.__initializeWith__("SimpleNumber");
-    this._ = 0;
-  }
-
-  function SCFloat() {
-    this.__initializeWith__("SimpleNumber");
-    this._ = 0.0;
-  }
-
-  function SCCollection() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCSequenceableCollection() {
-    this.__initializeWith__("Collection");
-  }
-
-  function SCArrayedCollection() {
-    this.__initializeWith__("SequenceableCollection");
-    this._immutable = false;
-    this._ = [];
-  }
-
-  function SCRawArray() {
-    this.__initializeWith__("ArrayedCollection");
-  }
-
-  function SCArray() {
-    this.__initializeWith__("ArrayedCollection");
-  }
-
-  function SCString(value) {
-    this.__initializeWith__("RawArray");
-    this._ = value;
-  }
-
-  function SCAbstractFunction() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCFunction() {
-    this.__initializeWith__("AbstractFunction");
-    // istanbul ignore next
-    this._ = function() {};
-  }
-
   SCObject.metaClass = createClassInstance(function() {});
-  sc.lang.klass.define(SCObject, "Object", {
+  klass.define(SCObject, "Object", {
     __tag: 1,
     __initializeWith__: function(className, args) {
       metaClasses[className]._Spec.apply(this, args);
@@ -838,7 +748,7 @@ var sc = { VERSION: "0.0.16" };
     $initClass: function() {}
   });
 
-  sc.lang.klass.define(SCClass, "Class");
+  klass.define(SCClass, "Class");
 
   SCObject.metaClass._MetaSpec.prototype = classes.Class = createClassInstance();
   classes.Class._Spec = SCClass;
@@ -848,61 +758,7 @@ var sc = { VERSION: "0.0.16" };
   classes.Object._Spec.prototype.__class = classes.Object;
   classes.Object._Spec.prototype.__Spec = classes.Object._Spec;
 
-  sc.lang.klass.define(SCNil, "Nil", {
-    __tag: 773
-  });
-
-  sc.lang.klass.define(SCSymbol, "Symbol", {
-    __tag: 1027
-  });
-
-  sc.lang.klass.define(SCBoolean, "Boolean");
-
-  sc.lang.klass.define(SCTrue, "True : Boolean", {
-    __tag: 775
-  });
-
-  sc.lang.klass.define(SCFalse, "False : Boolean", {
-    __tag: 774
-  });
-
-  sc.lang.klass.define(SCMagnitude, "Magnitude");
-
-  sc.lang.klass.define(SCChar, "Char : Magnitude", {
-    __tag: 1028
-  });
-
-  sc.lang.klass.define(SCNumber, "Number : Magnitude");
-  sc.lang.klass.define(SCSimpleNumber, "SimpleNumber : Number");
-
-  sc.lang.klass.define(SCInteger, "Integer : SimpleNumber", {
-    __tag: 770
-  });
-
-  sc.lang.klass.define(SCFloat, "Float : SimpleNumber", {
-    __tag: 777
-  });
-
-  sc.lang.klass.define(SCCollection, "Collection");
-  sc.lang.klass.define(SCSequenceableCollection, "SequenceableCollection : Collection");
-  sc.lang.klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
-  sc.lang.klass.define(SCRawArray, "RawArray : ArrayedCollection");
-
-  sc.lang.klass.define(SCArray, "Array : ArrayedCollection", {
-    __tag: 11
-  });
-
-  sc.lang.klass.define(SCString, "String : RawArray", {
-    __tag: 1034
-  });
-
-  sc.lang.klass.define(SCAbstractFunction, "AbstractFunction");
-
-  sc.lang.klass.define(SCFunction, "Function : AbstractFunction", {
-    __tag: 12
-  });
-
-  sc.lang.klass.refine("Object", function(spec) {
+  klass.refine("Object", function(spec) {
     spec.$new = function() {
       if (this._Spec === SCClass) {
         return $SC.Nil();
@@ -915,7 +771,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.isClass = function() {
-      return falseInstance;
+      return $SC.False();
     };
 
     spec.isKindOf = function($aClass) {
@@ -940,20 +796,20 @@ var sc = { VERSION: "0.0.16" };
     };
   });
 
-  sc.lang.klass.refine("Class", function(spec) {
+  klass.refine("Class", function(spec) {
     spec.name = function() {
       return $SC.String(this._name);
     };
 
     spec.class = function() {
       if (this._isMetaClass) {
-        return  classes.Class;
+        return classes.Class;
       }
-      return $SC.Class("Meta_" + this._name);
+      return $SC("Meta_" + this._name);
     };
 
     spec.isClass = function() {
-      return trueInstance;
+      return $SC.True();
     };
 
     spec.toString = function() {
@@ -961,57 +817,167 @@ var sc = { VERSION: "0.0.16" };
     };
   });
 
-  $SC.Class = sc.lang.klass.get;
+  sc.lang.klass = klass;
 
-  var nilInstance = new SCNil();
+})(sc);
+
+// src/sc/lang/klass-constructors.js
+(function(sc) {
+
+  var $SC = sc.lang.$SC;
+  var klass = sc.lang.klass;
+
+  function SCNil() {
+    this.__initializeWith__("Object");
+    this._ = null;
+  }
+  klass.define(SCNil, "Nil", {
+    __tag: 773
+  });
+
+  function SCSymbol() {
+    this.__initializeWith__("Object");
+    this._ = "";
+  }
+  klass.define(SCSymbol, "Symbol", {
+    __tag: 1027
+  });
+
+  function SCBoolean() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCBoolean, "Boolean");
+
+  function SCTrue() {
+    this.__initializeWith__("Boolean");
+    this._ = true;
+  }
+  klass.define(SCTrue, "True : Boolean", {
+    __tag: 775
+  });
+
+  function SCFalse() {
+    this.__initializeWith__("Boolean");
+    this._ = false;
+  }
+  klass.define(SCFalse, "False : Boolean", {
+    __tag: 774
+  });
+
+  function SCMagnitude() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCMagnitude, "Magnitude");
+
+  function SCChar() {
+    this.__initializeWith__("Magnitude");
+    this._ = "\0";
+  }
+  klass.define(SCChar, "Char : Magnitude", {
+    __tag: 1028
+  });
+
+  function SCNumber() {
+    this.__initializeWith__("Magnitude");
+  }
+  klass.define(SCNumber, "Number : Magnitude");
+
+  function SCSimpleNumber() {
+    this.__initializeWith__("Number");
+  }
+  klass.define(SCSimpleNumber, "SimpleNumber : Number");
+
+  function SCInteger() {
+    this.__initializeWith__("SimpleNumber");
+    this._ = 0;
+  }
+  klass.define(SCInteger, "Integer : SimpleNumber", {
+    __tag: 770
+  });
+
+  function SCFloat() {
+    this.__initializeWith__("SimpleNumber");
+    this._ = 0.0;
+  }
+  klass.define(SCFloat, "Float : SimpleNumber", {
+    __tag: 777
+  });
+
+  function SCCollection() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCCollection, "Collection");
+
+  function SCSequenceableCollection() {
+    this.__initializeWith__("Collection");
+  }
+  klass.define(SCSequenceableCollection, "SequenceableCollection : Collection");
+
+  function SCArrayedCollection() {
+    this.__initializeWith__("SequenceableCollection");
+    this._immutable = false;
+    this._ = [];
+  }
+  klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
+
+  function SCRawArray() {
+    this.__initializeWith__("ArrayedCollection");
+  }
+  klass.define(SCRawArray, "RawArray : ArrayedCollection");
+
+  function SCArray() {
+    this.__initializeWith__("ArrayedCollection");
+  }
+  klass.define(SCArray, "Array : ArrayedCollection", {
+    __tag: 11
+  });
+
+  function SCString(value) {
+    this.__initializeWith__("RawArray");
+    this._ = value;
+  }
+  klass.define(SCString, "String : RawArray", {
+    __tag: 1034
+  });
+
+  function SCAbstractFunction() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCAbstractFunction, "AbstractFunction");
+
+  function SCFunction() {
+    this.__initializeWith__("AbstractFunction");
+    // istanbul ignore next
+    this._ = function() {};
+  }
+  klass.define(SCFunction, "Function : AbstractFunction", {
+    __tag: 12
+  });
+
+  // $SC
+  var $nil      = new SCNil();
+  var $true     = new SCTrue();
+  var $false    = new SCFalse();
+  var $integers = {};
+  var $floats   = {};
+  var $symbols  = {};
+  var $chars    = {};
 
   $SC.Nil = function() {
-    return nilInstance;
+    return $nil;
   };
 
-  var symbolInstances = {};
-
-  $SC.Symbol = function(value) {
-    var instance;
-    if (!symbolInstances.hasOwnProperty(value)) {
-      instance = new SCSymbol();
-      instance._ = value;
-      symbolInstances[value] = instance;
-    }
-    return symbolInstances[value];
+  $SC.Boolean = function($value) {
+    return $value ? $true : $false;
   };
-
-  var trueInstance = new SCTrue();
-  var falseInstance = new SCFalse();
 
   $SC.True = function() {
-    return trueInstance;
+    return $true;
   };
 
   $SC.False = function() {
-    return falseInstance;
+    return $false;
   };
-  $SC.Boolean = function($value) {
-    return $value ? trueInstance : falseInstance;
-  };
-
-  var charInstances = {};
-
-  $SC.Char = function(value) {
-    var instance;
-
-    value = String(value).charAt(0);
-
-    if (!charInstances.hasOwnProperty(value)) {
-      instance = new SCChar();
-      instance._ = value;
-      charInstances[value] = instance;
-    }
-
-    return charInstances[value];
-  };
-
-  var intInstances = {};
 
   $SC.Integer = function(value) {
     var instance;
@@ -1022,29 +988,51 @@ var sc = { VERSION: "0.0.16" };
 
     value = value|0;
 
-    if (!intInstances.hasOwnProperty(value)) {
+    if (!$integers.hasOwnProperty(value)) {
       instance = new SCInteger();
       instance._ = value;
-      intInstances[value] = instance;
+      $integers[value] = instance;
     }
 
-    return intInstances[value];
+    return $integers[value];
   };
-
-  var floatInstances = {};
 
   $SC.Float = function(value) {
     var instance;
 
     value = +value;
 
-    if (!floatInstances.hasOwnProperty(value)) {
+    if (!$floats.hasOwnProperty(value)) {
       instance = new SCFloat();
       instance._ = value;
-      floatInstances[value] = instance;
+      $floats[value] = instance;
     }
 
-    return floatInstances[value];
+    return $floats[value];
+  };
+
+  $SC.Symbol = function(value) {
+    var instance;
+    if (!$symbols.hasOwnProperty(value)) {
+      instance = new SCSymbol();
+      instance._ = value;
+      $symbols[value] = instance;
+    }
+    return $symbols[value];
+  };
+
+  $SC.Char = function(value) {
+    var instance;
+
+    value = String(value).charAt(0);
+
+    if (!$chars.hasOwnProperty(value)) {
+      instance = new SCChar();
+      instance._ = value;
+      $chars[value] = instance;
+    }
+
+    return $chars[value];
   };
 
   $SC.Array = function(value, immutable) {
@@ -1067,29 +1055,37 @@ var sc = { VERSION: "0.0.16" };
     return instance;
   };
 
-  var int0Instance = $SC.Integer(0);
-  var int1Instance = $SC.Integer(1);
+})(sc);
 
-  utils = {
-    nilInstance: nilInstance,
-    trueInstance: trueInstance,
-    falseInstance: falseInstance,
-    int0Instance: int0Instance,
-    int1Instance: int1Instance,
+// src/sc/lang/klass-utils.js
+(function(sc) {
+
+  var $SC = sc.lang.$SC;
+  var klass = sc.lang.klass;
+
+  var utils = {
+    BOOL: function(a) {
+      return a.__bool__();
+    },
+    $nil  : $SC.Nil(),
+    $true : $SC.True(),
+    $false: $SC.False(),
+    $int_0: $SC.Integer(0),
+    $int_1: $SC.Integer(1),
     nop: function() {
       return this;
     },
-    alwaysReturn$Nil: $SC.Nil,
-    alwaysReturn$True: $SC.True,
-    alwaysReturn$False: $SC.False,
-    alwaysReturn$Integer_0: function() {
-      return int0Instance;
+    alwaysReturn$nil  : $SC.Nil,
+    alwaysReturn$true : $SC.True,
+    alwaysReturn$false: $SC.False,
+    alwaysReturn$int_0: function() {
+      return utils.$int_0;
     },
-    alwaysReturn$Integer_1: function() {
-      return int1Instance;
+    alwaysReturn$int_1: function() {
+      return utils.$int_1;
     },
     defaultValue$Nil: function($obj) {
-      return $obj || nilInstance;
+      return $obj || utils.$nil;
     },
     defaultValue$Boolean: function($obj, value) {
       return $obj || $SC.Boolean(value);
@@ -1103,16 +1099,12 @@ var sc = { VERSION: "0.0.16" };
     defaultValue$Symbol: function($obj, value) {
       return $obj || $SC.Symbol(value);
     },
-    bool: function(a) {
-      return a.__bool__();
-    },
     getMethod: function(className, methodName) {
-      return sc.lang.klass.get(className)._Spec.prototype[methodName];
+      return klass.get(className)._Spec.prototype[methodName];
     }
   };
 
-  sc.lang.klass.classes = classes;
-  sc.lang.klass.utils = utils;
+  klass.utils = utils;
 
 })(sc);
 
@@ -1120,12 +1112,12 @@ var sc = { VERSION: "0.0.16" };
 (function(sc) {
 
   var iterator = {};
-  var $SC = sc.lang.$SC;
+  var $SC   = sc.lang.$SC;
   var utils = sc.lang.klass.utils;
-
-  var bool = function(a) {
-    return a.__bool__();
-  };
+  var $nil   = utils.$nil;
+  var $int_0 = utils.$int_0;
+  var $int_1 = utils.$int_1;
+  var BOOL   = utils.BOOL;
 
   var __stop__ = function() {
     return null;
@@ -1165,10 +1157,9 @@ var sc = { VERSION: "0.0.16" };
   iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
-    var $nil = utils.nilInstance;
     var iter = {
       next: function() {
-        if (bool($function.value())) {
+        if (BOOL($function.value())) {
           return [ $nil, $nil ];
         }
         iter.next = __stop__;
@@ -1221,9 +1212,9 @@ var sc = { VERSION: "0.0.16" };
   iterator.number$do = function($end) {
     var $start, $step;
 
-    $start = utils.int0Instance;
+    $start = $int_0;
     $end   = $end.__dec__();
-    $step  = utils.int1Instance;
+    $step  = $int_1;
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -1232,7 +1223,7 @@ var sc = { VERSION: "0.0.16" };
     var $end, $step;
 
     $start = $start.__dec__();
-    $end   = utils.int0Instance;
+    $end   = $int_0;
     $step  = $SC.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
@@ -1242,7 +1233,7 @@ var sc = { VERSION: "0.0.16" };
     var $step;
     $end = utils.defaultValue$Nil($end);
 
-    $step = ($start <= $end) ? utils.int1Instance : $SC.Integer(-1);
+    $step = ($start <= $end) ? $int_1 : $SC.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -1435,10 +1426,12 @@ var sc = { VERSION: "0.0.16" };
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__num__ = function() {
       throw new Error("Wrong Type");
@@ -1481,9 +1474,9 @@ var sc = { VERSION: "0.0.16" };
     // TODO: implements gcSanity
     // TODO: implements canCallOS
 
-    spec.size = utils.alwaysReturn$Integer_0;
-    spec.indexedSize = utils.alwaysReturn$Integer_0;
-    spec.flatSize = utils.alwaysReturn$Integer_1;
+    spec.size = utils.alwaysReturn$int_0;
+    spec.indexedSize = utils.alwaysReturn$int_0;
+    spec.flatSize = utils.alwaysReturn$int_1;
 
     spec.do = function($function) {
       $function = utils.defaultValue$Nil($function);
@@ -1596,7 +1589,7 @@ var sc = { VERSION: "0.0.16" };
       var $array, i, imax;
 
       $n = utils.defaultValue$Integer($n, 2);
-      if (bool($n.isSequenceableCollection())) {
+      if (BOOL($n.isSequenceableCollection())) {
         return SCArray.fillND($n, $SC.Function(function() {
           return $this.copy();
         }));
@@ -1647,7 +1640,7 @@ var sc = { VERSION: "0.0.16" };
     // TODO: implements identityHash
 
     spec["->"] = function($obj) {
-      return $SC.Class("Association").new(this, $obj);
+      return $SC("Association").new(this, $obj);
     };
 
     spec.next = utils.nop;
@@ -1661,14 +1654,14 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.iter = function() {
-      return $SC.Class("OneShotStream").new(this);
+      return $SC("OneShotStream").new(this);
     };
 
     spec.stop = utils.nop;
     spec.free = utils.nop;
     spec.clear = utils.nop;
     spec.removedFromScheduler = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$False;
+    spec.isPlaying = utils.alwaysReturn$false;
 
     spec.embedInStream = function() {
       return this.yield();
@@ -1683,7 +1676,7 @@ var sc = { VERSION: "0.0.16" };
 
     // TODO: implements streamArg
 
-    spec.eventAt = utils.alwaysReturn$Nil;
+    spec.eventAt = utils.alwaysReturn$nil;
 
     spec.composeEvents = function($event) {
       $event = utils.defaultValue$Nil($event);
@@ -1691,8 +1684,8 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.finishEvent = utils.nop;
-    spec.atLimit = utils.alwaysReturn$False;
-    spec.isRest = utils.alwaysReturn$False;
+    spec.atLimit = utils.alwaysReturn$false;
+    spec.isRest = utils.alwaysReturn$false;
     spec.threadPlayer = utils.nop;
     spec.threadPlayer_ = utils.nop;
     spec["?"] = utils.nop;
@@ -1703,26 +1696,26 @@ var sc = { VERSION: "0.0.16" };
       return $obj.value(this);
     };
 
-    spec.isNil = utils.alwaysReturn$False;
-    spec.notNil = utils.alwaysReturn$True;
-    spec.isNumber = utils.alwaysReturn$False;
-    spec.isInteger = utils.alwaysReturn$False;
-    spec.isFloat = utils.alwaysReturn$False;
-    spec.isSequenceableCollection = utils.alwaysReturn$False;
-    spec.isCollection = utils.alwaysReturn$False;
-    spec.isArray = utils.alwaysReturn$False;
-    spec.isString = utils.alwaysReturn$False;
-    spec.containsSeqColl = utils.alwaysReturn$False;
-    spec.isValidUGenInput = utils.alwaysReturn$False;
-    spec.isException = utils.alwaysReturn$False;
-    spec.isFunction = utils.alwaysReturn$False;
+    spec.isNil = utils.alwaysReturn$false;
+    spec.notNil = utils.alwaysReturn$true;
+    spec.isNumber = utils.alwaysReturn$false;
+    spec.isInteger = utils.alwaysReturn$false;
+    spec.isFloat = utils.alwaysReturn$false;
+    spec.isSequenceableCollection = utils.alwaysReturn$false;
+    spec.isCollection = utils.alwaysReturn$false;
+    spec.isArray = utils.alwaysReturn$false;
+    spec.isString = utils.alwaysReturn$false;
+    spec.containsSeqColl = utils.alwaysReturn$false;
+    spec.isValidUGenInput = utils.alwaysReturn$false;
+    spec.isException = utils.alwaysReturn$false;
+    spec.isFunction = utils.alwaysReturn$false;
 
     spec.matchItem = function($item) {
       $item = utils.defaultValue$Nil($item);
       return this ["==="] ($item);
     };
 
-    spec.trueAt = utils.alwaysReturn$False;
+    spec.trueAt = utils.alwaysReturn$false;
 
     spec.falseAt = function($key) {
       $key = utils.defaultValue$Nil($key);
@@ -1806,7 +1799,7 @@ var sc = { VERSION: "0.0.16" };
       return this.asArray();
     };
 
-    spec.rank = utils.alwaysReturn$Integer_0;
+    spec.rank = utils.alwaysReturn$int_0;
 
     spec.deepCollect = function($depth, $function, $index, $rank) {
       $function = utils.defaultValue$Nil($function);
@@ -1820,7 +1813,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.slice = utils.nop;
-    spec.shape = utils.alwaysReturn$Nil;
+    spec.shape = utils.alwaysReturn$nil;
     spec.unbubble = utils.nop;
 
     spec.bubble = function($depth, $levels) {
@@ -1862,7 +1855,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.addFunc = fn(function($$functions) {
-      return $SC.Class("FunctionList").new(this ["++"] ($$functions));
+      return $SC("FunctionList").new(this ["++"] ($$functions));
     }, "*functions");
 
     spec.removeFunc = function($function) {
@@ -1901,7 +1894,7 @@ var sc = { VERSION: "0.0.16" };
 
       args = slice.call(arguments);
       for (i = 0, imax = args.length >> 1; i < imax; i++) {
-        if (bool(this ["=="] (args[i * 2]))) {
+        if (BOOL(this ["=="] (args[i * 2]))) {
           return args[i * 2 + 1].value();
         }
       }
@@ -1987,7 +1980,7 @@ var sc = { VERSION: "0.0.16" };
       $index  = utils.defaultValue$Nil($index);
       $method = utils.defaultValue$Symbol($method, "clipAt");
 
-      $iMin = $index.roundUp($int1).asInteger().__dec__();
+      $iMin = $index.roundUp($int_1).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
         $index.absdif($iMin)
@@ -2002,7 +1995,7 @@ var sc = { VERSION: "0.0.16" };
 
       $iMin = $index.floor().asInteger();
       $ratio = $index.absdif($iMin);
-      this.perform($method, $iMin, $val ["*"] ($int1 ["-"] ($ratio)));
+      this.perform($method, $iMin, $val ["*"] ($int_1 ["-"] ($ratio)));
       this.perform($method, $iMin.__inc__(), $val ["*"] ($ratio));
 
       return this;
@@ -2019,8 +2012,8 @@ var sc = { VERSION: "0.0.16" };
       );
     };
 
-    spec.isUGen = utils.alwaysReturn$False;
-    spec.numChannels = utils.alwaysReturn$Integer_1;
+    spec.isUGen = utils.alwaysReturn$false;
+    spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.pair = function($that) {
       $that = utils.defaultValue$Nil($that);
@@ -2054,10 +2047,10 @@ var sc = { VERSION: "0.0.16" };
 
       aSelector = $aSelector.__sym__();
       if (aSelector === "==") {
-        return utils.falseInstance;
+        return $false;
       }
       if (aSelector === "!=") {
-        return utils.trueInstance;
+        return $true;
       }
 
       throw new Error("binary operator '" + aSelector + "' failed.");
@@ -2074,16 +2067,16 @@ var sc = { VERSION: "0.0.16" };
 
     // TODO: implements writeDefFile
 
-    spec.isInputUGen = utils.alwaysReturn$False;
-    spec.isOutputUGen = utils.alwaysReturn$False;
-    spec.isControlUGen = utils.alwaysReturn$False;
+    spec.isInputUGen = utils.alwaysReturn$false;
+    spec.isOutputUGen = utils.alwaysReturn$false;
+    spec.isControlUGen = utils.alwaysReturn$false;
     spec.source = utils.nop;
     spec.asUGenInput = utils.nop;
     spec.asControlInput = utils.nop;
 
     spec.asAudioRateInput = function() {
       if (this.rate().__sym__() !== "audio") {
-        return $SC.Class("K2A").ar(this);
+        return $SC("K2A").ar(this);
       }
       return this;
     };
@@ -2131,19 +2124,19 @@ var sc = { VERSION: "0.0.16" };
 
   sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
     spec.composeUnaryOp = function($aSelector) {
-      return $SC.Class("UnaryOpFunction").new($aSelector, this);
+      return $SC("UnaryOpFunction").new($aSelector, this);
     };
 
     spec.composeBinaryOp = function($aSelector, $something, $adverb) {
-      return $SC.Class("BinaryOpFunction").new($aSelector, this, $something, $adverb);
+      return $SC("BinaryOpFunction").new($aSelector, this, $something, $adverb);
     };
 
     spec.reverseComposeBinaryOp = function($aSelector, $something, $adverb) {
-      return $SC.Class("BinaryOpFunction").new($aSelector, $something, this, $adverb);
+      return $SC("BinaryOpFunction").new($aSelector, $something, this, $adverb);
     };
 
     spec.composeNAryOp = function($aSelector, $anArgList) {
-      return $SC.Class("NAryOpFunction").new($aSelector, this, $anArgList);
+      return $SC("NAryOpFunction").new($aSelector, this, $anArgList);
     };
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
@@ -2741,7 +2734,7 @@ var sc = { VERSION: "0.0.16" };
       $result = this.value($for);
 
       if ($result.rate().__sym__() !== "audio") {
-        return $SC.Class("K2A").ar($result);
+        return $SC("K2A").ar($result);
       }
 
       return $result;
@@ -2751,7 +2744,7 @@ var sc = { VERSION: "0.0.16" };
       return this.value();
     };
 
-    spec.isValidUGenInput = utils.alwaysReturn$True;
+    spec.isValidUGenInput = utils.alwaysReturn$true;
   });
 
   function SCUnaryOpFunction(args) {
@@ -2852,6 +2845,7 @@ var sc = { VERSION: "0.0.16" };
   }
 
   sc.lang.klass.define(SCFunctionList, "FunctionList : AbstractFunction", function(spec, utils) {
+    var $int_0 = utils.$int_0;
 
     spec.array = function() {
       return this.$array;
@@ -2881,7 +2875,7 @@ var sc = { VERSION: "0.0.16" };
       this.$array.remove($function);
 
       if (this.$array.size() < 2) {
-        return this.$array.at(utils.int0Instance);
+        return this.$array.at($int_0);
       }
 
       return this;
@@ -3098,7 +3092,7 @@ var sc = { VERSION: "0.0.16" };
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Number", function(spec, utils) {
-    spec.isNumber = utils.alwaysReturn$True;
+    spec.isNumber = utils.alwaysReturn$true;
 
     spec["+"] = function() {
       return this._subclassResponsibility("+");
@@ -3209,10 +3203,10 @@ var sc = { VERSION: "0.0.16" };
   }
 
   sc.lang.klass.refine("SimpleNumber", function(spec, utils) {
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Float;
 
@@ -3243,7 +3237,7 @@ var sc = { VERSION: "0.0.16" };
       return $SC.Boolean(!isNaN(this._));
     };
 
-    spec.numChannels = utils.alwaysReturn$Integer_1;
+    spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.magnitude = function() {
       return this.abs();
@@ -3481,7 +3475,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.binaryValue = function() {
-      return this._ > 0 ? $int1 : $int0;
+      return this._ > 0 ? $int_1 : $int_0;
     };
 
     spec.rectWindow = function() {
@@ -3557,7 +3551,7 @@ var sc = { VERSION: "0.0.16" };
     spec.bitTest = function($bit) {
       $bit = utils.defaultValue$Nil($bit);
       return $SC.Boolean(
-        this.bitAnd($int1.leftShift($bit)).valueOf() !== 0
+        this.bitAnd($int_1.leftShift($bit)).valueOf() !== 0
       );
     };
 
@@ -3937,9 +3931,9 @@ var sc = { VERSION: "0.0.16" };
 
     spec.asAudioRateInput = function() {
       if (this._ === 0) {
-        return $SC.Class("Silent").ar();
+        return $SC("Silent").ar();
       }
-      return $SC.Class("DC").ar(this);
+      return $SC("DC").ar(this);
     };
 
     spec.madd = function($mul, $add) {
@@ -4062,8 +4056,9 @@ var sc = { VERSION: "0.0.16" };
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Integer", function(spec, utils) {
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Integer;
 
@@ -4079,7 +4074,7 @@ var sc = { VERSION: "0.0.16" };
       throw new Error("Integer.new is illegal, should use literal.");
     };
 
-    spec.isInteger = utils.alwaysReturn$True;
+    spec.isInteger = utils.alwaysReturn$true;
 
     // TODO: implements hash
 
@@ -4235,7 +4230,7 @@ var sc = { VERSION: "0.0.16" };
 
     spec.xrand = function($exclude) {
       $exclude = utils.defaultValue$Integer($exclude, 0);
-      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int1)) ["%"] (this);
+      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int_1)) ["%"] (this);
     };
 
     spec.xrand2 = function($exclude) {
@@ -4281,7 +4276,7 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
       $class    = utils.defaultValue$Nil($class);
 
-      if ($class === utils.nilInstance) {
+      if ($class === $nil) {
         $class = SCArray;
       }
 
@@ -4323,7 +4318,7 @@ var sc = { VERSION: "0.0.16" };
 
     spec.to = function($hi, $step) {
       $step = utils.defaultValue$Integer($step, 1);
-      return $SC.Class("Interval").new(this, $hi, $step);
+      return $SC("Interval").new(this, $hi, $step);
     };
 
     spec.asAscii = function() {
@@ -4369,7 +4364,7 @@ var sc = { VERSION: "0.0.16" };
       $numDigits = utils.defaultValue$Nil($numDigits);
 
       $num = this;
-      if ($numDigits === utils.nilInstance) {
+      if ($numDigits === $nil) {
         $numDigits = (
           this.log() ["/"] ($base.log() ["+"] ($SC.Float(1e-10)))
         ).asInteger().__inc__();
@@ -4463,7 +4458,7 @@ var sc = { VERSION: "0.0.16" };
       throw new Error("Float.new is illegal, should use literal.");
     };
 
-    spec.isFloat = utils.alwaysReturn$True;
+    spec.isFloat = utils.alwaysReturn$true;
     spec.asFloat = utils.nop;
 
     [
@@ -4719,6 +4714,8 @@ var sc = { VERSION: "0.0.16" };
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Symbol", function(spec, utils) {
+    var $nil = utils.$nil;
+
     spec.__sym__ = function() {
       return this._;
     };
@@ -4753,7 +4750,7 @@ var sc = { VERSION: "0.0.16" };
       if (sc.lang.klass.exists(this._)) {
         return sc.lang.klass.get(this._);
       }
-      return utils.nilInstance;
+      return $nil;
     };
 
     // TODO: implements asSetter
@@ -4869,7 +4866,7 @@ var sc = { VERSION: "0.0.16" };
     // TODO: Implements storeOn
     // TODO: Implements codegen_UGenCtorArg
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     // TODO: Implements kr
     // TODO: Implements ir
@@ -4965,6 +4962,8 @@ var sc = { VERSION: "0.0.16" };
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Nil", function(spec, utils) {
+    var $nil = utils.$nil;
+
     spec.__num__ = function() {
       return 0;
     };
@@ -4985,8 +4984,8 @@ var sc = { VERSION: "0.0.16" };
       throw new Error("Nil.new is illegal, should use literal.");
     };
 
-    spec.isNil = utils.alwaysReturn$True;
-    spec.notNil = utils.alwaysReturn$False;
+    spec.isNil = utils.alwaysReturn$true;
+    spec.notNil = utils.alwaysReturn$false;
 
     spec["?"] = function($obj) {
       return $obj;
@@ -4998,8 +4997,8 @@ var sc = { VERSION: "0.0.16" };
 
     spec["!?"] = utils.nop;
 
-    spec.asBoolean = utils.alwaysReturn$False;
-    spec.booleanValue = utils.alwaysReturn$False;
+    spec.asBoolean = utils.alwaysReturn$false;
+    spec.booleanValue = utils.alwaysReturn$false;
 
     spec.push = function($function) {
       $function = utils.defaultValue$Nil($function);
@@ -5017,7 +5016,7 @@ var sc = { VERSION: "0.0.16" };
 
     spec.rate = utils.nop;
     spec.numChannels = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$False;
+    spec.isPlaying = utils.alwaysReturn$false;
 
     spec.do = utils.nop;
     spec.reverseDo = utils.nop;
@@ -5031,7 +5030,7 @@ var sc = { VERSION: "0.0.16" };
     spec.rejectAs = utils.nop;
 
     spec.dependants = function() {
-      return $SC.Class("IdentitySet").new();
+      return $SC("IdentitySet").new();
     };
 
     spec.changed = utils.nop;
@@ -5045,14 +5044,14 @@ var sc = { VERSION: "0.0.16" };
       return $event;
     };
 
-    spec.awake = utils.alwaysReturn$Nil;
+    spec.awake = utils.alwaysReturn$nil;
 
     spec.play = utils.nop;
 
     spec.nextTimeOnGrid = function($clock) {
       $clock = utils.defaultValue$Nil($clock);
 
-      if ($clock === utils.nilInstance) {
+      if ($clock === $nil) {
         return $clock;
       }
 
@@ -5062,7 +5061,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.asQuant = function() {
-      return $SC.Class("Quant").default();
+      return $SC("Quant").default();
     };
 
     spec.swapThisGroup = utils.nop;
@@ -5080,7 +5079,7 @@ var sc = { VERSION: "0.0.16" };
       return this;
     };
 
-    spec.matchItem = utils.alwaysReturn$True;
+    spec.matchItem = utils.alwaysReturn$true;
 
     spec.add = function($value) {
       $value = utils.defaultValue$Nil($value);
@@ -5115,7 +5114,7 @@ var sc = { VERSION: "0.0.16" };
       if (functions.length <= 1) {
         return functions[0];
       }
-      return $SC.Class("FunctionList").new($SC.Array(functions));
+      return $SC("FunctionList").new($SC.Array(functions));
     };
 
     spec.removeFunc = utils.nop;
@@ -5126,10 +5125,10 @@ var sc = { VERSION: "0.0.16" };
 
     // TODO: implements handleError
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.asSpec = function() {
-      return $SC.Class("ControlSpec").new();
+      return $SC("ControlSpec").new();
     };
 
     spec.superclassesDo = utils.nop;
@@ -5183,8 +5182,9 @@ var sc = { VERSION: "0.0.16" };
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
-    var bool = utils.bool;
-    var SCArray = $SC.Class("Array");
+    var BOOL = utils.BOOL;
+    var $nil = utils.$nil;
+    var SCArray = $SC("Array");
 
     // TODO: implements def
 
@@ -5192,12 +5192,12 @@ var sc = { VERSION: "0.0.16" };
       throw new Error("Function.new is illegal, should use literal.");
     };
 
-    spec.isFunction = utils.alwaysReturn$True;
+    spec.isFunction = utils.alwaysReturn$true;
 
     // TODO: implements isClosed
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
-    spec.archiveAsObject = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    spec.archiveAsObject = utils.alwaysReturn$true;
 
     // TODO: implements checkCanArchive
 
@@ -5233,7 +5233,7 @@ var sc = { VERSION: "0.0.16" };
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $SC.Class("Routine").new(this);
+      return $SC("Routine").new(this);
     };
 
     spec.dup = function($n) {
@@ -5264,7 +5264,7 @@ var sc = { VERSION: "0.0.16" };
       args.unshift(this);
 
       for (i = 0, imax = args.length >> 1; i < imax; ++i) {
-        if (bool(args[i * 2].value())) {
+        if (BOOL(args[i * 2].value())) {
           return args[i * 2 + 1].value();
         }
       }
@@ -5273,15 +5273,15 @@ var sc = { VERSION: "0.0.16" };
         return args[args.length - 1].value();
       }
 
-      return utils.nilInstance;
+      return $nil;
     };
 
     spec.r = function() {
-      return $SC.Class("Routine").new(this);
+      return $SC("Routine").new(this);
     };
 
     spec.p = function() {
-      return $SC.Class("Prout").new(this);
+      return $SC("Prout").new(this);
     };
 
     // TODO: implements matchItem
@@ -5518,7 +5518,7 @@ var sc = { VERSION: "0.0.16" };
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.while = function() {
       var msg = "While was called with a fixed (unchanging) Boolean as the condition. ";
@@ -5539,7 +5539,7 @@ var sc = { VERSION: "0.0.16" };
       return $trueFunc.value();
     };
 
-    spec.not = utils.alwaysReturn$False;
+    spec.not = utils.alwaysReturn$false;
 
     spec["&&"] = function($that) {
       return $that.value();
@@ -5558,8 +5558,8 @@ var sc = { VERSION: "0.0.16" };
       return $that.value().not();
     };
 
-    spec.asInteger = utils.alwaysReturn$Integer_1;
-    spec.binaryValue = utils.alwaysReturn$Integer_1;
+    spec.asInteger = utils.alwaysReturn$int_1;
+    spec.binaryValue = utils.alwaysReturn$int_1;
   });
 
   sc.lang.klass.refine("False", function(spec, utils) {
@@ -5571,7 +5571,7 @@ var sc = { VERSION: "0.0.16" };
       return $falseFunc.value();
     };
 
-    spec.not = utils.alwaysReturn$True;
+    spec.not = utils.alwaysReturn$true;
 
     spec["&&"] = utils.nop;
 
@@ -5586,9 +5586,9 @@ var sc = { VERSION: "0.0.16" };
       return $that.value();
     };
 
-    spec.nand = utils.alwaysReturn$True;
-    spec.asInteger = utils.alwaysReturn$Integer_0;
-    spec.binaryValue = utils.alwaysReturn$Integer_0;
+    spec.nand = utils.alwaysReturn$true;
+    spec.asInteger = utils.alwaysReturn$int_0;
+    spec.binaryValue = utils.alwaysReturn$int_0;
   });
 
 })(sc);
@@ -5600,11 +5600,13 @@ var sc = { VERSION: "0.0.16" };
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Collection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.$newFrom = function($aCollection) {
       var $newCollection;
@@ -5633,7 +5635,7 @@ var sc = { VERSION: "0.0.16" };
       $size     = utils.defaultValue$Nil($size);
       $function = utils.defaultValue$Nil($function);
 
-      if (bool($size.isSequenceableCollection())) {
+      if (BOOL($size.isSequenceableCollection())) {
         return this.fillND($size, $function);
       }
 
@@ -5710,14 +5712,14 @@ var sc = { VERSION: "0.0.16" };
       $n = $dimensions.first();
       $obj = $this.new($n);
       $argIndex = $args.size();
-      $args = $args ["++"] ($int0);
+      $args = $args ["++"] ($int_0);
 
       if ($dimensions.size().__int__() <= 1) {
         $n.do($SC.Function(function($i) {
           $obj.add($function.valueArray($args.put($argIndex, $i)));
         }));
       } else {
-        $dimensions = $dimensions.drop($int1);
+        $dimensions = $dimensions.drop($int_1);
         $n.do($SC.Function(function($i) {
           $obj = $obj.add(fillND($this, $dimensions, $function, $args.put($argIndex, $i)));
         }));
@@ -5740,19 +5742,19 @@ var sc = { VERSION: "0.0.16" };
       var $res = null;
 
       if ($aCollection.class() !== this.class()) {
-        return utils.falseInstance;
+        return $false;
       }
       if (this.size() !== $aCollection.size()) {
-        return utils.falseInstance;
+        return $false;
       }
       this.do($SC.Function(function($item) {
-        if (!bool($aCollection.includes($item))) {
-          $res = utils.falseInstance;
+        if (!BOOL($aCollection.includes($item))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     // TODO: implements hash
@@ -5792,7 +5794,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.asCollection = utils.nop;
-    spec.isCollection = utils.alwaysReturn$True;
+    spec.isCollection = utils.alwaysReturn$true;
 
     spec.add = function() {
       return this._subclassResponsibility("add");
@@ -5837,7 +5839,7 @@ var sc = { VERSION: "0.0.16" };
       $removedItems = this.class().new();
       $copy = this.copy();
       $copy.do($SC.Function(function($item) {
-        if (bool($function.value($item))) {
+        if (BOOL($function.value($item))) {
           $this.remove($item);
           $removedItems = $removedItems.add($item);
         }
@@ -5877,12 +5879,12 @@ var sc = { VERSION: "0.0.16" };
 
       this.do($SC.Function(function($item2) {
         if ($item1 === $item2) {
-          $res = utils.trueInstance;
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.includesEqual = function($item1) {
@@ -5890,13 +5892,13 @@ var sc = { VERSION: "0.0.16" };
       $item1 = utils.defaultValue$Nil($item1);
 
       this.do($SC.Function(function($item2) {
-        if (bool( $item1 ["=="] ($item2) )) {
-          $res = utils.trueInstance;
+        if (BOOL( $item1 ["=="] ($item2) )) {
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.includesAny = function($aCollection) {
@@ -5904,13 +5906,13 @@ var sc = { VERSION: "0.0.16" };
       $aCollection = utils.defaultValue$Nil($aCollection);
 
       $aCollection.do($SC.Function(function($item) {
-        if (bool($this.includes($item))) {
-          $res = utils.trueInstance;
+        if (BOOL($this.includes($item))) {
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.includesAll = function($aCollection) {
@@ -5918,13 +5920,13 @@ var sc = { VERSION: "0.0.16" };
       $aCollection = utils.defaultValue$Nil($aCollection);
 
       $aCollection.do($SC.Function(function($item) {
-        if (!bool($this.includes($item))) {
-          $res = utils.falseInstance;
+        if (!BOOL($this.includes($item))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     spec.matchItem = function($item) {
@@ -5963,7 +5965,7 @@ var sc = { VERSION: "0.0.16" };
 
       $res = $class.new(this.size());
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $res.add($elem);
         }
       }));
@@ -5978,7 +5980,7 @@ var sc = { VERSION: "0.0.16" };
 
       $res = $class.new(this.size());
       this.do($SC.Function(function($elem, $i) {
-        if (!bool($function.value($elem, $i))) {
+        if (!BOOL($function.value($elem, $i))) {
           $res = $res.add($elem);
         }
       }));
@@ -5991,7 +5993,7 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $elem;
           return 65535;
         }
@@ -6005,7 +6007,7 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $i;
           return 65535;
         }
@@ -6067,7 +6069,7 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $elem;
         } else {
           return 65535;
@@ -6082,7 +6084,7 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $i;
         } else {
           return 65535;
@@ -6125,7 +6127,7 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           sum++;
         }
       }));
@@ -6138,7 +6140,7 @@ var sc = { VERSION: "0.0.16" };
       $obj = utils.defaultValue$Nil($obj);
 
       this.do($SC.Function(function($elem) {
-        if (bool($elem ["=="] ($obj))) {
+        if (BOOL($elem ["=="] ($obj))) {
           sum++;
         }
       }));
@@ -6151,13 +6153,13 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
-          $res = utils.trueInstance;
+        if (BOOL($function.value($elem, $i))) {
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.every = function($function) {
@@ -6165,20 +6167,20 @@ var sc = { VERSION: "0.0.16" };
       $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (!bool($function.value($elem, $i))) {
-          $res = utils.falseInstance;
+        if (!BOOL($function.value($elem, $i))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     spec.sum = function($function) {
       var $sum;
       $function = utils.defaultValue$Nil($function);
 
-      $sum = $int0;
+      $sum = $int_0;
       if ($function === $nil) {
         this.do($SC.Function(function($elem) {
           $sum = $sum ["+"] ($elem);
@@ -6200,7 +6202,7 @@ var sc = { VERSION: "0.0.16" };
       var $product;
       $function = utils.defaultValue$Nil($function);
 
-      $product = $int1;
+      $product = $int_1;
       if ($function === $nil) {
         this.do($SC.Function(function($elem) {
           $product = $product ["*"] ($elem);
@@ -6217,10 +6219,10 @@ var sc = { VERSION: "0.0.16" };
     spec.sumabs = function() {
       var $sum;
 
-      $sum = $int0;
+      $sum = $int_0;
       this.do($SC.Function(function($elem) {
-        if (bool($elem.isSequenceableCollection())) {
-          $elem = $elem.at($int0);
+        if (BOOL($elem.isSequenceableCollection())) {
+          $elem = $elem.at($int_0);
         }
         $sum = $sum ["+"] ($elem.abs());
       }));
@@ -6421,7 +6423,7 @@ var sc = { VERSION: "0.0.16" };
 
       this.do($SC.Function(function($sublist) {
         var sz;
-        if (bool($sublist.isCollection())) {
+        if (BOOL($sublist.isCollection())) {
           sz = $sublist.maxSizeAtDepth($SC.Integer(rank - 1));
         } else {
           sz = 1;
@@ -6440,7 +6442,7 @@ var sc = { VERSION: "0.0.16" };
 
       $res = $max;
       this.do($SC.Function(function($elem) {
-        if (bool($elem.isCollection())) {
+        if (BOOL($elem.isCollection())) {
           $res = $res.max($elem.maxDepth($max.__inc__()));
         }
       }));
@@ -6499,7 +6501,7 @@ var sc = { VERSION: "0.0.16" };
       var $index;
       $axis = utils.defaultValue$Nil($axis);
 
-      if (bool(this.isEmpty())) {
+      if (BOOL(this.isEmpty())) {
         return this.species().new();
       }
       if ($axis !== $nil) {
@@ -6517,7 +6519,7 @@ var sc = { VERSION: "0.0.16" };
 
       $result = this.species().new();
       this.do($SC.Function(function($item) {
-        if (bool($that.includes($item))) {
+        if (BOOL($that.includes($item))) {
           $result = $result.add($item);
         }
       }));
@@ -6531,7 +6533,7 @@ var sc = { VERSION: "0.0.16" };
 
       $result = this.copy();
       $that.do($SC.Function(function($item) {
-        if (!bool($result.includes($item))) {
+        if (!BOOL($result.includes($item))) {
           $result = $result.add($item);
         }
       }));
@@ -6549,12 +6551,12 @@ var sc = { VERSION: "0.0.16" };
 
       $result = this.species().new();
       $this.do($SC.Function(function($item) {
-        if (!bool($that.includes($item))) {
+        if (!BOOL($that.includes($item))) {
           $result = $result.add($item);
         }
       }));
       $that.do($SC.Function(function($item) {
-        if (!bool($this.includes($item))) {
+        if (!BOOL($this.includes($item))) {
           $result = $result.add($item);
         }
       }));
@@ -6572,19 +6574,19 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.asBag = function() {
-      return $SC.Class("Bag").new(this.size()).addAll(this);
+      return $SC("Bag").new(this.size()).addAll(this);
     };
 
     spec.asList = function() {
-      return $SC.Class("List").new(this.size()).addAll(this);
+      return $SC("List").new(this.size()).addAll(this);
     };
 
     spec.asSet = function() {
-      return $SC.Class("Set").new(this.size()).addAll(this);
+      return $SC("Set").new(this.size()).addAll(this);
     };
 
     spec.asSortedList = function($function) {
-      return $SC.Class("SortedList").new(this.size(), $function).addAll(this);
+      return $SC("SortedList").new(this.size(), $function).addAll(this);
     };
 
     // TODO: implements powerset
@@ -6612,10 +6614,12 @@ var sc = { VERSION: "0.0.16" };
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
 
     spec["|@|"] = function($index) {
       return this.clipAt($index);
@@ -6726,19 +6730,19 @@ var sc = { VERSION: "0.0.16" };
       $aCollection = utils.defaultValue$Nil($aCollection);
 
       if ($aCollection.class() !== this.class()) {
-        return utils.falseInstance;
+        return $false;
       }
       if (this.size() !== $aCollection.size()) {
-        return utils.falseInstance;
+        return $false;
       }
       this.do($SC.Function(function($item, $i) {
-        if (bool($item ["!="] ($aCollection.at($i)))) {
-          $res = utils.falseInstance;
+        if (BOOL($item ["!="] ($aCollection.at($i)))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     // TODO: implements hash
@@ -6764,7 +6768,7 @@ var sc = { VERSION: "0.0.16" };
 
       n = $n.__int__();
       if (n >= 0) {
-        return this.copyRange($int0, $SC.Integer(n - 1));
+        return this.copyRange($int_0, $SC.Integer(n - 1));
       }
       size = this.size().__int__();
 
@@ -6781,7 +6785,7 @@ var sc = { VERSION: "0.0.16" };
         return this.copyRange($n, $SC.Integer(size - 1));
       }
 
-      return this.copyRange($int0, $SC.Integer(size + n - 1));
+      return this.copyRange($int_0, $SC.Integer(size + n - 1));
     };
 
     spec.copyToEnd = function($start) {
@@ -6789,7 +6793,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.copyFromStart = function($end) {
-      return this.copyRange($int0, $end);
+      return this.copyRange($int_0, $end);
     };
 
     spec.indexOf = function($item) {
@@ -6832,8 +6836,8 @@ var sc = { VERSION: "0.0.16" };
       offset = $offset.__int__();
       for (i = 0, imax = size - offset; i < imax; ++i) {
         $index = $SC.Integer(i + offset);
-        if (bool(this.at($index) ["=="] ($first))) {
-          if (bool(this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist))) {
+        if (BOOL(this.at($index) ["=="] ($first))) {
+          if (BOOL(this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist))) {
             return $index;
           }
         }
@@ -6848,7 +6852,7 @@ var sc = { VERSION: "0.0.16" };
       $offset = utils.defaultValue$Integer($offset, 0);
 
       $indices = $nil;
-      $i = $int0;
+      $i = $int_0;
 
       while (($i = $this.find($arr, $offset)) !== $nil) {
         $indices = $indices.add($i);
@@ -6873,7 +6877,7 @@ var sc = { VERSION: "0.0.16" };
       if ($j === $nil) {
         return this.size().__dec__();
       }
-      if ($j === $int0) {
+      if ($j === $int_0) {
         return $j;
       }
 
@@ -6890,7 +6894,7 @@ var sc = { VERSION: "0.0.16" };
       var $a, $b, $div, $i;
       $val = utils.defaultValue$Nil($val);
 
-      if (bool(this.isEmpty())) {
+      if (BOOL(this.isEmpty())) {
         return $nil;
       }
       $i = this.indexOfGreaterThan($val);
@@ -6898,7 +6902,7 @@ var sc = { VERSION: "0.0.16" };
       if ($i === $nil) {
         return this.size().__dec__();
       }
-      if ($i === $int0) {
+      if ($i === $int_0) {
         return $i;
       }
 
@@ -6906,7 +6910,7 @@ var sc = { VERSION: "0.0.16" };
       $b = this.at($i);
       $div = $b ["-"] ($a);
 
-      // if (bool($div ["=="] ($int0))) {
+      // if (BOOL($div ["=="] ($int_0))) {
       //   return $i;
       // }
 
@@ -6918,19 +6922,19 @@ var sc = { VERSION: "0.0.16" };
       $step = utils.defaultValue$Nil($step);
 
       if (this.size() <= 1) {
-        return utils.trueInstance;
+        return $true;
       }
       this.doAdjacentPairs($SC.Function(function($a, $b) {
         var $diff = $b ["-"] ($a);
         if ($step === $nil) {
           $step = $diff;
-        } else if (bool($step ["!="] ($diff))) {
-          $res = utils.falseInstance;
+        } else if (BOOL($step ["!="] ($diff))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     spec.resamp0 = function($newSize) {
@@ -6940,7 +6944,7 @@ var sc = { VERSION: "0.0.16" };
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int1)
+        ($newSize.__dec__()).max($int_1)
       );
 
       return this.species().fill($newSize, $SC.Function(function($i) {
@@ -6955,7 +6959,7 @@ var sc = { VERSION: "0.0.16" };
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int1)
+        ($newSize.__dec__()).max($int_1)
       );
 
       return this.species().fill($newSize, $SC.Function(function($i) {
@@ -7021,7 +7025,7 @@ var sc = { VERSION: "0.0.16" };
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.at($int0);
+        return this.at($int_0);
       }
 
       return $nil;
@@ -7055,7 +7059,7 @@ var sc = { VERSION: "0.0.16" };
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.put($int0, $obj);
+        return this.put($int_0, $obj);
       }
 
       return this;
@@ -7103,7 +7107,7 @@ var sc = { VERSION: "0.0.16" };
       var $this = this, $int2 = $SC.Integer(2);
       $function = utils.defaultValue$Nil($function);
 
-      $int0.forBy(this.size() ["-"] ($int2), $int2, $SC.Function(function($i) {
+      $int_0.forBy(this.size() ["-"] ($int2), $int2, $SC.Function(function($i) {
         return $function.value($this.at($i), $this.at($i.__inc__()), $i);
       }));
 
@@ -7136,12 +7140,12 @@ var sc = { VERSION: "0.0.16" };
       $sublist = this.species().new();
       this.doAdjacentPairs($SC.Function(function($a, $b, $i) {
         $sublist = $sublist.add($a);
-        if (bool($function.value($a, $b, $i))) {
+        if (BOOL($function.value($a, $b, $i))) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         }
       }));
-      if (bool(this.notEmpty())) {
+      if (BOOL(this.notEmpty())) {
         $sublist = $sublist.add(this.last());
       }
       $list = $list.add($sublist);
@@ -7156,7 +7160,7 @@ var sc = { VERSION: "0.0.16" };
       $list = $SC.Array();
       $sublist = this.species().new();
       this.do($SC.Function(function($item, $i) {
-        if (bool($function.value($item, $i))) {
+        if (BOOL($function.value($item, $i))) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         } else {
@@ -7193,7 +7197,7 @@ var sc = { VERSION: "0.0.16" };
       $groupSizeList = utils.defaultValue$Nil($groupSizeList);
 
       $list = $SC.Array();
-      $subSize = $groupSizeList.at($int0);
+      $subSize = $groupSizeList.at($int_0);
       $sublist = this.species().new($subSize);
       this.do($SC.Function(function($item) {
         $sublist = $sublist.add($item);
@@ -7267,7 +7271,7 @@ var sc = { VERSION: "0.0.16" };
 
       $list = this.species().new(this.size());
       this.do($SC.Function(function($item, $i) {
-        if ($item._flatIf && bool($func.value($item, $i))) {
+        if ($item._flatIf && BOOL($func.value($item, $i))) {
           $list = $list.addAll($item._flatIf($func));
         } else {
           $list = $list.add($item);
@@ -7281,13 +7285,13 @@ var sc = { VERSION: "0.0.16" };
       var $this = this, $list, $size, $maxsize;
 
       $size = this.size();
-      $maxsize = $int0;
+      $maxsize = $int_0;
       this.do($SC.Function(function($sublist) {
         var $sz;
-        if (bool($sublist.isSequenceableCollection())) {
+        if (BOOL($sublist.isSequenceableCollection())) {
           $sz = $sublist.size();
         } else {
-          $sz = $int1;
+          $sz = $int_1;
         }
         if ($sz > $maxsize) {
           $maxsize = $sz;
@@ -7299,7 +7303,7 @@ var sc = { VERSION: "0.0.16" };
       }));
 
       this.do($SC.Function(function($isublist) {
-        if (bool($isublist.isSequenceableCollection())) {
+        if (BOOL($isublist.isSequenceableCollection())) {
           $list.do($SC.Function(function($jsublist, $j) {
             $jsublist.add($isublist.wrapAt($j));
           }));
@@ -7318,15 +7322,15 @@ var sc = { VERSION: "0.0.16" };
       $func = utils.defaultValue$Nil($func);
 
       $maxsize = this.maxValue($SC.Function(function($sublist) {
-        if (bool($sublist.isSequenceableCollection())) {
+        if (BOOL($sublist.isSequenceableCollection())) {
           return $sublist.size();
         }
-        return $int1;
+        return $int_1;
       }));
 
       return this.species().fill($maxsize, $SC.Function(function($i) {
         return $func.valueArray($this.collect($SC.Function(function($sublist) {
-          if (bool($sublist.isSequenceableCollection())) {
+          if (BOOL($sublist.isSequenceableCollection())) {
             return $sublist.wrapAt($i);
           } else {
             return $sublist;
@@ -7356,7 +7360,7 @@ var sc = { VERSION: "0.0.16" };
     // TODO: implements sumRhythmDivisions
     // TODO: implements convertOneRhythm
 
-    spec.isSequenceableCollection = utils.alwaysReturn$True;
+    spec.isSequenceableCollection = utils.alwaysReturn$true;
 
     spec.containsSeqColl = function() {
       return this.any($SC.Function(function($_) {
@@ -7842,7 +7846,7 @@ var sc = { VERSION: "0.0.16" };
           this, $aSelector, $theOperand
         );
       }
-      if (bool($adverb.isInteger())) {
+      if (BOOL($adverb.isInteger())) {
         return _performBinaryOpOnSeqColl_adverb_int(
           this, $aSelector, $theOperand, $adverb.valueOf()
         );
@@ -8271,10 +8275,10 @@ var sc = { VERSION: "0.0.16" };
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("ArrayedCollection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
 
     spec.valueOf = function() {
       return this._.map(function(elem) {
@@ -8533,7 +8537,7 @@ var sc = { VERSION: "0.0.16" };
 
       $i = $SC.Integer(i);
       while (i < raw.length) {
-        if (bool($func.value(raw[i], $i))) {
+        if (BOOL($func.value(raw[i], $i))) {
           this.takeAt($i);
         } else {
           $i = $SC.Integer(++i);
@@ -8580,7 +8584,7 @@ var sc = { VERSION: "0.0.16" };
       return $index;
     };
 
-    spec.slotIndex = utils.alwaysReturn$Nil;
+    spec.slotIndex = utils.alwaysReturn$nil;
 
     spec.getSlots = function() {
       return this.copy();
@@ -8608,7 +8612,7 @@ var sc = { VERSION: "0.0.16" };
       return this;
     };
 
-    spec.isArray = utils.alwaysReturn$True;
+    spec.isArray = utils.alwaysReturn$true;
     spec.asArray = utils.nop;
 
     spec.copyRange = function($start, $end) {
@@ -8913,7 +8917,7 @@ var sc = { VERSION: "0.0.16" };
         }
       }
 
-      return $int0;
+      return $int_0;
     };
 
     spec.normalizeSum = function() {
@@ -8942,7 +8946,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.rank = function() {
-      return $int1 ["+"] (this.first().rank());
+      return $int_1 ["+"] (this.first().rank());
     };
 
     spec.shape = function() {
@@ -8973,7 +8977,7 @@ var sc = { VERSION: "0.0.16" };
       $another  = utils.defaultValue$Nil($another);
       $indexing = utils.defaultValue$Symbol($indexing, "wrapAt");
 
-      $index = $int0;
+      $index = $int_0;
       $flat  = this.flat();
 
       return $another.deepCollect($SC.Integer(0x7FFFFFFF), $SC.Function(function() {
@@ -9079,8 +9083,8 @@ var sc = { VERSION: "0.0.16" };
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
-    spec.archiveAsObject = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    spec.archiveAsObject = utils.alwaysReturn$true;
     spec.rate = function() {
       return $SC.Symbol("scalar");
     };
@@ -9097,6 +9101,8 @@ var sc = { VERSION: "0.0.16" };
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("String", function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
 
     spec.__str__ = function() {
       return this.valueOf();
@@ -9167,7 +9173,7 @@ var sc = { VERSION: "0.0.16" };
       $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
 
       if ($aString.__tag !== 1034) {
-        return utils.nilInstance;
+        return $nil;
       }
 
       araw = this._;
@@ -9203,37 +9209,37 @@ var sc = { VERSION: "0.0.16" };
 
     spec["<"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() < 0
+        this.compare($aString, $false).valueOf() < 0
       );
     };
 
     spec[">"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() > 0
+        this.compare($aString, $false).valueOf() > 0
       );
     };
 
     spec["<="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() <= 0
+        this.compare($aString, $false).valueOf() <= 0
       );
     };
 
     spec[">="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() >= 0
+        this.compare($aString, $false).valueOf() >= 0
       );
     };
 
     spec["=="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() === 0
+        this.compare($aString, $false).valueOf() === 0
       );
     };
 
     spec["!="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() !== 0
+        this.compare($aString, $false).valueOf() !== 0
       );
     };
 
@@ -9253,7 +9259,7 @@ var sc = { VERSION: "0.0.16" };
       throw new Error("String:multiChannelPerform. Cannot expand strings.");
     };
 
-    spec.isString = utils.alwaysReturn$True;
+    spec.isString = utils.alwaysReturn$true;
 
     spec.asString = utils.nop;
 
@@ -9262,7 +9268,7 @@ var sc = { VERSION: "0.0.16" };
     };
 
     spec.species = function() {
-      return $SC.Class("String");
+      return $SC("String");
     };
 
     // TODO: implements postln
@@ -9546,8 +9552,8 @@ var sc = { VERSION: "0.0.16" };
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Array", function(spec, utils) {
-    var bool = utils.bool;
-    var SCArray = $SC.Class("Array");
+    var BOOL    = utils.BOOL;
+    var SCArray = $SC("Array");
 
     spec.$with = function() {
       return $SC.Array(slice.call(arguments));
@@ -10081,7 +10087,7 @@ var sc = { VERSION: "0.0.16" };
       var i, imax;
 
       for (i = 0, imax = raw.length; i < imax; ++i) {
-        if (bool(raw[i].isSequenceableCollection())) {
+        if (BOOL(raw[i].isSequenceableCollection())) {
           return $SC.True();
         }
       }
@@ -10218,7 +10224,7 @@ var sc = { VERSION: "0.0.16" };
       }));
     };
 
-    spec.isValidUGenInput = utils.alwaysReturn$True;
+    spec.isValidUGenInput = utils.alwaysReturn$true;
 
     spec.numChannels = function() {
       return this.size();
@@ -10235,7 +10241,7 @@ var sc = { VERSION: "0.0.16" };
     spec.madd = function($mul, $add) {
       $mul = utils.defaultValue$Float($mul, 1.0);
       $add = utils.defaultValue$Float($add, 0.0);
-      return $SC.Class("MulAdd").new(this, $mul, $add);
+      return $SC("MulAdd").new(this, $mul, $add);
     };
 
     // TODO: implements asRawOSC
@@ -10313,9 +10319,24 @@ var sc = { VERSION: "0.0.16" };
   };
 
   var Scope = (function() {
-    function Scope() {}
+    function Scope(methods) {
+      var f = function(parent) {
+        this.parent = parent;
+        this.stack  = [];
+      };
 
-    Scope.prototype.add = function(type, id, scope) {
+      function F() {}
+      F.prototype = Scope;
+      f.prototype = new F();
+
+      Object.keys(methods).forEach(function(key) {
+        f.prototype[key] = methods[key];
+      });
+
+      return f;
+    }
+
+    Scope.add = function(type, id, scope) {
       var peek = this.stack[this.stack.length - 1];
       var vars, args, declared, stmt, indent;
 
@@ -10356,14 +10377,14 @@ var sc = { VERSION: "0.0.16" };
       }
     };
 
-    Scope.prototype.add_delegate = function() {
+    Scope.add_delegate = function() {
     };
 
-    Scope.prototype.end = function() {
+    Scope.end = function() {
       this.stack.pop();
     };
 
-    Scope.prototype.getDeclaredVariable = function() {
+    Scope.getDeclaredVariable = function() {
       var peek = this.stack[this.stack.length - 1];
       var declared = {};
 
@@ -10378,30 +10399,13 @@ var sc = { VERSION: "0.0.16" };
       return declared;
     };
 
-    Scope.prototype.find = function(id) {
+    Scope.find = function(id) {
       var peek = this.stack[this.stack.length - 1];
       return peek.vars[id] || peek.args[id] || peek.declared[id];
     };
 
-    Scope.prototype.peek = function() {
+    Scope.peek = function() {
       return this.stack[this.stack.length - 1];
-    };
-
-    Scope.inheritWith = function(methods) {
-      var f = function(parent) {
-        this.parent = parent;
-        this.stack  = [];
-      };
-
-      function F() {}
-      F.prototype = Scope.prototype;
-      f.prototype = new F();
-
-      Object.keys(methods).forEach(function(key) {
-        f.prototype[key] = methods[key];
-      });
-
-      return f;
     };
 
     return Scope;
@@ -10410,6 +10414,23 @@ var sc = { VERSION: "0.0.16" };
   compiler.Scope = Scope;
 
   sc.lang.compiler = compiler;
+
+  var SCScript = sc.SCScript;
+
+  SCScript.tokenize = function(source, opts) {
+    opts = opts || /* istanbul ignore next */ {};
+    opts.tokens = true;
+    return sc.lang.parser.parse(source, opts).tokens || /* istanbul ignore next */ [];
+  };
+
+  SCScript.parse = function(source, opts) {
+    return sc.lang.parser.parse(source, opts);
+  };
+
+  SCScript.compile = function(source, opts) {
+    var ast = SCScript.parse(source, opts);
+    return sc.lang.codegen.compile(ast, opts);
+  };
 
 })(sc);
 
@@ -10467,7 +10488,7 @@ var sc = { VERSION: "0.0.16" };
     return "0" <= ch && ch <= "9";
   }
 
-  var Scope = sc.lang.compiler.Scope.inheritWith({
+  var Scope = sc.lang.compiler.Scope({
     begin: function() {
       var declared = this.getDeclaredVariable();
 
@@ -12944,16 +12965,6 @@ var sc = { VERSION: "0.0.16" };
 
   sc.lang.parser = parser;
 
-  var SCScript = sc.SCScript;
-
-  SCScript.tokenize = function(source, opts) {
-    opts = opts || /* istanbul ignore next */ {};
-    opts.tokens = true;
-    return parser.parse(source, opts).tokens || /* istanbul ignore next */ [];
-  };
-
-  SCScript.parse = parser.parse;
-
 })(sc);
 
 // src/sc/lang/codegen.js
@@ -12970,7 +12981,7 @@ var sc = { VERSION: "0.0.16" };
     yield: true
   };
 
-  var Scope = sc.lang.compiler.Scope.inheritWith({
+  var Scope = sc.lang.compiler.Scope({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
@@ -13139,14 +13150,11 @@ var sc = { VERSION: "0.0.16" };
       if (with_comma) {
         result.push(", ");
       }
-      result.push("{ ");
-      Object.keys(keyValues).forEach(function(key, i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(key, ": ", this.generate(keyValues[key]));
-      }, this);
-      result.push(" }");
+      result.push(
+        "{ ", this.stitchWith(Object.keys(keyValues), ", ", function(key) {
+          return [ key, ": ", this.generate(keyValues[key]) ];
+        }), " }"
+      );
     }
 
     return result;
@@ -13221,16 +13229,16 @@ var sc = { VERSION: "0.0.16" };
 
       result = [
         this.stitchWith(elements, ",\n", function(item, i) {
-          return [ this.base, this._assign(
+          return this.addIndent(this._Assign(
             item, operator, "_ref.at($SC.Integer(" + i + "))"
-          ) ];
+          ));
         })
       ];
 
       if (node.remain) {
-        result.push(",\n", this.base, this._assign(
+        result.push(",\n", this.addIndent(this._Assign(
           node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
-        ));
+        )));
       }
 
       return result;
@@ -13239,11 +13247,11 @@ var sc = { VERSION: "0.0.16" };
     return [
       "(_ref = ", this.generate(node.right), ",\n",
       assignments , ",\n",
-      this.base, "_ref)"
+      this.addIndent("_ref)")
     ];
   };
 
-  CodeGen.prototype._assign = function(left, operator, right) {
+  CodeGen.prototype._Assign = function(left, operator, right) {
     var result = [];
     var opts;
 
@@ -13374,8 +13382,46 @@ var sc = { VERSION: "0.0.16" };
 
     return [
       fn.call(this, node, info.args),
-      genFunctionMetadata(info), ")"
+      this._FunctionMetadata(info), ")"
     ];
+  };
+
+  CodeGen.prototype._FunctionMetadata = function(info) {
+    var keys, vals;
+    var args, result;
+
+    keys = info.keys;
+    vals = info.vals;
+
+    if (keys.length === 0 && !info.remain && !info.closed) {
+      return [];
+    }
+
+    args = this.stitchWith(keys, "; ", function(item, i) {
+      var result = [ keys[i] ];
+
+      if (vals[i]) {
+        result.push("=", vals[i].value); // TODO #[]
+      }
+
+      return result;
+    });
+
+    result = [ ", '", args ];
+
+    if (info.remain) {
+      if (keys.length) {
+        result.push("; ");
+      }
+      result.push("*" + info.remain);
+    }
+    result.push("'");
+
+    if (info.closed) {
+      result.push(", true");
+    }
+
+    return result;
   };
 
   CodeGen.prototype._SimpleFunction = function(node, args) {
@@ -13389,31 +13435,29 @@ var sc = { VERSION: "0.0.16" };
   };
 
   CodeGen.prototype._SegmentedFunction = function(node, args) {
-    var fargs;
-    var body;
+    var fargs, body, assignArguments;
 
     fargs = args.map(function(_, i) {
       return "_arg" + i;
     });
 
+    assignArguments = function(item, i) {
+      return "$" + args[i] + " = " + fargs[i];
+    };
+
     body = this.withFunction([], function() {
       var result = [];
       var fragments = [], syncBlockScope;
-      var closureVars = args;
       var elements = node.body;
       var i, imax;
       var functionBodies;
 
-      for (i = 0, imax = closureVars.length; i < imax; ++i) {
-        this.scope.add("var", closureVars[i]);
+      for (i = 0, imax = args.length; i < imax; ++i) {
+        this.scope.add("var", args[i]);
       }
 
       syncBlockScope = this.state.syncBlockScope;
       this.state.syncBlockScope = this.scope.peek();
-
-      var assignArguments = function(item, i) {
-        return "$" + args[i] + " = " + fargs[i];
-      };
 
       functionBodies = this.withIndent(function() {
         var fragments = [];
@@ -13459,9 +13503,9 @@ var sc = { VERSION: "0.0.16" };
 
         while (i < imax) {
           if (i) {
-            fragments.push(",", "\n", this.base, this.withFunction([], loop));
+            fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
           } else {
-            fragments.push(this.base, this.withFunction(fargs, loop));
+            fragments.push(this.addIndent(this.withFunction(fargs, loop)));
           }
         }
 
@@ -13486,7 +13530,7 @@ var sc = { VERSION: "0.0.16" };
     var name = node.name;
 
     if (isClassName(name)) {
-      return "$SC.Class('" + name + "')";
+      return "$SC('" + name + "')";
     }
 
     if (this.scope.find(name)) {
@@ -13644,16 +13688,20 @@ var sc = { VERSION: "0.0.16" };
   };
 
   var getInformationOfFunction = function(node) {
-    var args     = [];
-    var defaults = [];
-    var remain   = null;
+    var args = [];
+    var keys, vals, remain;
     var list, i, imax;
+
+    keys = [];
+    vals = [];
+    remain = null;
 
     if (node.args) {
       list = node.args.list;
       for (i = 0, imax = list.length; i < imax; ++i) {
         args.push(list[i].id.name);
-        defaults.push(list[i].id.name, list[i].init);
+        keys.push(list[i].id.name);
+        vals.push(list[i].init);
       }
       if (node.args.remain) {
         remain = node.args.remain.name;
@@ -13662,10 +13710,16 @@ var sc = { VERSION: "0.0.16" };
     }
 
     if (node.partial) {
-      defaults = [];
+      keys = [];
     }
 
-    return { args: args, remain: remain, defaults: defaults, closed: node.closed };
+    return {
+      args  : args,
+      keys  : keys,
+      vals  : vals,
+      remain: remain,
+      closed: node.closed
+    };
   };
 
   var isClassName = function(name) {
@@ -13673,71 +13727,28 @@ var sc = { VERSION: "0.0.16" };
     return "A" <= ch0 && ch0 <= "Z";
   };
 
+  var isNode = function(node, key) {
+    return key !== "range" && key !== "loc" && typeof node[key] === "object";
+  };
+
   var isSegmentedBlock = function(node) {
-    if (node.type === Syntax.CallExpression && isSegmentedMethod(node)) {
+    if (isSegmentedMethod(node)) {
       return true;
     }
     return Object.keys(node).some(function(key) {
-      if (key !== "range" && key !== "loc") {
-        if (typeof node[key] === "object") {
-          return isSegmentedBlock(node[key]);
-        }
+      if (isNode(node, key)) {
+        return isSegmentedBlock(node[key]);
       }
       return false;
-    }, this);
+    });
   };
 
   var isSegmentedMethod = function(node) {
-    return !!SegmentedMethod[node.method.name];
-  };
-
-  var genFunctionMetadata = function(info) {
-    var defaults, remain, closed;
-    var result;
-    var i, imax;
-
-    defaults = info.defaults;
-    remain   = info.remain;
-    closed   = info.closed;
-
-    if (defaults.length === 0 && !remain && !closed) {
-      return [];
-    }
-
-    result = [ ", '" ];
-
-    for (i = 0, imax = defaults.length; i < imax; i += 2) {
-      if (i) {
-        result.push("; ");
-      }
-      result.push(defaults[i]);
-      if (defaults[i + 1]) {
-        result.push("=", defaults[i + 1].value); // TODO #[]
-      }
-    }
-    if (remain) {
-      if (i) {
-        result.push("; ");
-      }
-      result.push("*" + remain);
-    }
-    result.push("'");
-
-    if (closed) {
-      result.push(", true");
-    }
-
-    return result;
+    return node.type === Syntax.CallExpression && !!SegmentedMethod[node.method.name];
   };
 
   codegen.compile = function(ast, opts) {
     return new CodeGen(opts).generate(ast);
-  };
-
-  var SCScript = sc.SCScript;
-
-  SCScript.compile = function(source, opts) {
-    return new CodeGen(opts).generate(sc.lang.parser.parse(source, opts));
   };
 
   sc.lang.codegen = codegen;

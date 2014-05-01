@@ -3,15 +3,15 @@
 
   require("./sc");
   require("./dollarSC");
-  require("./klass");
+  require("./klass-utils");
 
   var iterator = {};
-  var $SC = sc.lang.$SC;
+  var $SC   = sc.lang.$SC;
   var utils = sc.lang.klass.utils;
-
-  var bool = function(a) {
-    return a.__bool__();
-  };
+  var $nil   = utils.$nil;
+  var $int_0 = utils.$int_0;
+  var $int_1 = utils.$int_1;
+  var BOOL   = utils.BOOL;
 
   var __stop__ = function() {
     return null;
@@ -51,10 +51,9 @@
   iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
-    var $nil = utils.nilInstance;
     var iter = {
       next: function() {
-        if (bool($function.value())) {
+        if (BOOL($function.value())) {
           return [ $nil, $nil ];
         }
         iter.next = __stop__;
@@ -107,9 +106,9 @@
   iterator.number$do = function($end) {
     var $start, $step;
 
-    $start = utils.int0Instance;
+    $start = $int_0;
     $end   = $end.__dec__();
-    $step  = utils.int1Instance;
+    $step  = $int_1;
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -118,7 +117,7 @@
     var $end, $step;
 
     $start = $start.__dec__();
-    $end   = utils.int0Instance;
+    $end   = $int_0;
     $step  = $SC.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
@@ -128,7 +127,7 @@
     var $step;
     $end = utils.defaultValue$Nil($end);
 
-    $step = ($start <= $end) ? utils.int1Instance : $SC.Integer(-1);
+    $step = ($start <= $end) ? $int_1 : $SC.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
   };

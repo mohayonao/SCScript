@@ -10,7 +10,7 @@
   describe("SCSimpleNumber", function() {
     var SCSimpleNumber;
     before(function() {
-      SCSimpleNumber = $SC.Class("SimpleNumber");
+      SCSimpleNumber = $SC("SimpleNumber");
       this.createInstance = function(value) {
         var instance = $SC.Float(typeof value === "undefined" ? 0 : value);
         var testMethod = this.test.title.substr(1);
@@ -841,7 +841,7 @@
 
       spy1 = this.spy(sc.test.func);
       spy2 = this.spy(sc.test.func);
-      this.stub($SC, "Class")
+      this.stub(sc.lang.klass, "get")
         .withArgs("Silent").returns(sc.test.object({ ar: spy1 }))
         .withArgs("DC"    ).returns(sc.test.object({ ar: spy2 }));
 

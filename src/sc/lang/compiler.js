@@ -68,9 +68,24 @@
   };
 
   var Scope = (function() {
-    function Scope() {}
+    function Scope(methods) {
+      var f = function(parent) {
+        this.parent = parent;
+        this.stack  = [];
+      };
 
-    Scope.prototype.add = function(type, id, scope) {
+      function F() {}
+      F.prototype = Scope;
+      f.prototype = new F();
+
+      Object.keys(methods).forEach(function(key) {
+        f.prototype[key] = methods[key];
+      });
+
+      return f;
+    }
+
+    Scope.add = function(type, id, scope) {
       var peek = this.stack[this.stack.length - 1];
       var vars, args, declared, stmt, indent;
 
@@ -111,14 +126,14 @@
       }
     };
 
-    Scope.prototype.add_delegate = function() {
+    Scope.add_delegate = function() {
     };
 
-    Scope.prototype.end = function() {
+    Scope.end = function() {
       this.stack.pop();
     };
 
-    Scope.prototype.getDeclaredVariable = function() {
+    Scope.getDeclaredVariable = function() {
       var peek = this.stack[this.stack.length - 1];
       var declared = {};
 
@@ -133,30 +148,13 @@
       return declared;
     };
 
-    Scope.prototype.find = function(id) {
+    Scope.find = function(id) {
       var peek = this.stack[this.stack.length - 1];
       return peek.vars[id] || peek.args[id] || peek.declared[id];
     };
 
-    Scope.prototype.peek = function() {
+    Scope.peek = function() {
       return this.stack[this.stack.length - 1];
-    };
-
-    Scope.inheritWith = function(methods) {
-      var f = function(parent) {
-        this.parent = parent;
-        this.stack  = [];
-      };
-
-      function F() {}
-      F.prototype = Scope.prototype;
-      f.prototype = new F();
-
-      Object.keys(methods).forEach(function(key) {
-        f.prototype[key] = methods[key];
-      });
-
-      return f;
     };
 
     return Scope;
@@ -165,5 +163,22 @@
   compiler.Scope = Scope;
 
   sc.lang.compiler = compiler;
+
+  var SCScript = sc.SCScript;
+
+  SCScript.tokenize = function(source, opts) {
+    opts = opts || /* istanbul ignore next */ {};
+    opts.tokens = true;
+    return sc.lang.parser.parse(source, opts).tokens || /* istanbul ignore next */ [];
+  };
+
+  SCScript.parse = function(source, opts) {
+    return sc.lang.parser.parse(source, opts);
+  };
+
+  SCScript.compile = function(source, opts) {
+    var ast = SCScript.parse(source, opts);
+    return sc.lang.codegen.compile(ast, opts);
+  };
 
 })(sc);

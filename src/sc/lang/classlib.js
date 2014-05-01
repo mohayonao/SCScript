@@ -2,6 +2,8 @@
   "use strict";
 
   require("./klass");
+  require("./klass-constructors");
+  require("./klass-utils");
   require("./dollarSC");
   require("./iterator");
   require("./fn");

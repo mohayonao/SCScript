@@ -11,10 +11,10 @@
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("ArrayedCollection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
 
     spec.valueOf = function() {
       return this._.map(function(elem) {
@@ -273,7 +273,7 @@
 
       $i = $SC.Integer(i);
       while (i < raw.length) {
-        if (bool($func.value(raw[i], $i))) {
+        if (BOOL($func.value(raw[i], $i))) {
           this.takeAt($i);
         } else {
           $i = $SC.Integer(++i);
@@ -320,7 +320,7 @@
       return $index;
     };
 
-    spec.slotIndex = utils.alwaysReturn$Nil;
+    spec.slotIndex = utils.alwaysReturn$nil;
 
     spec.getSlots = function() {
       return this.copy();
@@ -348,7 +348,7 @@
       return this;
     };
 
-    spec.isArray = utils.alwaysReturn$True;
+    spec.isArray = utils.alwaysReturn$true;
     spec.asArray = utils.nop;
 
     spec.copyRange = function($start, $end) {
@@ -653,7 +653,7 @@
         }
       }
 
-      return $int0;
+      return $int_0;
     };
 
     spec.normalizeSum = function() {
@@ -682,7 +682,7 @@
     };
 
     spec.rank = function() {
-      return $int1 ["+"] (this.first().rank());
+      return $int_1 ["+"] (this.first().rank());
     };
 
     spec.shape = function() {
@@ -713,7 +713,7 @@
       $another  = utils.defaultValue$Nil($another);
       $indexing = utils.defaultValue$Symbol($indexing, "wrapAt");
 
-      $index = $int0;
+      $index = $int_0;
       $flat  = this.flat();
 
       return $another.deepCollect($SC.Integer(0x7FFFFFFF), $SC.Function(function() {
@@ -819,8 +819,8 @@
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
-    spec.archiveAsObject = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    spec.archiveAsObject = utils.alwaysReturn$true;
     spec.rate = function() {
       return $SC.Symbol("scalar");
     };

@@ -8,7 +8,7 @@
   describe("SCDictionary", function() {
     var SCDictionary;
     before(function() {
-      SCDictionary = $SC.Class("Dictionary");
+      SCDictionary = $SC("Dictionary");
       this.createInstance = function() {
         return SCDictionary.new();
       };
@@ -119,7 +119,7 @@
   describe("SCIdentityDictionary", function() {
     var SCIdentityDictionary;
     before(function() {
-      SCIdentityDictionary = $SC.Class("IdentityDictionary");
+      SCIdentityDictionary = $SC("IdentityDictionary");
       this.createInstance = function() {
         return SCIdentityDictionary.new();
       };

@@ -8,7 +8,7 @@
   describe("SCThread", function() {
     var SCThread;
     before(function() {
-      SCThread = $SC.Class("Thread");
+      SCThread = $SC("Thread");
       this.createInstance = function() {
         return SCThread.new();
       };
@@ -96,7 +96,7 @@
   describe("SCRoutine", function() {
     var SCRoutine;
     before(function() {
-      SCRoutine = $SC.Class("Routine");
+      SCRoutine = $SC("Routine");
       this.createInstance = function() {
         return SCRoutine.new();
       };

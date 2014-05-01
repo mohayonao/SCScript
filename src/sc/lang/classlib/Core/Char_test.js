@@ -11,7 +11,7 @@
   describe("SCChar", function() {
     var SCChar;
     before(function() {
-      SCChar = $SC.Class("Char");
+      SCChar = $SC("Char");
       this.createInstance = function(value) {
         return $SC.Char(typeof value === "undefined" ? "a" : value);
       };

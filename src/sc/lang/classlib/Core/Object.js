@@ -8,10 +8,12 @@
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__num__ = function() {
       throw new Error("Wrong Type");
@@ -54,9 +56,9 @@
     // TODO: implements gcSanity
     // TODO: implements canCallOS
 
-    spec.size = utils.alwaysReturn$Integer_0;
-    spec.indexedSize = utils.alwaysReturn$Integer_0;
-    spec.flatSize = utils.alwaysReturn$Integer_1;
+    spec.size = utils.alwaysReturn$int_0;
+    spec.indexedSize = utils.alwaysReturn$int_0;
+    spec.flatSize = utils.alwaysReturn$int_1;
 
     spec.do = function($function) {
       $function = utils.defaultValue$Nil($function);
@@ -169,7 +171,7 @@
       var $array, i, imax;
 
       $n = utils.defaultValue$Integer($n, 2);
-      if (bool($n.isSequenceableCollection())) {
+      if (BOOL($n.isSequenceableCollection())) {
         return SCArray.fillND($n, $SC.Function(function() {
           return $this.copy();
         }));
@@ -220,7 +222,7 @@
     // TODO: implements identityHash
 
     spec["->"] = function($obj) {
-      return $SC.Class("Association").new(this, $obj);
+      return $SC("Association").new(this, $obj);
     };
 
     spec.next = utils.nop;
@@ -234,14 +236,14 @@
     };
 
     spec.iter = function() {
-      return $SC.Class("OneShotStream").new(this);
+      return $SC("OneShotStream").new(this);
     };
 
     spec.stop = utils.nop;
     spec.free = utils.nop;
     spec.clear = utils.nop;
     spec.removedFromScheduler = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$False;
+    spec.isPlaying = utils.alwaysReturn$false;
 
     spec.embedInStream = function() {
       return this.yield();
@@ -256,7 +258,7 @@
 
     // TODO: implements streamArg
 
-    spec.eventAt = utils.alwaysReturn$Nil;
+    spec.eventAt = utils.alwaysReturn$nil;
 
     spec.composeEvents = function($event) {
       $event = utils.defaultValue$Nil($event);
@@ -264,8 +266,8 @@
     };
 
     spec.finishEvent = utils.nop;
-    spec.atLimit = utils.alwaysReturn$False;
-    spec.isRest = utils.alwaysReturn$False;
+    spec.atLimit = utils.alwaysReturn$false;
+    spec.isRest = utils.alwaysReturn$false;
     spec.threadPlayer = utils.nop;
     spec.threadPlayer_ = utils.nop;
     spec["?"] = utils.nop;
@@ -276,26 +278,26 @@
       return $obj.value(this);
     };
 
-    spec.isNil = utils.alwaysReturn$False;
-    spec.notNil = utils.alwaysReturn$True;
-    spec.isNumber = utils.alwaysReturn$False;
-    spec.isInteger = utils.alwaysReturn$False;
-    spec.isFloat = utils.alwaysReturn$False;
-    spec.isSequenceableCollection = utils.alwaysReturn$False;
-    spec.isCollection = utils.alwaysReturn$False;
-    spec.isArray = utils.alwaysReturn$False;
-    spec.isString = utils.alwaysReturn$False;
-    spec.containsSeqColl = utils.alwaysReturn$False;
-    spec.isValidUGenInput = utils.alwaysReturn$False;
-    spec.isException = utils.alwaysReturn$False;
-    spec.isFunction = utils.alwaysReturn$False;
+    spec.isNil = utils.alwaysReturn$false;
+    spec.notNil = utils.alwaysReturn$true;
+    spec.isNumber = utils.alwaysReturn$false;
+    spec.isInteger = utils.alwaysReturn$false;
+    spec.isFloat = utils.alwaysReturn$false;
+    spec.isSequenceableCollection = utils.alwaysReturn$false;
+    spec.isCollection = utils.alwaysReturn$false;
+    spec.isArray = utils.alwaysReturn$false;
+    spec.isString = utils.alwaysReturn$false;
+    spec.containsSeqColl = utils.alwaysReturn$false;
+    spec.isValidUGenInput = utils.alwaysReturn$false;
+    spec.isException = utils.alwaysReturn$false;
+    spec.isFunction = utils.alwaysReturn$false;
 
     spec.matchItem = function($item) {
       $item = utils.defaultValue$Nil($item);
       return this ["==="] ($item);
     };
 
-    spec.trueAt = utils.alwaysReturn$False;
+    spec.trueAt = utils.alwaysReturn$false;
 
     spec.falseAt = function($key) {
       $key = utils.defaultValue$Nil($key);
@@ -379,7 +381,7 @@
       return this.asArray();
     };
 
-    spec.rank = utils.alwaysReturn$Integer_0;
+    spec.rank = utils.alwaysReturn$int_0;
 
     spec.deepCollect = function($depth, $function, $index, $rank) {
       $function = utils.defaultValue$Nil($function);
@@ -393,7 +395,7 @@
     };
 
     spec.slice = utils.nop;
-    spec.shape = utils.alwaysReturn$Nil;
+    spec.shape = utils.alwaysReturn$nil;
     spec.unbubble = utils.nop;
 
     spec.bubble = function($depth, $levels) {
@@ -435,7 +437,7 @@
     };
 
     spec.addFunc = fn(function($$functions) {
-      return $SC.Class("FunctionList").new(this ["++"] ($$functions));
+      return $SC("FunctionList").new(this ["++"] ($$functions));
     }, "*functions");
 
     spec.removeFunc = function($function) {
@@ -474,7 +476,7 @@
 
       args = slice.call(arguments);
       for (i = 0, imax = args.length >> 1; i < imax; i++) {
-        if (bool(this ["=="] (args[i * 2]))) {
+        if (BOOL(this ["=="] (args[i * 2]))) {
           return args[i * 2 + 1].value();
         }
       }
@@ -560,7 +562,7 @@
       $index  = utils.defaultValue$Nil($index);
       $method = utils.defaultValue$Symbol($method, "clipAt");
 
-      $iMin = $index.roundUp($int1).asInteger().__dec__();
+      $iMin = $index.roundUp($int_1).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
         $index.absdif($iMin)
@@ -575,7 +577,7 @@
 
       $iMin = $index.floor().asInteger();
       $ratio = $index.absdif($iMin);
-      this.perform($method, $iMin, $val ["*"] ($int1 ["-"] ($ratio)));
+      this.perform($method, $iMin, $val ["*"] ($int_1 ["-"] ($ratio)));
       this.perform($method, $iMin.__inc__(), $val ["*"] ($ratio));
 
       return this;
@@ -592,8 +594,8 @@
       );
     };
 
-    spec.isUGen = utils.alwaysReturn$False;
-    spec.numChannels = utils.alwaysReturn$Integer_1;
+    spec.isUGen = utils.alwaysReturn$false;
+    spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.pair = function($that) {
       $that = utils.defaultValue$Nil($that);
@@ -627,10 +629,10 @@
 
       aSelector = $aSelector.__sym__();
       if (aSelector === "==") {
-        return utils.falseInstance;
+        return $false;
       }
       if (aSelector === "!=") {
-        return utils.trueInstance;
+        return $true;
       }
 
       throw new Error("binary operator '" + aSelector + "' failed.");
@@ -647,16 +649,16 @@
 
     // TODO: implements writeDefFile
 
-    spec.isInputUGen = utils.alwaysReturn$False;
-    spec.isOutputUGen = utils.alwaysReturn$False;
-    spec.isControlUGen = utils.alwaysReturn$False;
+    spec.isInputUGen = utils.alwaysReturn$false;
+    spec.isOutputUGen = utils.alwaysReturn$false;
+    spec.isControlUGen = utils.alwaysReturn$false;
     spec.source = utils.nop;
     spec.asUGenInput = utils.nop;
     spec.asControlInput = utils.nop;
 
     spec.asAudioRateInput = function() {
       if (this.rate().__sym__() !== "audio") {
-        return $SC.Class("K2A").ar(this);
+        return $SC("K2A").ar(this);
       }
       return this;
     };

@@ -1,3 +1,2 @@
-require("./parser");
-require("./codegen");
 require("./classlib/installer");
+require("./compiler");

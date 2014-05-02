@@ -1,9 +1,9 @@
 (function() {
   "use strict";
 
-  require("./klass-utils");
+  require("./utils");
 
-  var $SC = sc.lang.$SC;
+  var $SC   = sc.lang.$SC;
   var utils = sc.lang.klass.utils;
 
   describe("sc.lang.klass.utils", function() {

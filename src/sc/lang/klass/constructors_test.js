@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./klass-constructors");
+  require("./constructors");
 
   var $SC = sc.lang.$SC;
 

@@ -7,7 +7,6 @@
   var codegen  = sc.lang.codegen;
   var Syntax   = sc.lang.compiler.Syntax;
   var Token    = sc.lang.compiler.Message;
-  var SCScript = sc.SCScript;
 
   describe("sc.lang.codegen", function() {
     function s(str) {
@@ -54,8 +53,18 @@
     });
     describe("compile", function() {
       it("with bare", function() {
-        var source = "nil";
-        var test = esprima.parse(SCScript.compile(source, { bare: true }));
+        var ast = {
+          type: Syntax.Program,
+          body: [
+            {
+              type: Syntax.Literal,
+              value: "null",
+              valueType: Token.NilLiteral
+            }
+          ]
+        };
+        var source = codegen.compile(ast, { bare: true });
+        var test = esprima.parse(source);
         var compiled = esprima.parse(
           "(function($this, $SC) { return $SC.Nil(); })"
         );

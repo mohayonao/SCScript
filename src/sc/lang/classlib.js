@@ -1,10 +1,8 @@
 (function(sc) {
   "use strict";
 
-  require("./klass");
-  require("./klass-constructors");
-  require("./klass-utils");
   require("./dollarSC");
+  require("./klass");
   require("./iterator");
   require("./fn");
   require("../libs/random");

@@ -3,6 +3,7 @@
 
   require("./Object");
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Boolean", function(spec, utils) {
@@ -56,10 +57,9 @@
       throw new Error("True.new is illegal, should use literal.");
     };
 
-    spec.if = function($trueFunc) {
-      $trueFunc = utils.defaultValue$Nil($trueFunc);
+    spec.if = fn(function($trueFunc) {
       return $trueFunc.value();
-    };
+    }, "trueFunc");
 
     spec.not = utils.alwaysReturn$false;
 
@@ -69,16 +69,15 @@
 
     spec["||"] = utils.nop;
 
-    spec.and = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.and = fn(function($that) {
       return $that.value();
-    };
+    }, "that");
+
     spec.or = spec["||"];
 
-    spec.nand = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.nand = fn(function($that) {
       return $that.value().not();
-    };
+    }, "that");
 
     spec.asInteger = utils.alwaysReturn$int_1;
     spec.binaryValue = utils.alwaysReturn$int_1;
@@ -89,9 +88,9 @@
       throw new Error("False.new is illegal, should use literal.");
     };
 
-    spec.if = function($trueFunc, $falseFunc) {
+    spec.if = fn(function($trueFunc, $falseFunc) {
       return $falseFunc.value();
-    };
+    }, "trueFunc; falseFunc");
 
     spec.not = utils.alwaysReturn$true;
 
@@ -103,10 +102,9 @@
 
     spec.and = utils.nop;
 
-    spec.or = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.or = fn(function($that) {
       return $that.value();
-    };
+    }, "that");
 
     spec.nand = utils.alwaysReturn$true;
     spec.asInteger = utils.alwaysReturn$int_0;

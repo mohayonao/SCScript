@@ -58,7 +58,7 @@
     "-10pi": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC.Float(-10 * Math.PI);",
+        "  return $SC.Float(-31.41592653589793);",
         "});",
       ],
       ast: {
@@ -66,7 +66,7 @@
         body: [
           {
             type: Syntax.Literal,
-            value: "-10 * Math.PI",
+            value: "-31.41592653589793",
             valueType: Token.FloatLiteral,
             range: [ 0, 5 ],
             loc: {
@@ -573,7 +573,7 @@
     "a = 2pi": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a_($SC.Float(2 * Math.PI));",
+        "  return $this.a_($SC.Float(6.283185307179586));",
         "});",
       ],
       ast: {
@@ -593,7 +593,7 @@
             },
             right: {
               type: Syntax.Literal,
-              value: "2 * Math.PI",
+              value: "6.283185307179586",
               valueType: Token.FloatLiteral,
               range: [ 4, 7 ],
               loc: {
@@ -3532,6 +3532,223 @@
         loc: {
           start: { line: 1, column: 0 },
           end  : { line: 1, column: 7 }
+        }
+      }
+    },
+    "{|a=#[ nil, true, false ], b= #[ inf, -inf ], c=#[ 0, 0.0, 2pi, $a, \\sym ]|}": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function($a, $b, $c) {",
+        "    return $SC.Nil();",
+        "  }, 'a=[ nil, true, false ]; " +
+          "b=[ inf, -inf ]; c=[ 0, 0.0, 6.283185307179586, $a, \\sym ]');",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.FunctionExpression,
+            body: [],
+            args: {
+              list: [
+                {
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "a",
+                    range: [ 2, 3 ],
+                    loc: {
+                      start: { line: 1, column: 2 },
+                      end  : { line: 1, column: 3 }
+                    }
+                  },
+                  init: {
+                    type: Syntax.ListExpression,
+                    elements: [
+                      {
+                        type: Syntax.Literal,
+                        value: "null",
+                        valueType: Token.NilLiteral,
+                        range: [ 7, 10 ],
+                        loc: {
+                          start: { line: 1, column: 7 },
+                          end  : { line: 1, column: 10 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "true",
+                        valueType: "True",
+                        range: [ 12, 16 ],
+                        loc: {
+                          start: { line: 1, column: 12 },
+                          end  : { line: 1, column: 16 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "false",
+                        valueType: "False",
+                        range: [ 18, 23 ],
+                        loc: {
+                          start: { line: 1, column: 18 },
+                          end  : { line: 1, column: 23 }
+                        }
+                      }
+                    ],
+                    immutable: true,
+                    range: [ 4, 25 ],
+                    loc: {
+                      start: { line: 1, column: 4 },
+                      end  : { line: 1, column: 25 }
+                    }
+                  },
+                  range: [ 2, 25 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 25 }
+                  }
+                },
+                {
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "b",
+                    range: [ 27, 28 ],
+                    loc: {
+                      start: { line: 1, column: 27 },
+                      end  : { line: 1, column: 28 }
+                    }
+                  },
+                  init: {
+                    type: Syntax.ListExpression,
+                    elements: [
+                      {
+                        type: Syntax.Literal,
+                        value: "Infinity",
+                        valueType: "Float",
+                        range: [ 33, 36 ],
+                        loc: {
+                          start: { line: 1, column: 33 },
+                          end  : { line: 1, column: 36 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "-Infinity",
+                        valueType: Token.FloatLiteral,
+                        range: [ 38, 42 ],
+                        loc: {
+                          start: { line: 1, column: 38 },
+                          end  : { line: 1, column: 42 }
+                        }
+                      }
+                    ],
+                    immutable: true,
+                    range: [ 30, 44 ],
+                    loc: {
+                      start: { line: 1, column: 30 },
+                      end  : { line: 1, column: 44 }
+                    }
+                  },
+                  range: [ 27, 44 ],
+                  loc: {
+                    start: { line: 1, column: 27 },
+                    end  : { line: 1, column: 44 }
+                  }
+                },
+                {
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "c",
+                    range: [ 46, 47 ],
+                    loc: {
+                      start: { line: 1, column: 46 },
+                      end  : { line: 1, column: 47 }
+                    }
+                  },
+                  init: {
+                    type: Syntax.ListExpression,
+                    elements: [
+                      {
+                        type: Syntax.Literal,
+                        value: "0",
+                        valueType: Token.IntegerLiteral,
+                        range: [ 51, 52 ],
+                        loc: {
+                          start: { line: 1, column: 51 },
+                          end  : { line: 1, column: 52 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "0.0",
+                        valueType: Token.FloatLiteral,
+                        range: [ 54, 57 ],
+                        loc: {
+                          start: { line: 1, column: 54 },
+                          end  : { line: 1, column: 57 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "6.283185307179586",
+                        valueType: Token.FloatLiteral,
+                        range: [ 59, 62 ],
+                        loc: {
+                          start: { line: 1, column: 59 },
+                          end  : { line: 1, column: 62 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "a",
+                        valueType: Token.CharLiteral,
+                        range: [ 64, 66 ],
+                        loc: {
+                          start: { line: 1, column: 64 },
+                          end  : { line: 1, column: 66 }
+                        }
+                      },
+                      {
+                        type: Syntax.Literal,
+                        value: "sym",
+                        valueType: Token.SymbolLiteral,
+                        range: [ 68, 72 ],
+                        loc: {
+                          start: { line: 1, column: 68 },
+                          end  : { line: 1, column: 72 }
+                        }
+                      }
+                    ],
+                    immutable: true,
+                    range: [ 48, 74 ],
+                    loc: {
+                      start: { line: 1, column: 48 },
+                      end  : { line: 1, column: 74 }
+                    }
+                  },
+                  range: [ 46, 74 ],
+                  loc: {
+                    start: { line: 1, column: 46 },
+                    end  : { line: 1, column: 74 }
+                  }
+                }
+              ]
+            },
+            range: [ 0, 76 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 76 }
+            }
+          }
+        ],
+        range: [ 0, 76 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 76 }
         }
       }
     },

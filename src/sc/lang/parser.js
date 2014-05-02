@@ -428,7 +428,7 @@
         break;
       case "pi":
         type = Token.FloatLiteral;
-        value = "Math.PI";
+        value = String(Math.PI);
         break;
       case "nil":
         type = Token.NilLiteral;
@@ -478,10 +478,10 @@
 
     if (ch1 + ch2 === "pi") {
       this.index += 3;
-      value = -Math.PI;
+      value = String(-Math.PI);
     } else if (ch1 + ch2 + ch3 === "inf") {
       this.index += 4;
-      value = -Infinity;
+      value = "-Infinity";
     }
 
     if (value !== null) {
@@ -533,7 +533,7 @@
 
     if (pi) {
       type = Token.FloatLiteral;
-      value = value + " * Math.PI";
+      value = value * Math.PI;
     }
 
     if (type === Token.FloatLiteral && value === (value|0)) {
@@ -602,7 +602,7 @@
     }
 
     if (pi) {
-      value = value + " * Math.PI";
+      value = value * Math.PI;
     }
 
     if (type === Token.FloatLiteral && value === (value|0)) {
@@ -1040,8 +1040,13 @@
   };
 
   SCParser.prototype.parseFunctionArgumentElement = function() {
-     // literal or immurable array of literals
-    return this._parseArgVarElement("arg", "parseUnaryExpression");
+    var node = this._parseArgVarElement("arg", "parseArgumentableValue");
+
+    if (node.init && !isValidArgumentValue(node.init)) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return node;
   };
 
   // 2.3 Function Body
@@ -1836,8 +1841,39 @@
   };
 
   // 4.8 Primary Expressions
+  SCParser.prototype.parseArgumentableValue = function() {
+    var expr, stamp;
+
+    this.skipComment();
+    this.markStart();
+
+    stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
+
+    switch (stamp) {
+    case "#":
+      expr = this.parsePrimaryHashedExpression();
+      break;
+    case Token.CharLiteral:
+    case Token.FloatLiteral:
+    case Token.FalseLiteral:
+    case Token.IntegerLiteral:
+    case Token.NilLiteral:
+    case Token.SymbolLiteral:
+    case Token.TrueLiteral:
+      expr = this.createLiteral(this.lex());
+      break;
+    }
+
+    if (!expr) {
+      expr = {};
+      this.throwUnexpected(this.lex());
+    }
+
+    return this.markEnd(expr);
+  };
+
   SCParser.prototype.parsePrimaryExpression = function(node) {
-    var expr;
+    var expr, stamp;
 
     if (node) {
       return node;
@@ -1850,8 +1886,8 @@
       this.lex();
       expr = this.createGlobalExpression(this.parseIdentifier());
     } else {
-
-      switch (this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type) {
+      stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
+      switch (stamp) {
       case "(":
         expr = this.parseParentheses();
         break;
@@ -1861,33 +1897,27 @@
       case "[":
         expr = this.parseListInitialiser();
         break;
-      case "#":
-        expr = this.parsePrimaryHashedExpression();
-        break;
       case Token.Keyword:
         expr = this.parsePrimaryKeywordExpression();
         break;
       case Token.Identifier:
         expr = this.parsePrimaryIdentifier();
         break;
-      case Token.CharLiteral:
-      case Token.FloatLiteral:
-      case Token.FalseLiteral:
-      case Token.IntegerLiteral:
-      case Token.NilLiteral:
-      case Token.SymbolLiteral:
-      case Token.TrueLiteral:
-        expr = this.createLiteral(this.lex());
-        break;
       case Token.StringLiteral:
         expr = this.parsePrimaryStringExpression();
         break;
+      default:
+        // case "#":
+        // case Token.CharLiteral:
+        // case Token.FloatLiteral:
+        // case Token.FalseLiteral:
+        // case Token.IntegerLiteral:
+        // case Token.NilLiteral:
+        // case Token.SymbolLiteral:
+        // case Token.TrueLiteral:
+        expr = this.parseArgumentableValue(stamp);
+        break;
       }
-    }
-
-    if (!expr) {
-      expr = {};
-      this.throwUnexpected(this.lex());
     }
 
     return this.markEnd(expr);
@@ -2513,6 +2543,19 @@
       break;
     }
   };
+
+  function isValidArgumentValue(node) {
+    if (node.type === Syntax.Literal) {
+      return true;
+    }
+    if (node.type === Syntax.ListExpression) {
+      return node.elements.every(function(node) {
+        return node.type === Syntax.Literal;
+      });
+    }
+
+    return false;
+  }
 
   parser.parse = function(source, opts) {
     var instance, ast;

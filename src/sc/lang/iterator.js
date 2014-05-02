@@ -34,7 +34,6 @@
   // TODO: async function
   iterator.execute = function(iter, $function) {
     var $item, ret, i = 0;
-    $function = utils.defaultValue$Nil($function);
 
     while (($item = iter.next()) !== null) {
       if (Array.isArray($item)) {
@@ -125,7 +124,6 @@
 
   iterator.number$for = function($start, $end) {
     var $step;
-    $end = utils.defaultValue$Nil($end);
 
     $step = ($start <= $end) ? $int_1 : $SC.Integer(-1);
 
@@ -133,20 +131,15 @@
   };
 
   iterator.number$forBy = function($start, $end, $step) {
-    $end  = utils.defaultValue$Nil($end);
-    $step = utils.defaultValue$Nil($step);
-
     return sc_numeric_iter($start, $end, $step);
   };
 
   iterator.number$forSeries = function($start, $second, $last) {
-    var $end, $step;
+    var $step;
 
-    $second = utils.defaultValue$Nil($second);
-    $end    = utils.defaultValue$Nil($last);
     $step   = $second ["-"] ($start);
 
-    return sc_numeric_iter($start, $end, $step);
+    return sc_numeric_iter($start, $last, $step);
   };
 
   var js_incremental_iter = function(start, end, step, type) {
@@ -200,9 +193,6 @@
   };
 
   var js_numeric_iter$for = function($startval, $endval, type) {
-    $startval = utils.defaultValue$Nil($startval);
-    $endval   = utils.defaultValue$Nil($endval);
-
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = (start <= end) ? +1 : -1;
@@ -211,9 +201,6 @@
   };
 
   var js_numeric_iter$forBy = function($startval, $endval, $stepval, type) {
-    $endval  = utils.defaultValue$Nil($endval);
-    $stepval = utils.defaultValue$Nil($stepval);
-
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = type($stepval .__num__()).valueOf();
@@ -222,9 +209,6 @@
   };
 
   var js_numeric_iter$forSeries = function($startval, $second, $last, type) {
-    $second = utils.defaultValue$Nil($second);
-    $last   = utils.defaultValue$Nil($last);
-
     var start  = type($startval.__num__()).valueOf();
     var second = type($second  .__num__()).valueOf();
     var end    = type($last    .__num__()).valueOf();

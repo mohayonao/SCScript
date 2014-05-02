@@ -4,7 +4,8 @@
   require("./Object");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("Nil", function(spec, utils) {
     var $nil = utils.$nil;
@@ -45,15 +46,13 @@
     spec.asBoolean = utils.alwaysReturn$false;
     spec.booleanValue = utils.alwaysReturn$false;
 
-    spec.push = function($function) {
-      $function = utils.defaultValue$Nil($function);
+    spec.push = fn(function($function) {
       return $function.value();
-    };
+    }, "function");
 
-    spec.appendStream = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.appendStream = fn(function($stream) {
       return $stream;
-    };
+    }, "stream");
 
     spec.pop = utils.nop;
     spec.source = utils.nop;
@@ -84,26 +83,22 @@
     spec.release = utils.nop;
     spec.update = utils.nop;
 
-    spec.transformEvent = function($event) {
-      $event = utils.defaultValue$Nil($event);
+    spec.transformEvent = fn(function($event) {
       return $event;
-    };
+    }, "event");
 
     spec.awake = utils.alwaysReturn$nil;
 
     spec.play = utils.nop;
 
-    spec.nextTimeOnGrid = function($clock) {
-      $clock = utils.defaultValue$Nil($clock);
-
+    spec.nextTimeOnGrid = fn(function($clock) {
       if ($clock === $nil) {
         return $clock;
       }
-
       return $SC.Function(function() {
         return $clock.nextTimeOnGrid();
       });
-    };
+    }, "clock");
 
     spec.asQuant = function() {
       return $SC("Quant").default();
@@ -112,32 +107,27 @@
     spec.swapThisGroup = utils.nop;
     spec.performMsg = utils.nop;
 
-    spec.printOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.printOn = fn(function($stream) {
       $stream.putAll($SC.String("nil"));
       return this;
-    };
+    }, "stream");
 
-    spec.storeOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.storeOn = fn(function($stream) {
       $stream.putAll($SC.String("nil"));
       return this;
-    };
+    }, "stream");
 
     spec.matchItem = utils.alwaysReturn$true;
 
-    spec.add = function($value) {
-      $value = utils.defaultValue$Nil($value);
+    spec.add = fn(function($value) {
       return $SC.Array([ $value ]);
-    };
+    }, "value");
 
-    spec.addAll = function($array) {
-      $array = utils.defaultValue$Nil($array);
+    spec.addAll = fn(function($array) {
       return $array.asArray();
-    };
+    }, "array");
 
     spec["++"] = function($array) {
-      $array = utils.defaultValue$Nil($array);
       return $array.asArray();
     };
 
@@ -149,10 +139,9 @@
 
     spec.set = utils.nop;
 
-    spec.get = function($prevVal) {
-      $prevVal = utils.defaultValue$Nil($prevVal);
+    spec.get = fn(function($prevVal) {
       return $prevVal;
-    };
+    }, "prevVal");
 
     spec.addFunc = function() {
       var functions = slice.call(arguments);

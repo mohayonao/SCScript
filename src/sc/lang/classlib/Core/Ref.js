@@ -3,6 +3,7 @@
 
   require("./Object");
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
   function SCRef(args) {
@@ -19,18 +20,17 @@
       return this._value;
     };
 
-    spec.value_ = function($value) {
+    spec.value_ = fn(function($value) {
       this._value = $value;
       return this;
-    };
+    }, "value");
 
     // $new
 
-    spec.set = function($thing) {
-      $thing = utils.defaultValue$Nil($thing);
+    spec.set = fn(function($thing) {
       this._value = $thing;
       return this;
-    };
+    }, "thing");
 
     spec.get = function() {
       return this._value;

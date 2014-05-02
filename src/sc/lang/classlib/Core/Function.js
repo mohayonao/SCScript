@@ -4,7 +4,8 @@
   require("./AbstractFunction");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
     var BOOL = utils.BOOL;
@@ -41,7 +42,6 @@
     };
 
     spec.valueArray = function($args) {
-      $args = utils.defaultValue$Nil($args);
       return this._.apply(this, $args.asArray()._);
     };
 
@@ -61,10 +61,9 @@
       return $SC("Routine").new(this);
     };
 
-    spec.dup = function($n) {
-      $n = utils.defaultValue$Integer($n, 2);
+    spec.dup = fn(function($n) {
       return SCArray.fill($n, this);
-    };
+    }, "n=2");
 
     // TODO: implements sum
     // TODO: implements defer
@@ -127,16 +126,13 @@
     // TODO: implements makeFlopFunc
     // TODO: implements inEnvir
 
-    spec.while = function($body) {
-      $body = utils.defaultValue$Nil($body);
-
+    spec.while = fn(function($body) {
       sc.lang.iterator.execute(
         sc.lang.iterator.function$while(this),
         $body
       );
-
       return this;
-    };
+    }, "body");
   });
 
 })(sc);

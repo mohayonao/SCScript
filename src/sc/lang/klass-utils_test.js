@@ -57,46 +57,6 @@
       test = utils.alwaysReturn$int_1();
       expect(test).to.be.a("SCInteger").that.equals(1);
     });
-    it("defaultValue$Nil", function() {
-      var $obj = {};
-      test = utils.defaultValue$Nil(undefined);
-      expect(test).to.be.a("SCNil");
-
-      test = utils.defaultValue$Nil($obj);
-      expect(test).to.equals($obj);
-    });
-    it("defaultValue$Boolean", function() {
-      var $obj = {};
-      test = utils.defaultValue$Boolean(undefined, true);
-      expect(test).to.be.a("SCBoolean").that.is.true;
-
-      test = utils.defaultValue$Nil($obj);
-      expect(test).to.equals($obj);
-    });
-    it("defaultValue$Integer", function() {
-      var $obj = {};
-      test = utils.defaultValue$Integer(undefined, 1);
-      expect(test).to.be.a("SCInteger").that.equals(1);
-
-      test = utils.defaultValue$Integer($obj, 1);
-      expect(test).to.equals($obj);
-    });
-    it("defaultValue$Float", function() {
-      var $obj = {};
-      test = utils.defaultValue$Float(undefined, 1.0);
-      expect(test).to.be.a("SCFloat").that.equals(1.0);
-
-      test = utils.defaultValue$Float($obj, 1.0);
-      expect(test).to.equals($obj);
-    });
-    it("defaultValue$Symbol", function() {
-      var $obj = {};
-      test = utils.defaultValue$Symbol(undefined, "symbol");
-      expect(test).to.be.a("SCSymbol").that.equals("symbol");
-
-      test = utils.defaultValue$Symbol($obj, "symbol");
-      expect(test).to.equals($obj);
-    });
     it("getMethod", function() {
       var test = utils.getMethod("Object", "class");
       expect(test).to.be.a("JSFunction");

@@ -1,12 +1,10 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
-  require("./dollarSC");
   require("./klass");
-  require("./klass-constructors");
+  require("./constructors");
 
-  var $SC = sc.lang.$SC;
+  var $SC   = sc.lang.$SC;
   var klass = sc.lang.klass;
 
   var utils = {

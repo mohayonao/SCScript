@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("../lang/compiler");
+  require("./compiler");
 
   var Token  = sc.lang.compiler.Token;
   var Syntax = sc.lang.compiler.Syntax;
@@ -5563,10 +5563,10 @@
             method: {
               type: Syntax.Identifier,
               name: "new",
-              range: [ 7, 7 ],
+              range: [ 9, 9 ],
               loc: {
-                start: { line: 1, column: 7 },
-                end  : { line: 1, column: 7 }
+                start: { line: 1, column: 9 },
+                end  : { line: 1, column: 9 }
               }
             },
             args: {
@@ -5769,10 +5769,10 @@
               method: {
                 type: Syntax.Identifier,
                 name: "newFrom",
-                range: [ 5, 5 ],
+                range: [ 6, 6 ],
                 loc: {
-                  start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 5 }
+                  start: { line: 1, column: 6 },
+                  end  : { line: 1, column: 6 }
                 }
               },
               args: {
@@ -5882,10 +5882,10 @@
               method: {
                 type: Syntax.Identifier,
                 name: "newFrom",
-                range: [ 5, 5 ],
+                range: [ 6, 6 ],
                 loc: {
-                  start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 5 }
+                  start: { line: 1, column: 6 },
+                  end  : { line: 1, column: 6 }
                 }
               },
               args: {

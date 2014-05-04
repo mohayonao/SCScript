@@ -2,7 +2,7 @@
   "use strict";
 
   require("./fn");
-  require("./klass-utils");
+  require("./klass/utils");
 
   var fn   = sc.lang.fn;
   var $SC  = sc.lang.$SC;

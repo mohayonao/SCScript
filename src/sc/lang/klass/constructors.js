@@ -1,11 +1,9 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
   require("./klass");
-  require("./dollarSC");
 
-  var $SC = sc.lang.$SC;
+  var $SC   = sc.lang.$SC;
   var klass = sc.lang.klass;
 
   function SCNil() {

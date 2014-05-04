@@ -2,8 +2,6 @@
   "use strict";
 
   require("./dollarSC");
-  require("./compiler");
-  require("./parser");
 
   var slice = [].slice;
   var $SC = sc.lang.$SC;

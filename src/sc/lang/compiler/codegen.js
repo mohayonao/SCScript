@@ -2,7 +2,7 @@
   "use strict";
 
   require("./sc");
-  require("./parser");
+  require("./scope");
 
   var codegen = {};
   var Syntax  = sc.lang.compiler.Syntax;
@@ -218,7 +218,7 @@
   CodeGen.prototype.throwError = function(obj, messageFormat) {
     var args, message;
 
-    args = Array.prototype.slice.call(arguments, 1);
+    args = Array.prototype.slice.call(arguments, 2);
     message = messageFormat.replace(/%(\d)/g, function(whole, index) {
       return args[index];
     });

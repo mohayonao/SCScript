@@ -3,7 +3,7 @@
 
   require("./sc");
   require("./dollarSC");
-  require("./klass-utils");
+  require("./klass/utils");
 
   var iterator = {};
   var $SC   = sc.lang.$SC;

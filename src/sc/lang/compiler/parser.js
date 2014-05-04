@@ -46,7 +46,7 @@
     "!"  : 12,
   };
 
-  var Scope = sc.lang.compiler.Scope({
+  var Scope = sc.lang.compiler.scope({
     begin: function() {
       var declared = this.getDeclaredVariable();
 
@@ -94,15 +94,27 @@
   };
 
   SCParser.prototype.expect = function(value) {
-    return this.lexer.expect(value);
+    var token = this.lexer.lex();
+    if (token.type !== Token.Punctuator || token.value !== value) {
+      this.throwUnexpected(token, value);
+    }
   };
 
   SCParser.prototype.match = function(value) {
-    return this.lexer.match(value);
+    return this.lexer.lookahead.value === value;
   };
 
   SCParser.prototype.matchAny = function(list) {
-    return this.lexer.matchAny(list);
+    var value, i, imax;
+
+    value = this.lexer.lookahead.value;
+    for (i = 0, imax = list.length; i < imax; ++i) {
+      if (list[i] === value) {
+        return value;
+      }
+    }
+
+    return null;
   };
 
   SCParser.prototype.throwError = function() {
@@ -110,7 +122,26 @@
   };
 
   SCParser.prototype.throwUnexpected = function(token) {
-    return this.lexer.throwUnexpected(token);
+    switch (token.type) {
+    case Token.EOF:
+      this.throwError(token, Message.UnexpectedEOS);
+      break;
+    case Token.FloatLiteral:
+    case Token.IntegerLiteral:
+      this.throwError(token, Message.UnexpectedNumber);
+      break;
+    case Token.CharLiteral:
+    case Token.StringLiteral:
+    case Token.SymbolLiteral:
+      this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
+      break;
+    case Token.Identifier:
+      this.throwError(token, Message.UnexpectedIdentifier);
+      break;
+    default:
+      this.throwError(token, Message.UnexpectedToken, token.value);
+      break;
+    }
   };
 
   SCParser.prototype.withScope = function(fn) {
@@ -375,7 +406,7 @@
         node = marker.update().apply(left, true);
       } else {
         if (!isLeftHandSide(left)) {
-          this.throwError({}, Message.InvalidLHSInAssignment);
+          this.throwError(left, Message.InvalidLHSInAssignment);
         }
 
         token = this.lex();
@@ -395,7 +426,7 @@
     do {
       element = this.parseLeftHandSideExpression();
       if (!isLeftHandSide(element)) {
-        this.throwError({}, Message.InvalidLHSInAssignment);
+        this.throwError(element, Message.InvalidLHSInAssignment);
       }
       params.list.push(element);
       if (this.match(",")) {
@@ -404,7 +435,7 @@
         this.lex();
         params.remain = this.parseLeftHandSideExpression();
         if (!isLeftHandSide(params.remain)) {
-          this.throwError({}, Message.InvalidLHSInAssignment);
+          this.throwError(params.remain, Message.InvalidLHSInAssignment);
         }
         break;
       }
@@ -1387,7 +1418,7 @@
   };
 
   SCParser.prototype.parseGeneratorInitialiser = function() {
-    this.throwError({}, Message.NotImplemented, "generator literal");
+    this.lexer.throwError({}, Message.NotImplemented, "generator literal");
 
     this.parseExpression();
     this.expect(",");
@@ -1581,9 +1612,6 @@
     instance = new SCParser(source, opts);
     ast = instance.parse();
 
-    if (!!opts.tokens && typeof instance.lexer.tokens !== "undefined") {
-      ast.tokens = instance.lexer.tokens;
-    }
     if (!!opts.tolerant && typeof instance.lexer.errors !== "undefined") {
       ast.errors = instance.lexer.errors;
     }
@@ -1591,6 +1619,6 @@
     return ast;
   };
 
-  sc.lang.parser = parser;
+  sc.lang.compiler.parser = parser;
 
 })(sc);

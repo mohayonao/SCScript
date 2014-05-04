@@ -2,13 +2,13 @@
   "use strict";
 
   require("./codegen");
-  require("./compiler_test");
+  require("./test-cases");
 
-  var codegen  = sc.lang.codegen;
+  var codegen  = sc.lang.compiler.codegen;
   var Syntax   = sc.lang.compiler.Syntax;
   var Token    = sc.lang.compiler.Message;
 
-  describe("sc.lang.codegen", function() {
+  describe("sc.lang.compiler.codegen", function() {
     function s(str) {
       str = JSON.stringify(str);
       return '"' + str.substr(1, str.length - 2) + '"';

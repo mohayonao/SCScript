@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.19" };
+var sc = { VERSION: "0.0.20" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -27,68 +27,62 @@ var sc = { VERSION: "0.0.19" };
 // src/sc/lang/compiler/compiler.js
 (function(sc) {
 
-  var compiler = {};
-
-  compiler.Token = {
-    CharLiteral: "Char",
-    EOF: "<EOF>",
-    FalseLiteral: "False",
-    FloatLiteral: "Float",
-    Identifier: "Identifier",
-    IntegerLiteral: "Integer",
-    Keyword: "Keyword",
-    Label: "Label",
-    NilLiteral: "Nil",
-    Punctuator: "Punctuator",
-    StringLiteral: "String",
-    SymbolLiteral: "Symbol",
-    TrueLiteral: "True"
-  };
-
-  compiler.Syntax = {
-    AssignmentExpression: "AssignmentExpression",
-    BinaryExpression: "BinaryExpression",
-    BlockExpression: "BlockExpression",
-    CallExpression: "CallExpression",
-    FunctionExpression: "FunctionExpression",
-    GlobalExpression: "GlobalExpression",
-    Identifier: "Identifier",
-    ListExpression: "ListExpression",
-    Label: "Label",
-    Literal: "Literal",
-    ObjectExpression: "ObjectExpression",
-    Program: "Program",
-    ThisExpression: "ThisExpression",
-    UnaryExpression: "UnaryExpression",
-    VariableDeclaration: "VariableDeclaration",
-    VariableDeclarator: "VariableDeclarator"
-  };
-
-  compiler.Message = {
-    ArgumentAlreadyDeclared: "argument '%0' already declared",
-    InvalidLHSInAssignment: "invalid left-hand side in assignment",
-    NotImplemented: "not implemented %0",
-    UnexpectedEOS: "unexpected end of input",
-    UnexpectedIdentifier: "unexpected identifier",
-    UnexpectedChar: "unexpected char",
-    UnexpectedLabel: "unexpected label",
-    UnexpectedNumber: "unexpected number",
-    UnexpectedString: "unexpected string",
-    UnexpectedSymbol: "unexpected symbol",
-    UnexpectedToken: "unexpected token %0",
-    VariableAlreadyDeclared: "variable '%0' already declared",
-    VariableNotDefined: "variable '%0' not defined"
-  };
-
-  compiler.Keywords = {
-    var: "keyword",
-    arg: "keyword",
-    const: "keyword",
-    this: "function",
-    thisThread: "function",
-    thisProcess: "function",
-    thisFunction: "function",
-    thisFunctionDef: "function",
+  var compiler = {
+    Token: {
+      CharLiteral: "Char",
+      EOF: "<EOF>",
+      FalseLiteral: "False",
+      FloatLiteral: "Float",
+      Identifier: "Identifier",
+      IntegerLiteral: "Integer",
+      Keyword: "Keyword",
+      Label: "Label",
+      NilLiteral: "Nil",
+      Punctuator: "Punctuator",
+      StringLiteral: "String",
+      SymbolLiteral: "Symbol",
+      TrueLiteral: "True"
+    },
+    Syntax: {
+      AssignmentExpression: "AssignmentExpression",
+      BinaryExpression: "BinaryExpression",
+      BlockExpression: "BlockExpression",
+      CallExpression: "CallExpression",
+      FunctionExpression: "FunctionExpression",
+      GlobalExpression: "GlobalExpression",
+      Identifier: "Identifier",
+      ListExpression: "ListExpression",
+      Label: "Label",
+      Literal: "Literal",
+      ObjectExpression: "ObjectExpression",
+      Program: "Program",
+      ThisExpression: "ThisExpression",
+      UnaryExpression: "UnaryExpression",
+      VariableDeclaration: "VariableDeclaration",
+      VariableDeclarator: "VariableDeclarator"
+    },
+    Message: {
+      ArgumentAlreadyDeclared: "argument '%0' already declared",
+      InvalidLHSInAssignment: "invalid left-hand side in assignment",
+      NotImplemented: "not implemented %0",
+      UnexpectedEOS: "unexpected end of input",
+      UnexpectedIdentifier: "unexpected identifier",
+      UnexpectedNumber: "unexpected number",
+      UnexpectedLiteral: "unexpected %0",
+      UnexpectedToken: "unexpected token %0",
+      VariableAlreadyDeclared: "variable '%0' already declared",
+      VariableNotDefined: "variable '%0' not defined"
+    },
+    Keywords: {
+      var: "keyword",
+      arg: "keyword",
+      const: "keyword",
+      this: "function",
+      thisThread: "function",
+      thisProcess: "function",
+      thisFunction: "function",
+      thisFunctionDef: "function",
+    }
   };
 
   sc.lang.compiler = compiler;
@@ -96,18 +90,15 @@ var sc = { VERSION: "0.0.19" };
   var SCScript = sc.SCScript;
 
   SCScript.tokenize = function(source, opts) {
-    opts = opts || /* istanbul ignore next */ {};
-    opts.tokens = true;
-    return sc.lang.parser.parse(source, opts).tokens || /* istanbul ignore next */ [];
+    return new compiler.lexer(source, opts).tokenize();
   };
 
   SCScript.parse = function(source, opts) {
-    return sc.lang.parser.parse(source, opts);
+    return compiler.parser.parse(source, opts);
   };
 
   SCScript.compile = function(source, opts) {
-    var ast = SCScript.parse(source, opts);
-    return sc.lang.codegen.compile(ast, opts);
+    return compiler.codegen.compile(SCScript.parse(source, opts), opts);
   };
 
 })(sc);
@@ -206,7 +197,7 @@ var sc = { VERSION: "0.0.19" };
     return this.stack[this.stack.length - 1];
   };
 
-  sc.lang.compiler.Scope = Scope;
+  sc.lang.compiler.scope = Scope;
 
 })(sc);
 
@@ -224,7 +215,7 @@ var sc = { VERSION: "0.0.19" };
     yield: true
   };
 
-  var Scope = sc.lang.compiler.Scope({
+  var Scope = sc.lang.compiler.scope({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
@@ -1015,7 +1006,7 @@ var sc = { VERSION: "0.0.19" };
     return new CodeGen(opts).generate(ast);
   };
 
-  sc.lang.codegen = codegen;
+  sc.lang.compiler.codegen = codegen;
 
 })(sc);
 
@@ -1279,6 +1270,9 @@ var sc = { VERSION: "0.0.19" };
       source = String(source);
     }
     source = source.replace(/\r\n?/g, "\n");
+
+    opts = opts || /* istanbul ignore next */ {};
+
     this.source = source;
     this.opts   = opts;
     this.length = source.length;
@@ -1286,8 +1280,7 @@ var sc = { VERSION: "0.0.19" };
     this.lineNumber = this.length ? 1 : 0;
     this.lineStart  = 0;
     this.reverted   = null;
-    this.tokens = opts.tokens   ? [] : null;
-    this.errors = opts.tolerant ? [] : null;
+    this.errors     = opts.tolerant ? [] : null;
 
     this.peek();
   }
@@ -1304,9 +1297,63 @@ var sc = { VERSION: "0.0.19" };
     return n - 87; // if (97 <= n && n <= 122)
   }
 
+  function isAlpha(ch) {
+    return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
+  }
+
   function isNumber(ch) {
     return "0" <= ch && ch <= "9";
   }
+
+  Lexer.prototype.tokenize = function() {
+    var tokens, token;
+
+    tokens = [];
+
+    while (true) {
+      token = this.collectToken();
+      if (token.type === Token.EOF) {
+        break;
+      }
+      tokens.push(token);
+    }
+
+    return tokens;
+  };
+
+  Lexer.prototype.collectToken = function() {
+    var loc, token, t;
+
+    this.skipComment();
+
+    loc = {
+      start: {
+        line  : this.lineNumber,
+        column: this.index - this.lineStart
+      }
+    };
+
+    token = this.advance();
+
+    loc.end = {
+      line  : this.lineNumber,
+      column: this.index - this.lineStart
+    };
+
+    t = {
+      type : token.type,
+      value: token.value
+    };
+
+    if (this.opts.range) {
+      t.range = token.range;
+    }
+    if (this.opts.loc) {
+      t.loc = loc;
+    }
+
+    return t;
+  };
 
   Lexer.prototype.skipComment = function() {
     var source = this.source;
@@ -1398,43 +1445,6 @@ var sc = { VERSION: "0.0.19" };
     return index;
   };
 
-  Lexer.prototype.collectToken = function() {
-    var loc, token, source, t;
-
-    this.skipComment();
-
-    loc = {
-      start: {
-        line: this.lineNumber,
-        column: this.index - this.lineStart
-      }
-    };
-
-    token = this.advance();
-
-    loc.end = {
-      line: this.lineNumber,
-      column: this.index - this.lineStart
-    };
-
-    if (token.type !== Token.EOF) {
-      source = this.source;
-      t = {
-        type: token.type,
-        value: source.slice(token.range[0], token.range[1])
-      };
-      if (this.opts.range) {
-        t.range = [ token.range[0], token.range[1] ];
-      }
-      if (this.opts.loc) {
-        t.loc = loc;
-      }
-      this.tokens.push(t);
-    }
-
-    return token;
-  };
-
   Lexer.prototype.advance = function() {
     var ch, token;
 
@@ -1446,22 +1456,21 @@ var sc = { VERSION: "0.0.19" };
 
     ch = this.source.charAt(this.index);
 
-    // Symbol literal starts with back slash
     if (ch === "\\") {
       return this.scanSymbolLiteral();
     }
+    if (ch === "'") {
+      return this.scanQuotedLiteral(Token.SymbolLiteral, ch);
+    }
 
-    // Char literal starts with dollar
     if (ch === "$") {
       return this.scanCharLiteral();
     }
 
-    // String literal starts with single quote or double quote
-    if (ch === "'" || ch === "\"") {
-      return this.scanStringLiteral();
+    if (ch === '"') {
+      return this.scanQuotedLiteral(Token.StringLiteral, ch);
     }
 
-    // for partial application
     if (ch === "_") {
       return this.scanUnderscore();
     }
@@ -1473,24 +1482,15 @@ var sc = { VERSION: "0.0.19" };
       }
     }
 
-    // Identifier starts with alphabet
-    if (("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z")) {
+    if (isAlpha(ch)) {
       return this.scanIdentifier();
     }
 
-    // Number literal starts with number
     if (isNumber(ch)) {
       return this.scanNumericLiteral();
     }
 
     return this.scanPunctuator();
-  };
-
-  Lexer.prototype.expect = function(value) {
-    var token = this.lex();
-    if (token.type !== Token.Punctuator || token.value !== value) {
-      this.throwUnexpected(token, value);
-    }
   };
 
   Lexer.prototype.peek = function() {
@@ -1500,11 +1500,7 @@ var sc = { VERSION: "0.0.19" };
     lineNumber = this.lineNumber;
     lineStart  = this.lineStart;
 
-    if (this.opts.tokens) {
-      this.lookahead = this.collectToken();
-    } else {
-      this.lookahead = this.advance();
-    }
+    this.lookahead = this.advance();
 
     this.index      = index;
     this.lineNumber = lineNumber;
@@ -1516,18 +1512,19 @@ var sc = { VERSION: "0.0.19" };
     var token = this.lookahead;
 
     if (saved) {
-      saved = [ this.lookahead, this.index, this.lineNumber, this.lineStart ];
+      saved = [
+        this.lookahead,
+        this.index,
+        this.lineNumber,
+        this.lineStart
+      ];
     }
 
     this.index      = token.range[1];
     this.lineNumber = token.lineNumber;
     this.lineStart  = token.lineStart;
 
-    if (this.opts.tokens) {
-      this.lookahead = this.collectToken();
-    } else {
-      this.lookahead = this.advance();
-    }
+    this.lookahead = this.advance();
 
     this.index      = token.range[1];
     this.lineNumber = token.lineNumber;
@@ -1539,23 +1536,24 @@ var sc = { VERSION: "0.0.19" };
         that.index      = saved[1];
         that.lineNumber = saved[2];
         that.lineStart  = saved[3];
-        if (that.tokens) {
-          that.tokens.pop();
-        }
       };
     }
 
     return token;
   };
 
-  Lexer.prototype.EOFToken = function() {
+  Lexer.prototype.makeToken = function(type, value, start) {
     return {
-      type: Token.EOF,
-      value: "<EOF>",
+      type : type,
+      value: value,
       lineNumber: this.lineNumber,
-      lineStart: this.lineStart,
-      range: [ this.index, this.index ]
+      lineStart : this.lineStart,
+      range: [ start, this.index ]
     };
+  };
+
+  Lexer.prototype.EOFToken = function() {
+    return this.makeToken(Token.EOF, "<EOF>", this.index);
   };
 
   Lexer.prototype.scanCharLiteral = function() {
@@ -1566,13 +1564,7 @@ var sc = { VERSION: "0.0.19" };
 
     this.index += 2;
 
-    return {
-      type : Token.CharLiteral,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
-    };
+    return this.makeToken(Token.CharLiteral, value, start);
   };
 
   Lexer.prototype.scanIdentifier = function() {
@@ -1586,13 +1578,7 @@ var sc = { VERSION: "0.0.19" };
 
     if (this.source.charAt(this.index) === ":") {
       this.index += 1;
-      return {
-        type: Token.Label,
-        value: value,
-        lineNumber: this.lineNumber,
-        lineStart: this.lineStart,
-        range: [ start, this.index ]
-      };
+      return this.makeToken(Token.Label, value, start);
     } else if (this.isKeyword(value)) {
       type = Token.Keyword;
     } else {
@@ -1621,13 +1607,7 @@ var sc = { VERSION: "0.0.19" };
       }
     }
 
-    return {
-      type: type,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart: this.lineStart,
-      range: [ start, this.index ]
-    };
+    return this.makeToken(type, value, start);
   };
 
   Lexer.prototype.scanNumericLiteral = function(neg) {
@@ -1660,48 +1640,13 @@ var sc = { VERSION: "0.0.19" };
     }
 
     if (value !== null) {
-      return {
-        type : Token.FloatLiteral,
-        value: value,
-        lineNumber: this.lineNumber,
-        lineStart : this.lineStart,
-        range: [ start, this.index ]
-      };
+      return this.makeToken(Token.FloatLiteral, value, start);
     }
 
     return null;
   };
 
-  Lexer.prototype.scanNAryNumberLiteral = function(neg) {
-    var re, start, items;
-    var base, integer, frac, pi;
-    var value, type;
-
-    re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
-
-    if (!items) {
-      return;
-    }
-
-    base    = items[1].replace(/^0+(?=\d)/g, "")|0;
-    integer = items[2].replace(/(^0+(?=\d)|_)/g, "");
-    frac    = items[3] && items[3].replace(/_/g, "");
-
-    if (!frac && base < 26 && integer.substr(-2) === "pi") {
-      integer = integer.substr(0, integer.length - 2);
-      pi = true;
-    }
-
-    type  = Token.IntegerLiteral;
-    value = this.calcNBasedInteger(integer, base);
-
-    if (frac) {
-      type = Token.FloatLiteral;
-      value += this.calcNBasedFrac(frac, base);
-    }
-
+  var makeNumberToken = function(type, value, neg, pi) {
     if (neg) {
       value *= -1;
     }
@@ -1717,15 +1662,48 @@ var sc = { VERSION: "0.0.19" };
       value = String(value);
     }
 
-    this.index += items[0].length;
-
     return {
       type : type,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
+      value: value
     };
+  };
+
+  Lexer.prototype.scanNAryNumberLiteral = function(neg) {
+    var re, start, items;
+    var base, integer, frac, pi;
+    var value, type;
+    var token;
+
+    re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (!items) {
+      return;
+    }
+
+    base    = items[1].replace(/^0+(?=\d)/g, "")|0;
+    integer = items[2].replace(/(^0+(?=\d)|_)/g, "");
+    frac    = items[3] && items[3].replace(/_/g, "");
+
+    if (!frac && base < 26 && integer.substr(-2) === "pi") {
+      integer = integer.slice(0, -2);
+      pi = true;
+    }
+
+    type  = Token.IntegerLiteral;
+    value = this.calcNBasedInteger(integer, base);
+
+    if (frac) {
+      type = Token.FloatLiteral;
+      value += this.calcNBasedFrac(frac, base);
+    }
+
+    token = makeNumberToken(type, value, neg, pi);
+
+    this.index += items[0].length;
+
+    return this.makeToken(token.type, token.value, start);
   };
 
   Lexer.prototype.char2num = function(ch, base) {
@@ -1760,6 +1738,7 @@ var sc = { VERSION: "0.0.19" };
   Lexer.prototype.scanDecimalNumberLiteral = function(neg) {
     var re, start, items, integer, frac, pi;
     var value, type;
+    var token;
 
     re = /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/;
     start = this.index;
@@ -1772,29 +1751,11 @@ var sc = { VERSION: "0.0.19" };
     type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
     value = +integer.replace(/(^0+(?=\d)|_)/g, "");
 
-    if (neg) {
-      value *= -1;
-    }
-
-    if (pi) {
-      value = value * Math.PI;
-    }
-
-    if (type === Token.FloatLiteral && value === (value|0)) {
-      value = value + ".0";
-    } else {
-      value = String(value);
-    }
+    token = makeNumberToken(type, value, neg, pi);
 
     this.index += items[0].length;
 
-    return {
-      type : type,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
-    };
+    return this.makeToken(token.type, token.value, start);
   };
 
   Lexer.prototype.scanPunctuator = function() {
@@ -1806,13 +1767,7 @@ var sc = { VERSION: "0.0.19" };
 
     if (items) {
       this.index += items[0].length;
-      return {
-        type : Token.Punctuator,
-        value: items[0],
-        lineNumber: this.lineNumber,
-        lineStart : this.lineStart,
-        range: [ start, this.index ]
-      };
+      return this.makeToken(Token.Punctuator, items[0], start);
     }
 
     this.throwError({}, Message.UnexpectedToken, this.source.charAt(this.index));
@@ -1822,32 +1777,28 @@ var sc = { VERSION: "0.0.19" };
     return this.EOFToken();
   };
 
-  Lexer.prototype.scanStringLiteral = function() {
-    var source, start;
-    var length, index;
-    var quote, ch, value, type;
+  Lexer.prototype.scanQuotedLiteral = function(type, quote) {
+    var start, value;
+    start = this.index;
+    value = this._scanQuotedLiteral(quote);
+    return value ? this.makeToken(type, value, start) : this.EOFToken();
+  };
+
+  Lexer.prototype._scanQuotedLiteral = function(quote) {
+    var source, length, index, start, value, ch;
 
     source = this.source;
     length = this.length;
-    index  = start = this.index;
-    quote  = source.charAt(start);
-    type   = (quote === '"') ? Token.StringLiteral : Token.SymbolLiteral;
+    index  = this.index + 1;
+    start  = index;
+    value  = null;
 
-    index += 1;
     while (index < length) {
       ch = source.charAt(index);
       index += 1;
       if (ch === quote) {
-        value = source.substr(start + 1, index - start - 2);
-        value = value.replace(/\n/g, "\\n");
-        this.index = index;
-        return {
-          type : type,
-          value: value,
-          lineNumber: this.lineNumber,
-          lineStart : this.lineStart,
-          range: [ start, this.index ]
-        };
+        value = source.substr(start, index - start - 1).replace(/\n/g, "\\n");
+        break;
       } else if (ch === "\n") {
         this.lineNumber += 1;
         this.lineStart = index;
@@ -1857,9 +1808,12 @@ var sc = { VERSION: "0.0.19" };
     }
 
     this.index = index;
-    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
 
-    return this.EOFToken();
+    if (!value) {
+      this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+    }
+
+    return value;
   };
 
   Lexer.prototype.scanSymbolLiteral = function() {
@@ -1874,13 +1828,7 @@ var sc = { VERSION: "0.0.19" };
 
     this.index += items[0].length;
 
-    return {
-      type : Token.SymbolLiteral,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
-    };
+    return this.makeToken(Token.SymbolLiteral, value, start);
   };
 
   Lexer.prototype.scanUnderscore = function() {
@@ -1888,34 +1836,11 @@ var sc = { VERSION: "0.0.19" };
 
     this.index += 1;
 
-    return {
-      type: Token.Identifier,
-      value: "_",
-      lineNumber: this.lineNumber,
-      lineStart: this.lineStart,
-      range: [ start, this.index ]
-    };
+    return this.makeToken(Token.Identifier, "_", start);
   };
 
   Lexer.prototype.isKeyword = function(value) {
     return !!Keywords[value] || false;
-  };
-
-  Lexer.prototype.match = function(value) {
-    return this.lookahead.value === value;
-  };
-
-  Lexer.prototype.matchAny = function(list) {
-    var value, i, imax;
-
-    value = this.lookahead.value;
-    for (i = 0, imax = list.length; i < imax; ++i) {
-      if (list[i] === value) {
-        return value;
-      }
-    }
-
-    return null;
   };
 
   Lexer.prototype.getLocItems = function() {
@@ -1933,19 +1858,19 @@ var sc = { VERSION: "0.0.19" };
     });
 
     if (typeof token.lineNumber === "number") {
-      index = token.range[0];
+      index      = token.range[0];
       lineNumber = token.lineNumber;
-      column = token.range[0] - token.lineStart + 1;
+      column     = token.range[0] - token.lineStart + 1;
     } else {
-      index = this.index;
+      index      = this.index;
       lineNumber = this.lineNumber;
-      column = this.index - this.lineStart + 1;
+      column     = index - this.lineStart + 1;
     }
 
     error = new Error("Line " + lineNumber + ": " + message);
-    error.index = index;
-    error.lineNumber = lineNumber;
-    error.column = column;
+    error.index       = index;
+    error.lineNumber  = lineNumber;
+    error.column      = column;
     error.description = message;
 
     if (this.errors) {
@@ -1955,33 +1880,6 @@ var sc = { VERSION: "0.0.19" };
       }
     } else {
       throw error;
-    }
-  };
-
-  Lexer.prototype.throwUnexpected = function(token) {
-    switch (token.type) {
-    case Token.EOF:
-      this.throwError(token, Message.UnexpectedEOS);
-      break;
-    case Token.FloatLiteral:
-    case Token.IntegerLiteral:
-      this.throwError(token, Message.UnexpectedNumber);
-      break;
-    case Token.CharLiteral:
-      this.throwError(token, Message.UnexpectedChar);
-      break;
-    case Token.StringLiteral:
-      this.throwError(token, Message.UnexpectedString);
-      break;
-    case Token.SymbolLiteral:
-      this.throwError(token, Message.UnexpectedSymbol);
-      break;
-    case Token.Identifier:
-      this.throwError(token, Message.UnexpectedIdentifier);
-      break;
-    default:
-      this.throwError(token, Message.UnexpectedToken, token.value);
-      break;
     }
   };
 
@@ -2030,7 +1928,7 @@ var sc = { VERSION: "0.0.19" };
     "!"  : 12,
   };
 
-  var Scope = sc.lang.compiler.Scope({
+  var Scope = sc.lang.compiler.scope({
     begin: function() {
       var declared = this.getDeclaredVariable();
 
@@ -2078,15 +1976,27 @@ var sc = { VERSION: "0.0.19" };
   };
 
   SCParser.prototype.expect = function(value) {
-    return this.lexer.expect(value);
+    var token = this.lexer.lex();
+    if (token.type !== Token.Punctuator || token.value !== value) {
+      this.throwUnexpected(token, value);
+    }
   };
 
   SCParser.prototype.match = function(value) {
-    return this.lexer.match(value);
+    return this.lexer.lookahead.value === value;
   };
 
   SCParser.prototype.matchAny = function(list) {
-    return this.lexer.matchAny(list);
+    var value, i, imax;
+
+    value = this.lexer.lookahead.value;
+    for (i = 0, imax = list.length; i < imax; ++i) {
+      if (list[i] === value) {
+        return value;
+      }
+    }
+
+    return null;
   };
 
   SCParser.prototype.throwError = function() {
@@ -2094,7 +2004,26 @@ var sc = { VERSION: "0.0.19" };
   };
 
   SCParser.prototype.throwUnexpected = function(token) {
-    return this.lexer.throwUnexpected(token);
+    switch (token.type) {
+    case Token.EOF:
+      this.throwError(token, Message.UnexpectedEOS);
+      break;
+    case Token.FloatLiteral:
+    case Token.IntegerLiteral:
+      this.throwError(token, Message.UnexpectedNumber);
+      break;
+    case Token.CharLiteral:
+    case Token.StringLiteral:
+    case Token.SymbolLiteral:
+      this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
+      break;
+    case Token.Identifier:
+      this.throwError(token, Message.UnexpectedIdentifier);
+      break;
+    default:
+      this.throwError(token, Message.UnexpectedToken, token.value);
+      break;
+    }
   };
 
   SCParser.prototype.withScope = function(fn) {
@@ -2359,7 +2288,7 @@ var sc = { VERSION: "0.0.19" };
         node = marker.update().apply(left, true);
       } else {
         if (!isLeftHandSide(left)) {
-          this.throwError({}, Message.InvalidLHSInAssignment);
+          this.throwError(left, Message.InvalidLHSInAssignment);
         }
 
         token = this.lex();
@@ -2379,7 +2308,7 @@ var sc = { VERSION: "0.0.19" };
     do {
       element = this.parseLeftHandSideExpression();
       if (!isLeftHandSide(element)) {
-        this.throwError({}, Message.InvalidLHSInAssignment);
+        this.throwError(element, Message.InvalidLHSInAssignment);
       }
       params.list.push(element);
       if (this.match(",")) {
@@ -2388,7 +2317,7 @@ var sc = { VERSION: "0.0.19" };
         this.lex();
         params.remain = this.parseLeftHandSideExpression();
         if (!isLeftHandSide(params.remain)) {
-          this.throwError({}, Message.InvalidLHSInAssignment);
+          this.throwError(params.remain, Message.InvalidLHSInAssignment);
         }
         break;
       }
@@ -3370,7 +3299,7 @@ var sc = { VERSION: "0.0.19" };
   };
 
   SCParser.prototype.parseGeneratorInitialiser = function() {
-    this.throwError({}, Message.NotImplemented, "generator literal");
+    this.lexer.throwError({}, Message.NotImplemented, "generator literal");
 
     this.parseExpression();
     this.expect(",");
@@ -3564,9 +3493,6 @@ var sc = { VERSION: "0.0.19" };
     instance = new SCParser(source, opts);
     ast = instance.parse();
 
-    if (!!opts.tokens && typeof instance.lexer.tokens !== "undefined") {
-      ast.tokens = instance.lexer.tokens;
-    }
     if (!!opts.tolerant && typeof instance.lexer.errors !== "undefined") {
       ast.errors = instance.lexer.errors;
     }
@@ -3574,7 +3500,7 @@ var sc = { VERSION: "0.0.19" };
     return ast;
   };
 
-  sc.lang.parser = parser;
+  sc.lang.compiler.parser = parser;
 
 })(sc);
 

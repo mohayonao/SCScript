@@ -15,7 +15,7 @@
     yield: true
   };
 
-  var Scope = sc.lang.compiler.Scope({
+  var Scope = sc.lang.compiler.scope({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
@@ -807,6 +807,6 @@
     return new CodeGen(opts).generate(ast);
   };
 
-  sc.lang.codegen = codegen;
+  sc.lang.compiler.codegen = codegen;
 
 })(sc);

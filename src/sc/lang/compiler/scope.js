@@ -94,6 +94,6 @@
     return this.stack[this.stack.length - 1];
   };
 
-  sc.lang.compiler.Scope = Scope;
+  sc.lang.compiler.scope = Scope;
 
 })(sc);

@@ -1,0 +1,33 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>SCScript</title>
+    <style>
+      * {
+        margin: 0; padding: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="../assets/codemirror.css"/>
+    <link rel="stylesheet" href="./sc-mode.css"/>
+    <style>
+      .CodeMirror {
+        font-family: Monaco, Consolas, "Lucida Console", monospace;
+        font-size: 14px;
+        height: 100%
+      }
+      @-webkit-keyframes blink {
+        5% { background-color: #a0d8ef; }
+      100% { background-color: #ffffff; }
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="editor"></textarea>
+    <script src="../assets/codemirror.js"></script>
+    <script src="../assets/matchbrackets.js"></script>
+    <script src="../build/scscript.js"></script>
+    <script src="./sc-mode.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>

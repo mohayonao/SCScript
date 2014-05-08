@@ -133,6 +133,11 @@
     __tag: sc.C.TAG_FUNCTION
   });
 
+  function SCInterpreter() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCInterpreter, "Interpreter");
+
   // $SC
   var $nil      = new SCNil();
   var $true     = new SCTrue();
@@ -234,5 +239,7 @@
     instance._ = value;
     return instance;
   };
+
+  sc.lang.klass.$interpreter = new SCInterpreter();
 
 })(sc);

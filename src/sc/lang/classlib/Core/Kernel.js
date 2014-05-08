@@ -3,6 +3,8 @@
 
   require("./Object");
 
+  var fn  = sc.lang.fn;
+
   sc.lang.klass.refine("Class", {
     // TODO: implements superclass
     // TODO: implements asClass
@@ -33,6 +35,45 @@
     // TODO: implements $findAllReferences
     // TODO: implements allSubclasses
     // TODO: implements superclasses
+  });
+
+  sc.lang.klass.refine("Interpreter", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    (function() {
+      var i, ch;
+
+      function getter(name) {
+        return function() {
+          return this["_" + name] || $nil;
+        };
+      }
+
+      function setter(name) {
+        return fn(function(value) {
+          this["_" + name] = value;
+          return this;
+        }, "value");
+      }
+
+      for (i = 97; i <= 122; i++) {
+        ch = String.fromCharCode(i);
+        spec[ch] = getter(ch);
+        spec[ch + "_"] = setter(ch);
+      }
+    })();
+
+    spec.$new = function() {
+      throw new Error("Interpreter.new is illegal.");
+    };
+
+    spec.clearAll = function() {
+      var i;
+      for (i = 97; i <= 122; i++) {
+        this["_" + String.fromCharCode(i)] = $nil;
+      }
+      return this;
+    };
   });
 
 })(sc);

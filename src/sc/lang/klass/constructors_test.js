@@ -103,8 +103,17 @@
     });
     it("Function should return an instance of SCFunction", function() {
       var a;
+
+      a = $SC.Function(function() {}, "a");
+      expect(a).to.be.a("SCFunction");
+
       a = $SC.Function(function() {});
       expect(a).to.be.a("SCFunction");
+    });
+    it("Ref should return an instance of SCRef", function() {
+      var a;
+      a = $SC.Ref($SC.Integer(10));
+      expect(a._value).to.be.a("SCInteger").that.equals(10);
     });
   });
 

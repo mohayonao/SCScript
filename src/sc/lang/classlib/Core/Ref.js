@@ -4,14 +4,8 @@
   require("./Object");
 
   var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
 
-  function SCRef(args) {
-    this.__initializeWith__("Object");
-    this._value = args[0] || $SC.Nil();
-  }
-
-  sc.lang.klass.define(SCRef, "Ref : AbstractFunction", function(spec, utils) {
+  sc.lang.klass.refine("Ref", function(spec, utils) {
     spec.valueOf = function() {
       return this._value.valueOf();
     };

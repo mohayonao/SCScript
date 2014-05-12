@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">125.19</p>
+      <p class="stat">124.92</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">182</p>
+      <p class="stat">173</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">19.75</p>
+      <p class="stat">17.75</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.59</p>
+      <p class="stat">1.51</p>
     </div>
   </div>
 </div>
@@ -96,9 +96,12 @@
   require(&quot;./Object&quot;);
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine(&quot;Nil&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
     spec.__num__ = function() {
       return 0;
     };
@@ -119,8 +122,8 @@
       throw new Error(&quot;Nil.new is illegal, should use literal.&quot;);
     };
 
-    spec.isNil = utils.alwaysReturn$True;
-    spec.notNil = utils.alwaysReturn$False;
+    spec.isNil = utils.alwaysReturn$true;
+    spec.notNil = utils.alwaysReturn$false;
 
     spec[&quot;?&quot;] = function($obj) {
       return $obj;
@@ -132,18 +135,16 @@
 
     spec[&quot;!?&quot;] = utils.nop;
 
-    spec.asBoolean = utils.alwaysReturn$False;
-    spec.booleanValue = utils.alwaysReturn$False;
+    spec.asBoolean = utils.alwaysReturn$false;
+    spec.booleanValue = utils.alwaysReturn$false;
 
-    spec.push = function($function) {
-      $function = utils.defaultValue$Nil($function);
+    spec.push = fn(function($function) {
       return $function.value();
-    };
+    }, &quot;function&quot;);
 
-    spec.appendStream = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.appendStream = fn(function($stream) {
       return $stream;
-    };
+    }, &quot;stream&quot;);
 
     spec.pop = utils.nop;
     spec.source = utils.nop;
@@ -151,7 +152,7 @@
 
     spec.rate = utils.nop;
     spec.numChannels = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$False;
+    spec.isPlaying = utils.alwaysReturn$false;
 
     spec.do = utils.nop;
     spec.reverseDo = utils.nop;
@@ -165,7 +166,7 @@
     spec.rejectAs = utils.nop;
 
     spec.dependants = function() {
-      return $SC.Class(&quot;IdentitySet&quot;).new();
+      return $SC(&quot;IdentitySet&quot;).new();
     };
 
     spec.changed = utils.nop;
@@ -174,60 +175,51 @@
     spec.release = utils.nop;
     spec.update = utils.nop;
 
-    spec.transformEvent = function($event) {
-      $event = utils.defaultValue$Nil($event);
+    spec.transformEvent = fn(function($event) {
       return $event;
-    };
+    }, &quot;event&quot;);
 
-    spec.awake = utils.alwaysReturn$Nil;
+    spec.awake = utils.alwaysReturn$nil;
 
     spec.play = utils.nop;
 
-    spec.nextTimeOnGrid = function($clock) {
-      $clock = utils.defaultValue$Nil($clock);
-
-      if ($clock === utils.nilInstance) {
+    spec.nextTimeOnGrid = fn(function($clock) {
+      if ($clock === $nil) {
         return $clock;
       }
-
       return $SC.Function(function() {
         return $clock.nextTimeOnGrid();
       });
-    };
+    }, &quot;clock&quot;);
 
     spec.asQuant = function() {
-      return $SC.Class(&quot;Quant&quot;).default();
+      return $SC(&quot;Quant&quot;).default();
     };
 
     spec.swapThisGroup = utils.nop;
     spec.performMsg = utils.nop;
 
-    spec.printOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.printOn = fn(function($stream) {
       $stream.putAll($SC.String(&quot;nil&quot;));
       return this;
-    };
+    }, &quot;stream&quot;);
 
-    spec.storeOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.storeOn = fn(function($stream) {
       $stream.putAll($SC.String(&quot;nil&quot;));
       return this;
-    };
+    }, &quot;stream&quot;);
 
-    spec.matchItem = utils.alwaysReturn$True;
+    spec.matchItem = utils.alwaysReturn$true;
 
-    spec.add = function($value) {
-      $value = utils.defaultValue$Nil($value);
+    spec.add = fn(function($value) {
       return $SC.Array([ $value ]);
-    };
+    }, &quot;value&quot;);
 
-    spec.addAll = function($array) {
-      $array = utils.defaultValue$Nil($array);
+    spec.addAll = fn(function($array) {
       return $array.asArray();
-    };
+    }, &quot;array&quot;);
 
     spec[&quot;++&quot;] = function($array) {
-      $array = utils.defaultValue$Nil($array);
       return $array.asArray();
     };
 
@@ -239,17 +231,16 @@
 
     spec.set = utils.nop;
 
-    spec.get = function($prevVal) {
-      $prevVal = utils.defaultValue$Nil($prevVal);
+    spec.get = fn(function($prevVal) {
       return $prevVal;
-    };
+    }, &quot;prevVal&quot;);
 
     spec.addFunc = function() {
       var functions = slice.call(arguments);
       if (functions.length &lt;= 1) {
         return functions[0];
       }
-      return $SC.Class(&quot;FunctionList&quot;).new($SC.Array(functions));
+      return $SC(&quot;FunctionList&quot;).new($SC.Array(functions));
     };
 
     spec.removeFunc = utils.nop;
@@ -260,10 +251,10 @@
 
     // TODO: implements handleError
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.asSpec = function() {
-      return $SC.Class(&quot;ControlSpec&quot;).new();
+      return $SC(&quot;ControlSpec&quot;).new();
     };
 
     spec.superclassesDo = utils.nop;

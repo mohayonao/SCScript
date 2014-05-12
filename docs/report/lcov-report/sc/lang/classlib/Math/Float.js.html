@@ -199,7 +199,7 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Math/Float.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(67 / 67)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(62 / 62)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(18 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
@@ -208,7 +208,7 @@
         Functions: <span class="metric">100% <small>(16 / 16)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(67 / 67)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(62 / 62)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -418,20 +418,13 @@
 200
 201
 202
-203
-204
-205
-206
-207
-208
-209
-210
-211</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+203</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
@@ -508,9 +501,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11</span>
 <span class="cline-any cline-yes">1</span>
@@ -525,9 +515,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11</span>
 <span class="cline-any cline-yes">1</span>
@@ -542,9 +529,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-yes">11</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11</span>
 <span class="cline-any cline-yes">1</span>
@@ -642,9 +626,10 @@
   require("./SimpleNumber");
   require("./bop");
 &nbsp;
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
-  var mathlib = sc.libs.mathlib;
+  var mathlib  = sc.libs.mathlib;
 &nbsp;
   sc.lang.klass.refine("Float", function(spec, utils) {
     spec.toString = function() {
@@ -667,7 +652,7 @@
       throw new Error("Float.new is illegal, should use literal.");
     };
 &nbsp;
-    spec.isFloat = utils.alwaysReturn$True;
+    spec.isFloat = utils.alwaysReturn$true;
     spec.asFloat = utils.nop;
 &nbsp;
     [
@@ -717,10 +702,7 @@
       spec[items[0]] = sc.lang.classlib.bop.apply(null, items);
     });
 &nbsp;
-    spec.clip = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-&nbsp;
+    spec.clip = fn(function($lo, $hi) {
       // &lt;-- _ClipFloat --&gt;
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -732,12 +714,9 @@
       return $SC.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 &nbsp;
-    spec.wrap = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-&nbsp;
+    spec.wrap = fn(function($lo, $hi) {
       // &lt;-- _WrapInt --&gt;
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -749,12 +728,9 @@
       return $SC.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 &nbsp;
-    spec.fold = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-&nbsp;
+    spec.fold = fn(function($lo, $hi) {
       // &lt;-- _FoldFloat --&gt;
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -766,7 +742,7 @@
       return $SC.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 &nbsp;
     // TODO: implements coin
     // TODO: implements xrand2
@@ -798,23 +774,23 @@
       );
     };
 &nbsp;
-    spec.$from32Bits = function($word) {
+    spec.$from32Bits = fn(function($word) {
       // &lt;-- _From32Bits --&gt;
       return $SC.Float(
         new Float32Array(
           new Int32Array([ $word.__num__() ]).buffer
         )[0]
       );
-    };
+    }, "word");
 &nbsp;
-    spec.$from64Bits = function($hiWord, $loWord) {
+    spec.$from64Bits = fn(function($hiWord, $loWord) {
       // &lt;-- _From64Bits --&gt;
       return $SC.Float(
         new Float64Array(
           new Int32Array([ $loWord.__num__(), $hiWord.__num__() ]).buffer
         )[0]
       );
-    };
+    }, "hiWord; loWord");
 &nbsp;
     spec.do = function($function) {
       iterator.execute(
@@ -851,7 +827,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Apr 30 2014 07:04:21 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue May 13 2014 07:34:22 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

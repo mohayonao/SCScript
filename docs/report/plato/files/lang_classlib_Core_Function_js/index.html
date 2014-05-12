@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">128.43</p>
+      <p class="stat">128.69</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">141</p>
+      <p class="stat">138</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">28.23</p>
+      <p class="stat">27.28</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.85</p>
+      <p class="stat">0.83</p>
     </div>
   </div>
 </div>
@@ -96,11 +96,13 @@
   require(&quot;./AbstractFunction&quot;);
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine(&quot;Function&quot;, function(spec, utils) {
-    var bool = utils.bool;
-    var SCArray = $SC.Class(&quot;Array&quot;);
+    var BOOL = utils.BOOL;
+    var $nil = utils.$nil;
+    var SCArray = $SC(&quot;Array&quot;);
 
     // TODO: implements def
 
@@ -108,12 +110,12 @@
       throw new Error(&quot;Function.new is illegal, should use literal.&quot;);
     };
 
-    spec.isFunction = utils.alwaysReturn$True;
+    spec.isFunction = utils.alwaysReturn$true;
 
     // TODO: implements isClosed
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
-    spec.archiveAsObject = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    spec.archiveAsObject = utils.alwaysReturn$true;
 
     // TODO: implements checkCanArchive
 
@@ -132,7 +134,6 @@
     };
 
     spec.valueArray = function($args) {
-      $args = utils.defaultValue$Nil($args);
       return this._.apply(this, $args.asArray()._);
     };
 
@@ -149,13 +150,12 @@
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $SC.Class(&quot;Routine&quot;).new(this);
+      return $SC(&quot;Routine&quot;).new(this);
     };
 
-    spec.dup = function($n) {
-      $n = utils.defaultValue$Integer($n, 2);
+    spec.dup = fn(function($n) {
       return SCArray.fill($n, this);
-    };
+    }, &quot;n=2&quot;);
 
     // TODO: implements sum
     // TODO: implements defer
@@ -180,7 +180,7 @@
       args.unshift(this);
 
       for (i = 0, imax = args.length &gt;&gt; 1; i &lt; imax; ++i) {
-        if (bool(args[i * 2].value())) {
+        if (BOOL(args[i * 2].value())) {
           return args[i * 2 + 1].value();
         }
       }
@@ -189,15 +189,15 @@
         return args[args.length - 1].value();
       }
 
-      return utils.nilInstance;
+      return $nil;
     };
 
     spec.r = function() {
-      return $SC.Class(&quot;Routine&quot;).new(this);
+      return $SC(&quot;Routine&quot;).new(this);
     };
 
     spec.p = function() {
-      return $SC.Class(&quot;Prout&quot;).new(this);
+      return $SC(&quot;Prout&quot;).new(this);
     };
 
     // TODO: implements matchItem
@@ -218,16 +218,13 @@
     // TODO: implements makeFlopFunc
     // TODO: implements inEnvir
 
-    spec.while = function($body) {
-      $body = utils.defaultValue$Nil($body);
-
+    spec.while = fn(function($body) {
       sc.lang.iterator.execute(
         sc.lang.iterator.function$while(this),
         $body
       );
-
       return this;
-    };
+    }, &quot;body&quot;);
   });
 
 })(sc);</textarea>

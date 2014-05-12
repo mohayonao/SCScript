@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">137.61</p>
+      <p class="stat">131.95</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">38</p>
+      <p class="stat">79</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">2.67</p>
+      <p class="stat">19.65</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.02</p>
+      <p class="stat">0.29</p>
     </div>
   </div>
 </div>
@@ -94,6 +94,8 @@
   &quot;use strict&quot;;
 
   require(&quot;./Object&quot;);
+
+  var fn  = sc.lang.fn;
 
   sc.lang.klass.refine(&quot;Class&quot;, {
     // TODO: implements superclass
@@ -125,6 +127,45 @@
     // TODO: implements $findAllReferences
     // TODO: implements allSubclasses
     // TODO: implements superclasses
+  });
+
+  sc.lang.klass.refine(&quot;Interpreter&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
+    (function() {
+      var i, ch;
+
+      function getter(name) {
+        return function() {
+          return this[&quot;_&quot; + name] || $nil;
+        };
+      }
+
+      function setter(name) {
+        return fn(function(value) {
+          this[&quot;_&quot; + name] = value;
+          return this;
+        }, &quot;value&quot;);
+      }
+
+      for (i = 97; i &lt;= 122; i++) {
+        ch = String.fromCharCode(i);
+        spec[ch] = getter(ch);
+        spec[ch + &quot;_&quot;] = setter(ch);
+      }
+    })();
+
+    spec.$new = function() {
+      throw new Error(&quot;Interpreter.new is illegal.&quot;);
+    };
+
+    spec.clearAll = function() {
+      var i;
+      for (i = 97; i &lt;= 122; i++) {
+        this[&quot;_&quot; + String.fromCharCode(i)] = $nil;
+      }
+      return this;
+    };
   });
 
 })(sc);</textarea>

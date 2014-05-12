@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">133.77</p>
+      <p class="stat">134.11</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">116</p>
+      <p class="stat">114</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,7 +63,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">18.33</p>
+      <p class="stat">17.19</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
@@ -95,6 +95,7 @@
 
   require(&quot;./Object&quot;);
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine(&quot;Boolean&quot;, function(spec, utils) {
@@ -132,7 +133,7 @@
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.while = function() {
       var msg = &quot;While was called with a fixed (unchanging) Boolean as the condition. &quot;;
@@ -148,12 +149,11 @@
       throw new Error(&quot;True.new is illegal, should use literal.&quot;);
     };
 
-    spec.if = function($trueFunc) {
-      $trueFunc = utils.defaultValue$Nil($trueFunc);
+    spec.if = fn(function($trueFunc) {
       return $trueFunc.value();
-    };
+    }, &quot;trueFunc&quot;);
 
-    spec.not = utils.alwaysReturn$False;
+    spec.not = utils.alwaysReturn$false;
 
     spec[&quot;&amp;&amp;&quot;] = function($that) {
       return $that.value();
@@ -161,19 +161,18 @@
 
     spec[&quot;||&quot;] = utils.nop;
 
-    spec.and = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.and = fn(function($that) {
       return $that.value();
-    };
+    }, &quot;that&quot;);
+
     spec.or = spec[&quot;||&quot;];
 
-    spec.nand = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.nand = fn(function($that) {
       return $that.value().not();
-    };
+    }, &quot;that&quot;);
 
-    spec.asInteger = utils.alwaysReturn$Integer_1;
-    spec.binaryValue = utils.alwaysReturn$Integer_1;
+    spec.asInteger = utils.alwaysReturn$int_1;
+    spec.binaryValue = utils.alwaysReturn$int_1;
   });
 
   sc.lang.klass.refine(&quot;False&quot;, function(spec, utils) {
@@ -181,11 +180,11 @@
       throw new Error(&quot;False.new is illegal, should use literal.&quot;);
     };
 
-    spec.if = function($trueFunc, $falseFunc) {
+    spec.if = fn(function($trueFunc, $falseFunc) {
       return $falseFunc.value();
-    };
+    }, &quot;trueFunc; falseFunc&quot;);
 
-    spec.not = utils.alwaysReturn$True;
+    spec.not = utils.alwaysReturn$true;
 
     spec[&quot;&amp;&amp;&quot;] = utils.nop;
 
@@ -195,14 +194,13 @@
 
     spec.and = utils.nop;
 
-    spec.or = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.or = fn(function($that) {
       return $that.value();
-    };
+    }, &quot;that&quot;);
 
-    spec.nand = utils.alwaysReturn$True;
-    spec.asInteger = utils.alwaysReturn$Integer_0;
-    spec.binaryValue = utils.alwaysReturn$Integer_0;
+    spec.nand = utils.alwaysReturn$true;
+    spec.asInteger = utils.alwaysReturn$int_0;
+    spec.binaryValue = utils.alwaysReturn$int_0;
   });
 
 })(sc);</textarea>

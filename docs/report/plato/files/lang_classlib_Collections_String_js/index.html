@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.54</p>
+      <p class="stat">127.12</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">274</p>
+      <p class="stat">290</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">48.34</p>
+      <p class="stat">49.27</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.68</p>
+      <p class="stat">1.82</p>
     </div>
   </div>
 </div>
@@ -95,9 +95,13 @@
 
   require(&quot;./ArrayedCollection&quot;);
 
+  var fn  = sc.lang.fn;
+  var io  = sc.lang.io;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine(&quot;String&quot;, function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
 
     spec.__str__ = function() {
       return this.valueOf();
@@ -162,13 +166,11 @@
     // TODO: implements stripHTML
     // TODO: implements $scDir
 
-    spec.compare = function($aString, $ignoreCase) {
-      var araw, braw, length, i, a, b, cmp, fn;
-      $aString    = utils.defaultValue$Nil($aString);
-      $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
+    spec.compare = fn(function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, func;
 
       if ($aString.__tag !== sc.C.TAG_STR) {
-        return utils.nilInstance;
+        return $nil;
       }
 
       araw = this._;
@@ -176,17 +178,17 @@
       length = Math.min(araw.length, braw.length);
 
       if ($ignoreCase.__bool__()) {
-        fn = function(ch) {
+        func = function(ch) {
           return ch.toLowerCase();
         };
       } else {
-        fn = function(ch) {
+        func = function(ch) {
           return ch;
         };
       }
       for (i = 0; i &lt; length; i++) {
-        a = fn(araw[i]._).charCodeAt(0);
-        b = fn(braw[i]._).charCodeAt(0);
+        a = func(araw[i]._).charCodeAt(0);
+        b = func(braw[i]._).charCodeAt(0);
         cmp = a - b;
         if (cmp !== 0) {
           return $SC.Integer(cmp &lt; 0 ? -1 : +1);
@@ -200,53 +202,51 @@
       }
 
       return $SC.Integer(cmp);
-    };
+    }, &quot;aString; ignoreCase=false&quot;);
 
     spec[&quot;&lt;&quot;] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &lt; 0
+        this.compare($aString, $false).valueOf() &lt; 0
       );
     };
 
     spec[&quot;&gt;&quot;] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &gt; 0
+        this.compare($aString, $false).valueOf() &gt; 0
       );
     };
 
     spec[&quot;&lt;=&quot;] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &lt;= 0
+        this.compare($aString, $false).valueOf() &lt;= 0
       );
     };
 
     spec[&quot;&gt;=&quot;] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &gt;= 0
+        this.compare($aString, $false).valueOf() &gt;= 0
       );
     };
 
     spec[&quot;==&quot;] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() === 0
+        this.compare($aString, $false).valueOf() === 0
       );
     };
 
     spec[&quot;!=&quot;] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() !== 0
+        this.compare($aString, $false).valueOf() !== 0
       );
     };
 
     // TODO: implements hash
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
-      $aNumber = utils.defaultValue$Nil($aNumber);
       return $aNumber.asString().perform($aSelector, this);
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
-      $aComplex = utils.defaultValue$Nil($aComplex);
       return $aComplex.asString().perform($aSelector, this);
     };
 
@@ -254,7 +254,7 @@
       throw new Error(&quot;String:multiChannelPerform. Cannot expand strings.&quot;);
     };
 
-    spec.isString = utils.alwaysReturn$True;
+    spec.isString = utils.alwaysReturn$true;
 
     spec.asString = utils.nop;
 
@@ -263,13 +263,29 @@
     };
 
     spec.species = function() {
-      return $SC.Class(&quot;String&quot;);
+      return $SC(&quot;String&quot;);
     };
 
-    // TODO: implements postln
-    // TODO: implements post
-    // TODO: implements postcln
-    // TODO: implements postc
+    spec.postln = function() {
+      io.post(this.__str__() + &quot;\n&quot;);
+      return this;
+    };
+
+    spec.post = function() {
+      io.post(this.__str__());
+      return this;
+    };
+
+    spec.postcln = function() {
+      io.post(&quot;// &quot; + this.__str__() + &quot;\n&quot;);
+      return this;
+    };
+
+    spec.postc = function() {
+      io.post(&quot;// &quot; + this.__str__());
+      return this;
+    };
+
     // TODO: implements postf
     // TODO: implements format
     // TODO: implements matchRegexp

@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/lang/classlib/Collections/String.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(87 / 87)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(99 / 99)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(18 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(28 / 28)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(32 / 32)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(87 / 87)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(99 / 99)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -490,17 +490,37 @@
 272
 273
 274
-275</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290
+291</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">18</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">25</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -511,8 +531,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">108</span>
-<span class="cline-any cline-yes">365</span>
+<span class="cline-any cline-yes">117</span>
+<span class="cline-any cline-yes">411</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -563,8 +583,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">30</span>
-<span class="cline-any cline-yes">30</span>
 <span class="cline-any cline-yes">30</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">30</span>
@@ -642,10 +660,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">6</span>
-<span class="cline-any cline-yes">6</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -666,8 +682,24 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -769,9 +801,13 @@
 &nbsp;
   require("./ArrayedCollection");
 &nbsp;
+  var fn  = sc.lang.fn;
+  var io  = sc.lang.io;
   var $SC = sc.lang.$SC;
 &nbsp;
   sc.lang.klass.refine("String", function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
 &nbsp;
     spec.__str__ = function() {
       return this.valueOf();
@@ -836,13 +872,11 @@
     // TODO: implements stripHTML
     // TODO: implements $scDir
 &nbsp;
-    spec.compare = function($aString, $ignoreCase) {
-      var araw, braw, length, i, a, b, cmp, fn;
-      $aString    = utils.defaultValue$Nil($aString);
-      $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
+    spec.compare = fn(function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, func;
 &nbsp;
       if ($aString.__tag !== sc.C.TAG_STR) {
-        return utils.nilInstance;
+        return $nil;
       }
 &nbsp;
       araw = this._;
@@ -850,17 +884,17 @@
       length = Math.min(araw.length, braw.length);
 &nbsp;
       if ($ignoreCase.__bool__()) {
-        fn = function(ch) {
+        func = function(ch) {
           return ch.toLowerCase();
         };
       } else {
-        fn = function(ch) {
+        func = function(ch) {
           return ch;
         };
       }
       for (i = 0; i &lt; length; i++) {
-        a = fn(araw[i]._).charCodeAt(0);
-        b = fn(braw[i]._).charCodeAt(0);
+        a = func(araw[i]._).charCodeAt(0);
+        b = func(braw[i]._).charCodeAt(0);
         cmp = a - b;
         if (cmp !== 0) {
           return $SC.Integer(cmp &lt; 0 ? -1 : +1);
@@ -874,53 +908,51 @@
       }
 &nbsp;
       return $SC.Integer(cmp);
-    };
+    }, "aString; ignoreCase=false");
 &nbsp;
     spec["&lt;"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &lt; 0
+        this.compare($aString, $false).valueOf() &lt; 0
       );
     };
 &nbsp;
     spec["&gt;"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &gt; 0
+        this.compare($aString, $false).valueOf() &gt; 0
       );
     };
 &nbsp;
     spec["&lt;="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &lt;= 0
+        this.compare($aString, $false).valueOf() &lt;= 0
       );
     };
 &nbsp;
     spec["&gt;="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() &gt;= 0
+        this.compare($aString, $false).valueOf() &gt;= 0
       );
     };
 &nbsp;
     spec["=="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() === 0
+        this.compare($aString, $false).valueOf() === 0
       );
     };
 &nbsp;
     spec["!="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() !== 0
+        this.compare($aString, $false).valueOf() !== 0
       );
     };
 &nbsp;
     // TODO: implements hash
 &nbsp;
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
-      $aNumber = utils.defaultValue$Nil($aNumber);
       return $aNumber.asString().perform($aSelector, this);
     };
 &nbsp;
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
-      $aComplex = utils.defaultValue$Nil($aComplex);
       return $aComplex.asString().perform($aSelector, this);
     };
 &nbsp;
@@ -928,7 +960,7 @@
       throw new Error("String:multiChannelPerform. Cannot expand strings.");
     };
 &nbsp;
-    spec.isString = utils.alwaysReturn$True;
+    spec.isString = utils.alwaysReturn$true;
 &nbsp;
     spec.asString = utils.nop;
 &nbsp;
@@ -937,13 +969,29 @@
     };
 &nbsp;
     spec.species = function() {
-      return $SC.Class("String");
+      return $SC("String");
     };
 &nbsp;
-    // TODO: implements postln
-    // TODO: implements post
-    // TODO: implements postcln
-    // TODO: implements postc
+    spec.postln = function() {
+      io.post(this.__str__() + "\n");
+      return this;
+    };
+&nbsp;
+    spec.post = function() {
+      io.post(this.__str__());
+      return this;
+    };
+&nbsp;
+    spec.postcln = function() {
+      io.post("// " + this.__str__() + "\n");
+      return this;
+    };
+&nbsp;
+    spec.postc = function() {
+      io.post("// " + this.__str__());
+      return this;
+    };
+&nbsp;
     // TODO: implements postf
     // TODO: implements format
     // TODO: implements matchRegexp
@@ -1043,7 +1091,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Apr 30 2014 07:04:21 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue May 13 2014 07:34:22 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../../prettify.js"></script>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/compiler/scope.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/compiler/scope.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">117.36</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">99</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">42.40</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">0.79</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./compiler&quot;);
+
+  var Message = sc.lang.compiler.Message;
+
+  function Scope(methods) {
+    var f = function(parent) {
+      this.parent = parent;
+      this.stack  = [];
+    };
+
+    function F() {}
+    F.prototype = Scope;
+    f.prototype = new F();
+
+    Object.keys(methods).forEach(function(key) {
+      f.prototype[key] = methods[key];
+    });
+
+    return f;
+  }
+
+  Scope.add = function(type, id, scope) {
+    var peek = this.stack[this.stack.length - 1];
+    var vars, args, declared, stmt, indent;
+
+    if (scope) {
+      vars = scope.vars;
+      args = scope.args;
+      declared = scope.declared;
+      stmt = scope.stmt;
+      indent = scope.indent;
+    } else {
+      vars = peek.vars;
+      args = peek.args;
+      declared = peek.declared;
+      stmt = peek.stmt;
+      indent = peek.indent;
+    }
+
+    if (args[id]) {
+      this.parent.throwError({}, Message.ArgumentAlreadyDeclared, id);
+    }
+
+    if (vars[id] &amp;&amp; id.charAt(0) !== &quot;_&quot;) {
+      this.parent.throwError({}, Message.VariableAlreadyDeclared, id);
+    }
+
+    switch (type) {
+    case &quot;var&quot;:
+      if (!vars[id]) {
+        this.add_delegate(stmt, id, indent, peek, scope);
+        vars[id] = true;
+        delete declared[id];
+      }
+      break;
+    case &quot;arg&quot;:
+      args[id] = true;
+      delete declared[id];
+      break;
+    }
+  };
+
+  Scope.add_delegate = function() {
+  };
+
+  Scope.end = function() {
+    this.stack.pop();
+  };
+
+  Scope.getDeclaredVariable = function() {
+    var peek = this.stack[this.stack.length - 1];
+    var declared = {};
+
+    if (peek) {
+      Array.prototype.concat.apply([], [
+        peek.declared, peek.args, peek.vars
+      ].map(Object.keys)).forEach(function(key) {
+        declared[key] = true;
+      });
+    }
+
+    return declared;
+  };
+
+  Scope.find = function(id) {
+    var peek = this.stack[this.stack.length - 1];
+    return peek.vars[id] || peek.args[id] || peek.declared[id];
+  };
+
+  Scope.peek = function() {
+    return this.stack[this.stack.length - 1];
+  };
+
+  sc.lang.compiler.scope = Scope;
+
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

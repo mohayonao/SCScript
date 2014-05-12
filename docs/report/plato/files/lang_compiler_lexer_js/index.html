@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/compiler/lexer.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/compiler/lexer.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">101.80</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">635</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">136.29</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">5.94</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./compiler&quot;);
+
+  var Token    = sc.lang.compiler.Token;
+  var Message  = sc.lang.compiler.Message;
+  var Keywords = sc.lang.compiler.Keywords;
+
+  function Lexer(source, opts) {
+    /* istanbul ignore next */
+    if (typeof source !== &quot;string&quot;) {
+      if (typeof source === &quot;undefined&quot;) {
+        source = &quot;&quot;;
+      }
+      source = String(source);
+    }
+    source = source.replace(/\r\n?/g, &quot;\n&quot;);
+
+    opts = opts || /* istanbul ignore next */ {};
+
+    this.source = source;
+    this.opts   = opts;
+    this.length = source.length;
+    this.index  = 0;
+    this.lineNumber = this.length ? 1 : 0;
+    this.lineStart  = 0;
+    this.reverted   = null;
+    this.errors     = opts.tolerant ? [] : null;
+
+    this.peek();
+  }
+
+  function char2num(ch) {
+    var n = ch.charCodeAt(0);
+
+    if (48 &lt;= n &amp;&amp; n &lt;= 57) {
+      return n - 48;
+    }
+    if (65 &lt;= n &amp;&amp; n &lt;= 90) {
+      return n - 55;
+    }
+    return n - 87; // if (97 &lt;= n &amp;&amp; n &lt;= 122)
+  }
+
+  function isAlpha(ch) {
+    return (&quot;A&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;Z&quot;) || (&quot;a&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;z&quot;);
+  }
+
+  function isNumber(ch) {
+    return &quot;0&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;9&quot;;
+  }
+
+  Lexer.prototype.tokenize = function() {
+    var tokens, token;
+
+    tokens = [];
+
+    while (true) {
+      token = this.collectToken();
+      if (token.type === Token.EOF) {
+        break;
+      }
+      tokens.push(token);
+    }
+
+    return tokens;
+  };
+
+
+  Lexer.prototype.collectToken = function() {
+    var loc, token, t;
+
+    this.skipComment();
+
+    loc = {
+      start: {
+        line  : this.lineNumber,
+        column: this.index - this.lineStart
+      }
+    };
+
+    token = this.advance();
+
+    loc.end = {
+      line  : this.lineNumber,
+      column: this.index - this.lineStart
+    };
+
+    t = {
+      type : token.type,
+      value: token.value
+    };
+
+    if (this.opts.range) {
+      t.range = token.range;
+    }
+    if (this.opts.loc) {
+      t.loc = loc;
+    }
+
+    return t;
+  };
+
+  Lexer.prototype.skipComment = function() {
+    var source = this.source;
+    var length = this.length;
+    var index = this.index;
+    var ch;
+
+    LOOP: while (index &lt; length) {
+      ch = source.charAt(index);
+
+      if (ch === &quot; &quot; || ch === &quot;\t&quot;) {
+        index += 1;
+        continue;
+      }
+
+      if (ch === &quot;\n&quot;) {
+        index += 1;
+        this.lineNumber += 1;
+        this.lineStart = index;
+        continue;
+      }
+
+      if (ch === &quot;/&quot;) {
+        ch = source.charAt(index + 1);
+        if (ch === &quot;/&quot;) {
+          index = this.skipLineComment(index + 2);
+          continue;
+        }
+        if (ch === &quot;*&quot;) {
+          index = this.skipBlockComment(index + 2);
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    this.index = index;
+  };
+
+  Lexer.prototype.skipLineComment = function(index) {
+    var source = this.source;
+    var length = this.length;
+    var ch;
+
+    while (index &lt; length) {
+      ch = source.charAt(index);
+      index += 1;
+      if (ch === &quot;\n&quot;) {
+        this.lineNumber += 1;
+        this.lineStart = index;
+        break;
+      }
+    }
+
+    return index;
+  };
+
+  Lexer.prototype.skipBlockComment = function(index) {
+    var source = this.source;
+    var length = this.length;
+    var ch, depth;
+
+    depth = 1;
+    while (index &lt; length) {
+      ch = source.charAt(index);
+
+      if (ch === &quot;\n&quot;) {
+        this.lineNumber += 1;
+        this.lineStart = index;
+      } else {
+        ch = ch + source.charAt(index + 1);
+        if (ch === &quot;/*&quot;) {
+          depth += 1;
+          index += 1;
+        } else if (ch === &quot;*/&quot;) {
+          depth -= 1;
+          index += 1;
+          if (depth === 0) {
+            return index + 1;
+          }
+        }
+      }
+
+      index += 1;
+    }
+    this.throwError({}, Message.UnexpectedToken, &quot;ILLEGAL&quot;);
+
+    return index;
+  };
+
+  Lexer.prototype.advance = function() {
+    var ch, token;
+
+    this.skipComment();
+
+    if (this.length &lt;= this.index) {
+      return this.EOFToken();
+    }
+
+    ch = this.source.charAt(this.index);
+
+    if (ch === &quot;\\&quot;) {
+      return this.scanSymbolLiteral();
+    }
+    if (ch === &quot;&#039;&quot;) {
+      return this.scanQuotedLiteral(Token.SymbolLiteral, ch);
+    }
+
+    if (ch === &quot;$&quot;) {
+      return this.scanCharLiteral();
+    }
+
+    if (ch === &#039;&quot;&#039;) {
+      return this.scanQuotedLiteral(Token.StringLiteral, ch);
+    }
+
+    if (ch === &quot;_&quot;) {
+      return this.scanUnderscore();
+    }
+
+    if (ch === &quot;-&quot;) {
+      token = this.scanNegativeNumericLiteral();
+      if (token) {
+        return token;
+      }
+    }
+
+    if (isAlpha(ch)) {
+      return this.scanIdentifier();
+    }
+
+    if (isNumber(ch)) {
+      return this.scanNumericLiteral();
+    }
+
+    return this.scanPunctuator();
+  };
+
+  Lexer.prototype.peek = function() {
+    var index, lineNumber, lineStart;
+
+    index      = this.index;
+    lineNumber = this.lineNumber;
+    lineStart  = this.lineStart;
+
+    this.lookahead = this.advance();
+
+    this.index      = index;
+    this.lineNumber = lineNumber;
+    this.lineStart  = lineStart;
+  };
+
+  Lexer.prototype.lex = function(saved) {
+    var that = this;
+    var token = this.lookahead;
+
+    if (saved) {
+      saved = [
+        this.lookahead,
+        this.index,
+        this.lineNumber,
+        this.lineStart
+      ];
+    }
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    this.lookahead = this.advance();
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    if (saved) {
+      token.revert = function() {
+        that.lookahead  = saved[0];
+        that.index      = saved[1];
+        that.lineNumber = saved[2];
+        that.lineStart  = saved[3];
+      };
+    }
+
+    return token;
+  };
+
+  Lexer.prototype.makeToken = function(type, value, start) {
+    return {
+      type : type,
+      value: value,
+      lineNumber: this.lineNumber,
+      lineStart : this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  Lexer.prototype.EOFToken = function() {
+    return this.makeToken(Token.EOF, &quot;&lt;EOF&gt;&quot;, this.index);
+  };
+
+  Lexer.prototype.scanCharLiteral = function() {
+    var start, value;
+
+    start = this.index;
+    value = this.source.charAt(this.index + 1);
+
+    this.index += 2;
+
+    return this.makeToken(Token.CharLiteral, value, start);
+  };
+
+  Lexer.prototype.scanIdentifier = function() {
+    var source = this.source.slice(this.index);
+    var start = this.index;
+    var value, type;
+
+    value = /^[a-zA-Z][a-zA-Z0-9_]*/.exec(source)[0];
+
+    this.index += value.length;
+
+    if (this.source.charAt(this.index) === &quot;:&quot;) {
+      this.index += 1;
+      return this.makeToken(Token.Label, value, start);
+    } else if (this.isKeyword(value)) {
+      type = Token.Keyword;
+    } else {
+      switch (value) {
+      case &quot;inf&quot;:
+        type = Token.FloatLiteral;
+        value = &quot;Infinity&quot;;
+        break;
+      case &quot;pi&quot;:
+        type = Token.FloatLiteral;
+        value = String(Math.PI);
+        break;
+      case &quot;nil&quot;:
+        type = Token.NilLiteral;
+        value = &quot;null&quot;;
+        break;
+      case &quot;true&quot;:
+        type = Token.TrueLiteral;
+        break;
+      case &quot;false&quot;:
+        type = Token.FalseLiteral;
+        break;
+      default:
+        type = Token.Identifier;
+        break;
+      }
+    }
+
+    return this.makeToken(type, value, start);
+  };
+
+  Lexer.prototype.scanNumericLiteral = function(neg) {
+    return this.scanNAryNumberLiteral(neg) || this.scanDecimalNumberLiteral(neg);
+  };
+
+  Lexer.prototype.scanNegativeNumericLiteral = function() {
+    var token, ch1, ch2, ch3;
+    var start, value = null;
+
+    start = this.index;
+    ch1 = this.source.charAt(this.index + 1);
+
+    if (isNumber(ch1)) {
+      this.index += 1;
+      token = this.scanNumericLiteral(true);
+      token.range[0] = start;
+      return token;
+    }
+
+    ch2 = this.source.charAt(this.index + 2);
+    ch3 = this.source.charAt(this.index + 3);
+
+    if (ch1 + ch2 === &quot;pi&quot;) {
+      this.index += 3;
+      value = String(-Math.PI);
+    } else if (ch1 + ch2 + ch3 === &quot;inf&quot;) {
+      this.index += 4;
+      value = &quot;-Infinity&quot;;
+    }
+
+    if (value !== null) {
+      return this.makeToken(Token.FloatLiteral, value, start);
+    }
+
+    return null;
+  };
+
+  var makeNumberToken = function(type, value, neg, pi) {
+    if (neg) {
+      value *= -1;
+    }
+
+    if (pi) {
+      type = Token.FloatLiteral;
+      value = value * Math.PI;
+    }
+
+    if (type === Token.FloatLiteral &amp;&amp; value === (value|0)) {
+      value = value + &quot;.0&quot;;
+    } else {
+      value = String(value);
+    }
+
+    return {
+      type : type,
+      value: value
+    };
+  };
+
+  Lexer.prototype.scanNAryNumberLiteral = function(neg) {
+    var re, start, items;
+    var base, integer, frac, pi;
+    var value, type;
+    var token;
+
+    re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (!items) {
+      return;
+    }
+
+    base    = items[1].replace(/^0+(?=\d)/g, &quot;&quot;)|0;
+    integer = items[2].replace(/(^0+(?=\d)|_)/g, &quot;&quot;);
+    frac    = items[3] &amp;&amp; items[3].replace(/_/g, &quot;&quot;);
+
+    if (!frac &amp;&amp; base &lt; 26 &amp;&amp; integer.substr(-2) === &quot;pi&quot;) {
+      integer = integer.slice(0, -2);
+      pi = true;
+    }
+
+    type  = Token.IntegerLiteral;
+    value = this.calcNBasedInteger(integer, base);
+
+    if (frac) {
+      type = Token.FloatLiteral;
+      value += this.calcNBasedFrac(frac, base);
+    }
+
+    token = makeNumberToken(type, value, neg, pi);
+
+    this.index += items[0].length;
+
+    return this.makeToken(token.type, token.value, start);
+  };
+
+  Lexer.prototype.char2num = function(ch, base) {
+    var x = char2num(ch, base);
+    if (x &gt;= base) {
+      this.throwError({}, Message.UnexpectedToken, ch);
+    }
+    return x;
+  };
+
+  Lexer.prototype.calcNBasedInteger = function(integer, base) {
+    var value, i, imax;
+
+    for (i = value = 0, imax = integer.length; i &lt; imax; ++i) {
+      value *= base;
+      value += this.char2num(integer[i], base);
+    }
+
+    return value;
+  };
+
+  Lexer.prototype.calcNBasedFrac = function(frac, base) {
+    var value, i, imax;
+
+    for (i = value = 0, imax = frac.length; i &lt; imax; ++i) {
+      value += this.char2num(frac[i], base) * Math.pow(base, -(i + 1));
+    }
+
+    return value;
+  };
+
+  Lexer.prototype.scanDecimalNumberLiteral = function(neg) {
+    var re, start, items, integer, frac, pi;
+    var value, type;
+    var token;
+
+    re = /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    integer = items[1];
+    frac    = items[2];
+    pi      = items[3];
+
+    type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
+    value = +integer.replace(/(^0+(?=\d)|_)/g, &quot;&quot;);
+
+    token = makeNumberToken(type, value, neg, pi);
+
+    this.index += items[0].length;
+
+    return this.makeToken(token.type, token.value, start);
+  };
+
+  Lexer.prototype.scanPunctuator = function() {
+    var re, start, items;
+
+    re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%&lt;=&gt;!?&amp;|@]+)/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (items) {
+      this.index += items[0].length;
+      return this.makeToken(Token.Punctuator, items[0], start);
+    }
+
+    this.throwError({}, Message.UnexpectedToken, this.source.charAt(this.index));
+
+    this.index = this.length;
+
+    return this.EOFToken();
+  };
+
+  Lexer.prototype.scanQuotedLiteral = function(type, quote) {
+    var start, value;
+    start = this.index;
+    value = this._scanQuotedLiteral(quote);
+    return value ? this.makeToken(type, value, start) : this.EOFToken();
+  };
+
+  Lexer.prototype._scanQuotedLiteral = function(quote) {
+    var source, length, index, start, value, ch;
+
+    source = this.source;
+    length = this.length;
+    index  = this.index + 1;
+    start  = index;
+    value  = null;
+
+    while (index &lt; length) {
+      ch = source.charAt(index);
+      index += 1;
+      if (ch === quote) {
+        value = source.substr(start, index - start - 1).replace(/\n/g, &quot;\\n&quot;);
+        break;
+      } else if (ch === &quot;\n&quot;) {
+        this.lineNumber += 1;
+        this.lineStart = index;
+      } else if (ch === &quot;\\&quot;) {
+        index += 1;
+      }
+    }
+
+    this.index = index;
+
+    if (!value) {
+      this.throwError({}, Message.UnexpectedToken, &quot;ILLEGAL&quot;);
+    }
+
+    return value;
+  };
+
+  Lexer.prototype.scanSymbolLiteral = function() {
+    var re, start, items;
+    var value;
+
+    re = /^\\([a-z_]\w*)?/i;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    value = items[1];
+
+    this.index += items[0].length;
+
+    return this.makeToken(Token.SymbolLiteral, value, start);
+  };
+
+  Lexer.prototype.scanUnderscore = function() {
+    var start = this.index;
+
+    this.index += 1;
+
+    return this.makeToken(Token.Identifier, &quot;_&quot;, start);
+  };
+
+  Lexer.prototype.isKeyword = function(value) {
+    return !!Keywords[value] || false;
+  };
+
+  Lexer.prototype.getLocItems = function() {
+    return [ this.index, this.lineNumber, this.index - this.lineStart ];
+  };
+
+  Lexer.prototype.throwError = function(token, messageFormat) {
+    var args, message;
+    var error, index, lineNumber, column;
+    var prev;
+
+    args = Array.prototype.slice.call(arguments, 2);
+    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
+      return args[index];
+    });
+
+    if (typeof token.lineNumber === &quot;number&quot;) {
+      index      = token.range[0];
+      lineNumber = token.lineNumber;
+      column     = token.range[0] - token.lineStart + 1;
+    } else {
+      index      = this.index;
+      lineNumber = this.lineNumber;
+      column     = index - this.lineStart + 1;
+    }
+
+    error = new Error(&quot;Line &quot; + lineNumber + &quot;: &quot; + message);
+    error.index       = index;
+    error.lineNumber  = lineNumber;
+    error.column      = column;
+    error.description = message;
+
+    if (this.errors) {
+      prev = this.errors[this.errors.length - 1];
+      if (!(prev &amp;&amp; error.index &lt;= prev.index)) {
+        this.errors.push(error);
+      }
+    } else {
+      throw error;
+    }
+  };
+
+  sc.lang.compiler.lexer = Lexer;
+
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

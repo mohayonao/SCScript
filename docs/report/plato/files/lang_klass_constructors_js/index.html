@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/klass/constructors.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/klass/constructors.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">122.81</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">257</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">32.49</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.94</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./klass&quot;);
+  require(&quot;../fn&quot;);
+
+  var $SC   = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var klass = sc.lang.klass;
+
+  function SCNil() {
+    this.__initializeWith__(&quot;Object&quot;);
+    this._ = null;
+  }
+  klass.define(SCNil, &quot;Nil&quot;, {
+    __tag: sc.C.TAG_NIL
+  });
+
+  function SCSymbol() {
+    this.__initializeWith__(&quot;Object&quot;);
+    this._ = &quot;&quot;;
+  }
+  klass.define(SCSymbol, &quot;Symbol&quot;, {
+    __tag: sc.C.TAG_SYM
+  });
+
+  function SCBoolean() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+  klass.define(SCBoolean, &quot;Boolean&quot;);
+
+  function SCTrue() {
+    this.__initializeWith__(&quot;Boolean&quot;);
+    this._ = true;
+  }
+  klass.define(SCTrue, &quot;True : Boolean&quot;, {
+    __tag: sc.C.TAG_TRUE
+  });
+
+  function SCFalse() {
+    this.__initializeWith__(&quot;Boolean&quot;);
+    this._ = false;
+  }
+  klass.define(SCFalse, &quot;False : Boolean&quot;, {
+    __tag: sc.C.TAG_FALSE
+  });
+
+  function SCMagnitude() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+  klass.define(SCMagnitude, &quot;Magnitude&quot;);
+
+  function SCChar() {
+    this.__initializeWith__(&quot;Magnitude&quot;);
+    this._ = &quot;\0&quot;;
+  }
+  klass.define(SCChar, &quot;Char : Magnitude&quot;, {
+    __tag: sc.C.TAG_CHAR
+  });
+
+  function SCNumber() {
+    this.__initializeWith__(&quot;Magnitude&quot;);
+  }
+  klass.define(SCNumber, &quot;Number : Magnitude&quot;);
+
+  function SCSimpleNumber() {
+    this.__initializeWith__(&quot;Number&quot;);
+  }
+  klass.define(SCSimpleNumber, &quot;SimpleNumber : Number&quot;);
+
+  function SCInteger() {
+    this.__initializeWith__(&quot;SimpleNumber&quot;);
+    this._ = 0;
+  }
+  klass.define(SCInteger, &quot;Integer : SimpleNumber&quot;, {
+    __tag: sc.C.TAG_INT
+  });
+
+  function SCFloat() {
+    this.__initializeWith__(&quot;SimpleNumber&quot;);
+    this._ = 0.0;
+  }
+  klass.define(SCFloat, &quot;Float : SimpleNumber&quot;, {
+    __tag: sc.C.TAG_FLOAT
+  });
+
+  function SCCollection() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+  klass.define(SCCollection, &quot;Collection&quot;);
+
+  function SCSequenceableCollection() {
+    this.__initializeWith__(&quot;Collection&quot;);
+  }
+  klass.define(SCSequenceableCollection, &quot;SequenceableCollection : Collection&quot;);
+
+  function SCArrayedCollection() {
+    this.__initializeWith__(&quot;SequenceableCollection&quot;);
+    this._immutable = false;
+    this._ = [];
+  }
+  klass.define(SCArrayedCollection, &quot;ArrayedCollection : SequenceableCollection&quot;);
+
+  function SCRawArray() {
+    this.__initializeWith__(&quot;ArrayedCollection&quot;);
+  }
+  klass.define(SCRawArray, &quot;RawArray : ArrayedCollection&quot;);
+
+  function SCArray() {
+    this.__initializeWith__(&quot;ArrayedCollection&quot;);
+  }
+  klass.define(SCArray, &quot;Array : ArrayedCollection&quot;, {
+    __tag: sc.C.TAG_ARRAY
+  });
+
+  function SCString(value) {
+    this.__initializeWith__(&quot;RawArray&quot;);
+    this._ = value;
+  }
+  klass.define(SCString, &quot;String : RawArray&quot;, {
+    __tag: sc.C.TAG_STR
+  });
+
+  function SCAbstractFunction() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+  klass.define(SCAbstractFunction, &quot;AbstractFunction&quot;);
+
+  function SCFunction() {
+    this.__initializeWith__(&quot;AbstractFunction&quot;);
+    // istanbul ignore next
+    this._ = function() {};
+  }
+  klass.define(SCFunction, &quot;Function : AbstractFunction&quot;, {
+    __tag: sc.C.TAG_FUNCTION
+  });
+
+  function SCRef(args) {
+    this.__initializeWith__(&quot;Object&quot;);
+    this._value = args[0] || /* istanbul ignore next */ $nil;
+  }
+  sc.lang.klass.define(SCRef, &quot;Ref : AbstractFunction&quot;);
+
+  function SCInterpreter() {
+    this.__initializeWith__(&quot;Object&quot;);
+  }
+  klass.define(SCInterpreter, &quot;Interpreter&quot;);
+
+  // $SC
+  var $nil      = new SCNil();
+  var $true     = new SCTrue();
+  var $false    = new SCFalse();
+  var $integers = {};
+  var $floats   = {};
+  var $symbols  = {};
+  var $chars    = {};
+
+  $SC.Nil = function() {
+    return $nil;
+  };
+
+  $SC.Boolean = function($value) {
+    return $value ? $true : $false;
+  };
+
+  $SC.True = function() {
+    return $true;
+  };
+
+  $SC.False = function() {
+    return $false;
+  };
+
+  $SC.Integer = function(value) {
+    var instance;
+
+    if (!global.isFinite(value)) {
+      return $SC.Float(+value);
+    }
+
+    value = value|0;
+
+    if (!$integers.hasOwnProperty(value)) {
+      instance = new SCInteger();
+      instance._ = value;
+      $integers[value] = instance;
+    }
+
+    return $integers[value];
+  };
+
+  $SC.Float = function(value) {
+    var instance;
+
+    value = +value;
+
+    if (!$floats.hasOwnProperty(value)) {
+      instance = new SCFloat();
+      instance._ = value;
+      $floats[value] = instance;
+    }
+
+    return $floats[value];
+  };
+
+  $SC.Symbol = function(value) {
+    var instance;
+    if (!$symbols.hasOwnProperty(value)) {
+      instance = new SCSymbol();
+      instance._ = value;
+      $symbols[value] = instance;
+    }
+    return $symbols[value];
+  };
+
+  $SC.Char = function(value) {
+    var instance;
+
+    value = String(value).charAt(0);
+
+    if (!$chars.hasOwnProperty(value)) {
+      instance = new SCChar();
+      instance._ = value;
+      $chars[value] = instance;
+    }
+
+    return $chars[value];
+  };
+
+
+  $SC.Array = function(value, immutable) {
+    var instance = new SCArray();
+    instance._ = value || [];
+    instance._immutable = !!immutable;
+    return instance;
+  };
+
+  $SC.String = function(value, immutable) {
+    var instance = new SCString();
+    instance._ = String(value).split(&quot;&quot;).map($SC.Char);
+    instance._immutable = !!immutable;
+    return instance;
+  };
+
+  $SC.Function = function(value, def) {
+    var instance = new SCFunction();
+    instance._ = def ? fn(value, def) : value;
+    return instance;
+  };
+
+  $SC.Ref = function(value) {
+    return new SCRef([ value ]);
+  };
+
+  sc.lang.klass.$interpreter = new SCInterpreter();
+
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

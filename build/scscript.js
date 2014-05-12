@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.21" };
+var sc = { VERSION: "0.0.22" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -16,6 +16,16 @@ var sc = { VERSION: "0.0.21" };
 
   SCScript.install = function(installer) {
     installer(sc);
+  };
+
+  // istanbul ignore next
+  SCScript.stdout = function(msg) {
+    console.log(msg);
+  };
+
+  // istanbul ignore next
+  SCScript.stderr = function(msg) {
+    console.error(msg);
   };
 
   SCScript.VERSION = sc.VERSION;
@@ -3975,6 +3985,29 @@ var sc = { VERSION: "0.0.21" };
 
 })(sc);
 
+// src/sc/lang/io.js
+(function(sc) {
+
+  var io = {};
+
+  var SCScript = sc.SCScript;
+  var buffer   = "";
+
+  io.post = function(msg) {
+    var items;
+
+    items  = (buffer + msg).split("\n");
+    buffer = items.pop();
+
+    items.forEach(function(msg) {
+      SCScript.stdout(msg);
+    });
+  };
+
+  sc.lang.io = io;
+
+})(sc);
+
 // src/sc/lang/dollarSC.js
 (function(sc) {
 
@@ -4233,6 +4266,7 @@ var sc = { VERSION: "0.0.21" };
     newClass._Spec = constructor;
     constructor.prototype.__class = newClass;
     constructor.prototype.__Spec  = constructor;
+    constructor.prototype.__className = className;
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
@@ -5009,10 +5043,27 @@ var sc = { VERSION: "0.0.21" };
     };
 
     // TODO: implements dump
-    // TODO: implements post
-    // TODO: implements postln
-    // TODO: implements postc
-    // TODO: implements postcln
+
+    spec.post = function() {
+      this.asString().post();
+      return this;
+    };
+
+    spec.postln = function() {
+      this.asString().postln();
+      return this;
+    };
+
+    spec.postc = function() {
+      this.asString().postc();
+      return this;
+    };
+
+    spec.postcln = function() {
+      this.asString().postcln();
+      return this;
+    };
+
     // TODO: implements postcs
     // TODO: implements totalFree
     // TODO: implements largestFreeBlock
@@ -9932,6 +9983,17 @@ var sc = { VERSION: "0.0.21" };
     // TODO: implements writeInputSpec
     // TODO: implements case
     // TODO: implements makeEnvirValPairs
+
+    spec.asString = function() {
+      var items = [];
+      this.do($SC.Function(function($elem) {
+        items.push($elem.__str__());
+      }));
+
+      return $SC.String(
+        this.__className + "[ " + items.join(", ") + " ]"
+      );
+    };
   });
 
 })(sc);
@@ -12288,6 +12350,12 @@ var sc = { VERSION: "0.0.21" };
     spec.includes = function($item) {
       return $SC.Boolean(this._.indexOf($item) !== -1);
     };
+
+    spec.asString = function() {
+      return $SC.String("[ " + this._.map(function(elem) {
+        return elem.__str__();
+      }).join(", ") + " ]");
+    };
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {
@@ -12307,6 +12375,7 @@ var sc = { VERSION: "0.0.21" };
 (function(sc) {
 
   var fn  = sc.lang.fn;
+  var io  = sc.lang.io;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("String", function(spec, utils) {
@@ -12476,10 +12545,26 @@ var sc = { VERSION: "0.0.21" };
       return $SC("String");
     };
 
-    // TODO: implements postln
-    // TODO: implements post
-    // TODO: implements postcln
-    // TODO: implements postc
+    spec.postln = function() {
+      io.post(this.__str__() + "\n");
+      return this;
+    };
+
+    spec.post = function() {
+      io.post(this.__str__());
+      return this;
+    };
+
+    spec.postcln = function() {
+      io.post("// " + this.__str__() + "\n");
+      return this;
+    };
+
+    spec.postc = function() {
+      io.post("// " + this.__str__());
+      return this;
+    };
+
     // TODO: implements postf
     // TODO: implements format
     // TODO: implements matchRegexp

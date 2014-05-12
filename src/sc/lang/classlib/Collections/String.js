@@ -4,6 +4,7 @@
   require("./ArrayedCollection");
 
   var fn  = sc.lang.fn;
+  var io  = sc.lang.io;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("String", function(spec, utils) {
@@ -173,10 +174,26 @@
       return $SC("String");
     };
 
-    // TODO: implements postln
-    // TODO: implements post
-    // TODO: implements postcln
-    // TODO: implements postc
+    spec.postln = function() {
+      io.post(this.__str__() + "\n");
+      return this;
+    };
+
+    spec.post = function() {
+      io.post(this.__str__());
+      return this;
+    };
+
+    spec.postcln = function() {
+      io.post("// " + this.__str__() + "\n");
+      return this;
+    };
+
+    spec.postc = function() {
+      io.post("// " + this.__str__());
+      return this;
+    };
+
     // TODO: implements postf
     // TODO: implements format
     // TODO: implements matchRegexp

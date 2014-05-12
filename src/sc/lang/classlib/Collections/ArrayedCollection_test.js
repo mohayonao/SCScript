@@ -1225,6 +1225,14 @@
         },
       ]);
     });
+    it("#asString", function() {
+      var instance, test;
+
+      instance = this.createInstance([ 1, 2, 3 ]);
+
+      test = instance.asString();
+      expect(test).to.be.a("SCString").that.equals("[ 1, 2, 3 ]");
+    });
   });
 
   describe("SCRawArray", function() {

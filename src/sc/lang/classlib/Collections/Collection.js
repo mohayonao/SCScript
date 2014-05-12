@@ -936,6 +936,17 @@
     // TODO: implements writeInputSpec
     // TODO: implements case
     // TODO: implements makeEnvirValPairs
+
+    spec.asString = function() {
+      var items = [];
+      this.do($SC.Function(function($elem) {
+        items.push($elem.__str__());
+      }));
+
+      return $SC.String(
+        this.__className + "[ " + items.join(", ") + " ]"
+      );
+    };
   });
 
 })(sc);

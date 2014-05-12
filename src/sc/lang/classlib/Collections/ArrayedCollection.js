@@ -754,6 +754,12 @@
     spec.includes = function($item) {
       return $SC.Boolean(this._.indexOf($item) !== -1);
     };
+
+    spec.asString = function() {
+      return $SC.String("[ " + this._.map(function(elem) {
+        return elem.__str__();
+      }).join(", ") + " ]");
+    };
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {

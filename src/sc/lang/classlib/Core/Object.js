@@ -43,10 +43,27 @@
     };
 
     // TODO: implements dump
-    // TODO: implements post
-    // TODO: implements postln
-    // TODO: implements postc
-    // TODO: implements postcln
+
+    spec.post = function() {
+      this.asString().post();
+      return this;
+    };
+
+    spec.postln = function() {
+      this.asString().postln();
+      return this;
+    };
+
+    spec.postc = function() {
+      this.asString().postc();
+      return this;
+    };
+
+    spec.postcln = function() {
+      this.asString().postcln();
+      return this;
+    };
+
     // TODO: implements postcs
     // TODO: implements totalFree
     // TODO: implements largestFreeBlock

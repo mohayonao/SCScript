@@ -1208,5 +1208,13 @@
     });
     it.skip("#makeEnvirValPairs", function() {
     });
+    it("#asString", function() {
+      var instance, test;
+
+      instance = this.createInstance([ 1, 2, 3 ]);
+
+      test = instance.asString();
+      expect(test).to.be.a("SCString").that.equals("Array[ 1, 2, 3 ]");
+    });
   });
 })();

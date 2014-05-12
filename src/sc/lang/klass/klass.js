@@ -117,6 +117,7 @@
     newClass._Spec = constructor;
     constructor.prototype.__class = newClass;
     constructor.prototype.__Spec  = constructor;
+    constructor.prototype.__className = className;
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;

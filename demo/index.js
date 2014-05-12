@@ -102,6 +102,20 @@ window.onload = function() {
     }
   };
 
+  var execute = function() {
+    var code, result;
+
+    code = SCScript.compile(getCode(editor));
+
+    result = eval.call(null, code);
+
+    if (result) {
+      result = result.valueOf();
+    }
+
+    console.log(result);
+  };
+
   editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
     mode: "SCScript",
     theme: "sc-mode",
@@ -112,19 +126,8 @@ window.onload = function() {
     showCursorWhenSelecting: true,
     matchBrackets: true,
     extraKeys: {
-      "Ctrl-Enter": function() {
-        var code, result;
-
-        code = SCScript.compile(getCode(editor));
-
-        result = eval.call(null, code);
-
-        if (result) {
-          result = result.valueOf();
-        }
-
-        console.log(result);
-      }
+      "Ctrl-Enter": execute,
+      "Cmd-Enter" : execute
     }
   });
 

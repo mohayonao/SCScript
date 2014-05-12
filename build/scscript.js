@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.20" };
+var sc = { VERSION: "0.0.21" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -11,7 +11,7 @@ var sc = { VERSION: "0.0.20" };
   sc.libs = {};
 
   function SCScript(fn) {
-    return fn(sc.lang.$SC);
+    return fn(sc.lang.klass.$interpreter, sc.lang.$SC);
   }
 
   SCScript.install = function(installer) {
@@ -260,6 +260,17 @@ var sc = { VERSION: "0.0.20" };
       }
 
       stream.push(stmt.head, stmt.vars, stmt.tail);
+    },
+    begin_ref: function() {
+      var refId   = (this._refId | 0);
+      var refName = "_ref" + refId;
+      this.add("var", refName);
+      this._refId = refId + 1;
+      return refName;
+    },
+    end_ref: function() {
+      var refId = (this._refId | 0) - 1;
+      this._refId = Math.max(0, refId);
     }
   });
 
@@ -453,8 +464,10 @@ var sc = { VERSION: "0.0.20" };
     var elements = node.left;
     var operator = node.operator;
     var assignments;
+    var result;
+    var ref;
 
-    this.scope.add("var", "_ref");
+    ref = this.scope.begin_ref();
 
     assignments = this.withIndent(function() {
       var result, lastUsedIndex;
@@ -464,25 +477,29 @@ var sc = { VERSION: "0.0.20" };
       result = [
         this.stitchWith(elements, ",\n", function(item, i) {
           return this.addIndent(this._Assign(
-            item, operator, "_ref.at($SC.Integer(" + i + "))"
+            item, operator, ref + ".at($SC.Integer(" + i + "))"
           ));
         })
       ];
 
       if (node.remain) {
         result.push(",\n", this.addIndent(this._Assign(
-          node.remain, operator, "_ref.copyToEnd($SC.Integer(" + lastUsedIndex + "))"
+          node.remain, operator, ref + ".copyToEnd($SC.Integer(" + lastUsedIndex + "))"
         )));
       }
 
       return result;
     });
 
-    return [
-      "(_ref = ", this.generate(node.right), ",\n",
+    result = [
+      "(" + ref + " = ", this.generate(node.right), ",\n",
       assignments , ",\n",
-      this.addIndent("_ref)")
+      this.addIndent(ref + ")")
     ];
+
+    this.scope.end_ref();
+
+    return result;
   };
 
   CodeGen.prototype._Assign = function(left, operator, right) {
@@ -565,36 +582,52 @@ var sc = { VERSION: "0.0.20" };
     var args;
     var list;
     var hasActualArgument;
+    var result;
+    var ref;
 
     list = node.args.list;
     hasActualArgument = !!list.length;
 
-    args = [
-      this.stitchWith(list, ", ", function(item) {
-        return this.generate(item);
-      }),
-      this.insertKeyValueElement(node.args.keywords, hasActualArgument)
-    ];
+    if (node.stamp === "=") {
+      ref = this.scope.begin_ref();
+      result = [
+        "(" + ref + " = ", this.generate(list[0]), ", ",
+        this.generate(node.callee), ".", node.method.name, "(" + ref + "), ",
+        ref + ")"
+      ];
+      this.scope.end_ref();
+    } else {
+      args = [
+        this.stitchWith(list, ", ", function(item) {
+          return this.generate(item);
+        }),
+        this.insertKeyValueElement(node.args.keywords, hasActualArgument)
+      ];
+      result = [
+        this.generate(node.callee), ".", node.method.name, "(", args, ")"
+      ];
+    }
 
-    return [
-      this.generate(node.callee), ".", node.method.name, "(", args, ")"
-    ];
+    return result;
   };
 
   CodeGen.prototype._ExpandCall = function(node) {
     var result;
+    var ref;
 
-    this.scope.add("var", "_ref");
+    ref = this.scope.begin_ref();
 
     result = [
-      "(_ref = ",
+      "(" + ref + " = ",
       this.generate(node.callee),
-      ", _ref." + node.method.name + ".apply(_ref, ",
+      ", " + ref + "." + node.method.name + ".apply(" + ref + ", ",
       this.insertArrayElement(node.args.list), ".concat(",
       this.generate(node.args.expand), ".asArray()._",
       this.insertKeyValueElement(node.args.keywords, true),
       ")))"
     ];
+
+    this.scope.end_ref();
 
     return result;
   };
@@ -800,14 +833,17 @@ var sc = { VERSION: "0.0.20" };
   };
 
   CodeGen.prototype._InterpreterVariable = function(node, opts) {
-    var name;
+    var name, ref;
 
     if (opts) {
       // setter
+      ref = this.scope.begin_ref();
       name = [
-        "$this." + node.name + "_(", this.generate(opts.right), ")"
+        "(" + ref + " = ", this.generate(opts.right),
+        ", $this." + node.name + "_(" + ref + "), " + ref + ")"
       ];
       opts.used = true;
+      this.scope.end_ref();
     } else {
       // getter
       name = "$this." + node.name + "()";
@@ -2272,7 +2308,7 @@ var sc = { VERSION: "0.0.20" };
   };
 
   SCParser.prototype.parseSimpleAssignmentExpression = function() {
-    var node, left, right, token, marker;
+    var node, left, right, token, methodName, marker;
 
     node = left = this.parsePartialExpression();
 
@@ -2282,9 +2318,12 @@ var sc = { VERSION: "0.0.20" };
 
         token = this.lex();
         right = this.parseAssignmentExpression();
-        left.method.name = renameGetterToSetter(left.method.name);
+        methodName = renameGetterToSetter(left.method.name);
+        left.method.name = methodName;
         left.args.list   = node.args.list.concat(right);
-
+        if (methodName.charAt(methodName.length - 1) === "_") {
+          left.stamp = "=";
+        }
         node = marker.update().apply(left, true);
       } else {
         if (!isLeftHandSide(left)) {
@@ -4487,6 +4526,11 @@ var sc = { VERSION: "0.0.20" };
     __tag: 12
   });
 
+  function SCInterpreter() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCInterpreter, "Interpreter");
+
   // $SC
   var $nil      = new SCNil();
   var $true     = new SCTrue();
@@ -4587,6 +4631,8 @@ var sc = { VERSION: "0.0.20" };
     instance._ = value;
     return instance;
   };
+
+  sc.lang.klass.$interpreter = new SCInterpreter();
 
 })(sc);
 
@@ -8463,6 +8509,8 @@ var sc = { VERSION: "0.0.20" };
 // src/sc/lang/classlib/Core/Kernel.js
 (function(sc) {
 
+  var fn  = sc.lang.fn;
+
   sc.lang.klass.refine("Class", {
     // TODO: implements superclass
     // TODO: implements asClass
@@ -8493,6 +8541,45 @@ var sc = { VERSION: "0.0.20" };
     // TODO: implements $findAllReferences
     // TODO: implements allSubclasses
     // TODO: implements superclasses
+  });
+
+  sc.lang.klass.refine("Interpreter", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    (function() {
+      var i, ch;
+
+      function getter(name) {
+        return function() {
+          return this["_" + name] || $nil;
+        };
+      }
+
+      function setter(name) {
+        return fn(function(value) {
+          this["_" + name] = value;
+          return this;
+        }, "value");
+      }
+
+      for (i = 97; i <= 122; i++) {
+        ch = String.fromCharCode(i);
+        spec[ch] = getter(ch);
+        spec[ch + "_"] = setter(ch);
+      }
+    })();
+
+    spec.$new = function() {
+      throw new Error("Interpreter.new is illegal.");
+    };
+
+    spec.clearAll = function() {
+      var i;
+      for (i = 97; i <= 122; i++) {
+        this["_" + String.fromCharCode(i)] = $nil;
+      }
+      return this;
+    };
   });
 
 })(sc);

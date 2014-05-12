@@ -573,7 +573,8 @@
     "a = 2pi": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a_($SC.Float(6.283185307179586));",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Float(6.283185307179586), $this.a_(_ref0), _ref0);",
         "});",
       ],
       ast: {
@@ -618,11 +619,11 @@
     "#a, b = c": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = $this.c(),",
-        "    $this.a_(_ref.at($SC.Integer(0))),",
-        "    $this.b_(_ref.at($SC.Integer(1))),",
-        "  _ref);",
+        "  var _ref0, _ref1;",
+        "  return (_ref0 = $this.c(),",
+        "    (_ref1 = _ref0.at($SC.Integer(0)), $this.a_(_ref1), _ref1),",
+        "    (_ref1 = _ref0.at($SC.Integer(1)), $this.b_(_ref1), _ref1),",
+        "  _ref0);",
         "});",
       ],
       ast: {
@@ -677,12 +678,12 @@
     "#a, b ... c = d": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = $this.d(),",
-        "    $this.a_(_ref.at($SC.Integer(0))),",
-        "    $this.b_(_ref.at($SC.Integer(1))),",
-        "    $this.c_(_ref.copyToEnd($SC.Integer(2))),",
-        "  _ref);",
+        "  var _ref0, _ref1;",
+        "  return (_ref0 = $this.d(),",
+        "    (_ref1 = _ref0.at($SC.Integer(0)), $this.a_(_ref1), _ref1),",
+        "    (_ref1 = _ref0.at($SC.Integer(1)), $this.b_(_ref1), _ref1),",
+        "    (_ref1 = _ref0.copyToEnd($SC.Integer(2)), $this.c_(_ref1), _ref1),",
+        "  _ref0);",
         "});",
       ],
       ast: {
@@ -746,17 +747,17 @@
     "#a, b = #c, d = [ 0, 1 ]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = (_ref = $SC.Array([",
+        "  var _ref0, _ref1, _ref2;",
+        "  return (_ref0 = (_ref1 = $SC.Array([",
         "    $SC.Integer(0),",
         "    $SC.Integer(1),",
         "  ]),",
-        "    $this.c_(_ref.at($SC.Integer(0))),",
-        "    $this.d_(_ref.at($SC.Integer(1))),",
-        "  _ref),",
-        "    $this.a_(_ref.at($SC.Integer(0))),",
-        "    $this.b_(_ref.at($SC.Integer(1))),",
-        "  _ref);",
+        "    (_ref2 = _ref1.at($SC.Integer(0)), $this.c_(_ref2), _ref2),",
+        "    (_ref2 = _ref1.at($SC.Integer(1)), $this.d_(_ref2), _ref2),",
+        "  _ref1),",
+        "    (_ref1 = _ref0.at($SC.Integer(0)), $this.a_(_ref1), _ref1),",
+        "    (_ref1 = _ref0.at($SC.Integer(1)), $this.b_(_ref1), _ref1),",
+        "  _ref0);",
         "});",
       ],
       ast: {
@@ -908,7 +909,8 @@
     "a.b.c = 1": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a().b().c_($SC.Integer(1));",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Integer(1), $this.a().b().c_(_ref0), _ref0);",
         "});",
       ],
       ast: {
@@ -945,6 +947,7 @@
                 end  : { line: 1, column: 3 }
               }
             },
+            stamp: "=",
             method: {
               type: Syntax.Identifier,
               name: "c_",
@@ -2075,10 +2078,11 @@
     "a[b[c=0;1]=0;1]": {
       compiled: [
         "SCScript(function($this, $SC) {",
+        "  var _ref0;",
         "  return $this.a().at(" +
-          "($this.b().put(" +
-          "($this.c_($SC.Integer(0)), $SC.Integer(1)), $SC.Integer(0)" +
-          "), $SC.Integer(1))" +
+          "($this.b().put((" +
+          "(_ref0 = $SC.Integer(0), $this.c_(_ref0), _ref0), " +
+          "$SC.Integer(1)), $SC.Integer(0)), $SC.Integer(1))" +
           ");",
         "});",
       ],
@@ -3491,9 +3495,10 @@
     "a = #{}": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a_($SC.Function(function() {",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Function(function() {",
         "    return $SC.Nil();",
-        "  }, '', true));",
+        "  }, '', true), $this.a_(_ref0), _ref0);",
         "});",
       ],
       ast: {
@@ -3956,10 +3961,10 @@
     "var a; #a = [];": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var $a = $SC.Nil(), _ref;",
-        "  return (_ref = $SC.Array([]),",
-        "    $a = _ref.at($SC.Integer(0)),",
-        "  _ref);",
+        "  var $a = $SC.Nil(), _ref0;",
+        "  return (_ref0 = $SC.Array([]),",
+        "    $a = _ref0.at($SC.Integer(0)),",
+        "  _ref0);",
         "});",
       ],
       ast: {
@@ -4423,8 +4428,8 @@
     "max(0, 1, 2, *a, a: 5, b: 6)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Integer(0), _ref0.max.apply(_ref0, [",
         "    $SC.Integer(1),",
         "    $SC.Integer(2),",
         "  ].concat($this.a().asArray()._, { a: $SC.Integer(5), b: $SC.Integer(6) })));",
@@ -4527,8 +4532,8 @@
     "max(1, 2, *a)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = $SC.Integer(1), _ref.max.apply(_ref, [",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Integer(1), _ref0.max.apply(_ref0, [",
         "    $SC.Integer(2),",
         "  ].concat($this.a().asArray()._)));",
         "});",
@@ -4669,8 +4674,8 @@
     "max(0, *a, a: 3)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [" +
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Integer(0), _ref0.max.apply(_ref0, [" +
           "].concat($this.a().asArray()._, { a: $SC.Integer(3) })));",
         "});",
       ],
@@ -4740,8 +4745,8 @@
     "max(0, *a)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = $SC.Integer(0), _ref.max.apply(_ref, [" +
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Integer(0), _ref0.max.apply(_ref0, [" +
           "].concat($this.a().asArray()._)));",
         "});",
       ],
@@ -5119,7 +5124,11 @@
     "a = (1; 2; 3)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a_(($SC.Integer(1), $SC.Integer(2), $SC.Integer(3)));",
+        "  var _ref0;",
+        "  return (_ref0 = " +
+          "($SC.Integer(1), $SC.Integer(2), $SC.Integer(3)), " +
+          "$this.a_(_ref0), " +
+          "_ref0);",
         "});",
       ],
       ast: {
@@ -5186,11 +5195,12 @@
     "a = (var a = 1; a)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.a_((function() {",
+        "  var _ref0;",
+        "  return (_ref0 = (function() {",
         "    var $a = $SC.Nil();",
         "    $a = $SC.Integer(1);",
         "    return $a;",
-        "  })());",
+        "  })(), $this.a_(_ref0), _ref0);",
         "});",
       ],
       ast: {
@@ -6287,8 +6297,8 @@
     "a.value(*[])": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  var _ref;",
-        "  return (_ref = $this.a(), _ref.value.apply(_ref, [" +
+        "  var _ref0;",
+        "  return (_ref0 = $this.a(), _ref0.value.apply(_ref0, [" +
           "].concat($SC.Array([]).asArray()._)));",
         "});",
       ],
@@ -6922,14 +6932,15 @@
     "x = ( a: 1, b: 2, 3: 4 )": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.x_($SC.Event([",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Event([",
         "    $SC.Symbol('a'),",
         "    $SC.Integer(1),",
         "    $SC.Symbol('b'),",
         "    $SC.Integer(2),",
         "    $SC.Integer(3),",
         "    $SC.Integer(4),",
-        "  ]));",
+        "  ]), $this.x_(_ref0), _ref0);",
         "});",
       ],
       ast: {
@@ -7034,14 +7045,15 @@
     "x = ( a : 1, b : 2, c : 3 )": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.x_($SC.Event([",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Event([",
         "    $this.a(),",
         "    $SC.Integer(1),",
         "    $this.b(),",
         "    $SC.Integer(2),",
         "    $this.c(),",
         "    $SC.Integer(3),",
-        "  ]));",
+        "  ]), $this.x_(_ref0), _ref0);",
         "});",
       ],
       ast: {
@@ -7143,12 +7155,13 @@
     "x = (1 + 2: 3, 4: 5)": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.x_($SC.Event([",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Event([",
         "    $SC.Integer(1) ['+'] ($SC.Integer(2)),",
         "    $SC.Integer(3),",
         "    $SC.Integer(4),",
         "    $SC.Integer(5),",
-        "  ]));",
+        "  ]), $this.x_(_ref0), _ref0);",
         "});",
       ],
       ast: {
@@ -7252,9 +7265,10 @@
     "f = _ + _": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.f_($SC.Function(function($_0, $_1) {",
+        "  var _ref0;",
+        "  return (_ref0 = $SC.Function(function($_0, $_1) {",
         "    return $_0 ['+'] ($_1);",
-        "  }));",
+        "  }), $this.f_(_ref0), _ref0);",
         "});",
       ],
       ast: {

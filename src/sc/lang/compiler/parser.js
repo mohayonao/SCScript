@@ -390,7 +390,7 @@
   };
 
   SCParser.prototype.parseSimpleAssignmentExpression = function() {
-    var node, left, right, token, marker;
+    var node, left, right, token, methodName, marker;
 
     node = left = this.parsePartialExpression();
 
@@ -400,9 +400,12 @@
 
         token = this.lex();
         right = this.parseAssignmentExpression();
-        left.method.name = renameGetterToSetter(left.method.name);
+        methodName = renameGetterToSetter(left.method.name);
+        left.method.name = methodName;
         left.args.list   = node.args.list.concat(right);
-
+        if (methodName.charAt(methodName.length - 1) === "_") {
+          left.stamp = "=";
+        }
         node = marker.update().apply(left, true);
       } else {
         if (!isLeftHandSide(left)) {

@@ -6,7 +6,7 @@
   sc.libs = {};
 
   function SCScript(fn) {
-    return fn(sc.lang.$SC);
+    return fn(sc.lang.klass.$interpreter, sc.lang.$SC);
   }
 
   SCScript.install = function(installer) {

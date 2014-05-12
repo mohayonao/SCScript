@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.22" };
+var sc = { VERSION: "0.0.23" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -4431,6 +4431,7 @@ var sc = { VERSION: "0.0.22" };
 (function(sc) {
 
   var $SC   = sc.lang.$SC;
+  var fn    = sc.lang.fn;
   var klass = sc.lang.klass;
 
   function SCNil() {
@@ -4560,6 +4561,12 @@ var sc = { VERSION: "0.0.22" };
     __tag: 12
   });
 
+  function SCRef(args) {
+    this.__initializeWith__("Object");
+    this._value = args[0] || /* istanbul ignore next */ $nil;
+  }
+  sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
+
   function SCInterpreter() {
     this.__initializeWith__("Object");
   }
@@ -4660,10 +4667,14 @@ var sc = { VERSION: "0.0.22" };
     return instance;
   };
 
-  $SC.Function = function(value) {
+  $SC.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = value;
+    instance._ = def ? fn(value, def) : value;
     return instance;
+  };
+
+  $SC.Ref = function(value) {
+    return new SCRef([ value ]);
   };
 
   sc.lang.klass.$interpreter = new SCInterpreter();
@@ -8320,14 +8331,8 @@ var sc = { VERSION: "0.0.22" };
 (function(sc) {
 
   var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
 
-  function SCRef(args) {
-    this.__initializeWith__("Object");
-    this._value = args[0] || $SC.Nil();
-  }
-
-  sc.lang.klass.define(SCRef, "Ref : AbstractFunction", function(spec, utils) {
+  sc.lang.klass.refine("Ref", function(spec, utils) {
     spec.valueOf = function() {
       return this._value.valueOf();
     };
@@ -12352,8 +12357,8 @@ var sc = { VERSION: "0.0.22" };
     };
 
     spec.asString = function() {
-      return $SC.String("[ " + this._.map(function(elem) {
-        return elem.__str__();
+      return $SC.String("[ " + this._.map(function($elem) {
+        return $elem.asString().__str__();
       }).join(", ") + " ]");
     };
   });

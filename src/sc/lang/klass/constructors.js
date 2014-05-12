@@ -2,8 +2,10 @@
   "use strict";
 
   require("./klass");
+  require("../fn");
 
   var $SC   = sc.lang.$SC;
+  var fn    = sc.lang.fn;
   var klass = sc.lang.klass;
 
   function SCNil() {
@@ -133,6 +135,12 @@
     __tag: sc.C.TAG_FUNCTION
   });
 
+  function SCRef(args) {
+    this.__initializeWith__("Object");
+    this._value = args[0] || /* istanbul ignore next */ $nil;
+  }
+  sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
+
   function SCInterpreter() {
     this.__initializeWith__("Object");
   }
@@ -234,10 +242,14 @@
     return instance;
   };
 
-  $SC.Function = function(value) {
+  $SC.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = value;
+    instance._ = def ? fn(value, def) : value;
     return instance;
+  };
+
+  $SC.Ref = function(value) {
+    return new SCRef([ value ]);
   };
 
   sc.lang.klass.$interpreter = new SCInterpreter();

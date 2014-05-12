@@ -39,6 +39,10 @@
           return "keyword";
         }
 
+        if (stream.match(/[a-z]\w*/)) {
+          return "atom";
+        }
+
         if (stream.match(/[A-Z]\w*/)) {
           return "class";
         }

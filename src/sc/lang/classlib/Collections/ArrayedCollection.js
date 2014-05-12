@@ -756,8 +756,8 @@
     };
 
     spec.asString = function() {
-      return $SC.String("[ " + this._.map(function(elem) {
-        return elem.__str__();
+      return $SC.String("[ " + this._.map(function($elem) {
+        return $elem.asString().__str__();
       }).join(", ") + " ]");
     };
   });

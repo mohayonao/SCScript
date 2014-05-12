@@ -2,59 +2,103 @@
   "use strict";
 
   require("./fn");
+  require("./klass/utils");
 
-  var fn = sc.lang.fn;
+  var fn   = sc.lang.fn;
+  var $SC  = sc.lang.$SC;
+  var $nil = sc.lang.klass.utils.$nil;
 
   describe("sc.lang.fn", function() {
-    it("'a, b, c': call(1, 2) should pass [ 1, 2 ]", function() {
+    it("default arguments", function() {
       var instance, spy;
 
       spy = sinon.spy();
       instance = {
-        func: fn(spy, "a, b, c")
+        func: fn(spy, "a; b=nil; c=true; d=false; e=0; f=0.0; g=inf; h=-inf; i=\\symbol; j=$j")
       };
 
-      instance.func(1, 2);
+      instance.func(null, null, null, null);
 
-      expect(spy).to.be.calledWith(1, 2);
+      expect(spy.args[0][0]).to.be.a("SCNil");
+      expect(spy.args[0][1]).to.be.a("SCNil");
+      expect(spy.args[0][2]).to.be.a("SCBoolean").that.is.true;
+      expect(spy.args[0][3]).to.be.a("SCBoolean").that.is.false;
+      expect(spy.args[0][4]).to.be.a("SCInteger").that.equals(0);
+      expect(spy.args[0][5]).to.be.a("SCFloat").that.equals(0.0);
+      expect(spy.args[0][6]).to.be.a("SCFloat").that.equals(Infinity);
+      expect(spy.args[0][7]).to.be.a("SCFloat").that.equals(-Infinity);
+      expect(spy.args[0][8]).to.be.a("SCSymbol").that.equals("symbol");
+      expect(spy.args[0][9]).to.be.a("SCChar").that.equals("j");
     });
-    it("'a, b, c': call(1, { c: 3 }) should pass [ 1, undef, 3 ]", function() {
+    it("default arguments (list)", function() {
       var instance, spy;
 
       spy = sinon.spy();
       instance = {
-        func: fn(spy, "a, b, c")
+        func: fn(spy, "a=[ 0, 1, 2 ]")
       };
 
-      instance.func(1, { c: 3 });
+      instance.func();
 
-      expect(spy).to.be.calledWith(1, undefined, 3);
+      expect(spy.args[0][0]).to.be.a("SCArray").that.eqls([ 0, 1, 2 ]);
     });
-    it("'a, b, c': call(1, { x: 3 }) should pass [ 1, undef, undef ]", function() {
+    it("meta data", function() {
+      var func;
+
+      func = fn(function() {}, "a=1; b=1.0");
+
+      expect(func._argNames).to.be.a("JSArray").that.eqls([ "a", "b" ]);
+      expect(func._argVals ).to.be.a("JSArray").that.eqls([ $SC.Integer(1), $SC.Float(1.0) ]);
+    });
+    it("'a, b, c': call($arg1, { c: $argC }) should pass [ $arg1, $nil, $argC ]", function() {
+      var instance, spy;
+      var $arg1, $argC, $argD;
+
+      $arg1 = sc.test.object();
+      $argC = sc.test.object();
+      $argD = sc.test.object();
+
+      spy = sinon.spy();
+      instance = {
+        func: fn(spy, "a; b; c")
+      };
+
+      instance.func($arg1, { c: $argC, d: $argD });
+
+      expect(spy).to.be.calledWith($arg1, $nil, $argC);
+    });
+    it("'*a'", function() {
       var instance, spy;
 
       spy = sinon.spy();
       instance = {
-        func: fn(spy, "a, b, c")
+        func: fn(spy, "*a")
       };
 
-      instance.func(1, { x: 3 });
+      instance.func();
 
-      expect(spy).to.be.calledWith(1, undefined, undefined);
+      expect(spy.args[0][0]).to.be.a("SCArray").that.eqls([ ]);
     });
     it("'a, b, *c': call(1, 2, 3, 4, 5) should pass [ 1, 2, [ 3, 4, 5 ] ]", function() {
       var instance, spy;
+      var $arg1, $arg2, $arg3, $arg4, $arg5;
+
+      $arg1 = sc.test.object();
+      $arg2 = sc.test.object();
+      $arg3 = sc.test.object();
+      $arg4 = sc.test.object();
+      $arg5 = sc.test.object();
 
       spy = sinon.spy();
       instance = {
-        func: fn(spy, "a, b, *c")
+        func: fn(spy, "a; b; *c")
       };
 
-      instance.func(1, 2, 3, 4, 5);
+      instance.func($arg1, $arg2, $arg3, $arg4, $arg5);
 
-      expect(spy.args[0][0]).to.equal(1);
-      expect(spy.args[0][1]).to.equal(2);
-      expect(spy.args[0][2]).to.be.a("SCArray").that.eqls([ 3, 4, 5 ]);
+      expect(spy.args[0][0]).to.equal($arg1);
+      expect(spy.args[0][1]).to.equal($arg2);
+      expect(spy.args[0][2]).to.be.a("SCArray").that.eqls([ $arg3, $arg4, $arg5 ]);
     });
   });
 })();

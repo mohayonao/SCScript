@@ -6,6 +6,8 @@
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Symbol", function(spec, utils) {
+    var $nil = utils.$nil;
+
     spec.__sym__ = function() {
       return this._;
     };
@@ -40,7 +42,7 @@
       if (sc.lang.klass.exists(this._)) {
         return sc.lang.klass.get(this._);
       }
-      return utils.nilInstance;
+      return $nil;
     };
 
     // TODO: implements asSetter
@@ -156,7 +158,7 @@
     // TODO: Implements storeOn
     // TODO: Implements codegen_UGenCtorArg
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     // TODO: Implements kr
     // TODO: Implements ir

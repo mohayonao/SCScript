@@ -4,13 +4,15 @@
   require("./SimpleNumber");
   require("./bop");
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
-  var mathlib = sc.libs.mathlib;
+  var mathlib  = sc.libs.mathlib;
 
   sc.lang.klass.refine("Integer", function(spec, utils) {
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Integer;
 
@@ -26,7 +28,7 @@
       throw new Error("Integer.new is illegal, should use literal.");
     };
 
-    spec.isInteger = utils.alwaysReturn$True;
+    spec.isInteger = utils.alwaysReturn$true;
 
     // TODO: implements hash
 
@@ -106,10 +108,7 @@
       );
     };
 
-    spec.clip = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.clip = fn(function($lo, $hi) {
       // <-- _ClipInt -->
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -126,12 +125,9 @@
       return $SC.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.wrap = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -148,12 +144,9 @@
       return $SC.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.fold = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.fold = fn(function($lo, $hi) {
       // <-- _FoldInt -->
       if ($lo.__tag === sc.C.TAG_SYM) {
         return $lo;
@@ -170,7 +163,7 @@
       return $SC.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
     spec.even = function() {
       return $SC.Boolean(!(this._ & 1));
@@ -180,14 +173,12 @@
       return $SC.Boolean(!!(this._ & 1));
     };
 
-    spec.xrand = function($exclude) {
-      $exclude = utils.defaultValue$Integer($exclude, 0);
-      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int1)) ["%"] (this);
-    };
+    spec.xrand = fn(function($exclude) {
+      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int_1)) ["%"] (this);
+    }, "exclude=0");
 
-    spec.xrand2 = function($exclude) {
+    spec.xrand2 = fn(function($exclude) {
       var raw, res;
-      $exclude = utils.defaultValue$Integer($exclude, 0);
 
       raw = this._;
       res = (mathlib.rand((2 * raw))|0) - raw;
@@ -197,14 +188,11 @@
       }
 
       return $SC.Integer(res);
-    };
+    }, "exclude=0");
 
-    spec.degreeToKey = function($scale, $stepsPerOctave) {
-      $scale = utils.defaultValue$Nil($scale);
-      $stepsPerOctave = utils.defaultValue$Integer($stepsPerOctave, 12);
-
+    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
       return $scale.performDegreeToKey(this, $stepsPerOctave);
-    };
+    }, "scale; stepsPerOctave=12");
 
     spec.do = function($function) {
       iterator.execute(
@@ -215,20 +203,17 @@
     };
 
     spec.generate = function($function) {
-      $function = utils.defaultValue$Nil($function);
 
       $function.value(this);
 
       return this;
     };
 
-    spec.collectAs = function($function, $class) {
+    spec.collectAs = fn(function($function, $class) {
       var $res;
       var i, imax;
-      $function = utils.defaultValue$Nil($function);
-      $class    = utils.defaultValue$Nil($class);
 
-      if ($class === utils.nilInstance) {
+      if ($class === $nil) {
         $class = SCArray;
       }
 
@@ -238,7 +223,7 @@
       }
 
       return $res;
-    };
+    }, "function; class");
 
     spec.collect = function($function) {
       return this.collectAs($function, SCArray);
@@ -252,26 +237,25 @@
       return this;
     };
 
-    spec.for = function($endval, $function) {
+    spec.for = fn(function($endval, $function) {
       iterator.execute(
         iterator.integer$for(this, $endval),
         $function
       );
       return this;
-    };
+    }, "endval; function");
 
-    spec.forBy = function($endval, $stepval, $function) {
+    spec.forBy = fn(function($endval, $stepval, $function) {
       iterator.execute(
         iterator.integer$forBy(this, $endval, $stepval),
         $function
       );
       return this;
-    };
+    }, "endval; stepval; function");
 
-    spec.to = function($hi, $step) {
-      $step = utils.defaultValue$Integer($step, 1);
-      return $SC.Class("Interval").new(this, $hi, $step);
-    };
+    spec.to = fn(function($hi, $step) {
+      return $SC("Interval").new(this, $hi, $step);
+    }, "hi; step=1");
 
     spec.asAscii = function() {
       // <-- _AsAscii -->
@@ -295,9 +279,8 @@
       throw new Error("Integer: asDigit must be 0 <= this <= 35");
     };
 
-    spec.asBinaryDigits = function($numDigits) {
+    spec.asBinaryDigits = fn(function($numDigits) {
       var raw, array, numDigits, i;
-      $numDigits = utils.defaultValue$Integer($numDigits, 8);
 
       raw = this._;
       numDigits = $numDigits.__int__();
@@ -307,16 +290,14 @@
       }
 
       return $SC.Array(array);
-    };
+    }, "numDigits=8");
 
-    spec.asDigits = function($base, $numDigits) {
+    spec.asDigits = fn(function($base, $numDigits) {
       var $num;
       var array, numDigits, i;
-      $base      = utils.defaultValue$Integer($base, 10);
-      $numDigits = utils.defaultValue$Nil($numDigits);
 
       $num = this;
-      if ($numDigits === utils.nilInstance) {
+      if ($numDigits === $nil) {
         $numDigits = (
           this.log() ["/"] ($base.log() ["+"] ($SC.Float(1e-10)))
         ).asInteger().__inc__();
@@ -331,7 +312,7 @@
       }
 
       return $SC.Array(array);
-    };
+    }, "base=10; numDigits");
 
     // TODO: implements nextPowerOfTwo
     // TODO: implements isPowerOfTwo
@@ -353,15 +334,13 @@
     // TODO: implements asIPString
     // TODO: implements archiveAsCompileString
 
-    spec.geom = function($start, $grow) {
+    spec.geom = fn(function($start, $grow) {
       return SCArray.geom(this, $start, $grow);
-    };
+    }, "start; grow");
 
-    spec.fib = function($a, $b) {
-      $a = utils.defaultValue$Float($a, 0.0);
-      $b = utils.defaultValue$Float($b, 1.0);
+    spec.fib = fn(function($a, $b) {
       return SCArray.fib(this, $a, $b);
-    };
+    }, "a=0.0; b=1.0");
 
     // TODO: implements factors
     // TODO: implements pidRunning

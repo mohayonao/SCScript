@@ -10,7 +10,7 @@
   describe("SCAbstractFunction", function() {
     var SCAbstractFunction;
     before(function() {
-      SCAbstractFunction = $SC.Class("AbstractFunction");
+      SCAbstractFunction = $SC("AbstractFunction");
       this.createInstance = function(func) {
         var instance = $SC.Function(func || function() {});
         var testMethod = this.test.title.substr(1);
@@ -25,7 +25,7 @@
 
       spy = this.spy(sc.test.func);
       $aSelector = sc.test.object();
-      this.stub($SC, "Class").withArgs("UnaryOpFunction").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("UnaryOpFunction").returns(sc.test.object({
         new: spy
       }));
 
@@ -43,7 +43,7 @@
       $aSelector = sc.test.object();
       $something = sc.test.object();
       $adverb    = sc.test.object();
-      this.stub($SC, "Class").withArgs("BinaryOpFunction").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns(sc.test.object({
         new: spy
       }));
 
@@ -61,7 +61,7 @@
       $aSelector = sc.test.object();
       $something = sc.test.object();
       $adverb    = sc.test.object();
-      this.stub($SC, "Class").withArgs("BinaryOpFunction").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns(sc.test.object({
         new: spy
       }));
 
@@ -78,7 +78,7 @@
       spy = this.spy(sc.test.func);
       $aSelector = sc.test.object();
       $anArgList = sc.test.object();
-      this.stub($SC, "Class").withArgs("NAryOpFunction").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("NAryOpFunction").returns(sc.test.object({
         new: spy
       }));
 
@@ -656,7 +656,7 @@
           return $SC.Symbol(rate);
         }
       });
-      this.stub($SC, "Class").withArgs("K2A").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("K2A").returns(sc.test.object({
         ar: spy
       }));
 
@@ -695,7 +695,7 @@
   describe("SCUnaryOpFunction", function() {
     var SCUnaryOpFunction;
     before(function() {
-      SCUnaryOpFunction = $SC.Class("UnaryOpFunction");
+      SCUnaryOpFunction = $SC("UnaryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -748,7 +748,7 @@
   describe("SCBinaryOpFunction", function() {
     var SCBinaryOpFunction;
     before(function() {
-      SCBinaryOpFunction = $SC.Class("BinaryOpFunction");
+      SCBinaryOpFunction = $SC("BinaryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -801,7 +801,7 @@
   describe("SCNAryOpFunction", function() {
     var SCNAryOpFunction;
     before(function() {
-      SCNAryOpFunction = $SC.Class("NAryOpFunction");
+      SCNAryOpFunction = $SC("NAryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -855,7 +855,7 @@
     var SCFunctionList;
     var $int10, $int20, $int5;
     before(function() {
-      SCFunctionList = $SC.Class("FunctionList");
+      SCFunctionList = $SC("FunctionList");
       this.createInstance = function() {
         var instance = SCFunctionList.new($SC.Array([
           $SC.Function(function($a, $b) {

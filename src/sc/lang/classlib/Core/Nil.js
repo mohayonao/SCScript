@@ -4,9 +4,12 @@
   require("./Object");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("Nil", function(spec, utils) {
+    var $nil = utils.$nil;
+
     spec.__num__ = function() {
       return 0;
     };
@@ -27,8 +30,8 @@
       throw new Error("Nil.new is illegal, should use literal.");
     };
 
-    spec.isNil = utils.alwaysReturn$True;
-    spec.notNil = utils.alwaysReturn$False;
+    spec.isNil = utils.alwaysReturn$true;
+    spec.notNil = utils.alwaysReturn$false;
 
     spec["?"] = function($obj) {
       return $obj;
@@ -40,18 +43,16 @@
 
     spec["!?"] = utils.nop;
 
-    spec.asBoolean = utils.alwaysReturn$False;
-    spec.booleanValue = utils.alwaysReturn$False;
+    spec.asBoolean = utils.alwaysReturn$false;
+    spec.booleanValue = utils.alwaysReturn$false;
 
-    spec.push = function($function) {
-      $function = utils.defaultValue$Nil($function);
+    spec.push = fn(function($function) {
       return $function.value();
-    };
+    }, "function");
 
-    spec.appendStream = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.appendStream = fn(function($stream) {
       return $stream;
-    };
+    }, "stream");
 
     spec.pop = utils.nop;
     spec.source = utils.nop;
@@ -59,7 +60,7 @@
 
     spec.rate = utils.nop;
     spec.numChannels = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$False;
+    spec.isPlaying = utils.alwaysReturn$false;
 
     spec.do = utils.nop;
     spec.reverseDo = utils.nop;
@@ -73,7 +74,7 @@
     spec.rejectAs = utils.nop;
 
     spec.dependants = function() {
-      return $SC.Class("IdentitySet").new();
+      return $SC("IdentitySet").new();
     };
 
     spec.changed = utils.nop;
@@ -82,60 +83,51 @@
     spec.release = utils.nop;
     spec.update = utils.nop;
 
-    spec.transformEvent = function($event) {
-      $event = utils.defaultValue$Nil($event);
+    spec.transformEvent = fn(function($event) {
       return $event;
-    };
+    }, "event");
 
-    spec.awake = utils.alwaysReturn$Nil;
+    spec.awake = utils.alwaysReturn$nil;
 
     spec.play = utils.nop;
 
-    spec.nextTimeOnGrid = function($clock) {
-      $clock = utils.defaultValue$Nil($clock);
-
-      if ($clock === utils.nilInstance) {
+    spec.nextTimeOnGrid = fn(function($clock) {
+      if ($clock === $nil) {
         return $clock;
       }
-
       return $SC.Function(function() {
         return $clock.nextTimeOnGrid();
       });
-    };
+    }, "clock");
 
     spec.asQuant = function() {
-      return $SC.Class("Quant").default();
+      return $SC("Quant").default();
     };
 
     spec.swapThisGroup = utils.nop;
     spec.performMsg = utils.nop;
 
-    spec.printOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.printOn = fn(function($stream) {
       $stream.putAll($SC.String("nil"));
       return this;
-    };
+    }, "stream");
 
-    spec.storeOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.storeOn = fn(function($stream) {
       $stream.putAll($SC.String("nil"));
       return this;
-    };
+    }, "stream");
 
-    spec.matchItem = utils.alwaysReturn$True;
+    spec.matchItem = utils.alwaysReturn$true;
 
-    spec.add = function($value) {
-      $value = utils.defaultValue$Nil($value);
+    spec.add = fn(function($value) {
       return $SC.Array([ $value ]);
-    };
+    }, "value");
 
-    spec.addAll = function($array) {
-      $array = utils.defaultValue$Nil($array);
+    spec.addAll = fn(function($array) {
       return $array.asArray();
-    };
+    }, "array");
 
     spec["++"] = function($array) {
-      $array = utils.defaultValue$Nil($array);
       return $array.asArray();
     };
 
@@ -147,17 +139,16 @@
 
     spec.set = utils.nop;
 
-    spec.get = function($prevVal) {
-      $prevVal = utils.defaultValue$Nil($prevVal);
+    spec.get = fn(function($prevVal) {
       return $prevVal;
-    };
+    }, "prevVal");
 
     spec.addFunc = function() {
       var functions = slice.call(arguments);
       if (functions.length <= 1) {
         return functions[0];
       }
-      return $SC.Class("FunctionList").new($SC.Array(functions));
+      return $SC("FunctionList").new($SC.Array(functions));
     };
 
     spec.removeFunc = utils.nop;
@@ -168,10 +159,10 @@
 
     // TODO: implements handleError
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.asSpec = function() {
-      return $SC.Class("ControlSpec").new();
+      return $SC("ControlSpec").new();
     };
 
     spec.superclassesDo = utils.nop;

@@ -3,9 +3,13 @@
 
   require("./ArrayedCollection");
 
+  var fn  = sc.lang.fn;
+  var io  = sc.lang.io;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("String", function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
 
     spec.__str__ = function() {
       return this.valueOf();
@@ -70,13 +74,11 @@
     // TODO: implements stripHTML
     // TODO: implements $scDir
 
-    spec.compare = function($aString, $ignoreCase) {
-      var araw, braw, length, i, a, b, cmp, fn;
-      $aString    = utils.defaultValue$Nil($aString);
-      $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
+    spec.compare = fn(function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, func;
 
       if ($aString.__tag !== sc.C.TAG_STR) {
-        return utils.nilInstance;
+        return $nil;
       }
 
       araw = this._;
@@ -84,17 +86,17 @@
       length = Math.min(araw.length, braw.length);
 
       if ($ignoreCase.__bool__()) {
-        fn = function(ch) {
+        func = function(ch) {
           return ch.toLowerCase();
         };
       } else {
-        fn = function(ch) {
+        func = function(ch) {
           return ch;
         };
       }
       for (i = 0; i < length; i++) {
-        a = fn(araw[i]._).charCodeAt(0);
-        b = fn(braw[i]._).charCodeAt(0);
+        a = func(araw[i]._).charCodeAt(0);
+        b = func(braw[i]._).charCodeAt(0);
         cmp = a - b;
         if (cmp !== 0) {
           return $SC.Integer(cmp < 0 ? -1 : +1);
@@ -108,53 +110,51 @@
       }
 
       return $SC.Integer(cmp);
-    };
+    }, "aString; ignoreCase=false");
 
     spec["<"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() < 0
+        this.compare($aString, $false).valueOf() < 0
       );
     };
 
     spec[">"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() > 0
+        this.compare($aString, $false).valueOf() > 0
       );
     };
 
     spec["<="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() <= 0
+        this.compare($aString, $false).valueOf() <= 0
       );
     };
 
     spec[">="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() >= 0
+        this.compare($aString, $false).valueOf() >= 0
       );
     };
 
     spec["=="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() === 0
+        this.compare($aString, $false).valueOf() === 0
       );
     };
 
     spec["!="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() !== 0
+        this.compare($aString, $false).valueOf() !== 0
       );
     };
 
     // TODO: implements hash
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
-      $aNumber = utils.defaultValue$Nil($aNumber);
       return $aNumber.asString().perform($aSelector, this);
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
-      $aComplex = utils.defaultValue$Nil($aComplex);
       return $aComplex.asString().perform($aSelector, this);
     };
 
@@ -162,7 +162,7 @@
       throw new Error("String:multiChannelPerform. Cannot expand strings.");
     };
 
-    spec.isString = utils.alwaysReturn$True;
+    spec.isString = utils.alwaysReturn$true;
 
     spec.asString = utils.nop;
 
@@ -171,13 +171,29 @@
     };
 
     spec.species = function() {
-      return $SC.Class("String");
+      return $SC("String");
     };
 
-    // TODO: implements postln
-    // TODO: implements post
-    // TODO: implements postcln
-    // TODO: implements postc
+    spec.postln = function() {
+      io.post(this.__str__() + "\n");
+      return this;
+    };
+
+    spec.post = function() {
+      io.post(this.__str__());
+      return this;
+    };
+
+    spec.postcln = function() {
+      io.post("// " + this.__str__() + "\n");
+      return this;
+    };
+
+    spec.postc = function() {
+      io.post("// " + this.__str__());
+      return this;
+    };
+
     // TODO: implements postf
     // TODO: implements format
     // TODO: implements matchRegexp

@@ -11,8 +11,8 @@
   describe("SCSequenceableCollection", function() {
     var SCSequenceableCollection, SCArray;
     before(function() {
-      SCSequenceableCollection = $SC.Class("SequenceableCollection");
-      SCArray = $SC.Class("Array");
+      SCSequenceableCollection = $SC("SequenceableCollection");
+      SCArray = $SC("Array");
       this.createInstance = function(source, immutable) {
         var instance = $SC.Array((source||[]).map($), !!immutable);
         var testMethod = this.test.title.substr(1);

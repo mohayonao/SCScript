@@ -8,7 +8,7 @@
   describe("SCBoolean", function() {
     var SCBoolean;
     before(function() {
-      SCBoolean = $SC.Class("Boolean");
+      SCBoolean = $SC("Boolean");
       this.createInstance = function(value) {
         var instance = $SC.Boolean(!!value);
         var testMethod = this.test.title.substr(1);
@@ -85,7 +85,7 @@
   describe("SCTrue", function() {
     var SCTrue;
     before(function() {
-      SCTrue = $SC.Class("True");
+      SCTrue = $SC("True");
       this.createInstance = function() {
         return $SC.True();
       };
@@ -192,7 +192,7 @@
   describe("SCFalse", function() {
     var SCFalse;
     before(function() {
-      SCFalse = $SC.Class("False");
+      SCFalse = $SC("False");
       this.createInstance = function() {
         return $SC.False();
       };

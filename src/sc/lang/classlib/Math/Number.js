@@ -3,11 +3,12 @@
 
   require("./Magnitude");
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Number", function(spec, utils) {
-    spec.isNumber = utils.alwaysReturn$True;
+    spec.isNumber = utils.alwaysReturn$true;
 
     spec["+"] = function() {
       return this._subclassResponsibility("+");
@@ -39,7 +40,6 @@
 
     spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
       var $this = this;
-      $aSeqColl = utils.defaultValue$Nil($aSeqColl);
 
       return $aSeqColl.collect($SC.Function(function($item) {
         return $item.perform($aSelector, $this, $adverb);
@@ -64,29 +64,29 @@
     // TODO: implements complex
     // TODO: implements polar
 
-    spec.for = function($endValue, $function) {
+    spec.for = fn(function($endValue, $function) {
       iterator.execute(
         iterator.number$for(this, $endValue),
         $function
       );
       return this;
-    };
+    }, "endValue; function");
 
-    spec.forBy = function($endValue, $stepValue, $function) {
+    spec.forBy = fn(function($endValue, $stepValue, $function) {
       iterator.execute(
         iterator.number$forBy(this, $endValue, $stepValue),
         $function
       );
       return this;
-    };
+    }, "endValue; stepValue; function");
 
-    spec.forSeries = function($second, $last, $function) {
+    spec.forSeries = fn(function($second, $last, $function) {
       iterator.execute(
         iterator.number$forSeries(this, $second, $last),
         $function
       );
       return this;
-    };
+    }, "second; last; function");
   });
 
 })(sc);

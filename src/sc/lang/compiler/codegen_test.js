@@ -2,21 +2,20 @@
   "use strict";
 
   require("./codegen");
-  require("../test/parser-test-case");
+  require("./test-cases");
 
-  describe("sc.lang.codegen", function() {
-    var codegen = sc.lang.codegen;
-    var Syntax = sc.lang.parser.Syntax;
-    var Token  = sc.lang.parser.Message;
-    var SCScript = sc.SCScript;
+  var codegen  = sc.lang.compiler.codegen;
+  var Syntax   = sc.lang.compiler.Syntax;
+  var Token    = sc.lang.compiler.Message;
 
+  describe("sc.lang.compiler.codegen", function() {
     function s(str) {
       str = JSON.stringify(str);
       return '"' + str.substr(1, str.length - 2) + '"';
     }
 
     describe("compile", function() {
-      var cases = sc.test.parser.cases;
+      var cases = sc.test.compiler.cases;
 
       Object.keys(cases).forEach(function(source) {
         var items, compiled, ast, mocha_it;
@@ -38,19 +37,34 @@
         if (!Array.isArray(compiled)) {
           compiled = [ compiled ];
         }
-        compiled = esprima.parse(compiled.join("\n"));
 
         mocha_it(s(source), function() {
-          var code = codegen.compile(ast);
-          var test = esprima.parse(code);
+          var code, test;
+
+          code = compiled.join("\n");
+          expect(function() {
+            esprima.parse(code);
+          }).to.not.throw();
+
+          test = codegen.compile(ast).split("\n");
           expect(test).to.eqls(compiled);
         });
       });
     });
     describe("compile", function() {
       it("with bare", function() {
-        var source = "nil";
-        var test = esprima.parse(SCScript.compile(source, { bare: true }));
+        var ast = {
+          type: Syntax.Program,
+          body: [
+            {
+              type: Syntax.Literal,
+              value: "null",
+              valueType: Token.NilLiteral
+            }
+          ]
+        };
+        var source = codegen.compile(ast, { bare: true });
+        var test = esprima.parse(source);
         var compiled = esprima.parse(
           "(function($this, $SC) { return $SC.Nil(); })"
         );

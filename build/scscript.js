@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.13" };
+var sc = { VERSION: "0.0.23" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -11,16 +11,3545 @@ var sc = { VERSION: "0.0.13" };
   sc.libs = {};
 
   function SCScript(fn) {
-    return fn(sc.lang.$SC);
+    return fn(sc.lang.klass.$interpreter, sc.lang.$SC);
   }
 
   SCScript.install = function(installer) {
     installer(sc);
   };
 
+  // istanbul ignore next
+  SCScript.stdout = function(msg) {
+    console.log(msg);
+  };
+
+  // istanbul ignore next
+  SCScript.stderr = function(msg) {
+    console.error(msg);
+  };
+
   SCScript.VERSION = sc.VERSION;
 
   global.SCScript = sc.SCScript = SCScript;
+
+})(sc);
+
+// src/sc/lang/compiler/compiler.js
+(function(sc) {
+
+  var compiler = {
+    Token: {
+      CharLiteral: "Char",
+      EOF: "<EOF>",
+      FalseLiteral: "False",
+      FloatLiteral: "Float",
+      Identifier: "Identifier",
+      IntegerLiteral: "Integer",
+      Keyword: "Keyword",
+      Label: "Label",
+      NilLiteral: "Nil",
+      Punctuator: "Punctuator",
+      StringLiteral: "String",
+      SymbolLiteral: "Symbol",
+      TrueLiteral: "True"
+    },
+    Syntax: {
+      AssignmentExpression: "AssignmentExpression",
+      BinaryExpression: "BinaryExpression",
+      BlockExpression: "BlockExpression",
+      CallExpression: "CallExpression",
+      FunctionExpression: "FunctionExpression",
+      GlobalExpression: "GlobalExpression",
+      Identifier: "Identifier",
+      ListExpression: "ListExpression",
+      Label: "Label",
+      Literal: "Literal",
+      ObjectExpression: "ObjectExpression",
+      Program: "Program",
+      ThisExpression: "ThisExpression",
+      UnaryExpression: "UnaryExpression",
+      VariableDeclaration: "VariableDeclaration",
+      VariableDeclarator: "VariableDeclarator"
+    },
+    Message: {
+      ArgumentAlreadyDeclared: "argument '%0' already declared",
+      InvalidLHSInAssignment: "invalid left-hand side in assignment",
+      NotImplemented: "not implemented %0",
+      UnexpectedEOS: "unexpected end of input",
+      UnexpectedIdentifier: "unexpected identifier",
+      UnexpectedNumber: "unexpected number",
+      UnexpectedLiteral: "unexpected %0",
+      UnexpectedToken: "unexpected token %0",
+      VariableAlreadyDeclared: "variable '%0' already declared",
+      VariableNotDefined: "variable '%0' not defined"
+    },
+    Keywords: {
+      var: "keyword",
+      arg: "keyword",
+      const: "keyword",
+      this: "function",
+      thisThread: "function",
+      thisProcess: "function",
+      thisFunction: "function",
+      thisFunctionDef: "function",
+    }
+  };
+
+  sc.lang.compiler = compiler;
+
+  var SCScript = sc.SCScript;
+
+  SCScript.tokenize = function(source, opts) {
+    return new compiler.lexer(source, opts).tokenize();
+  };
+
+  SCScript.parse = function(source, opts) {
+    return compiler.parser.parse(source, opts);
+  };
+
+  SCScript.compile = function(source, opts) {
+    return compiler.codegen.compile(SCScript.parse(source, opts), opts);
+  };
+
+})(sc);
+
+// src/sc/lang/compiler/scope.js
+(function(sc) {
+
+  var Message = sc.lang.compiler.Message;
+
+  function Scope(methods) {
+    var f = function(parent) {
+      this.parent = parent;
+      this.stack  = [];
+    };
+
+    function F() {}
+    F.prototype = Scope;
+    f.prototype = new F();
+
+    Object.keys(methods).forEach(function(key) {
+      f.prototype[key] = methods[key];
+    });
+
+    return f;
+  }
+
+  Scope.add = function(type, id, scope) {
+    var peek = this.stack[this.stack.length - 1];
+    var vars, args, declared, stmt, indent;
+
+    if (scope) {
+      vars = scope.vars;
+      args = scope.args;
+      declared = scope.declared;
+      stmt = scope.stmt;
+      indent = scope.indent;
+    } else {
+      vars = peek.vars;
+      args = peek.args;
+      declared = peek.declared;
+      stmt = peek.stmt;
+      indent = peek.indent;
+    }
+
+    if (args[id]) {
+      this.parent.throwError({}, Message.ArgumentAlreadyDeclared, id);
+    }
+
+    if (vars[id] && id.charAt(0) !== "_") {
+      this.parent.throwError({}, Message.VariableAlreadyDeclared, id);
+    }
+
+    switch (type) {
+    case "var":
+      if (!vars[id]) {
+        this.add_delegate(stmt, id, indent, peek, scope);
+        vars[id] = true;
+        delete declared[id];
+      }
+      break;
+    case "arg":
+      args[id] = true;
+      delete declared[id];
+      break;
+    }
+  };
+
+  Scope.add_delegate = function() {
+  };
+
+  Scope.end = function() {
+    this.stack.pop();
+  };
+
+  Scope.getDeclaredVariable = function() {
+    var peek = this.stack[this.stack.length - 1];
+    var declared = {};
+
+    if (peek) {
+      Array.prototype.concat.apply([], [
+        peek.declared, peek.args, peek.vars
+      ].map(Object.keys)).forEach(function(key) {
+        declared[key] = true;
+      });
+    }
+
+    return declared;
+  };
+
+  Scope.find = function(id) {
+    var peek = this.stack[this.stack.length - 1];
+    return peek.vars[id] || peek.args[id] || peek.declared[id];
+  };
+
+  Scope.peek = function() {
+    return this.stack[this.stack.length - 1];
+  };
+
+  sc.lang.compiler.scope = Scope;
+
+})(sc);
+
+// src/sc/lang/compiler/codegen.js
+(function(sc) {
+
+  var codegen = {};
+  var Syntax  = sc.lang.compiler.Syntax;
+  var Token   = sc.lang.compiler.Token;
+  var Message = sc.lang.compiler.Message;
+  var SegmentedMethod = {
+    idle : true,
+    sleep: true,
+    wait : true,
+    yield: true
+  };
+
+  var Scope = sc.lang.compiler.scope({
+    add_delegate: function(stmt, id, indent, peek, scope) {
+      if (stmt.vars.length === 0) {
+        this._addNewVariableStatement(stmt, id, indent);
+      } else {
+        this._appendVariable(stmt, id);
+      }
+      if (scope) {
+        peek.declared[id] = true;
+      }
+    },
+    _addNewVariableStatement: function(stmt, id, indent) {
+      stmt.head.push(indent, "var ");
+      stmt.vars.push($id(id));
+      if (id.charAt(0) !== "_") {
+        stmt.vars.push(" = $SC.Nil()");
+      }
+      stmt.tail.push(";", "\n");
+    },
+    _appendVariable: function(stmt, id) {
+      stmt.vars.push(
+        ", ", $id(id)
+      );
+      if (id.charAt(0) !== "_") {
+        stmt.vars.push(" = $SC.Nil()");
+      }
+    },
+    begin: function(stream, args) {
+      var declared = this.getDeclaredVariable();
+      var stmt = { head: [], vars: [], tail: [] };
+      var i, imax;
+
+      this.stack.push({
+        vars    : {},
+        args    : {},
+        declared: declared,
+        indent  : this.parent.base,
+        stmt    : stmt
+      });
+
+      for (i = 0, imax = args.length; i < imax; i++) {
+        this.add("arg", args[i]);
+      }
+
+      stream.push(stmt.head, stmt.vars, stmt.tail);
+    },
+    begin_ref: function() {
+      var refId   = (this._refId | 0);
+      var refName = "_ref" + refId;
+      this.add("var", refName);
+      this._refId = refId + 1;
+      return refName;
+    },
+    end_ref: function() {
+      var refId = (this._refId | 0) - 1;
+      this._refId = Math.max(0, refId);
+    }
+  });
+
+  function CodeGen(opts) {
+    this.opts = opts || {};
+    this.base = "";
+    this.state = {
+      calledSegmentedMethod: false,
+      syncBlockScope: null
+    };
+    this.scope = new Scope(this);
+    if (typeof this.opts.bare === "undefined") {
+      this.opts.bare = false;
+    }
+  }
+
+  CodeGen.prototype.toSourceNodeWhenNeeded = function(generated) {
+    if (Array.isArray(generated)) {
+      return this.flattenToString(generated);
+    }
+    return generated;
+  };
+
+  CodeGen.prototype.flattenToString = function(list) {
+    var i, imax, e, result = "";
+    for (i = 0, imax = list.length; i < imax; ++i) {
+      e = list[i];
+      result += Array.isArray(e) ? this.flattenToString(e) : e;
+    }
+    return result;
+  };
+
+  CodeGen.prototype.addIndent = function(stmt) {
+    return [ this.base, stmt ];
+  };
+
+  CodeGen.prototype.generate = function(node, opts) {
+    var result;
+
+    if (Array.isArray(node)) {
+      result = [
+        "(", this.stitchWith(node, ", ", function(item) {
+          return this.generate(item, opts);
+        }), ")"
+      ];
+    } else if (node && node.type) {
+      result = this[node.type](node, opts);
+      result = this.toSourceNodeWhenNeeded(result, node);
+    } else if (typeof node === "string") {
+      result = $id(node);
+    } else {
+      result = node;
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.withFunction = function(args, fn) {
+    var result;
+    var argItems, base, body;
+
+    argItems = this.stitchWith(args, ", ", function(item) {
+      return this.generate(item);
+    });
+
+    result = [ "function(", argItems, ") {\n" ];
+
+    base = this.base;
+    this.base += "  ";
+
+    this.scope.begin(result, args);
+
+    body = fn.call(this);
+
+    if (body.length) {
+      result.push(body);
+    } else {
+      result.push(this.base, "return $SC.Nil();");
+    }
+
+    this.scope.end();
+
+    this.base = base;
+
+    result.push("\n", this.base, "}");
+
+    return result;
+  };
+
+  CodeGen.prototype.withIndent = function(fn) {
+    var base, result;
+
+    base = this.base;
+    this.base += "  ";
+    result = fn.call(this);
+    this.base = base;
+
+    return result;
+  };
+
+  CodeGen.prototype.insertArrayElement = function(elements) {
+    var result, items;
+
+    result = [ "[", "]" ];
+
+    if (elements.length) {
+      items = this.withIndent(function() {
+        return this.stitchWith(elements, "\n", function(item) {
+          return [ this.base, this.generate(item), "," ];
+        });
+      });
+      result.splice(1, 0, "\n", items, "\n", this.base);
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.insertKeyValueElement = function(keyValues, with_comma) {
+    var result = [];
+
+    if (keyValues) {
+      if (with_comma) {
+        result.push(", ");
+      }
+      result.push(
+        "{ ", this.stitchWith(Object.keys(keyValues), ", ", function(key) {
+          return [ key, ": ", this.generate(keyValues[key]) ];
+        }), " }"
+      );
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.stitchWith = function(elements, bond, fn) {
+    var result, item;
+    var count, i, imax;
+
+    result = [];
+    for (i = count = 0, imax = elements.length; i < imax; ++i) {
+      if (count) {
+        result.push(bond);
+      }
+
+      item = fn.call(this, elements[i], i);
+
+      if (typeof item !== "undefined") {
+        result.push(item);
+        count += 1;
+      }
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.throwError = function(obj, messageFormat) {
+    var args, message;
+
+    args = Array.prototype.slice.call(arguments, 2);
+    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
+      return args[index];
+    });
+
+    throw new Error(message);
+  };
+
+  CodeGen.prototype.AssignmentExpression = function(node) {
+    if (Array.isArray(node.left)) {
+      return this._DestructuringAssignment(node);
+    }
+
+    return this._SimpleAssignment(node);
+  };
+
+  CodeGen.prototype._SimpleAssignment = function(node) {
+    var result = [];
+    var opts;
+
+    opts = { right: node.right, used: false };
+
+    result.push(this.generate(node.left, opts));
+
+    if (!opts.used) {
+      result.push(" " + node.operator + " ", this.generate(opts.right));
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype._DestructuringAssignment = function(node) {
+    var elements = node.left;
+    var operator = node.operator;
+    var assignments;
+    var result;
+    var ref;
+
+    ref = this.scope.begin_ref();
+
+    assignments = this.withIndent(function() {
+      var result, lastUsedIndex;
+
+      lastUsedIndex = elements.length;
+
+      result = [
+        this.stitchWith(elements, ",\n", function(item, i) {
+          return this.addIndent(this._Assign(
+            item, operator, ref + ".at($SC.Integer(" + i + "))"
+          ));
+        })
+      ];
+
+      if (node.remain) {
+        result.push(",\n", this.addIndent(this._Assign(
+          node.remain, operator, ref + ".copyToEnd($SC.Integer(" + lastUsedIndex + "))"
+        )));
+      }
+
+      return result;
+    });
+
+    result = [
+      "(" + ref + " = ", this.generate(node.right), ",\n",
+      assignments , ",\n",
+      this.addIndent(ref + ")")
+    ];
+
+    this.scope.end_ref();
+
+    return result;
+  };
+
+  CodeGen.prototype._Assign = function(left, operator, right) {
+    var result = [];
+    var opts;
+
+    opts = { right: right, used: false };
+
+    result.push(this.generate(left, opts));
+
+    if (!opts.used) {
+      result.push(" " + operator + " ", right);
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.BinaryExpression = function(node) {
+    var operator = node.operator;
+
+    if (operator === "===" || operator === "!==") {
+      return this._EqualityOperator(node);
+    }
+
+    return this._BinaryExpression(node);
+  };
+
+  CodeGen.prototype._EqualityOperator = function(node) {
+    return [
+      "$SC.Boolean(",
+      this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
+      ")"
+    ];
+  };
+
+  CodeGen.prototype._BinaryExpression = function(node) {
+    var result, operator, ch;
+
+    result   = [ this.generate(node.left) ];
+    operator = node.operator;
+
+    ch = operator.charCodeAt(0);
+
+    if (0x61 <= ch && ch <= 0x7a) {
+      result.push(".", operator);
+    } else {
+      result.push(" ['", operator, "'] ");
+    }
+
+    result.push("(", this.generate(node.right));
+    if (node.adverb) {
+      result.push(", ", this.generate(node.adverb));
+    }
+    result.push(")");
+
+    return result;
+  };
+
+  CodeGen.prototype.BlockExpression = function(node) {
+    var body = this.withFunction([], function() {
+      return this._Statements(node.body);
+    });
+
+    return [ "(", body, ")()" ];
+  };
+
+  CodeGen.prototype.CallExpression = function(node) {
+    if (isSegmentedMethod(node)) {
+      this.state.calledSegmentedMethod = true;
+    }
+
+    if (node.args.expand) {
+      return this._ExpandCall(node);
+    }
+
+    return this._SimpleCall(node);
+  };
+
+  CodeGen.prototype._SimpleCall = function(node) {
+    var args;
+    var list;
+    var hasActualArgument;
+    var result;
+    var ref;
+
+    list = node.args.list;
+    hasActualArgument = !!list.length;
+
+    if (node.stamp === "=") {
+      ref = this.scope.begin_ref();
+      result = [
+        "(" + ref + " = ", this.generate(list[0]), ", ",
+        this.generate(node.callee), ".", node.method.name, "(" + ref + "), ",
+        ref + ")"
+      ];
+      this.scope.end_ref();
+    } else {
+      args = [
+        this.stitchWith(list, ", ", function(item) {
+          return this.generate(item);
+        }),
+        this.insertKeyValueElement(node.args.keywords, hasActualArgument)
+      ];
+      result = [
+        this.generate(node.callee), ".", node.method.name, "(", args, ")"
+      ];
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype._ExpandCall = function(node) {
+    var result;
+    var ref;
+
+    ref = this.scope.begin_ref();
+
+    result = [
+      "(" + ref + " = ",
+      this.generate(node.callee),
+      ", " + ref + "." + node.method.name + ".apply(" + ref + ", ",
+      this.insertArrayElement(node.args.list), ".concat(",
+      this.generate(node.args.expand), ".asArray()._",
+      this.insertKeyValueElement(node.args.keywords, true),
+      ")))"
+    ];
+
+    this.scope.end_ref();
+
+    return result;
+  };
+
+  CodeGen.prototype.GlobalExpression = function(node) {
+    return "$SC.Global." + node.id.name;
+  };
+
+  CodeGen.prototype.FunctionExpression = function(node) {
+    var fn, info;
+
+    info = getInformationOfFunction(node);
+
+    if (!isSegmentedBlock(node)) {
+      fn = CodeGen.prototype._SimpleFunction;
+    } else {
+      fn = CodeGen.prototype._SegmentedFunction;
+    }
+
+    return [
+      fn.call(this, node, info.args),
+      this._FunctionMetadata(info), ")"
+    ];
+  };
+
+  var format_argument = function(node) {
+    switch (node.valueType) {
+    case Token.NilLiteral   : return "nil";
+    case Token.TrueLiteral  : return "true";
+    case Token.FalseLiteral : return "false";
+    case Token.CharLiteral  : return "$" + node.value;
+    case Token.SymbolLiteral: return "\\" + node.value;
+    }
+    switch (node.value) {
+    case "Infinity" : return "inf";
+    case "-Infinity": return "-inf";
+    }
+    return node.value;
+  };
+
+  CodeGen.prototype._FunctionMetadata = function(info) {
+    var keys, vals;
+    var args, result;
+
+    keys = info.keys;
+    vals = info.vals;
+
+    if (keys.length === 0 && !info.remain && !info.closed) {
+      return [];
+    }
+
+    args = this.stitchWith(keys, "; ", function(item, i) {
+      var result = [ keys[i] ];
+
+      if (vals[i]) {
+        if (vals[i].type === Syntax.ListExpression) {
+          result.push("=[ ", this.stitchWith(vals[i].elements, ", ", function(item) {
+            return format_argument(item);
+          }), " ]");
+        } else {
+          result.push("=", format_argument(vals[i]));
+        }
+      }
+
+      return result;
+    });
+
+    result = [ ", '", args ];
+
+    if (info.remain) {
+      if (keys.length) {
+        result.push("; ");
+      }
+      result.push("*" + info.remain);
+    }
+    result.push("'");
+
+    if (info.closed) {
+      result.push(", true");
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype._SimpleFunction = function(node, args) {
+    var body;
+
+    body = this.withFunction(args, function() {
+      return this._Statements(node.body);
+    });
+
+    return [ "$SC.Function(", body ];
+  };
+
+  CodeGen.prototype._SegmentedFunction = function(node, args) {
+    var fargs, body, assignArguments;
+
+    fargs = args.map(function(_, i) {
+      return "_arg" + i;
+    });
+
+    assignArguments = function(item, i) {
+      return "$" + args[i] + " = " + fargs[i];
+    };
+
+    body = this.withFunction([], function() {
+      var result = [];
+      var fragments = [], syncBlockScope;
+      var elements = node.body;
+      var i, imax;
+      var functionBodies;
+
+      for (i = 0, imax = args.length; i < imax; ++i) {
+        this.scope.add("var", args[i]);
+      }
+
+      syncBlockScope = this.state.syncBlockScope;
+      this.state.syncBlockScope = this.scope.peek();
+
+      functionBodies = this.withIndent(function() {
+        var fragments = [];
+        var i = 0, imax = elements.length;
+        var lastIndex = imax - 1;
+
+        fragments.push("\n");
+
+        var loop = function() {
+          var fragments = [];
+          var stmt;
+          var count = 0;
+
+          while (i < imax) {
+            if (i === 0) {
+              if (args.length) {
+                stmt = this.stitchWith(args, "; ", assignArguments);
+                fragments.push([ this.addIndent(stmt), ";", "\n" ]);
+              }
+            } else if (count) {
+              fragments.push("\n");
+            }
+
+            this.state.calledSegmentedMethod = false;
+            stmt = this.generate(elements[i]);
+
+            if (stmt.length) {
+              if (i === lastIndex || this.state.calledSegmentedMethod) {
+                stmt = [ "return ", stmt ];
+              }
+              fragments.push([ this.addIndent(stmt), ";" ]);
+              count += 1;
+            }
+
+            i += 1;
+            if (this.state.calledSegmentedMethod) {
+              break;
+            }
+          }
+
+          return fragments;
+        };
+
+        while (i < imax) {
+          if (i) {
+            fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
+          } else {
+            fragments.push(this.addIndent(this.withFunction(fargs, loop)));
+          }
+        }
+
+        fragments.push("\n");
+
+        return fragments;
+      });
+
+      fragments.push("return [", functionBodies, this.addIndent("];"));
+
+      result.push([ this.addIndent(fragments) ]);
+
+      this.state.syncBlockScope = syncBlockScope;
+
+      return result;
+    });
+
+    return [ "$SC.SegFunction(", body ];
+  };
+
+  CodeGen.prototype.Identifier = function(node, opts) {
+    var name = node.name;
+
+    if (isClassName(name)) {
+      return "$SC('" + name + "')";
+    }
+
+    if (this.scope.find(name)) {
+      return $id(name);
+    }
+
+    if (name.length === 1) {
+      return this._InterpreterVariable(node, opts);
+    }
+
+    this.throwError(null, Message.VariableNotDefined, name);
+  };
+
+  CodeGen.prototype._InterpreterVariable = function(node, opts) {
+    var name, ref;
+
+    if (opts) {
+      // setter
+      ref = this.scope.begin_ref();
+      name = [
+        "(" + ref + " = ", this.generate(opts.right),
+        ", $this." + node.name + "_(" + ref + "), " + ref + ")"
+      ];
+      opts.used = true;
+      this.scope.end_ref();
+    } else {
+      // getter
+      name = "$this." + node.name + "()";
+    }
+
+    return name;
+  };
+
+  CodeGen.prototype.ListExpression = function(node) {
+    var result;
+
+    result = [
+      "$SC.Array(",
+      this.insertArrayElement(node.elements),
+    ];
+
+    if (node.immutable) {
+      result.push(", ", "true");
+    }
+
+    result.push(")");
+
+    return result;
+  };
+
+  CodeGen.prototype.Literal = function(node) {
+    switch (node.valueType) {
+    case Token.IntegerLiteral:
+      return "$SC.Integer(" + node.value + ")";
+    case Token.FloatLiteral:
+      return "$SC.Float(" + node.value + ")";
+    case Token.CharLiteral:
+      return "$SC.Char('" + node.value + "')";
+    case Token.SymbolLiteral:
+      return "$SC.Symbol('" + node.value + "')";
+    case Token.StringLiteral:
+      return "$SC.String('" + node.value + "')";
+    case Token.TrueLiteral:
+      return "$SC.True()";
+    case Token.FalseLiteral:
+      return "$SC.False()";
+    }
+
+    return "$SC.Nil()";
+  };
+
+  CodeGen.prototype.ObjectExpression = function(node) {
+    return [
+      "$SC.Event(", this.insertArrayElement(node.elements), ")"
+    ];
+  };
+
+  CodeGen.prototype.Program = function(node) {
+    var result, body;
+
+    if (node.body.length) {
+      body = this.withFunction([ "this", "SC" ], function() {
+        return this._Statements(node.body);
+      });
+
+      result = [ "(", body, ")" ];
+
+      if (!this.opts.bare) {
+        result = [ "SCScript", result, ";" ];
+      }
+    } else {
+      result = [];
+    }
+
+    return result;
+  };
+
+  CodeGen.prototype.ThisExpression = function(node) {
+    if (node.name === "this") {
+      return "$this";
+    }
+
+    return [ "$this." + node.name + "()" ];
+  };
+
+  CodeGen.prototype.UnaryExpression = function(node) {
+    /* istanbul ignore else */
+    if (node.operator === "`") {
+      return [ "$SC.Ref(", this.generate(node.arg), ")" ];
+    }
+
+    /* istanbul ignore next */
+    throw new Error("Unknown UnaryExpression: " + node.operator);
+  };
+
+  CodeGen.prototype.VariableDeclaration = function(node) {
+    var scope = this.state.syncBlockScope;
+
+    return this.stitchWith(node.declarations, ", ", function(item) {
+      this.scope.add("var", item.id.name, scope);
+
+      if (!item.init) {
+        return;
+      }
+
+      return [ this.generate(item.id), " = ", this.generate(item.init) ];
+    });
+  };
+
+  CodeGen.prototype._Statements = function(elements) {
+    var lastIndex = elements.length - 1;
+
+    return this.stitchWith(elements, "\n", function(item, i) {
+      var stmt;
+
+      stmt = this.generate(item);
+
+      if (stmt.length === 0) {
+        return;
+      }
+
+      if (i === lastIndex) {
+        stmt = [ "return ", stmt ];
+      }
+
+      return [ this.addIndent(stmt), ";" ];
+    });
+  };
+
+  var $id = function(id) {
+    var ch = id.charAt(0);
+
+    if (ch !== "_" && ch !== "$") {
+      id = "$" + id;
+    }
+
+    return id;
+  };
+
+  var getInformationOfFunction = function(node) {
+    var args = [];
+    var keys, vals, remain;
+    var list, i, imax;
+
+    keys = [];
+    vals = [];
+    remain = null;
+
+    if (node.args) {
+      list = node.args.list;
+      for (i = 0, imax = list.length; i < imax; ++i) {
+        args.push(list[i].id.name);
+        keys.push(list[i].id.name);
+        vals.push(list[i].init);
+      }
+      if (node.args.remain) {
+        remain = node.args.remain.name;
+        args.push(remain);
+      }
+    }
+
+    if (node.partial) {
+      keys = [];
+    }
+
+    return {
+      args  : args,
+      keys  : keys,
+      vals  : vals,
+      remain: remain,
+      closed: node.closed
+    };
+  };
+
+  var isClassName = function(name) {
+    var ch0 = name.charAt(0);
+    return "A" <= ch0 && ch0 <= "Z";
+  };
+
+  var isNode = function(node, key) {
+    return key !== "range" && key !== "loc" && typeof node[key] === "object";
+  };
+
+  var isSegmentedBlock = function(node) {
+    if (isSegmentedMethod(node)) {
+      return true;
+    }
+    return Object.keys(node).some(function(key) {
+      if (isNode(node, key)) {
+        return isSegmentedBlock(node[key]);
+      }
+      return false;
+    });
+  };
+
+  var isSegmentedMethod = function(node) {
+    return node.type === Syntax.CallExpression && !!SegmentedMethod[node.method.name];
+  };
+
+  codegen.compile = function(ast, opts) {
+    return new CodeGen(opts).generate(ast);
+  };
+
+  sc.lang.compiler.codegen = codegen;
+
+})(sc);
+
+// src/sc/lang/compiler/node.js
+(function(sc) {
+
+  var Syntax = sc.lang.compiler.Syntax;
+
+  var Node = {
+    createAssignmentExpression: function(operator, left, right, remain) {
+      var node = {
+        type: Syntax.AssignmentExpression,
+        operator: operator,
+        left: left,
+        right: right
+      };
+      if (remain) {
+        node.remain = remain;
+      }
+      return node;
+    },
+    createBinaryExpression: function(operator, left, right) {
+      var node = {
+        type: Syntax.BinaryExpression,
+        operator: operator.value,
+        left: left,
+        right: right
+      };
+      if (operator.adverb) {
+        node.adverb = operator.adverb;
+      }
+      return node;
+    },
+    createBlockExpression: function(body) {
+      return {
+        type: Syntax.BlockExpression,
+        body: body
+      };
+    },
+    createCallExpression: function(callee, method, args, stamp) {
+      var node;
+
+      node = {
+        type: Syntax.CallExpression,
+        callee: callee,
+        method: method,
+        args  : args,
+      };
+
+      if (stamp) {
+        node.stamp = stamp;
+      }
+
+      return node;
+    },
+    createGlobalExpression: function(id) {
+      return {
+        type: Syntax.GlobalExpression,
+        id: id
+      };
+    },
+    createFunctionExpression: function(args, body, closed, partial, blocklist) {
+      var node;
+
+      node = {
+        type: Syntax.FunctionExpression,
+        body: body
+      };
+      if (args) {
+        node.args = args;
+      }
+      if (closed) {
+        node.closed = true;
+      }
+      if (partial) {
+        node.partial = true;
+      }
+      if (blocklist) {
+        node.blocklist = true;
+      }
+      return node;
+    },
+    createIdentifier: function(name) {
+      return {
+        type: Syntax.Identifier,
+        name: name
+      };
+    },
+    createLabel: function(name) {
+      return {
+        type: Syntax.Label,
+        name: name
+      };
+    },
+    createListExpression: function(elements, immutable) {
+      var node = {
+        type: Syntax.ListExpression,
+        elements: elements
+      };
+      if (immutable) {
+        node.immutable = !!immutable;
+      }
+      return node;
+    },
+    createLiteral: function(token) {
+      return {
+        type: Syntax.Literal,
+        value: token.value,
+        valueType: token.type
+      };
+    },
+    createObjectExpression: function(elements) {
+      return {
+        type: Syntax.ObjectExpression,
+        elements: elements
+      };
+    },
+    createProgram: function(body) {
+      return {
+        type: Syntax.Program,
+        body: body
+      };
+    },
+    createThisExpression: function(name) {
+      return {
+        type: Syntax.ThisExpression,
+        name: name
+      };
+    },
+    createUnaryExpression: function(operator, arg) {
+      return {
+        type: Syntax.UnaryExpression,
+        operator: operator,
+        arg: arg
+      };
+    },
+    createVariableDeclaration: function(declarations, kind) {
+      return {
+        type: Syntax.VariableDeclaration,
+        declarations: declarations,
+        kind: kind
+      };
+    },
+    createVariableDeclarator: function(id, init) {
+      var node = {
+        type: Syntax.VariableDeclarator,
+        id: id
+      };
+      if (init) {
+        node.init = init;
+      }
+      return node;
+    }
+  };
+
+  sc.lang.compiler.node = Node;
+
+})(sc);
+
+// src/sc/lang/compiler/marker.js
+(function(sc) {
+
+  function Marker(lexer, locItems) {
+    this.lexer = lexer;
+    this.startLocItems = locItems;
+    this.endLocItems   = null;
+  }
+
+  Marker.create = function(lexer, node) {
+    var locItems;
+
+    if (!lexer.opts.loc && !lexer.opts.range) {
+      return nopMarker;
+    }
+
+    if (node) {
+      locItems = [ node.range[0], node.loc.start.line, node.loc.start.column ];
+    } else {
+      lexer.skipComment();
+      locItems = lexer.getLocItems();
+    }
+
+    return new Marker(lexer, locItems);
+  };
+
+  Marker.prototype.update = function(node) {
+    var locItems;
+
+    if (node) {
+      locItems = [ node.range[1], node.loc.end.line, node.loc.end.column ];
+    } else {
+      locItems = this.lexer.getLocItems();
+    }
+    this.endLocItems = locItems;
+
+    return this;
+  };
+
+  Marker.prototype.apply = function(node, force) {
+    var startLocItems, endLocItems;
+
+    if (Array.isArray(node)) {
+      return node;
+    }
+
+    if (force || !node.range || !node.loc) {
+      startLocItems = this.startLocItems;
+      if (this.endLocItems) {
+        endLocItems = this.endLocItems;
+      } else {
+        endLocItems = this.startLocItems;
+      }
+      /* istanbul ignore else */
+      if (this.lexer.opts.range) {
+        node.range = [ startLocItems[0], endLocItems[0] ];
+      }
+      /* istanbul ignore else */
+      if (this.lexer.opts.loc) {
+        node.loc = {
+          start: {
+            line  : startLocItems[1],
+            column: startLocItems[2]
+          },
+          end: {
+            line  : endLocItems[1],
+            column: endLocItems[2]
+          }
+        };
+      }
+    }
+
+    return node;
+  };
+
+  var nopMarker = {
+    apply: function(node) {
+      return node;
+    },
+    update: function() {
+      return this;
+    }
+  };
+
+  sc.lang.compiler.marker = Marker;
+
+})(sc);
+
+// src/sc/lang/compiler/lexer.js
+(function(sc) {
+
+  var Token    = sc.lang.compiler.Token;
+  var Message  = sc.lang.compiler.Message;
+  var Keywords = sc.lang.compiler.Keywords;
+
+  function Lexer(source, opts) {
+    /* istanbul ignore next */
+    if (typeof source !== "string") {
+      if (typeof source === "undefined") {
+        source = "";
+      }
+      source = String(source);
+    }
+    source = source.replace(/\r\n?/g, "\n");
+
+    opts = opts || /* istanbul ignore next */ {};
+
+    this.source = source;
+    this.opts   = opts;
+    this.length = source.length;
+    this.index  = 0;
+    this.lineNumber = this.length ? 1 : 0;
+    this.lineStart  = 0;
+    this.reverted   = null;
+    this.errors     = opts.tolerant ? [] : null;
+
+    this.peek();
+  }
+
+  function char2num(ch) {
+    var n = ch.charCodeAt(0);
+
+    if (48 <= n && n <= 57) {
+      return n - 48;
+    }
+    if (65 <= n && n <= 90) {
+      return n - 55;
+    }
+    return n - 87; // if (97 <= n && n <= 122)
+  }
+
+  function isAlpha(ch) {
+    return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
+  }
+
+  function isNumber(ch) {
+    return "0" <= ch && ch <= "9";
+  }
+
+  Lexer.prototype.tokenize = function() {
+    var tokens, token;
+
+    tokens = [];
+
+    while (true) {
+      token = this.collectToken();
+      if (token.type === Token.EOF) {
+        break;
+      }
+      tokens.push(token);
+    }
+
+    return tokens;
+  };
+
+  Lexer.prototype.collectToken = function() {
+    var loc, token, t;
+
+    this.skipComment();
+
+    loc = {
+      start: {
+        line  : this.lineNumber,
+        column: this.index - this.lineStart
+      }
+    };
+
+    token = this.advance();
+
+    loc.end = {
+      line  : this.lineNumber,
+      column: this.index - this.lineStart
+    };
+
+    t = {
+      type : token.type,
+      value: token.value
+    };
+
+    if (this.opts.range) {
+      t.range = token.range;
+    }
+    if (this.opts.loc) {
+      t.loc = loc;
+    }
+
+    return t;
+  };
+
+  Lexer.prototype.skipComment = function() {
+    var source = this.source;
+    var length = this.length;
+    var index = this.index;
+    var ch;
+
+    LOOP: while (index < length) {
+      ch = source.charAt(index);
+
+      if (ch === " " || ch === "\t") {
+        index += 1;
+        continue;
+      }
+
+      if (ch === "\n") {
+        index += 1;
+        this.lineNumber += 1;
+        this.lineStart = index;
+        continue;
+      }
+
+      if (ch === "/") {
+        ch = source.charAt(index + 1);
+        if (ch === "/") {
+          index = this.skipLineComment(index + 2);
+          continue;
+        }
+        if (ch === "*") {
+          index = this.skipBlockComment(index + 2);
+          continue;
+        }
+      }
+
+      break;
+    }
+
+    this.index = index;
+  };
+
+  Lexer.prototype.skipLineComment = function(index) {
+    var source = this.source;
+    var length = this.length;
+    var ch;
+
+    while (index < length) {
+      ch = source.charAt(index);
+      index += 1;
+      if (ch === "\n") {
+        this.lineNumber += 1;
+        this.lineStart = index;
+        break;
+      }
+    }
+
+    return index;
+  };
+
+  Lexer.prototype.skipBlockComment = function(index) {
+    var source = this.source;
+    var length = this.length;
+    var ch, depth;
+
+    depth = 1;
+    while (index < length) {
+      ch = source.charAt(index);
+
+      if (ch === "\n") {
+        this.lineNumber += 1;
+        this.lineStart = index;
+      } else {
+        ch = ch + source.charAt(index + 1);
+        if (ch === "/*") {
+          depth += 1;
+          index += 1;
+        } else if (ch === "*/") {
+          depth -= 1;
+          index += 1;
+          if (depth === 0) {
+            return index + 1;
+          }
+        }
+      }
+
+      index += 1;
+    }
+    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+
+    return index;
+  };
+
+  Lexer.prototype.advance = function() {
+    var ch, token;
+
+    this.skipComment();
+
+    if (this.length <= this.index) {
+      return this.EOFToken();
+    }
+
+    ch = this.source.charAt(this.index);
+
+    if (ch === "\\") {
+      return this.scanSymbolLiteral();
+    }
+    if (ch === "'") {
+      return this.scanQuotedLiteral(Token.SymbolLiteral, ch);
+    }
+
+    if (ch === "$") {
+      return this.scanCharLiteral();
+    }
+
+    if (ch === '"') {
+      return this.scanQuotedLiteral(Token.StringLiteral, ch);
+    }
+
+    if (ch === "_") {
+      return this.scanUnderscore();
+    }
+
+    if (ch === "-") {
+      token = this.scanNegativeNumericLiteral();
+      if (token) {
+        return token;
+      }
+    }
+
+    if (isAlpha(ch)) {
+      return this.scanIdentifier();
+    }
+
+    if (isNumber(ch)) {
+      return this.scanNumericLiteral();
+    }
+
+    return this.scanPunctuator();
+  };
+
+  Lexer.prototype.peek = function() {
+    var index, lineNumber, lineStart;
+
+    index      = this.index;
+    lineNumber = this.lineNumber;
+    lineStart  = this.lineStart;
+
+    this.lookahead = this.advance();
+
+    this.index      = index;
+    this.lineNumber = lineNumber;
+    this.lineStart  = lineStart;
+  };
+
+  Lexer.prototype.lex = function(saved) {
+    var that = this;
+    var token = this.lookahead;
+
+    if (saved) {
+      saved = [
+        this.lookahead,
+        this.index,
+        this.lineNumber,
+        this.lineStart
+      ];
+    }
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    this.lookahead = this.advance();
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    if (saved) {
+      token.revert = function() {
+        that.lookahead  = saved[0];
+        that.index      = saved[1];
+        that.lineNumber = saved[2];
+        that.lineStart  = saved[3];
+      };
+    }
+
+    return token;
+  };
+
+  Lexer.prototype.makeToken = function(type, value, start) {
+    return {
+      type : type,
+      value: value,
+      lineNumber: this.lineNumber,
+      lineStart : this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  Lexer.prototype.EOFToken = function() {
+    return this.makeToken(Token.EOF, "<EOF>", this.index);
+  };
+
+  Lexer.prototype.scanCharLiteral = function() {
+    var start, value;
+
+    start = this.index;
+    value = this.source.charAt(this.index + 1);
+
+    this.index += 2;
+
+    return this.makeToken(Token.CharLiteral, value, start);
+  };
+
+  Lexer.prototype.scanIdentifier = function() {
+    var source = this.source.slice(this.index);
+    var start = this.index;
+    var value, type;
+
+    value = /^[a-zA-Z][a-zA-Z0-9_]*/.exec(source)[0];
+
+    this.index += value.length;
+
+    if (this.source.charAt(this.index) === ":") {
+      this.index += 1;
+      return this.makeToken(Token.Label, value, start);
+    } else if (this.isKeyword(value)) {
+      type = Token.Keyword;
+    } else {
+      switch (value) {
+      case "inf":
+        type = Token.FloatLiteral;
+        value = "Infinity";
+        break;
+      case "pi":
+        type = Token.FloatLiteral;
+        value = String(Math.PI);
+        break;
+      case "nil":
+        type = Token.NilLiteral;
+        value = "null";
+        break;
+      case "true":
+        type = Token.TrueLiteral;
+        break;
+      case "false":
+        type = Token.FalseLiteral;
+        break;
+      default:
+        type = Token.Identifier;
+        break;
+      }
+    }
+
+    return this.makeToken(type, value, start);
+  };
+
+  Lexer.prototype.scanNumericLiteral = function(neg) {
+    return this.scanNAryNumberLiteral(neg) || this.scanDecimalNumberLiteral(neg);
+  };
+
+  Lexer.prototype.scanNegativeNumericLiteral = function() {
+    var token, ch1, ch2, ch3;
+    var start, value = null;
+
+    start = this.index;
+    ch1 = this.source.charAt(this.index + 1);
+
+    if (isNumber(ch1)) {
+      this.index += 1;
+      token = this.scanNumericLiteral(true);
+      token.range[0] = start;
+      return token;
+    }
+
+    ch2 = this.source.charAt(this.index + 2);
+    ch3 = this.source.charAt(this.index + 3);
+
+    if (ch1 + ch2 === "pi") {
+      this.index += 3;
+      value = String(-Math.PI);
+    } else if (ch1 + ch2 + ch3 === "inf") {
+      this.index += 4;
+      value = "-Infinity";
+    }
+
+    if (value !== null) {
+      return this.makeToken(Token.FloatLiteral, value, start);
+    }
+
+    return null;
+  };
+
+  var makeNumberToken = function(type, value, neg, pi) {
+    if (neg) {
+      value *= -1;
+    }
+
+    if (pi) {
+      type = Token.FloatLiteral;
+      value = value * Math.PI;
+    }
+
+    if (type === Token.FloatLiteral && value === (value|0)) {
+      value = value + ".0";
+    } else {
+      value = String(value);
+    }
+
+    return {
+      type : type,
+      value: value
+    };
+  };
+
+  Lexer.prototype.scanNAryNumberLiteral = function(neg) {
+    var re, start, items;
+    var base, integer, frac, pi;
+    var value, type;
+    var token;
+
+    re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (!items) {
+      return;
+    }
+
+    base    = items[1].replace(/^0+(?=\d)/g, "")|0;
+    integer = items[2].replace(/(^0+(?=\d)|_)/g, "");
+    frac    = items[3] && items[3].replace(/_/g, "");
+
+    if (!frac && base < 26 && integer.substr(-2) === "pi") {
+      integer = integer.slice(0, -2);
+      pi = true;
+    }
+
+    type  = Token.IntegerLiteral;
+    value = this.calcNBasedInteger(integer, base);
+
+    if (frac) {
+      type = Token.FloatLiteral;
+      value += this.calcNBasedFrac(frac, base);
+    }
+
+    token = makeNumberToken(type, value, neg, pi);
+
+    this.index += items[0].length;
+
+    return this.makeToken(token.type, token.value, start);
+  };
+
+  Lexer.prototype.char2num = function(ch, base) {
+    var x = char2num(ch, base);
+    if (x >= base) {
+      this.throwError({}, Message.UnexpectedToken, ch);
+    }
+    return x;
+  };
+
+  Lexer.prototype.calcNBasedInteger = function(integer, base) {
+    var value, i, imax;
+
+    for (i = value = 0, imax = integer.length; i < imax; ++i) {
+      value *= base;
+      value += this.char2num(integer[i], base);
+    }
+
+    return value;
+  };
+
+  Lexer.prototype.calcNBasedFrac = function(frac, base) {
+    var value, i, imax;
+
+    for (i = value = 0, imax = frac.length; i < imax; ++i) {
+      value += this.char2num(frac[i], base) * Math.pow(base, -(i + 1));
+    }
+
+    return value;
+  };
+
+  Lexer.prototype.scanDecimalNumberLiteral = function(neg) {
+    var re, start, items, integer, frac, pi;
+    var value, type;
+    var token;
+
+    re = /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    integer = items[1];
+    frac    = items[2];
+    pi      = items[3];
+
+    type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
+    value = +integer.replace(/(^0+(?=\d)|_)/g, "");
+
+    token = makeNumberToken(type, value, neg, pi);
+
+    this.index += items[0].length;
+
+    return this.makeToken(token.type, token.value, start);
+  };
+
+  Lexer.prototype.scanPunctuator = function() {
+    var re, start, items;
+
+    re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (items) {
+      this.index += items[0].length;
+      return this.makeToken(Token.Punctuator, items[0], start);
+    }
+
+    this.throwError({}, Message.UnexpectedToken, this.source.charAt(this.index));
+
+    this.index = this.length;
+
+    return this.EOFToken();
+  };
+
+  Lexer.prototype.scanQuotedLiteral = function(type, quote) {
+    var start, value;
+    start = this.index;
+    value = this._scanQuotedLiteral(quote);
+    return value ? this.makeToken(type, value, start) : this.EOFToken();
+  };
+
+  Lexer.prototype._scanQuotedLiteral = function(quote) {
+    var source, length, index, start, value, ch;
+
+    source = this.source;
+    length = this.length;
+    index  = this.index + 1;
+    start  = index;
+    value  = null;
+
+    while (index < length) {
+      ch = source.charAt(index);
+      index += 1;
+      if (ch === quote) {
+        value = source.substr(start, index - start - 1).replace(/\n/g, "\\n");
+        break;
+      } else if (ch === "\n") {
+        this.lineNumber += 1;
+        this.lineStart = index;
+      } else if (ch === "\\") {
+        index += 1;
+      }
+    }
+
+    this.index = index;
+
+    if (!value) {
+      this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+    }
+
+    return value;
+  };
+
+  Lexer.prototype.scanSymbolLiteral = function() {
+    var re, start, items;
+    var value;
+
+    re = /^\\([a-z_]\w*)?/i;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    value = items[1];
+
+    this.index += items[0].length;
+
+    return this.makeToken(Token.SymbolLiteral, value, start);
+  };
+
+  Lexer.prototype.scanUnderscore = function() {
+    var start = this.index;
+
+    this.index += 1;
+
+    return this.makeToken(Token.Identifier, "_", start);
+  };
+
+  Lexer.prototype.isKeyword = function(value) {
+    return !!Keywords[value] || false;
+  };
+
+  Lexer.prototype.getLocItems = function() {
+    return [ this.index, this.lineNumber, this.index - this.lineStart ];
+  };
+
+  Lexer.prototype.throwError = function(token, messageFormat) {
+    var args, message;
+    var error, index, lineNumber, column;
+    var prev;
+
+    args = Array.prototype.slice.call(arguments, 2);
+    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
+      return args[index];
+    });
+
+    if (typeof token.lineNumber === "number") {
+      index      = token.range[0];
+      lineNumber = token.lineNumber;
+      column     = token.range[0] - token.lineStart + 1;
+    } else {
+      index      = this.index;
+      lineNumber = this.lineNumber;
+      column     = index - this.lineStart + 1;
+    }
+
+    error = new Error("Line " + lineNumber + ": " + message);
+    error.index       = index;
+    error.lineNumber  = lineNumber;
+    error.column      = column;
+    error.description = message;
+
+    if (this.errors) {
+      prev = this.errors[this.errors.length - 1];
+      if (!(prev && error.index <= prev.index)) {
+        this.errors.push(error);
+      }
+    } else {
+      throw error;
+    }
+  };
+
+  sc.lang.compiler.lexer = Lexer;
+
+})(sc);
+
+// src/sc/lang/compiler/parser.js
+(function(sc) {
+
+  var parser = {};
+
+  var Token    = sc.lang.compiler.Token;
+  var Syntax   = sc.lang.compiler.Syntax;
+  var Message  = sc.lang.compiler.Message;
+  var Keywords = sc.lang.compiler.Keywords;
+  var Lexer    = sc.lang.compiler.lexer;
+  var Marker   = sc.lang.compiler.marker;
+  var Node     = sc.lang.compiler.node;
+
+  var binaryPrecedenceDefaults = {
+    "?"  : 1,
+    "??" : 1,
+    "!?" : 1,
+    "->" : 2,
+    "||" : 3,
+    "&&" : 4,
+    "|"  : 5,
+    "&"  : 6,
+    "==" : 7,
+    "!=" : 7,
+    "===": 7,
+    "!==": 7,
+    "<"  : 8,
+    ">"  : 8,
+    "<=" : 8,
+    ">=" : 8,
+    "<<" : 9,
+    ">>" : 9,
+    "+>>": 9,
+    "+"  : 10,
+    "-"  : 10,
+    "*"  : 11,
+    "/"  : 11,
+    "%"  : 11,
+    "!"  : 12,
+  };
+
+  var Scope = sc.lang.compiler.scope({
+    begin: function() {
+      var declared = this.getDeclaredVariable();
+
+      this.stack.push({
+        vars: {},
+        args: {},
+        declared: declared
+      });
+    }
+  });
+
+  function SCParser(source, opts) {
+    var binaryPrecedence;
+
+    this.opts  = opts || /* istanbul ignore next */ {};
+    this.lexer = new Lexer(source, opts);
+    this.scope = new Scope(this);
+    this.state = {
+      closedFunction: false,
+      disallowGenerator: false,
+      innerElements: false,
+      immutableList: false,
+      underscore: []
+    };
+
+    if (this.opts.binaryPrecedence) {
+      if (typeof this.opts.binaryPrecedence === "object") {
+        binaryPrecedence = this.opts.binaryPrecedence;
+      } else {
+        binaryPrecedence = binaryPrecedenceDefaults;
+      }
+    }
+
+    this.binaryPrecedence = binaryPrecedence || {};
+  }
+
+  Object.defineProperty(SCParser.prototype, "lookahead", {
+    get: function() {
+      return this.lexer.lookahead;
+    }
+  });
+
+  SCParser.prototype.lex = function() {
+    return this.lexer.lex();
+  };
+
+  SCParser.prototype.expect = function(value) {
+    var token = this.lexer.lex();
+    if (token.type !== Token.Punctuator || token.value !== value) {
+      this.throwUnexpected(token, value);
+    }
+  };
+
+  SCParser.prototype.match = function(value) {
+    return this.lexer.lookahead.value === value;
+  };
+
+  SCParser.prototype.matchAny = function(list) {
+    var value, i, imax;
+
+    value = this.lexer.lookahead.value;
+    for (i = 0, imax = list.length; i < imax; ++i) {
+      if (list[i] === value) {
+        return value;
+      }
+    }
+
+    return null;
+  };
+
+  SCParser.prototype.throwError = function() {
+    return this.lexer.throwError.apply(this.lexer, arguments);
+  };
+
+  SCParser.prototype.throwUnexpected = function(token) {
+    switch (token.type) {
+    case Token.EOF:
+      this.throwError(token, Message.UnexpectedEOS);
+      break;
+    case Token.FloatLiteral:
+    case Token.IntegerLiteral:
+      this.throwError(token, Message.UnexpectedNumber);
+      break;
+    case Token.CharLiteral:
+    case Token.StringLiteral:
+    case Token.SymbolLiteral:
+      this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
+      break;
+    case Token.Identifier:
+      this.throwError(token, Message.UnexpectedIdentifier);
+      break;
+    default:
+      this.throwError(token, Message.UnexpectedToken, token.value);
+      break;
+    }
+  };
+
+  SCParser.prototype.withScope = function(fn) {
+    var result;
+
+    this.scope.begin();
+    result = fn.call(this);
+    this.scope.end();
+
+    return result;
+  };
+
+  SCParser.prototype.parse = function() {
+    return this.parseProgram();
+  };
+
+  // 1. Program
+  SCParser.prototype.parseProgram = function() {
+    var node, marker;
+
+    marker = Marker.create(this.lexer);
+
+    node = this.withScope(function() {
+      var body;
+
+      body = this.parseFunctionBody("");
+      if (body.length === 1 && body[0].type === Syntax.BlockExpression) {
+        body = body[0].body;
+      }
+
+      return Node.createProgram(body);
+    });
+
+    return marker.update().apply(node);
+  };
+
+  // 2. Function
+  // 2.1 Function Expression
+  SCParser.prototype.parseFunctionExpression = function(closed, blocklist) {
+    var node;
+
+    node = this.withScope(function() {
+      var args, body;
+
+      if (this.match("|")) {
+        args = this.parseFunctionArgument("|");
+      } else if (this.match("arg")) {
+        args = this.parseFunctionArgument(";");
+      }
+      body = this.parseFunctionBody("}");
+
+      return Node.createFunctionExpression(args, body, closed, false, blocklist);
+    });
+
+    return node;
+  };
+
+  // 2.2 Function Argument
+  SCParser.prototype.parseFunctionArgument = function(expect) {
+    var args = { list: [] };
+
+    this.lex();
+
+    if (!this.match("...")) {
+      do {
+        args.list.push(this.parseFunctionArgumentElement());
+        if (!this.match(",")) {
+          break;
+        }
+        this.lex();
+      } while (this.lookahead.type !== Token.EOF);
+    }
+
+    if (this.match("...")) {
+      this.lex();
+      args.remain = this.parseVariableIdentifier();
+      this.scope.add("arg", args.remain.name);
+    }
+
+    this.expect(expect);
+
+    return args;
+  };
+
+  SCParser.prototype._parseArgVarElement = function(type, method) {
+    var init = null, id;
+    var marker, declarator;
+
+    marker = Marker.create(this.lexer);
+
+    id = this.parseVariableIdentifier();
+    this.scope.add(type, id.name);
+
+    if (this.match("=")) {
+      this.lex();
+      init = this[method]();
+    }
+
+    declarator = Node.createVariableDeclarator(id, init);
+
+    return marker.update().apply(declarator);
+  };
+
+  SCParser.prototype.parseFunctionArgumentElement = function() {
+    var node = this._parseArgVarElement("arg", "parseArgumentableValue");
+
+    if (node.init && !isValidArgumentValue(node.init)) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return node;
+  };
+
+  // 2.3 Function Body
+  SCParser.prototype.parseFunctionBody = function(match) {
+    var elements = [];
+
+    while (this.match("var")) {
+      elements.push(this.parseVariableDeclaration());
+    }
+
+    while (this.lookahead.type !== Token.EOF && !this.match(match)) {
+      elements.push(this.parseExpression());
+      if (this.lookahead.type !== Token.EOF && !this.match(match)) {
+        this.expect(";");
+      } else {
+        break;
+      }
+    }
+
+    return elements;
+  };
+
+  // 3. Variable Declarations
+  SCParser.prototype.parseVariableDeclaration = function() {
+    var declaration;
+    var marker;
+
+    marker = Marker.create(this.lexer);
+
+    this.lex(); // var
+
+    declaration = Node.createVariableDeclaration(
+      this.parseVariableDeclarationList(), "var"
+    );
+
+    declaration = marker.update().apply(declaration);
+
+    this.expect(";");
+
+    return declaration;
+  };
+
+  SCParser.prototype.parseVariableDeclarationList = function() {
+    var list = [];
+
+    do {
+      list.push(this.parseVariableDeclarationElement());
+      if (!this.match(",")) {
+        break;
+      }
+      this.lex();
+    } while (this.lookahead.type !== Token.EOF);
+
+    return list;
+  };
+
+  SCParser.prototype.parseVariableDeclarationElement = function() {
+    return this._parseArgVarElement("var", "parseAssignmentExpression");
+  };
+
+  // 4. Expression
+  SCParser.prototype.parseExpression = function(node) {
+    return this.parseAssignmentExpression(node);
+  };
+
+  // 4.1 Expressions
+  SCParser.prototype.parseExpressions = function(node) {
+    var nodes = [];
+
+    if (node) {
+      nodes.push(node);
+      this.lex();
+    }
+
+    while (this.lookahead.type !== Token.EOF && !this.matchAny([ ",", ")", "]", ".." ])) {
+      var marker;
+
+      marker = Marker.create(this.lexer);
+      node   = this.parseAssignmentExpression();
+      node   = marker.update().apply(node);
+
+      nodes.push(node);
+
+      if (this.match(";")) {
+        this.lex();
+      }
+    }
+
+    if (nodes.length === 0) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return nodes.length === 1 ? nodes[0] : nodes;
+  };
+
+  // 4.2 Assignment Expression
+  SCParser.prototype.parseAssignmentExpression = function(node) {
+    var token, marker;
+
+    if (node) {
+      return this.parsePartialExpression(node);
+    }
+
+    marker = Marker.create(this.lexer);
+
+    if (this.match("#")) {
+      token = this.lexer.lex(true);
+      if (this.matchAny([ "[", "{" ])) {
+        token.revert();
+      } else {
+        node = this.parseDestructuringAssignmentExpression();
+      }
+    }
+
+    if (!node) {
+      node = this.parseSimpleAssignmentExpression();
+    }
+
+    return marker.update().apply(node);
+  };
+
+  SCParser.prototype.parseDestructuringAssignmentExpression = function() {
+    var node, left, right, token;
+
+    left = this.parseDestructuringAssignmentLeft();
+    token = this.lookahead;
+    this.expect("=");
+
+    right = this.parseAssignmentExpression();
+    node = Node.createAssignmentExpression(
+      token.value, left.list, right, left.remain
+    );
+
+    return node;
+  };
+
+  SCParser.prototype.parseSimpleAssignmentExpression = function() {
+    var node, left, right, token, methodName, marker;
+
+    node = left = this.parsePartialExpression();
+
+    if (this.match("=")) {
+      if (node.type === Syntax.CallExpression) {
+        marker = Marker.create(this.lexer, left);
+
+        token = this.lex();
+        right = this.parseAssignmentExpression();
+        methodName = renameGetterToSetter(left.method.name);
+        left.method.name = methodName;
+        left.args.list   = node.args.list.concat(right);
+        if (methodName.charAt(methodName.length - 1) === "_") {
+          left.stamp = "=";
+        }
+        node = marker.update().apply(left, true);
+      } else {
+        if (!isLeftHandSide(left)) {
+          this.throwError(left, Message.InvalidLHSInAssignment);
+        }
+
+        token = this.lex();
+        right = this.parseAssignmentExpression();
+        node  = Node.createAssignmentExpression(
+          token.value, left, right
+        );
+      }
+    }
+
+    return node;
+  };
+
+  SCParser.prototype.parseDestructuringAssignmentLeft = function() {
+    var params = { list: [] }, element;
+
+    do {
+      element = this.parseLeftHandSideExpression();
+      if (!isLeftHandSide(element)) {
+        this.throwError(element, Message.InvalidLHSInAssignment);
+      }
+      params.list.push(element);
+      if (this.match(",")) {
+        this.lex();
+      } else if (this.match("...")) {
+        this.lex();
+        params.remain = this.parseLeftHandSideExpression();
+        if (!isLeftHandSide(params.remain)) {
+          this.throwError(params.remain, Message.InvalidLHSInAssignment);
+        }
+        break;
+      }
+    } while (this.lookahead.type !== Token.EOF && !this.match("="));
+
+    return params;
+  };
+
+  // 4.3 Partial Expression
+  SCParser.prototype.parsePartialExpression = function(node) {
+    var underscore, x, y;
+
+    if (this.state.innerElements) {
+      node = this.parseBinaryExpression(node);
+    } else {
+      underscore = this.state.underscore;
+      this.state.underscore = [];
+
+      node = this.parseBinaryExpression(node);
+
+      if (this.state.underscore.length) {
+        node = this.withScope(function() {
+          var args, i, imax;
+
+          args = new Array(this.state.underscore.length);
+          for (i = 0, imax = args.length; i < imax; ++i) {
+            x = this.state.underscore[i];
+            y = Node.createVariableDeclarator(x);
+            args[i] = Marker.create(this.lexer, x).update(x).apply(y);
+            this.scope.add("arg", this.state.underscore[i].name);
+          }
+
+          return Node.createFunctionExpression(
+            { list: args }, [ node ], false, true, false
+          );
+        });
+      }
+
+      this.state.underscore = underscore;
+    }
+
+    return node;
+  };
+
+  // 4.4 Conditional Expression
+  // 4.5 Binary Expression
+  SCParser.prototype.parseBinaryExpression = function(node) {
+    var marker, left, token, prec;
+
+    marker = Marker.create(this.lexer);
+    left   = this.parseUnaryExpression(node);
+    token  = this.lookahead;
+
+    prec = calcBinaryPrecedence(token, this.binaryPrecedence);
+    if (prec === 0) {
+      if (node) {
+        return this.parseUnaryExpression(node);
+      }
+      return left;
+    }
+    this.lex();
+
+    token.prec   = prec;
+    token.adverb = this.parseAdverb();
+
+    return this.sortByBinaryPrecedence(left, token, marker);
+  };
+
+  SCParser.prototype.sortByBinaryPrecedence = function(left, operator, marker) {
+    var expr;
+    var prec, token;
+    var markers, i;
+    var right, stack;
+
+    markers = [ marker, Marker.create(this.lexer) ];
+    right = this.parseUnaryExpression();
+
+    stack = [ left, operator, right ];
+
+    while ((prec = calcBinaryPrecedence(this.lookahead, this.binaryPrecedence)) > 0) {
+      // Reduce: make a binary expression from the three topmost entries.
+      while ((stack.length > 2) && (prec <= stack[stack.length - 2].prec)) {
+        right    = stack.pop();
+        operator = stack.pop();
+        left     = stack.pop();
+        expr = Node.createBinaryExpression(operator, left, right);
+        markers.pop();
+
+        marker = markers.pop();
+        marker.update().apply(expr);
+
+        stack.push(expr);
+
+        markers.push(marker);
+      }
+
+      // Shift.
+      token = this.lex();
+      token.prec = prec;
+      token.adverb = this.parseAdverb();
+
+      stack.push(token);
+
+      markers.push(Marker.create(this.lexer));
+      expr = this.parseUnaryExpression();
+      stack.push(expr);
+    }
+
+    // Final reduce to clean-up the stack.
+    i = stack.length - 1;
+    expr = stack[i];
+    markers.pop();
+    while (i > 1) {
+      expr = Node.createBinaryExpression(stack[i - 1], stack[i - 2], expr);
+      i -= 2;
+      marker = markers.pop();
+      marker.update().apply(expr);
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseAdverb = function() {
+    var adverb, lookahead;
+
+    if (this.match(".")) {
+      this.lex();
+
+      lookahead = this.lookahead;
+      adverb = this.parsePrimaryExpression();
+
+      if (adverb.type === Syntax.Literal) {
+        return adverb;
+      }
+
+      if (adverb.type === Syntax.Identifier) {
+        adverb.type = Syntax.Literal;
+        adverb.value = adverb.name;
+        adverb.valueType = Token.SymbolLiteral;
+        delete adverb.name;
+        return adverb;
+      }
+
+      this.throwUnexpected(lookahead);
+    }
+
+    return null;
+  };
+
+  // 4.6 Unary Expressions
+  SCParser.prototype.parseUnaryExpression = function(node) {
+    var token, expr;
+    var marker;
+
+    marker = Marker.create(this.lexer);
+
+    if (this.match("`")) {
+      token = this.lex();
+      expr = this.parseUnaryExpression();
+      expr = Node.createUnaryExpression(token.value, expr);
+    } else {
+      expr = this.parseLeftHandSideExpression(node);
+    }
+
+    return marker.update().apply(expr);
+  };
+
+  // 4.7 LeftHandSide Expressions
+  SCParser.prototype.parseLeftHandSideExpression = function(node) {
+    var marker, expr, prev, lookahead;
+    var blocklist, stamp;
+
+    marker = Marker.create(this.lexer);
+    expr   = this.parsePrimaryExpression(node);
+
+    blocklist = false;
+
+    while ((stamp = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
+      lookahead = this.lookahead;
+      if ((prev === "{" && (stamp !== "#" && stamp !== "{")) || (prev === "(" && stamp === "(")) {
+        this.throwUnexpected(lookahead);
+      }
+      switch (stamp) {
+      case "(":
+        expr = this.parseLeftHandSideParenthesis(expr);
+        break;
+      case "#":
+        expr = this.parseLeftHandSideClosedBrace(expr);
+        break;
+      case "{":
+        expr = this.parseLeftHandSideBrace(expr);
+        break;
+      case "[":
+        expr = this.parseLeftHandSideBracket(expr);
+        break;
+      case ".":
+        expr = this.parseLeftHandSideDot(expr);
+        break;
+      }
+      marker.update().apply(expr, true);
+
+      prev = stamp;
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideParenthesis = function(expr) {
+    if (isClassName(expr)) {
+      return this.parseLeftHandSideClassNew(expr);
+    }
+
+    return this.parseLeftHandSideMethodCall(expr);
+  };
+
+  SCParser.prototype.parseLeftHandSideClassNew = function(expr) {
+    var method, args;
+
+    method = Node.createIdentifier("new");
+    method = Marker.create(this.lexer).apply(method);
+
+    args   = this.parseCallArgument();
+
+    return Node.createCallExpression(expr, method, args, "(");
+  };
+
+  SCParser.prototype.parseLeftHandSideMethodCall = function(expr) {
+    var method, args, lookahead;
+
+    if (expr.type !== Syntax.Identifier) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    lookahead = this.lookahead;
+    args      = this.parseCallArgument();
+
+    method = expr;
+    expr   = args.list.shift();
+
+    if (!expr) {
+      if (args.expand) {
+        expr = args.expand;
+        delete args.expand;
+      } else {
+        this.throwUnexpected(lookahead);
+      }
+    }
+
+    // max(0, 1) -> 0.max(1)
+    return Node.createCallExpression(expr, method, args, "(");
+  };
+
+  SCParser.prototype.parseLeftHandSideClosedBrace = function(expr) {
+    this.lex();
+    if (!this.match("{")) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    this.state.closedFunction = true;
+    expr = this.parseLeftHandSideBrace(expr);
+    this.state.closedFunction = false;
+
+    return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideBrace = function(expr) {
+    var method, lookahead, disallowGenerator, node;
+
+    if (expr.type === Syntax.CallExpression && expr.stamp && expr.stamp !== "(") {
+      this.throwUnexpected(this.lookahead);
+    }
+    if (expr.type === Syntax.Identifier) {
+      if (isClassName(expr)) {
+        method = Node.createIdentifier("new");
+        method = Marker.create(this.lexer).apply(method);
+        expr   = Node.createCallExpression(expr, method, { list: [] }, "{");
+      } else {
+        expr = Node.createCallExpression(null, expr, { list: [] });
+      }
+    }
+    lookahead = this.lookahead;
+    disallowGenerator = this.state.disallowGenerator;
+    this.state.disallowGenerator = true;
+    node = this.parseBraces(true);
+    this.state.disallowGenerator = disallowGenerator;
+
+    // TODO: refactoring
+    if (expr.callee === null) {
+      expr.callee = node;
+      node = expr;
+    } else {
+      expr.args.list.push(node);
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideBracket = function(expr) {
+    if (expr.type === Syntax.CallExpression && expr.stamp === "(") {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    if (isClassName(expr)) {
+      expr = this.parseLeftHandSideNewFrom(expr);
+    } else {
+      expr = this.parseLeftHandSideListAt(expr);
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseLeftHandSideNewFrom = function(expr) {
+    var node, method;
+    var marker;
+
+    method = Node.createIdentifier("newFrom");
+    method = Marker.create(this.lexer).apply(method);
+
+    marker = Marker.create(this.lexer);
+    node = this.parseListInitialiser();
+    node = marker.update().apply(node);
+
+    return Node.createCallExpression(expr, method, { list: [ node ] }, "[");
+  };
+
+  SCParser.prototype.parseLeftHandSideListAt = function(expr) {
+    var indexes, method;
+
+    method = Node.createIdentifier("at");
+    method = Marker.create(this.lexer).apply(method);
+
+    indexes = this.parseListIndexer();
+    if (indexes) {
+      if (indexes.length === 3) {
+        method.name = "copySeries";
+      }
+    } else {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return Node.createCallExpression(expr, method, { list: indexes }, "[");
+  };
+
+  SCParser.prototype.parseLeftHandSideDot = function(expr) {
+    var method, args;
+
+    this.lex();
+
+    if (this.match("(")) {
+      // expr.()
+      return this.parseLeftHandSideDotValue(expr);
+    } else if (this.match("[")) {
+      // expr.[0]
+      return this.parseLeftHandSideDotBracket(expr);
+    }
+
+    method = this.parseProperty();
+    if (this.match("(")) {
+      // expr.method(args)
+      args = this.parseCallArgument();
+      return Node.createCallExpression(expr, method, args);
+    }
+
+    // expr.method
+    return Node.createCallExpression(expr, method, { list: [] });
+  };
+
+  SCParser.prototype.parseLeftHandSideDotValue = function(expr) {
+    var method, args;
+
+    method = Node.createIdentifier("value");
+    method = Marker.create(this.lexer).apply(method);
+
+    args   = this.parseCallArgument();
+
+    return Node.createCallExpression(expr, method, args, ".");
+  };
+
+  SCParser.prototype.parseLeftHandSideDotBracket = function(expr) {
+    var method, marker;
+
+    marker = Marker.create(this.lexer, expr);
+
+    method = Node.createIdentifier("value");
+    method = Marker.create(this.lexer).apply(method);
+
+    expr = Node.createCallExpression(expr, method, { list: [] }, ".");
+    expr = marker.update().apply(expr);
+
+    return this.parseLeftHandSideListAt(expr);
+  };
+
+  SCParser.prototype.parseCallArgument = function() {
+    var args, node, hasKeyword, lookahead;
+
+    args = { list: [] };
+    hasKeyword = false;
+
+    this.expect("(");
+
+    while (this.lookahead.type !== Token.EOF && !this.match(")")) {
+      lookahead = this.lookahead;
+      if (!hasKeyword) {
+        if (this.match("*")) {
+          this.lex();
+          args.expand = this.parseExpressions();
+          hasKeyword = true;
+        } else if (lookahead.type === Token.Label) {
+          this.parseCallArgumentKeyword(args);
+          hasKeyword = true;
+        } else {
+          node = this.parseExpressions();
+          args.list.push(node);
+        }
+      } else {
+        if (lookahead.type !== Token.Label) {
+          this.throwUnexpected(lookahead);
+        }
+        this.parseCallArgumentKeyword(args);
+      }
+      if (this.match(")")) {
+        break;
+      }
+      this.expect(",");
+    }
+
+    this.expect(")");
+
+    return args;
+  };
+
+  SCParser.prototype.parseCallArgumentKeyword = function(args) {
+    var key, value;
+
+    key = this.lex().value;
+    value = this.parseExpressions();
+    if (!args.keywords) {
+      args.keywords = {};
+    }
+    args.keywords[key] = value;
+  };
+
+  SCParser.prototype.parseListIndexer = function() {
+    var node = null;
+
+    this.expect("[");
+
+    if (!this.match("]")) {
+      if (this.match("..")) {
+        // [..last] / [..]
+        node = this.parseListIndexerWithoutFirst();
+      } else {
+        // [first] / [first..last] / [first, second..last]
+        node = this.parseListIndexerWithFirst();
+      }
+    }
+
+    this.expect("]");
+
+    if (node === null) {
+      this.throwUnexpected({ value: "]" });
+    }
+
+    return node;
+  };
+
+  SCParser.prototype.parseListIndexerWithoutFirst = function() {
+    var last;
+
+    this.lex();
+
+    if (!this.match("]")) {
+      last = this.parseExpressions();
+
+      // [..last]
+      return [ null, null, last ];
+    }
+
+    // [..]
+    return [ null, null, null ];
+  };
+
+  SCParser.prototype.parseListIndexerWithFirst = function() {
+    var first = null;
+
+    if (!this.match(",")) {
+      first = this.parseExpressions();
+    } else {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    if (this.match("..")) {
+      return this.parseListIndexerWithoutSecond(first);
+    } else if (this.match(",")) {
+      return this.parseListIndexerWithSecond(first);
+    }
+
+    // [first]
+    return [ first ];
+  };
+
+  SCParser.prototype.parseListIndexerWithoutSecond = function(first) {
+    var last = null;
+
+    this.lex();
+
+    if (!this.match("]")) {
+      last = this.parseExpressions();
+    }
+
+    // [first..last]
+    return [ first, null, last ];
+  };
+
+  SCParser.prototype.parseListIndexerWithSecond = function(first) {
+    var second, last = null;
+
+    this.lex();
+
+    second = this.parseExpressions();
+    if (this.match("..")) {
+      this.lex();
+      if (!this.match("]")) {
+        last = this.parseExpressions();
+      }
+    } else {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    // [first, second..last]
+    return [ first, second, last ];
+  };
+
+  SCParser.prototype.parseProperty = function() {
+    var token, id;
+    var marker;
+
+    marker = Marker.create(this.lexer);
+    token = this.lex();
+
+    if (token.type !== Token.Identifier || isClassName(token)) {
+      this.throwUnexpected(token);
+    }
+
+    id = Node.createIdentifier(token.value);
+
+    return marker.update().apply(id);
+  };
+
+  // 4.8 Primary Expressions
+  SCParser.prototype.parseArgumentableValue = function() {
+    var expr, stamp;
+    var marker;
+
+    marker = Marker.create(this.lexer);
+
+    stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
+
+    switch (stamp) {
+    case "#":
+      expr = this.parsePrimaryHashedExpression();
+      break;
+    case Token.CharLiteral:
+    case Token.FloatLiteral:
+    case Token.FalseLiteral:
+    case Token.IntegerLiteral:
+    case Token.NilLiteral:
+    case Token.SymbolLiteral:
+    case Token.TrueLiteral:
+      expr = Node.createLiteral(this.lex());
+      break;
+    }
+
+    if (!expr) {
+      expr = {};
+      this.throwUnexpected(this.lex());
+    }
+
+    return marker.update().apply(expr);
+  };
+
+  SCParser.prototype.parsePrimaryExpression = function(node) {
+    var expr, stamp;
+    var marker;
+
+    if (node) {
+      return node;
+    }
+
+    marker = Marker.create(this.lexer);
+
+    if (this.match("~")) {
+      this.lex();
+      expr = Node.createGlobalExpression(this.parseIdentifier());
+    } else {
+      stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
+      switch (stamp) {
+      case "(":
+        expr = this.parseParentheses();
+        break;
+      case "{":
+        expr = this.parseBraces();
+        break;
+      case "[":
+        expr = this.parseListInitialiser();
+        break;
+      case Token.Keyword:
+        expr = this.parsePrimaryKeywordExpression();
+        break;
+      case Token.Identifier:
+        expr = this.parsePrimaryIdentifier();
+        break;
+      case Token.StringLiteral:
+        expr = this.parsePrimaryStringExpression();
+        break;
+      default:
+        expr = this.parseArgumentableValue(stamp);
+        break;
+      }
+    }
+
+    return marker.update().apply(expr);
+  };
+
+  SCParser.prototype.parsePrimaryHashedExpression = function() {
+    var expr, lookahead;
+
+    lookahead = this.lookahead;
+
+    this.lex();
+
+    switch (this.matchAny([ "[", "{" ])) {
+    case "[":
+      expr = this.parsePrimaryImmutableListExpression(lookahead);
+      break;
+    case "{":
+      expr = this.parsePrimaryClosedFunctionExpression();
+      break;
+    default:
+      expr = {};
+      this.throwUnexpected(this.lookahead);
+      break;
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parsePrimaryImmutableListExpression = function(lookahead) {
+    var expr;
+
+    if (this.state.immutableList) {
+      this.throwUnexpected(lookahead);
+    }
+
+    this.state.immutableList = true;
+    expr = this.parseListInitialiser();
+    this.state.immutableList = false;
+
+    return expr;
+  };
+
+  SCParser.prototype.parsePrimaryClosedFunctionExpression = function() {
+    var expr, disallowGenerator, closedFunction;
+
+    disallowGenerator = this.state.disallowGenerator;
+    closedFunction    = this.state.closedFunction;
+
+    this.state.disallowGenerator = true;
+    this.state.closedFunction    = true;
+    expr = this.parseBraces();
+    this.state.closedFunction    = closedFunction;
+    this.state.disallowGenerator = disallowGenerator;
+
+    return expr;
+  };
+
+  SCParser.prototype.parsePrimaryKeywordExpression = function() {
+    if (Keywords[this.lookahead.value] === "keyword") {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    return Node.createThisExpression(this.lex().value);
+  };
+
+  SCParser.prototype.parsePrimaryIdentifier = function() {
+    var expr, lookahead;
+
+    lookahead = this.lookahead;
+
+    expr = this.parseIdentifier();
+
+    if (expr.name === "_") {
+      expr.name = "$_" + this.state.underscore.length.toString();
+      this.state.underscore.push(expr);
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.isInterpolatedString = function(value) {
+    var re = /(^|[^\x5c])#\{/;
+    return re.test(value);
+  };
+
+  SCParser.prototype.parsePrimaryStringExpression = function() {
+    var token;
+
+    token = this.lex();
+
+    if (this.isInterpolatedString(token.value)) {
+      return this.parseInterpolatedString(token.value);
+    }
+
+    return Node.createLiteral(token);
+  };
+
+  SCParser.prototype.parseInterpolatedString = function(value) {
+    var len, items;
+    var index1, index2, code, parser;
+
+    len = value.length;
+    items = [];
+
+    index1 = 0;
+
+    do {
+      index2 = findString$InterpolatedString(value, index1);
+      if (index2 >= len) {
+        break;
+      }
+      code = value.substr(index1, index2 - index1);
+      if (code) {
+        items.push('"' + code + '"');
+      }
+
+      index1 = index2 + 2;
+      index2 = findExpression$InterpolatedString(value, index1, items);
+
+      code = value.substr(index1, index2 - index1);
+      if (code) {
+        items.push("(" + code + ").asString");
+      }
+
+      index1 = index2 + 1;
+    } while (index1 < len);
+
+    if (index1 < len) {
+      items.push('"' + value.substr(index1) + '"');
+    }
+
+    code = items.join("++");
+    parser = new SCParser(code, {});
+
+    return parser.parseExpression();
+  };
+
+  // ( ... )
+  SCParser.prototype.parseParentheses = function() {
+    var marker, expr, generator;
+
+    marker = Marker.create(this.lexer);
+
+    this.expect("(");
+
+    if (this.match(":")) {
+      this.lex();
+      generator = true;
+    }
+
+    if (this.lookahead.type === Token.Label) {
+      expr = this.parseObjectInitialiser();
+    } else if (this.match("var")) {
+      expr = this.withScope(function() {
+        var body;
+        body = this.parseFunctionBody(")");
+        return Node.createBlockExpression(body);
+      });
+    } else if (this.match("..")) {
+      expr = this.parseSeriesInitialiser(null, generator);
+    } else if (this.match(")")) {
+      expr = Node.createObjectExpression([]);
+    } else {
+      expr = this.parseParenthesesGuess(generator, marker);
+    }
+
+    this.expect(")");
+
+    marker.update().apply(expr);
+
+    return expr;
+  };
+
+  SCParser.prototype.parseParenthesesGuess = function(generator) {
+    var node, expr;
+
+    node = this.parseExpression();
+    if (this.matchAny([ ",", ".." ])) {
+      expr = this.parseSeriesInitialiser(node, generator);
+    } else if (this.match(":")) {
+      expr = this.parseObjectInitialiser(node);
+    } else if (this.match(";")) {
+      expr = this.parseExpressions(node);
+      if (this.matchAny([ ",", ".." ])) {
+        expr = this.parseSeriesInitialiser(expr, generator);
+      }
+    } else {
+      expr = this.parseExpression(node);
+    }
+
+    return expr;
+  };
+
+  SCParser.prototype.parseObjectInitialiser = function(node) {
+    var elements = [], innerElements;
+
+    innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    if (node) {
+      this.expect(":");
+    } else {
+      node = this.parseLabelAsSymbol();
+    }
+    elements.push(node, this.parseExpression());
+
+    if (this.match(",")) {
+      this.lex();
+    }
+
+    while (this.lookahead.type !== Token.EOF && !this.match(")")) {
+      if (this.lookahead.type === Token.Label) {
+        node = this.parseLabelAsSymbol();
+      } else {
+        node = this.parseExpression();
+        this.expect(":");
+      }
+      elements.push(node, this.parseExpression());
+      if (!this.match(")")) {
+        this.expect(",");
+      }
+    }
+
+    this.state.innerElements = innerElements;
+
+    return Node.createObjectExpression(elements);
+  };
+
+  SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
+    var method, innerElements;
+    var items = [];
+
+    innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    method = Node.createIdentifier(generator ? "seriesIter" : "series");
+    method = Marker.create(this.lexer).apply(method);
+
+    if (node === null) {
+      // (..), (..last)
+      items = this.parseSeriesInitialiserWithoutFirst(generator);
+    } else {
+      items = this.parseSeriesInitialiserWithFirst(node, generator);
+    }
+
+    this.state.innerElements = innerElements;
+
+    return Node.createCallExpression(items.shift(), method, { list: items });
+  };
+
+  SCParser.prototype.parseSeriesInitialiserWithoutFirst = function(generator) {
+    var first, last = null;
+
+    // (..last)
+    first = {
+      type: Syntax.Literal,
+      value: "0",
+      valueType: Token.IntegerLiteral
+    };
+    first = Marker.create(this.lexer).apply(first);
+
+    this.expect("..");
+    if (this.match(")")) {
+      if (!generator) {
+        this.throwUnexpected(this.lookahead);
+      }
+    } else {
+      last = this.parseExpressions();
+    }
+
+    return [ first, null, last ];
+  };
+
+  SCParser.prototype.parseSeriesInitialiserWithFirst = function(node, generator) {
+    var first, second = null, last = null;
+
+    first = node;
+    if (this.match(",")) {
+      // (first, second .. last)
+      this.lex();
+      second = this.parseExpressions();
+      if (Array.isArray(second) && second.length === 0) {
+        this.throwUnexpected(this.lookahead);
+      }
+      this.expect("..");
+      if (!this.match(")")) {
+        last = this.parseExpressions();
+      } else if (!generator) {
+        this.throwUnexpected(this.lookahead);
+      }
+    } else {
+      // (first..last)
+      this.lex();
+      if (!this.match(")")) {
+        last = this.parseExpressions();
+      } else if (!generator) {
+        this.throwUnexpected(this.lookahead);
+      }
+    }
+
+    return [ first, second, last ];
+  };
+
+  SCParser.prototype.parseListInitialiser = function() {
+    var elements, innerElements;
+
+    elements = [];
+
+    innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    this.expect("[");
+
+    while (this.lookahead.type !== Token.EOF && !this.match("]")) {
+      if (this.lookahead.type === Token.Label) {
+        elements.push(this.parseLabelAsSymbol(), this.parseExpression());
+      } else {
+        elements.push(this.parseExpression());
+        if (this.match(":")) {
+          this.lex();
+          elements.push(this.parseExpression());
+        }
+      }
+      if (!this.match("]")) {
+        this.expect(",");
+      }
+    }
+
+    this.expect("]");
+
+    this.state.innerElements = innerElements;
+
+    return Node.createListExpression(elements, this.state.immutableList);
+  };
+
+  // { ... }
+  SCParser.prototype.parseBraces = function(blocklist) {
+    var expr;
+    var marker;
+
+    marker = Marker.create(this.lexer);
+
+    this.expect("{");
+
+    if (this.match(":")) {
+      if (!this.state.disallowGenerator) {
+        this.lex();
+        expr = this.parseGeneratorInitialiser();
+      } else {
+        expr = {};
+        this.throwUnexpected(this.lookahead);
+      }
+    } else {
+      expr = this.parseFunctionExpression(this.state.closedFunction, blocklist);
+    }
+
+    this.expect("}");
+
+    return marker.update().apply(expr);
+  };
+
+  SCParser.prototype.parseGeneratorInitialiser = function() {
+    this.lexer.throwError({}, Message.NotImplemented, "generator literal");
+
+    this.parseExpression();
+    this.expect(",");
+
+    while (this.lookahead.type !== Token.EOF && !this.match("}")) {
+      this.parseExpression();
+      if (!this.match("}")) {
+        this.expect(",");
+      }
+    }
+
+    return Node.createLiteral({ value: "null", valueType: Token.NilLiteral });
+  };
+
+  SCParser.prototype.parseLabel = function() {
+    var label, marker;
+
+    marker = Marker.create(this.lexer);
+
+    label = Node.createLabel(this.lex().value);
+
+    return marker.update().apply(label);
+  };
+
+  SCParser.prototype.parseLabelAsSymbol = function() {
+    var marker, label, node;
+
+    marker = Marker.create(this.lexer);
+
+    label = this.parseLabel();
+    node  = {
+      type: Syntax.Literal,
+      value: label.name,
+      valueType: Token.SymbolLiteral
+    };
+
+    node = marker.update().apply(node);
+
+    return node;
+  };
+
+  SCParser.prototype.parseIdentifier = function() {
+    var expr;
+    var marker;
+
+    marker = Marker.create(this.lexer);
+
+    if (this.lookahead.type !== Syntax.Identifier) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    expr = this.lex();
+    expr = Node.createIdentifier(expr.value);
+
+    return marker.update().apply(expr);
+  };
+
+  SCParser.prototype.parseVariableIdentifier = function() {
+    var token, value, ch;
+    var id, marker;
+
+    marker = Marker.create(this.lexer);
+
+    token = this.lex();
+    value = token.value;
+
+    if (token.type !== Token.Identifier) {
+      this.throwUnexpected(token);
+    } else {
+      ch = value.charAt(0);
+      if (("A" <= ch && ch <= "Z") || ch === "_") {
+        this.throwUnexpected(token);
+      }
+    }
+
+    id = Node.createIdentifier(value);
+
+    return marker.update().apply(id);
+  };
+
+  var renameGetterToSetter = function(methodName) {
+    switch (methodName) {
+    case "at"        : return "put";
+    case "copySeries": return "putSeries";
+    }
+    return methodName + "_";
+  };
+
+  var calcBinaryPrecedence = function(token, binaryPrecedence) {
+    var prec = 0;
+
+    switch (token.type) {
+    case Token.Punctuator:
+      if (token.value !== "=") {
+        if (binaryPrecedence.hasOwnProperty(token.value)) {
+          prec = binaryPrecedence[token.value];
+        } else if (/^[-+*\/%<=>!?&|@]+$/.test(token.value)) {
+          prec = 255;
+        }
+      }
+      break;
+    case Token.Label:
+      prec = 255;
+      break;
+    }
+
+    return prec;
+  };
+
+  var isClassName = function(node) {
+    var name, ch;
+
+    if (node.type === Syntax.Identifier) {
+      name = node.value || node.name;
+      ch = name.charAt(0);
+      return "A" <= ch && ch <= "Z";
+    }
+
+    return false;
+  };
+
+  var isLeftHandSide = function(expr) {
+    switch (expr.type) {
+    case Syntax.Identifier:
+    case Syntax.GlobalExpression:
+      return true;
+    }
+    return false;
+  };
+
+  var isValidArgumentValue = function(node) {
+    if (node.type === Syntax.Literal) {
+      return true;
+    }
+    if (node.type === Syntax.ListExpression) {
+      return node.elements.every(function(node) {
+        return node.type === Syntax.Literal;
+      });
+    }
+
+    return false;
+  };
+
+  var findString$InterpolatedString = function(value, index) {
+    var len, ch;
+
+    len = value.length;
+
+    while (index < len) {
+      ch = value.charAt(index);
+      if (ch === "#") {
+        if (value.charAt(index + 1) === "{") {
+          break;
+        }
+      } else if (ch === "\\") {
+        index += 1;
+      }
+      index += 1;
+    }
+
+    return index;
+  };
+
+  var findExpression$InterpolatedString = function(value, index) {
+    var len, depth, ch;
+
+    len = value.length;
+
+    depth = 0;
+    while (index < len) {
+      ch = value.charAt(index);
+      if (ch === "}") {
+        if (depth === 0) {
+          break;
+        }
+        depth -= 1;
+      } else if (ch === "{") {
+        depth += 1;
+      }
+      index += 1;
+    }
+
+    return index;
+  };
+
+  parser.parse = function(source, opts) {
+    var instance, ast;
+
+    opts = opts || /* istanbul ignore next */ {};
+
+    instance = new SCParser(source, opts);
+    ast = instance.parse();
+
+    if (!!opts.tolerant && typeof instance.lexer.errors !== "undefined") {
+      ast.errors = instance.lexer.errors;
+    }
+
+    return ast;
+  };
+
+  sc.lang.compiler.parser = parser;
 
 })(sc);
 
@@ -194,23 +3723,23 @@ var sc = { VERSION: "0.0.13" };
 
   mathlib.leftShift = function(a, b) {
     if (b < 0) {
-      return (a|0) >> (-b|0);
+      return a >> -b;
     }
-    return (a|0) << (b|0);
+    return a << b;
   };
 
   mathlib.rightShift = function(a, b) {
     if (b < 0) {
-      return (a|0) << (-b|0);
+      return a << -b;
     }
-    return (a|0) >> (b|0);
+    return a >> b;
   };
 
   mathlib.unsignedRightShift = function(a, b) {
     if (b < 0) {
-      return (a|0) << (-b|0);
+      return (a << -b) >>> 0;
     }
-    return (a|0) >> (b|0);
+    return a >>> b;
   };
 
   mathlib.ring1 = function(a, b) {
@@ -456,18 +3985,34 @@ var sc = { VERSION: "0.0.13" };
 
 })(sc);
 
+// src/sc/lang/io.js
+(function(sc) {
+
+  var io = {};
+
+  var SCScript = sc.SCScript;
+  var buffer   = "";
+
+  io.post = function(msg) {
+    var items;
+
+    items  = (buffer + msg).split("\n");
+    buffer = items.pop();
+
+    items.forEach(function(msg) {
+      SCScript.stdout(msg);
+    });
+  };
+
+  sc.lang.io = io;
+
+})(sc);
+
 // src/sc/lang/dollarSC.js
 (function(sc) {
 
-  var $SC = function(msg, rcv, args) {
-    var method;
-
-    method = rcv[msg];
-    if (method) {
-      return method.apply(rcv, args);
-    }
-
-    throw new Error(String(rcv) + " cannot understand message '" + msg + "'");
+  var $SC = function(name) {
+    return sc.lang.klass.get(name);
   };
 
   /* istanbul ignore next */
@@ -479,9 +4024,7 @@ var sc = { VERSION: "0.0.13" };
   $SC.Char = shouldBeImplementedInClassLib;
   $SC.Array = shouldBeImplementedInClassLib;
   $SC.String = shouldBeImplementedInClassLib;
-  $SC.Dictionary = shouldBeImplementedInClassLib;
   $SC.Function = shouldBeImplementedInClassLib;
-  $SC.Routine = shouldBeImplementedInClassLib;
   $SC.Ref = shouldBeImplementedInClassLib;
   $SC.Symbol = shouldBeImplementedInClassLib;
   $SC.Boolean = shouldBeImplementedInClassLib;
@@ -499,43 +4042,85 @@ var sc = { VERSION: "0.0.13" };
   var slice = [].slice;
   var $SC = sc.lang.$SC;
 
-  var fn = function(func, def) {
-    var argNames, remain, wrapper;
+  var _getDefaultValue = function(value) {
+    var ch;
 
-    argNames = def.split(/\s*,\s*/);
-    if (argNames[argNames.length - 1].charAt(0) === "*") {
-      remain = !!argNames.pop();
+    switch (value) {
+    case "nil":
+      return $SC.Nil();
+    case "true":
+      return $SC.True();
+    case "false":
+      return $SC.False();
+    case "inf":
+      return $SC.Float(Infinity);
+    case "-inf":
+      return $SC.Float(-Infinity);
     }
+
+    ch = value.charAt(0);
+    switch (ch) {
+    case "$":
+      return $SC.Char(value.charAt(1));
+    case "\\":
+      return $SC.Symbol(value.substr(1));
+    }
+
+    if (value.indexOf(".") !== -1) {
+      return $SC.Float(+value);
+    }
+
+    return $SC.Integer(+value);
+  };
+
+  var getDefaultValue = function(value) {
+    if (value.charAt(0) === "[") {
+      return $SC.Array(value.slice(1, -2).split(",").map(function(value) {
+        return _getDefaultValue(value.trim());
+      }));
+    }
+    return _getDefaultValue(value);
+  };
+
+  var fn = function(func, def) {
+    var argItems, argNames, argVals;
+    var remain, wrapper;
+
+    argItems = def.split(/\s*;\s*/);
+    if (argItems[argItems.length - 1].charAt(0) === "*") {
+      remain = !!argItems.pop();
+    }
+
+    argNames = new Array(argItems.length);
+    argVals  = new Array(argItems.length);
+
+    argItems.forEach(function(items, i) {
+      items = items.split("=");
+      argNames[i] = items[0].trim();
+      argVals [i] = getDefaultValue(items[1] || "nil");
+    });
 
     wrapper = function() {
       var given, args;
-      var dict, keys, name, index;
-      var i, imax;
 
       given = slice.call(arguments);
-      args  = [];
+      args  = argVals.slice();
 
       if (isDictionary(given[given.length - 1])) {
-        dict = given.pop();
-        keys = Object.keys(dict);
-        for (i = 0, imax = keys.length; i < imax; ++i) {
-          name  = keys[i];
-          index = argNames.indexOf(name);
-          if (index !== -1) {
-            args[index] = dict[name];
-          }
-        }
+        setKeywordArguments(args, argNames, given.pop());
       }
 
-      for (i = 0, imax = Math.min(argNames.length, given.length); i < imax; ++i) {
-        args[i] = given[i];
-      }
+      copy(args, given, Math.min(argNames.length, given.length));
+
       if (remain) {
         args.push($SC.Array(given.slice(argNames.length)));
       }
 
       return func.apply(this, args);
     };
+
+    wrapper._argNames = argNames;
+    wrapper._argVals  = argVals;
 
     return wrapper;
   };
@@ -544,21 +4129,36 @@ var sc = { VERSION: "0.0.13" };
     return !!(obj && obj.constructor === Object);
   };
 
+  var copy = function(args, given, length) {
+    for (var i = 0; i < length; ++i) {
+      if (given[i]) {
+        args[i] = given[i];
+      }
+    }
+  };
+
+  var setKeywordArguments = function(args, argNames, dict) {
+    Object.keys(dict).forEach(function(key) {
+      var index = argNames.indexOf(key);
+      if (index !== -1) {
+        args[index] = dict[key];
+      }
+    });
+  };
+
   sc.lang.fn = fn;
 
 })(sc);
 
-// src/sc/lang/klass.js
+// src/sc/lang/klass/klass.js
 (function(sc) {
-
-  sc.lang.klass = {};
 
   var slice = [].slice;
   var $SC = sc.lang.$SC;
 
+  var klass       = {};
   var metaClasses = {};
-  var classes = {};
-  var utils = {};
+  var classes     = klass.classes = {};
 
   var createClassInstance = function(MetaSpec) {
     var instance = new SCClass();
@@ -580,9 +4180,13 @@ var sc = { VERSION: "0.0.13" };
     constructor.metaClass = createClassInstance(MetaSpec);
   };
 
-  var def = function(className, fn, classMethods, instanceMethods, opts) {
+  var def = function(className, constructor, fn, opts) {
+    var classMethods, instanceMethods, setMethod, spec;
 
-    var setMethod = function(methods, methodName, func) {
+    classMethods    = constructor.metaClass._MetaSpec.prototype;
+    instanceMethods = constructor.prototype;
+
+    setMethod = function(methods, methodName, func) {
       var bond;
       if (methods.hasOwnProperty(methodName) && !opts.force) {
         bond = methods === classMethods ? "." : "#";
@@ -594,9 +4198,8 @@ var sc = { VERSION: "0.0.13" };
       methods[methodName] = func;
     };
 
-    var spec = {};
     if (typeof fn === "function") {
-      fn(spec, utils);
+      fn(spec = {}, klass.utils);
     } else {
       spec = fn;
     }
@@ -610,9 +4213,7 @@ var sc = { VERSION: "0.0.13" };
     });
   };
 
-  sc.lang.klass.define = function(constructor, className, spec) {
-    var items, superClassName, ch0, metaClass, newClass;
-
+  var throwIfInvalidArgument = function(constructor, className) {
     if (typeof constructor !== "function") {
       throw new Error(
         "sc.lang.klass.define: " +
@@ -626,12 +4227,11 @@ var sc = { VERSION: "0.0.13" };
           "second argument must be a string, but got: " + String(className)
       );
     }
+  };
 
-    items = className.split(":");
-    className = items[0].trim();
-    superClassName = (items[1] || "Object").trim();
+  var throwIfInvalidClassName = function(className, superClassName) {
+    var ch0 = className.charCodeAt(0);
 
-    ch0 = className.charCodeAt(0);
     if (ch0 < 0x41 || 0x5a < ch0) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
@@ -653,23 +4253,24 @@ var sc = { VERSION: "0.0.13" };
             "superclass '" + superClassName + "' is not registered."
         );
       }
-      extend(constructor, metaClasses[superClassName]);
     }
+  };
+
+  var buildClass = function(className, constructor) {
+    var newClass, metaClass;
 
     metaClass = constructor.metaClass;
 
-    spec = spec || {};
-    def(className, spec, metaClass._MetaSpec.prototype, constructor.prototype, {});
+    newClass = new metaClass._MetaSpec();
+    newClass._name = className;
+    newClass._Spec = constructor;
+    constructor.prototype.__class = newClass;
+    constructor.prototype.__Spec  = constructor;
+    constructor.prototype.__className = className;
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = "Meta_" + className;
-
-    newClass = new metaClass._MetaSpec();
-    newClass._name = className;
-    newClass._Spec = metaClass._Spec;
-    newClass._Spec.prototype.__class = newClass;
-    newClass._Spec.prototype.__Spec  = newClass._Spec;
 
     classes["Meta_" + className] = metaClass;
     classes[className] = newClass;
@@ -681,8 +4282,30 @@ var sc = { VERSION: "0.0.13" };
     metaClasses[className] = metaClass;
   };
 
-  sc.lang.klass.refine = function(className, spec, opts) {
-    var metaClass;
+  klass.define = function(constructor, className, fn) {
+    var items, superClassName;
+
+    throwIfInvalidArgument(constructor, className);
+
+    items = className.split(":");
+    className      = items[0].trim();
+    superClassName = (items[1] || "Object").trim();
+
+    throwIfInvalidClassName(className, superClassName);
+
+    if (className !== "Object") {
+      extend(constructor, metaClasses[superClassName]);
+    }
+
+    fn = fn || {};
+
+    def(className, constructor, fn, {});
+
+    buildClass(className, constructor);
+  };
+
+  klass.refine = function(className, fn, opts) {
+    var constructor;
 
     if (!metaClasses.hasOwnProperty(className)) {
       throw new Error(
@@ -690,11 +4313,13 @@ var sc = { VERSION: "0.0.13" };
           "class '" + className + "' is not registered."
       );
     }
-    metaClass = metaClasses[className];
-    def(className, spec, metaClass._MetaSpec.prototype, metaClass._Spec.prototype, opts || {});
+
+    constructor = metaClasses[className]._Spec;
+
+    def(className, constructor, fn, opts || {});
   };
 
-  sc.lang.klass.get = function(name) {
+  klass.get = function(name) {
     if (!classes[name]) {
       throw new Error(
         "sc.lang.klass.get: " +
@@ -704,7 +4329,7 @@ var sc = { VERSION: "0.0.13" };
     return classes[name];
   };
 
-  sc.lang.klass.exists = function(name) {
+  klass.exists = function(name) {
     return !!classes[name];
   };
 
@@ -720,96 +4345,8 @@ var sc = { VERSION: "0.0.13" };
     this._isMetaClass = false;
   }
 
-  function SCNil() {
-    this.__initializeWith__("Object");
-    this._ = null;
-  }
-
-  function SCSymbol() {
-    this.__initializeWith__("Object");
-    this._ = "";
-  }
-
-  function SCBoolean() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCTrue() {
-    this.__initializeWith__("Boolean");
-    this._ = true;
-  }
-
-  function SCFalse() {
-    this.__initializeWith__("Boolean");
-    this._ = false;
-  }
-
-  function SCMagnitude() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCChar() {
-    this.__initializeWith__("Magnitude");
-    this._ = "\0";
-  }
-
-  function SCNumber() {
-    this.__initializeWith__("Magnitude");
-  }
-
-  function SCSimpleNumber() {
-    this.__initializeWith__("Number");
-  }
-
-  function SCInteger() {
-    this.__initializeWith__("SimpleNumber");
-    this._ = 0;
-  }
-
-  function SCFloat() {
-    this.__initializeWith__("SimpleNumber");
-    this._ = 0.0;
-  }
-
-  function SCCollection() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCSequenceableCollection() {
-    this.__initializeWith__("Collection");
-  }
-
-  function SCArrayedCollection() {
-    this.__initializeWith__("SequenceableCollection");
-    this._immutable = false;
-    this._ = [];
-  }
-
-  function SCRawArray() {
-    this.__initializeWith__("ArrayedCollection");
-  }
-
-  function SCArray() {
-    this.__initializeWith__("ArrayedCollection");
-  }
-
-  function SCString(value) {
-    this.__initializeWith__("RawArray");
-    this._ = value;
-  }
-
-  function SCAbstractFunction() {
-    this.__initializeWith__("Object");
-  }
-
-  function SCFunction() {
-    this.__initializeWith__("AbstractFunction");
-    // istanbul ignore next
-    this._ = function() {};
-  }
-
   SCObject.metaClass = createClassInstance(function() {});
-  sc.lang.klass.define(SCObject, "Object", {
+  klass.define(SCObject, "Object", {
     __tag: 1,
     __initializeWith__: function(className, args) {
       metaClasses[className]._Spec.apply(this, args);
@@ -817,7 +4354,7 @@ var sc = { VERSION: "0.0.13" };
     $initClass: function() {}
   });
 
-  sc.lang.klass.define(SCClass, "Class");
+  klass.define(SCClass, "Class");
 
   SCObject.metaClass._MetaSpec.prototype = classes.Class = createClassInstance();
   classes.Class._Spec = SCClass;
@@ -827,61 +4364,7 @@ var sc = { VERSION: "0.0.13" };
   classes.Object._Spec.prototype.__class = classes.Object;
   classes.Object._Spec.prototype.__Spec = classes.Object._Spec;
 
-  sc.lang.klass.define(SCNil, "Nil", {
-    __tag: 773
-  });
-
-  sc.lang.klass.define(SCSymbol, "Symbol", {
-    __tag: 1027
-  });
-
-  sc.lang.klass.define(SCBoolean, "Boolean");
-
-  sc.lang.klass.define(SCTrue, "True : Boolean", {
-    __tag: 775
-  });
-
-  sc.lang.klass.define(SCFalse, "False : Boolean", {
-    __tag: 774
-  });
-
-  sc.lang.klass.define(SCMagnitude, "Magnitude");
-
-  sc.lang.klass.define(SCChar, "Char : Magnitude", {
-    __tag: 1028
-  });
-
-  sc.lang.klass.define(SCNumber, "Number : Magnitude");
-  sc.lang.klass.define(SCSimpleNumber, "SimpleNumber : Number");
-
-  sc.lang.klass.define(SCInteger, "Integer : SimpleNumber", {
-    __tag: 770
-  });
-
-  sc.lang.klass.define(SCFloat, "Float : SimpleNumber", {
-    __tag: 777
-  });
-
-  sc.lang.klass.define(SCCollection, "Collection");
-  sc.lang.klass.define(SCSequenceableCollection, "SequenceableCollection : Collection");
-  sc.lang.klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
-  sc.lang.klass.define(SCRawArray, "RawArray : ArrayedCollection");
-
-  sc.lang.klass.define(SCArray, "Array : ArrayedCollection", {
-    __tag: 11
-  });
-
-  sc.lang.klass.define(SCString, "String : RawArray", {
-    __tag: 1034
-  });
-
-  sc.lang.klass.define(SCAbstractFunction, "AbstractFunction");
-
-  sc.lang.klass.define(SCFunction, "Function : AbstractFunction", {
-    __tag: 12
-  });
-
-  sc.lang.klass.refine("Object", function(spec) {
+  klass.refine("Object", function(spec) {
     spec.$new = function() {
       if (this._Spec === SCClass) {
         return $SC.Nil();
@@ -894,7 +4377,7 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.isClass = function() {
-      return falseInstance;
+      return $SC.False();
     };
 
     spec.isKindOf = function($aClass) {
@@ -919,20 +4402,20 @@ var sc = { VERSION: "0.0.13" };
     };
   });
 
-  sc.lang.klass.refine("Class", function(spec) {
+  klass.refine("Class", function(spec) {
     spec.name = function() {
       return $SC.String(this._name);
     };
 
     spec.class = function() {
       if (this._isMetaClass) {
-        return  classes.Class;
+        return classes.Class;
       }
-      return $SC.Class("Meta_" + this._name);
+      return $SC("Meta_" + this._name);
     };
 
     spec.isClass = function() {
-      return trueInstance;
+      return $SC.True();
     };
 
     spec.toString = function() {
@@ -940,57 +4423,179 @@ var sc = { VERSION: "0.0.13" };
     };
   });
 
-  $SC.Class = sc.lang.klass.get;
+  sc.lang.klass = klass;
 
-  var nilInstance = new SCNil();
+})(sc);
+
+// src/sc/lang/klass/constructors.js
+(function(sc) {
+
+  var $SC   = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var klass = sc.lang.klass;
+
+  function SCNil() {
+    this.__initializeWith__("Object");
+    this._ = null;
+  }
+  klass.define(SCNil, "Nil", {
+    __tag: 773
+  });
+
+  function SCSymbol() {
+    this.__initializeWith__("Object");
+    this._ = "";
+  }
+  klass.define(SCSymbol, "Symbol", {
+    __tag: 1027
+  });
+
+  function SCBoolean() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCBoolean, "Boolean");
+
+  function SCTrue() {
+    this.__initializeWith__("Boolean");
+    this._ = true;
+  }
+  klass.define(SCTrue, "True : Boolean", {
+    __tag: 775
+  });
+
+  function SCFalse() {
+    this.__initializeWith__("Boolean");
+    this._ = false;
+  }
+  klass.define(SCFalse, "False : Boolean", {
+    __tag: 774
+  });
+
+  function SCMagnitude() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCMagnitude, "Magnitude");
+
+  function SCChar() {
+    this.__initializeWith__("Magnitude");
+    this._ = "\0";
+  }
+  klass.define(SCChar, "Char : Magnitude", {
+    __tag: 1028
+  });
+
+  function SCNumber() {
+    this.__initializeWith__("Magnitude");
+  }
+  klass.define(SCNumber, "Number : Magnitude");
+
+  function SCSimpleNumber() {
+    this.__initializeWith__("Number");
+  }
+  klass.define(SCSimpleNumber, "SimpleNumber : Number");
+
+  function SCInteger() {
+    this.__initializeWith__("SimpleNumber");
+    this._ = 0;
+  }
+  klass.define(SCInteger, "Integer : SimpleNumber", {
+    __tag: 770
+  });
+
+  function SCFloat() {
+    this.__initializeWith__("SimpleNumber");
+    this._ = 0.0;
+  }
+  klass.define(SCFloat, "Float : SimpleNumber", {
+    __tag: 777
+  });
+
+  function SCCollection() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCCollection, "Collection");
+
+  function SCSequenceableCollection() {
+    this.__initializeWith__("Collection");
+  }
+  klass.define(SCSequenceableCollection, "SequenceableCollection : Collection");
+
+  function SCArrayedCollection() {
+    this.__initializeWith__("SequenceableCollection");
+    this._immutable = false;
+    this._ = [];
+  }
+  klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
+
+  function SCRawArray() {
+    this.__initializeWith__("ArrayedCollection");
+  }
+  klass.define(SCRawArray, "RawArray : ArrayedCollection");
+
+  function SCArray() {
+    this.__initializeWith__("ArrayedCollection");
+  }
+  klass.define(SCArray, "Array : ArrayedCollection", {
+    __tag: 11
+  });
+
+  function SCString(value) {
+    this.__initializeWith__("RawArray");
+    this._ = value;
+  }
+  klass.define(SCString, "String : RawArray", {
+    __tag: 1034
+  });
+
+  function SCAbstractFunction() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCAbstractFunction, "AbstractFunction");
+
+  function SCFunction() {
+    this.__initializeWith__("AbstractFunction");
+    // istanbul ignore next
+    this._ = function() {};
+  }
+  klass.define(SCFunction, "Function : AbstractFunction", {
+    __tag: 12
+  });
+
+  function SCRef(args) {
+    this.__initializeWith__("Object");
+    this._value = args[0] || /* istanbul ignore next */ $nil;
+  }
+  sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
+
+  function SCInterpreter() {
+    this.__initializeWith__("Object");
+  }
+  klass.define(SCInterpreter, "Interpreter");
+
+  // $SC
+  var $nil      = new SCNil();
+  var $true     = new SCTrue();
+  var $false    = new SCFalse();
+  var $integers = {};
+  var $floats   = {};
+  var $symbols  = {};
+  var $chars    = {};
 
   $SC.Nil = function() {
-    return nilInstance;
+    return $nil;
   };
 
-  var symbolInstances = {};
-
-  $SC.Symbol = function(value) {
-    var instance;
-    if (!symbolInstances.hasOwnProperty(value)) {
-      instance = new SCSymbol();
-      instance._ = value;
-      symbolInstances[value] = instance;
-    }
-    return symbolInstances[value];
+  $SC.Boolean = function($value) {
+    return $value ? $true : $false;
   };
-
-  var trueInstance = new SCTrue();
-  var falseInstance = new SCFalse();
 
   $SC.True = function() {
-    return trueInstance;
+    return $true;
   };
 
   $SC.False = function() {
-    return falseInstance;
+    return $false;
   };
-  $SC.Boolean = function($value) {
-    return $value ? trueInstance : falseInstance;
-  };
-
-  var charInstances = {};
-
-  $SC.Char = function(value) {
-    var instance;
-
-    value = String(value).charAt(0);
-
-    if (!charInstances.hasOwnProperty(value)) {
-      instance = new SCChar();
-      instance._ = value;
-      charInstances[value] = instance;
-    }
-
-    return charInstances[value];
-  };
-
-  var intInstances = {};
 
   $SC.Integer = function(value) {
     var instance;
@@ -1001,29 +4606,51 @@ var sc = { VERSION: "0.0.13" };
 
     value = value|0;
 
-    if (!intInstances.hasOwnProperty(value)) {
+    if (!$integers.hasOwnProperty(value)) {
       instance = new SCInteger();
       instance._ = value;
-      intInstances[value] = instance;
+      $integers[value] = instance;
     }
 
-    return intInstances[value];
+    return $integers[value];
   };
-
-  var floatInstances = {};
 
   $SC.Float = function(value) {
     var instance;
 
     value = +value;
 
-    if (!floatInstances.hasOwnProperty(value)) {
+    if (!$floats.hasOwnProperty(value)) {
       instance = new SCFloat();
       instance._ = value;
-      floatInstances[value] = instance;
+      $floats[value] = instance;
     }
 
-    return floatInstances[value];
+    return $floats[value];
+  };
+
+  $SC.Symbol = function(value) {
+    var instance;
+    if (!$symbols.hasOwnProperty(value)) {
+      instance = new SCSymbol();
+      instance._ = value;
+      $symbols[value] = instance;
+    }
+    return $symbols[value];
+  };
+
+  $SC.Char = function(value) {
+    var instance;
+
+    value = String(value).charAt(0);
+
+    if (!$chars.hasOwnProperty(value)) {
+      instance = new SCChar();
+      instance._ = value;
+      $chars[value] = instance;
+    }
+
+    return $chars[value];
   };
 
   $SC.Array = function(value, immutable) {
@@ -1040,58 +4667,53 @@ var sc = { VERSION: "0.0.13" };
     return instance;
   };
 
-  $SC.Function = function(value) {
+  $SC.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = value;
+    instance._ = def ? fn(value, def) : value;
     return instance;
   };
 
-  var int0Instance = $SC.Integer(0);
-  var int1Instance = $SC.Integer(1);
+  $SC.Ref = function(value) {
+    return new SCRef([ value ]);
+  };
 
-  utils = {
-    nilInstance: nilInstance,
-    trueInstance: trueInstance,
-    falseInstance: falseInstance,
-    int0Instance: int0Instance,
-    int1Instance: int1Instance,
+  sc.lang.klass.$interpreter = new SCInterpreter();
+
+})(sc);
+
+// src/sc/lang/klass/utils.js
+(function(sc) {
+
+  var $SC   = sc.lang.$SC;
+  var klass = sc.lang.klass;
+
+  var utils = {
+    BOOL: function(a) {
+      return a.__bool__();
+    },
+    $nil  : $SC.Nil(),
+    $true : $SC.True(),
+    $false: $SC.False(),
+    $int_0: $SC.Integer(0),
+    $int_1: $SC.Integer(1),
     nop: function() {
       return this;
     },
-    alwaysReturn$Nil: $SC.Nil,
-    alwaysReturn$True: $SC.True,
-    alwaysReturn$False: $SC.False,
-    alwaysReturn$Integer_0: function() {
-      return int0Instance;
+    alwaysReturn$nil  : $SC.Nil,
+    alwaysReturn$true : $SC.True,
+    alwaysReturn$false: $SC.False,
+    alwaysReturn$int_0: function() {
+      return utils.$int_0;
     },
-    alwaysReturn$Integer_1: function() {
-      return int1Instance;
-    },
-    defaultValue$Nil: function($obj) {
-      return $obj || nilInstance;
-    },
-    defaultValue$Boolean: function($obj, value) {
-      return $obj || $SC.Boolean(value);
-    },
-    defaultValue$Integer: function($obj, value) {
-      return $obj || $SC.Integer(value);
-    },
-    defaultValue$Float: function($obj, value) {
-      return $obj || $SC.Float(value);
-    },
-    defaultValue$Symbol: function($obj, value) {
-      return $obj || $SC.Symbol(value);
-    },
-    bool: function(a) {
-      return a.__bool__();
+    alwaysReturn$int_1: function() {
+      return utils.$int_1;
     },
     getMethod: function(className, methodName) {
-      return sc.lang.klass.get(className)._Spec.prototype[methodName];
+      return klass.get(className)._Spec.prototype[methodName];
     }
   };
 
-  sc.lang.klass.classes = classes;
-  sc.lang.klass.utils = utils;
+  klass.utils = utils;
 
 })(sc);
 
@@ -1099,21 +4721,34 @@ var sc = { VERSION: "0.0.13" };
 (function(sc) {
 
   var iterator = {};
-  var $SC = sc.lang.$SC;
+  var $SC   = sc.lang.$SC;
   var utils = sc.lang.klass.utils;
-
-  var bool = function(a) {
-    return a.__bool__();
-  };
+  var $nil   = utils.$nil;
+  var $int_0 = utils.$int_0;
+  var $int_1 = utils.$int_1;
+  var BOOL   = utils.BOOL;
 
   var __stop__ = function() {
     return null;
   };
 
+  var nop_iter = {
+    next: __stop__
+  };
+
+  var one_shot_iter = function(value) {
+    var iter = {
+      next: function() {
+        iter.next = __stop__;
+        return value;
+      }
+    };
+    return iter;
+  };
+
   // TODO: async function
   iterator.execute = function(iter, $function) {
     var $item, ret, i = 0;
-    $function = utils.defaultValue$Nil($function);
 
     while (($item = iter.next()) !== null) {
       if (Array.isArray($item)) {
@@ -1127,21 +4762,12 @@ var sc = { VERSION: "0.0.13" };
     }
   };
 
-  iterator.object$do = function($obj) {
-    var iter = {
-      next: function() {
-        iter.next = __stop__;
-        return $obj;
-      }
-    };
-    return iter;
-  };
+  iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
-    var $nil = utils.nilInstance;
     var iter = {
       next: function() {
-        if (bool($function.value())) {
+        if (BOOL($function.value())) {
           return [ $nil, $nil ];
         }
         iter.next = __stop__;
@@ -1152,53 +4778,51 @@ var sc = { VERSION: "0.0.13" };
     return iter;
   };
 
-  var sc_numeric_iter = function($start, $end, $step) {
-    var iter, $i = $start;
-
-    if (bool($i ["=="] ($end))) {
-      iter = {
-        next: function() {
+  var sc_incremental_iter = function($start, $end, $step) {
+    var $i = $start, iter = {
+      next: function() {
+        var $ret = $i;
+        $i = $i ["+"] ($step);
+        if ($i > $end) {
           iter.next = __stop__;
-          return $start;
         }
-      };
-    } else if ($i < $end && $step > 0) {
-      iter = {
-        next: function() {
-          var $ret = $i;
-          $i = $i ["+"] ($step);
-          if ($i > $end) {
-            iter.next = __stop__;
-          }
-          return $ret;
-        }
-      };
-    } else if ($i > $end && $step < 0) {
-      iter = {
-        next: function() {
-          var $ret = $i;
-          $i = $i ["+"] ($step);
-          if ($i < $end) {
-            iter.next = __stop__;
-          }
-          return $ret;
-        }
-      };
-    } else {
-      iter = {
-        next: __stop__
-      };
-    }
-
+        return $ret;
+      }
+    };
     return iter;
+  };
+
+  var sc_decremental_iter = function($start, $end, $step) {
+    var $i = $start, iter = {
+      next: function() {
+        var $ret = $i;
+        $i = $i ["+"] ($step);
+        if ($i < $end) {
+          iter.next = __stop__;
+        }
+        return $ret;
+      }
+    };
+    return iter;
+  };
+
+  var sc_numeric_iter = function($start, $end, $step) {
+    if ($start.valueOf() === $end.valueOf()) {
+      return one_shot_iter($start);
+    } else if ($start < $end && $step > 0) {
+      return sc_incremental_iter($start, $end, $step);
+    } else if ($start > $end && $step < 0) {
+      return sc_decremental_iter($start, $end, $step);
+    }
+    return nop_iter;
   };
 
   iterator.number$do = function($end) {
     var $start, $step;
 
-    $start = utils.int0Instance;
+    $start = $int_0;
     $end   = $end.__dec__();
-    $step  = utils.int1Instance;
+    $step  = $int_1;
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -1207,7 +4831,7 @@ var sc = { VERSION: "0.0.13" };
     var $end, $step;
 
     $start = $start.__dec__();
-    $end   = utils.int0Instance;
+    $end   = $int_0;
     $step  = $SC.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
@@ -1215,178 +4839,157 @@ var sc = { VERSION: "0.0.13" };
 
   iterator.number$for = function($start, $end) {
     var $step;
-    $end = utils.defaultValue$Nil($end);
 
-    $step = ($start <= $end) ? utils.int1Instance : $SC.Integer(-1);
+    $step = ($start <= $end) ? $int_1 : $SC.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
   };
 
   iterator.number$forBy = function($start, $end, $step) {
-    $end  = utils.defaultValue$Nil($end);
-    $step = utils.defaultValue$Nil($step);
-
     return sc_numeric_iter($start, $end, $step);
   };
 
   iterator.number$forSeries = function($start, $second, $last) {
-    var $end, $step;
+    var $step;
 
-    $second = utils.defaultValue$Nil($second);
-    $end    = utils.defaultValue$Nil($last);
     $step   = $second ["-"] ($start);
 
-    return sc_numeric_iter($start, $end, $step);
+    return sc_numeric_iter($start, $last, $step);
+  };
+
+  var js_incremental_iter = function(start, end, step, type) {
+    var i = start, iter = {
+      next: function() {
+        var ret = i;
+        i += step;
+        if (i > end) {
+          iter.next = __stop__;
+        }
+        return type(ret);
+      }
+    };
+    return iter;
+  };
+
+  var js_decremental_iter = function(start, end, step, type) {
+    var i = start, iter = {
+      next: function() {
+        var ret = i;
+        i += step;
+        if (i < end) {
+          iter.next = __stop__;
+        }
+        return type(ret);
+      }
+    };
+    return iter;
   };
 
   var js_numeric_iter = function(start, end, step, type) {
-    var iter, i = start;
-
-    if (i === end) {
-      iter = {
-        next: function() {
-          iter.next = __stop__;
-          return type(start);
-        }
-      };
-    } else if (i < end && step > 0) {
-      iter = {
-        next: function() {
-          var ret = i;
-          i += step;
-          if (i > end) {
-            iter.next = __stop__;
-          }
-          return type(ret);
-        }
-      };
-    } else if (i > end && step < 0) {
-      iter = {
-        next: function() {
-          var ret = i;
-          i += step;
-          if (i < end) {
-            iter.next = __stop__;
-          }
-          return type(ret);
-        }
-      };
-    } else {
-      iter = {
-        next: __stop__
-      };
+    if (start === end) {
+      return one_shot_iter(type(start));
+    } else if (start < end && step > 0) {
+      return js_incremental_iter(start, end, step, type);
+    } else if (start > end && step < 0) {
+      return js_decremental_iter(start, end, step, type);
     }
+    return nop_iter;
+  };
 
-    return iter;
+  var js_numeric_iter$do = function($endval, type) {
+    var end = type($endval.__num__()).valueOf();
+    return js_numeric_iter(0, end - 1, +1, type);
+  };
+
+  var js_numeric_iter$reverseDo = function($startval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = (start|0) - start;
+    return js_numeric_iter(start - 1, end, -1, type);
+  };
+
+  var js_numeric_iter$for = function($startval, $endval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = (start <= end) ? +1 : -1;
+
+    return js_numeric_iter(start, end, step, type);
+  };
+
+  var js_numeric_iter$forBy = function($startval, $endval, $stepval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = type($stepval .__num__()).valueOf();
+
+    return js_numeric_iter(start, end, step, type);
+  };
+
+  var js_numeric_iter$forSeries = function($startval, $second, $last, type) {
+    var start  = type($startval.__num__()).valueOf();
+    var second = type($second  .__num__()).valueOf();
+    var end    = type($last    .__num__()).valueOf();
+    var step = second - start;
+
+    return js_numeric_iter(start, end, step, type);
   };
 
   iterator.integer$do = function($endval) {
-    var end = $endval.__int__();
-    return js_numeric_iter(0, end - 1, +1, $SC.Integer);
+    return js_numeric_iter$do($endval, $SC.Integer);
   };
 
   iterator.integer$reverseDo = function($startval) {
-    var start = $startval.__int__();
-    return js_numeric_iter(start - 1, 0, -1, $SC.Integer);
+    return js_numeric_iter$reverseDo($startval, $SC.Integer);
   };
 
   iterator.integer$for = function($startval, $endval) {
-    $endval = utils.defaultValue$Nil($endval);
-
-    var start = $startval.__int__();
-    var end   = $endval  .__int__();
-    var step  = (start <= end) ? +1 : -1;
-
-    return js_numeric_iter(start, end, step, $SC.Integer);
+    return js_numeric_iter$for($startval, $endval, $SC.Integer);
   };
 
   iterator.integer$forBy = function($startval, $endval, $stepval) {
-    $endval  = utils.defaultValue$Nil($endval);
-    $stepval = utils.defaultValue$Nil($stepval);
-
-    var start = $startval.__int__();
-    var end   = $endval  .__int__();
-    var step  = $stepval .__int__();
-
-    return js_numeric_iter(start, end, step, $SC.Integer);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Integer);
   };
 
   iterator.integer$forSeries = function($startval, $second, $last) {
-    $second = utils.defaultValue$Nil($second);
-    $last   = utils.defaultValue$Nil($last);
-
-    var start  = $startval.__int__();
-    var second = $second  .__int__();
-    var end    = $last    .__int__();
-    var step   = second - start;
-
-    return js_numeric_iter(start, end, step, $SC.Integer);
+    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Integer);
   };
 
   iterator.float$do = function($endval) {
-    var end = $endval.__num__();
-    return js_numeric_iter(0, end - 1, +1, $SC.Float);
+    return js_numeric_iter$do($endval, $SC.Float);
   };
 
   iterator.float$reverseDo = function($startval) {
-    var start = $startval.__num__();
-    var end   = (start|0) - start;
-    return js_numeric_iter(start - 1, end, -1, $SC.Float);
+    return js_numeric_iter$reverseDo($startval, $SC.Float);
   };
 
   iterator.float$for = function($startval, $endval) {
-    $endval = utils.defaultValue$Nil($endval);
-
-    var start = $startval.__num__();
-    var end   = $endval  .__num__();
-    var step  = (start <= end) ? +1 : -1;
-
-    return js_numeric_iter(start, end, step, $SC.Float);
+    return js_numeric_iter$for($startval, $endval, $SC.Float);
   };
 
   iterator.float$forBy = function($startval, $endval, $stepval) {
-    $endval  = utils.defaultValue$Nil($endval);
-    $stepval = utils.defaultValue$Nil($stepval);
-
-    var start = $startval.__num__();
-    var end   = $endval  .__num__();
-    var step  = $stepval .__num__();
-
-    return js_numeric_iter(start, end, step, $SC.Float);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Float);
   };
 
   iterator.float$forSeries = function($startval, $second, $last) {
-    $second = utils.defaultValue$Nil($second);
-    $last   = utils.defaultValue$Nil($last);
+    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Float);
+  };
 
-    var start  = $startval.__num__();
-    var second = $second  .__num__();
-    var end    = $last    .__num__();
-    var step = second - start;
-
-    return js_numeric_iter(start, end, step, $SC.Float);
+  var list_iter = function(list) {
+    var i = 0, iter = {
+      next: function() {
+        var $ret = list[i++];
+        if (i >= list.length) {
+          iter.next = __stop__;
+        }
+        return $ret;
+      }
+    };
+    return iter;
   };
 
   var js_array_iter = function(list) {
-    var iter, index = 0;
-
     if (list.length) {
-      iter = {
-        next: function() {
-          var $ret = list[index++];
-          if (index >= list.length) {
-            iter.next = __stop__;
-          }
-          return $ret;
-        }
-      };
-    } else {
-      iter = {
-        next: __stop__
-      };
+      return list_iter(list);
     }
-
-    return iter;
+    return nop_iter;
   };
 
   iterator.array$do = function($array) {
@@ -1412,14 +5015,16 @@ var sc = { VERSION: "0.0.13" };
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
-  var fn = sc.lang.fn;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__num__ = function() {
       throw new Error("Wrong Type");
@@ -1449,10 +5054,27 @@ var sc = { VERSION: "0.0.13" };
     };
 
     // TODO: implements dump
-    // TODO: implements post
-    // TODO: implements postln
-    // TODO: implements postc
-    // TODO: implements postcln
+
+    spec.post = function() {
+      this.asString().post();
+      return this;
+    };
+
+    spec.postln = function() {
+      this.asString().postln();
+      return this;
+    };
+
+    spec.postc = function() {
+      this.asString().postc();
+      return this;
+    };
+
+    spec.postcln = function() {
+      this.asString().postcln();
+      return this;
+    };
+
     // TODO: implements postcs
     // TODO: implements totalFree
     // TODO: implements largestFreeBlock
@@ -1462,13 +5084,11 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements gcSanity
     // TODO: implements canCallOS
 
-    spec.size = utils.alwaysReturn$Integer_0;
-    spec.indexedSize = utils.alwaysReturn$Integer_0;
-    spec.flatSize = utils.alwaysReturn$Integer_1;
+    spec.size = utils.alwaysReturn$int_0;
+    spec.indexedSize = utils.alwaysReturn$int_0;
+    spec.flatSize = utils.alwaysReturn$int_1;
 
     spec.do = function($function) {
-      $function = utils.defaultValue$Nil($function);
-
       sc.lang.iterator.execute(
         sc.lang.iterator.object$do(this),
         $function
@@ -1477,28 +5097,24 @@ var sc = { VERSION: "0.0.13" };
       return this;
     };
 
-    spec.generate = function($function, $state) {
-      $state = utils.defaultValue$Nil($state);
-
+    spec.generate = fn(function($function, $state) {
       this.do($function);
 
       return $state;
-    };
+    }, "function; state");
 
     // already defined: class
     // already defined: isKindOf
     // already defined: isMemberOf
 
-    spec.respondsTo = function($aSymbol) {
-      $aSymbol = utils.defaultValue$Nil($aSymbol);
+    spec.respondsTo = fn(function($aSymbol) {
       return $SC.Boolean(typeof this[$aSymbol.__sym__()] === "function");
-    };
+    }, "aSymbol");
 
     // TODO: implements performMsg
 
     spec.perform = function($selector) {
       var selector, method;
-      $selector = utils.defaultValue$Nil($selector);
 
       selector = $selector.__sym__();
       method = this[selector];
@@ -1512,8 +5128,6 @@ var sc = { VERSION: "0.0.13" };
 
     spec.performList = function($selector, $arglist) {
       var selector, method;
-      $selector = utils.defaultValue$Nil($selector);
-      $arglist  = utils.defaultValue$Nil($arglist);
 
       selector = $selector.__sym__();
       method = this[selector];
@@ -1572,12 +5186,11 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements copyImmutable
     // TODO: implements deepCopy
 
-    spec.dup = function($n) {
+    spec.dup = fn(function($n) {
       var $this = this;
       var $array, i, imax;
 
-      $n = utils.defaultValue$Integer($n, 2);
-      if (bool($n.isSequenceableCollection())) {
+      if (BOOL($n.isSequenceableCollection())) {
         return SCArray.fillND($n, $SC.Function(function() {
           return $this.copy();
         }));
@@ -1589,7 +5202,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $array;
-    };
+    }, "n=2");
 
     spec["!"] = function($n) {
       return this.dup($n);
@@ -1628,28 +5241,26 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements identityHash
 
     spec["->"] = function($obj) {
-      return $SC.Class("Association").new(this, $obj);
+      return $SC("Association").new(this, $obj);
     };
 
     spec.next = utils.nop;
     spec.reset = utils.nop;
 
-    spec.first = function($inval) {
-      $inval = utils.defaultValue$Nil($inval);
-
+    spec.first = fn(function($inval) {
       this.reset();
       return this.next($inval);
-    };
+    }, "inval");
 
     spec.iter = function() {
-      return $SC.Class("OneShotStream").new(this);
+      return $SC("OneShotStream").new(this);
     };
 
     spec.stop = utils.nop;
     spec.free = utils.nop;
     spec.clear = utils.nop;
     spec.removedFromScheduler = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$False;
+    spec.isPlaying = utils.alwaysReturn$false;
 
     spec.embedInStream = function() {
       return this.yield();
@@ -1664,51 +5275,47 @@ var sc = { VERSION: "0.0.13" };
 
     // TODO: implements streamArg
 
-    spec.eventAt = utils.alwaysReturn$Nil;
+    spec.eventAt = utils.alwaysReturn$nil;
 
-    spec.composeEvents = function($event) {
-      $event = utils.defaultValue$Nil($event);
+    spec.composeEvents = fn(function($event) {
       return $event.copy();
-    };
+    }, "event");
 
     spec.finishEvent = utils.nop;
-    spec.atLimit = utils.alwaysReturn$False;
-    spec.isRest = utils.alwaysReturn$False;
+    spec.atLimit = utils.alwaysReturn$false;
+    spec.isRest = utils.alwaysReturn$false;
     spec.threadPlayer = utils.nop;
     spec.threadPlayer_ = utils.nop;
     spec["?"] = utils.nop;
     spec["??"] = utils.nop;
 
     spec["!?"] = function($obj) {
-      $obj = utils.defaultValue$Nil($obj);
       return $obj.value(this);
     };
 
-    spec.isNil = utils.alwaysReturn$False;
-    spec.notNil = utils.alwaysReturn$True;
-    spec.isNumber = utils.alwaysReturn$False;
-    spec.isInteger = utils.alwaysReturn$False;
-    spec.isFloat = utils.alwaysReturn$False;
-    spec.isSequenceableCollection = utils.alwaysReturn$False;
-    spec.isCollection = utils.alwaysReturn$False;
-    spec.isArray = utils.alwaysReturn$False;
-    spec.isString = utils.alwaysReturn$False;
-    spec.containsSeqColl = utils.alwaysReturn$False;
-    spec.isValidUGenInput = utils.alwaysReturn$False;
-    spec.isException = utils.alwaysReturn$False;
-    spec.isFunction = utils.alwaysReturn$False;
+    spec.isNil = utils.alwaysReturn$false;
+    spec.notNil = utils.alwaysReturn$true;
+    spec.isNumber = utils.alwaysReturn$false;
+    spec.isInteger = utils.alwaysReturn$false;
+    spec.isFloat = utils.alwaysReturn$false;
+    spec.isSequenceableCollection = utils.alwaysReturn$false;
+    spec.isCollection = utils.alwaysReturn$false;
+    spec.isArray = utils.alwaysReturn$false;
+    spec.isString = utils.alwaysReturn$false;
+    spec.containsSeqColl = utils.alwaysReturn$false;
+    spec.isValidUGenInput = utils.alwaysReturn$false;
+    spec.isException = utils.alwaysReturn$false;
+    spec.isFunction = utils.alwaysReturn$false;
 
-    spec.matchItem = function($item) {
-      $item = utils.defaultValue$Nil($item);
+    spec.matchItem = fn(function($item) {
       return this ["==="] ($item);
-    };
+    }, "item");
 
-    spec.trueAt = utils.alwaysReturn$False;
+    spec.trueAt = utils.alwaysReturn$false;
 
-    spec.falseAt = function($key) {
-      $key = utils.defaultValue$Nil($key);
+    spec.falseAt = fn(function($key) {
       return this.trueAt($key).not();
-    };
+    }, "key");
 
     // TODO: implements pointsTo
     // TODO: implements mutable
@@ -1764,10 +5371,9 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements storeArgs
     // TODO: implements storeModifiersOn
 
-    spec.as = function($aSimilarClass) {
-      $aSimilarClass = utils.defaultValue$Nil($aSimilarClass);
+    spec.as = fn(function($aSimilarClass) {
       return $aSimilarClass.newFrom(this);
-    };
+    }, "aSimilarClass");
 
     spec.dereference = utils.nop;
 
@@ -1787,26 +5393,23 @@ var sc = { VERSION: "0.0.13" };
       return this.asArray();
     };
 
-    spec.rank = utils.alwaysReturn$Integer_0;
+    spec.rank = utils.alwaysReturn$int_0;
 
-    spec.deepCollect = function($depth, $function, $index, $rank) {
-      $function = utils.defaultValue$Nil($function);
+    spec.deepCollect = fn(function($depth, $function, $index, $rank) {
       return $function.value(this, $index, $rank);
-    };
+    }, "depth; function; index; rank");
 
-    spec.deepDo = function($depth, $function, $index, $rank) {
-      $function = utils.defaultValue$Nil($function);
+    spec.deepDo = fn(function($depth, $function, $index, $rank) {
       $function.value(this, $index, $rank);
       return this;
-    };
+    }, "depth; function; index; rank");
 
     spec.slice = utils.nop;
-    spec.shape = utils.alwaysReturn$Nil;
+    spec.shape = utils.alwaysReturn$nil;
     spec.unbubble = utils.nop;
 
-    spec.bubble = function($depth, $levels) {
+    spec.bubble = fn(function($depth, $levels) {
       var levels, a;
-      $levels = utils.defaultValue$Integer($levels, 1);
 
       levels = $levels.__int__();
       if (levels <= 1) {
@@ -1818,32 +5421,26 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "depth; levels");
 
-    spec.obtain = function($index, $default) {
-      $index   = utils.defaultValue$Nil($index);
-      $default = utils.defaultValue$Nil($default);
-
+    spec.obtain = fn(function($index, $default) {
       if ($index.__num__() === 0) {
         return this;
       } else {
         return $default;
       }
-    };
+    }, "index; defaults");
 
-    spec.instill = function($index, $item, $default) {
-      $index = utils.defaultValue$Nil($index);
-      $item  = utils.defaultValue$Nil($item);
-
+    spec.instill = fn(function($index, $item, $default) {
       if ($index.__num__() === 0) {
         return $item;
       } else {
         return this.asArray().instill($index, $item, $default);
       }
-    };
+    }, "index; item; default");
 
     spec.addFunc = fn(function($$functions) {
-      return $SC.Class("FunctionList").new(this ["++"] ($$functions));
+      return $SC("FunctionList").new(this ["++"] ($$functions));
     }, "*functions");
 
     spec.removeFunc = function($function) {
@@ -1853,20 +5450,18 @@ var sc = { VERSION: "0.0.13" };
       return this;
     };
 
-    spec.replaceFunc = function($find, $replace) {
-      $replace = utils.defaultValue$Nil($replace);
+    spec.replaceFunc = fn(function($find, $replace) {
       if (this === $find) {
         return $replace;
       }
       return this;
-    };
+    }, "find; replace");
 
     // TODO: implements addFuncTo
     // TODO: implements removeFuncFrom
 
-    spec.while = function($body) {
+    spec.while = fn(function($body) {
       var $this = this;
-      $body = utils.defaultValue$Nil($body);
 
       $SC.Function(function() {
         return $this.value();
@@ -1875,14 +5470,14 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return this;
-    };
+    }, "body");
 
     spec.switch = function() {
       var args, i, imax;
 
       args = slice.call(arguments);
       for (i = 0, imax = args.length >> 1; i < imax; i++) {
-        if (bool(this ["=="] (args[i * 2]))) {
+        if (BOOL(this ["=="] (args[i * 2]))) {
           return args[i * 2 + 1].value();
         }
       }
@@ -1957,60 +5552,48 @@ var sc = { VERSION: "0.0.13" };
       return this.asInteger();
     };
 
-    spec.blend = function($that, $blendFrac) {
-      $that      = utils.defaultValue$Nil($that);
-      $blendFrac = utils.defaultValue$Float($blendFrac, 0.5);
+    spec.blend = fn(function($that, $blendFrac) {
       return this ["+"] ($blendFrac ["*"] ($that ["-"] (this)));
-    };
+    }, "that; blendFrac=0.5");
 
-    spec.blendAt = function($index, $method) {
+    spec.blendAt = fn(function($index, $method) {
       var $iMin;
-      $index  = utils.defaultValue$Nil($index);
-      $method = utils.defaultValue$Symbol($method, "clipAt");
 
-      $iMin = $index.roundUp($int1).asInteger().__dec__();
+      $iMin = $index.roundUp($int_1).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
         $index.absdif($iMin)
       );
-    };
+    }, "index; method=\\clipAt");
 
-    spec.blendPut = function($index, $val, $method) {
+    spec.blendPut = fn(function($index, $val, $method) {
       var $iMin, $ratio;
-      $index  = utils.defaultValue$Nil($index);
-      $val    = utils.defaultValue$Nil($val);
-      $method = utils.defaultValue$Symbol($method, "wrapPut");
 
       $iMin = $index.floor().asInteger();
       $ratio = $index.absdif($iMin);
-      this.perform($method, $iMin, $val ["*"] ($int1 ["-"] ($ratio)));
+      this.perform($method, $iMin, $val ["*"] ($int_1 ["-"] ($ratio)));
       this.perform($method, $iMin.__inc__(), $val ["*"] ($ratio));
 
       return this;
-    };
+    }, "index; val; method=\\wrapPut");
 
-    spec.fuzzyEqual = function($that, $precision) {
-      $that      = utils.defaultValue$Nil($that);
-      $precision = utils.defaultValue$Float($precision, 1.0);
-
+    spec.fuzzyEqual = fn(function($that, $precision) {
       return $SC.Float(0.0).max(
         $SC.Float(1.0) ["-"] (
           (this ["-"] ($that).abs()) ["/"] ($precision)
         )
       );
-    };
+    }, "that; precision=1.0");
 
-    spec.isUGen = utils.alwaysReturn$False;
-    spec.numChannels = utils.alwaysReturn$Integer_1;
+    spec.isUGen = utils.alwaysReturn$false;
+    spec.numChannels = utils.alwaysReturn$int_1;
 
-    spec.pair = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.pair = fn(function($that) {
       return $SC.Array([ this, $that ]);
-    };
+    }, "that");
 
-    spec.pairs = function($that) {
+    spec.pairs = fn(function($that) {
       var $list;
-      $that = utils.defaultValue$Nil($that);
 
       $list = $SC.Array();
       this.asArray().do($SC.Function(function($a) {
@@ -2020,25 +5603,24 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $list;
-    };
+    }, "that");
 
-    spec.awake = function($beats) {
+    spec.awake = fn(function($beats) {
       return this.next($beats);
-    };
+    }, "beats");
 
     spec.beats_ = utils.nop;
     spec.clock_ = utils.nop;
 
     spec.performBinaryOpOnSomething = function($aSelector) {
       var aSelector;
-      $aSelector = utils.defaultValue$Nil($aSelector);
 
       aSelector = $aSelector.__sym__();
       if (aSelector === "==") {
-        return utils.falseInstance;
+        return $false;
       }
       if (aSelector === "!=") {
-        return utils.trueInstance;
+        return $true;
       }
 
       throw new Error("binary operator '" + aSelector + "' failed.");
@@ -2055,16 +5637,16 @@ var sc = { VERSION: "0.0.13" };
 
     // TODO: implements writeDefFile
 
-    spec.isInputUGen = utils.alwaysReturn$False;
-    spec.isOutputUGen = utils.alwaysReturn$False;
-    spec.isControlUGen = utils.alwaysReturn$False;
+    spec.isInputUGen = utils.alwaysReturn$false;
+    spec.isOutputUGen = utils.alwaysReturn$false;
+    spec.isControlUGen = utils.alwaysReturn$false;
     spec.source = utils.nop;
     spec.asUGenInput = utils.nop;
     spec.asControlInput = utils.nop;
 
     spec.asAudioRateInput = function() {
       if (this.rate().__sym__() !== "audio") {
-        return $SC.Class("K2A").ar(this);
+        return $SC("K2A").ar(this);
       }
       return this;
     };
@@ -2106,25 +5688,26 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Core/AbstractFunction.js
 (function(sc) {
 
-  var $SC = sc.lang.$SC;
-  var fn = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
+  var fn    = sc.lang.fn;
   var utils = sc.lang.klass.utils;
+  var $nil  = utils.$nil;
 
   sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
     spec.composeUnaryOp = function($aSelector) {
-      return $SC.Class("UnaryOpFunction").new($aSelector, this);
+      return $SC("UnaryOpFunction").new($aSelector, this);
     };
 
     spec.composeBinaryOp = function($aSelector, $something, $adverb) {
-      return $SC.Class("BinaryOpFunction").new($aSelector, this, $something, $adverb);
+      return $SC("BinaryOpFunction").new($aSelector, this, $something, $adverb);
     };
 
     spec.reverseComposeBinaryOp = function($aSelector, $something, $adverb) {
-      return $SC.Class("BinaryOpFunction").new($aSelector, $something, this, $adverb);
+      return $SC("BinaryOpFunction").new($aSelector, $something, this, $adverb);
     };
 
     spec.composeNAryOp = function($aSelector, $anArgList) {
-      return $SC.Class("NAryOpFunction").new($aSelector, this, $anArgList);
+      return $SC("NAryOpFunction").new($aSelector, this, $anArgList);
     };
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
@@ -2404,7 +5987,6 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.max = function($function, $adverb) {
-      $function = utils.defaultValue$Integer($function, 0);
       return this.composeBinaryOp($SC.Symbol("max"), $function, $adverb);
     };
 
@@ -2605,97 +6187,75 @@ var sc = { VERSION: "0.0.13" };
       return this.composeNAryOp($SC.Symbol("fold"), $SC.Array([ $lo, $hi ]));
     };
 
-    spec.blend = function($that, $blendFrac) {
-      $blendFrac = utils.defaultValue$Float($blendFrac, 0.5);
+    spec.blend = fn(function($that, $blendFrac) {
       return this.composeNAryOp(
         $SC.Symbol("blend"), $SC.Array([ $that, $blendFrac ])
       );
-    };
+    }, "that; blendFrac=0.5");
 
-    spec.linlin = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.linlin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("linlin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.linexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.linexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("linexp"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.explin = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.explin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("explin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.expexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.expexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("expexp"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.lincurve = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
+    spec.lincurve = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("lincurve"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
       );
-    };
+    }, "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.curvelin = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
+    spec.curvelin = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("curvelin"), $SC.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
       );
-    };
+    }, "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.bilin = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.bilin = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("bilin"), $SC.Array([
           $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
         ])
       );
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.biexp = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
-      $clip = utils.defaultValue$Symbol($clip, "minmax");
+    spec.biexp = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $SC.Symbol("biexp"), $SC.Array([
           $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
         ])
       );
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.moddif = function($function, $mod) {
-      $function = utils.defaultValue$Float($function, 0.0);
-      $mod      = utils.defaultValue$Float($mod     , 1.0);
+    spec.moddif = fn(function($function, $mod) {
       return this.composeNAryOp(
         $SC.Symbol("moddif"), $SC.Array([ $function, $mod ])
       );
-    };
+    }, "function; mod");
 
-    spec.degreeToKey = function($scale, $stepsPerOctave) {
-      $stepsPerOctave = utils.defaultValue$Integer($stepsPerOctave, 12);
+    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
       return this.composeNAryOp(
         $SC.Symbol("degreeToKey"), $SC.Array([ $scale, $stepsPerOctave ])
       );
-    };
+    }, "scale; stepsPerOctave=12");
 
     spec.degrad = function() {
       return this.composeUnaryOp($SC.Symbol("degrad"));
@@ -2722,7 +6282,7 @@ var sc = { VERSION: "0.0.13" };
       $result = this.value($for);
 
       if ($result.rate().__sym__() !== "audio") {
-        return $SC.Class("K2A").ar($result);
+        return $SC("K2A").ar($result);
       }
 
       return $result;
@@ -2732,13 +6292,13 @@ var sc = { VERSION: "0.0.13" };
       return this.value();
     };
 
-    spec.isValidUGenInput = utils.alwaysReturn$True;
+    spec.isValidUGenInput = utils.alwaysReturn$true;
   });
 
   function SCUnaryOpFunction(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$selector = utils.defaultValue$Nil(args[0]);
-    this.$a        = utils.defaultValue$Nil(args[1]);
+    this.$selector = args[0] || /* istanbul ignore next */ $nil;
+    this.$a        = args[1] || /* istanbul ignore next */ $nil;
   }
 
   sc.lang.klass.define(SCUnaryOpFunction, "UnaryOpFunction : AbstractFunction", function(spec) {
@@ -2764,10 +6324,10 @@ var sc = { VERSION: "0.0.13" };
 
   function SCBinaryOpFunction(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$selector = utils.defaultValue$Nil(args[0]);
-    this.$a        = utils.defaultValue$Nil(args[1]);
-    this.$b        = utils.defaultValue$Nil(args[2]);
-    this.$adverb   = utils.defaultValue$Nil(args[3]);
+    this.$selector = args[0] || /* istanbul ignore next */ $nil;
+    this.$a        = args[1] || /* istanbul ignore next */ $nil;
+    this.$b        = args[2] || /* istanbul ignore next */ $nil;
+    this.$adverb   = args[3] || /* istanbul ignore next */ $nil;
   }
 
   sc.lang.klass.define(SCBinaryOpFunction, "BinaryOpFunction : AbstractFunction", function(spec) {
@@ -2794,9 +6354,9 @@ var sc = { VERSION: "0.0.13" };
 
   function SCNAryOpFunction(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$selector = utils.defaultValue$Nil(args[0]);
-    this.$a        = utils.defaultValue$Nil(args[1]);
-    this.$arglist  = utils.defaultValue$Nil(args[2]);
+    this.$selector = args[0] || /* istanbul ignore next */ $nil;
+    this.$a        = args[1] || /* istanbul ignore next */ $nil;
+    this.$arglist  = args[2] || /* istanbul ignore next */ $nil;
   }
 
   sc.lang.klass.define(SCNAryOpFunction, "NAryOpFunction : AbstractFunction", function(spec) {
@@ -2828,21 +6388,21 @@ var sc = { VERSION: "0.0.13" };
 
   function SCFunctionList(args) {
     this.__initializeWith__("AbstractFunction");
-    this.$array   = utils.defaultValue$Nil(args[0]);
+    this.$array   = args[0] || /* istanbul ignore next */ $nil;
     this._flopped = false;
   }
 
   sc.lang.klass.define(SCFunctionList, "FunctionList : AbstractFunction", function(spec, utils) {
+    var $int_0 = utils.$int_0;
 
     spec.array = function() {
       return this.$array;
     };
 
-    spec.array_ = function($value) {
-      $value = utils.defaultValue$Nil($value);
+    spec.array_ = fn(function($value) {
       this.$array = $value;
       return this;
-    };
+    }, "value");
 
     spec.flopped = function() {
       return $SC.Boolean(this._flopped);
@@ -2862,7 +6422,7 @@ var sc = { VERSION: "0.0.13" };
       this.$array.remove($function);
 
       if (this.$array.size() < 2) {
-        return this.$array.at(utils.int0Instance);
+        return this.$array.at($int_0);
       }
 
       return this;
@@ -3010,9 +6570,10 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Math/Magnitude.js
 (function(sc) {
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
-  sc.lang.klass.refine("Magnitude", function(spec, utils) {
+  sc.lang.klass.refine("Magnitude", function(spec) {
     spec["=="] = function($aMagnitude) {
       return $SC.Boolean(this.valueOf() === $aMagnitude.valueOf());
     };
@@ -3041,33 +6602,25 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Boolean(this >= $aMagnitude);
     };
 
-    spec.exclusivelyBetween = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
+    spec.exclusivelyBetween = fn(function($lo, $hi) {
       return $SC.Boolean($lo < this && this < $hi);
-    };
+    }, "lo; hi");
 
-    spec.inclusivelyBetween = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
+    spec.inclusivelyBetween = fn(function($lo, $hi) {
       return $SC.Boolean($lo <= this && this <= $hi);
-    };
+    }, "lo; hi");
 
-    spec.min = function($aMagnitude) {
-      $aMagnitude = utils.defaultValue$Nil($aMagnitude);
+    spec.min = fn(function($aMagnitude) {
       return this <= $aMagnitude ? this : $aMagnitude;
-    };
+    }, "aMagnitude");
 
-    spec.max = function($aMagnitude) {
-      $aMagnitude = utils.defaultValue$Nil($aMagnitude);
+    spec.max = fn(function($aMagnitude) {
       return this >= $aMagnitude ? this : $aMagnitude;
-    };
+    }, "aMagnitude");
 
-    spec.clip = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
+    spec.clip = fn(function($lo, $hi) {
       return this <= $lo ? $lo : this >= $hi ? $hi : this;
-    };
+    }, "lo; hi");
   });
 
 })(sc);
@@ -3075,11 +6628,12 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Math/Number.js
 (function(sc) {
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Number", function(spec, utils) {
-    spec.isNumber = utils.alwaysReturn$True;
+    spec.isNumber = utils.alwaysReturn$true;
 
     spec["+"] = function() {
       return this._subclassResponsibility("+");
@@ -3111,7 +6665,6 @@ var sc = { VERSION: "0.0.13" };
 
     spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
       var $this = this;
-      $aSeqColl = utils.defaultValue$Nil($aSeqColl);
 
       return $aSeqColl.collect($SC.Function(function($item) {
         return $item.perform($aSelector, $this, $adverb);
@@ -3136,29 +6689,29 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements complex
     // TODO: implements polar
 
-    spec.for = function($endValue, $function) {
+    spec.for = fn(function($endValue, $function) {
       iterator.execute(
         iterator.number$for(this, $endValue),
         $function
       );
       return this;
-    };
+    }, "endValue; function");
 
-    spec.forBy = function($endValue, $stepValue, $function) {
+    spec.forBy = fn(function($endValue, $stepValue, $function) {
       iterator.execute(
         iterator.number$forBy(this, $endValue, $stepValue),
         $function
       );
       return this;
-    };
+    }, "endValue; stepValue; function");
 
-    spec.forSeries = function($second, $last, $function) {
+    spec.forSeries = fn(function($second, $last, $function) {
       iterator.execute(
         iterator.number$forSeries(this, $second, $last),
         $function
       );
       return this;
-    };
+    }, "second; last; function");
   });
 
 })(sc);
@@ -3166,7 +6719,8 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Math/SimpleNumber.js
 (function(sc) {
 
-  var $SC = sc.lang.$SC;
+  var fn   = sc.lang.fn;
+  var $SC  = sc.lang.$SC;
   var rand = sc.libs.random;
 
   function prOpSimpleNumber(selector, func) {
@@ -3190,10 +6744,10 @@ var sc = { VERSION: "0.0.13" };
   }
 
   sc.lang.klass.refine("SimpleNumber", function(spec, utils) {
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Float;
 
@@ -3224,7 +6778,7 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Boolean(!isNaN(this._));
     };
 
-    spec.numChannels = utils.alwaysReturn$Integer_1;
+    spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.magnitude = function() {
       return this.abs();
@@ -3462,7 +7016,7 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.binaryValue = function() {
-      return this._ > 0 ? $int1 : $int0;
+      return this._ > 0 ? $int_1 : $int_0;
     };
 
     spec.rectWindow = function() {
@@ -3536,9 +7090,8 @@ var sc = { VERSION: "0.0.13" };
     // bitXor: implemented by subclass
 
     spec.bitTest = function($bit) {
-      $bit = utils.defaultValue$Nil($bit);
       return $SC.Boolean(
-        this.bitAnd($int1.leftShift($bit)).valueOf() !== 0
+        this.bitAnd($int_1.leftShift($bit)).valueOf() !== 0
       );
     };
 
@@ -3593,11 +7146,9 @@ var sc = { VERSION: "0.0.13" };
       return a >= b;
     });
 
-    spec.equalWithPrecision = function($that, $precision) {
-      $that = utils.defaultValue$Nil($that);
-      $precision = utils.defaultValue$Float($precision, 0.0001);
+    spec.equalWithPrecision = fn(function($that, $precision) {
       return this.absdif($that) ["<"] ($precision);
-    };
+    }, "that; precision=0.0001");
 
     // TODO: implements hash
 
@@ -3630,12 +7181,11 @@ var sc = { VERSION: "0.0.13" };
       );
     };
 
-    spec.nextPowerOf = function($base) {
-      $base = utils.defaultValue$Nil($base);
+    spec.nextPowerOf = fn(function($base) {
       return $base.pow(
         (this.log() ["/"] ($base.log())).ceil()
       );
-    };
+    }, "base");
 
     spec.nextPowerOfThree = function() {
       return $SC.Float(
@@ -3643,18 +7193,14 @@ var sc = { VERSION: "0.0.13" };
       );
     };
 
-    spec.previousPowerOf = function($base) {
-      $base = utils.defaultValue$Nil($base);
+    spec.previousPowerOf = fn(function($base) {
       return $base.pow(
         (this.log() ["/"] ($base.log())).ceil().__dec__()
       );
-    };
+    }, "base");
 
-    spec.quantize = function($quantum, $tolerance, $strength) {
+    spec.quantize = fn(function($quantum, $tolerance, $strength) {
       var $round, $diff;
-      $quantum   = utils.defaultValue$Float($quantum, 1.0);
-      $tolerance = utils.defaultValue$Float($tolerance, 0.05);
-      $strength  = utils.defaultValue$Float($strength, 1.0);
 
       $round = this.round($quantum);
       $diff = $round ["-"] (this);
@@ -3664,15 +7210,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "quantum=1.0; tolerance=0.05; strength=1.0");
 
-    spec.linlin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.linlin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3683,15 +7224,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.linexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.linexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3703,15 +7239,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.explin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.explin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3722,15 +7253,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.expexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.expexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3742,16 +7268,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.lincurve = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    spec.lincurve = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b, $scaled;
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3769,16 +7289,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.curvelin = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    spec.curvelin = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b;
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3796,17 +7310,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.bilin = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    spec.bilin = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
-      $inCenter  = utils.defaultValue$Nil($inCenter);
-      $inMin     = utils.defaultValue$Nil($inMin);
-      $inMax     = utils.defaultValue$Nil($inMax);
-      $outCenter = utils.defaultValue$Nil($outCenter);
-      $outMin    = utils.defaultValue$Nil($outMin);
-      $outMax    = utils.defaultValue$Nil($outMax);
-      $clip      = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3819,17 +7326,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.biexp = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    spec.biexp = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
-      $inCenter  = utils.defaultValue$Nil($inCenter);
-      $inMin     = utils.defaultValue$Nil($inMin);
-      $inMax     = utils.defaultValue$Nil($inMax);
-      $outCenter = utils.defaultValue$Nil($outCenter);
-      $outMin    = utils.defaultValue$Nil($outMin);
-      $outMax    = utils.defaultValue$Nil($outMax);
-      $clip      = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -3842,25 +7342,19 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.moddif = function($aNumber, $mod) {
+    spec.moddif = fn(function($aNumber, $mod) {
       var $diff, $modhalf;
-      $aNumber = utils.defaultValue$Float($aNumber, 0.0);
-      $mod     = utils.defaultValue$Float($mod    , 1.0);
 
       $diff = this.absdif($aNumber) ["%"] ($mod);
       $modhalf = $mod ["*"] ($SC.Float(0.5));
 
       return $modhalf ["-"] ($diff.absdif($modhalf));
-    };
+    }, "aNumber=0.0; mod=1.0");
 
-    spec.lcurve = function($a, $m, $n, $tau) {
+    spec.lcurve = fn(function($a, $m, $n, $tau) {
       var $rTau, $x;
-      $a = utils.defaultValue$Float($a, 1.0);
-      $m = utils.defaultValue$Float($m, 0.0);
-      $n = utils.defaultValue$Float($n, 1.0);
-      $tau = utils.defaultValue$Float($tau, 1.0);
 
       $x = this.neg();
 
@@ -3879,26 +7373,21 @@ var sc = { VERSION: "0.0.13" };
           $n ["*"] ($x.exp()) ["*"] ($rTau).__inc__()
         );
       }
-    };
+    }, "a=1.0; m=0.0; n=1.0; tau=1.0");
 
-    spec.gauss = function($standardDeviation) {
-      $standardDeviation = utils.defaultValue$Nil($standardDeviation);
-        // ^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
+    spec.gauss = fn(function($standardDeviation) {
+      // ^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
       return ($SC.Float(-2.0) ["*"] ($SC.Float(1.0).rand().log()).sqrt() ["*"] (
         $SC.Float(2 * Math.PI).rand().sin()
       ) ["*"] ($standardDeviation)) ["+"] (this);
-    };
+    }, "standardDeviation");
 
-    spec.gaussCurve = function($a, $b, $c) {
-      $a = utils.defaultValue$Float($a, 1.0);
-      $b = utils.defaultValue$Float($b, 0.0);
-      $c = utils.defaultValue$Float($c, 1.0);
-
+    spec.gaussCurve = fn(function($a, $b, $c) {
       // ^a * (exp(squared(this - b) / (-2.0 * squared(c))))
       return $a ["*"] ((
         (this ["-"] ($b).squared()) ["/"] ($SC.Float(-2.0) ["*"] ($c.squared()))
       ).exp());
-    };
+    }, "a=1.0; b=0.0; c=1.0");
 
     // TODO: implements asPoint
     // TODO: implements asWarp
@@ -3918,17 +7407,14 @@ var sc = { VERSION: "0.0.13" };
 
     spec.asAudioRateInput = function() {
       if (this._ === 0) {
-        return $SC.Class("Silent").ar();
+        return $SC("Silent").ar();
       }
-      return $SC.Class("DC").ar(this);
+      return $SC("DC").ar(this);
     };
 
-    spec.madd = function($mul, $add) {
-      $mul = utils.defaultValue$Nil($mul);
-      $add = utils.defaultValue$Nil($add);
-
+    spec.madd = fn(function($mul, $add) {
       return (this ["*"] ($mul)) ["+"] ($add);
-    };
+    }, "mul; add");
 
     spec.lag = utils.nop;
     spec.lag2 = utils.nop;
@@ -3941,11 +7427,9 @@ var sc = { VERSION: "0.0.13" };
 
     // TODO: implements writeInputSpec
 
-    spec.series = function($second, $last) {
+    spec.series = fn(function($second, $last) {
       var $step;
       var last, step, size;
-      $second = utils.defaultValue$Nil($second);
-      $last   = utils.defaultValue$Nil($last);
 
       if ($second === $nil) {
         if (this.valueOf() < $last.valueOf()) {
@@ -3961,7 +7445,7 @@ var sc = { VERSION: "0.0.13" };
       size = (Math.floor((last - this._) / step + 0.001)|0) + 1;
 
       return SCArray.series($SC.Integer(size), this, $step);
-    };
+    }, "second; last");
 
     // TODO: implements seriesIter
     // TODO: implements degreeToKey
@@ -4038,13 +7522,15 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Math/Integer.js
 (function(sc) {
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
-  var mathlib = sc.libs.mathlib;
+  var mathlib  = sc.libs.mathlib;
 
   sc.lang.klass.refine("Integer", function(spec, utils) {
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Integer;
 
@@ -4060,7 +7546,7 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("Integer.new is illegal, should use literal.");
     };
 
-    spec.isInteger = utils.alwaysReturn$True;
+    spec.isInteger = utils.alwaysReturn$true;
 
     // TODO: implements hash
 
@@ -4140,10 +7626,7 @@ var sc = { VERSION: "0.0.13" };
       );
     };
 
-    spec.clip = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.clip = fn(function($lo, $hi) {
       // <-- _ClipInt -->
       if ($lo.__tag === 1027) {
         return $lo;
@@ -4160,12 +7643,9 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.wrap = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
       if ($lo.__tag === 1027) {
         return $lo;
@@ -4182,12 +7662,9 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.fold = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.fold = fn(function($lo, $hi) {
       // <-- _FoldInt -->
       if ($lo.__tag === 1027) {
         return $lo;
@@ -4204,7 +7681,7 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
     spec.even = function() {
       return $SC.Boolean(!(this._ & 1));
@@ -4214,14 +7691,12 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Boolean(!!(this._ & 1));
     };
 
-    spec.xrand = function($exclude) {
-      $exclude = utils.defaultValue$Integer($exclude, 0);
-      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int1)) ["%"] (this);
-    };
+    spec.xrand = fn(function($exclude) {
+      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int_1)) ["%"] (this);
+    }, "exclude=0");
 
-    spec.xrand2 = function($exclude) {
+    spec.xrand2 = fn(function($exclude) {
       var raw, res;
-      $exclude = utils.defaultValue$Integer($exclude, 0);
 
       raw = this._;
       res = (mathlib.rand((2 * raw))|0) - raw;
@@ -4231,14 +7706,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Integer(res);
-    };
+    }, "exclude=0");
 
-    spec.degreeToKey = function($scale, $stepsPerOctave) {
-      $scale = utils.defaultValue$Nil($scale);
-      $stepsPerOctave = utils.defaultValue$Integer($stepsPerOctave, 12);
-
+    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
       return $scale.performDegreeToKey(this, $stepsPerOctave);
-    };
+    }, "scale; stepsPerOctave=12");
 
     spec.do = function($function) {
       iterator.execute(
@@ -4249,20 +7721,17 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.generate = function($function) {
-      $function = utils.defaultValue$Nil($function);
 
       $function.value(this);
 
       return this;
     };
 
-    spec.collectAs = function($function, $class) {
+    spec.collectAs = fn(function($function, $class) {
       var $res;
       var i, imax;
-      $function = utils.defaultValue$Nil($function);
-      $class    = utils.defaultValue$Nil($class);
 
-      if ($class === utils.nilInstance) {
+      if ($class === $nil) {
         $class = SCArray;
       }
 
@@ -4272,7 +7741,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "function; class");
 
     spec.collect = function($function) {
       return this.collectAs($function, SCArray);
@@ -4286,26 +7755,25 @@ var sc = { VERSION: "0.0.13" };
       return this;
     };
 
-    spec.for = function($endval, $function) {
+    spec.for = fn(function($endval, $function) {
       iterator.execute(
         iterator.integer$for(this, $endval),
         $function
       );
       return this;
-    };
+    }, "endval; function");
 
-    spec.forBy = function($endval, $stepval, $function) {
+    spec.forBy = fn(function($endval, $stepval, $function) {
       iterator.execute(
         iterator.integer$forBy(this, $endval, $stepval),
         $function
       );
       return this;
-    };
+    }, "endval; stepval; function");
 
-    spec.to = function($hi, $step) {
-      $step = utils.defaultValue$Integer($step, 1);
-      return $SC.Class("Interval").new(this, $hi, $step);
-    };
+    spec.to = fn(function($hi, $step) {
+      return $SC("Interval").new(this, $hi, $step);
+    }, "hi; step=1");
 
     spec.asAscii = function() {
       // <-- _AsAscii -->
@@ -4329,9 +7797,8 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("Integer: asDigit must be 0 <= this <= 35");
     };
 
-    spec.asBinaryDigits = function($numDigits) {
+    spec.asBinaryDigits = fn(function($numDigits) {
       var raw, array, numDigits, i;
-      $numDigits = utils.defaultValue$Integer($numDigits, 8);
 
       raw = this._;
       numDigits = $numDigits.__int__();
@@ -4341,16 +7808,14 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(array);
-    };
+    }, "numDigits=8");
 
-    spec.asDigits = function($base, $numDigits) {
+    spec.asDigits = fn(function($base, $numDigits) {
       var $num;
       var array, numDigits, i;
-      $base      = utils.defaultValue$Integer($base, 10);
-      $numDigits = utils.defaultValue$Nil($numDigits);
 
       $num = this;
-      if ($numDigits === utils.nilInstance) {
+      if ($numDigits === $nil) {
         $numDigits = (
           this.log() ["/"] ($base.log() ["+"] ($SC.Float(1e-10)))
         ).asInteger().__inc__();
@@ -4365,7 +7830,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(array);
-    };
+    }, "base=10; numDigits");
 
     // TODO: implements nextPowerOfTwo
     // TODO: implements isPowerOfTwo
@@ -4387,15 +7852,13 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements asIPString
     // TODO: implements archiveAsCompileString
 
-    spec.geom = function($start, $grow) {
+    spec.geom = fn(function($start, $grow) {
       return SCArray.geom(this, $start, $grow);
-    };
+    }, "start; grow");
 
-    spec.fib = function($a, $b) {
-      $a = utils.defaultValue$Float($a, 0.0);
-      $b = utils.defaultValue$Float($b, 1.0);
+    spec.fib = fn(function($a, $b) {
       return SCArray.fib(this, $a, $b);
-    };
+    }, "a=0.0; b=1.0");
 
     // TODO: implements factors
     // TODO: implements pidRunning
@@ -4419,9 +7882,10 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Math/Float.js
 (function(sc) {
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
-  var mathlib = sc.libs.mathlib;
+  var mathlib  = sc.libs.mathlib;
 
   sc.lang.klass.refine("Float", function(spec, utils) {
     spec.toString = function() {
@@ -4444,7 +7908,7 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("Float.new is illegal, should use literal.");
     };
 
-    spec.isFloat = utils.alwaysReturn$True;
+    spec.isFloat = utils.alwaysReturn$true;
     spec.asFloat = utils.nop;
 
     [
@@ -4494,10 +7958,7 @@ var sc = { VERSION: "0.0.13" };
       spec[items[0]] = sc.lang.classlib.bop.apply(null, items);
     });
 
-    spec.clip = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.clip = fn(function($lo, $hi) {
       // <-- _ClipFloat -->
       if ($lo.__tag === 1027) {
         return $lo;
@@ -4509,12 +7970,9 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.wrap = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
       if ($lo.__tag === 1027) {
         return $lo;
@@ -4526,12 +7984,9 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
-    spec.fold = function($lo, $hi) {
-      $lo = utils.defaultValue$Nil($lo);
-      $hi = utils.defaultValue$Nil($hi);
-
+    spec.fold = fn(function($lo, $hi) {
       // <-- _FoldFloat -->
       if ($lo.__tag === 1027) {
         return $lo;
@@ -4543,7 +7998,7 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
-    };
+    }, "lo; hi");
 
     // TODO: implements coin
     // TODO: implements xrand2
@@ -4575,23 +8030,23 @@ var sc = { VERSION: "0.0.13" };
       );
     };
 
-    spec.$from32Bits = function($word) {
+    spec.$from32Bits = fn(function($word) {
       // <-- _From32Bits -->
       return $SC.Float(
         new Float32Array(
           new Int32Array([ $word.__num__() ]).buffer
         )[0]
       );
-    };
+    }, "word");
 
-    spec.$from64Bits = function($hiWord, $loWord) {
+    spec.$from64Bits = fn(function($hiWord, $loWord) {
       // <-- _From64Bits -->
       return $SC.Float(
         new Float64Array(
           new Int32Array([ $loWord.__num__(), $hiWord.__num__() ]).buffer
         )[0]
       );
-    };
+    }, "hiWord; loWord");
 
     spec.do = function($function) {
       iterator.execute(
@@ -4700,6 +8155,8 @@ var sc = { VERSION: "0.0.13" };
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Symbol", function(spec, utils) {
+    var $nil = utils.$nil;
+
     spec.__sym__ = function() {
       return this._;
     };
@@ -4734,7 +8191,7 @@ var sc = { VERSION: "0.0.13" };
       if (sc.lang.klass.exists(this._)) {
         return sc.lang.klass.get(this._);
       }
-      return utils.nilInstance;
+      return $nil;
     };
 
     // TODO: implements asSetter
@@ -4850,7 +8307,7 @@ var sc = { VERSION: "0.0.13" };
     // TODO: Implements storeOn
     // TODO: Implements codegen_UGenCtorArg
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     // TODO: Implements kr
     // TODO: Implements ir
@@ -4873,14 +8330,9 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Core/Ref.js
 (function(sc) {
 
-  var $SC = sc.lang.$SC;
+  var fn  = sc.lang.fn;
 
-  function SCRef(args) {
-    this.__initializeWith__("Object");
-    this._value = args[0] || $SC.Nil();
-  }
-
-  sc.lang.klass.define(SCRef, "Ref : AbstractFunction", function(spec, utils) {
+  sc.lang.klass.refine("Ref", function(spec, utils) {
     spec.valueOf = function() {
       return this._value.valueOf();
     };
@@ -4889,18 +8341,17 @@ var sc = { VERSION: "0.0.13" };
       return this._value;
     };
 
-    spec.value_ = function($value) {
+    spec.value_ = fn(function($value) {
       this._value = $value;
       return this;
-    };
+    }, "value");
 
     // $new
 
-    spec.set = function($thing) {
-      $thing = utils.defaultValue$Nil($thing);
+    spec.set = fn(function($thing) {
       this._value = $thing;
       return this;
-    };
+    }, "thing");
 
     spec.get = function() {
       return this._value;
@@ -4943,9 +8394,12 @@ var sc = { VERSION: "0.0.13" };
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("Nil", function(spec, utils) {
+    var $nil = utils.$nil;
+
     spec.__num__ = function() {
       return 0;
     };
@@ -4966,8 +8420,8 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("Nil.new is illegal, should use literal.");
     };
 
-    spec.isNil = utils.alwaysReturn$True;
-    spec.notNil = utils.alwaysReturn$False;
+    spec.isNil = utils.alwaysReturn$true;
+    spec.notNil = utils.alwaysReturn$false;
 
     spec["?"] = function($obj) {
       return $obj;
@@ -4979,18 +8433,16 @@ var sc = { VERSION: "0.0.13" };
 
     spec["!?"] = utils.nop;
 
-    spec.asBoolean = utils.alwaysReturn$False;
-    spec.booleanValue = utils.alwaysReturn$False;
+    spec.asBoolean = utils.alwaysReturn$false;
+    spec.booleanValue = utils.alwaysReturn$false;
 
-    spec.push = function($function) {
-      $function = utils.defaultValue$Nil($function);
+    spec.push = fn(function($function) {
       return $function.value();
-    };
+    }, "function");
 
-    spec.appendStream = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.appendStream = fn(function($stream) {
       return $stream;
-    };
+    }, "stream");
 
     spec.pop = utils.nop;
     spec.source = utils.nop;
@@ -4998,7 +8450,7 @@ var sc = { VERSION: "0.0.13" };
 
     spec.rate = utils.nop;
     spec.numChannels = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$False;
+    spec.isPlaying = utils.alwaysReturn$false;
 
     spec.do = utils.nop;
     spec.reverseDo = utils.nop;
@@ -5012,7 +8464,7 @@ var sc = { VERSION: "0.0.13" };
     spec.rejectAs = utils.nop;
 
     spec.dependants = function() {
-      return $SC.Class("IdentitySet").new();
+      return $SC("IdentitySet").new();
     };
 
     spec.changed = utils.nop;
@@ -5021,60 +8473,51 @@ var sc = { VERSION: "0.0.13" };
     spec.release = utils.nop;
     spec.update = utils.nop;
 
-    spec.transformEvent = function($event) {
-      $event = utils.defaultValue$Nil($event);
+    spec.transformEvent = fn(function($event) {
       return $event;
-    };
+    }, "event");
 
-    spec.awake = utils.alwaysReturn$Nil;
+    spec.awake = utils.alwaysReturn$nil;
 
     spec.play = utils.nop;
 
-    spec.nextTimeOnGrid = function($clock) {
-      $clock = utils.defaultValue$Nil($clock);
-
-      if ($clock === utils.nilInstance) {
+    spec.nextTimeOnGrid = fn(function($clock) {
+      if ($clock === $nil) {
         return $clock;
       }
-
       return $SC.Function(function() {
         return $clock.nextTimeOnGrid();
       });
-    };
+    }, "clock");
 
     spec.asQuant = function() {
-      return $SC.Class("Quant").default();
+      return $SC("Quant").default();
     };
 
     spec.swapThisGroup = utils.nop;
     spec.performMsg = utils.nop;
 
-    spec.printOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.printOn = fn(function($stream) {
       $stream.putAll($SC.String("nil"));
       return this;
-    };
+    }, "stream");
 
-    spec.storeOn = function($stream) {
-      $stream = utils.defaultValue$Nil($stream);
+    spec.storeOn = fn(function($stream) {
       $stream.putAll($SC.String("nil"));
       return this;
-    };
+    }, "stream");
 
-    spec.matchItem = utils.alwaysReturn$True;
+    spec.matchItem = utils.alwaysReturn$true;
 
-    spec.add = function($value) {
-      $value = utils.defaultValue$Nil($value);
+    spec.add = fn(function($value) {
       return $SC.Array([ $value ]);
-    };
+    }, "value");
 
-    spec.addAll = function($array) {
-      $array = utils.defaultValue$Nil($array);
+    spec.addAll = fn(function($array) {
       return $array.asArray();
-    };
+    }, "array");
 
     spec["++"] = function($array) {
-      $array = utils.defaultValue$Nil($array);
       return $array.asArray();
     };
 
@@ -5086,17 +8529,16 @@ var sc = { VERSION: "0.0.13" };
 
     spec.set = utils.nop;
 
-    spec.get = function($prevVal) {
-      $prevVal = utils.defaultValue$Nil($prevVal);
+    spec.get = fn(function($prevVal) {
       return $prevVal;
-    };
+    }, "prevVal");
 
     spec.addFunc = function() {
       var functions = slice.call(arguments);
       if (functions.length <= 1) {
         return functions[0];
       }
-      return $SC.Class("FunctionList").new($SC.Array(functions));
+      return $SC("FunctionList").new($SC.Array(functions));
     };
 
     spec.removeFunc = utils.nop;
@@ -5107,10 +8549,10 @@ var sc = { VERSION: "0.0.13" };
 
     // TODO: implements handleError
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.asSpec = function() {
-      return $SC.Class("ControlSpec").new();
+      return $SC("ControlSpec").new();
     };
 
     spec.superclassesDo = utils.nop;
@@ -5122,6 +8564,8 @@ var sc = { VERSION: "0.0.13" };
 
 // src/sc/lang/classlib/Core/Kernel.js
 (function(sc) {
+
+  var fn  = sc.lang.fn;
 
   sc.lang.klass.refine("Class", {
     // TODO: implements superclass
@@ -5155,17 +8599,58 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements superclasses
   });
 
+  sc.lang.klass.refine("Interpreter", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    (function() {
+      var i, ch;
+
+      function getter(name) {
+        return function() {
+          return this["_" + name] || $nil;
+        };
+      }
+
+      function setter(name) {
+        return fn(function(value) {
+          this["_" + name] = value;
+          return this;
+        }, "value");
+      }
+
+      for (i = 97; i <= 122; i++) {
+        ch = String.fromCharCode(i);
+        spec[ch] = getter(ch);
+        spec[ch + "_"] = setter(ch);
+      }
+    })();
+
+    spec.$new = function() {
+      throw new Error("Interpreter.new is illegal.");
+    };
+
+    spec.clearAll = function() {
+      var i;
+      for (i = 97; i <= 122; i++) {
+        this["_" + String.fromCharCode(i)] = $nil;
+      }
+      return this;
+    };
+  });
+
 })(sc);
 
 // src/sc/lang/classlib/Core/Function.js
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
-    var bool = utils.bool;
-    var SCArray = $SC.Class("Array");
+    var BOOL = utils.BOOL;
+    var $nil = utils.$nil;
+    var SCArray = $SC("Array");
 
     // TODO: implements def
 
@@ -5173,12 +8658,12 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("Function.new is illegal, should use literal.");
     };
 
-    spec.isFunction = utils.alwaysReturn$True;
+    spec.isFunction = utils.alwaysReturn$true;
 
     // TODO: implements isClosed
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
-    spec.archiveAsObject = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    spec.archiveAsObject = utils.alwaysReturn$true;
 
     // TODO: implements checkCanArchive
 
@@ -5197,7 +8682,6 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.valueArray = function($args) {
-      $args = utils.defaultValue$Nil($args);
       return this._.apply(this, $args.asArray()._);
     };
 
@@ -5214,13 +8698,12 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $SC.Class("Routine").new(this);
+      return $SC("Routine").new(this);
     };
 
-    spec.dup = function($n) {
-      $n = utils.defaultValue$Integer($n, 2);
+    spec.dup = fn(function($n) {
       return SCArray.fill($n, this);
-    };
+    }, "n=2");
 
     // TODO: implements sum
     // TODO: implements defer
@@ -5245,7 +8728,7 @@ var sc = { VERSION: "0.0.13" };
       args.unshift(this);
 
       for (i = 0, imax = args.length >> 1; i < imax; ++i) {
-        if (bool(args[i * 2].value())) {
+        if (BOOL(args[i * 2].value())) {
           return args[i * 2 + 1].value();
         }
       }
@@ -5254,15 +8737,15 @@ var sc = { VERSION: "0.0.13" };
         return args[args.length - 1].value();
       }
 
-      return utils.nilInstance;
+      return $nil;
     };
 
     spec.r = function() {
-      return $SC.Class("Routine").new(this);
+      return $SC("Routine").new(this);
     };
 
     spec.p = function() {
-      return $SC.Class("Prout").new(this);
+      return $SC("Prout").new(this);
     };
 
     // TODO: implements matchItem
@@ -5283,16 +8766,13 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements makeFlopFunc
     // TODO: implements inEnvir
 
-    spec.while = function($body) {
-      $body = utils.defaultValue$Nil($body);
-
+    spec.while = fn(function($body) {
       sc.lang.iterator.execute(
         sc.lang.iterator.function$while(this),
         $body
       );
-
       return this;
-    };
+    }, "body");
   });
 
 })(sc);
@@ -5462,6 +8942,7 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Core/Boolean.js
 (function(sc) {
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Boolean", function(spec, utils) {
@@ -5499,7 +8980,7 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.while = function() {
       var msg = "While was called with a fixed (unchanging) Boolean as the condition. ";
@@ -5515,12 +8996,11 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("True.new is illegal, should use literal.");
     };
 
-    spec.if = function($trueFunc) {
-      $trueFunc = utils.defaultValue$Nil($trueFunc);
+    spec.if = fn(function($trueFunc) {
       return $trueFunc.value();
-    };
+    }, "trueFunc");
 
-    spec.not = utils.alwaysReturn$False;
+    spec.not = utils.alwaysReturn$false;
 
     spec["&&"] = function($that) {
       return $that.value();
@@ -5528,19 +9008,18 @@ var sc = { VERSION: "0.0.13" };
 
     spec["||"] = utils.nop;
 
-    spec.and = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.and = fn(function($that) {
       return $that.value();
-    };
+    }, "that");
+
     spec.or = spec["||"];
 
-    spec.nand = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.nand = fn(function($that) {
       return $that.value().not();
-    };
+    }, "that");
 
-    spec.asInteger = utils.alwaysReturn$Integer_1;
-    spec.binaryValue = utils.alwaysReturn$Integer_1;
+    spec.asInteger = utils.alwaysReturn$int_1;
+    spec.binaryValue = utils.alwaysReturn$int_1;
   });
 
   sc.lang.klass.refine("False", function(spec, utils) {
@@ -5548,11 +9027,11 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("False.new is illegal, should use literal.");
     };
 
-    spec.if = function($trueFunc, $falseFunc) {
+    spec.if = fn(function($trueFunc, $falseFunc) {
       return $falseFunc.value();
-    };
+    }, "trueFunc; falseFunc");
 
-    spec.not = utils.alwaysReturn$True;
+    spec.not = utils.alwaysReturn$true;
 
     spec["&&"] = utils.nop;
 
@@ -5562,14 +9041,13 @@ var sc = { VERSION: "0.0.13" };
 
     spec.and = utils.nop;
 
-    spec.or = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.or = fn(function($that) {
       return $that.value();
-    };
+    }, "that");
 
-    spec.nand = utils.alwaysReturn$True;
-    spec.asInteger = utils.alwaysReturn$Integer_0;
-    spec.binaryValue = utils.alwaysReturn$Integer_0;
+    spec.nand = utils.alwaysReturn$true;
+    spec.asInteger = utils.alwaysReturn$int_0;
+    spec.binaryValue = utils.alwaysReturn$int_0;
   });
 
 })(sc);
@@ -5581,15 +9059,16 @@ var sc = { VERSION: "0.0.13" };
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Collection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
-    spec.$newFrom = function($aCollection) {
+    spec.$newFrom = fn(function($aCollection) {
       var $newCollection;
-      $aCollection = utils.defaultValue$Nil($aCollection);
 
       $newCollection = this.new($aCollection.size());
       $aCollection.do($SC.Function(function($item) {
@@ -5597,7 +9076,7 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $newCollection;
-    };
+    }, "aCollection");
 
     spec.$with = fn(function($$args) {
       var $newColl;
@@ -5608,13 +9087,11 @@ var sc = { VERSION: "0.0.13" };
       return $newColl;
     }, "*args");
 
-    spec.$fill = function($size, $function) {
+    spec.$fill = fn(function($size, $function) {
       var $obj;
       var size, i;
-      $size     = utils.defaultValue$Nil($size);
-      $function = utils.defaultValue$Nil($function);
 
-      if (bool($size.isSequenceableCollection())) {
+      if (BOOL($size.isSequenceableCollection())) {
         return this.fillND($size, $function);
       }
 
@@ -5626,14 +9103,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $obj;
-    };
+    }, "size; function");
 
-    spec.$fill2D = function($rows, $cols, $function) {
+    spec.$fill2D = fn(function($rows, $cols, $function) {
       var $this = this, $obj, $obj2, $row, $col;
       var rows, cols, i, j;
-      $rows     = utils.defaultValue$Nil($rows);
-      $cols     = utils.defaultValue$Nil($cols);
-      $function = utils.defaultValue$Nil($function);
 
       $obj = this.new($rows);
 
@@ -5651,15 +9125,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $obj;
-    };
+    }, "rows; cols; function");
 
-    spec.$fill3D = function($planes, $rows, $cols, $function) {
+    spec.$fill3D = fn(function($planes, $rows, $cols, $function) {
       var $this = this, $obj, $obj2, $obj3, $plane, $row, $col;
       var planes, rows, cols, i, j, k;
-      $planes   = utils.defaultValue$Nil($planes);
-      $rows     = utils.defaultValue$Nil($rows);
-      $cols     = utils.defaultValue$Nil($cols);
-      $function = utils.defaultValue$Nil($function);
 
       $obj = this.new($planes);
 
@@ -5683,7 +9153,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $obj;
-    };
+    }, "planes; rows; cols; function");
 
     var fillND = function($this, $dimensions, $function, $args) {
       var $n, $obj, $argIndex;
@@ -5691,14 +9161,14 @@ var sc = { VERSION: "0.0.13" };
       $n = $dimensions.first();
       $obj = $this.new($n);
       $argIndex = $args.size();
-      $args = $args ["++"] ($int0);
+      $args = $args ["++"] ($int_0);
 
       if ($dimensions.size().__int__() <= 1) {
         $n.do($SC.Function(function($i) {
           $obj.add($function.valueArray($args.put($argIndex, $i)));
         }));
       } else {
-        $dimensions = $dimensions.drop($int1);
+        $dimensions = $dimensions.drop($int_1);
         $n.do($SC.Function(function($i) {
           $obj = $obj.add(fillND($this, $dimensions, $function, $args.put($argIndex, $i)));
         }));
@@ -5707,11 +9177,9 @@ var sc = { VERSION: "0.0.13" };
       return $obj;
     };
 
-    spec.$fillND = function($dimensions, $function) {
-      $dimensions = utils.defaultValue$Nil($dimensions);
-      $function   = utils.defaultValue$Nil($function);
+    spec.$fillND = fn(function($dimensions, $function) {
       return fillND(this, $dimensions, $function, $SC.Array([]));
-    };
+    }, "dimensions; function");
 
     spec["@"] = function($index) {
       return this.at($index);
@@ -5721,19 +9189,19 @@ var sc = { VERSION: "0.0.13" };
       var $res = null;
 
       if ($aCollection.class() !== this.class()) {
-        return utils.falseInstance;
+        return $false;
       }
       if (this.size() !== $aCollection.size()) {
-        return utils.falseInstance;
+        return $false;
       }
       this.do($SC.Function(function($item) {
-        if (!bool($aCollection.includes($item))) {
-          $res = utils.falseInstance;
+        if (!BOOL($aCollection.includes($item))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     // TODO: implements hash
@@ -5773,44 +9241,42 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.asCollection = utils.nop;
-    spec.isCollection = utils.alwaysReturn$True;
+    spec.isCollection = utils.alwaysReturn$true;
 
     spec.add = function() {
       return this._subclassResponsibility("add");
     };
 
-    spec.addAll = function($aCollection) {
+    spec.addAll = fn(function($aCollection) {
       var $this = this;
 
-      $aCollection = utils.defaultValue$Nil($aCollection);
       $aCollection.asCollection().do($SC.Function(function($item) {
         return $this.add($item);
       }));
 
       return this;
-    };
+    }, "aCollection");
 
     spec.remove = function() {
       return this._subclassResponsibility("remove");
     };
 
-    spec.removeAll = function($list) {
+    spec.removeAll = fn(function($list) {
       var $this = this;
 
-      $list = utils.defaultValue$Nil($list);
       $list.do($SC.Function(function($item) {
         $this.remove($item);
       }));
 
       return this;
-    };
+    }, "list");
 
-    spec.removeEvery = function($list) {
+    spec.removeEvery = fn(function($list) {
       this.removeAllSuchThat($SC.Function(function($_) {
         return $list.includes($_);
       }));
       return this;
-    };
+    }, "list");
 
     spec.removeAllSuchThat = function($function) {
       var $this = this, $removedItems, $copy;
@@ -5818,7 +9284,7 @@ var sc = { VERSION: "0.0.13" };
       $removedItems = this.class().new();
       $copy = this.copy();
       $copy.do($SC.Function(function($item) {
-        if (bool($function.value($item))) {
+        if (BOOL($function.value($item))) {
           $this.remove($item);
           $removedItems = $removedItems.add($item);
         }
@@ -5827,18 +9293,16 @@ var sc = { VERSION: "0.0.13" };
       return $removedItems;
     };
 
-    spec.atAll = function($keys) {
+    spec.atAll = fn(function($keys) {
       var $this = this;
 
       return $keys.collect($SC.Function(function($index) {
         return $this.at($index);
       }));
-    };
+    }, "keys");
 
-    spec.putEach = function($keys, $values) {
+    spec.putEach = fn(function($keys, $values) {
       var keys, values, i, imax;
-      $keys   = utils.defaultValue$Nil($keys);
-      $values = utils.defaultValue$Nil($values);
 
       $keys   = $keys.asArray();
       $values = $values.asArray();
@@ -5850,67 +9314,63 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "keys; values");
 
-    spec.includes = function($item1) {
+    spec.includes = fn(function($item1) {
       var $res = null;
-      $item1 = utils.defaultValue$Nil($item1);
 
       this.do($SC.Function(function($item2) {
         if ($item1 === $item2) {
-          $res = utils.trueInstance;
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
-    };
+      return $res || $false;
+    }, "item1");
 
-    spec.includesEqual = function($item1) {
+    spec.includesEqual = fn(function($item1) {
       var $res = null;
-      $item1 = utils.defaultValue$Nil($item1);
 
       this.do($SC.Function(function($item2) {
-        if (bool( $item1 ["=="] ($item2) )) {
-          $res = utils.trueInstance;
+        if (BOOL( $item1 ["=="] ($item2) )) {
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
-    };
+      return $res || $false;
+    }, "item1");
 
-    spec.includesAny = function($aCollection) {
+    spec.includesAny = fn(function($aCollection) {
       var $this = this, $res = null;
-      $aCollection = utils.defaultValue$Nil($aCollection);
 
       $aCollection.do($SC.Function(function($item) {
-        if (bool($this.includes($item))) {
-          $res = utils.trueInstance;
+        if (BOOL($this.includes($item))) {
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
-    };
+      return $res || $false;
+    }, "aCollection");
 
-    spec.includesAll = function($aCollection) {
+    spec.includesAll = fn(function($aCollection) {
       var $this = this, $res = null;
-      $aCollection = utils.defaultValue$Nil($aCollection);
 
       $aCollection.do($SC.Function(function($item) {
-        if (!bool($this.includes($item))) {
-          $res = utils.falseInstance;
+        if (!BOOL($this.includes($item))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
-    };
+      return $res || $true;
+    }, "aCollection");
 
-    spec.matchItem = function($item) {
+    spec.matchItem = fn(function($item) {
       return this.includes($item);
-    };
+    }, "item");
 
     spec.collect = function($function) {
       return this.collectAs($function, this.species());
@@ -5924,10 +9384,8 @@ var sc = { VERSION: "0.0.13" };
       return this.rejectAs($function, this.species());
     };
 
-    spec.collectAs = function($function, $class) {
+    spec.collectAs = fn(function($function, $class) {
       var $res;
-      $function = utils.defaultValue$Nil($function);
-      $class    = utils.defaultValue$Nil($class);
 
       $res = $class.new(this.size());
       this.do($SC.Function(function($elem, $i) {
@@ -5935,44 +9393,39 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $res;
-    };
+    }, "function; class");
 
-    spec.selectAs = function($function, $class) {
+    spec.selectAs = fn(function($function, $class) {
       var $res;
-      $function = utils.defaultValue$Nil($function);
-      $class    = utils.defaultValue$Nil($class);
 
       $res = $class.new(this.size());
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $res.add($elem);
         }
       }));
 
       return $res;
-    };
+    }, "function; class");
 
-    spec.rejectAs = function($function, $class) {
+    spec.rejectAs = fn(function($function, $class) {
       var $res;
-      $function = utils.defaultValue$Nil($function);
-      $class    = utils.defaultValue$Nil($class);
 
       $res = $class.new(this.size());
       this.do($SC.Function(function($elem, $i) {
-        if (!bool($function.value($elem, $i))) {
+        if (!BOOL($function.value($elem, $i))) {
           $res = $res.add($elem);
         }
       }));
 
       return $res;
-    };
+    }, "function; class");
 
     spec.detect = function($function) {
       var $res = null;
-      $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $elem;
           return 65535;
         }
@@ -5983,10 +9436,9 @@ var sc = { VERSION: "0.0.13" };
 
     spec.detectIndex = function($function) {
       var $res = null;
-      $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $i;
           return 65535;
         }
@@ -5994,61 +9446,51 @@ var sc = { VERSION: "0.0.13" };
       return $res || $nil;
     };
 
-    spec.doMsg = function($selector) {
+    spec.doMsg = function() {
       var args = arguments;
-      args[0] = utils.defaultValue$Nil($selector);
       this.do($SC.Function(function($item) {
         $item.perform.apply($item, args);
       }));
       return this;
     };
 
-    spec.collectMsg = function($selector) {
+    spec.collectMsg = function() {
       var args = arguments;
-      args[0] = utils.defaultValue$Nil($selector);
       return this.collect($SC.Function(function($item) {
         return $item.perform.apply($item, args);
       }));
     };
 
-    spec.selectMsg = function($selector) {
+    spec.selectMsg = function() {
       var args = arguments;
-      args[0] = utils.defaultValue$Nil($selector);
       return this.select($SC.Function(function($item) {
         return $item.perform.apply($item, args);
       }));
     };
 
-    spec.rejectMsg = function($selector) {
+    spec.rejectMsg = function() {
       var args = arguments;
-      args[0] = utils.defaultValue$Nil($selector);
       return this.reject($SC.Function(function($item) {
         return $item.perform.apply($item, args);
       }));
     };
 
     spec.detectMsg = fn(function($selector, $$args) {
-      $selector = utils.defaultValue$Nil($selector);
-
       return this.detect($SC.Function(function($item) {
         return $item.performList($selector, $$args);
       }));
-    }, "selector,*args");
+    }, "selector; *args");
 
     spec.detectIndexMsg = fn(function($selector, $$args) {
-      $selector = utils.defaultValue$Nil($selector);
-
       return this.detectIndex($SC.Function(function($item) {
         return $item.performList($selector, $$args);
       }));
-    }, "selector,*args");
+    }, "selector; *args");
 
     spec.lastForWhich = function($function) {
       var $res = null;
-      $function = utils.defaultValue$Nil($function);
-
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $elem;
         } else {
           return 65535;
@@ -6060,10 +9502,8 @@ var sc = { VERSION: "0.0.13" };
 
     spec.lastIndexForWhich = function($function) {
       var $res = null;
-      $function = utils.defaultValue$Nil($function);
-
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           $res = $i;
         } else {
           return 65535;
@@ -6073,10 +9513,8 @@ var sc = { VERSION: "0.0.13" };
       return $res || $nil;
     };
 
-    spec.inject = function($thisValue, $function) {
+    spec.inject = fn(function($thisValue, $function) {
       var $nextValue;
-      $thisValue = utils.defaultValue$Nil($thisValue);
-      $function  = utils.defaultValue$Nil($function);
 
       $nextValue = $thisValue;
       this.do($SC.Function(function($item, $i) {
@@ -6084,12 +9522,10 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $nextValue;
-    };
+    }, "thisValue; function");
 
-    spec.injectr = function($thisValue, $function) {
+    spec.injectr = fn(function($thisValue, $function) {
       var $this = this, size, $nextValue;
-      $thisValue = utils.defaultValue$Nil($thisValue);
-      $function  = utils.defaultValue$Nil($function);
 
       size = this.size().__int__();
       $nextValue = $thisValue;
@@ -6099,14 +9535,12 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $nextValue;
-    };
+    }, "thisValue; function");
 
     spec.count = function($function) {
       var sum = 0;
-      $function = utils.defaultValue$Nil($function);
-
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
+        if (BOOL($function.value($elem, $i))) {
           sum++;
         }
       }));
@@ -6114,52 +9548,48 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Integer(sum);
     };
 
-    spec.occurrencesOf = function($obj) {
+    spec.occurrencesOf = fn(function($obj) {
       var sum = 0;
-      $obj = utils.defaultValue$Nil($obj);
 
       this.do($SC.Function(function($elem) {
-        if (bool($elem ["=="] ($obj))) {
+        if (BOOL($elem ["=="] ($obj))) {
           sum++;
         }
       }));
 
       return $SC.Integer(sum);
-    };
+    }, "obj");
 
     spec.any = function($function) {
       var $res = null;
-      $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (bool($function.value($elem, $i))) {
-          $res = utils.trueInstance;
+        if (BOOL($function.value($elem, $i))) {
+          $res = $true;
           return 65535;
         }
       }));
 
-      return $res || utils.falseInstance;
+      return $res || $false;
     };
 
     spec.every = function($function) {
       var $res = null;
-      $function = utils.defaultValue$Nil($function);
 
       this.do($SC.Function(function($elem, $i) {
-        if (!bool($function.value($elem, $i))) {
-          $res = utils.falseInstance;
+        if (!BOOL($function.value($elem, $i))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
-    spec.sum = function($function) {
+    spec.sum = fn(function($function) {
       var $sum;
-      $function = utils.defaultValue$Nil($function);
 
-      $sum = $int0;
+      $sum = $int_0;
       if ($function === $nil) {
         this.do($SC.Function(function($elem) {
           $sum = $sum ["+"] ($elem);
@@ -6171,17 +9601,16 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $sum;
-    };
+    }, "function");
 
     spec.mean = function($function) {
       return this.sum($function) ["/"] (this.size());
     };
 
-    spec.product = function($function) {
+    spec.product = fn(function($function) {
       var $product;
-      $function = utils.defaultValue$Nil($function);
 
-      $product = $int1;
+      $product = $int_1;
       if ($function === $nil) {
         this.do($SC.Function(function($elem) {
           $product = $product ["*"] ($elem);
@@ -6193,15 +9622,15 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $product;
-    };
+    }, "function");
 
     spec.sumabs = function() {
       var $sum;
 
-      $sum = $int0;
+      $sum = $int_0;
       this.do($SC.Function(function($elem) {
-        if (bool($elem.isSequenceableCollection())) {
-          $elem = $elem.at($int0);
+        if (BOOL($elem.isSequenceableCollection())) {
+          $elem = $elem.at($int_0);
         }
         $sum = $sum ["+"] ($elem.abs());
       }));
@@ -6209,9 +9638,8 @@ var sc = { VERSION: "0.0.13" };
       return $sum;
     };
 
-    spec.maxItem = function($function) {
+    spec.maxItem = fn(function($function) {
       var $maxValue, $maxElement;
-      $function = utils.defaultValue$Nil($function);
 
       $maxValue   = $nil;
       $maxElement = $nil;
@@ -6240,11 +9668,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $maxElement;
-    };
+    }, "function");
 
-    spec.minItem = function($function) {
+    spec.minItem = fn(function($function) {
       var $minValue, $minElement;
-      $function = utils.defaultValue$Nil($function);
 
       $minValue   = $nil;
       $minElement = $nil;
@@ -6273,11 +9700,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $minElement;
-    };
+    }, "function");
 
-    spec.maxIndex = function($function) {
+    spec.maxIndex = fn(function($function) {
       var $maxValue, $maxIndex;
-      $function = utils.defaultValue$Nil($function);
 
       $maxValue = $nil;
       $maxIndex = $nil;
@@ -6308,11 +9734,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $maxIndex;
-    };
+    }, "function");
 
-    spec.minIndex = function($function) {
+    spec.minIndex = fn(function($function) {
       var $maxValue, $minIndex;
-      $function = utils.defaultValue$Nil($function);
 
       $maxValue = $nil;
       $minIndex = $nil;
@@ -6343,11 +9768,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $minIndex;
-    };
+    }, "function");
 
-    spec.maxValue = function($function) {
+    spec.maxValue = fn(function($function) {
       var $maxValue, $maxElement;
-      $function = utils.defaultValue$Nil($function);
 
       $maxValue   = $nil;
       $maxElement = $nil;
@@ -6366,11 +9790,10 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $maxValue;
-    };
+    }, "function");
 
-    spec.minValue = function($function) {
+    spec.minValue = fn(function($function) {
       var $minValue, $minElement;
-      $function = utils.defaultValue$Nil($function);
 
       $minValue   = $nil;
       $minElement = $nil;
@@ -6389,11 +9812,10 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $minValue;
-    };
+    }, "function");
 
-    spec.maxSizeAtDepth = function($rank) {
+    spec.maxSizeAtDepth = fn(function($rank) {
       var rank, maxsize = 0;
-      $rank = utils.defaultValue$Nil($rank);
 
       rank = $rank.__num__();
       if (rank === 0) {
@@ -6402,7 +9824,7 @@ var sc = { VERSION: "0.0.13" };
 
       this.do($SC.Function(function($sublist) {
         var sz;
-        if (bool($sublist.isCollection())) {
+        if (BOOL($sublist.isCollection())) {
           sz = $sublist.maxSizeAtDepth($SC.Integer(rank - 1));
         } else {
           sz = 1;
@@ -6413,28 +9835,22 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $SC.Integer(maxsize);
-    };
+    }, "rank");
 
-    spec.maxDepth = function($max) {
+    spec.maxDepth = fn(function($max) {
       var $res;
-      $max = utils.defaultValue$Integer($max, 1);
 
       $res = $max;
       this.do($SC.Function(function($elem) {
-        if (bool($elem.isCollection())) {
+        if (BOOL($elem.isCollection())) {
           $res = $res.max($elem.maxDepth($max.__inc__()));
         }
       }));
 
       return $res;
-    };
+    }, "max=1");
 
-    spec.deepCollect = function($depth, $function, $index, $rank) {
-      $depth    = utils.defaultValue$Integer($depth, 1);
-      $function = utils.defaultValue$Nil($function);
-      $index    = utils.defaultValue$Integer($index, 0);
-      $rank     = utils.defaultValue$Integer($rank, 0);
-
+    spec.deepCollect = fn(function($depth, $function, $index, $rank) {
       if ($depth === $nil) {
         $rank = $rank.__inc__();
         return this.collect($SC.Function(function($item, $i) {
@@ -6450,14 +9866,9 @@ var sc = { VERSION: "0.0.13" };
       return this.collect($SC.Function(function($item, $i) {
         return $item.deepCollect($depth, $function, $i, $rank);
       }));
-    };
+    }, "depth=1; function; index=0; rank=0");
 
-    spec.deepDo = function($depth, $function, $index, $rank) {
-      $depth    = utils.defaultValue$Integer($depth, 1);
-      $function = utils.defaultValue$Nil($function);
-      $index    = utils.defaultValue$Integer($index, 0);
-      $rank     = utils.defaultValue$Integer($rank, 0);
-
+    spec.deepDo = fn(function($depth, $function, $index, $rank) {
       if ($depth === $nil) {
         $rank = $rank.__inc__();
         return this.do($SC.Function(function($item, $i) {
@@ -6474,13 +9885,12 @@ var sc = { VERSION: "0.0.13" };
       return this.do($SC.Function(function($item, $i) {
         $item.deepDo($depth, $function, $i, $rank);
       }));
-    };
+    }, "depth=1; function; index=0; rank=0");
 
-    spec.invert = function($axis) {
+    spec.invert = fn(function($axis) {
       var $index;
-      $axis = utils.defaultValue$Nil($axis);
 
-      if (bool(this.isEmpty())) {
+      if (BOOL(this.isEmpty())) {
         return this.species().new();
       }
       if ($axis !== $nil) {
@@ -6490,82 +9900,78 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $index ["-"] (this);
-    };
+    }, "axis");
 
-    spec.sect = function($that) {
+    spec.sect = fn(function($that) {
       var $result;
-      $that = utils.defaultValue$Nil($that);
 
       $result = this.species().new();
       this.do($SC.Function(function($item) {
-        if (bool($that.includes($item))) {
+        if (BOOL($that.includes($item))) {
           $result = $result.add($item);
         }
       }));
 
       return $result;
-    };
+    }, "that");
 
-    spec.union = function($that) {
+    spec.union = fn(function($that) {
       var $result;
-      $that = utils.defaultValue$Nil($that);
 
       $result = this.copy();
       $that.do($SC.Function(function($item) {
-        if (!bool($result.includes($item))) {
+        if (!BOOL($result.includes($item))) {
           $result = $result.add($item);
         }
       }));
 
       return $result;
-    };
+    }, "that");
 
-    spec.difference = function($that) {
+    spec.difference = fn(function($that) {
       return this.copy().removeAll($that);
-    };
+    }, "that");
 
-    spec.symmetricDifference = function($that) {
+    spec.symmetricDifference = fn(function($that) {
       var $this = this, $result;
-      $that = utils.defaultValue$Nil($that);
 
       $result = this.species().new();
       $this.do($SC.Function(function($item) {
-        if (!bool($that.includes($item))) {
+        if (!BOOL($that.includes($item))) {
           $result = $result.add($item);
         }
       }));
       $that.do($SC.Function(function($item) {
-        if (!bool($this.includes($item))) {
+        if (!BOOL($this.includes($item))) {
           $result = $result.add($item);
         }
       }));
 
       return $result;
-    };
+    }, "that");
 
-    spec.isSubsetOf = function($that) {
-      $that = utils.defaultValue$Nil($that);
+    spec.isSubsetOf = fn(function($that) {
       return $that.includesAll(this);
-    };
+    }, "that");
 
     spec.asArray = function() {
       return SCArray.new(this.size()).addAll(this);
     };
 
     spec.asBag = function() {
-      return $SC.Class("Bag").new(this.size()).addAll(this);
+      return $SC("Bag").new(this.size()).addAll(this);
     };
 
     spec.asList = function() {
-      return $SC.Class("List").new(this.size()).addAll(this);
+      return $SC("List").new(this.size()).addAll(this);
     };
 
     spec.asSet = function() {
-      return $SC.Class("Set").new(this.size()).addAll(this);
+      return $SC("Set").new(this.size()).addAll(this);
     };
 
     spec.asSortedList = function($function) {
-      return $SC.Class("SortedList").new(this.size(), $function).addAll(this);
+      return $SC("SortedList").new(this.size(), $function).addAll(this);
     };
 
     // TODO: implements powerset
@@ -6582,6 +9988,17 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements writeInputSpec
     // TODO: implements case
     // TODO: implements makeEnvirValPairs
+
+    spec.asString = function() {
+      var items = [];
+      this.do($SC.Function(function($elem) {
+        items.push($elem.__str__());
+      }));
+
+      return $SC.String(
+        this.__className + "[ " + items.join(", ") + " ]"
+      );
+    };
   });
 
 })(sc);
@@ -6590,13 +10007,16 @@ var sc = { VERSION: "0.0.13" };
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
   sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
 
     spec["|@|"] = function($index) {
       return this.clipAt($index);
@@ -6610,11 +10030,8 @@ var sc = { VERSION: "0.0.13" };
       return this.foldAt($index);
     };
 
-    spec.$series = function($size, $start, $step) {
+    spec.$series = fn(function($size, $start, $step) {
       var $obj, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $start = utils.defaultValue$Integer($start, 0);
-      $step  = utils.defaultValue$Integer($step, 1);
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
@@ -6622,13 +10039,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $obj;
-    };
+    }, "size; start=0; step=1");
 
-    spec.$geom = function($size, $start, $grow) {
+    spec.$geom = fn(function($size, $start, $grow) {
       var $obj, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $start = utils.defaultValue$Nil($start);
-      $grow  = utils.defaultValue$Nil($grow);
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
@@ -6637,13 +10051,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $obj;
-    };
+    }, "size; start; grow");
 
-    spec.$fib = function($size, $a, $b) {
+    spec.$fib = fn(function($size, $a, $b) {
       var $obj, $temp, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $a = utils.defaultValue$Float($a, 0.0);
-      $b = utils.defaultValue$Float($b, 1.0);
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
@@ -6654,17 +10065,14 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $obj;
-    };
+    }, "size; a=0.0; b=1.0");
 
     // TODO: implements $rand
     // TODO: implements $rand2
     // TODO: implements $linrand
 
-    spec.$interpolation = function($size, $start, $end) {
+    spec.$interpolation = fn(function($size, $start, $end) {
       var $obj, $step, i, imax;
-      $size  = utils.defaultValue$Nil($size);
-      $start = utils.defaultValue$Float($start, 0.0);
-      $end   = utils.defaultValue$Float($end  , 1.0);
 
       $obj = this.new($size);
       if ($size.__int__() === 1) {
@@ -6677,11 +10085,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $obj;
-    };
+    }, "size; start=0.0; end=1.0");
 
     spec["++"] = function($aSequenceableCollection) {
       var $newlist;
-      $aSequenceableCollection = utils.defaultValue$Nil($aSequenceableCollection);
 
       $newlist = this.species().new(this.size() ["+"] ($aSequenceableCollection.size()));
       $newlist = $newlist.addAll(this).addAll($aSequenceableCollection);
@@ -6697,37 +10104,33 @@ var sc = { VERSION: "0.0.13" };
       return this.at(this.size().rand());
     };
 
-    spec.wchoose = function($weights) {
-      $weights = utils.defaultValue$Nil($weights);
+    spec.wchoose = fn(function($weights) {
       return this.at($weights.windex());
-    };
+    }, "weights");
 
     spec["=="] = function($aCollection) {
       var $res = null;
-      $aCollection = utils.defaultValue$Nil($aCollection);
 
       if ($aCollection.class() !== this.class()) {
-        return utils.falseInstance;
+        return $false;
       }
       if (this.size() !== $aCollection.size()) {
-        return utils.falseInstance;
+        return $false;
       }
       this.do($SC.Function(function($item, $i) {
-        if (bool($item ["!="] ($aCollection.at($i)))) {
-          $res = utils.falseInstance;
+        if (BOOL($item ["!="] ($aCollection.at($i)))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
+      return $res || $true;
     };
 
     // TODO: implements hash
 
-    spec.copyRange = function($start, $end) {
+    spec.copyRange = fn(function($start, $end) {
       var $newColl, i, end;
-      $start = utils.defaultValue$Nil($start);
-      $end   = utils.defaultValue$Nil($end);
 
       i = $start.__int__();
       end = $end.__int__();
@@ -6737,24 +10140,22 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $newColl;
-    };
+    }, "start; end");
 
-    spec.keep = function($n) {
+    spec.keep = fn(function($n) {
       var n, size;
-      $n = utils.defaultValue$Nil($n);
 
       n = $n.__int__();
       if (n >= 0) {
-        return this.copyRange($int0, $SC.Integer(n - 1));
+        return this.copyRange($int_0, $SC.Integer(n - 1));
       }
       size = this.size().__int__();
 
       return this.copyRange($SC.Integer(size + n), $SC.Integer(size - 1));
-    };
+    }, "n");
 
-    spec.drop = function($n) {
+    spec.drop = fn(function($n) {
       var n, size;
-      $n = utils.defaultValue$Nil($n);
 
       n = $n.__int__();
       size = this.size().__int__();
@@ -6762,20 +10163,19 @@ var sc = { VERSION: "0.0.13" };
         return this.copyRange($n, $SC.Integer(size - 1));
       }
 
-      return this.copyRange($int0, $SC.Integer(size + n - 1));
-    };
+      return this.copyRange($int_0, $SC.Integer(size + n - 1));
+    }, "n");
 
-    spec.copyToEnd = function($start) {
+    spec.copyToEnd = fn(function($start) {
       return this.copyRange($start, $SC.Integer(this.size().__int__() - 1));
-    };
+    }, "start");
 
-    spec.copyFromStart = function($end) {
-      return this.copyRange($int0, $end);
-    };
+    spec.copyFromStart = fn(function($end) {
+      return this.copyRange($int_0, $end);
+    }, "end");
 
-    spec.indexOf = function($item) {
+    spec.indexOf = fn(function($item) {
       var $ret = null;
-      $item = utils.defaultValue$Nil($item);
 
       this.do($SC.Function(function($elem, $i) {
         if ($item === $elem) {
@@ -6785,11 +10185,10 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $ret || $nil;
-    };
+    }, "item");
 
-    spec.indicesOfEqual = function($item) {
+    spec.indicesOfEqual = fn(function($item) {
       var indices = [];
-      $item = utils.defaultValue$Nil($item);
 
       this.do($SC.Function(function($elem, $i) {
         if ($item === $elem) {
@@ -6798,13 +10197,11 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return indices.length ? $SC.Array(indices) : $nil;
-    };
+    }, "item");
 
-    spec.find = function($sublist, $offset) {
+    spec.find = fn(function($sublist, $offset) {
       var $subSize_1, $first, $index;
       var size, offset, i, imax;
-      $sublist = utils.defaultValue$Nil($sublist);
-      $offset  = utils.defaultValue$Integer($offset, 0);
 
       $subSize_1 = $sublist.size().__dec__();
       $first = $sublist.first();
@@ -6813,23 +10210,21 @@ var sc = { VERSION: "0.0.13" };
       offset = $offset.__int__();
       for (i = 0, imax = size - offset; i < imax; ++i) {
         $index = $SC.Integer(i + offset);
-        if (bool(this.at($index) ["=="] ($first))) {
-          if (bool(this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist))) {
+        if (BOOL(this.at($index) ["=="] ($first))) {
+          if (BOOL(this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist))) {
             return $index;
           }
         }
       }
 
       return $nil;
-    };
+    }, "sublist; offset=0");
 
-    spec.findAll = function($arr, $offset) {
+    spec.findAll = fn(function($arr, $offset) {
       var $this = this, $indices, $i;
-      $arr    = utils.defaultValue$Nil($arr);
-      $offset = utils.defaultValue$Integer($offset, 0);
 
       $indices = $nil;
-      $i = $int0;
+      $i = $int_0;
 
       while (($i = $this.find($arr, $offset)) !== $nil) {
         $indices = $indices.add($i);
@@ -6837,24 +10232,22 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $indices;
-    };
+    }, "arr; offset=0");
 
-    spec.indexOfGreaterThan = function($val) {
-      $val = utils.defaultValue$Nil($val);
+    spec.indexOfGreaterThan = fn(function($val) {
       return this.detectIndex($SC.Function(function($item) {
         return $SC.Boolean($item > $val);
       }));
-    };
+    }, "val");
 
-    spec.indexIn = function($val) {
+    spec.indexIn = fn(function($val) {
       var $i, $j;
-      $val = utils.defaultValue$Nil($val);
 
       $j = this.indexOfGreaterThan($val);
       if ($j === $nil) {
         return this.size().__dec__();
       }
-      if ($j === $int0) {
+      if ($j === $int_0) {
         return $j;
       }
 
@@ -6865,13 +10258,12 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $j;
-    };
+    }, "val");
 
-    spec.indexInBetween = function($val) {
+    spec.indexInBetween = fn(function($val) {
       var $a, $b, $div, $i;
-      $val = utils.defaultValue$Nil($val);
 
-      if (bool(this.isEmpty())) {
+      if (BOOL(this.isEmpty())) {
         return $nil;
       }
       $i = this.indexOfGreaterThan($val);
@@ -6879,7 +10271,7 @@ var sc = { VERSION: "0.0.13" };
       if ($i === $nil) {
         return this.size().__dec__();
       }
-      if ($i === $int0) {
+      if ($i === $int_0) {
         return $i;
       }
 
@@ -6887,66 +10279,62 @@ var sc = { VERSION: "0.0.13" };
       $b = this.at($i);
       $div = $b ["-"] ($a);
 
-      // if (bool($div ["=="] ($int0))) {
+      // if (BOOL($div ["=="] ($int_0))) {
       //   return $i;
       // }
 
       return (($val ["-"] ($a)) ["/"] ($div)) ["+"] ($i.__dec__());
-    };
+    }, "val");
 
-    spec.isSeries = function($step) {
+    spec.isSeries = fn(function($step) {
       var $res = null;
-      $step = utils.defaultValue$Nil($step);
 
       if (this.size() <= 1) {
-        return utils.trueInstance;
+        return $true;
       }
       this.doAdjacentPairs($SC.Function(function($a, $b) {
         var $diff = $b ["-"] ($a);
         if ($step === $nil) {
           $step = $diff;
-        } else if (bool($step ["!="] ($diff))) {
-          $res = utils.falseInstance;
+        } else if (BOOL($step ["!="] ($diff))) {
+          $res = $false;
           return 65535;
         }
       }));
 
-      return $res || utils.trueInstance;
-    };
+      return $res || $true;
+    }, "step");
 
-    spec.resamp0 = function($newSize) {
+    spec.resamp0 = fn(function($newSize) {
       var $this = this, $factor;
-      $newSize = utils.defaultValue$Nil($newSize);
 
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int1)
+        ($newSize.__dec__()).max($int_1)
       );
 
       return this.species().fill($newSize, $SC.Function(function($i) {
         return $this.at($i ["*"] ($factor).round($SC.Float(1.0)).asInteger());
       }));
-    };
+    }, "newSize");
 
-    spec.resamp1 = function($newSize) {
+    spec.resamp1 = fn(function($newSize) {
       var $this = this, $factor;
-      $newSize = utils.defaultValue$Nil($newSize);
 
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int1)
+        ($newSize.__dec__()).max($int_1)
       );
 
       return this.species().fill($newSize, $SC.Function(function($i) {
         return $this.blendAt($i ["*"] ($factor));
       }));
-    };
+    }, "newSize");
 
-    spec.remove = function($item) {
+    spec.remove = fn(function($item) {
       var $index;
-      $item = utils.defaultValue$Nil($item);
 
       $index = this.indexOf($item);
       if ($index !== $nil) {
@@ -6954,21 +10342,19 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $nil;
-    };
+    }, "item");
 
-    spec.removing = function($item) {
+    spec.removing = fn(function($item) {
       var $coll;
-      $item = utils.defaultValue$Nil($item);
 
       $coll = this.copy();
       $coll.remove($item);
 
       return $coll;
-    };
+    }, "item");
 
-    spec.take = function($item) {
+    spec.take = fn(function($item) {
       var $index;
-      $item = utils.defaultValue$Nil($item);
 
       $index = this.indexOf($item);
       if ($index !== $nil) {
@@ -6976,7 +10362,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $nil;
-    };
+    }, "item");
 
     spec.lastIndex = function() {
       var size = this.size().__int__();
@@ -7002,7 +10388,7 @@ var sc = { VERSION: "0.0.13" };
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.at($int0);
+        return this.at($int_0);
       }
 
       return $nil;
@@ -7032,17 +10418,17 @@ var sc = { VERSION: "0.0.13" };
       return this.last();
     };
 
-    spec.putFirst = function($obj) {
+    spec.putFirst = fn(function($obj) {
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.put($int0, $obj);
+        return this.put($int_0, $obj);
       }
 
       return this;
-    };
+    }, "obj");
 
-    spec.putLast = function($obj) {
+    spec.putLast = fn(function($obj) {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -7050,12 +10436,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "obj");
 
-    spec.obtain = function($index, $default) {
+    spec.obtain = fn(function($index, $default) {
       var $res;
-      $index   = utils.defaultValue$Nil($index);
-      $default = utils.defaultValue$Nil($default);
 
       $res = this.at($index);
       if ($res === $nil) {
@@ -7063,13 +10447,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res;
-    };
+    }, "index; default");
 
-    spec.instill = function($index, $item, $default) {
+    spec.instill = fn(function($index, $item, $default) {
       var $res;
-      $index   = utils.defaultValue$Nil($index);
-      $item    = utils.defaultValue$Nil($item);
-      $default = utils.defaultValue$Nil($default);
 
       if ($index.__num__() >= this.size()) {
         $res = this.extend($index.__inc__(), $default);
@@ -7078,13 +10459,12 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $res.put($index, $item);
-    };
+    }, "index; item; default");
 
     spec.pairsDo = function($function) {
       var $this = this, $int2 = $SC.Integer(2);
-      $function = utils.defaultValue$Nil($function);
 
-      $int0.forBy(this.size() ["-"] ($int2), $int2, $SC.Function(function($i) {
+      $int_0.forBy(this.size() ["-"] ($int2), $int2, $SC.Function(function($i) {
         return $function.value($this.at($i), $this.at($i.__inc__()), $i);
       }));
 
@@ -7098,7 +10478,6 @@ var sc = { VERSION: "0.0.13" };
     spec.doAdjacentPairs = function($function) {
       var $i;
       var size, i, imax;
-      $function = utils.defaultValue$Nil($function);
 
       size = this.size().__int__();
       for (i = 0, imax = size - 1; i < imax; ++i) {
@@ -7109,35 +10488,33 @@ var sc = { VERSION: "0.0.13" };
       return this;
     };
 
-    spec.separate = function($function) {
+    spec.separate = fn(function($function) {
       var $this = this, $list, $sublist;
-      $function = utils.defaultValue$Boolean($function, true);
 
       $list = $SC.Array();
       $sublist = this.species().new();
       this.doAdjacentPairs($SC.Function(function($a, $b, $i) {
         $sublist = $sublist.add($a);
-        if (bool($function.value($a, $b, $i))) {
+        if (BOOL($function.value($a, $b, $i))) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         }
       }));
-      if (bool(this.notEmpty())) {
+      if (BOOL(this.notEmpty())) {
         $sublist = $sublist.add(this.last());
       }
       $list = $list.add($sublist);
 
       return $list;
-    };
+    }, "function=true");
 
     spec.delimit = function($function) {
       var $this = this, $list, $sublist;
-      $function = utils.defaultValue$Nil($function);
 
       $list = $SC.Array();
       $sublist = this.species().new();
       this.do($SC.Function(function($item, $i) {
-        if (bool($function.value($item, $i))) {
+        if (BOOL($function.value($item, $i))) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         } else {
@@ -7149,9 +10526,8 @@ var sc = { VERSION: "0.0.13" };
       return $list;
     };
 
-    spec.clump = function($groupSize) {
+    spec.clump = fn(function($groupSize) {
       var $this = this, $list, $sublist;
-      $groupSize = utils.defaultValue$Nil($groupSize);
 
       $list = $SC.Array();
       $sublist = this.species().new($groupSize);
@@ -7167,14 +10543,13 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $list;
-    };
+    }, "groupSize");
 
-    spec.clumps = function($groupSizeList) {
+    spec.clumps = fn(function($groupSizeList) {
       var $this = this, $list, $subSize, $sublist, i = 0;
-      $groupSizeList = utils.defaultValue$Nil($groupSizeList);
 
       $list = $SC.Array();
-      $subSize = $groupSizeList.at($int0);
+      $subSize = $groupSizeList.at($int_0);
       $sublist = this.species().new($subSize);
       this.do($SC.Function(function($item) {
         $sublist = $sublist.add($item);
@@ -7189,21 +10564,19 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $list;
-    };
+    }, "groupSizeList");
 
-    spec.curdle = function($probability) {
-      $probability = utils.defaultValue$Nil($probability);
+    spec.curdle = fn(function($probability) {
       return this.separate($SC.Function(function() {
         return $probability.coin();
       }));
-    };
+    }, "probability");
 
-    spec.flatten = function($numLevels) {
-      $numLevels = utils.defaultValue$Integer($numLevels, 1);
+    spec.flatten = fn(function($numLevels) {
       return this._flatten($numLevels.__num__());
-    };
+    }, "numLevels=1");
 
-    spec._flatten = function(numLevels) {
+    spec._flatten = fn(function(numLevels) {
       var $list;
 
       if (numLevels <= 0) {
@@ -7221,13 +10594,13 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $list;
-    };
+    }, "numLevels");
 
     spec.flat = function() {
       return this._flat(this.species().new(this.flatSize()));
     };
 
-    spec._flat = function($list) {
+    spec._flat = fn(function($list) {
       this.do($SC.Function(function($item) {
         if ($item._flat) {
           $list = $item._flat($list);
@@ -7236,19 +10609,18 @@ var sc = { VERSION: "0.0.13" };
         }
       }));
       return $list;
-    };
+    }, "list");
 
-    spec.flatIf = function($func) {
-      $func = utils.defaultValue$Nil($func);
+    spec.flatIf = fn(function($func) {
       return this._flatIf($func);
-    };
+    }, "func");
 
     spec._flatIf = function($func) {
       var $list;
 
       $list = this.species().new(this.size());
       this.do($SC.Function(function($item, $i) {
-        if ($item._flatIf && bool($func.value($item, $i))) {
+        if ($item._flatIf && BOOL($func.value($item, $i))) {
           $list = $list.addAll($item._flatIf($func));
         } else {
           $list = $list.add($item);
@@ -7262,13 +10634,13 @@ var sc = { VERSION: "0.0.13" };
       var $this = this, $list, $size, $maxsize;
 
       $size = this.size();
-      $maxsize = $int0;
+      $maxsize = $int_0;
       this.do($SC.Function(function($sublist) {
         var $sz;
-        if (bool($sublist.isSequenceableCollection())) {
+        if (BOOL($sublist.isSequenceableCollection())) {
           $sz = $sublist.size();
         } else {
-          $sz = $int1;
+          $sz = $int_1;
         }
         if ($sz > $maxsize) {
           $maxsize = $sz;
@@ -7280,7 +10652,7 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       this.do($SC.Function(function($isublist) {
-        if (bool($isublist.isSequenceableCollection())) {
+        if (BOOL($isublist.isSequenceableCollection())) {
           $list.do($SC.Function(function($jsublist, $j) {
             $jsublist.add($isublist.wrapAt($j));
           }));
@@ -7294,27 +10666,26 @@ var sc = { VERSION: "0.0.13" };
       return $list;
     };
 
-    spec.flopWith = function($func) {
+    spec.flopWith = fn(function($func) {
       var $this = this, $maxsize;
-      $func = utils.defaultValue$Nil($func);
 
       $maxsize = this.maxValue($SC.Function(function($sublist) {
-        if (bool($sublist.isSequenceableCollection())) {
+        if (BOOL($sublist.isSequenceableCollection())) {
           return $sublist.size();
         }
-        return $int1;
+        return $int_1;
       }));
 
       return this.species().fill($maxsize, $SC.Function(function($i) {
         return $func.valueArray($this.collect($SC.Function(function($sublist) {
-          if (bool($sublist.isSequenceableCollection())) {
+          if (BOOL($sublist.isSequenceableCollection())) {
             return $sublist.wrapAt($i);
           } else {
             return $sublist;
           }
         })));
       }));
-    };
+    }, "func");
 
     // TODO: implements flopTogether
     // TODO: implements flopDeep
@@ -7337,7 +10708,7 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements sumRhythmDivisions
     // TODO: implements convertOneRhythm
 
-    spec.isSequenceableCollection = utils.alwaysReturn$True;
+    spec.isSequenceableCollection = utils.alwaysReturn$true;
 
     spec.containsSeqColl = function() {
       return this.any($SC.Function(function($_) {
@@ -7808,22 +11179,18 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.performBinaryOp = function($aSelector, $theOperand, $adverb) {
-      $theOperand = utils.defaultValue$Nil($theOperand);
       return $theOperand.performBinaryOpOnSeqColl($aSelector, this, $adverb);
     };
 
     spec.performBinaryOpOnSeqColl = function($aSelector, $theOperand, $adverb) {
       var adverb;
-      $aSelector  = utils.defaultValue$Nil($aSelector);
-      $theOperand = utils.defaultValue$Nil($theOperand);
-      $adverb     = utils.defaultValue$Nil($adverb);
 
-      if ($adverb === $nil) {
+      if ($adverb === $nil || !$adverb) {
         return _performBinaryOpOnSeqColl_adverb_nil(
           this, $aSelector, $theOperand
         );
       }
-      if (bool($adverb.isInteger())) {
+      if (BOOL($adverb.isInteger())) {
         return _performBinaryOpOnSeqColl_adverb_int(
           this, $aSelector, $theOperand, $adverb.valueOf()
         );
@@ -7968,14 +11335,12 @@ var sc = { VERSION: "0.0.13" };
     }
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
-      $aNumber = utils.defaultValue$Nil($aNumber);
       return this.collect($SC.Function(function($item) {
         return $aNumber.perform($aSelector, $item, $adverb);
       }));
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
-      $aComplex = utils.defaultValue$Nil($aComplex);
       return this.collect($SC.Function(function($item) {
         return $aComplex.perform($aSelector, $item, $adverb);
       }));
@@ -8195,17 +11560,15 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements quickSort
     // TODO: implements order
 
-    spec.swap = function($i, $j) {
+    spec.swap = fn(function($i, $j) {
       var $temp;
-      $i = utils.defaultValue$Nil($i);
-      $j = utils.defaultValue$Nil($j);
 
       $temp = this.at($i);
       this.put($i, this.at($j));
       this.put($j, $temp);
 
       return this;
-    };
+    }, "i; j");
 
     // TODO: implements quickSortRange
     // TODO: implements mergeSort
@@ -8219,18 +11582,15 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements $streamContensts
     // TODO: implements $streamContenstsLimit
 
-    spec.wrapAt = function($index) {
-      $index = utils.defaultValue$Nil($index);
+    spec.wrapAt = fn(function($index) {
       $index = $index ["%"] (this.size());
       return this.at($index);
-    };
+    }, "index");
 
-    spec.wrapPut = function($index, $value) {
-      $index = utils.defaultValue$Nil($index);
-      $value = utils.defaultValue$Nil($value);
+    spec.wrapPut = fn(function($index, $value) {
       $index = $index ["%"] (this.size());
       return this.put($index, $value);
-    };
+    }, "index; value");
 
     // TODO: implements reduce
     // TODO: implements join
@@ -8245,17 +11605,17 @@ var sc = { VERSION: "0.0.13" };
 (function(sc) {
 
   var slice = [].slice;
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
-  var fn = sc.lang.fn;
-  var rand = sc.libs.random;
-  var mathlib = sc.libs.mathlib;
+  var rand     = sc.libs.random;
+  var mathlib  = sc.libs.mathlib;
 
   sc.lang.klass.refine("ArrayedCollection", function(spec, utils) {
-    var bool = utils.bool;
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
 
     spec.valueOf = function() {
       return this._.map(function(elem) {
@@ -8282,11 +11642,9 @@ var sc = { VERSION: "0.0.13" };
 
     // TODO: implements maxSize
 
-    spec.swap = function($a, $b) {
+    spec.swap = fn(function($a, $b) {
       var raw = this._;
       var a, b, len, tmp;
-      $a = utils.defaultValue$Nil($a);
-      $b = utils.defaultValue$Nil($b);
 
       this._ThrowIfImmutable();
 
@@ -8303,11 +11661,10 @@ var sc = { VERSION: "0.0.13" };
       raw[a] = tmp;
 
       return this;
-    };
+    }, "a; b");
 
-    spec.at = function($index) {
+    spec.at = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -8322,11 +11679,10 @@ var sc = { VERSION: "0.0.13" };
       i = $index.__int__();
 
       return this._[i] || $nil;
-    };
+    }, "index");
 
-    spec.clipAt = function($index) {
+    spec.clipAt = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -8338,11 +11694,10 @@ var sc = { VERSION: "0.0.13" };
       i = mathlib.clip_idx($index.__int__(), this._.length);
 
       return this._[i];
-    };
+    }, "index");
 
-    spec.wrapAt = function($index) {
+    spec.wrapAt = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -8354,11 +11709,10 @@ var sc = { VERSION: "0.0.13" };
       i = mathlib.wrap_idx($index.__int__(), this._.length);
 
       return this._[i];
-    };
+    }, "index");
 
-    spec.foldAt = function($index) {
+    spec.foldAt = fn(function($index) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       if (Array.isArray($index._)) {
         return $SC.Array($index._.map(function($index) {
@@ -8370,11 +11724,10 @@ var sc = { VERSION: "0.0.13" };
       i = mathlib.fold_idx($index.__int__(), this._.length);
 
       return this._[i];
-    };
+    }, "index");
 
-    spec.put = function($index, $item) {
+    spec.put = fn(function($index, $item) {
       var i;
-      $index = utils.defaultValue$Nil($index);
 
       this._ThrowIfImmutable();
 
@@ -8395,12 +11748,9 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.clipPut = function($index, $item) {
-      $index = utils.defaultValue$Nil($index);
-      $item = utils.defaultValue$Nil($item);
-
+    spec.clipPut = fn(function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -8412,12 +11762,9 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.wrapPut = function($index, $item) {
-      $index = utils.defaultValue$Nil($index);
-      $item = utils.defaultValue$Nil($item);
-
+    spec.wrapPut = fn(function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -8429,12 +11776,9 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.foldPut = function($index, $item) {
-      $index = utils.defaultValue$Nil($index);
-      $item = utils.defaultValue$Nil($item);
-
+    spec.foldPut = fn(function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -8446,12 +11790,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "index; item");
 
-    spec.removeAt = function($index) {
+    spec.removeAt = fn(function($index) {
       var raw = this._;
       var index;
-      $index = utils.defaultValue$Nil($index);
 
       this._ThrowIfImmutable();
 
@@ -8461,12 +11804,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return raw.splice(index, 1)[0];
-    };
+    }, "index");
 
-    spec.takeAt = function($index) {
+    spec.takeAt = fn(function($index) {
       var raw = this._;
       var index, ret, instead;
-      $index = utils.defaultValue$Nil($index);
 
       this._ThrowIfImmutable();
 
@@ -8482,20 +11824,18 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return ret;
-    };
+    }, "index");
 
-    spec.indexOf = function($item) {
+    spec.indexOf = fn(function($item) {
       var index;
-      $item = utils.defaultValue$Nil($item);
 
       index = this._.indexOf($item);
       return index === -1 ? $nil : $SC.Integer(index);
-    };
+    }, "item");
 
-    spec.indexOfGreaterThan = function($val) {
+    spec.indexOfGreaterThan = fn(function($val) {
       var raw = this._;
       var val, i, imax = raw.length;
-      $val = utils.defaultValue$Nil($val);
 
       val = $val.__num__();
       for (i = 0; i < imax; ++i) {
@@ -8505,16 +11845,15 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $nil;
-    };
+    }, "val");
 
-    spec.takeThese = function($func) {
+    spec.takeThese = fn(function($func) {
       var raw = this._;
       var i = 0, $i;
-      $func = utils.defaultValue$Nil($func);
 
       $i = $SC.Integer(i);
       while (i < raw.length) {
-        if (bool($func.value(raw[i], $i))) {
+        if (BOOL($func.value(raw[i], $i))) {
           this.takeAt($i);
         } else {
           $i = $SC.Integer(++i);
@@ -8522,12 +11861,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "func");
 
-    spec.replace = function($find, $replace) {
+    spec.replace = fn(function($find, $replace) {
       var $index, $out, $array;
-      $find    = utils.defaultValue$Nil($find);
-      $replace = utils.defaultValue$Nil($replace);
 
       this._ThrowIfImmutable();
 
@@ -8543,7 +11880,7 @@ var sc = { VERSION: "0.0.13" };
       }));
 
       return $out ["++"] ($array);
-    };
+    }, "find; replace");
 
     spec.slotSize = function() {
       return this.size();
@@ -8561,41 +11898,36 @@ var sc = { VERSION: "0.0.13" };
       return $index;
     };
 
-    spec.slotIndex = utils.alwaysReturn$Nil;
+    spec.slotIndex = utils.alwaysReturn$nil;
 
     spec.getSlots = function() {
       return this.copy();
     };
 
     spec.setSlots = function($array) {
-      $array = utils.defaultValue$Nil($array);
       return this.overWrite($array);
     };
 
-    spec.atModify = function($index, $function) {
+    spec.atModify = fn(function($index, $function) {
       this.put($index, $function.value(this.at($index), $index));
       return this;
-    };
+    }, "index; function");
 
-    spec.atInc = function($index, $inc) {
-      $inc = utils.defaultValue$Integer($inc, 1);
+    spec.atInc = fn(function($index, $inc) {
       this.put($index, this.at($index) ["+"] ($inc));
       return this;
-    };
+    }, "index; inc=1");
 
-    spec.atDec = function($index, $dec) {
-      $dec = utils.defaultValue$Integer($dec, 1);
+    spec.atDec = fn(function($index, $dec) {
       this.put($index, this.at($index) ["-"] ($dec));
       return this;
-    };
+    }, "index; dec=1");
 
-    spec.isArray = utils.alwaysReturn$True;
+    spec.isArray = utils.alwaysReturn$true;
     spec.asArray = utils.nop;
 
-    spec.copyRange = function($start, $end) {
+    spec.copyRange = fn(function($start, $end) {
       var start, end, instance, raw;
-      $start = utils.defaultValue$Nil($start);
-      $end = utils.defaultValue$Nil($end);
 
       if ($start === $nil) {
         start = 0;
@@ -8612,13 +11944,10 @@ var sc = { VERSION: "0.0.13" };
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
-    };
+    }, "start; end");
 
-    spec.copySeries = function($first, $second, $last) {
+    spec.copySeries = fn(function($first, $second, $last) {
       var i, first, second, last, step, instance, raw;
-      $first = utils.defaultValue$Nil($first);
-      $second = utils.defaultValue$Nil($second);
-      $last = utils.defaultValue$Nil($last);
 
       raw = [];
       if ($first === $nil) {
@@ -8652,14 +11981,10 @@ var sc = { VERSION: "0.0.13" };
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
-    };
+    }, "first; second; last");
 
-    spec.putSeries = function($first, $second, $last, $value) {
+    spec.putSeries = fn(function($first, $second, $last, $value) {
       var i, first, second, last, step;
-      $first = utils.defaultValue$Nil($first);
-      $second = utils.defaultValue$Nil($second);
-      $last = utils.defaultValue$Nil($last);
-      $value = utils.defaultValue$Nil($value);
 
       this._ThrowIfImmutable();
 
@@ -8694,20 +12019,17 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "first; second; last; value");
 
-    spec.add = function($item) {
-      $item = utils.defaultValue$Nil($item);
-
+    spec.add = fn(function($item) {
       this._ThrowIfImmutable();
       this._.push(this.__elem__($item));
 
       return this;
-    };
+    }, "item");
 
-    spec.addAll = function($aCollection) {
+    spec.addAll = fn(function($aCollection) {
       var $this = this;
-      $aCollection = utils.defaultValue$Nil($aCollection);
 
       this._ThrowIfImmutable();
 
@@ -8720,12 +12042,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "aCollection");
 
-    spec.putEach = function($keys, $values) {
+    spec.putEach = fn(function($keys, $values) {
       var keys, values, i, imax;
-      $keys   = utils.defaultValue$Nil($keys);
-      $values = utils.defaultValue$Nil($values);
 
       this._ThrowIfImmutable();
 
@@ -8739,13 +12059,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "keys; values");
 
-    spec.extend = function($size, $item) {
+    spec.extend = fn(function($size, $item) {
       var instance, raw, size, i;
-
-      $size = utils.defaultValue$Nil($size);
-      $item = utils.defaultValue$Nil($item);
 
       raw  = this._.slice();
       size = $size.__int__();
@@ -8760,13 +12077,10 @@ var sc = { VERSION: "0.0.13" };
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
+    }, "size; item");
 
-    };
-
-    spec.insert = function($index, $item) {
+    spec.insert = fn(function($index, $item) {
       var index;
-      $index = utils.defaultValue$Nil($index);
-      $item  = utils.defaultValue$Nil($item);
 
       this._ThrowIfImmutable();
 
@@ -8774,15 +12088,14 @@ var sc = { VERSION: "0.0.13" };
       this._.splice(index, 0, this.__elem__($item));
 
       return this;
-    };
+    }, "index; item");
 
     spec.move = function($fromIndex, $toIndex) {
       return this.insert($toIndex, this.removeAt($fromIndex));
     };
 
-    spec.addFirst = function($item) {
+    spec.addFirst = fn(function($item) {
       var instance, raw;
-      $item = utils.defaultValue$Nil($item);
 
       raw = this._.slice();
       raw.unshift(this.__elem__($item));
@@ -8790,17 +12103,15 @@ var sc = { VERSION: "0.0.13" };
       instance = new this.__Spec();
       instance._ = raw;
       return instance;
-    };
+    }, "item");
 
-    spec.addIfNotNil = function($item) {
-      $item = utils.defaultValue$Nil($item);
-
+    spec.addIfNotNil = fn(function($item) {
       if ($item === $nil) {
         return this;
       }
 
       return this.addFirst(this.__elem__($item));
-    };
+    }, "item");
 
     spec.pop = function() {
       if (this._.length === 0) {
@@ -8827,10 +12138,8 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements grow
     // TODO: implements growClear
 
-    spec.seriesFill = function($start, $step) {
+    spec.seriesFill = fn(function($start, $step) {
       var i, imax;
-      $start = utils.defaultValue$Nil($start);
-      $step  = utils.defaultValue$Nil($step);
 
       for (i = 0, imax = this._.length; i < imax; ++i) {
         this.put($SC.Integer(i), $start);
@@ -8838,11 +12147,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "start; step");
 
-    spec.fill = function($value) {
+    spec.fill = fn(function($value) {
       var raw, i, imax;
-      $value = utils.defaultValue$Nil($value);
 
       this._ThrowIfImmutable();
 
@@ -8854,7 +12162,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return this;
-    };
+    }, "value");
 
     spec.do = function($function) {
       iterator.execute(
@@ -8894,40 +12202,38 @@ var sc = { VERSION: "0.0.13" };
         }
       }
 
-      return $int0;
+      return $int_0;
     };
 
     spec.normalizeSum = function() {
       return this ["*"] (this.sum().reciprocal());
     };
 
-    spec.normalize = function($min, $max) {
+    spec.normalize = fn(function($min, $max) {
       var $minItem, $maxItem;
-      $min = utils.defaultValue$Float($min, 0.0);
-      $max = utils.defaultValue$Float($max, 1.0);
 
       $minItem = this.minItem();
       $maxItem = this.maxItem();
       return this.collect($SC.Function(function($el) {
         return $el.linlin($minItem, $maxItem, $min, $max);
       }));
-    };
+    }, "min=0.0; max=1.0");
 
     // TODO: implements asciiPlot
     // TODO: implements perfectShuffle
     // TODO: implements performInPlace
 
-    spec.clipExtend = function($length) {
+    spec.clipExtend = fn(function($length) {
       var last = this._[this._.length - 1] || $nil;
       return this.extend($length, last);
-    };
+    }, "length");
 
     spec.rank = function() {
-      return $int1 ["+"] (this.first().rank());
+      return $int_1 ["+"] (this.first().rank());
     };
 
     spec.shape = function() {
-      return $SC.Array([ this.size() ]) ["++"] (this.at(0).shape());
+      return $SC.Array([ this.size() ]) ["++"] (this.at($int_0).shape());
     };
 
     spec.reshape = function() {
@@ -8949,12 +12255,10 @@ var sc = { VERSION: "0.0.13" };
       return $result;
     };
 
-    spec.reshapeLike = function($another, $indexing) {
+    spec.reshapeLike = fn(function($another, $indexing) {
       var $index, $flat;
-      $another  = utils.defaultValue$Nil($another);
-      $indexing = utils.defaultValue$Symbol($indexing, "wrapAt");
 
-      $index = $int0;
+      $index = $int_0;
       $flat  = this.flat();
 
       return $another.deepCollect($SC.Integer(0x7FFFFFFF), $SC.Function(function() {
@@ -8962,34 +12266,28 @@ var sc = { VERSION: "0.0.13" };
         $index = $index.__inc__();
         return $item;
       }));
-    };
+    }, "another; indexing=\\wrapAt");
 
     // TODO: implements deepCollect
     // TODO: implements deepDo
 
-    spec.unbubble = function($depth, $levels) {
-      $depth  = utils.defaultValue$Integer($depth , 0);
-      $levels = utils.defaultValue$Integer($levels, 1);
-
+    spec.unbubble = fn(function($depth, $levels) {
       if ($depth.__num__() <= 0) {
         if (this.size().__int__() > 1) {
           return this;
         }
         if ($levels.__int__() <= 1) {
-          return this.at(0);
+          return this.at($int_0);
         }
-        return this.at(0).unbubble($depth, $levels.__dec__());
+        return this.at($int_0).unbubble($depth, $levels.__dec__());
       }
 
       return this.collect($SC.Function(function($item) {
         return $item.unbubble($depth.__dec__());
       }));
-    };
+    }, "depth=0; levels=1");
 
-    spec.bubble = function($depth, $levels) {
-      $depth  = utils.defaultValue$Integer($depth , 0);
-      $levels = utils.defaultValue$Integer($levels, 1);
-
+    spec.bubble = fn(function($depth, $levels) {
       if ($depth.__int__() <= 0) {
         if ($levels.__int__() <= 1) {
           return $SC.Array([ this ]);
@@ -9000,7 +12298,7 @@ var sc = { VERSION: "0.0.13" };
       return this.collect($SC.Function(function($item) {
         return $item.bubble($depth.__dec__(), $levels);
       }));
-    };
+    }, "depth=0; levels=1");
 
     spec.slice = fn(function($$cuts) {
       var $firstCut, $list;
@@ -9011,7 +12309,7 @@ var sc = { VERSION: "0.0.13" };
         return this.copy();
       }
 
-      $firstCut = $$cuts.at(0);
+      $firstCut = $$cuts.at($int_0);
       if ($firstCut === $nil) {
         $list = this.copy();
       } else {
@@ -9057,11 +12355,17 @@ var sc = { VERSION: "0.0.13" };
     spec.includes = function($item) {
       return $SC.Boolean(this._.indexOf($item) !== -1);
     };
+
+    spec.asString = function() {
+      return $SC.String("[ " + this._.map(function($elem) {
+        return $elem.asString().__str__();
+      }).join(", ") + " ]");
+    };
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {
-    spec.archiveAsCompileString = utils.alwaysReturn$True;
-    spec.archiveAsObject = utils.alwaysReturn$True;
+    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    spec.archiveAsObject = utils.alwaysReturn$true;
     spec.rate = function() {
       return $SC.Symbol("scalar");
     };
@@ -9075,9 +12379,13 @@ var sc = { VERSION: "0.0.13" };
 // src/sc/lang/classlib/Collections/String.js
 (function(sc) {
 
+  var fn  = sc.lang.fn;
+  var io  = sc.lang.io;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("String", function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
 
     spec.__str__ = function() {
       return this.valueOf();
@@ -9142,13 +12450,11 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements stripHTML
     // TODO: implements $scDir
 
-    spec.compare = function($aString, $ignoreCase) {
-      var araw, braw, length, i, a, b, cmp, fn;
-      $aString    = utils.defaultValue$Nil($aString);
-      $ignoreCase = utils.defaultValue$Boolean($ignoreCase, false);
+    spec.compare = fn(function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, func;
 
       if ($aString.__tag !== 1034) {
-        return utils.nilInstance;
+        return $nil;
       }
 
       araw = this._;
@@ -9156,17 +12462,17 @@ var sc = { VERSION: "0.0.13" };
       length = Math.min(araw.length, braw.length);
 
       if ($ignoreCase.__bool__()) {
-        fn = function(ch) {
+        func = function(ch) {
           return ch.toLowerCase();
         };
       } else {
-        fn = function(ch) {
+        func = function(ch) {
           return ch;
         };
       }
       for (i = 0; i < length; i++) {
-        a = fn(araw[i]._).charCodeAt(0);
-        b = fn(braw[i]._).charCodeAt(0);
+        a = func(araw[i]._).charCodeAt(0);
+        b = func(braw[i]._).charCodeAt(0);
         cmp = a - b;
         if (cmp !== 0) {
           return $SC.Integer(cmp < 0 ? -1 : +1);
@@ -9180,53 +12486,51 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Integer(cmp);
-    };
+    }, "aString; ignoreCase=false");
 
     spec["<"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() < 0
+        this.compare($aString, $false).valueOf() < 0
       );
     };
 
     spec[">"] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() > 0
+        this.compare($aString, $false).valueOf() > 0
       );
     };
 
     spec["<="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() <= 0
+        this.compare($aString, $false).valueOf() <= 0
       );
     };
 
     spec[">="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() >= 0
+        this.compare($aString, $false).valueOf() >= 0
       );
     };
 
     spec["=="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() === 0
+        this.compare($aString, $false).valueOf() === 0
       );
     };
 
     spec["!="] = function($aString) {
       return $SC.Boolean(
-        this.compare($aString, utils.falseInstance).valueOf() !== 0
+        this.compare($aString, $false).valueOf() !== 0
       );
     };
 
     // TODO: implements hash
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
-      $aNumber = utils.defaultValue$Nil($aNumber);
       return $aNumber.asString().perform($aSelector, this);
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
-      $aComplex = utils.defaultValue$Nil($aComplex);
       return $aComplex.asString().perform($aSelector, this);
     };
 
@@ -9234,7 +12538,7 @@ var sc = { VERSION: "0.0.13" };
       throw new Error("String:multiChannelPerform. Cannot expand strings.");
     };
 
-    spec.isString = utils.alwaysReturn$True;
+    spec.isString = utils.alwaysReturn$true;
 
     spec.asString = utils.nop;
 
@@ -9243,13 +12547,29 @@ var sc = { VERSION: "0.0.13" };
     };
 
     spec.species = function() {
-      return $SC.Class("String");
+      return $SC("String");
     };
 
-    // TODO: implements postln
-    // TODO: implements post
-    // TODO: implements postcln
-    // TODO: implements postc
+    spec.postln = function() {
+      io.post(this.__str__() + "\n");
+      return this;
+    };
+
+    spec.post = function() {
+      io.post(this.__str__());
+      return this;
+    };
+
+    spec.postcln = function() {
+      io.post("// " + this.__str__() + "\n");
+      return this;
+    };
+
+    spec.postc = function() {
+      io.post("// " + this.__str__());
+      return this;
+    };
+
     // TODO: implements postf
     // TODO: implements format
     // TODO: implements matchRegexp
@@ -9522,13 +12842,15 @@ var sc = { VERSION: "0.0.13" };
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
-  var rand = sc.libs.random;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
+  var rand  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Array", function(spec, utils) {
-    var bool = utils.bool;
-    var SCArray = $SC.Class("Array");
+    var BOOL    = utils.BOOL;
+    var $nil    = utils.$nil;
+    var SCArray = $SC("Array");
 
     spec.$with = function() {
       return $SC.Array(slice.call(arguments));
@@ -9620,10 +12942,9 @@ var sc = { VERSION: "0.0.13" };
       return $SC.Array(a);
     };
 
-    spec.stutter = function($n) {
+    spec.stutter = fn(function($n) {
       var raw = this._;
       var n, a, i, j, imax, k;
-      $n = utils.defaultValue$Integer($n, 2);
 
       // <-- _ArrayStutter -->
       n = Math.max(0, $n.__int__());
@@ -9635,12 +12956,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "n=2");
 
-    spec.rotate = function($n) {
+    spec.rotate = fn(function($n) {
       var raw = this._;
       var n, a, size, i, j;
-      $n = utils.defaultValue$Integer($n, 1);
 
       // <-- _ArrayRotate -->
       n = $n.__int__();
@@ -9658,12 +12978,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "n=1");
 
-    spec.pyramid = function($patternType) {
+    spec.pyramid = fn(function($patternType) {
       var patternType;
       var obj1, obj2, i, j, k, n, numslots, x;
-      $patternType = utils.defaultValue$Integer($patternType, 1);
 
       obj1 = this._;
       obj2 = [];
@@ -9785,13 +13104,12 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(obj2);
-    };
+    }, "n=1");
 
-    spec.pyramidg = function($patternType) {
+    spec.pyramidg = fn(function($patternType) {
       var raw = this._;
       var patternType;
       var list = [], lastIndex, i;
-      $patternType = utils.defaultValue$Integer($patternType, 1);
 
       patternType = Math.max(1, Math.min($patternType.__int__(), 10));
       lastIndex = raw.length - 1;
@@ -9868,12 +13186,10 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(list);
-    };
+    }, "n=1");
 
-    spec.sputter = function($probability, $maxlen) {
+    spec.sputter = fn(function($probability, $maxlen) {
       var list, prob, maxlen, i, length;
-      $probability = utils.defaultValue$Float($probability, 0.25);
-      $maxlen      = utils.defaultValue$Float($maxlen, 100);
 
       list   = [];
       prob   = 1.0 - $probability.__num__();
@@ -9888,13 +13204,16 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(list);
-    };
+    }, "probability=0.25; maxlen=100");
 
-    spec.lace = function($length) {
+    spec.lace = fn(function($length) {
       var raw = this._;
       var length, wrap = raw.length;
       var a, i, $item;
-      $length = utils.defaultValue$Integer($length, wrap);
+
+      if ($length === $nil) {
+        $length = $SC.Integer(wrap);
+      }
 
       length = $length.__int__();
       a = new Array(length);
@@ -9909,13 +13228,12 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "length");
 
-    spec.permute = function($nthPermutation) {
+    spec.permute = fn(function($nthPermutation) {
       var raw = this._;
       var obj1, obj2, size, $item;
       var nthPermutation, i, imax, j;
-      $nthPermutation = utils.defaultValue$Integer($nthPermutation, 0);
 
       obj1 = raw;
       obj2 = raw.slice();
@@ -9932,13 +13250,12 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(obj2);
-    };
+    }, "nthPermutation=0");
 
-    spec.allTuples = function($maxTuples) {
+    spec.allTuples = fn(function($maxTuples) {
       var maxSize;
       var obj1, obj2, obj3, obj4, newSize, tupSize;
       var i, j, k;
-      $maxTuples = utils.defaultValue$Integer($maxTuples, 16384);
 
       maxSize = $maxTuples.__int__();
 
@@ -9970,12 +13287,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(obj2);
-    };
+    }, "maxTuples=16384");
 
-    spec.wrapExtend = function($size) {
+    spec.wrapExtend = fn(function($size) {
       var raw = this._;
       var size, a, i;
-      $size = utils.defaultValue$Nil($size);
 
       size = Math.max(0, $size.__int__());
       if (raw.length < size) {
@@ -9988,12 +13304,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "size");
 
-    spec.foldExtend = function($size) {
+    spec.foldExtend = fn(function($size) {
       var raw = this._;
       var size, a, i;
-      $size = utils.defaultValue$Nil($size);
 
       size = Math.max(0, $size.__int__());
 
@@ -10007,12 +13322,11 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "size");
 
-    spec.clipExtend = function($size) {
+    spec.clipExtend = fn(function($size) {
       var raw = this._;
       var size, a, i, imax, b;
-      $size = utils.defaultValue$Nil($size);
 
       size = Math.max(0, $size.__int__());
 
@@ -10029,15 +13343,13 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "size");
 
-    spec.slide = function($windowLength, $stepSize) {
+    spec.slide = fn(function($windowLength, $stepSize) {
       var raw = this._;
       var windowLength, stepSize;
       var obj1, obj2, m, n, numwin, numslots;
       var i, j, h, k;
-      $windowLength = utils.defaultValue$Integer($windowLength, 3);
-      $stepSize     = utils.defaultValue$Integer($stepSize    , 1);
 
       windowLength = $windowLength.__int__();
       stepSize = $stepSize.__int__();
@@ -10055,14 +13367,14 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(obj2);
-    };
+    }, "windowLength=3; stepSize=1");
 
     spec.containsSeqColl = function() {
       var raw = this._;
       var i, imax;
 
       for (i = 0, imax = raw.length; i < imax; ++i) {
-        if (bool(raw[i].isSequenceableCollection())) {
+        if (BOOL(raw[i].isSequenceableCollection())) {
           return $SC.True();
         }
       }
@@ -10070,13 +13382,10 @@ var sc = { VERSION: "0.0.13" };
       return $SC.False();
     };
 
-    spec.unlace = function($clumpSize, $numChan, $clip) {
+    spec.unlace = fn(function($clumpSize, $numChan) {
       var raw = this._;
       var clumpSize, numChan;
       var a, b, size, i, j, k;
-      $clumpSize = utils.defaultValue$Integer($clumpSize, 2);
-      $numChan   = utils.defaultValue$Integer($numChan  , 1);
-      $clip      = utils.defaultValue$Boolean($clip, false);
 
       clumpSize = $clumpSize.__int__();
       numChan   = $numChan  .__int__();
@@ -10098,7 +13407,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $SC.Array(a);
-    };
+    }, "clumpSize=2; numChan=1");
 
     // TODO: implements interlace
     // TODO: implements deinterlace
@@ -10141,10 +13450,8 @@ var sc = { VERSION: "0.0.13" };
 
     // TODO: implements envirPairs
 
-    spec.shift = function($n, $filler) {
+    spec.shift = fn(function($n, $filler) {
       var $fill, $remain;
-      $n      = utils.defaultValue$Nil($n);
-      $filler = utils.defaultValue$Float($filler, 0.0);
 
       $fill = SCArray.fill($n.abs(), $filler);
       $remain = this.drop($n.neg());
@@ -10154,7 +13461,7 @@ var sc = { VERSION: "0.0.13" };
       }
 
       return $fill ["++"] ($remain);
-    };
+    }, "n; fillter=0.0");
 
     spec.powerset = function() {
       var raw = this._;
@@ -10199,7 +13506,7 @@ var sc = { VERSION: "0.0.13" };
       }));
     };
 
-    spec.isValidUGenInput = utils.alwaysReturn$True;
+    spec.isValidUGenInput = utils.alwaysReturn$true;
 
     spec.numChannels = function() {
       return this.size();
@@ -10213,3387 +13520,14 @@ var sc = { VERSION: "0.0.13" };
     // TODO: implements asSpec
     // TODO: implements fork
 
-    spec.madd = function($mul, $add) {
-      $mul = utils.defaultValue$Float($mul, 1.0);
-      $add = utils.defaultValue$Float($add, 0.0);
-      return $SC.Class("MulAdd").new(this, $mul, $add);
-    };
+    spec.madd = fn(function($mul, $add) {
+      return $SC("MulAdd").new(this, $mul, $add);
+    }, "mul=1.0; add=0.0");
 
     // TODO: implements asRawOSC
     // TODO: implements printOn
     // TODO: implements storeOn
   });
-
-})(sc);
-
-// src/sc/lang/parser.js
-(function(sc) {
-
-  var parser = {};
-
-  var Token = parser.Token = {
-    CharLiteral: "Char",
-    EOF: "<EOF>",
-    FalseLiteral: "False",
-    FloatLiteral: "Float",
-    Identifier: "Identifier",
-    IntegerLiteral: "Integer",
-    Keyword: "Keyword",
-    Label: "Label",
-    NilLiteral: "Nil",
-    Punctuator: "Punctuator",
-    StringLiteral: "String",
-    SymbolLiteral: "Symbol",
-    TrueLiteral: "True"
-  };
-
-  var Syntax = parser.Syntax = {
-    AssignmentExpression: "AssignmentExpression",
-    BinaryExpression: "BinaryExpression",
-    BlockExpression: "BlockExpression",
-    CallExpression: "CallExpression",
-    FunctionExpression: "FunctionExpression",
-    GlobalExpression: "GlobalExpression",
-    Identifier: "Identifier",
-    ListExpression: "ListExpression",
-    Label: "Label",
-    Literal: "Literal",
-    ObjectExpression: "ObjectExpression",
-    Program: "Program",
-    ThisExpression: "ThisExpression",
-    UnaryExpression: "UnaryExpression",
-    VariableDeclaration: "VariableDeclaration",
-    VariableDeclarator: "VariableDeclarator"
-  };
-
-  var Message = parser.Message = {
-    ArgumentAlreadyDeclared: "argument '%0' already declared",
-    InvalidLHSInAssignment: "invalid left-hand side in assignment",
-    NotImplemented: "not implemented %0",
-    UnexpectedEOS: "unexpected end of input",
-    UnexpectedIdentifier: "unexpected identifier",
-    UnexpectedChar: "unexpected char",
-    UnexpectedLabel: "unexpected label",
-    UnexpectedNumber: "unexpected number",
-    UnexpectedString: "unexpected string",
-    UnexpectedSymbol: "unexpected symbol",
-    UnexpectedToken: "unexpected token %0",
-    VariableAlreadyDeclared: "variable '%0' already declared",
-    VariableNotDefined: "variable '%0' not defined"
-  };
-
-  var Keywords = parser.Keywords = {
-    var: "keyword",
-    arg: "keyword",
-    const: "keyword",
-    this: "function",
-    thisThread: "function",
-    thisProcess: "function",
-    thisFunction: "function",
-    thisFunctionDef: "function",
-  };
-
-  var binaryPrecedenceDefaults = {
-    "?"  : 1,
-    "??" : 1,
-    "!?" : 1,
-    "->" : 2,
-    "||" : 3,
-    "&&" : 4,
-    "|"  : 5,
-    "&"  : 6,
-    "==" : 7,
-    "!=" : 7,
-    "===": 7,
-    "!==": 7,
-    "<"  : 8,
-    ">"  : 8,
-    "<=" : 8,
-    ">=" : 8,
-    "<<" : 9,
-    ">>" : 9,
-    "+>>": 9,
-    "+"  : 10,
-    "-"  : 10,
-    "*"  : 11,
-    "/"  : 11,
-    "%"  : 11,
-    "!"  : 12,
-  };
-
-  function char2num(ch) {
-    var n = ch.charCodeAt(0);
-
-    if (48 <= n && n <= 57) {
-      return n - 48;
-    }
-    if (65 <= n && n <= 90) {
-      return n - 55;
-    }
-    return n - 87; // if (97 <= n && n <= 122)
-  }
-
-  function isNumber(ch) {
-    return "0" <= ch && ch <= "9";
-  }
-
-  function Scope(parser) {
-    this.parser = parser;
-    this.stack = [];
-  }
-
-  Scope.prototype.add = function(type, id) {
-    var peek = this.stack[this.stack.length - 1];
-    var vars, args, declared;
-
-    vars = peek.vars;
-    args = peek.args;
-    declared = peek.declared;
-
-    switch (type) {
-    case "var":
-      if (args[id] || vars[id]) {
-        this.parser.throwError({}, Message.VariableAlreadyDeclared, id);
-      } else {
-        vars[id] = true;
-        delete declared[id];
-      }
-      break;
-    case "arg":
-      if (args[id]) {
-        this.parser.throwError({}, Message.ArgumentAlreadyDeclared, id);
-      }
-      args[id] = true;
-      delete declared[id];
-      break;
-    }
-  };
-
-  Scope.prototype.begin = function() {
-    var peek = this.stack[this.stack.length - 1];
-    var declared = {};
-
-    if (peek) {
-      Array.prototype.concat.apply([], [
-        peek.declared, peek.args, peek.vars
-      ].map(Object.keys)).forEach(function(key) {
-        declared[key] = true;
-      });
-    }
-
-    this.stack.push({ vars: {}, args: {}, declared: declared });
-  };
-
-  Scope.prototype.end = function() {
-    this.stack.pop();
-  };
-
-  function LocationMarker(parser) {
-    this.parser = parser;
-    this.marker = [
-      parser.index,
-      parser.lineNumber,
-      parser.index - parser.lineStart
-    ];
-  }
-
-  LocationMarker.prototype.apply = function(node) {
-    var parser = this.parser;
-    var marker = this.marker;
-
-    /* istanbul ignore else */
-    if (this.parser.opts.range) {
-      node.range = [ marker[0], parser.index ];
-    }
-    /* istanbul ignore else */
-    if (this.parser.opts.loc) {
-      node.loc = {
-        start: {
-          line: marker[1],
-          column: marker[2]
-        },
-        end: {
-          line: parser.lineNumber,
-          column: parser.index - parser.lineStart
-        }
-      };
-    }
-  };
-
-  function SCParser(source, opts) {
-    /* istanbul ignore next */
-    if (typeof source !== "string") {
-      if (typeof source === "undefined") {
-        source = "";
-      }
-      source = String(source);
-    }
-    source = source.replace(/\r\n?/g, "\n");
-    this.source = source;
-    this.opts = opts;
-    this.length = source.length;
-    this.index = 0;
-    this.lineNumber = this.length ? 1 : 0;
-    this.lineStart = 0;
-    this.reverted = null;
-    this.scope = new Scope(this);
-    this.marker = [];
-    this.tokens = opts.tokens ? [] : null;
-    this.errors = opts.tolerant ? [] : null;
-    this.state = {
-      closedFunction: false,
-      disallowGenerator: false,
-      innerElements: false,
-      immutableList: false,
-      underscore: []
-    };
-  }
-
-  SCParser.prototype.parse = function() {
-    return this.parseProgram();
-  };
-
-  SCParser.prototype.skipComment = function() {
-    var source = this.source;
-    var length = this.length;
-    var index = this.index;
-    var lineNumber = this.lineNumber;
-    var lineStart = this.lineStart;
-    var ch, depth;
-
-    LOOP: while (index < length) {
-      ch = source.charAt(index);
-      switch (ch) {
-
-      case " ":
-      case "\t":
-        index += 1;
-        continue LOOP;
-        /* falls through */
-
-      case "\n":
-        index += 1;
-        lineNumber += 1;
-        lineStart = index;
-        continue LOOP;
-        /* falls through */
-
-      case "/":
-        ch = source.charAt(index + 1);
-        switch (ch) {
-        case "/":
-          // line comment
-          index += 2;
-          while (index < length) {
-            ch = source.charAt(index);
-            index += 1;
-            if (ch === "\n") {
-              lineNumber += 1;
-              lineStart = index;
-              break;
-            }
-          }
-          break;
-
-        case "*":
-          // block comment
-          depth = 1;
-          index += 2;
-          while (index < length) {
-            ch = source.charAt(index);
-            switch (ch) {
-            case "/":
-              ch = source.charAt(index + 1);
-              if (ch === "*") {
-                depth += 1;
-                index += 1;
-              }
-              break;
-            case "*":
-              ch = source.charAt(index + 1);
-              if (ch === "/") {
-                depth -= 1;
-                index += 1;
-                if (depth === 0) {
-                  index += 1;
-                  continue LOOP;
-                }
-              }
-              break;
-            case "\n":
-              lineNumber += 1;
-              lineStart = index;
-              break;
-            }
-            index += 1;
-          }
-          this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-          break;
-
-        default:
-          break LOOP;
-        }
-        break;
-
-      default:
-        break LOOP;
-      }
-    }
-
-    this.index = index;
-    this.lineNumber = lineNumber;
-    this.lineStart = lineStart;
-  };
-
-  SCParser.prototype.collectToken = function() {
-    var loc, token, source, t;
-
-    this.skipComment();
-
-    loc = {
-      start: {
-        line: this.lineNumber,
-        column: this.index - this.lineStart
-      }
-    };
-
-    token = this.advance();
-
-    loc.end = {
-      line: this.lineNumber,
-      column: this.index - this.lineStart
-    };
-
-    if (token.type !== Token.EOF) {
-      source = this.source;
-      t = {
-        type: token.type,
-        value: source.slice(token.range[0], token.range[1])
-      };
-      if (this.opts.range) {
-        t.range = [ token.range[0], token.range[1] ];
-      }
-      if (this.opts.loc) {
-        t.loc = loc;
-      }
-      this.tokens.push(t);
-    }
-
-    return token;
-  };
-
-  SCParser.prototype.advance = function() {
-    var ch, token;
-
-    this.skipComment();
-
-    if (this.length <= this.index) {
-      return this.EOFToken();
-    }
-
-    ch = this.source.charAt(this.index);
-
-    // Symbol literal starts with back slash
-    if (ch === "\\") {
-      return this.scanSymbolLiteral();
-    }
-
-    // Char literal starts with dollar
-    if (ch === "$") {
-      return this.scanCharLiteral();
-    }
-
-    // String literal starts with single quote or double quote
-    if (ch === "'" || ch === "\"") {
-      return this.scanStringLiteral();
-    }
-
-    // for partial application
-    if (ch === "_") {
-      return this.scanUnderscore();
-    }
-
-    if (ch === "-") {
-      token = this.scanNegativeNumericLiteral();
-      if (token) {
-        return token;
-      }
-    }
-
-    // Identifier starts with alphabet
-    if (("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z")) {
-      return this.scanIdentifier();
-    }
-
-    // Number literal starts with number
-    if (isNumber(ch)) {
-      return this.scanNumericLiteral();
-    }
-
-    return this.scanPunctuator();
-  };
-
-  SCParser.prototype.expect = function(value) {
-    var token = this.lex();
-    if (token.type !== Token.Punctuator || token.value !== value) {
-      this.throwUnexpected(token, value);
-    }
-  };
-
-  SCParser.prototype.peek = function() {
-    var index, lineNumber, lineStart;
-
-    index = this.index;
-    lineNumber = this.lineNumber;
-    lineStart = this.lineStart;
-
-    if (this.opts.tokens) {
-      this.lookahead = this.collectToken();
-    } else {
-      this.lookahead = this.advance();
-    }
-
-    this.index = index;
-    this.lineNumber = lineNumber;
-    this.lineStart = lineStart;
-  };
-
-  SCParser.prototype.lex = function() {
-    var token = this.lookahead;
-
-    this.index = token.range[1];
-    this.lineNumber = token.lineNumber;
-    this.lineStart = token.lineStart;
-
-    if (this.opts.tokens) {
-      this.lookahead = this.collectToken();
-    } else {
-      this.lookahead = this.advance();
-    }
-
-    this.index = token.range[1];
-    this.lineNumber = token.lineNumber;
-    this.lineStart = token.lineStart;
-
-    return token;
-  };
-
-  SCParser.prototype.EOFToken = function() {
-    return {
-      type: Token.EOF,
-      value: "<EOF>",
-      lineNumber: this.lineNumber,
-      lineStart: this.lineStart,
-      range: [ this.index, this.index ]
-    };
-  };
-
-  SCParser.prototype.restore = function(saved) {
-    this.lookahead  = saved[0];
-    this.index      = saved[1];
-    this.lineNumber = saved[2];
-    this.lineStart  = saved[3];
-    if (this.tokens) {
-      this.tokens.pop();
-    }
-  };
-
-  SCParser.prototype.save = function() {
-    return [ this.lookahead, this.index, this.lineNumber, this.lineStart ];
-  };
-
-  SCParser.prototype.scanCharLiteral = function() {
-    var start, value;
-
-    start = this.index;
-    value = this.source.charAt(this.index + 1);
-
-    this.index += 2;
-
-    return {
-      type : Token.CharLiteral,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
-    };
-  };
-
-  SCParser.prototype.scanIdentifier = function() {
-    var source = this.source.slice(this.index);
-    var start = this.index;
-    var value, type;
-
-    value = /^[a-zA-Z][a-zA-Z0-9_]*/.exec(source)[0];
-
-    this.index += value.length;
-
-    if (this.source.charAt(this.index) === ":") {
-      this.index += 1;
-      return {
-        type: Token.Label,
-        value: value,
-        lineNumber: this.lineNumber,
-        lineStart: this.lineStart,
-        range: [ start, this.index ]
-      };
-    } else if (this.isKeyword(value)) {
-      type = Token.Keyword;
-    } else {
-      switch (value) {
-      case "inf":
-        type = Token.FloatLiteral;
-        value = "Infinity";
-        break;
-      case "pi":
-        type = Token.FloatLiteral;
-        value = "Math.PI";
-        break;
-      case "nil":
-        type = Token.NilLiteral;
-        value = "null";
-        break;
-      case "true":
-        type = Token.TrueLiteral;
-        break;
-      case "false":
-        type = Token.FalseLiteral;
-        break;
-      default:
-        type = Token.Identifier;
-        break;
-      }
-    }
-
-    return {
-      type: type,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart: this.lineStart,
-      range: [ start, this.index ]
-    };
-  };
-
-  SCParser.prototype.scanNumericLiteral = function(neg) {
-    return this.scanNAryNumberLiteral(neg) || this.scanDecimalNumberLiteral(neg);
-  };
-
-  SCParser.prototype.scanNegativeNumericLiteral = function() {
-    var token, ch1, ch2, ch3;
-    var start, value = null;
-
-    start = this.index;
-    ch1 = this.source.charAt(this.index + 1);
-
-    if (isNumber(ch1)) {
-      this.index += 1;
-      token = this.scanNumericLiteral(true);
-      token.range[0] = start;
-      return token;
-    }
-
-    ch2 = this.source.charAt(this.index + 2);
-    ch3 = this.source.charAt(this.index + 3);
-
-    if (ch1 + ch2 === "pi") {
-      this.index += 3;
-      value = -Math.PI;
-    } else if (ch1 + ch2 + ch3 === "inf") {
-      this.index += 4;
-      value = -Infinity;
-    }
-
-    if (value !== null) {
-      return {
-        type : Token.FloatLiteral,
-        value: value,
-        lineNumber: this.lineNumber,
-        lineStart : this.lineStart,
-        range: [ start, this.index ]
-      };
-    }
-
-    return null;
-  };
-
-  SCParser.prototype.scanNAryNumberLiteral = function(neg) {
-    var re, start, items;
-    var base, integer, frac, pi;
-    var x, i, imax;
-    var value, type;
-
-    re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
-
-    if (!items) {
-      return;
-    }
-
-    base    = items[1].replace(/^0+(?=\d)/g, "")|0;
-    integer = items[2].replace(/(^0+(?=\d)|_)/g, "");
-    frac    = items[3] && items[3].replace(/_/g, "");
-
-    if (!frac && base < 26 && integer.substr(-2) === "pi") {
-      integer = integer.substr(0, integer.length - 2);
-      pi = true;
-    }
-
-    type  = Token.IntegerLiteral;
-    value = 0;
-
-    for (i = 0, imax = integer.length; i < imax; ++i) {
-      value *= base;
-      x = char2num(integer[i]);
-      if (x >= base) {
-        this.throwError({}, Message.UnexpectedToken, integer[i]);
-      }
-      value += x;
-    }
-
-    if (frac) {
-      type = Token.FloatLiteral;
-      for (i = 0, imax = frac.length; i < imax; ++i) {
-        x = char2num(frac[i]);
-        if (x >= base) {
-          this.throwError({}, Message.UnexpectedToken, integer[i]);
-        }
-        value += x * Math.pow(base, -(i + 1));
-      }
-    }
-
-    if (neg) {
-      value *= -1;
-    }
-
-    if (pi) {
-      type = Token.FloatLiteral;
-      value = value + " * Math.PI";
-    }
-
-    if (type === Token.FloatLiteral && value === (value|0)) {
-      value = value + ".0";
-    } else {
-      value = String(value);
-    }
-
-    this.index += items[0].length;
-
-    return {
-      type : type,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
-    };
-  };
-
-  SCParser.prototype.scanDecimalNumberLiteral = function(neg) {
-    var re, start, items, integer, frac, pi;
-    var value, type;
-
-    re = /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
-
-    integer = items[1];
-    frac    = items[2];
-    pi      = items[3];
-
-    type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
-    value = +integer.replace(/(^0+(?=\d)|_)/g, "");
-
-    if (neg) {
-      value *= -1;
-    }
-
-    if (pi) {
-      value = value + " * Math.PI";
-    }
-
-    if (type === Token.FloatLiteral && value === (value|0)) {
-      value = value + ".0";
-    } else {
-      value = String(value);
-    }
-
-    this.index += items[0].length;
-
-    return {
-      type : type,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
-    };
-  };
-
-  SCParser.prototype.scanPunctuator = function() {
-    var re, start, items;
-
-    re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
-
-    if (items) {
-      this.index += items[0].length;
-      return {
-        type : Token.Punctuator,
-        value: items[0],
-        lineNumber: this.lineNumber,
-        lineStart : this.lineStart,
-        range: [ start, this.index ]
-      };
-    }
-
-    this.throwError({}, Message.UnexpectedToken, this.source.charAt(this.index));
-
-    this.index = this.length;
-
-    return this.EOFToken();
-  };
-
-  SCParser.prototype.scanStringLiteral = function() {
-    var source, start;
-    var length, index;
-    var quote, ch, value, type;
-
-    source = this.source;
-    length = this.length;
-    index  = start = this.index;
-    quote  = source.charAt(start);
-    type   = (quote === '"') ? Token.StringLiteral : Token.SymbolLiteral;
-
-    index += 1;
-    while (index < length) {
-      ch = source.charAt(index);
-      index += 1;
-      if (ch === quote) {
-        value = source.substr(start + 1, index - start - 2);
-        value = value.replace(/\n/g, "\\n");
-        this.index = index;
-        return {
-          type : type,
-          value: value,
-          lineNumber: this.lineNumber,
-          lineStart : this.lineStart,
-          range: [ start, this.index ]
-        };
-      } else if (ch === "\n") {
-        this.lineNumber += 1;
-        this.lineStart = index;
-      } else if (ch === "\\") {
-        index += 1;
-      }
-    }
-
-    this.index = index;
-    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-
-    return this.EOFToken();
-  };
-
-  SCParser.prototype.scanSymbolLiteral = function() {
-    var re, start, items;
-    var value;
-
-    re = /^\\([a-z_]\w*)?/i;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
-
-    value = items[1];
-
-    this.index += items[0].length;
-
-    return {
-      type : Token.SymbolLiteral,
-      value: value,
-      lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
-      range: [ start, this.index ]
-    };
-  };
-
-  SCParser.prototype.scanUnderscore = function() {
-    var start = this.index;
-
-    this.index += 1;
-
-    return {
-      type: Token.Identifier,
-      value: "_",
-      lineNumber: this.lineNumber,
-      lineStart: this.lineStart,
-      range: [ start, this.index ]
-    };
-  };
-
-  SCParser.prototype.createAssignmentExpression = function(operator, left, right, remain) {
-    var node = {
-      type: Syntax.AssignmentExpression,
-      operator: operator,
-      left: left,
-      right: right
-    };
-    if (remain) {
-      node.remain = remain;
-    }
-    return node;
-  };
-
-  SCParser.prototype.createBinaryExpression = function(operator, left, right) {
-    var node = {
-      type: Syntax.BinaryExpression,
-      operator: operator.value,
-      left: left,
-      right: right
-    };
-    if (operator.adverb) {
-      node.adverb = operator.adverb;
-    }
-    return node;
-  };
-
-  SCParser.prototype.createBlockExpression = function(body) {
-    return {
-      type: Syntax.BlockExpression,
-      body: body
-    };
-  };
-
-  SCParser.prototype.createCallExpression = function(callee, method, args, stamp) {
-    var node;
-
-    node = {
-      type: Syntax.CallExpression,
-      callee: callee,
-      method: method,
-      args  : args,
-    };
-
-    if (stamp) {
-      node.stamp = stamp;
-    }
-
-    return node;
-  };
-
-  SCParser.prototype.createGlobalExpression = function(id) {
-    return {
-      type: Syntax.GlobalExpression,
-      id: id
-    };
-  };
-
-  SCParser.prototype.createFunctionExpression = function(args, body, closed, partial, blocklist) {
-    var node;
-
-    node = {
-      type: Syntax.FunctionExpression,
-      body: body
-    };
-    if (args) {
-      node.args = args;
-    }
-    if (closed) {
-      node.closed = true;
-    }
-    if (partial) {
-      node.partial = true;
-    }
-    if (blocklist) {
-      node.blocklist = true;
-    }
-    return node;
-  };
-
-  SCParser.prototype.createIdentifier = function(name) {
-    return {
-      type: Syntax.Identifier,
-      name: name
-    };
-  };
-
-  SCParser.prototype.createLabel = function(name) {
-    return {
-      type: Syntax.Label,
-      name: name
-    };
-  };
-
-  SCParser.prototype.createListExpression = function(elements, immutable) {
-    var node = {
-      type: Syntax.ListExpression,
-      elements: elements
-    };
-    if (immutable) {
-      node.immutable = !!immutable;
-    }
-    return node;
-  };
-
-  SCParser.prototype.createLiteral = function(token) {
-    return {
-      type: Syntax.Literal,
-      value: token.value,
-      valueType: token.type
-    };
-  };
-
-  SCParser.prototype.createLocationMarker = function() {
-    if (this.opts.loc || this.opts.range) {
-      this.skipComment();
-      return new LocationMarker(this);
-    }
-  };
-
-  SCParser.prototype.createObjectExpression = function(elements) {
-    return {
-      type: Syntax.ObjectExpression,
-      elements: elements
-    };
-  };
-
-  SCParser.prototype.createProgram = function(body) {
-    return {
-      type: Syntax.Program,
-      body: body
-    };
-  };
-
-  SCParser.prototype.createThisExpression = function(name) {
-    return {
-      type: Syntax.ThisExpression,
-      name: name
-    };
-  };
-
-  SCParser.prototype.createUnaryExpression = function(operator, arg) {
-    return {
-      type: Syntax.UnaryExpression,
-      operator: operator,
-      arg: arg
-    };
-  };
-
-  SCParser.prototype.createVariableDeclaration = function(declarations, kind) {
-    return {
-      type: Syntax.VariableDeclaration,
-      declarations: declarations,
-      kind: kind
-    };
-  };
-
-  SCParser.prototype.createVariableDeclarator = function(id, init) {
-    var node = {
-      type: Syntax.VariableDeclarator,
-      id: id
-    };
-    if (init) {
-      node.init = init;
-    }
-    return node;
-  };
-
-  SCParser.prototype.isClassName = function(node) {
-    var name, ch;
-
-    if (node.type === Syntax.Identifier) {
-      name = node.value || node.name;
-      ch = name.charAt(0);
-      return "A" <= ch && ch <= "Z";
-    }
-
-    return false;
-  };
-
-  SCParser.prototype.isKeyword = function(value) {
-    return !!Keywords[value] || false;
-  };
-
-  SCParser.prototype.isLeftHandSide = function(expr) {
-    switch (expr.type) {
-    case Syntax.Identifier:
-    case Syntax.GlobalExpression:
-      return true;
-    }
-    return false;
-  };
-
-  SCParser.prototype.match = function(value) {
-    var token = this.lookahead;
-    return token.type === Token.Punctuator && token.value === value;
-  };
-
-  SCParser.prototype.matchAny = function(list) {
-    var value, i, imax;
-
-    if (this.lookahead.type === Token.Punctuator) {
-      value = this.lookahead.value;
-      for (i = 0, imax = list.length; i < imax; ++i) {
-        if (list[i] === value) {
-          return value;
-        }
-      }
-    }
-
-    return null;
-  };
-
-  SCParser.prototype.matchKeyword = function(value) {
-    var token = this.lookahead;
-    return token.type === Token.Keyword && token.value === value;
-  };
-
-  SCParser.prototype.withScope = function(fn) {
-    var result;
-
-    this.scope.begin();
-    result = fn.call(this);
-    this.scope.end();
-
-    return result;
-  };
-
-  // 1. Program
-  SCParser.prototype.parseProgram = function() {
-    var node;
-
-    this.skipComment();
-    this.markStart();
-    this.peek();
-
-    node = this.withScope(function() {
-      var body;
-
-      body = this.parseFunctionBody("");
-      if (body.length === 1 && body[0].type === Syntax.BlockExpression) {
-        body = body[0].body;
-      }
-
-      return this.createProgram(body);
-    });
-
-    return this.markEnd(node);
-  };
-
-  // 2. Function
-  // 2.1 Function Expression
-  SCParser.prototype.parseFunctionExpression = function(closed, blocklist) {
-    var node;
-
-    node = this.withScope(function() {
-      var args, body;
-
-      if (this.match("|")) {
-        args = this.parseFunctionArgument("|");
-      } else if (this.matchKeyword("arg")) {
-        args = this.parseFunctionArgument(";");
-      }
-      body = this.parseFunctionBody("}");
-
-      return this.createFunctionExpression(args, body, closed, false, blocklist);
-    });
-
-    return node;
-  };
-
-  // 2.2 Function Argument
-  SCParser.prototype.parseFunctionArgument = function(expect) {
-    var args = { list: [] }, lookahead;
-
-    this.lex();
-
-    if (!this.match("...")) {
-      do {
-        args.list.push(this.parseFunctionArgumentElement());
-        if (!this.match(",")) {
-          break;
-        }
-        this.lex();
-      } while (this.lookahead.type !== Token.EOF);
-    }
-
-    if (this.match("...")) {
-      this.lex();
-      lookahead = this.lookahead;
-      args.remain = this.parseVariableIdentifier();
-      this.scope.add("arg", args.remain.name);
-    }
-
-    this.expect(expect);
-
-    return args;
-  };
-
-  SCParser.prototype.parseFunctionArgumentElement = function() {
-    var init = null, id;
-
-    this.skipComment();
-    this.markStart();
-    id = this.parseVariableIdentifier();
-    this.scope.add("arg", id.name);
-
-    if (this.match("=")) {
-      this.lex();
-      init = this.parseUnaryExpression(); // literal or immurable array of literals
-    }
-
-    return this.markEnd(this.createVariableDeclarator(id, init));
-  };
-
-  // 2.3 Function Body
-  SCParser.prototype.parseFunctionBody = function(match) {
-    var elements = [];
-
-    while (this.matchKeyword("var")) {
-      elements.push(this.parseVariableDeclaration());
-    }
-
-    while (this.lookahead.type !== Token.EOF && !this.match(match)) {
-      elements.push(this.parseExpression());
-      if (this.lookahead.type !== Token.EOF && !this.match(match)) {
-        this.expect(";");
-      } else {
-        break;
-      }
-    }
-
-    return elements;
-  };
-
-  // 3. Variable Declarations
-  SCParser.prototype.parseVariableDeclaration = function() {
-    var declaration;
-
-    this.skipComment();
-    this.markStart();
-
-    this.lex(); // var
-
-    declaration = this.markEnd(
-      this.createVariableDeclaration(
-        this.parseVariableDeclarationList(), "var"
-      )
-    );
-
-    this.expect(";");
-
-    return declaration;
-  };
-
-  SCParser.prototype.parseVariableDeclarationList = function() {
-    var list = [];
-
-    do {
-      list.push(this.parseVariableDeclarationElement());
-      if (!this.match(",")) {
-        break;
-      }
-      this.lex();
-    } while (this.lookahead.type !== Token.EOF);
-
-    return list;
-  };
-
-  SCParser.prototype.parseVariableDeclarationElement = function() {
-    var init = null, id;
-
-    this.skipComment();
-    this.markStart();
-    id = this.parseVariableIdentifier();
-    this.scope.add("var", id.name);
-
-    if (this.match("=")) {
-      this.lex();
-      init = this.parseAssignmentExpression();
-    }
-
-    return this.markEnd(this.createVariableDeclarator(id, init));
-  };
-
-  // 4. Expression
-  SCParser.prototype.parseExpression = function(node) {
-    return this.parseAssignmentExpression(node);
-  };
-
-  // 4.1 Expressions
-  SCParser.prototype.parseExpressions = function(node) {
-    var nodes = [];
-
-    if (node) {
-      nodes.push(node);
-      this.lex();
-    }
-
-    while (this.lookahead.type !== Token.EOF && !this.matchAny([ ",", ")", "]", ".." ])) {
-      this.skipComment();
-      this.markStart();
-      node = this.parseAssignmentExpression();
-      this.markEnd(node);
-      nodes.push(node);
-      if (this.match(";")) {
-        this.lex();
-      }
-    }
-
-    if (nodes.length === 0) {
-      this.throwUnexpected(this.lookahead);
-    }
-
-    return nodes.length === 1 ? nodes[0] : nodes;
-  };
-
-  // 4.2 Assignment Expression
-  SCParser.prototype.parseAssignmentExpression = function(node) {
-    var token, left, right;
-    var sharp, destructuringAssignment;
-    var marker, saved;
-
-    if (node) {
-      return this.parsePartialExpression(node);
-    }
-
-    token = this.lookahead;
-
-    this.skipComment();
-    marker = this.createLocationMarker();
-    this.markStart();
-
-    saved = this.save();
-
-    if (this.match("#")) {
-      sharp = true;
-      token = this.lex();
-      if (this.matchAny([ "[", "{" ])) {
-        this.restore(saved);
-      } else {
-        destructuringAssignment = true;
-        left = this.parseDestructuringAssignmentLeft();
-        token = this.lookahead;
-        this.expect("=");
-
-        right = this.parseAssignmentExpression();
-        node = this.createAssignmentExpression(
-          token.value, left.list, right, left.remain
-        );
-      }
-    }
-
-    if (!destructuringAssignment) {
-      node = left = this.parsePartialExpression();
-
-      if (this.match("=")) {
-        if (node.type === Syntax.CallExpression) {
-          token = this.lex();
-          right = this.parseAssignmentExpression();
-          left.method.name = this.getAssignMethod(left.method.name);
-          left.args.list = node.args.list.concat(right);
-          /* istanbul ignore else */
-          if (this.opts.range) {
-            left.range[1] = this.index;
-          }
-          /* istanbul ignore else */
-          if (this.opts.loc) {
-            left.loc.end = {
-              line: this.lineNumber,
-              column: this.index - this.lineStart
-            };
-          }
-          node = left;
-        } else {
-          // TODO: fix
-          if (!this.isLeftHandSide(left)) {
-            this.throwError({}, Message.InvalidLHSInAssignment);
-          }
-
-          token = this.lex();
-          right = this.parseAssignmentExpression();
-          node  = this.createAssignmentExpression(
-            token.value, left, right
-          );
-        }
-      }
-    }
-
-    return this.markEnd(node);
-  };
-
-  SCParser.prototype.getAssignMethod = function(methodName) {
-    switch (methodName) {
-    case "at":
-      return "put";
-    case "copySeries":
-      return "putSeries";
-    }
-    return methodName + "_";
-  };
-
-  SCParser.prototype.parseDestructuringAssignmentLeft = function() {
-    var params = { list: [] }, element;
-
-    do {
-      element = this.parseLeftHandSideExpression();
-      if (!this.isLeftHandSide(element)) {
-        this.throwError({}, Message.InvalidLHSInAssignment);
-      }
-      params.list.push(element);
-      if (this.match(",")) {
-        this.lex();
-      } else if (this.match("...")) {
-        this.lex();
-        params.remain = this.parseLeftHandSideExpression();
-        if (!this.isLeftHandSide(params.remain)) {
-          this.throwError({}, Message.InvalidLHSInAssignment);
-        }
-        break;
-      }
-    } while (this.lookahead.type !== Token.EOF && !this.match("="));
-
-    return params;
-  };
-
-  // 4.3 Partial Expression
-  SCParser.prototype.parsePartialExpression = function(node) {
-    var underscore, x, y;
-
-    if (this.state.innerElements) {
-      node = this.parseBinaryExpression(node);
-    } else {
-      underscore = this.state.underscore;
-      this.state.underscore = [];
-
-      node = this.parseBinaryExpression(node);
-
-      if (this.state.underscore.length) {
-        node = this.withScope(function() {
-          var args, i, imax;
-
-          args = new Array(this.state.underscore.length);
-          for (i = 0, imax = args.length; i < imax; ++i) {
-            x = this.state.underscore[i];
-            y = this.createVariableDeclarator(x);
-            /* istanbul ignore else */
-            if (x.range) {
-              y.range = x.range;
-            }
-            /* istanbul ignore else */
-            if (x.loc) {
-              y.loc = x.loc;
-            }
-            args[i] = y;
-            this.scope.add("arg", this.state.underscore[i].name);
-          }
-
-          return this.createFunctionExpression(
-            { list: args }, [ node ], false, true, false
-          );
-        });
-      }
-
-      this.state.underscore = underscore;
-    }
-
-    return node;
-  };
-
-  // 4.4 Conditional Expression
-  // 4.5 Binary Expression
-  SCParser.prototype.parseBinaryExpression = function(node) {
-    var marker, markers, expr, token, prec, stack;
-    var left, operator, right, i;
-
-    this.skipComment();
-
-    marker = this.createLocationMarker();
-    left = this.parseUnaryExpression(node);
-
-    token = this.lookahead;
-    prec = this.binaryPrecedence(token);
-    if (prec === 0) {
-      if (node) {
-        return this.parseUnaryExpression(node);
-      }
-      return left;
-    }
-    this.lex();
-
-    token.prec = prec;
-    token.adverb = this.parseAdverb();
-
-    markers = [ marker, this.createLocationMarker() ];
-    right = this.parseUnaryExpression();
-
-    stack = [ left, token, right ];
-
-    while ((prec = this.binaryPrecedence(this.lookahead)) > 0) {
-      // Reduce: make a binary expression from the three topmost entries.
-      while ((stack.length > 2) && (prec <= stack[stack.length - 2].prec)) {
-        right = stack.pop();
-        operator = stack.pop();
-        left = stack.pop();
-        expr = this.createBinaryExpression(operator, left, right);
-        markers.pop();
-
-        marker = markers.pop();
-        /* istanbul ignore else */
-        if (marker) {
-          marker.apply(expr);
-        }
-        stack.push(expr);
-        markers.push(marker);
-      }
-
-      // Shift.
-      token = this.lex();
-      token.prec = prec;
-      token.adverb = this.parseAdverb();
-
-      stack.push(token);
-      markers.push(this.createLocationMarker());
-      expr = this.parseUnaryExpression();
-      stack.push(expr);
-    }
-
-    // Final reduce to clean-up the stack.
-    i = stack.length - 1;
-    expr = stack[i];
-    markers.pop();
-    while (i > 1) {
-      expr = this.createBinaryExpression(stack[i - 1], stack[i - 2], expr);
-      i -= 2;
-      marker = markers.pop();
-      /* istanbul ignore else */
-      if (marker) {
-        marker.apply(expr);
-      }
-    }
-
-    return expr;
-  };
-
-  SCParser.prototype.binaryPrecedence = function(token) {
-    var table, prec = 0;
-
-    if (this.opts.binaryPrecedence) {
-      if (typeof this.opts.binaryPrecedence === "object") {
-        table = this.opts.binaryPrecedence;
-      } else {
-        table = binaryPrecedenceDefaults;
-      }
-    } else {
-      table = {};
-    }
-    switch (token.type) {
-    case Token.Punctuator:
-      if (token.value !== "=") {
-        if (table.hasOwnProperty(token.value)) {
-          prec = table[token.value];
-        } else if (/^[-+*\/%<=>!?&|@]+$/.test(token.value)) {
-          prec = 255;
-        }
-      }
-      break;
-    case Token.Label:
-      prec = 255;
-      break;
-    }
-
-    return prec;
-  };
-
-  SCParser.prototype.parseAdverb = function() {
-    var adverb, lookahead;
-
-    if (this.match(".")) {
-      this.lex();
-
-      lookahead = this.lookahead;
-      adverb = this.parsePrimaryExpression();
-
-      if (adverb.type === Syntax.Literal) {
-        return adverb;
-      }
-
-      if (adverb.type === Syntax.Identifier) {
-        adverb.type = Syntax.Literal;
-        adverb.value = adverb.name;
-        adverb.valueType = Token.SymbolLiteral;
-        delete adverb.name;
-        return adverb;
-      }
-
-      this.throwUnexpected(lookahead);
-    }
-
-    return null;
-  };
-
-  // 4.6 Unary Expressions
-  SCParser.prototype.parseUnaryExpression = function(node) {
-    var token, expr;
-
-    this.markStart();
-
-    if (this.match("`")) {
-      token = this.lex();
-      expr = this.parseUnaryExpression();
-      expr = this.createUnaryExpression(token.value, expr);
-    } else {
-      expr = this.parseLeftHandSideExpression(node);
-    }
-
-    return this.markEnd(expr);
-  };
-
-  // 4.7 LeftHandSide Expressions
-  SCParser.prototype.parseLeftHandSideExpression = function(node) {
-    var marker, expr, args, m, prev, lookahead, closedFunction;
-    var disallowGenerator, blocklist;
-    var method;
-
-    this.skipComment();
-
-    marker = this.createLocationMarker();
-    expr = this.parsePrimaryExpression(node);
-
-    blocklist = false;
-
-    while ((m = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
-      lookahead = this.lookahead;
-      if ((prev === "{" && (m !== "#" && m !== "{")) || (prev === "(" && m === "(")) {
-        this.throwUnexpected(lookahead);
-      }
-      switch (m) {
-      case "(":
-        if (this.isClassName(expr)) {
-          method = this.markTouch(this.createIdentifier("new"));
-          args   = this.parseCallArgument();
-          expr   = this.createCallExpression(expr, method, args, "(");
-        } else {
-          if (expr.type !== Syntax.Identifier) {
-            this.throwUnexpected(this.lookahead);
-          }
-          args = this.parseCallArgument();
-
-          method = expr;
-          expr   = args.list.shift();
-          if (!expr) {
-            if (args.expand) {
-              expr = args.expand;
-              delete args.expand;
-            } else {
-              this.throwUnexpected(lookahead);
-            }
-          }
-          expr = this.createCallExpression(expr, method, args, "("); // TODO: max(0, 1)  .. (?
-        }
-        break;
-      case "#":
-        closedFunction = this.state.closedFunction;
-        this.state.closedFunction = true;
-        this.lex();
-        if (!this.match("{")) {
-          this.throwUnexpected(this.lookahead);
-        }
-        m = "{";
-        /* falls through */
-      case "{":
-        if (expr.type === Syntax.CallExpression && expr.stamp && expr.stamp !== "(") {
-          this.throwUnexpected(this.lookahead);
-        }
-        if (expr.type === Syntax.Identifier) {
-          if (this.isClassName(expr)) {
-            method = this.markTouch(this.createIdentifier("new"));
-            expr   = this.createCallExpression(expr, method, { list: [] }, m);
-          } else {
-            expr = this.createCallExpression(null, expr, { list: [] });
-          }
-        }
-        lookahead = this.lookahead;
-        disallowGenerator = this.state.disallowGenerator;
-        this.state.disallowGenerator = true;
-        node = this.parseBraces(true);
-        this.state.disallowGenerator = disallowGenerator;
-        this.state.closedFunction = closedFunction;
-
-        // TODO: refactoring
-        if (expr.callee === null) {
-          expr.callee = node;
-          node = expr;
-        } else {
-          expr.args.list.push(node);
-        }
-
-        break;
-      case "[":
-        if (expr.type === Syntax.CallExpression && expr.stamp === "(") {
-          this.throwUnexpected(this.lookahead);
-        }
-        if (this.isClassName(expr)) {
-          expr = this.parseLeftHandSideNewFrom(expr);
-        } else {
-          expr = this.parseLeftHandSideListAt(expr);
-        }
-        break;
-      case ".":
-        this.lex();
-        if (this.match("(")) {
-          method = this.markTouch(this.createIdentifier("value"));
-          args   = this.parseCallArgument();
-          expr   = this.createCallExpression(expr, method, args, ".");
-        } else if (this.match("[")) {
-           // TODO: fix
-          var expr0;
-          method = this.markTouch(this.createIdentifier("value"));
-          expr0  = expr;
-          expr   = this.markTouch(this.createCallExpression(expr, method, { list: [] }, "."));
-          /* istanbul ignore else */
-          if (this.opts.range) {
-            expr.range[0] = expr0.range[0];
-          }
-          /* istanbul ignore else */
-          if (this.opts.loc) {
-            expr.loc.start = expr0.loc.start;
-          }
-          expr = this.parseLeftHandSideListAt(expr);
-        } else {
-          method = this.parseProperty();
-          if (this.match("(")) {
-            args = this.parseCallArgument();
-            expr = this.createCallExpression(expr, method, args);
-          } else {
-            expr = this.createCallExpression(expr, method, { list: [] });
-          }
-        }
-        break;
-      }
-      /* istanbul ignore else */
-      if (marker) {
-        marker.apply(expr);
-      }
-      prev = m;
-    }
-
-    return expr;
-  };
-
-  SCParser.prototype.parseLeftHandSideNewFrom = function(expr) {
-    var node, method;
-
-    method = this.markTouch(this.createIdentifier("newFrom"));
-
-    this.skipComment();
-    this.markStart();
-
-    node = this.markEnd(this.parseListInitialiser());
-
-    return this.createCallExpression(expr, method, { list: [ node ] }, "[");
-  };
-
-  SCParser.prototype.parseLeftHandSideListAt = function(expr) {
-    var indexes, method;
-
-    method = this.markTouch(this.createIdentifier("at"));
-
-    indexes = this.parseListIndexer();
-    if (indexes) {
-      if (indexes.length === 3) {
-        method.name = "copySeries";
-      }
-    } else {
-      this.throwUnexpected(this.lookahead);
-    }
-
-    return this.createCallExpression(expr, method, { list: indexes }, "[");
-  };
-
-  SCParser.prototype.parseCallArgument = function() {
-    var args, node, key, value, hasKeyword, lookahead;
-
-    args = { list: [] };
-    hasKeyword = false;
-
-    this.expect("(");
-
-    while (this.lookahead.type !== Token.EOF && !this.match(")")) {
-      lookahead = this.lookahead;
-      if (!hasKeyword) {
-        if (this.match("*")) {
-          this.lex();
-          args.expand = this.parseExpressions();
-          hasKeyword = true;
-        } else if (lookahead.type === Token.Label) {
-          key = this.lex().value;
-          value = this.parseExpressions();
-          args.keywords = {};
-          args.keywords[key] = value;
-          hasKeyword = true;
-        } else {
-          node = this.parseExpressions();
-          args.list.push(node);
-        }
-      } else {
-        if (lookahead.type !== Token.Label) {
-          this.throwUnexpected(lookahead);
-        }
-        key = this.lex().value;
-        value = this.parseExpressions();
-        if (!args.keywords) {
-          args.keywords = {};
-        }
-        args.keywords[key] = value;
-      }
-      if (this.match(")")) {
-        break;
-      }
-      this.expect(",");
-    }
-
-    this.expect(")");
-
-    return args;
-  };
-
-  SCParser.prototype.parseListIndexer = function() {
-    var first = null, second = null, last = null;
-    var node = null;
-
-    this.expect("[");
-
-    if (!this.match("]")) {
-
-      if (this.match("..")) {
-        // [..A]
-        this.lex();
-        if (!this.match("]")) {
-          last = this.parseExpressions();
-          node = [ null, null, last ];
-        } else {
-          node = [ null, null, null ];
-        }
-      } else {
-        if (!this.match(",")) {
-          first = this.parseExpressions();
-        } else {
-          this.throwUnexpected(this.lookahead);
-        }
-        if (this.match("..")) {
-          this.lex();
-          if (!this.match("]")) {
-            // [A..B]
-            last = this.parseExpressions();
-          }
-          node = [ first, null, last ];
-        } else if (this.match(",")) {
-          this.lex();
-          second = this.parseExpressions();
-          if (this.match("..")) {
-            // [A, B..C]
-            this.lex();
-            if (!this.match("]")) {
-              last = this.parseExpressions();
-            }
-          } else {
-            this.throwUnexpected(this.lookahead);
-          }
-          node = [ first, second, last ];
-        } else {
-          // [A]
-          node = [ first ];
-        }
-      }
-    }
-
-    this.expect("]");
-
-    if (node === null) {
-      this.throwUnexpected({ value: "]" });
-    }
-
-    return node;
-  };
-
-  SCParser.prototype.parseProperty = function() {
-    var token;
-
-    this.skipComment();
-    this.markStart();
-    token = this.lex();
-
-    if (token.type !== Token.Identifier || this.isClassName(token)) {
-      this.throwUnexpected(token);
-    }
-
-    return this.markEnd(this.createIdentifier(token.value));
-  };
-
-  // 4.8 Primary Expressions
-  SCParser.prototype.parsePrimaryExpression = function(node) {
-    var expr, token, lookahead, closedFunction, disallowGenerator;
-
-    if (node) {
-      return node;
-    }
-
-    this.skipComment();
-    this.markStart();
-
-    if (this.match("~")) {
-      this.lex();
-      expr = this.createGlobalExpression(this.parseIdentifier());
-    } else {
-      lookahead = this.lookahead;
-
-      switch (this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type) {
-      case "(":
-        expr = this.parseParentheses();
-        break;
-      case "{":
-        expr = this.parseBraces();
-        break;
-      case "[":
-        expr = this.parseListInitialiser();
-        break;
-      case "#":
-        this.lex();
-        switch (this.matchAny([ "[", "{" ])) {
-        case "[":
-          if (this.state.immutableList) {
-            this.throwUnexpected(lookahead);
-          }
-          this.state.immutableList = true;
-          expr = this.parseListInitialiser();
-          this.state.immutableList = false;
-          break;
-        case "{":
-          disallowGenerator = this.state.disallowGenerator;
-          this.state.disallowGenerator = true;
-          closedFunction = this.state.closedFunction;
-          this.state.closedFunction = true;
-          expr = this.parseBraces();
-          this.state.closedFunction = closedFunction;
-          this.state.disallowGenerator = disallowGenerator;
-          break;
-        default:
-          expr = {};
-          this.throwUnexpected(this.lookahead);
-          break;
-        }
-        break;
-      case Token.Keyword:
-        if (Keywords[this.lookahead.value] === "keyword") {
-          this.throwUnexpected(this.lookahead);
-        }
-        expr = this.createThisExpression(this.lex().value);
-        break;
-      case Token.Identifier:
-        lookahead = this.lookahead;
-        expr = this.parseIdentifier();
-        if (expr.name === "_") {
-          expr.name = "$_" + this.state.underscore.length.toString();
-          this.state.underscore.push(expr);
-        }
-        break;
-      case Token.CharLiteral:
-      case Token.FloatLiteral:
-      case Token.FalseLiteral:
-      case Token.IntegerLiteral:
-      case Token.NilLiteral:
-      case Token.SymbolLiteral:
-      case Token.TrueLiteral:
-        expr = this.createLiteral(this.lex());
-        break;
-      case Token.StringLiteral:
-        token = this.lex();
-        if (this.isInterpolatedString(token.value)) {
-          expr = this.parseInterpolatedString(token.value);
-        } else {
-          expr = this.createLiteral(token);
-        }
-        break;
-      }
-    }
-
-    if (!expr) {
-      expr = {};
-      this.throwUnexpected(this.lex());
-    }
-
-    return this.markEnd(expr);
-  };
-
-  SCParser.prototype.isInterpolatedString = function(value) {
-    var re = /(^|[^\x5c])#\{/;
-    return re.test(value);
-  };
-
-  SCParser.prototype.parseInterpolatedString = function(value) {
-    var len, items;
-    var i, j, ch, depth, code, parser;
-
-    len = value.length;
-    items = [];
-
-    i = 0;
-
-    do {
-      j = i;
-      LOOP1: while (j < len) {
-        ch = value.charAt(j);
-        switch (ch) {
-        case "#":
-          if (value.charAt(j + 1) === "{") {
-            break LOOP1;
-          }
-          break;
-        case "\\":
-          j += 1;
-          break;
-        }
-        j += 1;
-      }
-
-      if (j >= len) {
-        break;
-      }
-      code = value.substr(i, j - i);
-      if (code) {
-        items.push('"' + code + '"');
-      }
-      i = j + 2;
-      j = i;
-      depth = 0;
-      LOOP2: while (j < len) {
-        ch = value.charAt(j);
-        switch (ch) {
-        case "}":
-          if (depth === 0) {
-            code = value.substr(i, j - i);
-            if (code) {
-              items.push("(" + code + ").asString");
-            }
-            break LOOP2;
-          }
-          depth -= 1;
-          break;
-        case "{":
-          depth += 1;
-          break;
-        }
-        j += 1;
-      }
-      i = j + 1;
-    } while (i < len);
-
-    if (i < len) {
-      items.push('"' + value.substr(i) + '"');
-    }
-
-    code = items.join("++");
-    parser = new SCParser(code, {});
-    parser.peek();
-
-    return parser.parseExpression();
-  };
-
-  // ( ... )
-  SCParser.prototype.parseParentheses = function() {
-    var marker, node, expr, generator;
-
-    this.skipComment();
-
-    marker = this.createLocationMarker();
-    this.expect("(");
-
-    if (this.match(":")) {
-      this.lex();
-      generator = true;
-    }
-
-    if (this.lookahead.type === Token.Label) {
-      expr = this.parseObjectInitialiser();
-    } else if (this.matchKeyword("var")) {
-      expr = this.withScope(function() {
-        var body;
-        body = this.parseFunctionBody(")");
-        return this.createBlockExpression(body);
-      });
-    } else if (this.match("..")) {
-      expr = this.parseSeriesInitialiser(null, generator);
-    } else if (this.match(")")) {
-      expr = this.createObjectExpression([]);
-    } else {
-      node = this.parseExpression();
-      if (this.matchAny([ ",", ".." ])) {
-        expr = this.parseSeriesInitialiser(node, generator);
-      } else if (this.match(":")) {
-        expr = this.parseObjectInitialiser(node);
-      } else if (this.match(";")) {
-        expr = this.parseExpressions(node);
-        if (this.matchAny([ ",", ".." ])) {
-          expr = this.parseSeriesInitialiser(expr, generator);
-        }
-        marker = null;
-      } else {
-        expr = this.parseExpression(node);
-        marker = null;
-      }
-    }
-
-    this.expect(")");
-
-    /* istanbul ignore else */
-    if (marker) {
-      marker.apply(expr);
-    }
-
-    return expr;
-  };
-
-  SCParser.prototype.parseObjectInitialiser = function(node) {
-    var elements = [], innerElements;
-
-    innerElements = this.state.innerElements;
-    this.state.innerElements = true;
-
-    if (node) {
-      this.expect(":");
-    } else {
-      node = this.parseLabelAsSymbol();
-    }
-    elements.push(node, this.parseExpression());
-
-    if (this.match(",")) {
-      this.lex();
-    }
-
-    while (this.lookahead.type !== Token.EOF && !this.match(")")) {
-      if (this.lookahead.type === Token.Label) {
-        node = this.parseLabelAsSymbol();
-      } else {
-        node = this.parseExpression();
-        this.expect(":");
-      }
-      elements.push(node, this.parseExpression());
-      if (!this.match(")")) {
-        this.expect(",");
-      }
-    }
-
-    this.state.innerElements = innerElements;
-
-    return this.createObjectExpression(elements);
-  };
-
-  SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
-    var first = null, second = null, last = null;
-    var method, innerElements;
-
-    innerElements = this.state.innerElements;
-    this.state.innerElements = true;
-
-    method = this.markTouch(this.createIdentifier(
-      generator ? "seriesIter" : "series"
-    ));
-
-    if (node === null) {
-      // (..last)
-      first = this.markTouch({
-        type: Syntax.Literal,
-        value: "0",
-        valueType: Token.IntegerLiteral
-      });
-      this.expect("..");
-      if (this.match(")")) {
-        if (!generator) {
-          this.throwUnexpected(this.lookahead);
-        }
-      } else {
-        last = this.parseExpressions();
-      }
-    } else {
-      first = node;
-      if (this.match(",")) {
-        // (first, second .. last)
-        this.lex();
-        second = this.parseExpressions();
-        if (Array.isArray(second) && second.length === 0) {
-          this.throwUnexpected(this.lookahead);
-        }
-        this.expect("..");
-        if (!this.match(")")) {
-          last = this.parseExpressions();
-        } else if (!generator) {
-          this.throwUnexpected(this.lookahead);
-        }
-      } else {
-        // (first..last)
-        this.lex();
-        if (!this.match(")")) {
-          last = this.parseExpressions();
-        } else if (!generator) {
-          this.throwUnexpected(this.lookahead);
-        }
-      }
-    }
-
-    this.state.innerElements = innerElements;
-
-    return this.createCallExpression(first, method, { list: [ second, last ] });
-  };
-
-  SCParser.prototype.parseListInitialiser = function() {
-    var elements, innerElements;
-
-    elements = [];
-
-    innerElements = this.state.innerElements;
-    this.state.innerElements = true;
-
-    this.expect("[");
-
-    while (this.lookahead.type !== Token.EOF && !this.match("]")) {
-      if (this.lookahead.type === Token.Label) {
-        elements.push(this.parseLabelAsSymbol(), this.parseExpression());
-      } else {
-        elements.push(this.parseExpression());
-        if (this.match(":")) {
-          this.lex();
-          elements.push(this.parseExpression());
-        }
-      }
-      if (!this.match("]")) {
-        this.expect(",");
-      }
-    }
-
-    this.expect("]");
-
-    this.state.innerElements = innerElements;
-
-    return this.createListExpression(elements, this.state.immutableList);
-  };
-
-  // { ... }
-  SCParser.prototype.parseBraces = function(blocklist) {
-    var expr;
-
-    this.skipComment();
-    this.markStart();
-
-    this.expect("{");
-
-    if (this.match(":")) {
-      if (!this.state.disallowGenerator) {
-        this.lex();
-        expr = this.parseGeneratorInitialiser();
-      } else {
-        expr = {};
-        this.throwUnexpected(this.lookahead);
-      }
-    } else {
-      expr = this.parseFunctionExpression(this.state.closedFunction, blocklist);
-    }
-
-    this.expect("}");
-
-    return this.markEnd(expr);
-  };
-
-  SCParser.prototype.parseGeneratorInitialiser = function() {
-    this.throwError({}, Message.NotImplemented, "generator literal");
-
-    this.parseExpression();
-    this.expect(",");
-
-    while (this.lookahead.type !== Token.EOF && !this.match("}")) {
-      this.parseExpression();
-      if (!this.match("}")) {
-        this.expect(",");
-      }
-    }
-
-    return this.createLiteral({ value: "null", valueType: Token.NilLiteral });
-  };
-
-  SCParser.prototype.parseLabel = function() {
-    this.skipComment();
-    this.markStart();
-    return this.markEnd(this.createLabel(this.lex().value));
-  };
-
-  SCParser.prototype.parseLabelAsSymbol = function() {
-    var label, node;
-
-    label = this.parseLabel();
-    node  = {
-      type: Syntax.Literal,
-      value: label.name,
-      valueType: Token.SymbolLiteral
-    };
-
-    /* istanbul ignore else */
-    if (label.range) {
-      node.range = label.range;
-    }
-    /* istanbul ignore else */
-    if (label.loc) {
-      node.loc = label.loc;
-    }
-
-    return node;
-  };
-
-  SCParser.prototype.parseIdentifier = function() {
-    var expr;
-
-    this.skipComment();
-    this.markStart();
-
-    if (this.lookahead.type !== Syntax.Identifier) {
-      this.throwUnexpected(this.lookahead);
-    }
-
-    expr = this.lex();
-
-    return this.markEnd(this.createIdentifier(expr.value));
-  };
-
-  SCParser.prototype.parseVariableIdentifier = function() {
-    var token, value, ch;
-
-    this.skipComment();
-    this.markStart();
-
-    token = this.lex();
-    value = token.value;
-
-    if (token.type !== Token.Identifier) {
-      this.throwUnexpected(token);
-    } else {
-      ch = value.charAt(0);
-      if (("A" <= ch && ch <= "Z") || ch === "_") {
-        this.throwUnexpected(token);
-      }
-    }
-
-    return this.markEnd(this.createIdentifier(value));
-  };
-
-  SCParser.prototype.markStart = function() {
-    /* istanbul ignore else */
-    if (this.opts.loc) {
-      this.marker.push(
-        this.index - this.lineStart,
-        this.lineNumber
-      );
-    }
-    /* istanbul ignore else */
-    if (this.opts.range) {
-      this.marker.push(
-        this.index
-      );
-    }
-  };
-
-  SCParser.prototype.markEnd = function(node) {
-    if (Array.isArray(node) || node.range || node.loc) {
-      /* istanbul ignore else */
-      if (this.opts.range) {
-        this.marker.pop();
-      }
-      /* istanbul ignore else */
-      if (this.opts.loc) {
-        this.marker.pop();
-        this.marker.pop();
-      }
-    } else {
-      /* istanbul ignore else */
-      if (this.opts.range) {
-        node.range = [ this.marker.pop(), this.index ];
-      }
-      /* istanbul ignore else */
-      if (this.opts.loc) {
-        node.loc = {
-          start: {
-            line: this.marker.pop(),
-            column: this.marker.pop()
-          },
-          end: {
-            line: this.lineNumber,
-            column: this.index - this.lineStart
-          }
-        };
-      }
-    }
-    return node;
-  };
-
-  SCParser.prototype.markTouch = function(node) {
-    /* istanbul ignore else */
-    if (this.opts.range) {
-      node.range = [ this.index, this.index ];
-    }
-    /* istanbul ignore else */
-    if (this.opts.loc) {
-      node.loc = {
-        start: {
-          line: this.lineNumber,
-          column: this.index - this.lineStart
-        },
-        end: {
-          line: this.lineNumber,
-          column: this.index - this.lineStart
-        }
-      };
-    }
-    return node;
-  };
-
-  SCParser.prototype.throwError = function(token, messageFormat) {
-    var args, message;
-    var error, index, lineNumber, column;
-    var prev;
-
-    args = Array.prototype.slice.call(arguments, 2);
-    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
-      return args[index];
-    });
-
-    if (typeof token.lineNumber === "number") {
-      index = token.range[0];
-      lineNumber = token.lineNumber;
-      column = token.range[0] - token.lineStart + 1;
-    } else {
-      index = this.index;
-      lineNumber = this.lineNumber;
-      column = this.index - this.lineStart + 1;
-    }
-
-    error = new Error("Line " + lineNumber + ": " + message);
-    error.index = index;
-    error.lineNumber = lineNumber;
-    error.column = column;
-    error.description = message;
-
-    if (this.errors) {
-      prev = this.errors[this.errors.length - 1];
-      if (!(prev && error.index <= prev.index)) {
-        this.errors.push(error);
-      }
-    } else {
-      throw error;
-    }
-  };
-
-  SCParser.prototype.throwUnexpected = function(token) {
-    switch (token.type) {
-    case Token.EOF:
-      this.throwError(token, Message.UnexpectedEOS);
-      break;
-    case Token.FloatLiteral:
-    case Token.IntegerLiteral:
-      this.throwError(token, Message.UnexpectedNumber);
-      break;
-    case Token.CharLiteral:
-      this.throwError(token, Message.UnexpectedChar);
-      break;
-    case Token.StringLiteral:
-      this.throwError(token, Message.UnexpectedString);
-      break;
-    case Token.SymbolLiteral:
-      this.throwError(token, Message.UnexpectedSymbol);
-      break;
-    case Token.Identifier:
-      this.throwError(token, Message.UnexpectedIdentifier);
-      break;
-    default:
-      this.throwError(token, Message.UnexpectedToken, token.value);
-      break;
-    }
-  };
-
-  parser.parse = function(source, opts) {
-    var instance, ast;
-
-    opts = opts || /* istanbul ignore next */ {};
-
-    instance = new SCParser(source, opts);
-    ast = instance.parse();
-
-    if (!!opts.tokens && typeof instance.tokens !== "undefined") {
-      ast.tokens = instance.tokens;
-    }
-    if (!!opts.tolerant && typeof instance.errors !== "undefined") {
-      ast.errors = instance.errors;
-    }
-
-    return ast;
-  };
-
-  sc.lang.parser = parser;
-
-  var SCScript = sc.SCScript;
-
-  SCScript.tokenize = function(source, opts) {
-    opts = opts || /* istanbul ignore next */ {};
-    opts.tokens = true;
-    return parser.parse(source, opts).tokens || /* istanbul ignore next */ [];
-  };
-
-  SCScript.parse = parser.parse;
-
-})(sc);
-
-// src/sc/lang/codegen.js
-(function(sc) {
-
-  var codegen = {};
-  var Syntax  = sc.lang.parser.Syntax;
-  var Token   = sc.lang.parser.Token;
-  var Message = sc.lang.parser.Message;
-  var SegmentedMethod = {
-    idle : true,
-    sleep: true,
-    wait : true,
-    yield: true
-  };
-
-  function Scope(codegen) {
-    this.codegen = codegen;
-    this.stack = [];
-  }
-
-  Scope.prototype.add = function(type, id, scope) {
-    var peek = this.stack[this.stack.length - 1];
-    var vars, args, declared, stmt, indent;
-
-    if (scope) {
-      vars = scope.vars;
-      args = scope.args;
-      declared = scope.declared;
-      stmt = scope.stmt;
-      indent = scope.indent;
-    } else {
-      vars = peek.vars;
-      args = peek.args;
-      declared = peek.declared;
-      stmt = peek.stmt;
-      indent = peek.indent;
-    }
-
-    switch (type) {
-    case "var":
-      if (args[id]) {
-        this.codegen.throwError(Message.VariableAlreadyDeclared, id);
-      } else if (vars[id]) {
-        if (id.charAt(0) !== "_") {
-          this.codegen.throwError(Message.VariableAlreadyDeclared, id);
-        }
-      } else {
-        vars[id] = true;
-        delete declared[id];
-        if (stmt.vars.length === 0) {
-          stmt.head.push(indent, "var ");
-          stmt.vars.push(this.codegen.id(id));
-          if (id.charAt(0) !== "_") {
-            stmt.vars.push(" = $SC.Nil()");
-          }
-          stmt.tail.push(";", "\n");
-        } else {
-          stmt.vars.push(
-            ", ", this.codegen.id(id)
-          );
-          if (id.charAt(0) !== "_") {
-            stmt.vars.push(" = $SC.Nil()");
-          }
-        }
-        if (scope) {
-          peek.declared[id] = true;
-        }
-      }
-      break;
-    case "arg":
-      if (args[id]) {
-        this.codegen.throwError(Message.ArgumentAlreadyDeclared, id);
-      }
-      args[id] = true;
-      delete declared[id];
-      break;
-    }
-  };
-
-  Scope.prototype.begin = function(stream, args) {
-    var peek = this.stack[this.stack.length - 1];
-    var declared = {};
-    var stmt = { head: [], vars: [], tail: [] };
-    var i, imax;
-
-    if (peek) {
-      Array.prototype.concat.apply([], [
-        peek.declared, peek.args, peek.vars
-      ].map(Object.keys)).forEach(function(key) {
-        declared[key] = true;
-      });
-    }
-
-    this.stack.push({
-      vars: {}, args: {}, declared: declared, indent: this.codegen.base, stmt: stmt
-    });
-
-    for (i = 0, imax = args.length; i < imax; i++) {
-      this.add("arg", args[i]);
-    }
-
-    stream.push(stmt.head, stmt.vars, stmt.tail);
-  };
-
-  Scope.prototype.end = function() {
-    this.stack.pop();
-  };
-
-  Scope.prototype.find = function(id) {
-    var peek = this.stack[this.stack.length - 1];
-    return peek.vars[id] || peek.args[id] || peek.declared[id];
-  };
-
-  Scope.prototype.peek = function() {
-    return this.stack[this.stack.length - 1];
-  };
-
-  function CodeGen(opts) {
-    this.opts = opts || {};
-    this.base = "";
-    this.state = {
-      calledSegmentedMethod: false,
-      syncBlockScope: null
-    };
-    this.scope = new Scope(this);
-    if (typeof this.opts.bare === "undefined") {
-      this.opts.bare = false;
-    }
-  }
-
-  CodeGen.prototype.toSourceNodeWhenNeeded = function(generated) {
-    if (Array.isArray(generated)) {
-      return this.flattenToString(generated);
-    }
-    return generated;
-  };
-
-  CodeGen.prototype.flattenToString = function(list) {
-    var i, imax, e, result = "";
-    for (i = 0, imax = list.length; i < imax; ++i) {
-      e = list[i];
-      result += Array.isArray(e) ? this.flattenToString(e) : e;
-    }
-    return result;
-  };
-
-  CodeGen.prototype.addIndent = function(stmt) {
-    return [ this.base, stmt ];
-  };
-
-  CodeGen.prototype.id = function(id) {
-    var ch = id.charAt(0);
-
-    if (ch !== "_" && ch !== "$") {
-      id = "$" + id;
-    }
-
-    return id;
-  };
-
-  CodeGen.prototype.isClassName = function(node) {
-    var ch0;
-
-    ch0 = node.name.charAt(0);
-    return "A" <= ch0 && ch0 <= "Z";
-  };
-
-  CodeGen.prototype.isInterpreterVariable = function(node) {
-    var name, found;
-
-    name = node.name;
-    found = this.scope.find(name);
-    if (name.length === 1 && "a" <= name && name <= "z") {
-      if (!found) {
-        return true;
-      }
-    }
-    if (!found) {
-      this.throwError(Message.VariableNotDefined, name);
-    }
-
-    return false;
-  };
-
-  CodeGen.prototype.isSegmentedBlock = function(node) {
-    if (node.type === Syntax.CallExpression && this.isSegmentedMethod(node)) {
-      return true;
-    }
-    return Object.keys(node).some(function(key) {
-      if (key !== "range" && key !== "loc") {
-        if (typeof node[key] === "object") {
-          return this.isSegmentedBlock(node[key]);
-        }
-      }
-      return false;
-    }, this);
-  };
-
-  CodeGen.prototype.isSegmentedMethod = function(node) {
-    return !!SegmentedMethod[node.method.name];
-  };
-
-  CodeGen.prototype.withFunction = function(result, args, body) {
-    var braces, base, stmtCount;
-    var i, imax;
-
-    braces = { open: [ "{" ], close: [ "}" ] };
-
-    result.push("function(");
-    for (i = 0, imax = args.length; i < imax; i++) {
-      if (i) {
-        result.push(", ");
-      }
-      result.push(this.id(args[i]));
-    }
-    result.push(") ");
-
-    result.push(braces.open);
-
-    base = this.base;
-    this.base += "  ";
-
-    this.scope.begin(result, args);
-
-    stmtCount = body.call(this, result);
-    if (stmtCount === 0) {
-      result.push(this.base, "return $SC.Nil();");
-      stmtCount += 1;
-    }
-
-    this.scope.end();
-
-    this.base = base;
-
-    result.push(braces.close);
-
-    braces.open.push("\n");
-    braces.close.unshift("\n", this.base);
-  };
-
-  CodeGen.prototype.withIndent = function(fn) {
-    var base, result;
-
-    base = this.base;
-    this.base += "  ";
-    result = fn.call(this, this.base);
-    this.base = base;
-
-    return result;
-  };
-
-  CodeGen.prototype.generate = function(node, opts) {
-    var result, i, imax;
-
-    if (Array.isArray(node)) {
-      result = [];
-      result.push("(");
-      for (i = 0, imax = node.length; i < imax; ++i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(this.generate(node[i], opts));
-      }
-      result.push(")");
-    } else if (node && node.type) {
-      result = this[node.type].call(this, node, opts);
-    } else {
-      result = node;
-    }
-
-    return result;
-  };
-
-  CodeGen.prototype.throwError = function(messageFormat) {
-    var args, message;
-
-    args = Array.prototype.slice.call(arguments, 1);
-    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
-      return args[index];
-    });
-
-    throw new Error(message);
-  };
-
-  CodeGen.prototype.AssignmentExpression = function(node) {
-    var result;
-
-    if (!Array.isArray(node.left)) {
-      result = this.genSingleAssignment(node);
-    } else {
-      result = this.genDestructuringAssignment(node);
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.genSingleAssignment = function(node) {
-    var result = [];
-    var opts;
-
-    opts = { right: node.right, used: false };
-
-    result.push(this.generate(node.left, opts));
-
-    if (!opts.used) {
-      result.push(" " + node.operator + " ", this.generate(opts.right));
-    }
-
-    return result;
-  };
-
-  CodeGen.prototype.genDestructuringAssignment = function(node) {
-    var result = [];
-    var elements = node.left;
-    var i, imax;
-
-    this.scope.add("var", "_ref");
-
-    result.push("(_ref = ", this.generate(node.right));
-
-    for (i = 0, imax = elements.length; i < imax; ++i) {
-      result.push(
-        this.assign(elements[i], node.operator, "_ref.at($SC.Integer(" + i + "))")
-      );
-    }
-
-    if (node.remain) {
-      result.push(
-        this.assign(node.remain, node.operator, "_ref.copyToEnd($SC.Integer(" + imax + "))")
-      );
-    }
-
-    result.push(", _ref)");
-
-    return result;
-  };
-
-  CodeGen.prototype.assign = function(left, operator, right) {
-    var result = [];
-    var opts;
-
-    opts = { right: right, used: false };
-
-    result.push(", ", this.generate(left, opts));
-
-    if (!opts.used) {
-      result.push(" " + operator + " ", right);
-    }
-
-    return result;
-  };
-
-  CodeGen.prototype.BinaryExpression = function(node) {
-    var result;
-
-    switch (node.operator) {
-    case "===":
-    case "!==":
-      result = this.genEqualityOperator(node);
-      break;
-    default:
-      result = this.genBinaryExpression(node);
-      break;
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.genEqualityOperator = function(node) {
-    return [
-      "$SC.Boolean(",
-      this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
-      ")"
-    ];
-  };
-
-  CodeGen.prototype.genBinaryExpression = function(node) {
-    var result, operator, ch;
-
-    result   = [ this.generate(node.left) ];
-    operator = node.operator;
-
-    ch = operator.charCodeAt(0);
-
-    if (0x61 <= ch && ch <= 0x7a) {
-      result.push(".", operator);
-    } else {
-      result.push(" ['", operator, "'] ");
-    }
-
-    result.push("(", this.generate(node.right));
-    if (node.adverb) {
-      result.push(", ", this.generate(node.adverb));
-    }
-    result.push(")");
-
-    return result;
-  };
-
-  CodeGen.prototype.BlockExpression = function(node) {
-    var result = [];
-    var elements;
-
-    elements = node.body;
-
-    result.push("(");
-    this.withFunction(result, [], function() {
-      var stmt, stmtCount, i, imax;
-
-      for (i = stmtCount = 0, imax = elements.length; i < imax; ++i) {
-        if (stmtCount) {
-          result.push("\n");
-        }
-        stmt = this.generate(elements[i]);
-        if (i === imax - 1) {
-          stmt = [ "return ", stmt ];
-        }
-        result.push([ this.addIndent(stmt), ";" ]);
-        stmtCount += 1;
-      }
-
-      return stmtCount;
-    });
-    result.push(")()");
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.CallExpression = function(node) {
-    var result;
-
-    if (this.isSegmentedMethod(node)) {
-      this.state.calledSegmentedMethod = true;
-    }
-
-    if (!node.args.expand) {
-      result = this.genNormalCall(node);
-    } else {
-      result = this.genExpandCall(node);
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.genNormalCall = function(node) {
-    var args = [];
-    var list, i, imax;
-
-    list = node.args.list;
-
-    for (i = 0, imax = list.length; i < imax; ++i) {
-      if (i) {
-        args.push(", ");
-      }
-      args.push(this.generate(list[i]));
-    }
-
-    args.push(this.insertKeywordArguments(node.args.keywords, !!imax));
-
-    return [
-      this.generate(node.callee), ".", node.method.name, "(", args, ")"
-    ];
-  };
-
-  CodeGen.prototype.genExpandCall = function(node) {
-    var result;
-    var list, i, imax;
-
-    this.scope.add("var", "_ref");
-
-    result = [
-      "(_ref = ",
-      this.generate(node.callee),
-      ", _ref." + node.method.name + ".apply(_ref, ",
-      "["
-    ];
-
-    list = node.args.list;
-
-    if (list.length) {
-      result.push(" ");
-      for (i = 0, imax = list.length; i < imax; ++i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(this.generate(list[i]));
-      }
-      result.push(" ");
-    }
-
-    result.push(
-      "].concat(",
-      this.generate(node.args.expand),
-      ".asArray()._"
-    );
-
-    result.push(this.insertKeywordArguments(node.args.keywords, true));
-
-    result.push(")");
-    result.push("))");
-
-    return result;
-  };
-
-  CodeGen.prototype.insertKeywordArguments = function(keywords, with_comma) {
-    var result = [];
-
-    if (keywords) {
-      if (with_comma) {
-        result.push(", ");
-      }
-      result.push("{ ");
-      Object.keys(keywords).forEach(function(key, i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(key, ": ", this.generate(keywords[key]));
-      }, this);
-      result.push(" }");
-    }
-
-    return result;
-  };
-
-  CodeGen.prototype.GlobalExpression = function(node) {
-    var result;
-
-    result = "$SC.Global." + node.id.name;
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.FunctionExpression = function(node) {
-    var result, info;
-
-    info = this.getInformationOfFunction(node);
-
-    if (!this.isSegmentedBlock(node)) {
-      result = this.genSimpleFunction(node, info.args);
-    } else {
-      result = this.genSegmentedFunction(node, info.args);
-    }
-
-    result.push(this.genFunctionMetadata(info), ")");
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.getInformationOfFunction = function(node) {
-    var args     = [];
-    var defaults = [];
-    var remain   = null;
-    var list, i, imax;
-
-    if (node.args) {
-      list = node.args.list;
-      for (i = 0, imax = list.length; i < imax; ++i) {
-        args.push(list[i].id.name);
-        defaults.push(list[i].id.name, list[i].init);
-      }
-      if (node.args.remain) {
-        remain = node.args.remain.name;
-        args.push(remain);
-      }
-    }
-
-    if (node.partial) {
-      defaults = [];
-    }
-
-    return { args: args, remain: remain, defaults: defaults, closed: node.closed };
-  };
-
-  CodeGen.prototype.genSimpleFunction = function(node, args) {
-    var result = [];
-
-    result.push("$SC.Function(");
-
-    this.withFunction(result, args, function() {
-      var stmt, i, imax;
-      var count, elements = node.body;
-
-      for (i = count = 0, imax = elements.length; i < imax; ++i) {
-        if (count) {
-          result.push("\n");
-        }
-        stmt = this.generate(elements[i]);
-        if (stmt.length) {
-          if (i === imax - 1) {
-            stmt = [ "return ", stmt ];
-          }
-          result.push([ this.addIndent(stmt), ";" ]);
-          count += 1;
-        }
-      }
-
-      return count;
-    });
-
-    return result;
-  };
-
-  CodeGen.prototype.genSegmentedFunction = function(node, args) {
-    var result;
-    var fargs;
-
-    result = [ "$SC.SegFunction(" ];
-
-    fargs = args.map(function(_, i) {
-      return "_arg" + i;
-    });
-
-    this.withFunction(result, [], function() {
-      var fragments = [], syncBlockScope;
-      var closureVars = args;
-      var elements = node.body;
-      var i, imax;
-
-      for (i = 0, imax = closureVars.length; i < imax; ++i) {
-        this.scope.add("var", closureVars[i]);
-      }
-
-      syncBlockScope = this.state.syncBlockScope;
-      this.state.syncBlockScope = this.scope.peek();
-
-      fragments.push("return [");
-      this.withIndent(function() {
-        var i = 0, imax = elements.length;
-
-        fragments.push("\n");
-
-        var loop = function() {
-          var stmt;
-          var count = 0;
-          var j, jmax;
-
-          while (i < imax) {
-            if (i === 0) {
-              if (args.length) {
-                stmt = [];
-                for (j = 0, jmax = args.length; j < jmax; ++j) {
-                  if (j) {
-                    stmt.push("; ");
-                  }
-                  stmt.push("$" + args[j] + " = " + fargs[j]);
-                }
-                fragments.push([ this.addIndent(stmt), ";", "\n" ]);
-              }
-            } else if (count) {
-              fragments.push("\n");
-            }
-            this.state.calledSegmentedMethod = false;
-            stmt = this.generate(elements[i]);
-            if (stmt.length) {
-              if (i === imax - 1 || this.state.calledSegmentedMethod) {
-                stmt = [ "return ", stmt ];
-              }
-              fragments.push([ this.addIndent(stmt), ";" ]);
-              count += 1;
-            }
-            i += 1;
-            if (this.state.calledSegmentedMethod) {
-              break;
-            }
-          }
-
-          return count;
-        };
-
-        while (i < imax) {
-          if (i) {
-            fragments.push(",", "\n");
-            fragments.push(this.base);
-            this.withFunction(fragments, [], loop);
-          } else {
-            fragments.push(this.base);
-            this.withFunction(fragments, fargs, loop);
-          }
-        }
-        fragments.push("\n");
-      });
-      fragments.push(this.addIndent("];"));
-
-      result.push([ this.addIndent(fragments) ]);
-
-      this.state.syncBlockScope = syncBlockScope;
-
-      return 1;
-    });
-
-    return result;
-  };
-
-  CodeGen.prototype.genFunctionMetadata = function(info) {
-    var defaults, remain, closed;
-    var result;
-    var i, imax;
-
-    defaults = info.defaults;
-    remain   = info.remain;
-    closed   = info.closed;
-
-    if (defaults.length === 0 && !remain && !closed) {
-      return [];
-    }
-
-    result = [ ", '" ];
-
-    for (i = 0, imax = defaults.length; i < imax; i += 2) {
-      if (i) {
-        result.push("; ");
-      }
-      result.push(defaults[i]);
-      if (defaults[i + 1]) {
-        result.push("=", defaults[i + 1].value); // TODO #[]
-      }
-    }
-    if (remain) {
-      if (i) {
-        result.push("; ");
-      }
-      result.push("*" + remain);
-    }
-    result.push("'");
-
-    if (closed) {
-      result.push(", true");
-    }
-
-    return result;
-  };
-
-  CodeGen.prototype.Identifier = function(node, opts) {
-    var result;
-
-    if (this.isClassName(node)) {
-      result = "$SC.Class('" + node.name + "')";
-    } else if (this.isInterpreterVariable(node)) {
-      result = this.genInterpreterVariable(node, opts);
-    } else {
-      result = this.id(node.name);
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.genInterpreterVariable = function(node, opts) {
-    var name;
-
-    if (opts) {
-      // setter
-      name = [
-        "$this." + node.name + "_(", this.generate(opts.right), ")"
-      ];
-      opts.used = true;
-    } else {
-      // getter
-      name = "$this." + node.name + "()";
-    }
-
-    return name;
-  };
-
-  CodeGen.prototype.ListExpression = function(node) {
-    var result;
-    var elements, i, imax;
-
-    result = [
-      "$SC.Array(["
-    ];
-
-    elements = node.elements;
-
-    if (elements.length) {
-      result.push(" ");
-      for (i = 0, imax = elements.length; i < imax; ++i) {
-        if (i !== 0) {
-          result.push(", ");
-        }
-        result.push(this.generate(elements[i]));
-      }
-      result.push(" ");
-    }
-
-    result.push("]");
-
-    if (node.immutable) {
-      result.push(", ", "true");
-    }
-
-    result.push(")");
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.Literal = function(node) {
-    var result;
-
-    switch (node.valueType) {
-    case Token.IntegerLiteral:
-      result = "$SC.Integer(" + node.value + ")";
-      break;
-    case Token.FloatLiteral:
-      result = "$SC.Float(" + node.value + ")";
-      break;
-    case Token.CharLiteral:
-      result = "$SC.Char('" + node.value + "')";
-      break;
-    case Token.SymbolLiteral:
-      result = "$SC.Symbol('" + node.value + "')";
-      break;
-    case Token.StringLiteral:
-      result = "$SC.String('" + node.value + "')";
-      break;
-    case Token.TrueLiteral:
-      result = "$SC.True()";
-      break;
-    case Token.FalseLiteral:
-      result = "$SC.False()";
-      break;
-    default:
-      result = "$SC.Nil()";
-      break;
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.ObjectExpression = function(node) {
-    var result;
-    var elements, i, imax;
-
-    result = [ "$SC.Event(" ];
-
-    elements = node.elements;
-
-    if (elements.length) {
-      result.push("[ ");
-      for (i = 0, imax = elements.length; i < imax; ++i) {
-        if (i) {
-          result.push(", ");
-        }
-        result.push(this.generate(elements[i]));
-      }
-      result.push(" ]");
-    }
-    result.push(")");
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.Program = function(node) {
-    var result = [];
-
-    if (node.body.length) {
-      if (!this.opts.bare) {
-        result.push("SCScript");
-      }
-      result.push("(");
-      this.withFunction(result, [ "this", "SC" ], function() {
-        var elements = node.body;
-        var stmt, stmtCount, i, imax;
-
-        for (i = stmtCount = 0, imax = elements.length; i < imax; ++i) {
-          if (stmtCount) {
-            result.push("\n");
-          }
-          stmt = this.generate(elements[i]);
-          if (stmt.length) {
-            if (i === imax - 1) {
-              stmt = [ "return ", stmt ];
-            }
-            result.push([ this.addIndent(stmt), ";" ]);
-            stmtCount += 1;
-          }
-        }
-
-        return stmtCount;
-      });
-      result.push(")");
-      if (!this.opts.bare) {
-        result.push(";");
-      }
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.ThisExpression = function(node) {
-    var result;
-
-    if (node.name === "this") {
-      result = "$this";
-    } else {
-      result = [ "$this." + node.name + "()" ];
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.UnaryExpression = function(node) {
-    var result;
-
-    /* istanbul ignore else */
-    if (node.operator === "`") {
-      result = [ "$SC.Ref(", this.generate(node.arg), ")" ];
-    } else {
-      throw new Error("Unknown UnaryExpression: " + node.operator);
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  CodeGen.prototype.VariableDeclaration = function(node) {
-    var result = [];
-    var declarations, count;
-    var i, imax;
-
-    declarations = node.declarations;
-    for (i = count = 0, imax = declarations.length; i < imax; ++i) {
-      if (count) {
-        result.push(", ");
-      }
-
-      this.scope.add("var", declarations[i].id.name, this.state.syncBlockScope);
-      if (declarations[i].init) {
-        result.push(
-          this.id(declarations[i].id.name),
-          " = ",
-          this.generate(declarations[i].init)
-        );
-        count += 1;
-      }
-    }
-
-    return this.toSourceNodeWhenNeeded(result, node);
-  };
-
-  codegen.compile = function(ast, opts) {
-    return new CodeGen(opts).generate(ast);
-  };
-
-  var SCScript = sc.SCScript;
-
-  SCScript.compile = function(source, opts) {
-    return new CodeGen(opts).generate(sc.lang.parser.parse(source, opts));
-  };
-
-  sc.lang.codegen = codegen;
 
 })(sc);
 

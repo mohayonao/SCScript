@@ -12,9 +12,9 @@
     var SCObject, SCCollection, SCArray;
     var $int3, $int10, $int100;
     before(function() {
-      SCObject = $SC.Class("Object");
-      SCCollection = $SC.Class("Collection");
-      SCArray = $SC.Class("Array");
+      SCObject = $SC("Object");
+      SCCollection = $SC("Collection");
+      SCArray = $SC("Array");
       this.createInstance = function(source, immutable) {
         var instance = $SC.Array((source||[]).map($), !!immutable);
         var testMethod = this.test.title.substr(1);
@@ -1086,7 +1086,7 @@
         return sc.test.object({ addAll: $addAll });
       });
       $addAll = this.spy(sc.test.func);
-      this.stub($SC.Class("Array"), "new", $new);
+      this.stub(SCArray, "new", $new);
 
       instance = this.createInstance([ 1, 2, 3 ]);
 
@@ -1103,7 +1103,7 @@
         return sc.test.object({ addAll: $addAll });
       });
       $addAll = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("Bag").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Bag").returns(sc.test.object({
         new: $new
       }));
 
@@ -1122,7 +1122,7 @@
         return sc.test.object({ addAll: $addAll });
       });
       $addAll = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("List").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("List").returns(sc.test.object({
         new: $new
       }));
 
@@ -1141,7 +1141,7 @@
         return sc.test.object({ addAll: $addAll });
       });
       $addAll = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("Set").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Set").returns(sc.test.object({
         new: $new
       }));
 
@@ -1161,7 +1161,7 @@
       });
       $addAll = this.spy(sc.test.func);
       $function = sc.test.object();
-      this.stub($SC, "Class").withArgs("SortedList").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("SortedList").returns(sc.test.object({
         new: $new
       }));
 
@@ -1207,6 +1207,14 @@
     it.skip("#case", function() {
     });
     it.skip("#makeEnvirValPairs", function() {
+    });
+    it("#asString", function() {
+      var instance, test;
+
+      instance = this.createInstance([ 1, 2, 3 ]);
+
+      test = instance.asString();
+      expect(test).to.be.a("SCString").that.equals("Array[ 1, 2, 3 ]");
     });
   });
 })();

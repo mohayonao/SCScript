@@ -3,14 +3,9 @@
 
   require("./Object");
 
-  var $SC = sc.lang.$SC;
+  var fn  = sc.lang.fn;
 
-  function SCRef(args) {
-    this.__initializeWith__("Object");
-    this._value = args[0] || $SC.Nil();
-  }
-
-  sc.lang.klass.define(SCRef, "Ref : AbstractFunction", function(spec, utils) {
+  sc.lang.klass.refine("Ref", function(spec, utils) {
     spec.valueOf = function() {
       return this._value.valueOf();
     };
@@ -19,18 +14,17 @@
       return this._value;
     };
 
-    spec.value_ = function($value) {
+    spec.value_ = fn(function($value) {
       this._value = $value;
       return this;
-    };
+    }, "value");
 
     // $new
 
-    spec.set = function($thing) {
-      $thing = utils.defaultValue$Nil($thing);
+    spec.set = fn(function($thing) {
       this._value = $thing;
       return this;
-    };
+    }, "thing");
 
     spec.get = function() {
       return this._value;

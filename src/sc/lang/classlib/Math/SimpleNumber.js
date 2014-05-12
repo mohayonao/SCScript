@@ -3,7 +3,8 @@
 
   require("./Number");
 
-  var $SC = sc.lang.$SC;
+  var fn   = sc.lang.fn;
+  var $SC  = sc.lang.$SC;
   var rand = sc.libs.random;
 
   function prOpSimpleNumber(selector, func) {
@@ -27,10 +28,10 @@
   }
 
   sc.lang.klass.refine("SimpleNumber", function(spec, utils) {
-    var $nil = utils.nilInstance;
-    var $int0 = utils.int0Instance;
-    var $int1 = utils.int1Instance;
-    var SCArray = $SC.Class("Array");
+    var $nil   = utils.$nil;
+    var $int_0 = utils.$int_0;
+    var $int_1 = utils.$int_1;
+    var SCArray = $SC("Array");
 
     spec.__newFrom__ = $SC.Float;
 
@@ -61,7 +62,7 @@
       return $SC.Boolean(!isNaN(this._));
     };
 
-    spec.numChannels = utils.alwaysReturn$Integer_1;
+    spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.magnitude = function() {
       return this.abs();
@@ -299,7 +300,7 @@
     };
 
     spec.binaryValue = function() {
-      return this._ > 0 ? $int1 : $int0;
+      return this._ > 0 ? $int_1 : $int_0;
     };
 
     spec.rectWindow = function() {
@@ -373,9 +374,8 @@
     // bitXor: implemented by subclass
 
     spec.bitTest = function($bit) {
-      $bit = utils.defaultValue$Nil($bit);
       return $SC.Boolean(
-        this.bitAnd($int1.leftShift($bit)).valueOf() !== 0
+        this.bitAnd($int_1.leftShift($bit)).valueOf() !== 0
       );
     };
 
@@ -430,11 +430,9 @@
       return a >= b;
     });
 
-    spec.equalWithPrecision = function($that, $precision) {
-      $that = utils.defaultValue$Nil($that);
-      $precision = utils.defaultValue$Float($precision, 0.0001);
+    spec.equalWithPrecision = fn(function($that, $precision) {
       return this.absdif($that) ["<"] ($precision);
-    };
+    }, "that; precision=0.0001");
 
     // TODO: implements hash
 
@@ -467,12 +465,11 @@
       );
     };
 
-    spec.nextPowerOf = function($base) {
-      $base = utils.defaultValue$Nil($base);
+    spec.nextPowerOf = fn(function($base) {
       return $base.pow(
         (this.log() ["/"] ($base.log())).ceil()
       );
-    };
+    }, "base");
 
     spec.nextPowerOfThree = function() {
       return $SC.Float(
@@ -480,18 +477,14 @@
       );
     };
 
-    spec.previousPowerOf = function($base) {
-      $base = utils.defaultValue$Nil($base);
+    spec.previousPowerOf = fn(function($base) {
       return $base.pow(
         (this.log() ["/"] ($base.log())).ceil().__dec__()
       );
-    };
+    }, "base");
 
-    spec.quantize = function($quantum, $tolerance, $strength) {
+    spec.quantize = fn(function($quantum, $tolerance, $strength) {
       var $round, $diff;
-      $quantum   = utils.defaultValue$Float($quantum, 1.0);
-      $tolerance = utils.defaultValue$Float($tolerance, 0.05);
-      $strength  = utils.defaultValue$Float($strength, 1.0);
 
       $round = this.round($quantum);
       $diff = $round ["-"] (this);
@@ -501,15 +494,10 @@
       }
 
       return this;
-    };
+    }, "quantum=1.0; tolerance=0.05; strength=1.0");
 
-    spec.linlin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.linlin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -520,15 +508,10 @@
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.linexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.linexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -540,15 +523,10 @@
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.explin = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.explin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -559,15 +537,10 @@
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.expexp = function($inMin, $inMax, $outMin, $outMax, $clip) {
+    spec.expexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
-      $inMin  = utils.defaultValue$Nil($inMin);
-      $inMax  = utils.defaultValue$Nil($inMax);
-      $outMin = utils.defaultValue$Nil($outMin);
-      $outMax = utils.defaultValue$Nil($outMax);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -579,16 +552,10 @@
       }
 
       return $res;
-    };
+    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
 
-    spec.lincurve = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    spec.lincurve = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b, $scaled;
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -606,16 +573,10 @@
       }
 
       return $res;
-    };
+    }, "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.curvelin = function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    spec.curvelin = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b;
-      $inMin  = utils.defaultValue$Integer($inMin, 0);
-      $inMax  = utils.defaultValue$Integer($inMax, 1);
-      $outMin = utils.defaultValue$Integer($outMin, 0);
-      $outMax = utils.defaultValue$Integer($outMax, 1);
-      $curve  = utils.defaultValue$Integer($curve, -4);
-      $clip   = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -633,17 +594,10 @@
       }
 
       return $res;
-    };
+    }, "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax");
 
-    spec.bilin = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    spec.bilin = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
-      $inCenter  = utils.defaultValue$Nil($inCenter);
-      $inMin     = utils.defaultValue$Nil($inMin);
-      $inMax     = utils.defaultValue$Nil($inMax);
-      $outCenter = utils.defaultValue$Nil($outCenter);
-      $outMin    = utils.defaultValue$Nil($outMin);
-      $outMax    = utils.defaultValue$Nil($outMax);
-      $clip      = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -656,17 +610,10 @@
       }
 
       return $res;
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.biexp = function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    spec.biexp = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
-      $inCenter  = utils.defaultValue$Nil($inCenter);
-      $inMin     = utils.defaultValue$Nil($inMin);
-      $inMax     = utils.defaultValue$Nil($inMax);
-      $outCenter = utils.defaultValue$Nil($outCenter);
-      $outMin    = utils.defaultValue$Nil($outMin);
-      $outMax    = utils.defaultValue$Nil($outMax);
-      $clip      = utils.defaultValue$Symbol($clip, "minmax");
 
       $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
@@ -679,25 +626,19 @@
       }
 
       return $res;
-    };
+    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
 
-    spec.moddif = function($aNumber, $mod) {
+    spec.moddif = fn(function($aNumber, $mod) {
       var $diff, $modhalf;
-      $aNumber = utils.defaultValue$Float($aNumber, 0.0);
-      $mod     = utils.defaultValue$Float($mod    , 1.0);
 
       $diff = this.absdif($aNumber) ["%"] ($mod);
       $modhalf = $mod ["*"] ($SC.Float(0.5));
 
       return $modhalf ["-"] ($diff.absdif($modhalf));
-    };
+    }, "aNumber=0.0; mod=1.0");
 
-    spec.lcurve = function($a, $m, $n, $tau) {
+    spec.lcurve = fn(function($a, $m, $n, $tau) {
       var $rTau, $x;
-      $a = utils.defaultValue$Float($a, 1.0);
-      $m = utils.defaultValue$Float($m, 0.0);
-      $n = utils.defaultValue$Float($n, 1.0);
-      $tau = utils.defaultValue$Float($tau, 1.0);
 
       $x = this.neg();
 
@@ -716,26 +657,21 @@
           $n ["*"] ($x.exp()) ["*"] ($rTau).__inc__()
         );
       }
-    };
+    }, "a=1.0; m=0.0; n=1.0; tau=1.0");
 
-    spec.gauss = function($standardDeviation) {
-      $standardDeviation = utils.defaultValue$Nil($standardDeviation);
-        // ^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
+    spec.gauss = fn(function($standardDeviation) {
+      // ^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
       return ($SC.Float(-2.0) ["*"] ($SC.Float(1.0).rand().log()).sqrt() ["*"] (
         $SC.Float(2 * Math.PI).rand().sin()
       ) ["*"] ($standardDeviation)) ["+"] (this);
-    };
+    }, "standardDeviation");
 
-    spec.gaussCurve = function($a, $b, $c) {
-      $a = utils.defaultValue$Float($a, 1.0);
-      $b = utils.defaultValue$Float($b, 0.0);
-      $c = utils.defaultValue$Float($c, 1.0);
-
+    spec.gaussCurve = fn(function($a, $b, $c) {
       // ^a * (exp(squared(this - b) / (-2.0 * squared(c))))
       return $a ["*"] ((
         (this ["-"] ($b).squared()) ["/"] ($SC.Float(-2.0) ["*"] ($c.squared()))
       ).exp());
-    };
+    }, "a=1.0; b=0.0; c=1.0");
 
     // TODO: implements asPoint
     // TODO: implements asWarp
@@ -755,17 +691,14 @@
 
     spec.asAudioRateInput = function() {
       if (this._ === 0) {
-        return $SC.Class("Silent").ar();
+        return $SC("Silent").ar();
       }
-      return $SC.Class("DC").ar(this);
+      return $SC("DC").ar(this);
     };
 
-    spec.madd = function($mul, $add) {
-      $mul = utils.defaultValue$Nil($mul);
-      $add = utils.defaultValue$Nil($add);
-
+    spec.madd = fn(function($mul, $add) {
       return (this ["*"] ($mul)) ["+"] ($add);
-    };
+    }, "mul; add");
 
     spec.lag = utils.nop;
     spec.lag2 = utils.nop;
@@ -778,11 +711,9 @@
 
     // TODO: implements writeInputSpec
 
-    spec.series = function($second, $last) {
+    spec.series = fn(function($second, $last) {
       var $step;
       var last, step, size;
-      $second = utils.defaultValue$Nil($second);
-      $last   = utils.defaultValue$Nil($last);
 
       if ($second === $nil) {
         if (this.valueOf() < $last.valueOf()) {
@@ -798,7 +729,7 @@
       size = (Math.floor((last - this._) / step + 0.001)|0) + 1;
 
       return SCArray.series($SC.Integer(size), this, $step);
-    };
+    }, "second; last");
 
     // TODO: implements seriesIter
     // TODO: implements degreeToKey

@@ -12,7 +12,7 @@
   describe("SCObject", function() {
     var SCObject;
     before(function() {
-      SCObject = $SC.Class("Object");
+      SCObject = $SC("Object");
       this.createInstance = function(instance) {
         var testMethod;
         if (!instance) {
@@ -92,14 +92,66 @@
     });
     it.skip("#dump", function() {
     });
-    it.skip("#post", function() {
-    });
-    it.skip("#postln", function() {
-    });
-    it.skip("#postc", function() {
-    });
-    it.skip("#postcln", function() {
-    });
+    it("#post", sinon.test(function() {
+      var instance, test;
+      var post;
+
+      post = this.spy();
+
+      instance = this.createInstance();
+      this.stub(instance, "asString", function() {
+        return { post: post };
+      });
+
+      test = instance.post();
+      expect(test).to.equal(instance);
+      expect(post).to.be.calledWith(undefined);
+    }));
+    it("#postln", sinon.test(function() {
+      var instance, test;
+      var postln;
+
+      postln = this.spy();
+
+      instance = this.createInstance();
+      this.stub(instance, "asString", function() {
+        return { postln: postln };
+      });
+
+      test = instance.postln();
+      expect(test).to.equal(instance);
+      expect(postln).to.be.calledWith(undefined);
+    }));
+    it("#postc", sinon.test(function() {
+      var instance, test;
+      var postc;
+
+      postc = this.spy();
+
+      instance = this.createInstance();
+      this.stub(instance, "asString", function() {
+        return { postc: postc };
+      });
+
+      test = instance.postc();
+      expect(test).to.equal(instance);
+      expect(postc).to.be.calledWith(undefined);
+    }));
+    it("#postcln", sinon.test(function() {
+      var instance, test;
+      var postcln;
+
+      postcln = this.spy();
+
+      instance = this.createInstance();
+      this.stub(instance, "asString", function() {
+        return { postcln: postcln };
+      });
+
+      test = instance.postcln();
+      expect(test).to.equal(instance);
+      expect(postcln).to.be.calledWith(undefined);
+    }));
     it.skip("#postcs", function() {
     });
     it.skip("#totalFree", function() {
@@ -403,7 +455,7 @@
 
       spy = this.spy(sc.test.func);
       $obj = sc.test.object();
-      this.stub($SC, "Class").withArgs("Association").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Association").returns(sc.test.object({
         new: spy
       }));
 
@@ -440,7 +492,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("OneShotStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("OneShotStream").returns(sc.test.object({
         new: spy
       }));
 
@@ -924,7 +976,7 @@
       var $elem, $arg1, $arg2;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("FunctionList").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("FunctionList").returns(sc.test.object({
         new: spy
       }));
       $elem = sc.test.object();
@@ -1401,7 +1453,7 @@
       var instance, test, spy, rate;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Class").withArgs("K2A").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("K2A").returns(sc.test.object({
         ar: spy
       }));
 

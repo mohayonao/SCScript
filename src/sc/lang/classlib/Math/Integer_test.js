@@ -11,7 +11,7 @@
   describe("SCInteger", function() {
     var SCInteger;
     before(function() {
-      SCInteger = $SC.Class("Integer");
+      SCInteger = $SC("Integer");
       this.createInstance = function(value) {
         return $SC.Integer(typeof value === "undefined" ? 0 : value);
       };
@@ -434,7 +434,7 @@
           source: 5,
           args  : [ function($i) {
             return $i.__dec__();
-          }, $SC.Class("Array") ],
+          }, $SC("Array") ],
           result: [ -1, 0, 1, 2, 3 ]
         },
       ]);
@@ -450,7 +450,7 @@
 
       test = instance.collect($function);
       expect(instance.collectAs.args[0][0]).to.equal($function);
-      expect(instance.collectAs.args[0][1]).to.equal($SC.Class("Array"));
+      expect(instance.collectAs.args[0][1]).to.equal($SC("Array"));
       expect(instance.collectAs).to.be.calledLastIn(test);
     }));
     it("#reverseDo", sinon.test(function() {
@@ -517,7 +517,7 @@
       spy = this.spy(sc.test.func);
       $hi = sc.test.object();
       $step = sc.test.object();
-      this.stub($SC, "Class").withArgs("Interval").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Interval").returns(sc.test.object({
         new: spy
       }));
 

@@ -1,6 +1,17 @@
 {
-  "sc/test/parser-test-case": [
-    "sc/lang/parser",
-    "sc/lang/codegen"
+  "sc/lang/compiler/test-cases": [
+    "sc/lang/compiler/parser",
+    "sc/lang/compiler/codegen"
+  ],
+  "sc/lang/compiler/node": [
+    "sc/lang/compiler/parser"
+  ],
+  "sc/lang/compiler/marker": [
+    "sc/lang/compiler/parser",
+    "sc/lang/compiler/codegen"
+  ],
+  "sc/lang/compiler/scope": [
+    "sc/lang/compiler/parser",
+    "sc/lang/compiler/codegen"
   ]
 }

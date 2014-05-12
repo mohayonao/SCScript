@@ -259,7 +259,7 @@
       prev = null;
     }
 
-    method = sc.lang.klass.get(className)._Spec.prototype[methodName];
+    method = sc.lang.klass.classes[className]._Spec.prototype[methodName];
     Object.defineProperty(instance, methodName, {
       value: method, configurable: true
     });

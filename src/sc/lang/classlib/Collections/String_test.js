@@ -10,7 +10,7 @@
   describe("SCString", function() {
     var SCString;
     before(function() {
-      SCString = $SC.Class("String");
+      SCString = $SC("String");
       this.createInstance = function(str) {
         return $SC.String(str || "str");
       };
@@ -232,14 +232,50 @@
       test = instance.species();
       expect(test).to.equal(SCString);
     });
-    it.skip("#postln", function() {
-    });
-    it.skip("#post", function() {
-    });
-    it.skip("#postcln", function() {
-    });
-    it.skip("#postc", function() {
-    });
+    it("#postln", sinon.test(function() {
+      var instance, test;
+
+      this.stub(sc.lang.io, "post");
+
+      instance = this.createInstance("post");
+
+      test = instance.postln();
+      expect(test).to.equal(instance);
+      expect(sc.lang.io.post).to.be.calledWith("post\n");
+    }));
+    it("#post", sinon.test(function() {
+      var instance, test;
+
+      this.stub(sc.lang.io, "post");
+
+      instance = this.createInstance("post");
+
+      test = instance.post();
+      expect(test).to.equal(instance);
+      expect(sc.lang.io.post).to.be.calledWith("post");
+    }));
+    it("#postcln", sinon.test(function() {
+      var instance, test;
+
+      this.stub(sc.lang.io, "post");
+
+      instance = this.createInstance("post");
+
+      test = instance.postcln();
+      expect(test).to.equal(instance);
+      expect(sc.lang.io.post).to.be.calledWith("// post\n");
+    }));
+    it("#postc", sinon.test(function() {
+      var instance, test;
+
+      this.stub(sc.lang.io, "post");
+
+      instance = this.createInstance("post");
+
+      test = instance.postc();
+      expect(test).to.equal(instance);
+      expect(sc.lang.io.post).to.be.calledWith("// post");
+    }));
     it.skip("#postf", function() {
     });
     it.skip("#format", function() {

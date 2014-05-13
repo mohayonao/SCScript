@@ -82,6 +82,53 @@
         }
       }
     },
+    "-a": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().neg();",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: ".",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 1, 2 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "neg",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: []
+            },
+            range: [ 0, 2 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 2 }
+            }
+          }
+        ],
+        range: [ 0, 2 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 2 }
+        }
+      }
+    },
     "nil": {
       compiled: [
         "SCScript(function($this, $SC) {",
@@ -3520,9 +3567,9 @@
               type: Syntax.FunctionExpression,
               body: [],
               closed: true,
-              range: [ 5, 7 ],
+              range: [ 4, 7 ],
               loc: {
-                start: { line: 1, column: 5 },
+                start: { line: 1, column: 4 },
                 end  : { line: 1, column: 7 }
               }
             },

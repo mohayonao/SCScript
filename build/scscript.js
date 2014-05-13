@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.23" };
+var sc = { VERSION: "0.0.25" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -1657,7 +1657,9 @@ var sc = { VERSION: "0.0.23" };
   };
 
   Lexer.prototype.scanNumericLiteral = function(neg) {
-    return this.scanNAryNumberLiteral(neg) || this.scanDecimalNumberLiteral(neg);
+    return this.scanNAryNumberLiteral(neg) ||
+      this.scanHexNumberLiteral(neg) ||
+      this.scanDecimalNumberLiteral(neg);
   };
 
   Lexer.prototype.scanNegativeNumericLiteral = function() {
@@ -1779,6 +1781,33 @@ var sc = { VERSION: "0.0.23" };
     }
 
     return value;
+  };
+
+  Lexer.prototype.scanHexNumberLiteral = function(neg) {
+    var re, start, items;
+    var integer, pi;
+    var value, type;
+    var token;
+
+    re = /^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (!items) {
+      return;
+    }
+
+    integer = items[1].replace(/_/g, "");
+    pi      = !!items[2];
+
+    type  = Token.IntegerLiteral;
+    value = +integer;
+
+    token = makeNumberToken(type, value, neg, pi);
+
+    this.index += items[0].length;
+
+    return this.makeToken(token.type, token.value, start);
   };
 
   Lexer.prototype.scanDecimalNumberLiteral = function(neg) {
@@ -2518,20 +2547,30 @@ var sc = { VERSION: "0.0.23" };
 
   // 4.6 Unary Expressions
   SCParser.prototype.parseUnaryExpression = function(node) {
-    var token, expr;
+    var token, expr, method;
     var marker;
 
     marker = Marker.create(this.lexer);
 
-    if (this.match("`")) {
+    switch (this.matchAny([ "`", "-" ])) {
+    case "`":
       token = this.lex();
-      expr = this.parseUnaryExpression();
+      expr = this.parseLeftHandSideExpression();
       expr = Node.createUnaryExpression(token.value, expr);
-    } else {
+      break;
+    case "-":
+      token = this.lex();
+      method = Node.createIdentifier("neg");
+      method = marker.update().apply(method);
+      expr = this.parseLeftHandSideExpression();
+      expr = Node.createCallExpression(expr, method, { list: [] }, ".");
+      break;
+    default:
       expr = this.parseLeftHandSideExpression(node);
+      break;
     }
 
-    return marker.update().apply(expr);
+    return marker.update().apply(expr, true);
   };
 
   // 4.7 LeftHandSide Expressions

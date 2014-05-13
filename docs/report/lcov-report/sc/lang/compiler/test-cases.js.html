@@ -8286,7 +8286,54 @@
 8068
 8069
 8070
-8071</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+8071
+8072
+8073
+8074
+8075
+8076
+8077
+8078
+8079
+8080
+8081
+8082
+8083
+8084
+8085
+8086
+8087
+8088
+8089
+8090
+8091
+8092
+8093
+8094
+8095
+8096
+8097
+8098
+8099
+8100
+8101
+8102
+8103
+8104
+8105
+8106
+8107
+8108
+8109
+8110
+8111
+8112
+8113
+8114
+8115
+8116
+8117
+8118</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -8295,6 +8342,53 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -16440,6 +16534,53 @@
         }
       }
     },
+    "-a": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $this.a().neg();",
+        "});",
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            stamp: ".",
+            callee: {
+              type: Syntax.Identifier,
+              name: "a",
+              range: [ 1, 2 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end  : { line: 1, column: 2 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "neg",
+              range: [ 0, 1 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 1 }
+              }
+            },
+            args: {
+              list: []
+            },
+            range: [ 0, 2 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 2 }
+            }
+          }
+        ],
+        range: [ 0, 2 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 2 }
+        }
+      }
+    },
     "nil": {
       compiled: [
         "SCScript(function($this, $SC) {",
@@ -19878,9 +20019,9 @@
               type: Syntax.FunctionExpression,
               body: [],
               closed: true,
-              range: [ 5, 7 ],
+              range: [ 4, 7 ],
               loc: {
-                start: { line: 1, column: 5 },
+                start: { line: 1, column: 4 },
                 end  : { line: 1, column: 7 }
               }
             },
@@ -24431,7 +24572,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue May 13 2014 07:34:22 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue May 13 2014 23:43:06 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

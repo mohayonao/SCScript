@@ -211,7 +211,7 @@
           error({ line: 1, column: 2, index: 1 }, Message.UnexpectedToken, "ILLEGAL"),
         ],
         "``": [
-          error({ line: 1, column: 3, index: 2 }, Message.UnexpectedEOS),
+          error({ line: 1, column: 2, index: 1 }, Message.UnexpectedToken, "`"),
         ],
         "[1": [
           error({ line: 1, column: 3, index: 2 }, Message.UnexpectedEOS),

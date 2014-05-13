@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.24" };
+var sc = { VERSION: "0.0.25" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -2547,20 +2547,30 @@ var sc = { VERSION: "0.0.24" };
 
   // 4.6 Unary Expressions
   SCParser.prototype.parseUnaryExpression = function(node) {
-    var token, expr;
+    var token, expr, method;
     var marker;
 
     marker = Marker.create(this.lexer);
 
-    if (this.match("`")) {
+    switch (this.matchAny([ "`", "-" ])) {
+    case "`":
       token = this.lex();
-      expr = this.parseUnaryExpression();
+      expr = this.parseLeftHandSideExpression();
       expr = Node.createUnaryExpression(token.value, expr);
-    } else {
+      break;
+    case "-":
+      token = this.lex();
+      method = Node.createIdentifier("neg");
+      method = marker.update().apply(method);
+      expr = this.parseLeftHandSideExpression();
+      expr = Node.createCallExpression(expr, method, { list: [] }, ".");
+      break;
+    default:
       expr = this.parseLeftHandSideExpression(node);
+      break;
     }
 
-    return marker.update().apply(expr);
+    return marker.update().apply(expr, true);
   };
 
   // 4.7 LeftHandSide Expressions

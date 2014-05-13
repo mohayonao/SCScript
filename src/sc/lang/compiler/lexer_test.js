@@ -93,7 +93,7 @@
       },
       "a": [
         {
-          type: "Identifier",
+          type: Token.Identifier,
           value: "a",
           range: [ 0, 1 ],
           loc: {
@@ -104,7 +104,7 @@
       ],
       "_": [
         {
-          type: "Identifier",
+          type: Token.Identifier,
           value: "_",
           range: [ 0, 1 ],
           loc: {
@@ -115,7 +115,7 @@
       ],
       "this": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "this",
           range: [ 0, 4 ],
           loc: {
@@ -126,7 +126,7 @@
       ],
       "thisThread": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "thisThread",
           range: [ 0, 10 ],
           loc: {
@@ -137,7 +137,7 @@
       ],
       "thisProcess": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "thisProcess",
           range: [ 0, 11 ],
           loc: {
@@ -148,7 +148,7 @@
       ],
       "thisFunction": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "thisFunction",
           range: [ 0, 12 ],
           loc: {
@@ -159,7 +159,7 @@
       ],
       "thisFunctionDef": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "thisFunctionDef",
           range: [ 0, 15 ],
           loc: {
@@ -170,7 +170,7 @@
       ],
       "var": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "var",
           range: [ 0, 3 ],
           loc: {
@@ -181,7 +181,7 @@
       ],
       "arg": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "arg",
           range: [ 0, 3 ],
           loc: {
@@ -192,7 +192,7 @@
       ],
       "const": [
         {
-          type: "Keyword",
+          type: Token.Keyword,
           value: "const",
           range: [ 0, 5 ],
           loc: {
@@ -203,7 +203,7 @@
       ],
       "10": [
         {
-          type: "Integer",
+          type: Token.IntegerLiteral,
           value: "10",
           range: [ 0, 2 ],
           loc: {
@@ -214,7 +214,7 @@
       ],
       "-10": [
         {
-          type: "Integer",
+          type: Token.IntegerLiteral,
           value: "-10",
           range: [ 0, 3 ],
           loc: {
@@ -225,7 +225,7 @@
       ],
       "1_000": [
         {
-          type: "Integer",
+          type: Token.IntegerLiteral,
           value: "1000",
           range: [ 0, 5 ],
           loc: {
@@ -236,7 +236,7 @@
       ],
       "10pi": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "31.41592653589793",
           range: [ 0, 4 ],
           loc: {
@@ -247,7 +247,7 @@
       ],
       "-10.5e-1pi": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "-3.2986722862692828",
           range: [ 0, 10 ],
           loc: {
@@ -258,7 +258,7 @@
       ],
       "1_0000.0000_0000e-1_000": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "0.0",
           range: [ 0, 23 ],
           loc: {
@@ -269,7 +269,7 @@
       ],
       "2r1101": [
         {
-          type: "Integer",
+          type: Token.IntegerLiteral,
           value: "13",
           range: [ 0, 6 ],
           loc: {
@@ -280,7 +280,7 @@
       ],
       "-2r1101": [
         {
-          type: "Integer",
+          type: Token.IntegerLiteral,
           value: "-13",
           range: [ 0, 7 ],
           loc: {
@@ -291,7 +291,7 @@
       ],
       "2r1101.0": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "13.0",
           range: [ 0, 8 ],
           loc: {
@@ -302,7 +302,7 @@
       ],
       "2r1101pi": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "40.840704496667314",
           range: [ 0, 8 ],
           loc: {
@@ -313,7 +313,7 @@
       ],
       "2r1.101": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "1.625",
           range: [ 0, 7 ],
           loc: {
@@ -332,9 +332,20 @@
           error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "Z")
         ]
       },
+      "0xff": [
+        {
+          type: Token.IntegerLiteral,
+          value: "255",
+          range: [ 0, 4 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 4 }
+          }
+        },
+      ],
       "pi": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "3.141592653589793",
           range: [ 0, 2 ],
           loc: {
@@ -345,7 +356,7 @@
       ],
       "-pi": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "-3.141592653589793",
           range: [ 0, 3 ],
           loc: {
@@ -356,7 +367,7 @@
       ],
       "inf": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "Infinity",
           range: [ 0, 3 ],
           loc: {
@@ -367,7 +378,7 @@
       ],
       "-inf": [
         {
-          type: "Float",
+          type: Token.FloatLiteral,
           value: "-Infinity",
           range: [ 0, 4 ],
           loc: {
@@ -378,7 +389,7 @@
       ],
       "$.": [
         {
-          type: "Char",
+          type: Token.CharLiteral,
           value: ".",
           range: [ 0, 2 ],
           loc: {
@@ -389,7 +400,7 @@
       ],
       "\\symbol": [
         {
-          type: "Symbol",
+          type: Token.SymbolLiteral,
           value: "symbol",
           range: [ 0, 7 ],
           loc: {
@@ -400,7 +411,7 @@
       ],
       "'symbol'": [
         {
-          type: "Symbol",
+          type: Token.SymbolLiteral,
           value: "symbol",
           range: [ 0, 8 ],
           loc: {
@@ -416,7 +427,7 @@
       },
       '"s\\tri\ng"': [
         {
-          type: "String",
+          type: Token.StringLiteral,
           value: "s\\tri\\ng",
           range: [ 0, 9 ],
           loc: {
@@ -432,7 +443,7 @@
       },
       "nil": [
         {
-          type: "Nil",
+          type: Token.NilLiteral,
           value: "null",
           range: [ 0, 3 ],
           loc: {
@@ -443,7 +454,7 @@
       ],
       "true": [
         {
-          type: "True",
+          type: Token.TrueLiteral,
           value: "true",
           range: [ 0, 4 ],
           loc: {
@@ -454,7 +465,7 @@
       ],
       "false": [
         {
-          type: "False",
+          type: Token.FalseLiteral,
           value: "false",
           range: [ 0, 5 ],
           loc: {
@@ -465,7 +476,7 @@
       ],
       "[]": [
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "[",
           range: [ 0, 1 ],
           loc: {
@@ -474,7 +485,7 @@
           }
         },
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "]",
           range: [ 1, 2 ],
           loc: {
@@ -485,7 +496,7 @@
       ],
       "#[]": [
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "#",
           range: [ 0, 1 ],
           loc: {
@@ -494,7 +505,7 @@
           }
         },
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "[",
           range: [ 1, 2 ],
           loc: {
@@ -503,7 +514,7 @@
           }
         },
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "]",
           range: [ 2, 3 ],
           loc: {
@@ -514,7 +525,7 @@
       ],
       "{}": [
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "{",
           range: [ 0, 1 ],
           loc: {
@@ -523,7 +534,7 @@
           }
         },
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "}",
           range: [ 1, 2 ],
           loc: {
@@ -534,7 +545,7 @@
       ],
       "#{}": [
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "#",
           range: [ 0, 1 ],
           loc: {
@@ -543,7 +554,7 @@
           }
         },
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "{",
           range: [ 1, 2 ],
           loc: {
@@ -552,7 +563,7 @@
           }
         },
         {
-          type: "Punctuator",
+          type: Token.Punctuator,
           value: "}",
           range: [ 2, 3 ],
           loc: {
@@ -563,7 +574,7 @@
       ],
       "label:": [
         {
-          type: "Label",
+          type: Token.Label,
           value: "label",
           range: [ 0, 6 ],
           loc: {

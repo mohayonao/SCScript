@@ -212,7 +212,7 @@
             .to.equal(result);
           break;
         default:
-          expect(test).with_message(desc).to.eql(result);
+          expect(test.valueOf()).with_message(desc).to.eql(result);
         }
       }
 

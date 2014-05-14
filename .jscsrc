@@ -22,15 +22,15 @@
   ],
   "requireRightStickedOperators": [ "!" ],
   "disallowRightStickedOperators": [
-    "?", "*", "=", "==", "===", "!=","!==", ">", ">=", "<", "<="
+    "?", "*", "=", "==", "===", "!=", "!==", ">", ">=", "<", "<="
   ],
   "disallowSpaceAfterPrefixUnaryOperators": [ "++", "--", "+", "-", "~", "!" ],
   "disallowSpaceBeforePostfixUnaryOperators": [ "++", "--" ],
-  "requireSpaceBeforeBinaryOperators": [
-    "+", "-", "*", "=", "==", "===", "!=", "!=="
-  ],
+  // "requireSpaceBeforeBinaryOperators": [
+  // "+", "-", "*", "=", "==", "===", "!=", "!=="
+  // ],
   "requireSpaceAfterBinaryOperators": [
-    "+", "-", "*", "=", "==", "===", "!=","!=="
+    "+", "-", "*", "=", "==", "===", "!=", "!=="
   ],
   "validateLineBreaks": "LF",
   "validateQuoteMarks": { "mark": "\"", "escape": true },

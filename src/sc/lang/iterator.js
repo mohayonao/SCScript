@@ -285,6 +285,12 @@
     return js_array_iter($array._.slice().reverse());
   };
 
+  iterator.set$do = function($set) {
+    return js_array_iter($set._array._.filter(function($elem) {
+      return $elem !== $nil;
+    }));
+  };
+
   sc.lang.iterator = iterator;
 
 })(sc);

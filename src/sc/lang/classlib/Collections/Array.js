@@ -14,6 +14,18 @@
     var $nil    = utils.$nil;
     var SCArray = $SC("Array");
 
+    spec.$newClear = fn(function($indexedSize) {
+      var array, indexedSize, i;
+
+      indexedSize = $indexedSize.__int__();
+      array = new Array(indexedSize);
+      for (i = 0; i < indexedSize; ++i) {
+        array[i] = $nil;
+      }
+
+      return $SC.Array(array);
+    }, "indexedSize=0");
+
     spec.$with = function() {
       return $SC.Array(slice.call(arguments));
     };
@@ -522,7 +534,7 @@
       numwin = ((raw.length + n - m) / n)|0;
       numslots = numwin * m;
 
-      for (i = h = k = 0; i < numwin; ++i,h += n) {
+      for (i = h = k = 0; i < numwin; ++i, h += n) {
         for (j = h; j < m + h; ++j) {
           obj2[k++] = obj1[j];
         }

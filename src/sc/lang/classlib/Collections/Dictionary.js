@@ -8,7 +8,25 @@
     this._ = {};
   }
 
-  sc.lang.klass.define(SCDictionary, "Dictionary : Set", function() {
+  sc.lang.klass.define(SCDictionary, "Dictionary : Set", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.valueOf = function() {
+      var obj;
+      var array, i, imax;
+
+      obj = {};
+
+      array = this._array._;
+      for (i = 0, imax = array.length; i < imax; i += 2) {
+        if (array[i] !== $nil) {
+          obj[array[i].valueOf()] = array[i + 1].valueOf();
+        }
+      }
+
+      return obj;
+    };
+
     // TODO: implements $newFrom
     // TODO: implements at
     // TODO: implements atFail

@@ -343,6 +343,50 @@
           }
         },
       ],
+      "2bb": [
+        {
+          type: Token.FloatLiteral,
+          value: "1.8",
+          range: [ 0, 3 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 3 }
+          }
+        }
+      ],
+      "2ss": [
+        {
+          type: Token.FloatLiteral,
+          value: "2.2",
+          range: [ 0, 3 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 3 }
+          }
+        }
+      ],
+      "2b10": [
+        {
+          type: Token.FloatLiteral,
+          value: "1.99",
+          range: [ 0, 4 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 4 }
+          }
+        }
+      ],
+      "2s10": [
+        {
+          type: Token.FloatLiteral,
+          value: "2.01",
+          range: [ 0, 4 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 4 }
+          }
+        }
+      ],
       "pi": [
         {
           type: Token.FloatLiteral,
@@ -406,6 +450,28 @@
           loc: {
             start: { line: 1, column: 0 },
             end  : { line: 1, column: 7 }
+          }
+        },
+      ],
+      "\\": [
+        {
+          type: Token.SymbolLiteral,
+          value: "",
+          range: [ 0, 1 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 1 }
+          }
+        },
+      ],
+      "\\0123": [
+        {
+          type: Token.SymbolLiteral,
+          value: "0123",
+          range: [ 0, 5 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 5 }
           }
         },
       ],

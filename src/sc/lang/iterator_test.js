@@ -436,6 +436,19 @@
         expect(iter.next()).to.be.a("JSNull");
         expect(iter.next()).to.be.a("JSNull");
       });
+      it("set$reverseDo", function() {
+        var iter;
+        var $set = {
+          _array: $([ null, 1, 2, null, 3, null ])
+        };
+
+        iter = iterator.set$do($set);
+        expect(iter.next()).to.be.a("SCInteger").that.equals(1);
+        expect(iter.next()).to.be.a("SCInteger").that.equals(2);
+        expect(iter.next()).to.be.a("SCInteger").that.equals(3);
+        expect(iter.next()).to.be.a("JSNull");
+        expect(iter.next()).to.be.a("JSNull");
+      });
     });
     describe("execute", function() {
       it("execute", sinon.test(function() {

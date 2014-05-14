@@ -409,6 +409,28 @@
           }
         },
       ],
+      "\\": [
+        {
+          type: Token.SymbolLiteral,
+          value: "",
+          range: [ 0, 1 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 1 }
+          }
+        },
+      ],
+      "\\0123": [
+        {
+          type: Token.SymbolLiteral,
+          value: "0123",
+          range: [ 0, 5 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end  : { line: 1, column: 5 }
+          }
+        },
+      ],
       "'symbol'": [
         {
           type: Token.SymbolLiteral,

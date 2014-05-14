@@ -167,7 +167,7 @@
     node = this.withScope(function() {
       var body;
 
-      body = this.parseFunctionBody("");
+      body = this.parseFunctionBody(null);
       if (body.length === 1 && body[0].type === Syntax.BlockExpression) {
         body = body[0].body;
       }

@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.25" };
+var sc = { VERSION: "0.0.26" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -1895,11 +1895,11 @@ var sc = { VERSION: "0.0.25" };
     var re, start, items;
     var value;
 
-    re = /^\\([a-z_]\w*)?/i;
+    re = /^\\([a-zA-Z_]\w*|\d+)?/;
     start = this.index;
     items = re.exec(this.source.slice(this.index));
 
-    value = items[1];
+    value = items[1] || "";
 
     this.index += items[0].length;
 
@@ -2124,7 +2124,7 @@ var sc = { VERSION: "0.0.25" };
     node = this.withScope(function() {
       var body;
 
-      body = this.parseFunctionBody("");
+      body = this.parseFunctionBody(null);
       if (body.length === 1 && body[0].type === Syntax.BlockExpression) {
         body = body[0].body;
       }

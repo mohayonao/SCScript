@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.26" };
+var sc = { VERSION: "0.0.27" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -1659,6 +1659,7 @@ var sc = { VERSION: "0.0.26" };
   Lexer.prototype.scanNumericLiteral = function(neg) {
     return this.scanNAryNumberLiteral(neg) ||
       this.scanHexNumberLiteral(neg) ||
+      this.scanAccidentalNumberLiteral(neg) ||
       this.scanDecimalNumberLiteral(neg);
   };
 
@@ -1804,6 +1805,38 @@ var sc = { VERSION: "0.0.26" };
     value = +integer;
 
     token = makeNumberToken(type, value, neg, pi);
+
+    this.index += items[0].length;
+
+    return this.makeToken(token.type, token.value, start);
+  };
+
+  Lexer.prototype.scanAccidentalNumberLiteral = function(neg) {
+    var re, start, items;
+    var integer, accidental, cents;
+    var sign, value;
+    var token;
+
+    re = /^(\d+)([bs]+)(\d*)/;
+    start = this.index;
+    items = re.exec(this.source.slice(this.index));
+
+    if (!items) {
+      return;
+    }
+
+    integer    = items[1];
+    accidental = items[2];
+    sign = (accidental.charAt(0) === "s") ? +1 : -1;
+
+    if (items[3] === "") {
+      cents = Math.min(accidental.length * 0.1, 0.4);
+    } else {
+      cents = Math.min(items[3] * 0.001, 0.499);
+    }
+    value = +integer + (sign * cents);
+
+    token = makeNumberToken(Token.FloatLiteral, value, neg, false);
 
     this.index += items[0].length;
 

@@ -26,9 +26,9 @@
   ],
   "disallowSpaceAfterPrefixUnaryOperators": [ "++", "--", "+", "-", "~", "!" ],
   "disallowSpaceBeforePostfixUnaryOperators": [ "++", "--" ],
-  // "requireSpaceBeforeBinaryOperators": [
-  // "+", "-", "*", "=", "==", "===", "!=", "!=="
-  // ],
+  "requireSpaceBeforeBinaryOperators": [
+    "+", "-", "*", "=", "==", "===", "!=", "!=="
+  ],
   "requireSpaceAfterBinaryOperators": [
     "+", "-", "*", "=", "==", "===", "!=", "!=="
   ],

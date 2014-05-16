@@ -3,15 +3,17 @@
 
   sc.test = {};
 
-  require("../lang/classlib/Collections/Array");
-  require("../lang/classlib/Collections/String");
-  require("../lang/classlib/Core/Boolean");
-  require("../lang/classlib/Core/Char");
-  require("../lang/classlib/Core/Function");
-  require("../lang/classlib/Core/Nil");
-  require("../lang/classlib/Core/Symbol");
-  require("../lang/classlib/Math/Integer");
-  require("../lang/classlib/Math/Float");
+  require("../lang/installer");
+
+  require("../classlib/Collections/Array");
+  require("../classlib/Collections/String");
+  require("../classlib/Core/Boolean");
+  require("../classlib/Core/Char");
+  require("../classlib/Core/Function");
+  require("../classlib/Core/Nil");
+  require("../classlib/Core/Symbol");
+  require("../classlib/Math/Integer");
+  require("../classlib/Math/Float");
 
   sc.lang.klass.refine("Object", function(spec) {
 

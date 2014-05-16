@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - classlib/Core/Char.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>classlib/Core/Char.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">133.54</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">163</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">35.23</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.65</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">SCScript.install(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;../Math/Magnitude&quot;);
+
+  var $SC = sc.lang.$SC;
+
+  sc.lang.klass.refine(&quot;Char&quot;, function(spec, utils) {
+    spec.__str__ = function() {
+      return this._;
+    };
+
+    spec.$nl = function() {
+      return $SC.Char(&quot;\n&quot;);
+    };
+
+    spec.$ff = function() {
+      return $SC.Char(&quot;\f&quot;);
+    };
+
+    spec.$tab = function() {
+      return $SC.Char(&quot;\t&quot;);
+    };
+
+    spec.$space = function() {
+      return $SC.Char(&quot; &quot;);
+    };
+
+    spec.$comma = function() {
+      return $SC.Char(&quot;,&quot;);
+    };
+
+    spec.$new = function() {
+      throw new Error(&quot;Char.new is illegal, should use literal.&quot;);
+    };
+
+    // TODO: implements hash
+
+    spec.ascii = function() {
+      return $SC.Integer(this._.charCodeAt(0));
+    };
+
+    spec.digit = function() {
+      var ascii = this._.charCodeAt(0);
+      if (0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) {
+        return $SC.Integer(ascii - 0x30);
+      }
+      if (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) {
+        return $SC.Integer(ascii - 0x37);
+      }
+      if (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a) {
+        return $SC.Integer(ascii - 0x57);
+      }
+      throw new Error(&quot;digitValue failed&quot;);
+    };
+
+    spec.asAscii = utils.nop;
+
+    spec.asUnicode = function() {
+      return this.ascii();
+    };
+
+    spec.toUpper = function() {
+      return $SC.Char(this._.toUpperCase());
+    };
+
+    spec.toLower = function() {
+      return $SC.Char(this._.toLowerCase());
+    };
+
+    spec.isAlpha = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
+                         (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+    };
+
+    spec.isAlphaNum = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
+                         (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
+                         (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+    };
+
+    spec.isPrint = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
+    };
+
+    spec.isPunct = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
+                         (0x3a &lt;= ascii &amp;&amp; ascii &lt;= 0x40) ||
+                         (0x5b &lt;= ascii &amp;&amp; ascii &lt;= 0x60) ||
+                         (0x7b &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
+    };
+
+    spec.isControl = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
+    };
+
+    spec.isSpace = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
+    };
+
+    spec.isVowl = function() {
+      var ch = this._.charAt(0).toUpperCase();
+      return $SC.Boolean(&quot;AEIOU&quot;.indexOf(ch) !== -1);
+    };
+
+    spec.isDecDigit = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
+    };
+
+    spec.isUpper = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
+    };
+
+    spec.isLower = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+    };
+
+    spec.isFileSafe = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
+                         ascii !== 0x2f &amp;&amp; // 0x2f is &#039;/&#039;
+                         ascii !== 0x3a &amp;&amp; // 0x3a is &#039;:&#039;
+                         ascii !== 0x22);  // 0x22 is &#039;&quot;&#039;
+    };
+
+    spec.isPathSeparator = function() {
+      var ascii = this._.charCodeAt(0);
+      return $SC.Boolean(ascii === 0x2f);
+    };
+
+    spec[&quot;&lt;&quot;] = function($aChar) {
+      return $SC.Boolean(this.ascii() &lt; $aChar.ascii());
+    };
+
+    spec[&quot;++&quot;] = function($that) {
+      return $SC.String(this._ + $that.__str__());
+    };
+
+    // TODO: implements $bullet
+    // TODO: implements printOn
+    // TODO: implements storeOn
+
+    spec.archiveAsCompileString = function() {
+      return $SC.True();
+    };
+
+    spec.asString = function() {
+      return $SC.String(this._);
+    };
+
+    spec.shallowCopy = utils.nop;
+  });
+
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

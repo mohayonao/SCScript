@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - classlib/Collections/String.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>classlib/Collections/String.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">127.12</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">290</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">48.45</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.84</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">SCScript.install(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./ArrayedCollection&quot;);
+
+  var fn  = sc.lang.fn;
+  var io  = sc.lang.io;
+  var $SC = sc.lang.$SC;
+
+  sc.lang.klass.refine(&quot;String&quot;, function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
+
+    spec.__str__ = function() {
+      return this.valueOf();
+    };
+
+    spec.__elem__ = function($item) {
+      if ($item.__tag !== sc.C.TAG_CHAR) {
+        throw new TypeError(&quot;Wrong type.&quot;);
+      }
+      return $item;
+    };
+
+    spec.valueOf = function() {
+      return this._.map(function(elem) {
+        return elem.__str__();
+      }).join(&quot;&quot;);
+    };
+
+    spec.toString = function() {
+      return this.valueOf();
+    };
+
+    // TODO: implements unixCmdActions
+    // TODO: implements unixCmdActions_
+
+    spec.$new = function() {
+      throw new Error(&quot;String.new is illegal, should use literal.&quot;);
+    };
+
+    // TODO: implements $initClass
+    // TODO: implements $doUnixCmdAction
+    // TODO: implements unixCmd
+    // TODO: implements unixCmdGetStdOut
+
+    spec.asSymbol = function() {
+      return $SC.Symbol(this.__str__());
+    };
+
+    spec.asInteger = function() {
+      var m = /^[-+]?\d+/.exec(this.__str__());
+      return $SC.Integer(m ? m[0]|0 : 0);
+    };
+
+    spec.asFloat = function() {
+      var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
+      return $SC.Float(m ? +m[0] : 0);
+    };
+
+    spec.ascii = function() {
+      var raw = this.__str__();
+      var a, i, imax;
+
+      a = new Array(raw.length);
+      for (i = 0, imax = a.length; i &lt; imax; ++i) {
+        a[i] = $SC.Integer(raw.charCodeAt(i));
+      }
+
+      return $SC.Array(a);
+    };
+
+    // TODO: implements stripRTF
+    // TODO: implements stripHTML
+    // TODO: implements $scDir
+
+    spec.compare = fn(function($aString, $ignoreCase) {
+      var araw, braw, length, i, a, b, cmp, func;
+
+      if ($aString.__tag !== sc.C.TAG_STR) {
+        return $nil;
+      }
+
+      araw = this._;
+      braw = $aString._;
+      length = Math.min(araw.length, braw.length);
+
+      if ($ignoreCase.__bool__()) {
+        func = function(ch) {
+          return ch.toLowerCase();
+        };
+      } else {
+        func = function(ch) {
+          return ch;
+        };
+      }
+      for (i = 0; i &lt; length; i++) {
+        a = func(araw[i]._).charCodeAt(0);
+        b = func(braw[i]._).charCodeAt(0);
+        cmp = a - b;
+        if (cmp !== 0) {
+          return $SC.Integer(cmp &lt; 0 ? -1 : +1);
+        }
+      }
+
+      if (araw.length &lt; braw.length) {
+        cmp = -1;
+      } else if (araw.length &gt; braw.length) {
+        cmp = 1;
+      }
+
+      return $SC.Integer(cmp);
+    }, &quot;aString; ignoreCase=false&quot;);
+
+    spec[&quot;&lt;&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, $false).valueOf() &lt; 0
+      );
+    };
+
+    spec[&quot;&gt;&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, $false).valueOf() &gt; 0
+      );
+    };
+
+    spec[&quot;&lt;=&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, $false).valueOf() &lt;= 0
+      );
+    };
+
+    spec[&quot;&gt;=&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, $false).valueOf() &gt;= 0
+      );
+    };
+
+    spec[&quot;==&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, $false).valueOf() === 0
+      );
+    };
+
+    spec[&quot;!=&quot;] = function($aString) {
+      return $SC.Boolean(
+        this.compare($aString, $false).valueOf() !== 0
+      );
+    };
+
+    // TODO: implements hash
+
+    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
+      return $aNumber.asString().perform($aSelector, this);
+    };
+
+    spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
+      return $aComplex.asString().perform($aSelector, this);
+    };
+
+    spec.multiChannelPerform = function() {
+      throw new Error(&quot;String:multiChannelPerform. Cannot expand strings.&quot;);
+    };
+
+    spec.isString = utils.alwaysReturn$true;
+
+    spec.asString = utils.nop;
+
+    spec.asCompileString = function() {
+      return $SC.String(&quot;\&quot;&quot; + this.__str__() + &quot;\&quot;&quot;);
+    };
+
+    spec.species = function() {
+      return $SC(&quot;String&quot;);
+    };
+
+    spec.postln = function() {
+      io.post(this.__str__() + &quot;\n&quot;);
+      return this;
+    };
+
+    spec.post = function() {
+      io.post(this.__str__());
+      return this;
+    };
+
+    spec.postcln = function() {
+      io.post(&quot;// &quot; + this.__str__() + &quot;\n&quot;);
+      return this;
+    };
+
+    spec.postc = function() {
+      io.post(&quot;// &quot; + this.__str__());
+      return this;
+    };
+
+    // TODO: implements postf
+    // TODO: implements format
+    // TODO: implements matchRegexp
+    // TODO: implements fformat
+    // TODO: implements die
+    // TODO: implements error
+    // TODO: implements warn
+    // TODO: implements inform
+
+    spec[&quot;++&quot;] = function($anObject) {
+      return $SC.String(
+        this.toString() + $anObject.asString().toString()
+      );
+    };
+
+    spec[&quot;+&quot;] = function($anObject) {
+      return $SC.String(
+        this.toString() + &quot; &quot; + $anObject.asString().toString()
+      );
+    };
+
+    // TODO: implements catArgs
+    // TODO: implements scatArgs
+    // TODO: implements ccatArgs
+    // TODO: implements catList
+    // TODO: implements scatList
+    // TODO: implements ccatList
+    // TODO: implements split
+    // TODO: implements containsStringAt
+    // TODO: implements icontainsStringAt
+    // TODO: implements contains
+    // TODO: implements containsi
+    // TODO: implements findRegexp
+    // TODO: implements findAllRegexp
+    // TODO: implements find
+    // TODO: implements findBackwards
+    // TODO: implements endsWith
+    // TODO: implements beginsWith
+    // TODO: implements findAll
+    // TODO: implements replace
+    // TODO: implements escapeChar
+    // TODO: implements shellQuote
+    // TODO: implements quote
+    // TODO: implements tr
+    // TODO: implements insert
+    // TODO: implements wrapExtend
+    // TODO: implements zeroPad
+    // TODO: implements padLeft
+    // TODO: implements padRight
+    // TODO: implements underlined
+    // TODO: implements scramble
+    // TODO: implements rotate
+    // TODO: implements compile
+    // TODO: implements interpret
+    // TODO: implements interpretPrint
+    // TODO: implements $readNew
+    // TODO: implements printOn
+    // TODO: implements storeOn
+    // TODO: implements inspectorClass
+    // TODO: implements standardizePath
+    // TODO: implements realPath
+    // TODO: implements withTrailingSlash
+    // TODO: implements withoutTrailingSlash
+    // TODO: implements absolutePath
+    // TODO: implements pathMatch
+    // TODO: implements load
+    // TODO: implements loadPaths
+    // TODO: implements loadRelative
+    // TODO: implements resolveRelative
+    // TODO: implements include
+    // TODO: implements exclude
+    // TODO: implements basename
+    // TODO: implements dirname
+    // TODO: implements splittext
+    // TODO: implements +/+
+    // TODO: implements asRelativePath
+    // TODO: implements asAbsolutePath
+    // TODO: implements systemCmd
+    // TODO: implements gethostbyname
+    // TODO: implements getenv
+    // TODO: implements setenv
+    // TODO: implements unsetenv
+    // TODO: implements codegen_UGenCtorArg
+    // TODO: implements ugenCodeString
+    // TODO: implements asSecs
+    // TODO: implements speak
+    // TODO: implements toLower
+    // TODO: implements toUpper
+    // TODO: implements mkdir
+    // TODO: implements parseYAML
+    // TODO: implements parseYAMLFile
+  });
+
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -1,13 +1,12 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.28" };
+var sc = { VERSION: "0.0.29" };
 
 // src/sc/sc.js
 (function(sc) {
 
   sc.lang = {};
-  sc.lang.$SC = {};
   sc.libs = {};
 
   function SCScript(fn) {
@@ -4328,24 +4327,30 @@ var sc = { VERSION: "0.0.28" };
     }
   };
 
-  var buildClass = function(className, constructor) {
-    var newClass, metaClass;
+  var registerClass = function(MetaClass, className, constructor) {
+    var newClass;
 
-    metaClass = constructor.metaClass;
-
-    newClass = new metaClass._MetaSpec();
+    newClass = new MetaClass._MetaSpec();
     newClass._name = className;
     newClass._Spec = constructor;
     constructor.prototype.__class = newClass;
     constructor.prototype.__Spec  = constructor;
     constructor.prototype.__className = className;
+    classes[className] = newClass;
+
+    return newClass;
+  };
+
+  var buildClass = function(className, constructor) {
+    var newClass, metaClass;
+
+    metaClass = constructor.metaClass;
+    newClass  = registerClass(metaClass, className, constructor);
 
     metaClass._Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = "Meta_" + className;
-
     classes["Meta_" + className] = metaClass;
-    classes[className] = newClass;
 
     if (newClass.initClass) {
       newClass.initClass();
@@ -4418,23 +4423,37 @@ var sc = { VERSION: "0.0.28" };
   }
 
   SCObject.metaClass = createClassInstance(function() {});
+
   klass.define(SCObject, "Object", {
     __tag: 1,
     __initializeWith__: function(className, args) {
       metaClasses[className]._Spec.apply(this, args);
     },
-    $initClass: function() {}
+    toString: function() {
+      var name = this.__class._name;
+      if (/^[AEIOU]/.test(name)) {
+        return String("an " + name);
+      } else {
+        return String("a " + name);
+      }
+    },
+    valueOf: function() {
+      return this._;
+    }
   });
 
-  klass.define(SCClass, "Class");
+  klass.define(SCClass, "Class", {
+    toString: function() {
+      return String(this._name);
+    }
+  });
 
-  SCObject.metaClass._MetaSpec.prototype = classes.Class = createClassInstance();
+  classes.Class = createClassInstance();
   classes.Class._Spec = SCClass;
-  classes.Object = new SCObject.metaClass._MetaSpec();
-  classes.Object._name = "Object";
-  classes.Object._Spec = SCObject.metaClass._Spec;
-  classes.Object._Spec.prototype.__class = classes.Object;
-  classes.Object._Spec.prototype.__Spec = classes.Object._Spec;
+
+  SCObject.metaClass._MetaSpec.prototype = classes.Class;
+
+  registerClass(SCObject.metaClass, "Object", classes.Object._Spec);
 
   klass.refine("Object", function(spec) {
     spec.$new = function() {
@@ -4443,55 +4462,7 @@ var sc = { VERSION: "0.0.28" };
       }
       return new this._Spec(slice.call(arguments));
     };
-
-    spec.class = function() {
-      return this.__class;
-    };
-
-    spec.isClass = function() {
-      return $SC.False();
-    };
-
-    spec.isKindOf = function($aClass) {
-      return $SC.Boolean(this instanceof $aClass._Spec);
-    };
-
-    spec.isMemberOf = function($aClass) {
-      return $SC.Boolean(this.__class === $aClass);
-    };
-
-    spec.toString = function() {
-      var name = this.__class._name;
-      if (/^[AEIOU]/.test(name)) {
-        return String("an " + name);
-      } else {
-        return String("a " + name);
-      }
-    };
-
-    spec.valueOf = function() {
-      return this._;
-    };
-  });
-
-  klass.refine("Class", function(spec) {
-    spec.name = function() {
-      return $SC.String(this._name);
-    };
-
-    spec.class = function() {
-      if (this._isMetaClass) {
-        return classes.Class;
-      }
-      return $SC("Meta_" + this._name);
-    };
-
-    spec.isClass = function() {
-      return $SC.True();
-    };
-
-    spec.toString = function() {
-      return String(this._name);
+    spec.$initClass = function() {
     };
   });
 
@@ -5181,9 +5152,17 @@ var sc = { VERSION: "0.0.28" };
       return $state;
     }, "function; state");
 
-    // already defined: class
-    // already defined: isKindOf
-    // already defined: isMemberOf
+    spec.class = function() {
+      return this.__class;
+    };
+
+    spec.isKindOf = function($aClass) {
+      return $SC.Boolean(this instanceof $aClass._Spec);
+    };
+
+    spec.isMemberOf = function($aClass) {
+      return $SC.Boolean(this.__class === $aClass);
+    };
 
     spec.respondsTo = fn(function($aSymbol) {
       return $SC.Boolean(typeof this[$aSymbol.__sym__()] === "function");
@@ -8643,9 +8622,21 @@ var sc = { VERSION: "0.0.28" };
 // src/sc/lang/classlib/Core/Kernel.js
 (function(sc) {
 
+  var $SC = sc.lang.$SC;
   var fn  = sc.lang.fn;
 
-  sc.lang.klass.refine("Class", {
+  sc.lang.klass.refine("Class", function(spec) {
+    spec.class = function() {
+      if (this._isMetaClass) {
+        return $SC("Class");
+      }
+      return $SC("Meta_" + this._name);
+    };
+
+    spec.name = function() {
+      return $SC.String(this._name);
+    };
+
     // TODO: implements superclass
     // TODO: implements asClass
     // TODO: implements initClass
@@ -13724,7 +13715,7 @@ var sc = { VERSION: "0.0.28" };
       numwin = ((raw.length + n - m) / n)|0;
       numslots = numwin * m;
 
-      for (i = h = k = 0; i < numwin; ++i,h += n) {
+      for (i = h = k = 0; i < numwin; ++i, h += n) {
         for (j = h; j < m + h; ++j) {
           obj2[k++] = obj1[j];
         }

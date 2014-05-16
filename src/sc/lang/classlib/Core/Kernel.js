@@ -3,9 +3,21 @@
 
   require("./Object");
 
+  var $SC = sc.lang.$SC;
   var fn  = sc.lang.fn;
 
-  sc.lang.klass.refine("Class", {
+  sc.lang.klass.refine("Class", function(spec) {
+    spec.class = function() {
+      if (this._isMetaClass) {
+        return $SC("Class");
+      }
+      return $SC("Meta_" + this._name);
+    };
+
+    spec.name = function() {
+      return $SC.String(this._name);
+    };
+
     // TODO: implements superclass
     // TODO: implements asClass
     // TODO: implements initClass

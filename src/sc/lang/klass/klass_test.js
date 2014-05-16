@@ -70,39 +70,6 @@
       test = instance.class();
       expect(test).to.equal(SCObject);
     });
-    it("#isClass", function() {
-      test = $nil.isClass();
-      expect(test).to.be.a("SCBoolean").that.is.false;
-
-      test = instance.isClass();
-      expect(test).to.be.a("SCBoolean").that.is.false;
-    });
-    it("#isKindOf", function() {
-      test = $nil.isKindOf(SCObject);
-      expect(test).to.be.a("SCBoolean").that.is.true;
-
-      test = $nil.isKindOf(SCNil);
-      expect(test).to.be.a("SCBoolean").that.is.true;
-
-      test = instance.isKindOf(SCObject);
-      expect(test).to.be.a("SCBoolean").that.is.true;
-
-      test = instance.isKindOf(SCNil);
-      expect(test).to.be.a("SCBoolean").that.is.false;
-    });
-    it("#isMemberOf", function() {
-      test = $nil.isMemberOf(SCObject);
-      expect(test).to.be.a("SCBoolean").that.is.false;
-
-      test = $nil.isMemberOf(SCNil);
-      expect(test).to.be.a("SCBoolean").that.is.true;
-
-      test = instance.isMemberOf(SCObject);
-      expect(test).to.be.a("SCBoolean").that.is.true;
-
-      test = instance.isMemberOf(SCNil);
-      expect(test).to.be.a("SCBoolean").that.is.false;
-    });
     it("#valueOf", function() {
       test = $nil.valueOf();
       expect(test).to.be.a("JSNull");
@@ -127,45 +94,17 @@
   });
 
   describe("SCClass", function() {
-    var SCObject, SCNil, SCClass, SCMeta_Object, SCMeta_Nil, SCMeta_Class, test;
+    var SCObject, SCClass;
     before(function() {
       SCObject = $SC("Object");
-      SCNil = $SC("Nil");
       SCClass = $SC("Class");
-      SCMeta_Object = $SC("Meta_Object");
-      SCMeta_Nil = $SC("Meta_Nil");
-      SCMeta_Class = $SC("Meta_Class");
     });
     it(".new", function() {
-      test = SCClass.new();
+      var test = SCClass.new();
       expect(test).to.be.a("SCNil");
     });
-    it("#name", function() {
-      test = SCClass.name();
-      expect(test).to.be.a("SCString").that.equals("Class");
-    });
-    it("#class", function() {
-      test = SCClass.class();
-      expect(test).to.equal(SCMeta_Class);
-
-      test = SCMeta_Class.class();
-      expect(test).to.equal(SCClass);
-
-      test = SCNil.class();
-      expect(test).to.equal(SCMeta_Nil);
-
-      test = SCMeta_Nil.class();
-      expect(test).to.equal(SCClass);
-
-      test = SCObject.class();
-      expect(test).to.equal(SCMeta_Object);
-    });
-    it("#isClass", function() {
-      test = SCClass.isClass();
-      expect(test).to.be.a("SCBoolean").that.is.true;
-    });
     it("#toString", function() {
-      test = SCClass.toString();
+      var test = SCClass.toString();
       expect(test).to.be.a("JSString").that.equals("Class");
     });
   });

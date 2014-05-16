@@ -1318,11 +1318,44 @@
 
     it.skip("#minNyquist", function() {
     });
-    it.skip("#sort", function() {
+    it("#sort", function() {
+      testCase(this, [
+        {
+          source: [ 1, 5, 2, 4, 3 ],
+          result: this,
+          after : [ 1, 2, 3, 4, 5 ]
+        },
+        {
+          source: [ 1, 5, 2, 4, 3 ],
+          args: [ function($a, $b) {
+            return $b ["<="] ($a);
+          } ],
+          result: this,
+          after : [ 5, 4, 3, 2, 1 ]
+        }
+      ]);
     });
-    it.skip("#sortBy", function() {
+    it("#sortBy", function() {
+      testCase(this, [
+        {
+          source: [ [ 9, 1 ], [ 2, 8 ], [ 5, 5 ], [ 7, 3 ], [ 4, 6 ] ],
+          args  : [ 1 ],
+          result: this,
+          after : [ [ 9, 1 ], [ 7, 3 ], [ 5, 5 ], [ 4, 6 ], [ 2, 8 ] ]
+        }
+      ]);
     });
-    it.skip("#sortMap", function() {
+    it("#sortMap", function() {
+      testCase(this, [
+        {
+          source: [ -5, 3, -2, 0, 1, 6, 4 ],
+          args  : [ function($a) {
+            return $a.abs();
+          } ],
+          result: this,
+          after : [ 0, 1, -2, 3, 4, -5, 6 ]
+        }
+      ]);
     });
     it.skip("#sortedMedian", function() {
     });

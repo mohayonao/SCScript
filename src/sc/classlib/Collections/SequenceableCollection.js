@@ -1549,9 +1549,33 @@ SCScript.install(function(sc) {
     };
 
     // TODO: implements minNyquist
-    // TODO: implements sort
-    // TODO: implements sortBy
-    // TODO: implements sortMap
+
+    spec.sort = fn(function($function) {
+      if ($function === $nil) {
+        $function = $SC.Function(function($a, $b) {
+          return $a ["<="] ($b);
+        });
+      }
+      this._sort($function);
+      return this;
+    }, "function");
+
+    spec.sortBy = fn(function($key) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $a.at($key) ["<="] ($b.at($key));
+      }));
+    }, "key");
+
+    spec.sortMap = fn(function($function) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $function.value($a) ["<="] ($function.value($b));
+      }));
+    }, "function");
+
+    // spec._sort = function($function) {
+    //   this.mergeSort($function);
+    // };
+
     // TODO: implements sortedMedian
     // TODO: implements median
     // TODO: implements quickSort

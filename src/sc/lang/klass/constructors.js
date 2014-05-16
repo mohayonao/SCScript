@@ -235,10 +235,10 @@
     return instance;
   };
 
-  $SC.String = function(value, immutable) {
+  $SC.String = function(value) {
     var instance = new SCString();
     instance._ = String(value).split("").map($SC.Char);
-    instance._immutable = !!immutable;
+    instance._immutable = true;
     return instance;
   };
 

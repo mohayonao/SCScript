@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.31" };
+var sc = { VERSION: "0.0.32" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -822,6 +822,11 @@ var sc = { VERSION: "0.0.31" };
   // basic classes
   function SCObject() {
     this._ = this;
+    Object.defineProperties(this, {
+      _immutable: {
+        value: false, writable: true
+      }
+    });
   }
 
   function SCClass() {
@@ -1112,10 +1117,10 @@ var sc = { VERSION: "0.0.31" };
     return instance;
   };
 
-  $SC.String = function(value, immutable) {
+  $SC.String = function(value) {
     var instance = new SCString();
     instance._ = String(value).split("").map($SC.Char);
-    instance._immutable = !!immutable;
+    instance._immutable = true;
     return instance;
   };
 

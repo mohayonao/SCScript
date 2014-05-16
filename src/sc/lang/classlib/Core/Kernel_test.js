@@ -6,7 +6,23 @@
   var $SC = sc.lang.$SC;
 
   describe("SCKernel", function() {
-    it.skip("write later", function() {
+    var SCClass, SCMeta_Class;
+    before(function() {
+      SCClass      = $SC("Class");
+      SCMeta_Class = $SC("Meta_Class");
+    });
+    it("#class", function() {
+      var test;
+
+      test = SCClass.class();
+      expect(test).to.equal(SCMeta_Class);
+
+      test = SCMeta_Class.class();
+      expect(test).to.equal(SCClass);
+    });
+    it("#name", function() {
+      var test = SCClass.name();
+      expect(test).to.be.a("SCString").that.equals("Class");
     });
   });
 

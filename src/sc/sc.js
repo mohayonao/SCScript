@@ -2,7 +2,6 @@
   "use strict";
 
   sc.lang = {};
-  sc.lang.$SC = {};
   sc.libs = {};
 
   function SCScript(fn) {

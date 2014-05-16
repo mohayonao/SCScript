@@ -92,9 +92,17 @@
       return $state;
     }, "function; state");
 
-    // already defined: class
-    // already defined: isKindOf
-    // already defined: isMemberOf
+    spec.class = function() {
+      return this.__class;
+    };
+
+    spec.isKindOf = function($aClass) {
+      return $SC.Boolean(this instanceof $aClass._Spec);
+    };
+
+    spec.isMemberOf = function($aClass) {
+      return $SC.Boolean(this.__class === $aClass);
+    };
 
     spec.respondsTo = fn(function($aSymbol) {
       return $SC.Boolean(typeof this[$aSymbol.__sym__()] === "function");

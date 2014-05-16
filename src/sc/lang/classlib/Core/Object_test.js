@@ -225,6 +225,44 @@
       expect(instance.do).to.be.calledWith($function);
       expect(test).to.equal($state);
     }));
+    it("#class", function() {
+      var instance,test;
+
+      instance = this.createInstance();
+      test = instance.class();
+
+      expect(test).to.equal(SCObject);
+    });
+    it("#isKindOf", function() {
+      var instance, test;
+
+      instance = $SC.Nil();
+      test = instance.isKindOf(SCObject);
+      expect(test).to.be.a("SCBoolean").that.is.true;
+
+      instance = $SC.Nil();
+      test = instance.isKindOf($SC("Nil"));
+      expect(test).to.be.a("SCBoolean").that.is.true;
+
+      instance = this.createInstance();
+      test = instance.isKindOf($SC("Nil"));
+      expect(test).to.be.a("SCBoolean").that.is.false;
+    });
+    it("#isMemberOf", function() {
+      var instance, test;
+
+      instance = $SC.Nil();
+      test = instance.isMemberOf(SCObject);
+      expect(test).to.be.a("SCBoolean").that.is.false;
+
+      instance = $SC.Nil();
+      test = instance.isMemberOf($SC("Nil"));
+      expect(test).to.be.a("SCBoolean").that.is.true;
+
+      instance = this.createInstance();
+      test = instance.isMemberOf($SC("Nil"));
+      expect(test).to.be.a("SCBoolean").that.is.false;
+    });
     it("#respondsTo", function() {
       testCase(this, [
         [ null, [ "\\respondsTo" ], true  ],

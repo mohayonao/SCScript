@@ -284,6 +284,11 @@ module.exports = function(grunt) {
     global.esprima = esprima;
     global.sc = { VERSION: grunt.config.data.pkg.version };
     global.sc.C = require("./src/const");
+    global.SCScript = {
+      install: function(installer) {
+        installer(global.sc);
+      }
+    };
 
     if (cover) {
       coverageVar = "$$cov_" + Date.now() + "$$";
@@ -354,7 +359,7 @@ module.exports = function(grunt) {
     child.stderr.pipe(process.stderr);
   });
 
-  function sortModules(root) {
+  function sortModules() {
     var result = [];
 
     function load(filepath) {
@@ -375,7 +380,7 @@ module.exports = function(grunt) {
       }
     }
 
-    load(root);
+    [].slice.call(arguments).forEach(load);
 
     return result;
   }
@@ -394,18 +399,12 @@ module.exports = function(grunt) {
     grunt.file.write("docs/report/test/index.html", tmpl);
   }
 
-  grunt.registerTask("build", function() {
-    var result = [];
+  function concat(files) {
     var C = require("./src/const");
-    var modules = sortModules("src/sc/installer.js");
 
-    result.push(
-      "(function(global) {\n",
-      q("use strict") + ";\n\n",
-      "var sc = { VERSION: " + q(grunt.config.data.pkg.version) + " };\n"
-    );
+    files = sortModules.apply(null, files);
 
-    result.push.apply(result, modules.map(function(filepath) {
+    return files.map(function(filepath) {
       var src;
 
       src = grunt.file.read(filepath);
@@ -424,13 +423,29 @@ module.exports = function(grunt) {
       }
 
       return src;
-    }));
+    });
+  }
 
+  grunt.registerTask("build", function() {
+    var files, result;
+
+    result = [];
+    result.push(
+      "(function(global) {\n",
+      q("use strict") + ";\n\n",
+      "var sc = { VERSION: " + q(grunt.config.data.pkg.version) + " };\n"
+    );
+
+    files = [ "src/sc/installer.js" ];
+    result.push.apply(result, concat(files));
     result.push(
       "\n})(this.self||global);\n"
     );
+    grunt.file.write("build/scscript.js", result.join("").trim());
 
-    grunt.file.write("build/scscript.js", result.join(""));
+    files  = grunt.file.expand([ "src/sc/classlib/**/*.js", "!src/sc/classlib/**/*_test.js" ]);
+    result = concat(files);
+    grunt.file.write("build/scscript-classlib.js", result.join("").trim());
 
     makeBrowserTest();
   });
@@ -451,7 +466,7 @@ module.exports = function(grunt) {
       dist: {
         files: {
           "docs/report/plato": [
-            "src/sc/**/*.js", "!src/sc/test/*.js", "!src/sc/**/*_test.js"
+            "src/sc/**/*.js", "!src/sc/test/*", "!src/**/*test*.js"
           ]
         }
       }

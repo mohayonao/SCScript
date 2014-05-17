@@ -764,7 +764,7 @@
     var node, method;
     var marker;
 
-    method = Node.createIdentifier("newFrom");
+    method = Node.createIdentifier("_newFrom");
     method = Marker.create(this.lexer).apply(method);
 
     marker = Marker.create(this.lexer);

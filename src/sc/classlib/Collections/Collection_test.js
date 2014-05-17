@@ -34,6 +34,15 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
+    it("._newFrom", function() {
+      var test;
+      var $aCollection;
+
+      $aCollection = $([ 1, 2, 3, 4, 5 ]);
+
+      test = SCCollection._newFrom.call(SCArray, $aCollection);
+      expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+    });
     it(".newFrom", function() {
       var test;
       var $aCollection;

@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.30" };
+var sc = { VERSION: "0.0.31" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -4182,7 +4182,7 @@ var sc = { VERSION: "0.0.30" };
     var node, method;
     var marker;
 
-    method = Node.createIdentifier("newFrom");
+    method = Node.createIdentifier("_newFrom");
     method = Marker.create(this.lexer).apply(method);
 
     marker = Marker.create(this.lexer);

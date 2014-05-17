@@ -51,7 +51,13 @@
         [ Infinity, [], false ],
       ]);
     });
-    it.skip("#hash", function() {
+    it("#hash", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.hash();
+      expect(test).to.be.a("SCInteger");
     });
     it("#+", function() {
       testCase(this, [

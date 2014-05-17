@@ -481,11 +481,29 @@
     });
     it.skip("#instVarHash", function() {
     });
-    it.skip("#basicHash", function() {
+    it("#basicHash", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.basicHash();
+      expect(test).to.be.a("SCInteger");
     });
-    it.skip("#hash", function() {
+    it("#hash", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.hash();
+      expect(test).to.be.a("SCInteger");
     });
-    it.skip("#identityHash", function() {
+    it("#identityHash", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.identityHash();
+      expect(test).to.be.a("SCInteger");
     });
     it("#->", sinon.test(function() {
       var instance, test, spy;

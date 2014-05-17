@@ -48,7 +48,9 @@ SCScript.install(function(sc) {
 
     spec.isInteger = utils.alwaysReturn$true;
 
-    // TODO: implements hash
+    spec.hash = function() {
+      return $SC.Float(this._).hash();
+    };
 
     [
       [ "+", $SC.Integer, $SC.Float ],

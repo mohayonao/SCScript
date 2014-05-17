@@ -32,12 +32,6 @@
         [ 3, [ 2 ], true  ],
       ]);
     });
-    it("#hash", function() {
-      var instance = this.createInstance();
-      expect(function() {
-        instance.hash();
-      }).to.throw(Error, "should have been implemented by subclass");
-    });
     it("#<", function() {
       testCase(this, [
         [ 1, [ 2 ], true  ],

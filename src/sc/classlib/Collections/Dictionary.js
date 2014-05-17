@@ -33,7 +33,7 @@ SCScript.install(function(sc) {
 
       obj = {};
 
-      array = this._array._;
+      array = this._$array._;
       for (i = 0, imax = array.length; i < imax; i += 2) {
         if (array[i] !== $nil) {
           obj[array[i].valueOf()] = array[i + 1].valueOf();
@@ -55,7 +55,7 @@ SCScript.install(function(sc) {
     }, "aCollection");
 
     spec.at = fn(function($key) {
-      return this._array.at(this.scanFor($key).__inc__());
+      return this._$array.at(this.scanFor($key).__inc__());
     }, "key");
 
     spec.atFail = fn(function($key, $function) {
@@ -101,13 +101,13 @@ SCScript.install(function(sc) {
       if ($value === $nil) {
         this.removeAt($key);
       } else {
-        $array = this._array;
+        $array = this._$array;
         $index = this.scanFor($key);
         $array.put($index.__inc__(), $value);
         if ($array.at($index) === $nil) {
           $array.put($index, $key);
-          this._size = this._size.__inc__();
-          if ($array.size().__inc__() < this._size.__inc__() * 4) {
+          this._size += 1;
+          if ($array.size().__inc__() < this._size * 4) {
             this.grow();
           }
         }
@@ -165,7 +165,7 @@ SCScript.install(function(sc) {
       var $res;
       var array, index;
 
-      array = this._array._;
+      array = this._$array._;
       index = this.scanFor($key).__int__();
 
       // istanbul ignore else
@@ -180,13 +180,13 @@ SCScript.install(function(sc) {
       var $index, $key;
 
       $index = this.scanFor($argkey);
-      $key   = this._array.at($index);
+      $key   = this._$array.at($index);
 
       if ($key === $nil) {
         return $function.value();
       }
 
-      return SCAssociation.new($key, this._array.at($index.__inc__()));
+      return SCAssociation.new($key, this._$array.at($index.__inc__()));
     }, "argKey; function");
 
     spec.keys = fn(function($species) {
@@ -196,7 +196,7 @@ SCScript.install(function(sc) {
         $species = SCSet;
       }
 
-      $set = $species.new(this._size);
+      $set = $species.new(this.size());
       this.keysDo($SC.Function(function($key) {
         $set.add($key);
       }));
@@ -207,7 +207,7 @@ SCScript.install(function(sc) {
     spec.values = function() {
       var $list;
 
-      $list = $SC("List").new(this._size);
+      $list = $SC("List").new(this.size());
       this.do($SC.Function(function($value) {
         $list.add($value);
       }));
@@ -236,7 +236,7 @@ SCScript.install(function(sc) {
       var $array;
       var $val, $index, $atKeyIndex;
 
-      $array = this._array;
+      $array = this._$array;
       $index = this.scanFor($key);
       $atKeyIndex = $array.at($index);
       if ($atKeyIndex === $nil) {
@@ -247,7 +247,7 @@ SCScript.install(function(sc) {
       $array.put($index, $nil);
       $array.put($index.__inc__(), $nil);
 
-      this._size = this._size.__dec__();
+      this._size -= 1;
 
       // this.fixCollisionsFrom($index);
 
@@ -258,7 +258,7 @@ SCScript.install(function(sc) {
       var $array;
       var $val, $index, $atKeyIndex;
 
-      $array = this._array;
+      $array = this._$array;
       $index = this.scanFor($key);
       $atKeyIndex = $array.at($index);
 
@@ -270,7 +270,7 @@ SCScript.install(function(sc) {
       $array.put($index, $nil);
       $array.put($index.__inc__(), $nil);
 
-      this._size = this._size.__dec__();
+      this._size -= 1;
 
       // this.fixCollisionsFrom($index);
 
@@ -286,7 +286,7 @@ SCScript.install(function(sc) {
     };
 
     spec.keysValuesDo = fn(function($function) {
-      this.keysValuesArrayDo(this._array, $function);
+      this.keysValuesArrayDo(this._$array, $function);
       return this;
     }, "function");
 
@@ -323,7 +323,7 @@ SCScript.install(function(sc) {
     }, "function");
 
     spec.pairsDo = fn(function($function) {
-      this.keysValuesArrayDo(this._array, $function);
+      this.keysValuesArrayDo(this._$array, $function);
       return this;
     }, "function");
 
@@ -412,7 +412,7 @@ SCScript.install(function(sc) {
     spec.findKeyForValue = fn(function($argValue) {
       var $ret = null;
 
-      this.keysValuesArrayDo(this._array, $SC.Function(function($key, $val) {
+      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
         if (BOOL($argValue ["=="] ($val))) {
           $ret = $key;
           return sc.C.LOOP_BREAK;
@@ -444,7 +444,7 @@ SCScript.install(function(sc) {
         return $nil;
       }
 
-      $array = this._array;
+      $array = this._$array;
       $size  = $array.size() [">>"] ($int_1);
 
       do {
@@ -502,7 +502,7 @@ SCScript.install(function(sc) {
       var $key, $val;
       var array, j, i, imax;
 
-      array = this._array._;
+      array = this._$array._;
       for (i = j = 0, imax = array.length; i < imax; i += 2, ++j) {
         $key = array[i];
         if ($key !== $nil) {
@@ -520,7 +520,7 @@ SCScript.install(function(sc) {
       var array, i, imax;
       var $elem;
 
-      array = this._array._;
+      array = this._$array._;
       imax  = array.length;
 
       for (i = 0; i < imax; i += 2) {

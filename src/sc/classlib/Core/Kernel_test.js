@@ -30,7 +30,7 @@
     var SCInterpreter, $interpreter;
     before(function() {
       SCInterpreter = $SC("Interpreter");
-      $interpreter = sc.lang.klass.$interpreter;
+      $interpreter = new SCInterpreter._Spec();
     });
     it(".new", function() {
       expect(function() {

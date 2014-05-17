@@ -44,8 +44,6 @@
     });
     it.skip("#subSample", function() {
     });
-    it.skip("#loop", function() {
-    });
     it.skip("#generate", function() {
     });
     it.skip("#collect", function() {
@@ -76,15 +74,11 @@
     });
     it.skip("#embedInStream", function() {
     });
-    it.skip("#while", function() {
-    });
     it.skip("#asEventStreamPlayer", function() {
     });
     it.skip("#play", function() {
     });
     it.skip("#trace", function() {
-    });
-    it.skip("#constrain", function() {
     });
     it.skip("#repeat", function() {
     });

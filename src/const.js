@@ -27,6 +27,11 @@
     TAG_FUNCTION       : 0x0c,
     TAG_UNUSED         : 0xff,
 
+    THREAD_STATE_INIT     : 0,
+    THREAD_STATE_RUNNING  : 3,
+    THREAD_STATE_SUSPENDED: 5,
+    THREAD_STATE_DONE     : 6,
+
     LOOP_BREAK: 0xffff,
   };
 

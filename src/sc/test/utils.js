@@ -282,7 +282,7 @@
         });
       });
     }
-    instance.__testid = instance._hash;
+    instance.__testid = instance.__hash;
 
     return instance;
   };

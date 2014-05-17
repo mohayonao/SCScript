@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.33" };
+var sc = { VERSION: "0.0.34" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -10,7 +10,7 @@ var sc = { VERSION: "0.0.33" };
   sc.libs = {};
 
   function SCScript(fn) {
-    return fn(sc.lang.klass.$interpreter, sc.lang.$SC);
+    return sc.lang.main.run(fn);
   }
 
   SCScript.install = function(installer) {
@@ -465,29 +465,6 @@ var sc = { VERSION: "0.0.33" };
 
 })(sc);
 
-// src/sc/lang/io.js
-(function(sc) {
-
-  var io = {};
-
-  var SCScript = sc.SCScript;
-  var buffer   = "";
-
-  io.post = function(msg) {
-    var items;
-
-    items  = (buffer + msg).split("\n");
-    buffer = items.pop();
-
-    items.forEach(function(msg) {
-      SCScript.stdout(msg);
-    });
-  };
-
-  sc.lang.io = io;
-
-})(sc);
-
 // src/sc/lang/dollarSC.js
 (function(sc) {
 
@@ -511,6 +488,7 @@ var sc = { VERSION: "0.0.33" };
   $SC.True = shouldBeImplementedInClassLib;
   $SC.False = shouldBeImplementedInClassLib;
   $SC.Nil = shouldBeImplementedInClassLib;
+  $SC.SegFunction = shouldBeImplementedInClassLib;
 
   sc.lang.$SC = $SC;
 
@@ -828,10 +806,10 @@ var sc = { VERSION: "0.0.33" };
   function SCObject() {
     this._ = this;
     Object.defineProperties(this, {
-      _immutable: {
+      __immutable: {
         value: false, writable: true
       },
-      _hash: {
+      __hash: {
         value: hash++
       }
     });
@@ -895,9 +873,28 @@ var sc = { VERSION: "0.0.33" };
 // src/sc/lang/klass/constructors.js
 (function(sc) {
 
-  var $SC   = sc.lang.$SC;
-  var fn    = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $SC    = sc.lang.$SC;
+  var fn     = sc.lang.fn;
+  var klass  = sc.lang.klass;
+
+  var $nil, $true, $false;
+  var $symbols, $chars, $integers, $floats;
+
+  function SCProcess() {
+    this.__initializeWith__("Object");
+    this._$interpreter = $nil;
+    this._$mainThread  = $nil; // ???
+  }
+  klass.define(SCProcess, "Process");
+
+  function SCInterpreter() {
+    this.__initializeWith__("Object");
+    for (var i = 97; i <= 122; i++) {
+      this["_$" + String.fromCharCode(i)] = $nil;
+    }
+    // this._$s = $SC("Server").default(); // in SCMain
+  }
+  klass.define(SCInterpreter, "Interpreter");
 
   function SCNil() {
     this.__initializeWith__("Object");
@@ -987,7 +984,7 @@ var sc = { VERSION: "0.0.33" };
 
   function SCArrayedCollection() {
     this.__initializeWith__("SequenceableCollection");
-    this._immutable = false;
+    this.__immutable = false;
     this._ = [];
   }
   klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
@@ -1004,9 +1001,8 @@ var sc = { VERSION: "0.0.33" };
     __tag: 11
   });
 
-  function SCString(value) {
+  function SCString() {
     this.__initializeWith__("RawArray");
-    this._ = value;
   }
   klass.define(SCString, "String : RawArray", {
     __tag: 1034
@@ -1032,19 +1028,32 @@ var sc = { VERSION: "0.0.33" };
   }
   sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
 
-  function SCInterpreter() {
-    this.__initializeWith__("Object");
+  function SCStream() {
+    this.__initializeWith__("AbstractFunction");
   }
-  klass.define(SCInterpreter, "Interpreter");
+  sc.lang.klass.define(SCStream, "Stream : AbstractFunction");
+
+  function SCThread() {
+    this.__initializeWith__("Stream");
+    if (this._init) {
+      this._init();
+    }
+  }
+  sc.lang.klass.define(SCThread, "Thread : Stream");
+
+  function SCRoutine() {
+    this.__initializeWith__("Thread");
+  }
+  sc.lang.klass.define(SCRoutine, "Routine : Thread");
 
   // $SC
-  var $nil      = new SCNil();
-  var $true     = new SCTrue();
-  var $false    = new SCFalse();
-  var $integers = {};
-  var $floats   = {};
-  var $symbols  = {};
-  var $chars    = {};
+  $nil      = new SCNil();
+  $true     = new SCTrue();
+  $false    = new SCFalse();
+  $integers = {};
+  $floats   = {};
+  $symbols  = {};
+  $chars    = {};
 
   $SC.Nil = function() {
     return $nil;
@@ -1121,14 +1130,14 @@ var sc = { VERSION: "0.0.33" };
   $SC.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
-    instance._immutable = !!immutable;
+    instance.__immutable = !!immutable;
     return instance;
   };
 
-  $SC.String = function(value) {
+  $SC.String = function(value, mutable) {
     var instance = new SCString();
     instance._ = String(value).split("").map($SC.Char);
-    instance._immutable = true;
+    instance.__immutable = !mutable;
     return instance;
   };
 
@@ -1141,8 +1150,6 @@ var sc = { VERSION: "0.0.33" };
   $SC.Ref = function(value) {
     return new SCRef([ value ]);
   };
-
-  sc.lang.klass.$interpreter = new SCInterpreter();
 
 })(sc);
 
@@ -1179,6 +1186,60 @@ var sc = { VERSION: "0.0.33" };
   };
 
   klass.utils = utils;
+
+})(sc);
+
+// src/sc/lang/main.js
+(function(sc) {
+
+  var main = {};
+
+  var $SC = sc.lang.$SC;
+  var random = sc.libs.random;
+
+  var $process, $interpreter;
+  var $mainThread;
+
+  main.run = function(fn) {
+    if (!initialize.done) {
+      initialize();
+    }
+    return fn($interpreter, $SC);
+  };
+
+  function initialize() {
+    var Process, Interpreter, Thread;
+
+    Process     = $SC("Process")._Spec;
+    Interpreter = $SC("Interpreter")._Spec;
+    Thread      = $SC("Thread")._Spec;
+
+    $process     = new Process();
+    $interpreter = new Interpreter();
+    $mainThread  = new Thread();
+
+    $process._$interpreter = $interpreter;
+    // $interpreter._$s = SCServer.default();
+
+    main.$thread   = $mainThread;
+    random.current = $mainThread._randgen;
+
+    // TODO:
+    // SoundSystem.addThread($mainThread);
+    // SoundSystem.start();
+
+    initialize.done = true;
+  }
+
+  $SC.thisProcess = function() {
+    return $process;
+  };
+
+  $SC.thisThread = function() {
+    return main.$thread;
+  };
+
+  sc.lang.main = main;
 
 })(sc);
 
@@ -1466,12 +1527,35 @@ var sc = { VERSION: "0.0.33" };
   };
 
   iterator.set$do = function($set) {
-    return js_array_iter($set._array._.filter(function($elem) {
+    return js_array_iter($set._$array._.filter(function($elem) {
       return $elem !== $nil;
     }));
   };
 
   sc.lang.iterator = iterator;
+
+})(sc);
+
+// src/sc/lang/io.js
+(function(sc) {
+
+  var io = {};
+
+  var SCScript = sc.SCScript;
+  var buffer   = "";
+
+  io.post = function(msg) {
+    var items;
+
+    items  = (buffer + msg).split("\n");
+    buffer = items.pop();
+
+    items.forEach(function(msg) {
+      SCScript.stdout(msg);
+    });
+  };
+
+  sc.lang.io = io;
 
 })(sc);
 
@@ -2372,7 +2456,7 @@ var sc = { VERSION: "0.0.33" };
       return "$this";
     }
 
-    return [ "$this." + node.name + "()" ];
+    return [ "$SC." + node.name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {

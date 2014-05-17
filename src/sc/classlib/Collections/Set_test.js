@@ -85,11 +85,11 @@
 
       test = instance.clear();
       expect(test).to.equal(instance);
-      expect(instance._array).to.be.a("SCArray").that.eqls([
+      expect(instance._$array).to.be.a("SCArray").that.eqls([
         null, null, null, null, null, null,
         null, null, null, null, null, null,
       ]);
-      expect(instance._size).to.be.a("SCInteger").that.equals(0);
+      expect(instance._size).to.equal(0);
     });
     it("#makeEmpty", sinon.test(function() {
       var instance, test;

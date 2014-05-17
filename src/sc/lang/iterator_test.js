@@ -439,7 +439,7 @@
       it("set$reverseDo", function() {
         var iter;
         var $set = {
-          _array: $([ null, 1, 2, null, 3, null ])
+          _$array: $([ null, 1, 2, null, 3, null ])
         };
 
         iter = iterator.set$do($set);

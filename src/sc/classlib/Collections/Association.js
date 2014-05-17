@@ -7,8 +7,8 @@ SCScript.install(function(sc) {
 
   function SCAssociation(args) {
     this.__initializeWith__("Magnitude");
-    this._key   = args.shift() || $SC.Nil();
-    this._value = args.shift() || $SC.Nil();
+    this._$key   = args.shift() || $SC.Nil();
+    this._$value = args.shift() || $SC.Nil();
   }
 
   sc.lang.klass.define(SCAssociation, "Association : Magnitude", function(spec, utils) {
@@ -16,40 +16,40 @@ SCScript.install(function(sc) {
     var $false = utils.$false;
 
     spec.valueOf = function() {
-      return this._key.valueOf();
+      return this._$key.valueOf();
     };
 
     spec.key = function() {
-      return this._key;
+      return this._$key;
     };
 
     spec.key_ = function($value) {
-      this._key = $value || /* istanbul ignore next */ $nil;
+      this._$key = $value || /* istanbul ignore next */ $nil;
       return this;
     };
 
     spec.value = function() {
-      return this._value;
+      return this._$value;
     };
 
     spec.value_ = function($value) {
-      this._value = $value || /* istanbul ignore next */ $nil;
+      this._$value = $value || /* istanbul ignore next */ $nil;
       return this;
     };
 
     spec["=="] = function($anAssociation) {
       if ($anAssociation.key) {
-        return this._key ["=="] ($anAssociation.key());
+        return this._$key ["=="] ($anAssociation.key());
       }
       return $false;
     };
 
     spec.hash = function() {
-      return this._key.hash();
+      return this._$key.hash();
     };
 
     spec["<"] = function($anAssociation) {
-      return this._key ["<"] ($anAssociation.key());
+      return this._$key ["<"] ($anAssociation.key());
     };
 
     // TODO: implements printOn

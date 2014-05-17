@@ -432,7 +432,7 @@ SCScript.install(function(sc) {
 
       this._ThrowIfImmutable();
 
-      if ($aCollection.isSequenceableCollection().valueOf()) {
+      if (BOOL($aCollection.isCollection())) {
         $aCollection.do($SC.Function(function($item) {
           $this._.push($this.__elem__($item));
         }));
@@ -759,6 +759,14 @@ SCScript.install(function(sc) {
       return $SC.String("[ " + this._.map(function($elem) {
         return $elem.asString().__str__();
       }).join(", ") + " ]");
+    };
+
+    // istanbul ignore next
+    spec._sort = function($function) {
+      this._ThrowIfImmutable();
+      this._.sort(function($a, $b) {
+        return BOOL($function.value($a, $b)) ? -1 : 1;
+      });
     };
   });
 

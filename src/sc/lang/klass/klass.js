@@ -193,6 +193,11 @@
   // basic classes
   function SCObject() {
     this._ = this;
+    Object.defineProperties(this, {
+      _immutable: {
+        value: false, writable: true
+      }
+    });
   }
 
   function SCClass() {

@@ -8,11 +8,11 @@ SCScript.install(function(sc) {
   var iterator = sc.lang.iterator;
 
   function SCSet(args) {
-    this.__initializeWith__("Collection");
     var n = 2;
     if (args && args[0]) {
       n = args[0].__int__();
     }
+    this.__initializeWith__("Collection");
     this.initSet($SC.Integer(Math.max(n, 2) * 2));
   }
 
@@ -35,7 +35,7 @@ SCScript.install(function(sc) {
     };
 
     spec.array_ = function($value) {
-      this._array = $value;
+      this._array = $value || /* istanbul ignore next */ $nil;
       return this;
     };
 
@@ -248,25 +248,11 @@ SCScript.install(function(sc) {
     };
 
     spec.grow = function() {
-      var $this = this;
-      var oldElements;
-
-      oldElements = this._array._;
-      this._array = SCArray.newClear(
-        $SC.Integer(this._array.size().__int__() * 2)
-      );
-      this._size = $int_0;
-
-      oldElements.forEach(function($item) {
-        if ($item !== $nil) {
-          $this.noCheckAdd($item);
-        }
-      });
-    };
-
-    spec.noCheckAdd = function($item) {
-      this._array.put(this.scanFor($item), $item);
-      this._size = this._size.__inc__();
+      var array, i, imax;
+      array = this._array._;
+      for (i = array.length, imax = i * 2; i < imax; ++i) {
+        array[i] = $nil;
+      }
     };
 
     // istanbul ignore next

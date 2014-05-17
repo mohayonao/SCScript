@@ -6,6 +6,7 @@
   require("../lang/installer");
 
   require("../classlib/Collections/Array");
+  require("../classlib/Collections/Association");
   require("../classlib/Collections/String");
   require("../classlib/Core/Boolean");
   require("../classlib/Core/Char");
@@ -71,7 +72,7 @@
       return $SC.Function(a);
     }
 
-    throw new Error("should not reached");
+    return a;
   };
   sc.test.$ = encode;
 
@@ -83,6 +84,10 @@
     return str;
   };
 
+  var isDictionary = function(obj) {
+    return obj && obj.constructor === Object;
+  };
+
   var isSCObject = function(obj) {
     return obj && typeof obj._ !== "undefined";
   };
@@ -92,18 +97,10 @@
 
     if (isSCObject(obj)) {
       switch (obj.__tag) {
-      case sc.C.TAG_INT: return "SCInteger";
-      case sc.C.TAG_SYM: return "SCSymbol";
-      case sc.C.TAG_CHAR: return "SCChar";
-      case sc.C.TAG_NIL: return "SCNil";
       case sc.C.TAG_FALSE: return "SCBoolean";
       case sc.C.TAG_TRUE: return "SCBoolean";
-      case sc.C.TAG_FLOAT: return "SCFloat";
-      case sc.C.TAG_STR: return "SCString";
-      case sc.C.TAG_ARRAY: return "SCArray";
-      case sc.C.TAG_FUNCTION: return "SCFunction";
       }
-      return "SCObject";
+      return "SC" + obj.__className;
     }
 
     if (guess) {
@@ -229,6 +226,10 @@
               return x && x.valueOf();
             })
           );
+        }
+      } else if (isDictionary(raw)) {
+        if (items.after) {
+          expect(raw).with_message(desc + ": after").to.eql(items.after);
         }
       }
     });

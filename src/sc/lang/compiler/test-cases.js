@@ -5708,7 +5708,7 @@
     "Set[3, 4, 5]": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC('Set').newFrom($SC.Array([",
+        "  return $SC('Set')._newFrom($SC.Array([",
         "    $SC.Integer(3),",
         "    $SC.Integer(4),",
         "    $SC.Integer(5),",
@@ -5732,7 +5732,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "newFrom",
+              name: "_newFrom",
               range: [ 3, 3 ],
               loc: {
                 start: { line: 1, column: 3 },
@@ -5800,7 +5800,7 @@
     "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC('Array').newFrom($SC.Array([",
+        "  return $SC('Array')._newFrom($SC.Array([",
         "    $SC.Integer(1),",
         "    $SC.Integer(2),",
         "  ])).at($SC.Integer(0));",
@@ -5825,7 +5825,7 @@
               },
               method: {
                 type: Syntax.Identifier,
-                name: "newFrom",
+                name: "_newFrom",
                 range: [ 6, 6 ],
                 loc: {
                   start: { line: 1, column: 6 },
@@ -5912,7 +5912,7 @@
     "Array [ 1, 2 ][0]": { // (Array [ 1, 2 ])[0]
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $SC('Array').newFrom($SC.Array([",
+        "  return $SC('Array')._newFrom($SC.Array([",
         "    $SC.Integer(1),",
         "    $SC.Integer(2),",
         "  ])).at($SC.Integer(0));",
@@ -5938,7 +5938,7 @@
               },
               method: {
                 type: Syntax.Identifier,
-                name: "newFrom",
+                name: "_newFrom",
                 range: [ 6, 6 ],
                 loc: {
                   start: { line: 1, column: 6 },

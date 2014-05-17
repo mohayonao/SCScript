@@ -67,7 +67,13 @@
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
-    it.skip("#hash", function() {
+    it("#hash", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.hash();
+      expect(test).to.be.a("SCInteger");
     });
     it("#<", function() {
       var instance, test;

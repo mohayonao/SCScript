@@ -231,9 +231,18 @@ SCScript.install(function(sc) {
     // TODO: implements equals
     // TODO: implements compareObject
     // TODO: implements instVarHash
-    // TODO: implements basicHash
-    // TODO: implements hash
-    // TODO: implements identityHash
+
+    spec.basicHash = function() {
+      return $SC.Integer(this._hash);
+    };
+
+    spec.hash = function() {
+      return $SC.Integer(this._hash);
+    };
+
+    spec.identityHash = function() {
+      return $SC.Integer(this._hash);
+    };
 
     spec["->"] = function($obj) {
       return $SC("Association").new(this, $obj);
@@ -1577,10 +1586,6 @@ SCScript.install(function(sc) {
       return $SC.Boolean(this.valueOf() !== $aMagnitude.valueOf());
     };
 
-    spec.hash = function() {
-      return this._subclassResponsibility("hash");
-    };
-
     spec["<"] = function($aMagnitude) {
       return $SC.Boolean(this < $aMagnitude);
     };
@@ -2145,8 +2150,6 @@ SCScript.install(function(sc) {
       return this.absdif($that) ["<"] ($precision);
     }, "that; precision=0.0001");
 
-    // TODO: implements hash
-
     spec.asInteger = function() {
       return $SC.Integer(this._);
     };
@@ -2535,7 +2538,9 @@ SCScript.install(function(sc) {
 
     spec.isInteger = utils.alwaysReturn$true;
 
-    // TODO: implements hash
+    spec.hash = function() {
+      return $SC.Float(this._).hash();
+    };
 
     [
       [ "+", $SC.Integer, $SC.Float ],
@@ -8055,7 +8060,9 @@ SCScript.install(function(sc) {
       return $false;
     };
 
-    // TODO: implements hash
+    spec.hash = function() {
+      return this._key.hash();
+    };
 
     spec["<"] = function($anAssociation) {
       return this._key ["<"] ($anAssociation.key());

@@ -231,9 +231,18 @@ SCScript.install(function(sc) {
     // TODO: implements equals
     // TODO: implements compareObject
     // TODO: implements instVarHash
-    // TODO: implements basicHash
-    // TODO: implements hash
-    // TODO: implements identityHash
+
+    spec.basicHash = function() {
+      return $SC.Integer(this._hash);
+    };
+
+    spec.hash = function() {
+      return $SC.Integer(this._hash);
+    };
+
+    spec.identityHash = function() {
+      return $SC.Integer(this._hash);
+    };
 
     spec["->"] = function($obj) {
       return $SC("Association").new(this, $obj);

@@ -15,10 +15,6 @@ SCScript.install(function(sc) {
       return $SC.Boolean(this.valueOf() !== $aMagnitude.valueOf());
     };
 
-    spec.hash = function() {
-      return this._subclassResponsibility("hash");
-    };
-
     spec["<"] = function($aMagnitude) {
       return $SC.Boolean(this < $aMagnitude);
     };

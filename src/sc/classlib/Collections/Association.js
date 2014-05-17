@@ -44,7 +44,9 @@ SCScript.install(function(sc) {
       return $false;
     };
 
-    // TODO: implements hash
+    spec.hash = function() {
+      return this._key.hash();
+    };
 
     spec["<"] = function($anAssociation) {
       return this._key ["<"] ($anAssociation.key());

@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.32" };
+var sc = { VERSION: "0.0.33" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -639,6 +639,7 @@ var sc = { VERSION: "0.0.32" };
   var klass       = {};
   var metaClasses = {};
   var classes     = klass.classes = {};
+  var hash = 0x100000;
 
   var createClassInstance = function(MetaSpec) {
     var instance = new SCClass();
@@ -675,7 +676,9 @@ var sc = { VERSION: "0.0.32" };
             className + bond + methodName + " is already defined."
         );
       }
-      methods[methodName] = func;
+      Object.defineProperty(methods, methodName, {
+        value: func, writable: true
+      });
     };
 
     if (typeof fn === "function") {
@@ -742,9 +745,11 @@ var sc = { VERSION: "0.0.32" };
     newClass = new MetaClass._MetaSpec();
     newClass._name = className;
     newClass._Spec = constructor;
-    constructor.prototype.__class = newClass;
-    constructor.prototype.__Spec  = constructor;
-    constructor.prototype.__className = className;
+    Object.defineProperties(constructor.prototype, {
+      __class: { value: newClass, writable: true },
+      __Spec : { value: constructor },
+      __className: { value: className }
+    });
     classes[className] = newClass;
 
     return newClass;
@@ -825,6 +830,9 @@ var sc = { VERSION: "0.0.32" };
     Object.defineProperties(this, {
       _immutable: {
         value: false, writable: true
+      },
+      _hash: {
+        value: hash++
       }
     });
   }

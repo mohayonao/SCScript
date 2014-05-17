@@ -272,8 +272,6 @@
     return instance;
   };
 
-  var __testid = Date.now();
-
   sc.test.object = function(properties) {
     var instance = sc.lang.klass.classes.Object.new();
 
@@ -284,7 +282,7 @@
         });
       });
     }
-    instance.__testid = __testid++;
+    instance.__testid = instance._hash;
 
     return instance;
   };

@@ -286,7 +286,7 @@
   };
 
   iterator.set$do = function($set) {
-    return js_array_iter($set._array._.filter(function($elem) {
+    return js_array_iter($set._$array._.filter(function($elem) {
       return $elem !== $nil;
     }));
   };

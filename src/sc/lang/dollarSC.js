@@ -23,6 +23,7 @@
   $SC.True = shouldBeImplementedInClassLib;
   $SC.False = shouldBeImplementedInClassLib;
   $SC.Nil = shouldBeImplementedInClassLib;
+  $SC.SegFunction = shouldBeImplementedInClassLib;
 
   sc.lang.$SC = $SC;
 

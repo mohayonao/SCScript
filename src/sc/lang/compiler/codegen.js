@@ -722,7 +722,7 @@
       return "$this";
     }
 
-    return [ "$this." + node.name + "()" ];
+    return [ "$SC." + node.name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {

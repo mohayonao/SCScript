@@ -1418,9 +1418,32 @@
       expect(test).to.equals(instance)
         .that.is.a("SCArray").and.eqls([ 1, 2, 0, 4, 5 ]);
     });
-    it.skip("#reduce", function() {
+    it("#reduce", function() {
+      testCase(this, [
+        {
+          source: [ 3 ],
+          args  : [ "\\*" ],
+          result: 3
+        },
+        {
+          source: [ 3, 4, 5, 6 ],
+          args  : [ "\\*" ],
+          result: 360
+        },
+      ]);
     });
-    it.skip("#join", function() {
+    it("#join", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          result: "1234",
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 0 ],
+          result: "1020304",
+        },
+      ]);
     });
     it.skip("#nextTimeOnGrid", function() {
     });

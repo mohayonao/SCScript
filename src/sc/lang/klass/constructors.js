@@ -4,9 +4,28 @@
   require("./klass");
   require("../fn");
 
-  var $SC   = sc.lang.$SC;
-  var fn    = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $SC    = sc.lang.$SC;
+  var fn     = sc.lang.fn;
+  var klass  = sc.lang.klass;
+
+  var $nil, $true, $false;
+  var $symbols, $chars, $integers, $floats;
+
+  function SCProcess() {
+    this.__initializeWith__("Object");
+    this._$interpreter = $nil;
+    this._$mainThread  = $nil; // ???
+  }
+  klass.define(SCProcess, "Process");
+
+  function SCInterpreter() {
+    this.__initializeWith__("Object");
+    for (var i = 97; i <= 122; i++) {
+      this["_$" + String.fromCharCode(i)] = $nil;
+    }
+    // this._$s = $SC("Server").default(); // in SCMain
+  }
+  klass.define(SCInterpreter, "Interpreter");
 
   function SCNil() {
     this.__initializeWith__("Object");
@@ -96,7 +115,7 @@
 
   function SCArrayedCollection() {
     this.__initializeWith__("SequenceableCollection");
-    this._immutable = false;
+    this.__immutable = false;
     this._ = [];
   }
   klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
@@ -113,9 +132,8 @@
     __tag: sc.C.TAG_ARRAY
   });
 
-  function SCString(value) {
+  function SCString() {
     this.__initializeWith__("RawArray");
-    this._ = value;
   }
   klass.define(SCString, "String : RawArray", {
     __tag: sc.C.TAG_STR
@@ -141,19 +159,32 @@
   }
   sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
 
-  function SCInterpreter() {
-    this.__initializeWith__("Object");
+  function SCStream() {
+    this.__initializeWith__("AbstractFunction");
   }
-  klass.define(SCInterpreter, "Interpreter");
+  sc.lang.klass.define(SCStream, "Stream : AbstractFunction");
+
+  function SCThread() {
+    this.__initializeWith__("Stream");
+    if (this._init) {
+      this._init();
+    }
+  }
+  sc.lang.klass.define(SCThread, "Thread : Stream");
+
+  function SCRoutine() {
+    this.__initializeWith__("Thread");
+  }
+  sc.lang.klass.define(SCRoutine, "Routine : Thread");
 
   // $SC
-  var $nil      = new SCNil();
-  var $true     = new SCTrue();
-  var $false    = new SCFalse();
-  var $integers = {};
-  var $floats   = {};
-  var $symbols  = {};
-  var $chars    = {};
+  $nil      = new SCNil();
+  $true     = new SCTrue();
+  $false    = new SCFalse();
+  $integers = {};
+  $floats   = {};
+  $symbols  = {};
+  $chars    = {};
 
   $SC.Nil = function() {
     return $nil;
@@ -231,14 +262,14 @@
   $SC.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
-    instance._immutable = !!immutable;
+    instance.__immutable = !!immutable;
     return instance;
   };
 
-  $SC.String = function(value) {
+  $SC.String = function(value, mutable) {
     var instance = new SCString();
     instance._ = String(value).split("").map($SC.Char);
-    instance._immutable = true;
+    instance.__immutable = !mutable;
     return instance;
   };
 
@@ -251,7 +282,5 @@
   $SC.Ref = function(value) {
     return new SCRef([ value ]);
   };
-
-  sc.lang.klass.$interpreter = new SCInterpreter();
 
 })(sc);

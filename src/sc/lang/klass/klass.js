@@ -199,10 +199,10 @@
   function SCObject() {
     this._ = this;
     Object.defineProperties(this, {
-      _immutable: {
+      __immutable: {
         value: false, writable: true
       },
-      _hash: {
+      __hash: {
         value: hash++
       }
     });

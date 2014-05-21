@@ -7879,7 +7879,7 @@
     "thisProcess.platform;": {
       compiled: [
         "SCScript(function($this, $SC) {",
-        "  return $this.thisProcess().platform();",
+        "  return $SC.thisProcess().platform();",
         "});",
       ],
       ast: {

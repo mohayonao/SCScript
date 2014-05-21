@@ -27,7 +27,7 @@ SCScript.install(function(sc) {
     };
 
     spec._ThrowIfImmutable = function() {
-      if (this._immutable) {
+      if (this.__immutable) {
         throw new Error("Attempted write to immutable object.");
       }
     };
@@ -771,14 +771,115 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {
+    var SCArray = $SC("Array");
+
     spec.archiveAsCompileString = utils.alwaysReturn$true;
     spec.archiveAsObject = utils.alwaysReturn$true;
+
     spec.rate = function() {
       return $SC.Symbol("scalar");
     };
 
     // TODO: implements readFromStream
-    // TODO: implements powerset
+
+    spec.powerset = function() {
+      return this.as(SCArray).powerset();
+    };
+  });
+
+  function SCInt8Array() {
+    this.__initializeWith__("RawArray");
+  }
+
+  sc.lang.klass.define(SCInt8Array, "Int8Array : RawArray", function(spec) {
+    var int8 = new Int8Array(1);
+
+    spec.valueOf = function() {
+      return new Int8Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int8[0] = item.__int__();
+      return $SC.Integer(int8[0]);
+    };
+  });
+
+  function SCInt16Array() {
+    this.__initializeWith__("RawArray");
+  }
+
+  sc.lang.klass.define(SCInt16Array, "Int16Array : RawArray", function(spec) {
+    var int16 = new Int16Array(1);
+
+    spec.valueOf = function() {
+      return new Int16Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int16[0] = item.__int__();
+      return $SC.Integer(int16[0]);
+    };
+  });
+
+  function SCInt32Array() {
+    this.__initializeWith__("RawArray");
+  }
+
+  sc.lang.klass.define(SCInt32Array, "Int32Array : RawArray", function(spec) {
+    var int32 = new Int32Array(1);
+
+    spec.valueOf = function() {
+      return new Int32Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int32[0] = item.__int__();
+      return $SC.Integer(int32[0]);
+    };
+  });
+
+  function SCFloatArray() {
+    this.__initializeWith__("RawArray");
+  }
+
+  sc.lang.klass.define(SCFloatArray, "FloatArray : RawArray", function(spec) {
+    var float32 = new Float32Array(1);
+
+    spec.valueOf = function() {
+      return new Float32Array(this._.map(function($elem) {
+        return $elem.__num__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      float32[0] = item.__num__();
+      return $SC.Float(float32[0]);
+    };
+  });
+
+  function SCDoubleArray() {
+    this.__initializeWith__("RawArray");
+  }
+
+  sc.lang.klass.define(SCDoubleArray, "DoubleArray : RawArray", function(spec) {
+    var float64 = new Float64Array(1);
+
+    spec.valueOf = function() {
+      return new Float64Array(this._.map(function($elem) {
+        return $elem.__num__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      float64[0] = item.__num__();
+      return $SC.Float(float64[0]);
+    };
   });
 
 });

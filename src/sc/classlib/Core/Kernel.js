@@ -4,7 +4,6 @@ SCScript.install(function(sc) {
   require("./Object");
 
   var $SC = sc.lang.$SC;
-  var fn  = sc.lang.fn;
 
   sc.lang.klass.refine("Class", function(spec) {
     spec.class = function() {
@@ -57,15 +56,15 @@ SCScript.install(function(sc) {
 
       function getter(name) {
         return function() {
-          return this["_" + name] || $nil;
+          return this["_$" + name];
         };
       }
 
       function setter(name) {
-        return fn(function(value) {
-          this["_" + name] = value;
+        return function($value) {
+          this["_$" + name] = $value || /* istanbul ignore next */ $nil;
           return this;
-        }, "value");
+        };
       }
 
       for (i = 97; i <= 122; i++) {
@@ -82,7 +81,7 @@ SCScript.install(function(sc) {
     spec.clearAll = function() {
       var i;
       for (i = 97; i <= 122; i++) {
-        this["_" + String.fromCharCode(i)] = $nil;
+        this["_$" + String.fromCharCode(i)] = $nil;
       }
       return this;
     };

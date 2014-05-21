@@ -129,9 +129,21 @@
     });
     it.skip("#asBinOpString", function() {
     });
-    it.skip("#applyTo", function() {
+    it("#applyTo", function() {
+      var instance, test;
+      var $a, $b;
+
+      $a = $SC.Integer(10);
+      $b = $SC.Integer(20);
+
+      instance = this.createInstance("*");
+
+      test = instance.applyTo($a, $b);
+      expect(test).to.be.a("SCInteger").that.equals(200);
     });
-    it.skip("#performBinaryOpOnSomething", function() {
+    it("#performBinaryOpOnSomething", function() {
+      var instance = this.createInstance();
+      expect(instance.performBinaryOpOnSomething).to.be.nop;
     });
     it("#neg", function() {
       var instance = this.createInstance();

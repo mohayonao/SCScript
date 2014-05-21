@@ -48,11 +48,6 @@
     });
     it.skip("#<>unixCmdActions", function() {
     });
-    it(".new", function() {
-      expect(function() {
-        SCString.new();
-      }).to.throw("should use literal");
-    });
     it.skip(".initClass", function() {
     });
     it.skip(".doUnixCmdAction", function() {

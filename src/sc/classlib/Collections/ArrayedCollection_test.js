@@ -1239,8 +1239,11 @@
     var SCRawArray;
     before(function() {
       SCRawArray = $SC("RawArray");
-      this.createInstance = function() {
-        return SCRawArray.new();
+      this.createInstance = function(source) {
+        var instance = $SC.String(source || "").copy();
+        var testMethod = this.test.title.substr(1);
+        sc.test.setSingletonMethod(instance, "RawArray", testMethod);
+        return instance;
       };
     });
     it("#archiveAsCompileString", function() {
@@ -1269,7 +1272,103 @@
     });
     it.skip("#readFromStream", function() {
     });
-    it.skip("#powerset", function() {
+    it("#powerset", function() {
+      testCase(this, [
+        {
+          source: "str",
+          result: [
+            [  ],
+            [ "s" ],
+            [ "t" ],
+            [ "s", "t" ],
+            [ "r" ],
+            [ "s", "r" ],
+            [ "t", "r" ],
+            [ "s", "t", "r" ]
+          ]
+        }
+      ]);
     });
   });
+
+  describe("SCInt8Array", function() {
+    var SCInt8Array;
+    before(function() {
+      SCInt8Array = $SC("Int8Array");
+    });
+    it("#valueOf", function() {
+      var instance, test, expected;
+
+      instance = SCInt8Array.newFrom($([ 0, 255, 256 ]));
+      test = instance.valueOf();
+
+      expected = new Int8Array([ 0, -1, 0 ]);
+      expect(test).to.eql(expected);
+    });
+  });
+
+  describe("SCInt16Array", function() {
+    var SCInt16Array;
+    before(function() {
+      SCInt16Array = $SC("Int16Array");
+    });
+    it("#valueOf", function() {
+      var instance, test, expected;
+
+      instance = SCInt16Array.newFrom($([ 0, 65535, 65536 ]));
+      test = instance.valueOf();
+
+      expected = new Int16Array([ 0, -1, 0 ]);
+      expect(test).to.eql(expected);
+    });
+  });
+
+  describe("SCInt32Array", function() {
+    var SCInt32Array;
+    before(function() {
+      SCInt32Array = $SC("Int32Array");
+    });
+    it("#valueOf", function() {
+      var instance, test, expected;
+
+      instance = SCInt32Array.newFrom($([ 0, 4294967295, 4294967296 ]));
+      test = instance.valueOf();
+
+      expected = new Int32Array([ 0, -1, 0 ]);
+      expect(test).to.eql(expected);
+    });
+  });
+
+  describe("SCFloatArray", function() {
+    var SCFloatArray;
+    before(function() {
+      SCFloatArray = $SC("FloatArray");
+    });
+    it("#valueOf", function() {
+      var instance, test, expected;
+
+      instance = SCFloatArray.newFrom($([ 0, 0.5, -0.5 ]));
+      test = instance.valueOf();
+
+      expected = new Float32Array([ 0, 0.5, -0.5 ]);
+      expect(test).to.eql(expected);
+    });
+  });
+
+  describe("SCDoubleArray", function() {
+    var SCDoubleArray;
+    before(function() {
+      SCDoubleArray = $SC("DoubleArray");
+    });
+    it("#valueOf", function() {
+      var instance, test, expected;
+
+      instance = SCDoubleArray.newFrom($([ 0, 0.5, -0.5 ]));
+      test = instance.valueOf();
+
+      expected = new Float64Array([ 0, 0.5, -0.5 ]);
+      expect(test).to.eql(expected);
+    });
+  });
+
 })();

@@ -233,15 +233,15 @@ SCScript.install(function(sc) {
     // TODO: implements instVarHash
 
     spec.basicHash = function() {
-      return $SC.Integer(this._hash);
+      return $SC.Integer(this.__hash);
     };
 
     spec.hash = function() {
-      return $SC.Integer(this._hash);
+      return $SC.Integer(this.__hash);
     };
 
     spec.identityHash = function() {
-      return $SC.Integer(this._hash);
+      return $SC.Integer(this.__hash);
     };
 
     spec["->"] = function($obj) {

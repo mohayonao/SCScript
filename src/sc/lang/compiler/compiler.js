@@ -35,7 +35,9 @@
       ThisExpression: "ThisExpression",
       UnaryExpression: "UnaryExpression",
       VariableDeclaration: "VariableDeclaration",
-      VariableDeclarator: "VariableDeclarator"
+      VariableDeclarator: "VariableDeclarator",
+      ValueMethodEvaluator: "ValueMethodEvaluator",
+      ValueMethodResult: "ValueMethodResult"
     },
     Message: {
       ArgumentAlreadyDeclared: "argument '%0' already declared",
@@ -74,7 +76,15 @@
   };
 
   SCScript.compile = function(source, opts) {
-    return compiler.codegen.compile(SCScript.parse(source, opts), opts);
+    var ast;
+
+    if (typeof source === "string") {
+      ast = SCScript.parse(source, opts);
+    } else {
+      ast = source;
+    }
+
+    return compiler.codegen.compile(ast, opts);
   };
 
 })(sc);

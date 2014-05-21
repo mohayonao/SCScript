@@ -25,6 +25,10 @@
   $SC.Nil = shouldBeImplementedInClassLib;
   $SC.SegFunction = shouldBeImplementedInClassLib;
 
+  $SC.Value = function(val) {
+    return val._result || val;
+  };
+
   sc.lang.$SC = $SC;
 
 })(sc);

@@ -628,7 +628,8 @@
 
     while ((stamp = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
       lookahead = this.lookahead;
-      if ((prev === "{" && (stamp !== "#" && stamp !== "{")) || (prev === "(" && stamp === "(")) {
+      if ((prev === "{" && (stamp === "(" || stamp === "[")) ||
+          (prev === "(" && stamp === "(")) {
         this.throwUnexpected(lookahead);
       }
       switch (stamp) {

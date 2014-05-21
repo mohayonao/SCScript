@@ -45,7 +45,7 @@
       var source, opts, ast;
       var test;
 
-      source = Math.random();
+      source = "source";
       opts   = Math.random();
       ast    = Math.random();
 
@@ -60,6 +60,21 @@
       expect(compiler.codegen.compile).to.be.calledWith(ast, opts);
       expect(compiler.codegen.compile).to.be.calledLastIn(test);
     }));
+    it("SCScript.compile with ast", sinon.test(function() {
+      var source, opts;
+      var test;
+
+      source = {};
+      opts   = Math.random();
+
+      this.stub(compiler.codegen, "compile", sc.test.func);
+
+      test = SCScript.compile(source, opts);
+
+      expect(compiler.codegen.compile).to.be.calledWith(source, opts);
+      expect(compiler.codegen.compile).to.be.calledLastIn(test);
+    }));
+
   });
 
 })();

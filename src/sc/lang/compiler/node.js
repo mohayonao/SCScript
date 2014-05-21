@@ -149,6 +149,20 @@
         node.init = init;
       }
       return node;
+    },
+    createValueMethodEvaluator: function(id, expr) {
+      return {
+        type: Syntax.ValueMethodEvaluator,
+        id  : id,
+        expr: expr,
+        segmented: true
+      };
+    },
+    createValueMethodResult: function(id) {
+      return {
+        type: Syntax.ValueMethodResult,
+        id: id
+      };
     }
   };
 

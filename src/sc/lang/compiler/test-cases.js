@@ -5705,6 +5705,76 @@
         }
       }
     },
+    "r {}.value": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.Function(function() {",
+        "    return $SC.Nil();",
+        "  }).r().value();",
+        "});"
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.CallExpression,
+              callee: {
+                type: Syntax.FunctionExpression,
+                body: [
+                ],
+                blocklist: true,
+                range: [ 2, 4 ],
+                loc: {
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 4 }
+                }
+              },
+              method: {
+                type: Syntax.Identifier,
+                name: "r",
+                range: [ 0, 1 ],
+                loc: {
+                  start: { line: 1, column: 0 },
+                  end  : { line: 1, column: 1 }
+                }
+              },
+              args: {
+                list: []
+              },
+              range: [ 0, 4 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end  : { line: 1, column: 4 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "value",
+              range: [ 5, 10 ],
+              loc: {
+                start: { line: 1, column: 5 },
+                end  : { line: 1, column: 10 }
+              }
+            },
+            args: {
+              list: []
+            },
+            range: [ 0, 10 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 10 }
+            }
+          }
+        ],
+        range: [ 0, 10 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 10 }
+        }
+      }
+    },
     "Set[3, 4, 5]": {
       compiled: [
         "SCScript(function($this, $SC) {",
@@ -8108,6 +8178,93 @@
         }
       }
     },
+    "{ neg(a.value) }": {
+      compiled: [
+        "SCScript(function($this, $SC) {",
+        "  return $SC.SegFunction(function() {",
+        "    var _val0;",
+        "    return [",
+        "      function() {",
+        "        return _val0 = $this.a().value();",
+        "      },",
+        "      function() {",
+        "        return $SC.Value(_val0).neg();",
+        "      }",
+        "    ];",
+        "  });",
+        "});"
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.FunctionExpression,
+            body: [
+              {
+                type: Syntax.CallExpression,
+                stamp: "(",
+                callee: {
+                  type: Syntax.CallExpression,
+                  callee: {
+                    type: Syntax.Identifier,
+                    name: "a",
+                    range: [ 6, 7 ],
+                    loc: {
+                      start: { line: 1, column: 6 },
+                      end  : { line: 1, column: 7 }
+                    }
+                  },
+                  method: {
+                    type: Syntax.Identifier,
+                    name: "value",
+                    range: [ 8, 13 ],
+                    loc: {
+                      start: { line: 1, column: 8 },
+                      end  : { line: 1, column: 13 }
+                    }
+                  },
+                  args: {
+                    list: []
+                  },
+                  range: [ 6, 13 ],
+                  loc: {
+                    start: { line: 1, column: 6 },
+                    end  : { line: 1, column: 13 }
+                  }
+                },
+                method: {
+                  type: Syntax.Identifier,
+                  name: "neg",
+                  range: [ 2, 5 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 5 }
+                  }
+                },
+                args: {
+                  list: []
+                },
+                range: [ 2, 14 ],
+                loc: {
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 14 }
+                }
+              }
+            ],
+            range: [ 0, 16 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 16 }
+            }
+          }
+        ],
+        range: [ 0, 16 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 16 }
+        }
+      }
+    }
   };
 
   sc.test.compiler = {

@@ -425,9 +425,6 @@
           error({ line: 1, column: 19, index: 18 }, Message.UnexpectedNumber),
           error({ line: 1, column: 21, index: 20 }, Message.UnexpectedToken, "]"),
         ],
-        "if {true} .value": [
-          error({ line: 1, column: 11, index: 10 }, Message.UnexpectedToken, ".")
-        ],
       };
 
       Object.keys(cases).forEach(function(source) {

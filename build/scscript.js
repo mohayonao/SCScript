@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.35" };
+var sc = { VERSION: "0.0.36" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -489,10 +489,8 @@ var sc = { VERSION: "0.0.35" };
   $SC.False = shouldBeImplementedInClassLib;
   $SC.Nil = shouldBeImplementedInClassLib;
   $SC.SegFunction = shouldBeImplementedInClassLib;
-
-  $SC.Value = function(val) {
-    return val._result || val;
-  };
+  $SC.Value = shouldBeImplementedInClassLib;
+  $SC.Result = shouldBeImplementedInClassLib;
 
   sc.lang.$SC = $SC;
 
@@ -2801,13 +2799,11 @@ var sc = { VERSION: "0.0.35" };
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
-    var val = "_val" + node.id;
-    this.scope.add("var", val, this.state.syncBlockScope);
-    return [ val + " = ", this.generate(node.expr) ];
+    return [ "$SC.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
   };
 
   CodeGen.prototype.ValueMethodResult = function(node) {
-    return [ "$SC.Value(_val" + node.id + ")" ];
+    return [ "$SC.Result(" + node.id + ")" ];
   };
 
   CodeGen.prototype._Statements = function(elements) {

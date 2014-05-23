@@ -24,10 +24,8 @@
   $SC.False = shouldBeImplementedInClassLib;
   $SC.Nil = shouldBeImplementedInClassLib;
   $SC.SegFunction = shouldBeImplementedInClassLib;
-
-  $SC.Value = function(val) {
-    return val._result || val;
-  };
+  $SC.Value = shouldBeImplementedInClassLib;
+  $SC.Result = shouldBeImplementedInClassLib;
 
   sc.lang.$SC = $SC;
 

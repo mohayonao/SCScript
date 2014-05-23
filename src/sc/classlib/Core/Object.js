@@ -95,7 +95,7 @@ SCScript.install(function(sc) {
     };
 
     spec.isKindOf = function($aClass) {
-      return $SC.Boolean(this instanceof $aClass._Spec);
+      return $SC.Boolean(this instanceof $aClass.__Spec);
     };
 
     spec.isMemberOf = function($aClass) {
@@ -165,7 +165,7 @@ SCScript.install(function(sc) {
     // TODO: implements contentsCopy
 
     spec.shallowCopy = function() {
-      var a = new this.__class._Spec();
+      var a = new this.__Spec([]);
 
       Object.keys(this).forEach(function(key) {
         a[key] = copy(this[key]);

@@ -21,33 +21,33 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
-    it.skip("#<state", function() {
+    it.skip("<state", function() {
     });
-    it.skip("#<parent", function() {
+    it.skip("<parent", function() {
     });
-    it.skip("#<primitiveError", function() {
+    it.skip("<primitiveError", function() {
     });
-    it.skip("#<primitiveIndex", function() {
+    it.skip("<primitiveIndex", function() {
     });
-    it.skip("#<beats", function() {
+    it.skip("<beats", function() {
     });
-    it.skip("#<seconds", function() {
+    it.skip("<seconds", function() {
     });
-    it.skip("#<clock", function() {
+    it.skip("<clock", function() {
     });
-    it.skip("#<nextBeat", function() {
+    it.skip("<nextBeat", function() {
     });
-    it.skip("#<>endBeat", function() {
+    it.skip("<>endBeat", function() {
     });
-    it.skip("#<>endValue", function() {
+    it.skip("<>endValue", function() {
     });
-    it.skip("#<>exceptionHandler", function() {
+    it.skip("<>exceptionHandler", function() {
     });
-    it.skip("#>threadPlayer", function() {
+    it.skip(">threadPlayer", function() {
     });
-    it.skip("#<executingPath", function() {
+    it.skip("<executingPath", function() {
     });
-    it.skip("#<oldExecutingPath", function() {
+    it.skip("<oldExecutingPath", function() {
     });
     it.skip("#init", function() {
     });

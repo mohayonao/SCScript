@@ -76,9 +76,24 @@ SCScript.install(function(sc) {
     // TODO: implements awake
     // TODO: implements cmdPeriod
     // TODO: implements bench
-    // TODO: implements protect
+
+    spec.protect = function($handler) {
+      var $result;
+
+      try {
+        $result = this.value();
+      } catch (e) {
+        $result = null;
+      } finally {
+        $handler.value();
+      }
+
+      return $result || $nil;
+    };
+
     // TODO: implements try
     // TODO: implements prTry
+
     // TODO: implements handleError
 
     spec.case = function() {

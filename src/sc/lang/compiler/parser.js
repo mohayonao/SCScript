@@ -1043,7 +1043,11 @@
 
     if (this.match("~")) {
       this.lex();
-      expr = Node.createGlobalExpression(this.parseIdentifier());
+      expr = this.parseIdentifier();
+      if (isClassName(expr)) {
+        this.throwUnexpected({ type: Token.Identifier, value: expr.id });
+      }
+      expr = Node.createEnvironmentExpresion(expr);
     } else {
       stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
       switch (stamp) {
@@ -1231,7 +1235,7 @@
     } else if (this.match("..")) {
       expr = this.parseSeriesInitialiser(null, generator);
     } else if (this.match(")")) {
-      expr = Node.createObjectExpression([]);
+      expr = Node.createEventExpression([]);
     } else {
       expr = this.parseParenthesesGuess(generator, marker);
     }
@@ -1295,7 +1299,7 @@
 
     this.state.innerElements = innerElements;
 
-    return Node.createObjectExpression(elements);
+    return Node.createEventExpression(elements);
   };
 
   SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
@@ -1557,7 +1561,7 @@
   var isLeftHandSide = function(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
-    case Syntax.GlobalExpression:
+    case Syntax.EnvironmentExpresion:
       return true;
     }
     return false;

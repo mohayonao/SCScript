@@ -7,20 +7,16 @@ SCScript.install(function(sc) {
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
 
-  function SCSet(args) {
-    var n = 2;
-    if (args && args[0]) {
-      n = args[0].__int__();
-    }
-    this.__initializeWith__("Collection");
-    this.initSet($SC.Integer(Math.max(n, 2) * 2));
-  }
-
-  sc.lang.klass.define(SCSet, "Set : Collection", function(spec, utils) {
+  sc.lang.klass.refine("Set", function(spec, utils) {
     var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
     var SCArray = $SC("Array");
+
+    spec.$new = fn(function($n) {
+      $n = $SC.Integer(Math.max($n.__int__(), 2) * 2);
+      return this.__super__("new").initSet($n);
+    }, "n=2");
 
     spec.valueOf = function() {
       return this._$array._.filter(function($elem) {
@@ -232,6 +228,7 @@ SCScript.install(function(sc) {
     spec.initSet = function($n) {
       this._$array = SCArray.newClear($n);
       this._size   = 0;
+      return this;
     };
 
     spec.putCheck = function($index, $item) {

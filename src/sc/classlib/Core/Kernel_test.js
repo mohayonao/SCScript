@@ -26,18 +26,25 @@
     });
   });
 
+  describe("SCProcess", function() {
+    var SCProcess;
+    before(function() {
+      SCProcess = $SC("Process");
+    });
+    it(".new", function() {
+      expect(function() {
+        SCProcess.new();
+      }).to.not.throw();
+    });
+  });
+
   describe("SCInterpreter", function() {
     var SCInterpreter, $interpreter;
     before(function() {
       SCInterpreter = $SC("Interpreter");
-      $interpreter = new SCInterpreter._Spec();
+      $interpreter = SCInterpreter.new();
     });
-    it(".new", function() {
-      expect(function() {
-        SCInterpreter.new();
-      }).to.throw("Interpreter.new is illegal.");
-    });
-    it("#<>a..z / #clearAll", function() {
+    it("<>a..z / #clearAll", function() {
       var instance;
 
       instance = $interpreter;

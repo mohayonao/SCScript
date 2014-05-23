@@ -13,10 +13,6 @@
         return SCUnaryOpStream.new();
       };
     });
-    it.skip("#>operator", function() {
-    });
-    it.skip("#>a", function() {
-    });
     it.skip("#next", function() {
     });
     it.skip("#reset", function() {
@@ -32,12 +28,6 @@
       this.createInstance = function() {
         return SCBinaryOpStream.new();
       };
-    });
-    it.skip("#>operator", function() {
-    });
-    it.skip("#>a", function() {
-    });
-    it.skip("#>b", function() {
     });
     it.skip("#next", function() {
     });
@@ -70,10 +60,6 @@
       this.createInstance = function() {
         return SCNAryOpStream.new();
       };
-    });
-    it.skip("#>operator", function() {
-    });
-    it.skip("#>a", function() {
     });
     it.skip("#arglist_", function() {
     });

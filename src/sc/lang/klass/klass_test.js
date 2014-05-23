@@ -9,20 +9,17 @@
     var test;
     it("define", function() {
       expect(function() {
-        sc.lang.klass.define("CONSTRUCTOR");
-      }).to.throw("first argument must be a constructor");
-      expect(function() {
-        sc.lang.klass.define(function() {}, 0);
-      }).to.throw("second argument must be a string");
-      expect(function() {
-        sc.lang.klass.define(function() {}, "lowercase");
+        sc.lang.klass.define("lowercase");
       }).to.throw("classname should be CamelCase");
       expect(function() {
-        sc.lang.klass.define(function() {}, "Object");
+        sc.lang.klass.define("Object");
       }).to.throw("already registered");
       expect(function() {
-        sc.lang.klass.define(function() {}, "NewClass : UndefinedClass");
+        sc.lang.klass.define("NewClass : UndefinedClass");
       }).to.throw("superclass 'UndefinedClass' is not registered");
+      expect(function() {
+        sc.lang.klass.define("NewClass");
+      }).to.throw("class should have a constructor");
     });
     it("refine", function() {
       expect(function() {
@@ -91,6 +88,13 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
+    it("#_newCopyArgs", function() {
+      var instance = SCObject._newCopyArgs({
+        a: $SC.Integer(100), b: undefined
+      });
+      expect(instance._$a).to.be.a("SCInteger").that.equals(100);
+      expect(instance._$b).to.be.a("SCNil");
+    });
   });
 
   describe("SCClass", function() {
@@ -108,4 +112,69 @@
       expect(test).to.be.a("JSString").that.equals("Class");
     });
   });
+
+  describe("__super__", function() {
+    var SCTestClass1, SCTestClass2;
+    before(function() {
+      sc.lang.klass.define("TestClass1", {
+        constructor: function() {
+          this.__super__("Object");
+          this._testClass1 = true;
+        },
+        $method: function() {
+          this._testClass1ClassMethodCalled = true;
+          return this;
+        },
+        method: function() {
+          this._testClass1InstanceMethodCalled = true;
+          return this;
+        }
+      });
+      sc.lang.klass.define("TestClass2 : TestClass1", {
+        constructor: function() {
+          this.__super__("TestClass1");
+          this._testClass2 = true;
+        },
+        $method: function() {
+          this.__super__("method");
+          this._testClass2ClassMethodCalled = true;
+          return this;
+        },
+        method: function() {
+          this.__super__("method");
+          this._testClass2InstanceMethodCalled = true;
+          return this;
+        },
+        notFound: function() {
+          this.__super__("notFound");
+          return this;
+        }
+      });
+      SCTestClass1 = $SC("TestClass1");
+      SCTestClass2 = $SC("TestClass2");
+    });
+    it("should call super constructor", function() {
+      var instance = SCTestClass2.new();
+      expect(instance._testClass1).to.be.true;
+      expect(instance._testClass2).to.be.true;
+    });
+    it("should call superclass method", function() {
+      var instance = SCTestClass2.new();
+      instance.method();
+      expect(instance._testClass1InstanceMethodCalled).to.be.true;
+      expect(instance._testClass2InstanceMethodCalled).to.be.true;
+    });
+    it("should call superclass class method", function() {
+      SCTestClass2.method();
+      expect(SCTestClass2._testClass1ClassMethodCalled).to.be.true;
+      expect(SCTestClass2._testClass2ClassMethodCalled).to.be.true;
+    });
+    it("should throw error if not found method", function() {
+      var instance = SCTestClass2.new();
+      expect(function() {
+        instance.notFound();
+      }).to.throw("not found");
+    });
+  });
+
 })();

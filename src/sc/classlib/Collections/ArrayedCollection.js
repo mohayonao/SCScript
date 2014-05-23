@@ -340,7 +340,7 @@ SCScript.install(function(sc) {
       }
       raw = this._.slice(start, end + 1);
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "start; end");
@@ -377,7 +377,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "first; second; last");
@@ -473,7 +473,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "size; item");
@@ -499,7 +499,7 @@ SCScript.install(function(sc) {
       raw = this._.slice();
       raw.unshift(this.__elem__($item));
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "item");
@@ -525,7 +525,7 @@ SCScript.install(function(sc) {
 
       raw = this._.slice();
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       if ($anArray !== $nil) {
         instance.addAll($anArray);
@@ -787,12 +787,12 @@ SCScript.install(function(sc) {
     };
   });
 
-  function SCInt8Array() {
-    this.__initializeWith__("RawArray");
-  }
-
-  sc.lang.klass.define(SCInt8Array, "Int8Array : RawArray", function(spec) {
+  sc.lang.klass.define("Int8Array : RawArray", function(spec) {
     var int8 = new Int8Array(1);
+
+    spec.constructor = function SCInt8Array() {
+      this.__super__("RawArray");
+    };
 
     spec.valueOf = function() {
       return new Int8Array(this._.map(function($elem) {
@@ -806,12 +806,12 @@ SCScript.install(function(sc) {
     };
   });
 
-  function SCInt16Array() {
-    this.__initializeWith__("RawArray");
-  }
-
-  sc.lang.klass.define(SCInt16Array, "Int16Array : RawArray", function(spec) {
+  sc.lang.klass.define("Int16Array : RawArray", function(spec) {
     var int16 = new Int16Array(1);
+
+    spec.constructor = function SCInt16Array() {
+      this.__super__("RawArray");
+    };
 
     spec.valueOf = function() {
       return new Int16Array(this._.map(function($elem) {
@@ -825,12 +825,12 @@ SCScript.install(function(sc) {
     };
   });
 
-  function SCInt32Array() {
-    this.__initializeWith__("RawArray");
-  }
-
-  sc.lang.klass.define(SCInt32Array, "Int32Array : RawArray", function(spec) {
+  sc.lang.klass.define("Int32Array : RawArray", function(spec) {
     var int32 = new Int32Array(1);
+
+    spec.constructor = function SCInt32Array() {
+      this.__super__("RawArray");
+    };
 
     spec.valueOf = function() {
       return new Int32Array(this._.map(function($elem) {
@@ -844,12 +844,12 @@ SCScript.install(function(sc) {
     };
   });
 
-  function SCFloatArray() {
-    this.__initializeWith__("RawArray");
-  }
-
-  sc.lang.klass.define(SCFloatArray, "FloatArray : RawArray", function(spec) {
+  sc.lang.klass.define("FloatArray : RawArray", function(spec) {
     var float32 = new Float32Array(1);
+
+    spec.constructor = function SCFloatArray() {
+      this.__super__("RawArray");
+    };
 
     spec.valueOf = function() {
       return new Float32Array(this._.map(function($elem) {
@@ -863,12 +863,12 @@ SCScript.install(function(sc) {
     };
   });
 
-  function SCDoubleArray() {
-    this.__initializeWith__("RawArray");
-  }
-
-  sc.lang.klass.define(SCDoubleArray, "DoubleArray : RawArray", function(spec) {
+  sc.lang.klass.define("DoubleArray : RawArray", function(spec) {
     var float64 = new Float64Array(1);
+
+    spec.constructor = function SCDoubleArray() {
+      this.__super__("RawArray");
+    };
 
     spec.valueOf = function() {
       return new Float64Array(this._.map(function($elem) {

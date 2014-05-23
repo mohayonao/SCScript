@@ -8,16 +8,7 @@ SCScript.install(function(sc) {
   var fn    = sc.lang.fn;
   var $SC   = sc.lang.$SC;
 
-  function SCDictionary(args) {
-    var n = 8;
-    if (args && args[0]) {
-      n = args[0].__int__();
-    }
-    this.__initializeWith__("Set", [ $SC.Integer(n) ]);
-    this._ = {};
-  }
-
-  sc.lang.klass.define(SCDictionary, "Dictionary : Set", function(spec, utils) {
+  sc.lang.klass.refine("Dictionary", function(spec, utils) {
     var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
@@ -26,6 +17,10 @@ SCScript.install(function(sc) {
     var SCSet  = $SC("Set");
     var SCArray = $SC("Array");
     var SCAssociation = $SC("Association");
+
+    spec.$new = fn(function($n) {
+      return this.__super__("new", [ $n ]);
+    }, "n=8");
 
     spec.valueOf = function() {
       var obj;
@@ -106,10 +101,7 @@ SCScript.install(function(sc) {
         $array.put($index.__inc__(), $value);
         if ($array.at($index) === $nil) {
           $array.put($index, $key);
-          this._size += 1;
-          if ($array.size().__inc__() < this._size * 4) {
-            this.grow();
-          }
+          this._incrementSize();
         }
       }
 
@@ -541,19 +533,102 @@ SCScript.install(function(sc) {
 
     // TODO: implements storeItemsOn
     // TODO: implements printItemsOn
+
+    spec._incrementSize = function() {
+      this._size += 1;
+      if (this._$array.size().__inc__() < this._size * 4) {
+        this.grow();
+      }
+    };
   });
 
-  function SCIdentityDictionary() {
-    this.__initializeWith__("Dictionary");
-  }
+  sc.lang.klass.refine("IdentityDictionary", function(spec, utils) {
+    var $nil = utils.$nil;
 
-  sc.lang.klass.define(SCIdentityDictionary, "IdentityDictionary : Dictionary", function() {
-    // TODO: implements at
-    // TODO: implements put
-    // TODO: implements putGet
-    // TODO: implements includesKey
-    // TODO: implements findKeyForValue
-    // TODO: implements scanFor
+    spec.$new = fn(function($n, $proto, $parent, $know) {
+      return this.__super__("new", [ $n ])
+        .proto_($proto).parent_($parent).know_($know);
+    }, "n=8; proto; parent; know=false");
+
+    spec.proto = function() {
+      return this._$proto;
+    };
+
+    spec.proto_ = function($value) {
+      this._$proto = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.parent = function() {
+      return this._$parent;
+    };
+
+    spec.parent_ = function($value) {
+      this._$parent = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.know = function() {
+      return this._$know;
+    };
+
+    spec.know_ = function($value) {
+      this._$know = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.putGet = fn(function($key, $value) {
+      var $array, $index, $prev;
+
+      $array = this._$array;
+      $index = this.scanFor($key);
+      $prev  = $array.at($index.__inc__());
+      $array.put($index.__inc__(), $value);
+      if ($array.at($index) === $nil) {
+        $array.put($index, $key);
+        this._incrementSize();
+      }
+
+      return $prev;
+    }, "key; value");
+
+    spec.findKeyForValue = fn(function($argValue) {
+      var $ret = null;
+
+      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
+        if ($argValue === $val) {
+          $ret = $key;
+          return sc.C.LOOP_BREAK;
+        }
+      }));
+
+      return $ret || $nil;
+    }, "argValue");
+
+    // istanbul ignore next
+    spec.scanFor = function($argKey) {
+      var array, i, imax;
+      var $elem;
+
+      array = this._$array._;
+      imax  = array.length;
+
+      for (i = 0; i < imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $argKey) {
+          return $SC.Integer(i);
+        }
+      }
+      for (i = 0; i < imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $nil) {
+          return $SC.Integer(i);
+        }
+      }
+
+      return $SC.Integer(-2);
+    };
+
     // TODO: implements freezeAsParent
     // TODO: implements insertParent
     // TODO: implements storeItemsOn

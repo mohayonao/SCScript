@@ -438,8 +438,19 @@
     return result;
   };
 
-  CodeGen.prototype.GlobalExpression = function(node) {
-    return "$SC.Global." + node.id.name;
+  CodeGen.prototype.EnvironmentExpresion = function(node, opts) {
+    var result;
+
+    if (opts) {
+      // setter
+      result = [ "$SC.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
+      opts.used = true;
+    } else {
+      // getter
+      result = "$SC.Environment('" + node.id.name + "')";
+    }
+
+    return result;
   };
 
   CodeGen.prototype.FunctionExpression = function(node) {
@@ -646,13 +657,13 @@
       ref = this.scope.begin_ref();
       name = [
         "(" + ref + " = ", this.generate(opts.right),
-        ", $this." + node.name + "_(" + ref + "), " + ref + ")"
+        ", $SC.This()." + node.name + "_(" + ref + "), " + ref + ")"
       ];
       opts.used = true;
       this.scope.end_ref();
     } else {
       // getter
-      name = "$this." + node.name + "()";
+      name = "$SC.This()." + node.name + "()";
     }
 
     return name;
@@ -696,7 +707,7 @@
     return "$SC.Nil()";
   };
 
-  CodeGen.prototype.ObjectExpression = function(node) {
+  CodeGen.prototype.EventExpression = function(node) {
     return [
       "$SC.Event(", this.insertArrayElement(node.elements), ")"
     ];
@@ -706,7 +717,7 @@
     var result, body;
 
     if (node.body.length) {
-      body = this.withFunction([ "this", "SC" ], function() {
+      body = this.withFunction([ "SC" ], function() {
         return this._Statements(node.body);
       });
 
@@ -723,11 +734,9 @@
   };
 
   CodeGen.prototype.ThisExpression = function(node) {
-    if (node.name === "this") {
-      return "$this";
-    }
-
-    return [ "$SC." + node.name + "()" ];
+    var name = node.name;
+    name = name.charAt(0).toUpperCase() + name.substr(1);
+    return [ "$SC." + name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {

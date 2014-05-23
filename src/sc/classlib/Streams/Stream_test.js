@@ -99,15 +99,15 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
-    it.skip("#<stream", function() {
+    it.skip("<stream", function() {
     });
-    it.skip("#<originalStream", function() {
+    it.skip("<originalStream", function() {
     });
-    it.skip("#<clock", function() {
+    it.skip("<clock", function() {
     });
-    it.skip("#<nextBeat", function() {
+    it.skip("<nextBeat", function() {
     });
-    it.skip("#<>streamHasEnded", function() {
+    it.skip("<>streamHasEnded", function() {
     });
     it.skip("#isPlaying", function() {
     });

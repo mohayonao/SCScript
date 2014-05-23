@@ -755,13 +755,11 @@
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
-    var val = "_val" + node.id;
-    this.scope.add("var", val, this.state.syncBlockScope);
-    return [ val + " = ", this.generate(node.expr) ];
+    return [ "$SC.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
   };
 
   CodeGen.prototype.ValueMethodResult = function(node) {
-    return [ "$SC.Value(_val" + node.id + ")" ];
+    return [ "$SC.Result(" + node.id + ")" ];
   };
 
   CodeGen.prototype._Statements = function(elements) {

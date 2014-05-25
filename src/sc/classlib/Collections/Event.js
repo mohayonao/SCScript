@@ -3,11 +3,7 @@ SCScript.install(function(sc) {
 
   require("./Environment");
 
-  function SCEvent() {
-    this.__initializeWith__("Environment");
-  }
-
-  sc.lang.klass.define(SCEvent, "Event : Environment", function() {
+  sc.lang.klass.refine("Event", function() {
     // TODO: implements $default
     // TODO: implements $silent
     // TODO: implements $addEventType

@@ -18,7 +18,7 @@
         });
       };
     });
-    it.skip("#<def", function() {
+    it.skip("<def", function() {
     });
     it(".new", function() {
       expect(function() {
@@ -181,12 +181,37 @@
     });
     it.skip("#bench", function() {
     });
-    it.skip("#protect", function() {
-    });
-    it.skip("#try", function() {
-    });
-    it.skip("#prTry", function() {
-    });
+    it("#protect", sinon.test(function() {
+      var instance, test;
+      var spy, $handler;
+
+      spy = this.spy();
+      $handler = $SC.Function(spy);
+
+      instance = this.createInstance(function() {
+        return $SC.Integer(1);
+      });
+
+      test = instance.protect($handler);
+      expect(test).to.be.a("SCInteger").that.equals(1);
+      expect(spy).to.be.called;
+    }));
+    it("#protect with error", sinon.test(function() {
+      var instance, test;
+      var spy, $handler;
+
+      spy = this.spy();
+      $handler = $SC.Function(spy);
+
+      instance = this.createInstance(function() {
+        throw new Error("error");
+      });
+
+
+      test = instance.protect($handler);
+      expect(test).to.be.a("SCNil");
+      expect(spy).to.be.called;
+    }));
     it.skip("#handleError", function() {
     });
     it("#case", function() {

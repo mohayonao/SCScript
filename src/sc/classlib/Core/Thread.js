@@ -7,12 +7,21 @@ SCScript.install(function(sc) {
   var $SC = sc.lang.$SC;
   var random = sc.libs.random;
 
-  sc.lang.klass.refine("Thread", function(spec, utils) {
-    var $nil   = utils.$nil;
+  sc.lang.klass.define("Thread", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCThread() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($func) {
+      return this.__super__("new")._init($func);
+    };
 
     spec._init = function() {
       this._state   = sc.C.THREAD_STATE_INIT;
       this._randgen = new random.RandGen((Math.random() * 4294967295) >>> 0);
+      return this;
     };
 
     spec.state = function() {
@@ -164,7 +173,12 @@ SCScript.install(function(sc) {
     // TODO: implements checkCanArchive
   });
 
-  sc.lang.klass.refine("Routine", function() {
+  sc.lang.klass.define("Routine", function(spec) {
+
+    spec.constructor = function SCRoutine() {
+      this.__super__("Thread");
+    };
+
     // TODO: implements $run
     // TODO: implements next
     // TODO: implements value

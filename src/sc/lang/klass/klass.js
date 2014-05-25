@@ -3,39 +3,48 @@
 
   require("../sc");
   require("../dollarSC");
+  require("../../libs/strlib");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var $SC    = sc.lang.$SC;
+  var strlib = sc.libs.strlib;
 
   var klass       = {};
   var metaClasses = {};
   var classes     = klass.classes = {};
   var hash = 0x100000;
 
+  var isClassName = function(name) {
+    var ch = name.charCodeAt(0);
+    return 0x41 <= ch && ch <= 0x5a;
+  };
+
   var createClassInstance = function(MetaSpec) {
     var instance = new SCClass();
-    instance._MetaSpec = MetaSpec;
+    instance.__MetaSpec = MetaSpec;
     return instance;
   };
 
   var extend = function(constructor, superMetaClass) {
     function F() {}
-    F.prototype = superMetaClass._Spec.prototype;
+    F.prototype = superMetaClass.__Spec.prototype;
     constructor.prototype = new F();
 
     function Meta_F() {}
-    Meta_F.prototype = superMetaClass._MetaSpec.prototype;
+    Meta_F.prototype = superMetaClass.__MetaSpec.prototype;
 
     function MetaSpec() {}
     MetaSpec.prototype = new Meta_F();
+    MetaSpec.__superClass = superMetaClass.__MetaSpec;
 
     constructor.metaClass = createClassInstance(MetaSpec);
+    constructor.__superClass = superMetaClass.__Spec;
   };
 
-  var def = function(className, constructor, fn, opts) {
-    var classMethods, instanceMethods, setMethod, spec;
+  var def = function(className, constructor, spec, opts) {
+    var classMethods, instanceMethods, setMethod;
 
-    classMethods    = constructor.metaClass._MetaSpec.prototype;
+    classMethods    = constructor.metaClass.__MetaSpec.prototype;
     instanceMethods = constructor.prototype;
 
     setMethod = function(methods, methodName, func) {
@@ -52,41 +61,19 @@
       });
     };
 
-    if (typeof fn === "function") {
-      fn(spec = {}, klass.utils);
-    } else {
-      spec = fn;
-    }
-
     Object.keys(spec).forEach(function(methodName) {
-      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
-        setMethod(classMethods, methodName.substr(1), spec[methodName]);
-      } else {
-        setMethod(instanceMethods, methodName, spec[methodName]);
+      if (methodName !== "constructor") {
+        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+          setMethod(classMethods, methodName.substr(1), spec[methodName]);
+        } else {
+          setMethod(instanceMethods, methodName, spec[methodName]);
+        }
       }
     });
   };
 
-  var throwIfInvalidArgument = function(constructor, className) {
-    if (typeof constructor !== "function") {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "first argument must be a constructor, but got: " + typeof(constructor)
-      );
-    }
-
-    if (typeof className !== "string") {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "second argument must be a string, but got: " + String(className)
-      );
-    }
-  };
-
   var throwIfInvalidClassName = function(className, superClassName) {
-    var ch0 = className.charCodeAt(0);
-
-    if (ch0 < 0x41 || 0x5a < ch0) { // faster test than !/^[A-Z]/.test(className)
+    if (!isClassName(className)) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
           "classname should be CamelCase, but got '" + className + "'"
@@ -113,12 +100,13 @@
   var registerClass = function(MetaClass, className, constructor) {
     var newClass;
 
-    newClass = new MetaClass._MetaSpec();
+    newClass = new MetaClass.__MetaSpec();
     newClass._name = className;
-    newClass._Spec = constructor;
+    newClass.__Spec = constructor;
+    newClass.__superClass = MetaClass.__MetaSpec.__superClass;
     Object.defineProperties(constructor.prototype, {
       __class: { value: newClass, writable: true },
-      __Spec : { value: constructor },
+      __Spec : { value: constructor, writable: true },
       __className: { value: className }
     });
     classes[className] = newClass;
@@ -132,7 +120,7 @@
     metaClass = constructor.metaClass;
     newClass  = registerClass(metaClass, className, constructor);
 
-    metaClass._Spec = constructor;
+    metaClass.__Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = "Meta_" + className;
     classes["Meta_" + className] = metaClass;
@@ -144,10 +132,39 @@
     metaClasses[className] = metaClass;
   };
 
-  klass.define = function(constructor, className, fn) {
-    var items, superClassName;
+  var evalSpec = function(spec) {
+    var result;
+    if (typeof spec === "function") {
+      result = {};
+      spec(result, klass.utils);
+      return result;
+    }
+    return spec || /* istanbul ignore next */ {};
+  };
 
-    throwIfInvalidArgument(constructor, className);
+  var __super__ = function(that, root, funcName, args) {
+    var func, result;
+
+    that.__superClassP = that.__superClassP || root;
+
+    while (!func && that.__superClassP) {
+      func = that.__superClassP.prototype[funcName];
+      that.__superClassP = that.__superClassP.__superClass;
+    }
+
+    if (func) {
+      result = func.apply(that, args || []);
+    } else {
+      throw new Error("supermethod '" + funcName + "' not found");
+    }
+
+    delete that.__superClassP;
+
+    return result || /* istanbul ignore next */ $SC.Nil();
+  };
+
+  klass.define = function(className, spec) {
+    var items, superClassName, constructor;
 
     items = className.split(":");
     className      = items[0].trim();
@@ -155,18 +172,29 @@
 
     throwIfInvalidClassName(className, superClassName);
 
+    spec = evalSpec(spec);
+
+    if (spec.hasOwnProperty("constructor")) {
+      constructor = spec.constructor;
+    } else {
+      throw new Error(
+        "sc.lang.klass.define: " +
+          "class should have a constructor."
+      );
+    }
+
     if (className !== "Object") {
       extend(constructor, metaClasses[superClassName]);
     }
 
-    fn = fn || {};
-
-    def(className, constructor, fn, {});
+    def(className, constructor, spec, {});
 
     buildClass(className, constructor);
+
+    return constructor;
   };
 
-  klass.refine = function(className, fn, opts) {
+  klass.refine = function(className, spec, opts) {
     var constructor;
 
     if (!metaClasses.hasOwnProperty(className)) {
@@ -176,9 +204,10 @@
       );
     }
 
-    constructor = metaClasses[className]._Spec;
+    constructor = metaClasses[className].__Spec;
 
-    def(className, constructor, fn, opts || {});
+    spec = evalSpec(spec);
+    def(className, constructor, spec, opts || {});
   };
 
   klass.get = function(name) {
@@ -209,51 +238,65 @@
   }
 
   function SCClass() {
-    this._ = this;
+    SCObject.call(this);
     this._name = "Class";
-    this._Spec = null;
     this._isMetaClass = false;
   }
 
   SCObject.metaClass = createClassInstance(function() {});
 
-  klass.define(SCObject, "Object", {
+  klass.define("Object", {
+    constructor: SCObject,
     __tag: sc.C.TAG_OBJ,
-    __initializeWith__: function(className, args) {
-      metaClasses[className]._Spec.apply(this, args);
+    __super__: function(funcName, args) {
+      if (isClassName(funcName)) {
+        return metaClasses[funcName].__Spec.call(this);
+      }
+
+      return __super__(this, this.__Spec.__superClass, funcName, args);
     },
     toString: function() {
       var name = this.__class._name;
-      if (/^[AEIOU]/.test(name)) {
-        return String("an " + name);
-      } else {
-        return String("a " + name);
-      }
+      return String(strlib.article(name) + " " + name);
     },
     valueOf: function() {
       return this._;
     }
   });
 
-  klass.define(SCClass, "Class", {
+  klass.define("Class", {
+    constructor: SCClass,
+    __super__: function(funcName, args) {
+      return __super__(this, this.__superClass, funcName, args);
+    },
     toString: function() {
       return String(this._name);
     }
   });
 
   classes.Class = createClassInstance();
-  classes.Class._Spec = SCClass;
+  classes.Class.__Spec = SCClass;
 
-  SCObject.metaClass._MetaSpec.prototype = classes.Class;
+  SCObject.metaClass.__MetaSpec.prototype = classes.Class;
 
-  registerClass(SCObject.metaClass, "Object", classes.Object._Spec);
+  registerClass(SCObject.metaClass, "Object", classes.Object.__Spec);
 
   klass.refine("Object", function(spec) {
     spec.$new = function() {
-      if (this._Spec === SCClass) {
+      if (this.__Spec === SCClass) {
         return $SC.Nil();
       }
-      return new this._Spec(slice.call(arguments));
+      return new this.__Spec(slice.call(arguments));
+    };
+    spec.$_newCopyArgs = function(dict) {
+      var instance;
+
+      instance = new this.__Spec(slice.call(arguments));
+      Object.keys(dict).forEach(function(key) {
+        instance["_$" + key] = dict[key] || $SC.Nil();
+      });
+
+      return instance;
     };
     spec.$initClass = function() {
     };

@@ -3,19 +3,21 @@ SCScript.install(function(sc) {
 
   require("./Stream");
 
-  var fn    = sc.lang.fn;
-  var utils = sc.lang.klass.utils;
-  var BOOL  = utils.BOOL;
-  var $nil  = utils.$nil;
+  var fn = sc.lang.fn;
 
-  function SCUnaryOpStream(args) {
-    this.__initializeWith__("Stream");
-    this._$operator = args.shift() || /* istanbul ignore next */ $nil;
-    this._$a        = args.shift() || /* istanbul ignore next */ $nil;
-  }
-
-  sc.lang.klass.define(SCUnaryOpStream, "UnaryOpStream : Stream", function(spec, utils) {
+  sc.lang.klass.define("UnaryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
+
+    spec.constructor = function SCUnaryOpStream() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($operator, $a) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a
+      });
+    };
 
     spec.next = fn(function($inval) {
       var $vala;
@@ -36,15 +38,20 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  function SCBinaryOpStream(args) {
-    this.__initializeWith__("Stream");
-    this._$operator = args.shift() || /* istanbul ignore next */ $nil;
-    this._$a        = args.shift() || /* istanbul ignore next */ $nil;
-    this._$b        = args.shift() || /* istanbul ignore next */ $nil;
-  }
-
-  sc.lang.klass.define(SCBinaryOpStream, "BinaryOpStream : Stream", function(spec, utils) {
+  sc.lang.klass.define("BinaryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
+
+    spec.constructor = function SCBinaryOpStream() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($operator, $a, $b) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a,
+        b       : $b
+      });
+    };
 
     spec.next = fn(function($inval) {
       var $vala, $valb;
@@ -71,16 +78,21 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  function SCBinaryOpXStream(args) {
-    this.__initializeWith__("Stream");
-    this._$operator = args.shift() || /* istanbul ignore next */ $nil;
-    this._$a        = args.shift() || /* istanbul ignore next */ $nil;
-    this._$b        = args.shift() || /* istanbul ignore next */ $nil;
-    this._$vala     = $nil;
-  }
-
-  sc.lang.klass.define(SCBinaryOpXStream, "BinaryOpXStream : Stream", function(spec, utils) {
+  sc.lang.klass.define("BinaryOpXStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
+
+    spec.constructor = function SCBinaryOpXStream() {
+      this.__super__("Stream");
+      this._$vala     = $nil;
+    };
+
+    spec.$new = function($operator, $a, $b) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a,
+        b       : $b
+      });
+    };
 
     spec.next = fn(function($inval) {
       var $valb;
@@ -122,25 +134,31 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  function SCNAryOpStream(args) {
-    var $arglist;
-    this.__initializeWith__("Stream");
-    this._$operator = args.shift() || /* istanbul ignore next */ $nil;
-    this._$a        = args.shift() || /* istanbul ignore next */ $nil;
-
-    $arglist = args.shift() || /* istanbul ignore next */ $nil;
-    if (Array.isArray($arglist._)) {
-      this._arglist = $arglist._;
-    } else {
-      this._arglist = [];
-    }
-    this._isNumeric = this._arglist.every(function($item) {
-      return $item.__tag === sc.C.TAG_SYM || BOOL($item.isNumber());
-    });
-  }
-
-  sc.lang.klass.define(SCNAryOpStream, "NAryOpStream : Stream", function(spec, utils) {
+  sc.lang.klass.define("NAryOpStream : Stream", function(spec, utils) {
+    var BOOL = utils.BOOL;
     var $nil = utils.$nil;
+
+    spec.constructor = function SCNAryOpStream() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($operator, $a, $arglist) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a
+      }).arglist_($arglist);
+    };
+
+    spec.arglist_ = function($list) {
+      if (Array.isArray($list._)) {
+        this._arglist = $list._;
+      } else {
+        this._arglist = [];
+      }
+      this._isNumeric = this._arglist.every(function($item) {
+        return $item.__tag === sc.C.TAG_SYM || BOOL($item.isNumber());
+      });
+    };
 
     spec.next = fn(function($inval) {
       var $vala;

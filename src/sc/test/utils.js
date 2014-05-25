@@ -8,6 +8,7 @@
   require("../classlib/Collections/Array");
   require("../classlib/Collections/Association");
   require("../classlib/Collections/String");
+  require("../classlib/Collections/Event");
   require("../classlib/Core/Boolean");
   require("../classlib/Core/Char");
   require("../classlib/Core/Function");
@@ -262,7 +263,7 @@
       prev = null;
     }
 
-    method = sc.lang.klass.classes[className]._Spec.prototype[methodName];
+    method = sc.lang.klass.classes[className].__Spec.prototype[methodName];
     Object.defineProperty(instance, methodName, {
       value: method, configurable: true
     });

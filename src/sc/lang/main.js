@@ -10,46 +10,55 @@
   var $SC = sc.lang.$SC;
   var random = sc.libs.random;
 
-  var $process, $interpreter;
-  var $mainThread;
+  main.$currentEnv = null;
 
   main.run = function(fn) {
     if (!initialize.done) {
       initialize();
     }
-    return fn($interpreter, $SC);
+    return fn($SC);
   };
 
   function initialize() {
-    var Process, Interpreter, Thread;
+    var $process;
 
-    Process     = $SC("Process")._Spec;
-    Interpreter = $SC("Interpreter")._Spec;
-    Thread      = $SC("Thread")._Spec;
+    $process = $SC("Main").new();
+    $process._$interpreter = $SC("Interpreter").new();
+    $process._$mainThread  = $SC("Thread").new();
 
-    $process     = new Process();
-    $interpreter = new Interpreter();
-    $mainThread  = new Thread();
+    main.$currentEnv = $SC("Environment").new();
 
-    $process._$interpreter = $interpreter;
     // $interpreter._$s = SCServer.default();
 
-    main.$thread   = $mainThread;
-    random.current = $mainThread._randgen;
+    random.current = $process._$mainThread._randgen;
 
     // TODO:
-    // SoundSystem.addThread($mainThread);
+    // SoundSystem.addProcess($process);
     // SoundSystem.start();
 
     initialize.done = true;
+
+    main.$process = $process;
   }
 
-  $SC.thisProcess = function() {
-    return $process;
+  $SC.Environment = function(key, $value) {
+    if ($value) {
+      main.$currentEnv.put($SC.Symbol(key), $value);
+      return $value;
+    }
+    return main.$currentEnv.at($SC.Symbol(key));
   };
 
-  $SC.thisThread = function() {
-    return main.$thread;
+  $SC.This = function() {
+    return main.$process.interpreter();
+  };
+
+  $SC.ThisProcess = function() {
+    return main.$process;
+  };
+
+  $SC.ThisThread = function() {
+    return main.$process.mainThread();
   };
 
   sc.lang.main = main;

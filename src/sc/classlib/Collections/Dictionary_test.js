@@ -47,7 +47,12 @@
           source: [ 1, 2, 3, 4 ],
           args  : [ 2 ],
           result: null
-        }
+        },
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
+          args  : [ $SC.Integer(0) ],
+          result: $SC.Float(1.0)
+        },
       ]);
     });
     it("#atFail", function() {
@@ -557,14 +562,6 @@
     });
     it.skip("#asKeyValuePairs", function() {
     });
-    it.skip("#keysValuesArrayDo", function() {
-    });
-    it.skip("#grow", function() {
-    });
-    it.skip("#fixCollisionsFrom", function() {
-    });
-    it.skip("#scanFor", function() {
-    });
     it.skip("#storeItemsOn", function() {
     });
     it.skip("#printItemsOn", function() {
@@ -575,8 +572,8 @@
     var SCIdentityDictionary;
     before(function() {
       SCIdentityDictionary = $SC("IdentityDictionary");
-      this.createInstance = function() {
-        return SCIdentityDictionary.new();
+      this.createInstance = function(list) {
+        return SCIdentityDictionary.newFrom(list ? $(list) : $SC.Array());
       };
     });
     it("#valueOf", function() {
@@ -586,17 +583,94 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });
-    it.skip("#at", function() {
+    it("<>proto", function() {
+      var instance, test;
+      var $value;
+
+      $value = sc.test.object();
+
+      instance = this.createInstance();
+
+      test = instance.proto_($value);
+      expect(test).to.equal(instance);
+
+      test = instance.proto();
+      expect(test).to.equal($value);
     });
-    it.skip("#put", function() {
+    it("<>parent", function() {
+      var instance, test;
+      var $value;
+
+      $value = sc.test.object();
+
+      instance = this.createInstance();
+
+      test = instance.parent_($value);
+      expect(test).to.equal(instance);
+
+      test = instance.parent();
+      expect(test).to.equal($value);
     });
-    it.skip("#putGet", function() {
+    it("<>know", function() {
+      var instance, test;
+      var $value;
+
+      $value = sc.test.object();
+
+      instance = this.createInstance();
+
+      test = instance.know();
+      expect(test).to.be.a("SCBoolean").that.is.false;
+
+      test = instance.know_($value);
+      expect(test).to.equal(instance);
+
+      test = instance.know();
+      expect(test).to.equal($value);
     });
-    it.skip("#includesKey", function() {
+    it("#at", function() {
+      testCase(this, [
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
+          args  : [ $SC.Integer(0) ],
+          result: $SC.Integer(1)
+        },
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
+          args  : [ $SC.Float(0.0) ],
+          result: $SC.Float(1.0)
+        },
+      ]);
     });
-    it.skip("#findKeyForValue", function() {
+    it("#putGet", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 1, 0 ],
+          result: 2,
+          after : { 1: 0, 3: 4 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 5, 6 ],
+          result: null,
+          after : { 1: 2, 3: 4, 5: 6 }
+        },
+      ]);
     });
-    it.skip("#scanFor", function() {
+    it("#findKeyForValue", function() {
+      testCase(this, [
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1) ],
+          args  : [ $SC.Integer(1) ],
+          result: $SC.Integer(0)
+        },
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1) ],
+          args  : [ $SC.Float(1.0) ],
+          result: null
+        },
+      ]);
     });
     it.skip("#freezeAsParent", function() {
     });

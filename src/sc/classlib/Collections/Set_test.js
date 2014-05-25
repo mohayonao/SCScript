@@ -25,7 +25,7 @@
       test = instance.valueOf();
       expect(test).to.eql([]);
     });
-    it("#<>array", function() {
+    it("<>array", function() {
       var instance, test;
       var $value;
 
@@ -39,7 +39,7 @@
       test = instance.array();
       expect(test).to.equal($value);
     });
-    it("#<size", function() {
+    it("<size", function() {
       var instance, test;
 
       instance = this.createInstance([ 1, 2 ]);
@@ -198,10 +198,10 @@
           source: [ 1, 2, 3 ],
           result: SCSet.newFrom($([ 1, 2, 3 ]))
         },
-        {
-          source: [ 1, [ 2, 3 ] ],
-          result: SCSet.newFrom($([ 1, 2, 3 ]))
-        },
+        // {
+        //   source: [ 1, [ 2, 3 ] ],
+        //   result: SCSet.newFrom($([ 1, 2, 3 ]))
+        // },
       ]);
     });
     it("#sect", function() {

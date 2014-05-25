@@ -52,9 +52,9 @@
 
       return node;
     },
-    createGlobalExpression: function(id) {
+    createEnvironmentExpresion: function(id) {
       return {
-        type: Syntax.GlobalExpression,
+        type: Syntax.EnvironmentExpresion,
         id: id
       };
     },
@@ -108,9 +108,9 @@
         valueType: token.type
       };
     },
-    createObjectExpression: function(elements) {
+    createEventExpression: function(elements) {
       return {
-        type: Syntax.ObjectExpression,
+        type: Syntax.EventExpression,
         elements: elements
       };
     },

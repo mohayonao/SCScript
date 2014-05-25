@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.36" };
+var sc = { VERSION: "0.0.37" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -468,31 +468,9 @@ var sc = { VERSION: "0.0.36" };
 // src/sc/lang/dollarSC.js
 (function(sc) {
 
-  var $SC = function(name) {
+  sc.lang.$SC = function(name) {
     return sc.lang.klass.get(name);
   };
-
-  /* istanbul ignore next */
-  var shouldBeImplementedInClassLib = function() {};
-
-  $SC.Class = shouldBeImplementedInClassLib;
-  $SC.Integer = shouldBeImplementedInClassLib;
-  $SC.Float = shouldBeImplementedInClassLib;
-  $SC.Char = shouldBeImplementedInClassLib;
-  $SC.Array = shouldBeImplementedInClassLib;
-  $SC.String = shouldBeImplementedInClassLib;
-  $SC.Function = shouldBeImplementedInClassLib;
-  $SC.Ref = shouldBeImplementedInClassLib;
-  $SC.Symbol = shouldBeImplementedInClassLib;
-  $SC.Boolean = shouldBeImplementedInClassLib;
-  $SC.True = shouldBeImplementedInClassLib;
-  $SC.False = shouldBeImplementedInClassLib;
-  $SC.Nil = shouldBeImplementedInClassLib;
-  $SC.SegFunction = shouldBeImplementedInClassLib;
-  $SC.Value = shouldBeImplementedInClassLib;
-  $SC.Result = shouldBeImplementedInClassLib;
-
-  sc.lang.$SC = $SC;
 
 })(sc);
 
@@ -610,41 +588,65 @@ var sc = { VERSION: "0.0.36" };
 
 })(sc);
 
+// src/sc/libs/strlib.js
+(function(sc) {
+
+  var strlib = {};
+
+  strlib.article = function(name) {
+    if (/^[AEIOU]/i.test(name)) {
+      return "an";
+    }
+    return "a";
+  };
+
+  sc.libs.strlib = strlib;
+
+})(sc);
+
 // src/sc/lang/klass/klass.js
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var $SC    = sc.lang.$SC;
+  var strlib = sc.libs.strlib;
 
   var klass       = {};
   var metaClasses = {};
   var classes     = klass.classes = {};
   var hash = 0x100000;
 
+  var isClassName = function(name) {
+    var ch = name.charCodeAt(0);
+    return 0x41 <= ch && ch <= 0x5a;
+  };
+
   var createClassInstance = function(MetaSpec) {
     var instance = new SCClass();
-    instance._MetaSpec = MetaSpec;
+    instance.__MetaSpec = MetaSpec;
     return instance;
   };
 
   var extend = function(constructor, superMetaClass) {
     function F() {}
-    F.prototype = superMetaClass._Spec.prototype;
+    F.prototype = superMetaClass.__Spec.prototype;
     constructor.prototype = new F();
 
     function Meta_F() {}
-    Meta_F.prototype = superMetaClass._MetaSpec.prototype;
+    Meta_F.prototype = superMetaClass.__MetaSpec.prototype;
 
     function MetaSpec() {}
     MetaSpec.prototype = new Meta_F();
+    MetaSpec.__superClass = superMetaClass.__MetaSpec;
 
     constructor.metaClass = createClassInstance(MetaSpec);
+    constructor.__superClass = superMetaClass.__Spec;
   };
 
-  var def = function(className, constructor, fn, opts) {
-    var classMethods, instanceMethods, setMethod, spec;
+  var def = function(className, constructor, spec, opts) {
+    var classMethods, instanceMethods, setMethod;
 
-    classMethods    = constructor.metaClass._MetaSpec.prototype;
+    classMethods    = constructor.metaClass.__MetaSpec.prototype;
     instanceMethods = constructor.prototype;
 
     setMethod = function(methods, methodName, func) {
@@ -661,41 +663,19 @@ var sc = { VERSION: "0.0.36" };
       });
     };
 
-    if (typeof fn === "function") {
-      fn(spec = {}, klass.utils);
-    } else {
-      spec = fn;
-    }
-
     Object.keys(spec).forEach(function(methodName) {
-      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
-        setMethod(classMethods, methodName.substr(1), spec[methodName]);
-      } else {
-        setMethod(instanceMethods, methodName, spec[methodName]);
+      if (methodName !== "constructor") {
+        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+          setMethod(classMethods, methodName.substr(1), spec[methodName]);
+        } else {
+          setMethod(instanceMethods, methodName, spec[methodName]);
+        }
       }
     });
   };
 
-  var throwIfInvalidArgument = function(constructor, className) {
-    if (typeof constructor !== "function") {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "first argument must be a constructor, but got: " + typeof(constructor)
-      );
-    }
-
-    if (typeof className !== "string") {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "second argument must be a string, but got: " + String(className)
-      );
-    }
-  };
-
   var throwIfInvalidClassName = function(className, superClassName) {
-    var ch0 = className.charCodeAt(0);
-
-    if (ch0 < 0x41 || 0x5a < ch0) { // faster test than !/^[A-Z]/.test(className)
+    if (!isClassName(className)) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
           "classname should be CamelCase, but got '" + className + "'"
@@ -722,12 +702,13 @@ var sc = { VERSION: "0.0.36" };
   var registerClass = function(MetaClass, className, constructor) {
     var newClass;
 
-    newClass = new MetaClass._MetaSpec();
+    newClass = new MetaClass.__MetaSpec();
     newClass._name = className;
-    newClass._Spec = constructor;
+    newClass.__Spec = constructor;
+    newClass.__superClass = MetaClass.__MetaSpec.__superClass;
     Object.defineProperties(constructor.prototype, {
       __class: { value: newClass, writable: true },
-      __Spec : { value: constructor },
+      __Spec : { value: constructor, writable: true },
       __className: { value: className }
     });
     classes[className] = newClass;
@@ -741,7 +722,7 @@ var sc = { VERSION: "0.0.36" };
     metaClass = constructor.metaClass;
     newClass  = registerClass(metaClass, className, constructor);
 
-    metaClass._Spec = constructor;
+    metaClass.__Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = "Meta_" + className;
     classes["Meta_" + className] = metaClass;
@@ -753,10 +734,39 @@ var sc = { VERSION: "0.0.36" };
     metaClasses[className] = metaClass;
   };
 
-  klass.define = function(constructor, className, fn) {
-    var items, superClassName;
+  var evalSpec = function(spec) {
+    var result;
+    if (typeof spec === "function") {
+      result = {};
+      spec(result, klass.utils);
+      return result;
+    }
+    return spec || /* istanbul ignore next */ {};
+  };
 
-    throwIfInvalidArgument(constructor, className);
+  var __super__ = function(that, root, funcName, args) {
+    var func, result;
+
+    that.__superClassP = that.__superClassP || root;
+
+    while (!func && that.__superClassP) {
+      func = that.__superClassP.prototype[funcName];
+      that.__superClassP = that.__superClassP.__superClass;
+    }
+
+    if (func) {
+      result = func.apply(that, args || []);
+    } else {
+      throw new Error("supermethod '" + funcName + "' not found");
+    }
+
+    delete that.__superClassP;
+
+    return result || /* istanbul ignore next */ $SC.Nil();
+  };
+
+  klass.define = function(className, spec) {
+    var items, superClassName, constructor;
 
     items = className.split(":");
     className      = items[0].trim();
@@ -764,18 +774,29 @@ var sc = { VERSION: "0.0.36" };
 
     throwIfInvalidClassName(className, superClassName);
 
+    spec = evalSpec(spec);
+
+    if (spec.hasOwnProperty("constructor")) {
+      constructor = spec.constructor;
+    } else {
+      throw new Error(
+        "sc.lang.klass.define: " +
+          "class should have a constructor."
+      );
+    }
+
     if (className !== "Object") {
       extend(constructor, metaClasses[superClassName]);
     }
 
-    fn = fn || {};
-
-    def(className, constructor, fn, {});
+    def(className, constructor, spec, {});
 
     buildClass(className, constructor);
+
+    return constructor;
   };
 
-  klass.refine = function(className, fn, opts) {
+  klass.refine = function(className, spec, opts) {
     var constructor;
 
     if (!metaClasses.hasOwnProperty(className)) {
@@ -785,9 +806,10 @@ var sc = { VERSION: "0.0.36" };
       );
     }
 
-    constructor = metaClasses[className]._Spec;
+    constructor = metaClasses[className].__Spec;
 
-    def(className, constructor, fn, opts || {});
+    spec = evalSpec(spec);
+    def(className, constructor, spec, opts || {});
   };
 
   klass.get = function(name) {
@@ -818,51 +840,65 @@ var sc = { VERSION: "0.0.36" };
   }
 
   function SCClass() {
-    this._ = this;
+    SCObject.call(this);
     this._name = "Class";
-    this._Spec = null;
     this._isMetaClass = false;
   }
 
   SCObject.metaClass = createClassInstance(function() {});
 
-  klass.define(SCObject, "Object", {
+  klass.define("Object", {
+    constructor: SCObject,
     __tag: 1,
-    __initializeWith__: function(className, args) {
-      metaClasses[className]._Spec.apply(this, args);
+    __super__: function(funcName, args) {
+      if (isClassName(funcName)) {
+        return metaClasses[funcName].__Spec.call(this);
+      }
+
+      return __super__(this, this.__Spec.__superClass, funcName, args);
     },
     toString: function() {
       var name = this.__class._name;
-      if (/^[AEIOU]/.test(name)) {
-        return String("an " + name);
-      } else {
-        return String("a " + name);
-      }
+      return String(strlib.article(name) + " " + name);
     },
     valueOf: function() {
       return this._;
     }
   });
 
-  klass.define(SCClass, "Class", {
+  klass.define("Class", {
+    constructor: SCClass,
+    __super__: function(funcName, args) {
+      return __super__(this, this.__superClass, funcName, args);
+    },
     toString: function() {
       return String(this._name);
     }
   });
 
   classes.Class = createClassInstance();
-  classes.Class._Spec = SCClass;
+  classes.Class.__Spec = SCClass;
 
-  SCObject.metaClass._MetaSpec.prototype = classes.Class;
+  SCObject.metaClass.__MetaSpec.prototype = classes.Class;
 
-  registerClass(SCObject.metaClass, "Object", classes.Object._Spec);
+  registerClass(SCObject.metaClass, "Object", classes.Object.__Spec);
 
   klass.refine("Object", function(spec) {
     spec.$new = function() {
-      if (this._Spec === SCClass) {
+      if (this.__Spec === SCClass) {
         return $SC.Nil();
       }
-      return new this._Spec(slice.call(arguments));
+      return new this.__Spec(slice.call(arguments));
+    };
+    spec.$_newCopyArgs = function(dict) {
+      var instance;
+
+      instance = new this.__Spec(slice.call(arguments));
+      Object.keys(dict).forEach(function(key) {
+        instance["_$" + key] = dict[key] || $SC.Nil();
+      });
+
+      return instance;
     };
     spec.$initClass = function() {
     };
@@ -882,171 +918,188 @@ var sc = { VERSION: "0.0.36" };
   var $nil, $true, $false;
   var $symbols, $chars, $integers, $floats;
 
-  function SCProcess() {
-    this.__initializeWith__("Object");
-    this._$interpreter = $nil;
-    this._$mainThread  = $nil; // ???
-  }
-  klass.define(SCProcess, "Process");
-
-  function SCInterpreter() {
-    this.__initializeWith__("Object");
-    for (var i = 97; i <= 122; i++) {
-      this["_$" + String.fromCharCode(i)] = $nil;
-    }
-    // this._$s = $SC("Server").default(); // in SCMain
-  }
-  klass.define(SCInterpreter, "Interpreter");
-
   function SCNil() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
     this._ = null;
   }
-  klass.define(SCNil, "Nil", {
+  klass.define("Nil", {
+    constructor: SCNil,
     __tag: 773
   });
 
   function SCSymbol() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
     this._ = "";
   }
-  klass.define(SCSymbol, "Symbol", {
+  klass.define("Symbol", {
+    constructor: SCSymbol,
     __tag: 1027
   });
 
   function SCBoolean() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
   }
-  klass.define(SCBoolean, "Boolean");
+  klass.define("Boolean", {
+    constructor: SCBoolean
+  });
 
   function SCTrue() {
-    this.__initializeWith__("Boolean");
+    this.__super__("Boolean");
     this._ = true;
   }
-  klass.define(SCTrue, "True : Boolean", {
+  klass.define("True : Boolean", {
+    constructor: SCTrue,
     __tag: 775
   });
 
   function SCFalse() {
-    this.__initializeWith__("Boolean");
+    this.__super__("Boolean");
     this._ = false;
   }
-  klass.define(SCFalse, "False : Boolean", {
+  klass.define("False : Boolean", {
+    constructor: SCFalse,
     __tag: 774
   });
 
-  function SCMagnitude() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCMagnitude, "Magnitude");
+  klass.define("Magnitude", {
+    constructor: function SCMagnitude() {
+      this.__super__("Object");
+    }
+  });
 
   function SCChar() {
-    this.__initializeWith__("Magnitude");
+    this.__super__("Magnitude");
     this._ = "\0";
   }
-  klass.define(SCChar, "Char : Magnitude", {
+  klass.define("Char : Magnitude", {
+    constructor: SCChar,
     __tag: 1028
   });
 
-  function SCNumber() {
-    this.__initializeWith__("Magnitude");
-  }
-  klass.define(SCNumber, "Number : Magnitude");
+  klass.define("Number : Magnitude", {
+    constructor: function SCNumber() {
+      this.__super__("Magnitude");
+    }
+  });
 
-  function SCSimpleNumber() {
-    this.__initializeWith__("Number");
-  }
-  klass.define(SCSimpleNumber, "SimpleNumber : Number");
+  klass.define("SimpleNumber : Number", {
+    constructor: function SCSimpleNumber() {
+      this.__super__("Number");
+    }
+  });
 
   function SCInteger() {
-    this.__initializeWith__("SimpleNumber");
+    this.__super__("SimpleNumber");
     this._ = 0;
   }
-  klass.define(SCInteger, "Integer : SimpleNumber", {
+  klass.define("Integer : SimpleNumber", {
+    constructor: SCInteger,
     __tag: 770
   });
 
   function SCFloat() {
-    this.__initializeWith__("SimpleNumber");
+    this.__super__("SimpleNumber");
     this._ = 0.0;
   }
-  klass.define(SCFloat, "Float : SimpleNumber", {
+  klass.define("Float : SimpleNumber", {
+    constructor: SCFloat,
     __tag: 777
   });
 
-  function SCCollection() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCCollection, "Collection");
+  klass.define("Collection", {
+    constructor: function SCCollection() {
+      this.__super__("Object");
+    }
+  });
 
-  function SCSequenceableCollection() {
-    this.__initializeWith__("Collection");
-  }
-  klass.define(SCSequenceableCollection, "SequenceableCollection : Collection");
+  klass.define("SequenceableCollection : Collection", {
+    constructor: function SCSequenceableCollection() {
+      this.__super__("Collection");
+    }
+  });
 
-  function SCArrayedCollection() {
-    this.__initializeWith__("SequenceableCollection");
-    this.__immutable = false;
-    this._ = [];
-  }
-  klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
+  klass.define("ArrayedCollection : SequenceableCollection", {
+    constructor: function SCArrayedCollection() {
+      this.__super__("SequenceableCollection");
+      this.__immutable = false;
+      this._ = [];
+    }
+  });
 
-  function SCRawArray() {
-    this.__initializeWith__("ArrayedCollection");
-  }
-  klass.define(SCRawArray, "RawArray : ArrayedCollection");
+  klass.define("RawArray : ArrayedCollection", {
+    constructor: function SCRawArray() {
+      this.__super__("ArrayedCollection");
+    }
+  });
 
   function SCArray() {
-    this.__initializeWith__("ArrayedCollection");
+    this.__super__("ArrayedCollection");
   }
-  klass.define(SCArray, "Array : ArrayedCollection", {
+  klass.define("Array : ArrayedCollection", {
+    constructor: SCArray,
     __tag: 11
   });
 
   function SCString() {
-    this.__initializeWith__("RawArray");
+    this.__super__("RawArray");
   }
-  klass.define(SCString, "String : RawArray", {
+  klass.define("String : RawArray", {
+    constructor: SCString,
     __tag: 1034
   });
 
-  function SCAbstractFunction() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCAbstractFunction, "AbstractFunction");
+  klass.define("Set : Collection", {
+    constructor: function SCSet() {
+      this.__super__("Collection");
+    }
+  });
+
+  klass.define("Dictionary : Set", {
+    constructor: function SCDictionary() {
+      this.__super__("Set");
+    }
+  });
+
+  klass.define("IdentityDictionary : Dictionary", {
+    constructor: function SCIdentityDictionary() {
+      this.__super__("Dictionary");
+    }
+  });
+
+  klass.define("Environment : IdentityDictionary", {
+    constructor: function SCEnvironment() {
+      this.__super__("IdentityDictionary");
+    }
+  });
+
+  klass.define("Event : Environment", {
+    constructor: function SCEvent() {
+      this.__super__("Environment");
+    }
+  });
+
+  klass.define("AbstractFunction", {
+    constructor: function SCAbstractFunction() {
+      this.__super__("Object");
+    }
+  });
 
   function SCFunction() {
-    this.__initializeWith__("AbstractFunction");
+    this.__super__("AbstractFunction");
     // istanbul ignore next
     this._ = function() {};
   }
-  klass.define(SCFunction, "Function : AbstractFunction", {
+  klass.define("Function : AbstractFunction", {
+    constructor: SCFunction,
     __tag: 12
   });
 
-  function SCRef(args) {
-    this.__initializeWith__("Object");
-    this._value = args[0] || /* istanbul ignore next */ $nil;
+  function SCRef() {
+    this.__super__("Object");
   }
-  sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
-
-  function SCStream() {
-    this.__initializeWith__("AbstractFunction");
-  }
-  sc.lang.klass.define(SCStream, "Stream : AbstractFunction");
-
-  function SCThread() {
-    this.__initializeWith__("Stream");
-    if (this._init) {
-      this._init();
-    }
-  }
-  sc.lang.klass.define(SCThread, "Thread : Stream");
-
-  function SCRoutine() {
-    this.__initializeWith__("Thread");
-  }
-  sc.lang.klass.define(SCRoutine, "Routine : Thread");
+  klass.define("Ref : AbstractFunction", {
+    constructor: SCRef
+  });
 
   // $SC
   $nil      = new SCNil();
@@ -1143,6 +1196,16 @@ var sc = { VERSION: "0.0.36" };
     return instance;
   };
 
+  $SC.Event = function(value) {
+    var instance, i, imax, j;
+    i = imax = j = value;
+    instance = $SC("Event").new();
+    for (i = j = 0, imax = value.length >> 1; i < imax; ++i) {
+      instance.put(value[j++], value[j++]);
+    }
+    return instance;
+  };
+
   $SC.Function = function(value, def) {
     var instance = new SCFunction();
     instance._ = def ? fn(value, def) : value;
@@ -1150,7 +1213,9 @@ var sc = { VERSION: "0.0.36" };
   };
 
   $SC.Ref = function(value) {
-    return new SCRef([ value ]);
+    var instance = new SCRef();
+    instance._$value = value;
+    return instance;
   };
 
 })(sc);
@@ -1183,7 +1248,7 @@ var sc = { VERSION: "0.0.36" };
       return utils.$int_1;
     },
     getMethod: function(className, methodName) {
-      return klass.get(className)._Spec.prototype[methodName];
+      return klass.get(className).__Spec.prototype[methodName];
     }
   };
 
@@ -1199,46 +1264,55 @@ var sc = { VERSION: "0.0.36" };
   var $SC = sc.lang.$SC;
   var random = sc.libs.random;
 
-  var $process, $interpreter;
-  var $mainThread;
+  main.$currentEnv = null;
 
   main.run = function(fn) {
     if (!initialize.done) {
       initialize();
     }
-    return fn($interpreter, $SC);
+    return fn($SC);
   };
 
   function initialize() {
-    var Process, Interpreter, Thread;
+    var $process;
 
-    Process     = $SC("Process")._Spec;
-    Interpreter = $SC("Interpreter")._Spec;
-    Thread      = $SC("Thread")._Spec;
+    $process = $SC("Main").new();
+    $process._$interpreter = $SC("Interpreter").new();
+    $process._$mainThread  = $SC("Thread").new();
 
-    $process     = new Process();
-    $interpreter = new Interpreter();
-    $mainThread  = new Thread();
+    main.$currentEnv = $SC("Environment").new();
 
-    $process._$interpreter = $interpreter;
     // $interpreter._$s = SCServer.default();
 
-    main.$thread   = $mainThread;
-    random.current = $mainThread._randgen;
+    random.current = $process._$mainThread._randgen;
 
     // TODO:
-    // SoundSystem.addThread($mainThread);
+    // SoundSystem.addProcess($process);
     // SoundSystem.start();
 
     initialize.done = true;
+
+    main.$process = $process;
   }
 
-  $SC.thisProcess = function() {
-    return $process;
+  $SC.Environment = function(key, $value) {
+    if ($value) {
+      main.$currentEnv.put($SC.Symbol(key), $value);
+      return $value;
+    }
+    return main.$currentEnv.at($SC.Symbol(key));
   };
 
-  $SC.thisThread = function() {
-    return main.$thread;
+  $SC.This = function() {
+    return main.$process.interpreter();
+  };
+
+  $SC.ThisProcess = function() {
+    return main.$process;
+  };
+
+  $SC.ThisThread = function() {
+    return main.$process.mainThread();
   };
 
   sc.lang.main = main;
@@ -1586,12 +1660,12 @@ var sc = { VERSION: "0.0.36" };
       BlockExpression: "BlockExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",
-      GlobalExpression: "GlobalExpression",
+      EnvironmentExpresion: "EnvironmentExpresion",
       Identifier: "Identifier",
       ListExpression: "ListExpression",
       Label: "Label",
       Literal: "Literal",
-      ObjectExpression: "ObjectExpression",
+      EventExpression: "EventExpression",
       Program: "Program",
       ThisExpression: "ThisExpression",
       UnaryExpression: "UnaryExpression",
@@ -1702,9 +1776,9 @@ var sc = { VERSION: "0.0.36" };
 
       return node;
     },
-    createGlobalExpression: function(id) {
+    createEnvironmentExpresion: function(id) {
       return {
-        type: Syntax.GlobalExpression,
+        type: Syntax.EnvironmentExpresion,
         id: id
       };
     },
@@ -1758,9 +1832,9 @@ var sc = { VERSION: "0.0.36" };
         valueType: token.type
       };
     },
-    createObjectExpression: function(elements) {
+    createEventExpression: function(elements) {
       return {
-        type: Syntax.ObjectExpression,
+        type: Syntax.EventExpression,
         elements: elements
       };
     },
@@ -2482,8 +2556,19 @@ var sc = { VERSION: "0.0.36" };
     return result;
   };
 
-  CodeGen.prototype.GlobalExpression = function(node) {
-    return "$SC.Global." + node.id.name;
+  CodeGen.prototype.EnvironmentExpresion = function(node, opts) {
+    var result;
+
+    if (opts) {
+      // setter
+      result = [ "$SC.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
+      opts.used = true;
+    } else {
+      // getter
+      result = "$SC.Environment('" + node.id.name + "')";
+    }
+
+    return result;
   };
 
   CodeGen.prototype.FunctionExpression = function(node) {
@@ -2690,13 +2775,13 @@ var sc = { VERSION: "0.0.36" };
       ref = this.scope.begin_ref();
       name = [
         "(" + ref + " = ", this.generate(opts.right),
-        ", $this." + node.name + "_(" + ref + "), " + ref + ")"
+        ", $SC.This()." + node.name + "_(" + ref + "), " + ref + ")"
       ];
       opts.used = true;
       this.scope.end_ref();
     } else {
       // getter
-      name = "$this." + node.name + "()";
+      name = "$SC.This()." + node.name + "()";
     }
 
     return name;
@@ -2740,7 +2825,7 @@ var sc = { VERSION: "0.0.36" };
     return "$SC.Nil()";
   };
 
-  CodeGen.prototype.ObjectExpression = function(node) {
+  CodeGen.prototype.EventExpression = function(node) {
     return [
       "$SC.Event(", this.insertArrayElement(node.elements), ")"
     ];
@@ -2750,7 +2835,7 @@ var sc = { VERSION: "0.0.36" };
     var result, body;
 
     if (node.body.length) {
-      body = this.withFunction([ "this", "SC" ], function() {
+      body = this.withFunction([ "SC" ], function() {
         return this._Statements(node.body);
       });
 
@@ -2767,11 +2852,9 @@ var sc = { VERSION: "0.0.36" };
   };
 
   CodeGen.prototype.ThisExpression = function(node) {
-    if (node.name === "this") {
-      return "$this";
-    }
-
-    return [ "$SC." + node.name + "()" ];
+    var name = node.name;
+    name = name.charAt(0).toUpperCase() + name.substr(1);
+    return [ "$SC." + name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {
@@ -4705,7 +4788,11 @@ var sc = { VERSION: "0.0.36" };
 
     if (this.match("~")) {
       this.lex();
-      expr = Node.createGlobalExpression(this.parseIdentifier());
+      expr = this.parseIdentifier();
+      if (isClassName(expr)) {
+        this.throwUnexpected({ type: Token.Identifier, value: expr.id });
+      }
+      expr = Node.createEnvironmentExpresion(expr);
     } else {
       stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
       switch (stamp) {
@@ -4892,7 +4979,7 @@ var sc = { VERSION: "0.0.36" };
     } else if (this.match("..")) {
       expr = this.parseSeriesInitialiser(null, generator);
     } else if (this.match(")")) {
-      expr = Node.createObjectExpression([]);
+      expr = Node.createEventExpression([]);
     } else {
       expr = this.parseParenthesesGuess(generator, marker);
     }
@@ -4956,7 +5043,7 @@ var sc = { VERSION: "0.0.36" };
 
     this.state.innerElements = innerElements;
 
-    return Node.createObjectExpression(elements);
+    return Node.createEventExpression(elements);
   };
 
   SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
@@ -5218,7 +5305,7 @@ var sc = { VERSION: "0.0.36" };
   var isLeftHandSide = function(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
-    case Syntax.GlobalExpression:
+    case Syntax.EnvironmentExpresion:
       return true;
     }
     return false;

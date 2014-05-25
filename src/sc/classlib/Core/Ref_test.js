@@ -10,8 +10,8 @@
     before(function() {
       SCRef = $SC("Ref");
       $nil = $SC.Nil();
-      this.createInstance = function(_value) {
-        return SCRef.new(_value || $nil);
+      this.createInstance = function(value) {
+        return SCRef.new(value || $nil);
       };
     });
     it("#valueOf", function() {
@@ -25,7 +25,7 @@
       test = instance.valueOf();
       expect(test).to.equal($value);
     });
-    it("#<>value", function() {
+    it("<>value", function() {
       var instance, test;
       var $value;
 
@@ -51,7 +51,7 @@
 
       test = instance.set();
       expect(test).to.equal(instance);
-      expect(test._value).to.be.a("SCNil");
+      expect(test._$value).to.be.a("SCNil");
     });
     it("#get", function() {
       var instance, test;

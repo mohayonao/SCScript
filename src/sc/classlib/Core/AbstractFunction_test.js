@@ -888,7 +888,7 @@
         $arg3 = sc.test.object();
         $arg4 = sc.test.object();
       });
-      it("#<>array", function() {
+      it("<>array", function() {
         var test;
 
         test = instance.array_($SC.Array([ $arg1, $arg2 ]));
@@ -1028,8 +1028,9 @@
       instance = this.createInstance();
 
       test = instance.storeArgs();
+
       expect(test).to.be.a("SCArray").that.eqls([
-        instance.$array.valueOf()
+        instance._$array.valueOf()
       ]);
     });
   });

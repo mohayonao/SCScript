@@ -3,17 +3,13 @@ SCScript.install(function(sc) {
 
   require("../Math/Magnitude");
 
-  var $SC = sc.lang.$SC;
-
-  function SCAssociation(args) {
-    this.__initializeWith__("Magnitude");
-    this._$key   = args.shift() || $SC.Nil();
-    this._$value = args.shift() || $SC.Nil();
-  }
-
-  sc.lang.klass.define(SCAssociation, "Association : Magnitude", function(spec, utils) {
+  sc.lang.klass.define("Association : Magnitude", function(spec, utils) {
     var $nil   = utils.$nil;
     var $false = utils.$false;
+
+    spec.constructor = function SCAssociation() {
+      this.__super__("Magnitude");
+    };
 
     spec.valueOf = function() {
       return this._$key.valueOf();
@@ -35,6 +31,13 @@ SCScript.install(function(sc) {
     spec.value_ = function($value) {
       this._$value = $value || /* istanbul ignore next */ $nil;
       return this;
+    };
+
+    spec.$new = function($key, $value) {
+      return this._newCopyArgs({
+        key: $key,
+        value: $value
+      });
     };
 
     spec["=="] = function($anAssociation) {

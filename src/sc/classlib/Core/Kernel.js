@@ -4,8 +4,9 @@ SCScript.install(function(sc) {
   require("./Object");
 
   var $SC = sc.lang.$SC;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.refine("Class", function(spec) {
+  klass.refine("Class", function(spec) {
     spec.class = function() {
       if (this._isMetaClass) {
         return $SC("Class");
@@ -48,8 +49,42 @@ SCScript.install(function(sc) {
     // TODO: implements superclasses
   });
 
-  sc.lang.klass.refine("Interpreter", function(spec, utils) {
+
+  klass.define("Process", function(spec, utils) {
     var $nil = utils.$nil;
+
+    spec.constructor = function SCProcess() {
+      this.__super__("Object");
+      this._$interpreter = $nil;
+      this._$mainThread  = $nil;
+    };
+
+    spec.interpreter = function() {
+      return this._$interpreter;
+    };
+
+    spec.mainThread = function() {
+      return this._$mainThread;
+    };
+  });
+
+  klass.define("Main : Process", function(spec) {
+    spec.constructor = function SCMain() {
+      this.__super__("Process");
+    };
+  });
+
+
+  klass.define("Interpreter", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCInterpreter() {
+      this.__super__("Object");
+      for (var i = 97; i <= 122; i++) {
+        this["_$" + String.fromCharCode(i)] = $nil;
+      }
+      // this._$s = $SC("Server").default(); // in SCMain
+    };
 
     (function() {
       var i, ch;
@@ -73,10 +108,6 @@ SCScript.install(function(sc) {
         spec[ch + "_"] = setter(ch);
       }
     })();
-
-    spec.$new = function() {
-      throw new Error("Interpreter.new is illegal.");
-    };
 
     spec.clearAll = function() {
       var i;

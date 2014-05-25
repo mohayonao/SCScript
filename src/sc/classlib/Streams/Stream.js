@@ -6,13 +6,17 @@ SCScript.install(function(sc) {
   var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
-  sc.lang.klass.refine("Stream", function(spec, utils) {
+  sc.lang.klass.define("Stream", function(spec, utils) {
     var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_0 = utils.$int_0;
     var SCArray = $SC("Array");
+
+    spec.constructor = function SCStream() {
+      this.__super__("AbstractFunction");
+    };
 
     spec.parent = function() {
       return $nil;
@@ -366,11 +370,11 @@ SCScript.install(function(sc) {
 
   });
 
-  function SCPauseStream() {
-    this.__initializeWith__("Stream");
-  }
+  sc.lang.klass.define("PauseStream : Stream", function(spec) {
+    spec.constructor = function SCPauseStream() {
+      this.__super__("Stream");
+    };
 
-  sc.lang.klass.define(SCPauseStream, "PauseStream : Stream", function() {
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
@@ -397,11 +401,11 @@ SCScript.install(function(sc) {
     // TODO: implements threadPlayer
   });
 
-  function SCTask() {
-    this.__initializeWith__("PauseStream");
-  }
+  sc.lang.klass.define("Task : PauseStream", function(spec) {
+    spec.constructor = function SCTask() {
+      this.__super__("PauseStream");
+    };
 
-  sc.lang.klass.define(SCTask, "Task : PauseStream", function() {
     // TODO: implements storeArgs
   });
 

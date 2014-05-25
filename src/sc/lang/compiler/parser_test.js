@@ -425,6 +425,9 @@
           error({ line: 1, column: 19, index: 18 }, Message.UnexpectedNumber),
           error({ line: 1, column: 21, index: 20 }, Message.UnexpectedToken, "]"),
         ],
+        "~ID": [
+          error({ line: 1, column: 4, index: 3 }, Message.UnexpectedIdentifier),
+        ],
       };
 
       Object.keys(cases).forEach(function(source) {

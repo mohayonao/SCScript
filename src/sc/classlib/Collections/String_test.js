@@ -46,7 +46,7 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSString").that.equals("str");
     });
-    it.skip("#<>unixCmdActions", function() {
+    it.skip("<>unixCmdActions", function() {
     });
     it.skip(".initClass", function() {
     });

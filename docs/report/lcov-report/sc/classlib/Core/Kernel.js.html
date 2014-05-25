@@ -199,18 +199,18 @@
     <h1>Code coverage report for <span class="entity">sc/classlib/Core/Kernel.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(33 / 33)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">93.75% <small>(45 / 48)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(4 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">83.33% <small>(15 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(33 / 33)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">93.75% <small>(45 / 48)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
-        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric">1 branch</span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../../../index.html">All files</a> &#187; <a href="index.html">sc/classlib/Core/</a> &#187; Kernel.js</div>
 </div>
@@ -307,7 +307,37 @@
 89
 90
 91
-92</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -358,8 +388,42 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">26</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
@@ -386,10 +450,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">26</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -404,9 +464,9 @@
   require("./Object");
 &nbsp;
   var $SC = sc.lang.$SC;
-  var fn  = sc.lang.fn;
+  var klass = sc.lang.klass;
 &nbsp;
-  sc.lang.klass.refine("Class", function(spec) {
+  klass.refine("Class", function(spec) {
     spec.class = function() {
       if (this._isMetaClass) {
         return $SC("Class");
@@ -449,23 +509,57 @@
     // TODO: implements superclasses
   });
 &nbsp;
-  sc.lang.klass.refine("Interpreter", function(spec, utils) {
+&nbsp;
+  klass.define("Process", function(spec, utils) {
     var $nil = utils.$nil;
+&nbsp;
+    spec.constructor = function SCProcess() {
+      this.__super__("Object");
+      this._$interpreter = $nil;
+      this._$mainThread  = $nil;
+    };
+&nbsp;
+    spec.interpreter = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >      return this._$interpreter;</span>
+    };
+&nbsp;
+    spec.mainThread = <span class="fstat-no" title="function not covered" >function() {</span>
+<span class="cstat-no" title="statement not covered" >      return this._$mainThread;</span>
+    };
+  });
+&nbsp;
+  klass.define("Main : Process", function(spec) {
+    spec.constructor = <span class="fstat-no" title="function not covered" >function SCMain() {</span>
+<span class="cstat-no" title="statement not covered" >      this.__super__("Process");</span>
+    };
+  });
+&nbsp;
+&nbsp;
+  klass.define("Interpreter", function(spec, utils) {
+    var $nil = utils.$nil;
+&nbsp;
+    spec.constructor = function SCInterpreter() {
+      this.__super__("Object");
+      for (var i = 97; i &lt;= 122; i++) {
+        this["_$" + String.fromCharCode(i)] = $nil;
+      }
+      // this._$s = $SC("Server").default(); // in SCMain
+    };
 &nbsp;
     (function() {
       var i, ch;
 &nbsp;
       function getter(name) {
         return function() {
-          return this["_" + name] || $nil;
+          return this["_$" + name];
         };
       }
 &nbsp;
       function setter(name) {
-        return fn(function(value) {
-          this["_" + name] = value;
+        return function($value) {
+          this["_$" + name] = $value || /* istanbul ignore next */ <span class="branch-1 cbranch-skip" title="branch not covered" >$nil;</span>
           return this;
-        }, "value");
+        };
       }
 &nbsp;
       for (i = 97; i &lt;= 122; i++) {
@@ -475,14 +569,10 @@
       }
     })();
 &nbsp;
-    spec.$new = function() {
-      throw new Error("Interpreter.new is illegal.");
-    };
-&nbsp;
     spec.clearAll = function() {
       var i;
       for (i = 97; i &lt;= 122; i++) {
-        this["_" + String.fromCharCode(i)] = $nil;
+        this["_$" + String.fromCharCode(i)] = $nil;
       }
       return this;
     };
@@ -494,7 +584,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri May 16 2014 21:48:07 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon May 26 2014 07:17:48 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

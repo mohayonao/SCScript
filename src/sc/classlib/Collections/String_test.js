@@ -46,12 +46,7 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSString").that.equals("str");
     });
-    it.skip("#<>unixCmdActions", function() {
-    });
-    it(".new", function() {
-      expect(function() {
-        SCString.new();
-      }).to.throw("should use literal");
+    it.skip("<>unixCmdActions", function() {
     });
     it.skip(".initClass", function() {
     });

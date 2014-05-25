@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">133.61</p>
+      <p class="stat">134.60</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">91</p>
+      <p class="stat">121</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">20.45</p>
+      <p class="stat">20.30</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.39</p>
+      <p class="stat">0.57</p>
     </div>
   </div>
 </div>
@@ -96,9 +96,9 @@
   require(&quot;./Object&quot;);
 
   var $SC = sc.lang.$SC;
-  var fn  = sc.lang.fn;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.refine(&quot;Class&quot;, function(spec) {
+  klass.refine(&quot;Class&quot;, function(spec) {
     spec.class = function() {
       if (this._isMetaClass) {
         return $SC(&quot;Class&quot;);
@@ -141,23 +141,57 @@
     // TODO: implements superclasses
   });
 
-  sc.lang.klass.refine(&quot;Interpreter&quot;, function(spec, utils) {
+
+  klass.define(&quot;Process&quot;, function(spec, utils) {
     var $nil = utils.$nil;
+
+    spec.constructor = function SCProcess() {
+      this.__super__(&quot;Object&quot;);
+      this._$interpreter = $nil;
+      this._$mainThread  = $nil;
+    };
+
+    spec.interpreter = function() {
+      return this._$interpreter;
+    };
+
+    spec.mainThread = function() {
+      return this._$mainThread;
+    };
+  });
+
+  klass.define(&quot;Main : Process&quot;, function(spec) {
+    spec.constructor = function SCMain() {
+      this.__super__(&quot;Process&quot;);
+    };
+  });
+
+
+  klass.define(&quot;Interpreter&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCInterpreter() {
+      this.__super__(&quot;Object&quot;);
+      for (var i = 97; i &lt;= 122; i++) {
+        this[&quot;_$&quot; + String.fromCharCode(i)] = $nil;
+      }
+      // this._$s = $SC(&quot;Server&quot;).default(); // in SCMain
+    };
 
     (function() {
       var i, ch;
 
       function getter(name) {
         return function() {
-          return this[&quot;_&quot; + name] || $nil;
+          return this[&quot;_$&quot; + name];
         };
       }
 
       function setter(name) {
-        return fn(function(value) {
-          this[&quot;_&quot; + name] = value;
+        return function($value) {
+          this[&quot;_$&quot; + name] = $value || /* istanbul ignore next */ $nil;
           return this;
-        }, &quot;value&quot;);
+        };
       }
 
       for (i = 97; i &lt;= 122; i++) {
@@ -167,14 +201,10 @@
       }
     })();
 
-    spec.$new = function() {
-      throw new Error(&quot;Interpreter.new is illegal.&quot;);
-    };
-
     spec.clearAll = function() {
       var i;
       for (i = 97; i &lt;= 122; i++) {
-        this[&quot;_&quot; + String.fromCharCode(i)] = $nil;
+        this[&quot;_$&quot; + String.fromCharCode(i)] = $nil;
       }
       return this;
     };

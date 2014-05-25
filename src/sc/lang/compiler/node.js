@@ -52,9 +52,9 @@
 
       return node;
     },
-    createGlobalExpression: function(id) {
+    createEnvironmentExpresion: function(id) {
       return {
-        type: Syntax.GlobalExpression,
+        type: Syntax.EnvironmentExpresion,
         id: id
       };
     },
@@ -108,9 +108,9 @@
         valueType: token.type
       };
     },
-    createObjectExpression: function(elements) {
+    createEventExpression: function(elements) {
       return {
-        type: Syntax.ObjectExpression,
+        type: Syntax.EventExpression,
         elements: elements
       };
     },
@@ -149,6 +149,20 @@
         node.init = init;
       }
       return node;
+    },
+    createValueMethodEvaluator: function(id, expr) {
+      return {
+        type: Syntax.ValueMethodEvaluator,
+        id  : id,
+        expr: expr,
+        segmented: true
+      };
+    },
+    createValueMethodResult: function(id) {
+      return {
+        type: Syntax.ValueMethodResult,
+        id: id
+      };
     }
   };
 

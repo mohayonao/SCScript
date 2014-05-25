@@ -1549,9 +1549,33 @@ SCScript.install(function(sc) {
     };
 
     // TODO: implements minNyquist
-    // TODO: implements sort
-    // TODO: implements sortBy
-    // TODO: implements sortMap
+
+    spec.sort = fn(function($function) {
+      if ($function === $nil) {
+        $function = $SC.Function(function($a, $b) {
+          return $a ["<="] ($b);
+        });
+      }
+      this._sort($function);
+      return this;
+    }, "function");
+
+    spec.sortBy = fn(function($key) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $a.at($key) ["<="] ($b.at($key));
+      }));
+    }, "key");
+
+    spec.sortMap = fn(function($function) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $function.value($a) ["<="] ($function.value($b));
+      }));
+    }, "function");
+
+    // spec._sort = function($function) {
+    //   this.mergeSort($function);
+    // };
+
     // TODO: implements sortedMedian
     // TODO: implements median
     // TODO: implements quickSort
@@ -1589,8 +1613,41 @@ SCScript.install(function(sc) {
       return this.put($index, $value);
     }, "index; value");
 
-    // TODO: implements reduce
-    // TODO: implements join
+    spec.reduce = fn(function($operator) {
+      var once;
+      var $result;
+
+      if (this.size().__int__() === 1) {
+        return this.at($int_0);
+      }
+
+      once = true;
+      $result = $nil;
+      this.doAdjacentPairs($SC.Function(function($a, $b) {
+        if (once) {
+          once = false;
+          $result = $operator.applyTo($a, $b);
+        } else {
+          $result = $operator.applyTo($result, $b);
+        }
+      }));
+
+      return $result;
+    }, "operator");
+
+    spec.join = fn(function($joiner) {
+      var items, joiner;
+
+      items = [];
+      this.do($SC.Function(function($item) {
+        items.push($item.__str__());
+      }));
+
+      joiner = ($joiner === $nil) ? "" : $joiner.__str__();
+
+      return $SC.String(items.join(joiner), true);
+    }, "joiner");
+
     // TODO: implements nextTimeOnGrid
     // TODO: implements asQuant
     // TODO: implements schedBundleArrayOnClock

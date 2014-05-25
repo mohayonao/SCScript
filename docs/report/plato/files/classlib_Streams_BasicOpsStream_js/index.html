@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - classlib/Streams/BasicOpsStream.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>classlib/Streams/BasicOpsStream.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">122.91</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">201</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">36.54</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.43</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">SCScript.install(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./Stream&quot;);
+
+  var fn = sc.lang.fn;
+
+  sc.lang.klass.define(&quot;UnaryOpStream : Stream&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCUnaryOpStream() {
+      this.__super__(&quot;Stream&quot;);
+    };
+
+    spec.$new = function($operator, $a) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $vala;
+
+      $vala = this._$a.next($inval);
+      if ($vala === $nil) {
+        return $nil;
+      }
+
+      return $vala.perform(this._$operator);
+    }, &quot;inval&quot;);
+
+    spec.reset = function() {
+      this._$a.reset();
+      return this;
+    };
+
+    // TODO: implements storeOn
+  });
+
+  sc.lang.klass.define(&quot;BinaryOpStream : Stream&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCBinaryOpStream() {
+      this.__super__(&quot;Stream&quot;);
+    };
+
+    spec.$new = function($operator, $a, $b) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a,
+        b       : $b
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $vala, $valb;
+
+      $vala = this._$a.next($inval);
+      if ($vala === $nil) {
+        return $nil;
+      }
+
+      $valb = this._$b.next($inval);
+      if ($valb === $nil) {
+        return $nil;
+      }
+
+      return $vala.perform(this._$operator, $valb);
+    }, &quot;inval&quot;);
+
+    spec.reset = function() {
+      this._$a.reset();
+      this._$b.reset();
+      return this;
+    };
+
+    // TODO: implements storeOn
+  });
+
+  sc.lang.klass.define(&quot;BinaryOpXStream : Stream&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCBinaryOpXStream() {
+      this.__super__(&quot;Stream&quot;);
+      this._$vala     = $nil;
+    };
+
+    spec.$new = function($operator, $a, $b) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a,
+        b       : $b
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $valb;
+
+      if (this._$vala === $nil) {
+        this._$vala = this._$a.next($inval);
+        if (this._$vala === $nil) {
+          return $nil;
+        }
+        $valb = this._$b.next($inval);
+        if ($valb === $nil) {
+          return $nil;
+        }
+      } else {
+        $valb = this._$b.next($inval);
+        if ($valb === $nil) {
+          this._$vala = this._$a.next($inval);
+          if (this._$vala === $nil) {
+            return $nil;
+          }
+          this._$b.reset();
+          $valb = this._$b.next($inval);
+          if ($valb === $nil) {
+            return $nil;
+          }
+        }
+      }
+
+      return this._$vala.perform(this._$operator, $valb);
+    }, &quot;inval&quot;);
+
+    spec.reset = function() {
+      this._$vala = $nil;
+      this._$a.reset();
+      this._$b.reset();
+      return this;
+    };
+
+    // TODO: implements storeOn
+  });
+
+  sc.lang.klass.define(&quot;NAryOpStream : Stream&quot;, function(spec, utils) {
+    var BOOL = utils.BOOL;
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCNAryOpStream() {
+      this.__super__(&quot;Stream&quot;);
+    };
+
+    spec.$new = function($operator, $a, $arglist) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a
+      }).arglist_($arglist);
+    };
+
+    spec.arglist_ = function($list) {
+      if (Array.isArray($list._)) {
+        this._arglist = $list._;
+      } else {
+        this._arglist = [];
+      }
+      this._isNumeric = this._arglist.every(function($item) {
+        return $item.__tag === sc.C.TAG_SYM || BOOL($item.isNumber());
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $vala;
+      var values;
+
+      $vala = this._$a.next($inval);
+      if ($vala === $nil) {
+        return $nil;
+      }
+
+      if (this._isNumeric) {
+        values = this._arglist;
+      } else {
+        values = this._arglist.map(function($item) {
+          var $res;
+
+          $res = $item.next($inval);
+          if ($res === $nil) {
+            return $nil;
+          }
+
+          return $res;
+        });
+      }
+
+      return $vala.perform.apply($vala, [ this._$operator ].concat(values));
+    }, &quot;inval&quot;);
+
+    spec.reset = function() {
+      this._$a.reset();
+      this._arglist.forEach(function($item) {
+        $item.reset();
+      });
+      return this;
+    };
+
+    // TODO: implements storeOn
+  });
+
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

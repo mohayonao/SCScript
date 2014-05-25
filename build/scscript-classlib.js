@@ -95,7 +95,7 @@ SCScript.install(function(sc) {
     };
 
     spec.isKindOf = function($aClass) {
-      return $SC.Boolean(this instanceof $aClass._Spec);
+      return $SC.Boolean(this instanceof $aClass.__Spec);
     };
 
     spec.isMemberOf = function($aClass) {
@@ -165,7 +165,7 @@ SCScript.install(function(sc) {
     // TODO: implements contentsCopy
 
     spec.shallowCopy = function() {
-      var a = new this.__class._Spec();
+      var a = new this.__Spec([]);
 
       Object.keys(this).forEach(function(key) {
         a[key] = copy(this[key]);
@@ -231,9 +231,18 @@ SCScript.install(function(sc) {
     // TODO: implements equals
     // TODO: implements compareObject
     // TODO: implements instVarHash
-    // TODO: implements basicHash
-    // TODO: implements hash
-    // TODO: implements identityHash
+
+    spec.basicHash = function() {
+      return $SC.Integer(this.__hash);
+    };
+
+    spec.hash = function() {
+      return $SC.Integer(this.__hash);
+    };
+
+    spec.identityHash = function() {
+      return $SC.Integer(this.__hash);
+    };
 
     spec["->"] = function($obj) {
       return $SC("Association").new(this, $obj);
@@ -683,10 +692,8 @@ SCScript.install(function(sc) {
 // src/sc/classlib/Core/AbstractFunction.js
 SCScript.install(function(sc) {
 
-  var $SC   = sc.lang.$SC;
-  var fn    = sc.lang.fn;
-  var utils = sc.lang.klass.utils;
-  var $nil  = utils.$nil;
+  var $SC = sc.lang.$SC;
+  var fn  = sc.lang.fn;
 
   sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
     spec.composeUnaryOp = function($aSelector) {
@@ -1290,21 +1297,25 @@ SCScript.install(function(sc) {
     spec.isValidUGenInput = utils.alwaysReturn$true;
   });
 
-  function SCUnaryOpFunction(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$selector = args[0] || /* istanbul ignore next */ $nil;
-    this.$a        = args[1] || /* istanbul ignore next */ $nil;
-  }
+  sc.lang.klass.define("UnaryOpFunction : AbstractFunction", function(spec) {
+    spec.constructor = function SCUnaryOpFunction() {
+      this.__super__("AbstractFunction");
+    };
 
-  sc.lang.klass.define(SCUnaryOpFunction, "UnaryOpFunction : AbstractFunction", function(spec) {
+    spec.$new = function($selector, $a) {
+      return this._newCopyArgs({
+        selector: $selector,
+        a       : $a
+      });
+    };
 
     spec.value = function() {
-      var $a = this.$a;
-      return $a.value.apply($a, arguments).perform(this.$selector);
+      var $a = this._$a;
+      return $a.value.apply($a, arguments).perform(this._$selector);
     };
 
     spec.valueArray = function($args) {
-      return this.$a.valueArray($args).perform(this.$selector);
+      return this._$a.valueArray($args).perform(this._$selector);
     };
 
     // TODO: implements valueEnvir
@@ -1317,24 +1328,28 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  function SCBinaryOpFunction(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$selector = args[0] || /* istanbul ignore next */ $nil;
-    this.$a        = args[1] || /* istanbul ignore next */ $nil;
-    this.$b        = args[2] || /* istanbul ignore next */ $nil;
-    this.$adverb   = args[3] || /* istanbul ignore next */ $nil;
-  }
+  sc.lang.klass.define("BinaryOpFunction : AbstractFunction", function(spec) {
+    spec.constructor = function SCBinaryOpFunction() {
+      this.__super__("AbstractFunction");
+    };
 
-  sc.lang.klass.define(SCBinaryOpFunction, "BinaryOpFunction : AbstractFunction", function(spec) {
+    spec.$new = function($selector, $a, $b, $adverb) {
+      return this._newCopyArgs({
+        selector: $selector,
+        a       : $a,
+        b       : $b,
+        adverb  : $adverb
+      });
+    };
 
     spec.value = function() {
-      return this.$a.value.apply(this.$a, arguments)
-        .perform(this.$selector, this.$b.value.apply(this.$b, arguments), this.$adverb);
+      return this._$a.value.apply(this._$a, arguments)
+        .perform(this._$selector, this._$b.value.apply(this._$b, arguments), this._$adverb);
     };
 
     spec.valueArray = function($args) {
-      return this.$a.valueArray($args)
-        .perform(this.$selector, this.$b.valueArray($args, arguments), this.$adverb);
+      return this._$a.valueArray($args)
+        .perform(this._$selector, this._$b.valueArray($args, arguments), this._$adverb);
     };
 
     // TODO: implements valueEnvir
@@ -1347,26 +1362,30 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  function SCNAryOpFunction(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$selector = args[0] || /* istanbul ignore next */ $nil;
-    this.$a        = args[1] || /* istanbul ignore next */ $nil;
-    this.$arglist  = args[2] || /* istanbul ignore next */ $nil;
-  }
+  sc.lang.klass.define("NAryOpFunction : AbstractFunction", function(spec) {
+    spec.constructor = function SCNAryOpFunction() {
+      this.__super__("AbstractFunction");
+    };
 
-  sc.lang.klass.define(SCNAryOpFunction, "NAryOpFunction : AbstractFunction", function(spec) {
+    spec.$new = function($selector, $a, $arglist) {
+      return this._newCopyArgs({
+        selector: $selector,
+        a       : $a,
+        arglist : $arglist
+      });
+    };
 
     spec.value = function() {
       var args = arguments;
-      return this.$a.value.apply(this.$a, args)
-        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+      return this._$a.value.apply(this._$a, args)
+        .performList(this._$selector, this._$arglist.collect($SC.Function(function($_) {
           return $_.value.apply($_, args);
         })));
     };
 
     spec.valueArray = function($args) {
-      return this.$a.valueArray($args)
-        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+      return this._$a.valueArray($args)
+        .performList(this._$selector, this._$arglist.collect($SC.Function(function($_) {
           return $_.valueArray($args);
         })));
     };
@@ -1374,28 +1393,33 @@ SCScript.install(function(sc) {
     // TODO: implements valueEnvir
     // TODO: implements valueArrayEnvir
 
-    spec.functionPerformList = function($selector, $arglist) {
-      return this.performList($selector, $arglist);
+    spec.functionPerformList = function($selector, _$arglist) {
+      return this.performList($selector, _$arglist);
     };
 
     // TODO: implements storeOn
   });
 
-  function SCFunctionList(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$array   = args[0] || /* istanbul ignore next */ $nil;
-    this._flopped = false;
-  }
-
-  sc.lang.klass.define(SCFunctionList, "FunctionList : AbstractFunction", function(spec, utils) {
+  sc.lang.klass.define("FunctionList : AbstractFunction", function(spec, utils) {
     var $int_0 = utils.$int_0;
 
+    spec.constructor = function SCFunctionList() {
+      this.__super__("AbstractFunction");
+      this._flopped = false;
+    };
+
+    spec.$new = function($functions) {
+      return this._newCopyArgs({
+        array: $functions
+      });
+    };
+
     spec.array = function() {
-      return this.$array;
+      return this._$array;
     };
 
     spec.array_ = fn(function($value) {
-      this.$array = $value;
+      this._$array = $value;
       return this;
     }, "value");
 
@@ -1408,30 +1432,30 @@ SCScript.install(function(sc) {
         throw new Error("cannot add a function to a flopped FunctionList");
       }
 
-      this.$array = this.$array.addAll($$functions);
+      this._$array = this._$array.addAll($$functions);
 
       return this;
     }, "*functions");
 
     spec.removeFunc = function($function) {
-      this.$array.remove($function);
+      this._$array.remove($function);
 
-      if (this.$array.size() < 2) {
-        return this.$array.at($int_0);
+      if (this._$array.size() < 2) {
+        return this._$array.at($int_0);
       }
 
       return this;
     };
 
     spec.replaceFunc = function($find, $replace) {
-      this.$array = this.$array.replace($find, $replace);
+      this._$array = this._$array.replace($find, $replace);
       return this;
     };
 
     spec.value = function() {
       var $res, args = arguments;
 
-      $res = this.$array.collect($SC.Function(function($_) {
+      $res = this._$array.collect($SC.Function(function($_) {
         return $_.value.apply($_, args);
       }));
 
@@ -1441,7 +1465,7 @@ SCScript.install(function(sc) {
     spec.valueArray = function($args) {
       var $res;
 
-      $res = this.$array.collect($SC.Function(function($_) {
+      $res = this._$array.collect($SC.Function(function($_) {
         return $_.valueArray($args);
       }));
 
@@ -1452,13 +1476,13 @@ SCScript.install(function(sc) {
     // TODO: implements valueArrayEnvir
 
     spec.do = function($function) {
-      this.$array.do($function);
+      this._$array.do($function);
       return this;
     };
 
     spec.flop = function() {
       if (!this._flopped) {
-        this.$array = this.$array.collect($SC.Function(function($_) {
+        this._$array = this._$array.collect($SC.Function(function($_) {
           return $_.flop();
         }));
       }
@@ -1470,7 +1494,7 @@ SCScript.install(function(sc) {
     // TODO: implements envirFlop
 
     spec.storeArgs = function() {
-      return $SC.Array([ this.$array ]);
+      return $SC.Array([ this._$array ]);
     };
 
   });
@@ -1480,52 +1504,378 @@ SCScript.install(function(sc) {
 // src/sc/classlib/Streams/Stream.js
 SCScript.install(function(sc) {
 
-  function SCStream() {
-    this.__initializeWith__("AbstractFunction");
-  }
+  var fn  = sc.lang.fn;
+  var $SC = sc.lang.$SC;
 
-  sc.lang.klass.define(SCStream, "Stream : AbstractFunction", function() {
-    // TODO: implements parent
-    // TODO: implements next
-    // TODO: implements iter
-    // TODO: implements value
-    // TODO: implements valueArray
-    // TODO: implements nextN
-    // TODO: implements all
-    // TODO: implements put
-    // TODO: implements putN
-    // TODO: implements putAll
-    // TODO: implements do
-    // TODO: implements subSample
-    // TODO: implements loop
-    // TODO: implements generate
-    // TODO: implements collect
-    // TODO: implements reject
-    // TODO: implements select
-    // TODO: implements dot
-    // TODO: implements interlace
-    // TODO: implements ++
-    // TODO: implements appendStream
-    // TODO: implements collate
-    // TODO: implements <>
-    // TODO: implements composeUnaryOp
-    // TODO: implements composeBinaryOp
-    // TODO: implements reverseComposeBinaryOp
-    // TODO: implements composeNAryOp
-    // TODO: implements embedInStream
-    // TODO: implements while
-    // TODO: implements asEventStreamPlayer
-    // TODO: implements play
+  sc.lang.klass.define("Stream", function(spec, utils) {
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var SCArray = $SC("Array");
+
+    spec.constructor = function SCStream() {
+      this.__super__("AbstractFunction");
+    };
+
+    spec.parent = function() {
+      return $nil;
+    };
+
+    spec.next = function() {
+      return this._subclassResponsibility("next");
+    };
+
+    spec.iter = utils.nop;
+
+    spec.value = fn(function($inval) {
+      return this.next($inval);
+    }, "inval");
+
+    spec.valueArray = function() {
+      return this.next();
+    };
+
+    spec.nextN = fn(function($n, $inval) {
+      var $this = this;
+      return SCArray.fill($n, $SC.Function(function() {
+        return $this.next($inval);
+      }));
+    }, "n; inval");
+
+    spec.all = fn(function($inval) {
+      var $array;
+
+      $array = $nil;
+      this.do($SC.Function(function($item) {
+        $array = $array.add($item);
+      }), $inval);
+
+      return $array;
+    }, "inval");
+
+    spec.put = function() {
+      return this._subclassResponsibility("put");
+    };
+
+    spec.putN = fn(function($n, $item) {
+      var $this = this;
+      $n.do($SC.Function(function() {
+        $this.put($item);
+      }));
+      return this;
+    }, "n; item");
+
+    spec.putAll = fn(function($aCollection) {
+      var $this = this;
+      $aCollection.do($SC.Function(function($item) {
+        $this.put($item);
+      }));
+      return this;
+    }, "aCollection");
+
+    spec.do = fn(function($function, $inval) {
+      var $this = this;
+      var $item, $i;
+
+      $i = $int_0;
+      $SC.Function(function() {
+        $item = $this.next($inval);
+        return $item.notNil();
+      }).while($SC.Function(function() { // TODO: use SegFunction
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
+      }));
+
+      return this;
+    }, "function; inval");
+
+    spec.subSample = fn(function($offset, $skipSize) {
+      var $this = this;
+      var SCRoutine = $SC("Routine");
+
+      return SCRoutine.new($SC.Function(function() {
+        $offset.do($SC.Function(function() {
+          $this.next();
+        }));
+        $SC.Function(function() {
+          $this.next().yield();
+          $skipSize.do($SC.Function(function() {
+            $this.next();
+          }));
+        }).loop();
+      }));
+    }, "offset=0; skipSize=0");
+
+    spec.generate = fn(function($function) {
+      var $this = this;
+      var $item, $i;
+
+      $i = $int_0;
+      $SC.Function(function() {
+        $item = $this.next($item);
+        return $item.notNil();
+      }).while($SC.Function(function() { // TODO: use SegFunction
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
+      }));
+
+      return this;
+    }, "function");
+
+    spec.collect = fn(function($argCollectFunc) {
+      var $this = this;
+      var $nextFunc, $resetFunc;
+
+      $nextFunc = $SC.Function(function($inval) {
+        var $nextval;
+
+        $nextval = $this.next($inval);
+        if ($nextval !== $nil) {
+          return $argCollectFunc.value($nextval, $inval);
+        }
+        return $nil;
+      });
+      $resetFunc = $SC.Function(function() {
+        return $this.reset();
+      });
+
+      return $SC("FuncStream").new($nextFunc, $resetFunc);
+    }, "argCollectFunc");
+
+    spec.reject = fn(function($function) {
+      var $this = this;
+      var $nextFunc, $resetFunc;
+
+      $nextFunc = $SC.Function(function($inval) {
+        var $nextval;
+
+        $nextval = $this.next($inval);
+        $SC.Function(function() {
+          return $nextval.notNil().and($SC.Function(function() {
+            return $function.value($nextval, $inval);
+          }));
+        }).while($SC.Function(function() { // TODO: use SegFunction
+          $nextval = $this.next($inval);
+          return $nextval;
+        }));
+
+        return $nextval;
+      });
+      $resetFunc = $SC.Function(function() {
+        return $this.reset();
+      });
+
+      return $SC("FuncStream").new($nextFunc, $resetFunc);
+    }, "function");
+
+    spec.select = fn(function($function) {
+      var $this = this;
+      var $nextFunc, $resetFunc;
+
+      $nextFunc = $SC.Function(function($inval) {
+        var $nextval;
+
+        $nextval = $this.next($inval);
+        $SC.Function(function() {
+          return $nextval.notNil().and($SC.Function(function() {
+            return $function.value($nextval, $inval).not();
+          }));
+        }).while($SC.Function(function() { // TODO: use SegFunction
+          $nextval = $this.next($inval);
+          return $nextval;
+        }));
+
+        return $nextval;
+      });
+      $resetFunc = $SC.Function(function() {
+        return $this.reset();
+      });
+
+      return $SC("FuncStream").new($nextFunc, $resetFunc);
+    }, "function");
+
+    spec.dot = fn(function($function, $stream) {
+      var $this = this;
+
+      return $SC("FuncStream").new($SC.Function(function($inval) {
+        var $x, $y;
+
+        $x = $this.next($inval);
+        $y = $stream.next($inval);
+
+        if ($x !== $nil && $y !== $nil) {
+          return $function.value($x, $y, $inval);
+        }
+
+        return $nil;
+      }), $SC.Function(function() {
+        $this.reset();
+        return $stream.reset();
+      }));
+    }, "function; stream");
+
+    spec.interlace = fn(function($function, $stream) {
+      var $this = this;
+      var $nextx, $nexty;
+
+      $nextx = this.next();
+      $nexty = $stream.next();
+
+      return $SC("FuncStream").new($SC.Function(function($inval) {
+        var $val;
+
+        if ($nextx === $nil) {
+          if ($nextx === $nil) {
+            return $nil;
+          } else {
+            $val = $nexty;
+            $nexty = $stream.next($inval);
+            return $val;
+          }
+        } else {
+          if ($nexty === $nil ||
+              BOOL($function.value($nextx, $nexty, $inval))) {
+            $val   = $nextx;
+            $nextx = $this.next($inval);
+            return $val;
+          } else {
+            $val   = $nexty;
+            $nexty = $stream.next($inval);
+            return $val;
+          }
+        }
+      }), $SC.Function(function() {
+        $this.reset();
+        $stream.reset();
+        $nextx = $this.next();
+        $nexty = $stream.next();
+        return $nexty;
+      }));
+    }, "function; stream");
+
+    spec["++"] = function($stream) {
+      return this.appendStream($stream);
+    };
+
+    spec.appendStream = fn(function($stream) {
+      var $this = this;
+      var $reset;
+
+      $reset = $false;
+      return $SC("Routine").new($SC.Function(function($inval) {
+        if (BOOL($reset)) {
+          $this.reset();
+          $stream.reset();
+        }
+        $reset = $true;
+        $inval = $this.embedInStream($inval);
+        return $stream.embedInStream($inval);
+      }));
+    }, "stream");
+
+    spec.collate = fn(function($stream) {
+      return this.interlace($SC.Function(function($x, $y) {
+        return $x ["<"] ($y);
+      }), $stream);
+    }, "stream");
+
+    spec["<>"] = function($obj) {
+      return $SC("Pchain").new(this, $obj).asStream();
+    };
+
+    spec.composeUnaryOp = fn(function($argSelector) {
+      return $SC("UnaryOpStream").new($argSelector, this);
+    }, "argSelector");
+
+    spec.composeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+      if ($adverb === $nil) {
+        return $SC("BinaryOpStream").new(
+          $argSelector, this, $argStream.asStream()
+        );
+      }
+      if ($adverb.__sym__() === "x") {
+        return $SC("BinaryOpXStream").new(
+          $argSelector, this, $argStream.asStream()
+        );
+      }
+
+      return $nil;
+    }, "argSelector; argStream; adverb");
+
+    spec.reverseComposeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+      if ($adverb === $nil) {
+        return $SC("BinaryOpStream").new(
+          $argSelector, $argStream.asStream(), this
+        );
+      }
+      if ($adverb.__sym__() === "x") {
+        return $SC("BinaryOpXStream").new(
+          $argSelector, $argStream.asStream(), this
+        );
+      }
+
+      return $nil;
+    }, "argSelector; argStream; adverb");
+
+    spec.composeNAryOp = fn(function($argSelector, $anArgList) {
+      return $SC("NAryOpStream").new(
+        $argSelector, this, $anArgList.collect($SC.Function(function($_) {
+          return $_.asStream();
+        }))
+      );
+    }, "argStream; anArgList");
+
+    spec.embedInStream = fn(function($inval) {
+      var $this = this;
+      var $outval;
+
+      $SC.Function(function() {
+        $outval = $this.value($inval);
+        return $outval.notNil();
+      }).while($SC.Function(function() { // TODO: use SegFunction
+        $inval = $outval.yield();
+        return $inval;
+      }));
+
+      return $inval;
+    }, "inval");
+
+    spec.asEventStreamPlayer = fn(function($protoEvent) {
+      return $SC("EventStreamPlayer").new(this, $protoEvent);
+    }, "protoEvent");
+
+    spec.play = fn(function($clock, $quant) {
+      if ($clock === $nil) {
+        $clock = $SC("TempoClock").default();
+      }
+      $clock.play(this, $quant.asQuant());
+      return this;
+    }, "clock; quant");
+
     // TODO: implements trace
-    // TODO: implements constrain
-    // TODO: implements repeat
+
+    spec.repeat = fn(function($repeats) {
+      var $this = this;
+
+      return $SC.Function(function($inval) {
+        return $repeats.value($inval).do($SC.Function(function() {
+          $inval = $this.reset().embedInStream($inval);
+          return $inval;
+        }));
+      }).r();
+    }, "repeats=inf");
+
   });
 
-  function SCPauseStream() {
-    this.__initializeWith__("Stream");
-  }
+  sc.lang.klass.define("PauseStream : Stream", function(spec) {
+    spec.constructor = function SCPauseStream() {
+      this.__super__("Stream");
+    };
 
-  sc.lang.klass.define(SCPauseStream, "PauseStream : Stream", function() {
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
@@ -1552,12 +1902,212 @@ SCScript.install(function(sc) {
     // TODO: implements threadPlayer
   });
 
-  function SCTask() {
-    this.__initializeWith__("PauseStream");
-  }
+  sc.lang.klass.define("Task : PauseStream", function(spec) {
+    spec.constructor = function SCTask() {
+      this.__super__("PauseStream");
+    };
 
-  sc.lang.klass.define(SCTask, "Task : PauseStream", function() {
     // TODO: implements storeArgs
+  });
+
+});
+
+// src/sc/classlib/Streams/BasicOpsStream.js
+SCScript.install(function(sc) {
+
+  var fn = sc.lang.fn;
+
+  sc.lang.klass.define("UnaryOpStream : Stream", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCUnaryOpStream() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($operator, $a) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $vala;
+
+      $vala = this._$a.next($inval);
+      if ($vala === $nil) {
+        return $nil;
+      }
+
+      return $vala.perform(this._$operator);
+    }, "inval");
+
+    spec.reset = function() {
+      this._$a.reset();
+      return this;
+    };
+
+    // TODO: implements storeOn
+  });
+
+  sc.lang.klass.define("BinaryOpStream : Stream", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCBinaryOpStream() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($operator, $a, $b) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a,
+        b       : $b
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $vala, $valb;
+
+      $vala = this._$a.next($inval);
+      if ($vala === $nil) {
+        return $nil;
+      }
+
+      $valb = this._$b.next($inval);
+      if ($valb === $nil) {
+        return $nil;
+      }
+
+      return $vala.perform(this._$operator, $valb);
+    }, "inval");
+
+    spec.reset = function() {
+      this._$a.reset();
+      this._$b.reset();
+      return this;
+    };
+
+    // TODO: implements storeOn
+  });
+
+  sc.lang.klass.define("BinaryOpXStream : Stream", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCBinaryOpXStream() {
+      this.__super__("Stream");
+      this._$vala     = $nil;
+    };
+
+    spec.$new = function($operator, $a, $b) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a,
+        b       : $b
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $valb;
+
+      if (this._$vala === $nil) {
+        this._$vala = this._$a.next($inval);
+        if (this._$vala === $nil) {
+          return $nil;
+        }
+        $valb = this._$b.next($inval);
+        if ($valb === $nil) {
+          return $nil;
+        }
+      } else {
+        $valb = this._$b.next($inval);
+        if ($valb === $nil) {
+          this._$vala = this._$a.next($inval);
+          if (this._$vala === $nil) {
+            return $nil;
+          }
+          this._$b.reset();
+          $valb = this._$b.next($inval);
+          if ($valb === $nil) {
+            return $nil;
+          }
+        }
+      }
+
+      return this._$vala.perform(this._$operator, $valb);
+    }, "inval");
+
+    spec.reset = function() {
+      this._$vala = $nil;
+      this._$a.reset();
+      this._$b.reset();
+      return this;
+    };
+
+    // TODO: implements storeOn
+  });
+
+  sc.lang.klass.define("NAryOpStream : Stream", function(spec, utils) {
+    var BOOL = utils.BOOL;
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCNAryOpStream() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($operator, $a, $arglist) {
+      return this._newCopyArgs({
+        operator: $operator,
+        a       : $a
+      }).arglist_($arglist);
+    };
+
+    spec.arglist_ = function($list) {
+      if (Array.isArray($list._)) {
+        this._arglist = $list._;
+      } else {
+        this._arglist = [];
+      }
+      this._isNumeric = this._arglist.every(function($item) {
+        return $item.__tag === 1027 || BOOL($item.isNumber());
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $vala;
+      var values;
+
+      $vala = this._$a.next($inval);
+      if ($vala === $nil) {
+        return $nil;
+      }
+
+      if (this._isNumeric) {
+        values = this._arglist;
+      } else {
+        values = this._arglist.map(function($item) {
+          var $res;
+
+          $res = $item.next($inval);
+          if ($res === $nil) {
+            return $nil;
+          }
+
+          return $res;
+        });
+      }
+
+      return $vala.perform.apply($vala, [ this._$operator ].concat(values));
+    }, "inval");
+
+    spec.reset = function() {
+      this._$a.reset();
+      this._arglist.forEach(function($item) {
+        $item.reset();
+      });
+      return this;
+    };
+
+    // TODO: implements storeOn
   });
 
 });
@@ -1575,10 +2125,6 @@ SCScript.install(function(sc) {
 
     spec["!="] = function($aMagnitude) {
       return $SC.Boolean(this.valueOf() !== $aMagnitude.valueOf());
-    };
-
-    spec.hash = function() {
-      return this._subclassResponsibility("hash");
     };
 
     spec["<"] = function($aMagnitude) {
@@ -2145,8 +2691,6 @@ SCScript.install(function(sc) {
       return this.absdif($that) ["<"] ($precision);
     }, "that; precision=0.0001");
 
-    // TODO: implements hash
-
     spec.asInteger = function() {
       return $SC.Integer(this._);
     };
@@ -2535,7 +3079,9 @@ SCScript.install(function(sc) {
 
     spec.isInteger = utils.alwaysReturn$true;
 
-    // TODO: implements hash
+    spec.hash = function() {
+      return $SC.Float(this._).hash();
+    };
 
     [
       [ "+", $SC.Integer, $SC.Float ],
@@ -3088,45 +3634,169 @@ SCScript.install(function(sc) {
 // src/sc/classlib/Core/Thread.js
 SCScript.install(function(sc) {
 
-  function SCThread() {
-    this.__initializeWith__("Stream");
-  }
+  var fn  = sc.lang.fn;
+  var $SC = sc.lang.$SC;
+  var random = sc.libs.random;
 
-  sc.lang.klass.define(SCThread, "Thread : Stream", function() {
-    // TODO: implements state
-    // TODO: implements parent
-    // TODO: implements primitiveError
-    // TODO: implements primitiveIndex
-    // TODO: implements beats
-    // TODO: implements seconds
-    // TODO: implements clock
-    // TODO: implements nextBeat
-    // TODO: implements endBeat
-    // TODO: implements endBeat_
-    // TODO: implements endValue
-    // TODO: implements endValue_
-    // TODO: implements exceptionHandler
-    // TODO: implements exceptionHandler_
-    // TODO: implements threadPlayer_
-    // TODO: implements executingPath
-    // TODO: implements oldExecutingPath
+  sc.lang.klass.define("Thread", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCThread() {
+      this.__super__("Stream");
+    };
+
+    spec.$new = function($func) {
+      return this.__super__("new")._init($func);
+    };
+
+    spec._init = function() {
+      this._state   = 0;
+      this._randgen = new random.RandGen((Math.random() * 4294967295) >>> 0);
+      return this;
+    };
+
+    spec.state = function() {
+      return $SC.Integer(this._state);
+    };
+
+    // spec.parent = function() {
+    //   return this._parent;
+    // };
+
+    // spec.primitiveError = function() {
+    //   return this._primitiveError;
+    // };
+
+    // spec.primitiveIndex = function() {
+    //   return this._primitiveIndex;
+    // };
+
+    // spec.beats = function() {
+    //   return this._beats;
+    // };
+
+    // spec.beats_ = fn(function($inBeats) {
+    //   this._beats   = $inBeats;
+    //   this._seconds = this._clock.beats2secs($inBeats);
+    //   return this;
+    // }, "inBeats");
+
+    // spec.seconds = function() {
+    //   return this._seconds;
+    // };
+
+    // spec.seconds_ = fn(function($inSeconds) {
+    //   this._seconds = $inSeconds;
+    //   this._beats   = this._clock.secs2beats($inSeconds);
+    //   return this;
+    // }, "inSeconds");
+
+    // spec.clock = function() {
+    //   return this._clock;
+    // };
+
+    // spec.clock_ = fn(function($inClock) {
+    //   this._clock = $inClock;
+    //   this._beats = this._clock.secs2beats(this._seconds);
+    //   return this;
+    // }, "inClock");
+
+    // spec.nextBeat = function() {
+    //   return this._nextBeat;
+    // };
+
+    // spec.endBeat = function() {
+    //   return this._endBeat;
+    // };
+
+    // spec.endBeat_ = function($value) {
+    //   this._endBeat = $value || /* istanbul ignroe next */ $nil;
+    //   return this;
+    // };
+
+    // spec.endValue = function() {
+    //   return this._endValue;
+    // };
+
+    // spec.endValue_ = function($value) {
+    //   this._endValue = $value || /* istanbul ignroe next */ $nil;
+    //   return this;
+    // };
+
+    // spec.exceptionHandler = function() {
+    //   return this._exceptionHandler;
+    // };
+
+    // spec.exceptionHandler_ = function($value) {
+    //   this._exceptionHandler = $value || /* istanbul ignroe next */ $nil;
+    //   return this;
+    // };
+
+    // spec.threadPlayer_ = function($value) {
+    //   this._threadPlayer = $value || /* istanbul ignroe next */ $nil;
+    //   return this;
+    // };
+
+    // spec.executingPath = function() {
+    //   return this._executingPath;
+    // };
+
+    // spec.oldExecutingPath = function() {
+    //   return this._oldExecutingPath;
+    // };
 
     // TODO: implements init
-    // TODO: implements copy
-    // TODO: implements clock_
-    // TODO: implements seconds_
-    // TODO: implements beats_
-    // TODO: implements isPlaying
-    // TODO: implements threadPlayer
+
+    spec.copy = utils.nop;
+
+    // spec.isPlaying = function() {
+    //   return $SC.Boolean(this._state._ === 5);
+    // };
+
+    // spec.threadPlayer = function() {
+    //   if (this._threadPlayer !== $nil) {
+    //     return this.findThreadPlayer();
+    //   }
+    //   return $nil;
+    // };
+
     // TODO: implements findThreadPlayer
-    // TODO: implements randSeed_
-    // TODO: implements randData_
-    // TODO: implements randData
+
+    spec.randSeed_ = fn(function($seed) {
+      var seed;
+
+      if ($seed === $nil) {
+        seed = Math.random() * 4294967295;
+      } else {
+        seed = $seed.__int__();
+      }
+      this._randgen.setSeed(seed >>> 0);
+
+      return this;
+    }, "seed");
+
+    spec.randData_ = fn(function($data) {
+      this._randgen.x = $data.at($SC.Integer(0)).__int__();
+      this._randgen.y = $data.at($SC.Integer(1)).__int__();
+      this._randgen.z = $data.at($SC.Integer(2)).__int__();
+      return this;
+    }, "data");
+
+    spec.randData = function() {
+      return $SC("Int32Array").newFrom($SC.Array([
+        $SC.Integer(this._randgen.x),
+        $SC.Integer(this._randgen.y),
+        $SC.Integer(this._randgen.z),
+      ]));
+    };
+
     // TODO: implements failedPrimitiveName
     // TODO: implements handleError
-    // TODO: implements next
-    // TODO: implements value
-    // TODO: implements valueArray
+
+    spec.next = utils.nop;
+    spec.value = utils.nop;
+    spec.valueArray = utils.nop;
+
     // TODO: implements $primitiveError
     // TODO: implements $primitiveErrorString
     // TODO: implements storeOn
@@ -3134,11 +3804,12 @@ SCScript.install(function(sc) {
     // TODO: implements checkCanArchive
   });
 
-  function SCRoutine() {
-    this.__initializeWith__("Thread");
-  }
+  sc.lang.klass.define("Routine", function(spec) {
 
-  sc.lang.klass.define(SCRoutine, "Routine : Thread", function() {
+    spec.constructor = function SCRoutine() {
+      this.__super__("Thread");
+    };
+
     // TODO: implements $run
     // TODO: implements next
     // TODO: implements value
@@ -3158,6 +3829,7 @@ SCScript.install(function(sc) {
 // src/sc/classlib/Core/Symbol.js
 SCScript.install(function(sc) {
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Symbol", function(spec, utils) {
@@ -3219,9 +3891,12 @@ SCScript.install(function(sc) {
     // TODO: implements blend
     // TODO: implements ++
     // TODO: implements asBinOpString
-    // TODO: implements applyTo
-    // TODO: implements performBinaryOpOnSomething
 
+    spec.applyTo = fn(function($firstArg, $$args) {
+      return $firstArg.perform.apply($firstArg, [ this ].concat($$args._));
+    }, "first; *args");
+
+    spec.performBinaryOpOnSomething = utils.nop;
     spec.neg = utils.nop;
     spec.bitNot = utils.nop;
     spec.abs = utils.nop;
@@ -3339,28 +4014,32 @@ SCScript.install(function(sc) {
   var fn  = sc.lang.fn;
 
   sc.lang.klass.refine("Ref", function(spec, utils) {
+    spec.$new = function($thing) {
+      return this.__super__("new").value_($thing);
+    };
+
     spec.valueOf = function() {
-      return this._value.valueOf();
+      return this._$value.valueOf();
     };
 
     spec.value = function() {
-      return this._value;
+      return this._$value;
     };
 
     spec.value_ = fn(function($value) {
-      this._value = $value;
+      this._$value = $value;
       return this;
     }, "value");
 
     // $new
 
     spec.set = fn(function($thing) {
-      this._value = $thing;
+      this._$value = $thing;
       return this;
     }, "thing");
 
     spec.get = function() {
-      return this._value;
+      return this._$value;
     };
 
     spec.dereference = spec.value;
@@ -3381,11 +4060,11 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
 
     spec.at = function($key) {
-      return this._value.at($key);
+      return this._$value.at($key);
     };
 
     spec.put = function($key, $val) {
-      return this._value.put($key, $val);
+      return this._$value.put($key, $val);
     };
 
     // TODO: implements seq
@@ -3572,9 +4251,9 @@ SCScript.install(function(sc) {
 SCScript.install(function(sc) {
 
   var $SC = sc.lang.$SC;
-  var fn  = sc.lang.fn;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.refine("Class", function(spec) {
+  klass.refine("Class", function(spec) {
     spec.class = function() {
       if (this._isMetaClass) {
         return $SC("Class");
@@ -3617,23 +4296,55 @@ SCScript.install(function(sc) {
     // TODO: implements superclasses
   });
 
-  sc.lang.klass.refine("Interpreter", function(spec, utils) {
+  klass.define("Process", function(spec, utils) {
     var $nil = utils.$nil;
+
+    spec.constructor = function SCProcess() {
+      this.__super__("Object");
+      this._$interpreter = $nil;
+      this._$mainThread  = $nil;
+    };
+
+    spec.interpreter = function() {
+      return this._$interpreter;
+    };
+
+    spec.mainThread = function() {
+      return this._$mainThread;
+    };
+  });
+
+  klass.define("Main : Process", function(spec) {
+    spec.constructor = function SCMain() {
+      this.__super__("Process");
+    };
+  });
+
+  klass.define("Interpreter", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCInterpreter() {
+      this.__super__("Object");
+      for (var i = 97; i <= 122; i++) {
+        this["_$" + String.fromCharCode(i)] = $nil;
+      }
+      // this._$s = $SC("Server").default(); // in SCMain
+    };
 
     (function() {
       var i, ch;
 
       function getter(name) {
         return function() {
-          return this["_" + name] || $nil;
+          return this["_$" + name];
         };
       }
 
       function setter(name) {
-        return fn(function(value) {
-          this["_" + name] = value;
+        return function($value) {
+          this["_$" + name] = $value || /* istanbul ignore next */ $nil;
           return this;
-        }, "value");
+        };
       }
 
       for (i = 97; i <= 122; i++) {
@@ -3643,14 +4354,10 @@ SCScript.install(function(sc) {
       }
     })();
 
-    spec.$new = function() {
-      throw new Error("Interpreter.new is illegal.");
-    };
-
     spec.clearAll = function() {
       var i;
       for (i = 97; i <= 122; i++) {
-        this["_" + String.fromCharCode(i)] = $nil;
+        this["_$" + String.fromCharCode(i)] = $nil;
       }
       return this;
     };
@@ -3734,9 +4441,24 @@ SCScript.install(function(sc) {
     // TODO: implements awake
     // TODO: implements cmdPeriod
     // TODO: implements bench
-    // TODO: implements protect
+
+    spec.protect = function($handler) {
+      var $result;
+
+      try {
+        $result = this.value();
+      } catch (e) {
+        $result = null;
+      } finally {
+        $handler.value();
+      }
+
+      return $result || $nil;
+    };
+
     // TODO: implements try
     // TODO: implements prTry
+
     // TODO: implements handleError
 
     spec.case = function() {
@@ -4084,6 +4806,21 @@ SCScript.install(function(sc) {
     var $int_0 = utils.$int_0;
     var $int_1 = utils.$int_1;
     var SCArray = $SC("Array");
+
+    // e.g. Array [ 1, 2, 3 ]
+    spec.$_newFrom = function($anArray) {
+      var $newCollection;
+      var array, i, imax;
+
+      $newCollection = this.new($anArray.size());
+
+      array = $anArray._;
+      for (i = 0, imax = array.length; i < imax; ++i) {
+        $newCollection.add(array[i]);
+      }
+
+      return $newCollection;
+    };
 
     spec.$newFrom = fn(function($aCollection) {
       var $newCollection;
@@ -6570,9 +7307,33 @@ SCScript.install(function(sc) {
     };
 
     // TODO: implements minNyquist
-    // TODO: implements sort
-    // TODO: implements sortBy
-    // TODO: implements sortMap
+
+    spec.sort = fn(function($function) {
+      if ($function === $nil) {
+        $function = $SC.Function(function($a, $b) {
+          return $a ["<="] ($b);
+        });
+      }
+      this._sort($function);
+      return this;
+    }, "function");
+
+    spec.sortBy = fn(function($key) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $a.at($key) ["<="] ($b.at($key));
+      }));
+    }, "key");
+
+    spec.sortMap = fn(function($function) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $function.value($a) ["<="] ($function.value($b));
+      }));
+    }, "function");
+
+    // spec._sort = function($function) {
+    //   this.mergeSort($function);
+    // };
+
     // TODO: implements sortedMedian
     // TODO: implements median
     // TODO: implements quickSort
@@ -6610,8 +7371,41 @@ SCScript.install(function(sc) {
       return this.put($index, $value);
     }, "index; value");
 
-    // TODO: implements reduce
-    // TODO: implements join
+    spec.reduce = fn(function($operator) {
+      var once;
+      var $result;
+
+      if (this.size().__int__() === 1) {
+        return this.at($int_0);
+      }
+
+      once = true;
+      $result = $nil;
+      this.doAdjacentPairs($SC.Function(function($a, $b) {
+        if (once) {
+          once = false;
+          $result = $operator.applyTo($a, $b);
+        } else {
+          $result = $operator.applyTo($result, $b);
+        }
+      }));
+
+      return $result;
+    }, "operator");
+
+    spec.join = fn(function($joiner) {
+      var items, joiner;
+
+      items = [];
+      this.do($SC.Function(function($item) {
+        items.push($item.__str__());
+      }));
+
+      joiner = ($joiner === $nil) ? "" : $joiner.__str__();
+
+      return $SC.String(items.join(joiner), true);
+    }, "joiner");
+
     // TODO: implements nextTimeOnGrid
     // TODO: implements asQuant
     // TODO: implements schedBundleArrayOnClock
@@ -6646,7 +7440,7 @@ SCScript.install(function(sc) {
     };
 
     spec._ThrowIfImmutable = function() {
-      if (this._immutable) {
+      if (this.__immutable) {
         throw new Error("Attempted write to immutable object.");
       }
     };
@@ -6959,7 +7753,7 @@ SCScript.install(function(sc) {
       }
       raw = this._.slice(start, end + 1);
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "start; end");
@@ -6996,7 +7790,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "first; second; last");
@@ -7051,7 +7845,7 @@ SCScript.install(function(sc) {
 
       this._ThrowIfImmutable();
 
-      if ($aCollection.isSequenceableCollection().valueOf()) {
+      if (BOOL($aCollection.isCollection())) {
         $aCollection.do($SC.Function(function($item) {
           $this._.push($this.__elem__($item));
         }));
@@ -7092,7 +7886,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "size; item");
@@ -7118,7 +7912,7 @@ SCScript.install(function(sc) {
       raw = this._.slice();
       raw.unshift(this.__elem__($item));
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, "item");
@@ -7144,7 +7938,7 @@ SCScript.install(function(sc) {
 
       raw = this._.slice();
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       if ($anArray !== $nil) {
         instance.addAll($anArray);
@@ -7379,17 +8173,126 @@ SCScript.install(function(sc) {
         return $elem.asString().__str__();
       }).join(", ") + " ]");
     };
+
+    // istanbul ignore next
+    spec._sort = function($function) {
+      this._ThrowIfImmutable();
+      this._.sort(function($a, $b) {
+        return BOOL($function.value($a, $b)) ? -1 : 1;
+      });
+    };
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {
+    var SCArray = $SC("Array");
+
     spec.archiveAsCompileString = utils.alwaysReturn$true;
     spec.archiveAsObject = utils.alwaysReturn$true;
+
     spec.rate = function() {
       return $SC.Symbol("scalar");
     };
 
     // TODO: implements readFromStream
-    // TODO: implements powerset
+
+    spec.powerset = function() {
+      return this.as(SCArray).powerset();
+    };
+  });
+
+  sc.lang.klass.define("Int8Array : RawArray", function(spec) {
+    var int8 = new Int8Array(1);
+
+    spec.constructor = function SCInt8Array() {
+      this.__super__("RawArray");
+    };
+
+    spec.valueOf = function() {
+      return new Int8Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int8[0] = item.__int__();
+      return $SC.Integer(int8[0]);
+    };
+  });
+
+  sc.lang.klass.define("Int16Array : RawArray", function(spec) {
+    var int16 = new Int16Array(1);
+
+    spec.constructor = function SCInt16Array() {
+      this.__super__("RawArray");
+    };
+
+    spec.valueOf = function() {
+      return new Int16Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int16[0] = item.__int__();
+      return $SC.Integer(int16[0]);
+    };
+  });
+
+  sc.lang.klass.define("Int32Array : RawArray", function(spec) {
+    var int32 = new Int32Array(1);
+
+    spec.constructor = function SCInt32Array() {
+      this.__super__("RawArray");
+    };
+
+    spec.valueOf = function() {
+      return new Int32Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int32[0] = item.__int__();
+      return $SC.Integer(int32[0]);
+    };
+  });
+
+  sc.lang.klass.define("FloatArray : RawArray", function(spec) {
+    var float32 = new Float32Array(1);
+
+    spec.constructor = function SCFloatArray() {
+      this.__super__("RawArray");
+    };
+
+    spec.valueOf = function() {
+      return new Float32Array(this._.map(function($elem) {
+        return $elem.__num__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      float32[0] = item.__num__();
+      return $SC.Float(float32[0]);
+    };
+  });
+
+  sc.lang.klass.define("DoubleArray : RawArray", function(spec) {
+    var float64 = new Float64Array(1);
+
+    spec.constructor = function SCDoubleArray() {
+      this.__super__("RawArray");
+    };
+
+    spec.valueOf = function() {
+      return new Float64Array(this._.map(function($elem) {
+        return $elem.__num__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      float64[0] = item.__num__();
+      return $SC.Float(float64[0]);
+    };
   });
 
 });
@@ -7428,11 +8331,6 @@ SCScript.install(function(sc) {
 
     // TODO: implements unixCmdActions
     // TODO: implements unixCmdActions_
-
-    spec.$new = function() {
-      throw new Error("String.new is illegal, should use literal.");
-    };
-
     // TODO: implements $initClass
     // TODO: implements $doUnixCmdAction
     // TODO: implements unixCmd
@@ -7690,23 +8588,19 @@ SCScript.install(function(sc) {
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
 
-  function SCSet(args) {
-    this.__initializeWith__("Collection");
-    var n = 2;
-    if (args && args[0]) {
-      n = args[0].__int__();
-    }
-    this.initSet($SC.Integer(Math.max(n, 2) * 2));
-  }
-
-  sc.lang.klass.define(SCSet, "Set : Collection", function(spec, utils) {
+  sc.lang.klass.refine("Set", function(spec, utils) {
     var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
     var SCArray = $SC("Array");
 
+    spec.$new = fn(function($n) {
+      $n = $SC.Integer(Math.max($n.__int__(), 2) * 2);
+      return this.__super__("new").initSet($n);
+    }, "n=2");
+
     spec.valueOf = function() {
-      return this._array._.filter(function($elem) {
+      return this._$array._.filter(function($elem) {
         return $elem !== $nil;
       }).map(function($elem) {
         return $elem.valueOf();
@@ -7714,16 +8608,16 @@ SCScript.install(function(sc) {
     };
 
     spec.array = function() {
-      return this._array;
+      return this._$array;
     };
 
     spec.array_ = function($value) {
-      this._array = $value;
+      this._$array = $value || /* istanbul ignore next */ $nil;
       return this;
     };
 
     spec.size = function() {
-      return this._size;
+      return $SC.Integer(this._size);
     };
 
     spec.species = function() {
@@ -7731,7 +8625,7 @@ SCScript.install(function(sc) {
     };
 
     spec.copy = function() {
-      return this.shallowCopy().array_(this._array.copy());
+      return this.shallowCopy().array_(this._$array.copy());
     };
 
     spec.do = function($function) {
@@ -7743,8 +8637,8 @@ SCScript.install(function(sc) {
     };
 
     spec.clear = function() {
-      this._array.fill();
-      this._size = $int_0;
+      this._$array.fill();
+      this._size = 0;
       return this;
     };
 
@@ -7754,11 +8648,11 @@ SCScript.install(function(sc) {
     };
 
     spec.includes = fn(function($item) {
-      return this._array.at(this.scanFor($item)).notNil();
+      return this._$array.at(this.scanFor($item)).notNil();
     }, "item");
 
     spec.findMatch = fn(function($item) {
-      return this._array.at(this.scanFor($item));
+      return this._$array.at(this.scanFor($item));
     }, "item");
 
     spec.add = fn(function($item) {
@@ -7769,7 +8663,7 @@ SCScript.install(function(sc) {
       }
 
       $index = this.scanFor($item);
-      if (this._array.at($index) === $nil) {
+      if (this._$array.at($index) === $nil) {
         this.putCheck($index, $item);
       }
 
@@ -7780,9 +8674,9 @@ SCScript.install(function(sc) {
       var $index;
 
       $index = this.scanFor($item);
-      if (this._array.at($index) !== $nil) {
-        this._array.put($index, $nil);
-        this._size = this._size.__dec__();
+      if (this._$array.at($index) !== $nil) {
+        this._$array.put($index, $nil);
+        this._size -= 1;
         // this.fixCollisionsFrom($index);
       }
 
@@ -7793,11 +8687,11 @@ SCScript.install(function(sc) {
       var $val;
       var $size, $array;
 
-      if (this._size.__int__() <= 0) {
+      if (this._size <= 0) {
         return $nil;
       }
 
-      $array = this._array;
+      $array = this._$array;
       $size  = $array.size();
 
       do {
@@ -7812,7 +8706,7 @@ SCScript.install(function(sc) {
       var $array, $size;
 
       $index = $int_0;
-      $array = this._array;
+      $array = this._$array;
       $size  = $array.size();
 
       while ($index < $size && ($val = $array.at($index)) === $nil) {
@@ -7834,7 +8728,7 @@ SCScript.install(function(sc) {
 
       $result = this.species().new();
 
-      this._array._.forEach(function($x) {
+      this._$array._.forEach(function($x) {
         $result.addAll($x);
       });
 
@@ -7846,7 +8740,7 @@ SCScript.install(function(sc) {
 
       $result = this.species().new();
 
-      this._array._.forEach(function($item) {
+      this._$array._.forEach(function($item) {
         if ($item !== $nil && BOOL($that.includes($item))) {
           $result.add($item);
         }
@@ -7876,7 +8770,7 @@ SCScript.install(function(sc) {
 
       $result = this.species().new();
 
-      this._array._.forEach(function($item) {
+      this._$array._.forEach(function($item) {
         if ($item !== $nil && !BOOL($that.includes($item))) {
           $result.add($item);
         }
@@ -7913,50 +8807,37 @@ SCScript.install(function(sc) {
     spec.asSet = utils.nop;
 
     spec.initSet = function($n) {
-      this._array = SCArray.newClear($n);
-      this._size  = $int_0;
+      this._$array = SCArray.newClear($n);
+      this._size   = 0;
+      return this;
     };
 
     spec.putCheck = function($index, $item) {
-      this._array.put($index, $item);
-      this._size = this._size.__inc__();
+      this._$array.put($index, $item);
+      this._size += 1;
       this.fullCheck();
       return this;
     };
 
     spec.fullCheck = function() {
-      if (this._array.size().__int__() < this._size.__int__() * 2) {
+      if (this._$array.size().__int__() < this._size * 2) {
         this.grow();
       }
     };
 
     spec.grow = function() {
-      var $this = this;
-      var oldElements;
-
-      oldElements = this._array._;
-      this._array = SCArray.newClear(
-        $SC.Integer(this._array.size().__int__() * 2)
-      );
-      this._size = $int_0;
-
-      oldElements.forEach(function($item) {
-        if ($item !== $nil) {
-          $this.noCheckAdd($item);
-        }
-      });
-    };
-
-    spec.noCheckAdd = function($item) {
-      this._array.put(this.scanFor($item), $item);
-      this._size = this._size.__inc__();
+      var array, i, imax;
+      array = this._$array._;
+      for (i = array.length, imax = i * 2; i < imax; ++i) {
+        array[i] = $nil;
+      }
     };
 
     // istanbul ignore next
     spec.scanFor = function($obj) {
       var array, index;
 
-      array = this._array._;
+      array = this._$array._;
 
       index = array.indexOf($obj);
       if (index !== -1) {
@@ -7978,16 +8859,90 @@ SCScript.install(function(sc) {
 
 });
 
+// src/sc/classlib/Collections/Association.js
+SCScript.install(function(sc) {
+
+  sc.lang.klass.define("Association : Magnitude", function(spec, utils) {
+    var $nil   = utils.$nil;
+    var $false = utils.$false;
+
+    spec.constructor = function SCAssociation() {
+      this.__super__("Magnitude");
+    };
+
+    spec.valueOf = function() {
+      return this._$key.valueOf();
+    };
+
+    spec.key = function() {
+      return this._$key;
+    };
+
+    spec.key_ = function($value) {
+      this._$key = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.value = function() {
+      return this._$value;
+    };
+
+    spec.value_ = function($value) {
+      this._$value = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.$new = function($key, $value) {
+      return this._newCopyArgs({
+        key: $key,
+        value: $value
+      });
+    };
+
+    spec["=="] = function($anAssociation) {
+      if ($anAssociation.key) {
+        return this._$key ["=="] ($anAssociation.key());
+      }
+      return $false;
+    };
+
+    spec.hash = function() {
+      return this._$key.hash();
+    };
+
+    spec["<"] = function($anAssociation) {
+      return this._$key ["<"] ($anAssociation.key());
+    };
+
+    // TODO: implements printOn
+    // TODO: implements storeOn
+    // TODO: implements embedInStream
+    // TODO: implements transformEvent
+
+  });
+
+});
+
 // src/sc/classlib/Collections/Dictionary.js
 SCScript.install(function(sc) {
 
-  function SCDictionary() {
-    this.__initializeWith__("Set");
-    this._ = {};
-  }
+  var slice = [].slice;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
-  sc.lang.klass.define(SCDictionary, "Dictionary : Set", function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.refine("Dictionary", function(spec, utils) {
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_1 = utils.$int_1;
+    var SCSet  = $SC("Set");
+    var SCArray = $SC("Array");
+    var SCAssociation = $SC("Association");
+
+    spec.$new = fn(function($n) {
+      return this.__super__("new", [ $n ]);
+    }, "n=8");
 
     spec.valueOf = function() {
       var obj;
@@ -7995,7 +8950,7 @@ SCScript.install(function(sc) {
 
       obj = {};
 
-      array = this._array._;
+      array = this._$array._;
       for (i = 0, imax = array.length; i < imax; i += 2) {
         if (array[i] !== $nil) {
           obj[array[i].valueOf()] = array[i + 1].valueOf();
@@ -8005,66 +8960,597 @@ SCScript.install(function(sc) {
       return obj;
     };
 
-    // TODO: implements $newFrom
-    // TODO: implements at
-    // TODO: implements atFail
-    // TODO: implements matchAt
-    // TODO: implements trueAt
-    // TODO: implements add
-    // TODO: implements put
-    // TODO: implements putAll
-    // TODO: implements putPairs
-    // TODO: implements getPairs
-    // TODO: implements associationAt
-    // TODO: implements associationAtFail
-    // TODO: implements keys
-    // TODO: implements values
-    // TODO: implements includes
-    // TODO: implements includesKey
-    // TODO: implements removeAt
-    // TODO: implements removeAtFail
-    // TODO: implements remove
-    // TODO: implements removeFail
-    // TODO: implements keysValuesDo
-    // TODO: implements keysValuesChange
-    // TODO: implements do
-    // TODO: implements keysDo
-    // TODO: implements associationsDo
-    // TODO: implements pairsDo
-    // TODO: implements collect
-    // TODO: implements select
-    // TODO: implements reject
-    // TODO: implements invert
-    // TODO: implements merge
+    spec.$newFrom = fn(function($aCollection) {
+      var $newCollection;
+
+      $newCollection = this.new($aCollection.size());
+      $aCollection.keysValuesDo($SC.Function(function($k, $v) {
+        $newCollection.put($k, $v);
+      }));
+
+      return $newCollection;
+    }, "aCollection");
+
+    spec.at = fn(function($key) {
+      return this._$array.at(this.scanFor($key).__inc__());
+    }, "key");
+
+    spec.atFail = fn(function($key, $function) {
+      var $val;
+
+      $val = this.at($key);
+      if ($val === $nil) {
+        $val = $function.value();
+      }
+
+      return $val;
+    }, "key; function");
+
+    spec.matchAt = fn(function($key) {
+      var ret = null;
+
+      this.keysValuesDo($SC.Function(function($k, $v) {
+        if (BOOL($k.matchItem($key))) {
+          ret = $v;
+          return 65535;
+        }
+      }));
+
+      return ret || $nil;
+    }, "key");
+
+    spec.trueAt = fn(function($key) {
+      var $ret;
+
+      $ret = this.at($key);
+
+      return $ret !== $nil ? $ret : $false;
+    }, "key");
+
+    spec.add = fn(function($anAssociation) {
+      this.put($anAssociation.key(), $anAssociation.value());
+      return this;
+    }, "anAssociation");
+
+    spec.put = fn(function($key, $value) {
+      var $array, $index;
+
+      if ($value === $nil) {
+        this.removeAt($key);
+      } else {
+        $array = this._$array;
+        $index = this.scanFor($key);
+        $array.put($index.__inc__(), $value);
+        if ($array.at($index) === $nil) {
+          $array.put($index, $key);
+          this._incrementSize();
+        }
+      }
+
+      return this;
+    }, "key; value");
+
+    spec.putAll = function() {
+      var $this = this;
+      var func;
+
+      func = $SC.Function(function($key, $value) {
+        $this.put($key, $value);
+      });
+
+      slice.call(arguments).forEach(function($dict) {
+        $dict.keysValuesDo(func);
+      }, this);
+
+      return this;
+    };
+
+    spec.putPairs = fn(function($args) {
+      var $this = this;
+
+      $args.pairsDo($SC.Function(function($key, $val) {
+        $this.put($key, $val);
+      }));
+
+      return this;
+    }, "args");
+
+    spec.getPairs = fn(function($args) {
+      var $this = this;
+      var $result;
+
+      if ($args === $nil) {
+        $args = this.keys();
+      }
+
+      $result = $nil;
+      $args.do($SC.Function(function($key) {
+        var $val;
+        $val = $this.at($key);
+        if ($val !== $nil) {
+          $result = $result.add($key).add($val);
+        }
+      }));
+
+      return $result;
+    }, "args");
+
+    spec.associationAt = fn(function($key) {
+      var $res;
+      var array, index;
+
+      array = this._$array._;
+      index = this.scanFor($key).__int__();
+
+      // istanbul ignore else
+      if (index >= 0) {
+        $res = SCAssociation.new(array[index], array[index + 1]);
+      }
+
+      return $res || /* istanbul ignore next */ $nil;
+    }, "key");
+
+    spec.associationAtFail = fn(function($argkey, $function) {
+      var $index, $key;
+
+      $index = this.scanFor($argkey);
+      $key   = this._$array.at($index);
+
+      if ($key === $nil) {
+        return $function.value();
+      }
+
+      return SCAssociation.new($key, this._$array.at($index.__inc__()));
+    }, "argKey; function");
+
+    spec.keys = fn(function($species) {
+      var $set;
+
+      if ($species === $nil) {
+        $species = SCSet;
+      }
+
+      $set = $species.new(this.size());
+      this.keysDo($SC.Function(function($key) {
+        $set.add($key);
+      }));
+
+      return $set;
+    }, "species");
+
+    spec.values = function() {
+      var $list;
+
+      $list = $SC("List").new(this.size());
+      this.do($SC.Function(function($value) {
+        $list.add($value);
+      }));
+
+      return $list;
+    };
+
+    spec.includes = fn(function($item1) {
+      var $ret = null;
+
+      this.do($SC.Function(function($item2) {
+        if (BOOL($item1 ["=="] ($item2))) {
+          $ret = $true;
+          return 65535;
+        }
+      }));
+
+      return $ret || $false;
+    }, "item1");
+
+    spec.includesKey = fn(function($key) {
+      return this.at($key).notNil();
+    }, "key");
+
+    spec.removeAt = fn(function($key) {
+      var $array;
+      var $val, $index, $atKeyIndex;
+
+      $array = this._$array;
+      $index = this.scanFor($key);
+      $atKeyIndex = $array.at($index);
+      if ($atKeyIndex === $nil) {
+        return $nil;
+      }
+
+      $val = $array.at($index.__inc__());
+      $array.put($index, $nil);
+      $array.put($index.__inc__(), $nil);
+
+      this._size -= 1;
+
+      // this.fixCollisionsFrom($index);
+
+      return $val;
+    }, "key");
+
+    spec.removeAtFail = fn(function($key, $function) {
+      var $array;
+      var $val, $index, $atKeyIndex;
+
+      $array = this._$array;
+      $index = this.scanFor($key);
+      $atKeyIndex = $array.at($index);
+
+      if ($atKeyIndex === $nil) {
+        return $function.value();
+      }
+
+      $val = $array.at($index.__inc__());
+      $array.put($index, $nil);
+      $array.put($index.__inc__(), $nil);
+
+      this._size -= 1;
+
+      // this.fixCollisionsFrom($index);
+
+      return $val;
+    }, "key; function");
+
+    spec.remove = function() {
+      throw new Error("shouldNotImplement");
+    };
+
+    spec.removeFail = function() {
+      throw new Error("shouldNotImplement");
+    };
+
+    spec.keysValuesDo = fn(function($function) {
+      this.keysValuesArrayDo(this._$array, $function);
+      return this;
+    }, "function");
+
+    spec.keysValuesChange = fn(function($function) {
+      var $this = this;
+
+      this.keysValuesDo($SC.Function(function($key, $value, $i) {
+        $this.put($key, $function.value($key, $value, $i));
+      }));
+
+      return this;
+    }, "function");
+
+    spec.do = fn(function($function) {
+      this.keysValuesDo($SC.Function(function($key, $value, $i) {
+        $function.value($value, $i);
+      }));
+      return this;
+    }, "function");
+
+    spec.keysDo = fn(function($function) {
+      this.keysValuesDo($SC.Function(function($key, $val, $i) {
+        $function.value($key, $i);
+      }));
+      return this;
+    }, "function");
+
+    spec.associationsDo = fn(function($function) {
+      this.keysValuesDo($SC.Function(function($key, $val, $i) {
+        var $assoc = SCAssociation.new($key, $val);
+        $function.value($assoc, $i);
+      }));
+      return this;
+    }, "function");
+
+    spec.pairsDo = fn(function($function) {
+      this.keysValuesArrayDo(this._$array, $function);
+      return this;
+    }, "function");
+
+    spec.collect = fn(function($function) {
+      var $res;
+
+      $res = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $elem) {
+        $res.put($key, $function.value($elem, $key));
+      }));
+
+      return $res;
+    }, "function");
+
+    spec.select = fn(function($function) {
+      var $res;
+
+      $res = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $elem) {
+        if (BOOL($function.value($elem, $key))) {
+          $res.put($key, $elem);
+        }
+      }));
+
+      return $res;
+    }, "function");
+
+    spec.reject = fn(function($function) {
+      var $res;
+
+      $res = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $elem) {
+        if (!BOOL($function.value($elem, $key))) {
+          $res.put($key, $elem);
+        }
+      }));
+
+      return $res;
+    }, "function");
+
+    spec.invert = function() {
+      var $dict;
+
+      $dict = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $val) {
+        $dict.put($val, $key);
+      }));
+
+      return $dict;
+    };
+
+    spec.merge = fn(function($that, $func, $fill) {
+      var $this = this;
+      var $commonKeys, $myKeys, $otherKeys;
+      var $res;
+
+      $res = this.class().new();
+
+      $myKeys    = this.keys();
+      $otherKeys = $that.keys();
+
+      if (BOOL($myKeys ["=="] ($otherKeys))) {
+        $commonKeys = $myKeys;
+      } else {
+        $commonKeys = $myKeys.sect($otherKeys);
+      }
+
+      $commonKeys.do($SC.Function(function($key) {
+        $res.put($key, $func.value($this.at($key), $that.at($key), $key));
+      }));
+
+      if (BOOL($fill)) {
+        $myKeys.difference($otherKeys).do($SC.Function(function($key) {
+          $res.put($key, $this.at($key));
+        }));
+        $otherKeys.difference($myKeys).do($SC.Function(function($key) {
+          $res.put($key, $that.at($key));
+        }));
+      }
+
+      return $res;
+    }, "that; func; fill=true");
+
     // TODO: implements blend
-    // TODO: implements findKeyForValue
-    // TODO: implements sortedKeysValuesDo
-    // TODO: implements choose
-    // TODO: implements order
-    // TODO: implements powerset
-    // TODO: implements transformEvent
+
+    spec.findKeyForValue = fn(function($argValue) {
+      var $ret = null;
+
+      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
+        if (BOOL($argValue ["=="] ($val))) {
+          $ret = $key;
+          return 65535;
+        }
+      }));
+
+      return $ret || $nil;
+    }, "argValue");
+
+    spec.sortedKeysValuesDo = fn(function($function, $sortFunc) {
+      var $this = this;
+      var $keys;
+
+      $keys = this.keys(SCArray);
+      $keys.sort($sortFunc);
+
+      $keys.do($SC.Function(function($key, $i) {
+        $function.value($key, $this.at($key), $i);
+      }));
+
+      return this;
+    }, "$function; $sortFunc");
+
+    spec.choose = function() {
+      var $array;
+      var $size, $index;
+
+      if (BOOL(this.isEmpty())) {
+        return $nil;
+      }
+
+      $array = this._$array;
+      $size  = $array.size() [">>"] ($int_1);
+
+      do {
+        $index = $size.rand() ["<<"] ($int_1);
+      } while ($array.at($index) === $nil);
+
+      return $array.at($index.__inc__());
+    };
+
+    spec.order = fn(function($func) {
+      var $assoc;
+
+      if (BOOL(this.isEmpty())) {
+        return $nil;
+      }
+
+      $assoc = $nil;
+      this.keysValuesDo($SC.Function(function($key, $val) {
+        $assoc = $assoc.add($key ["->"] ($val));
+      }));
+
+      return $assoc.sort($func).collect($SC.Function(function($_) {
+        return $_.key();
+      }));
+    }, "func");
+
+    spec.powerset = function() {
+      var $this = this;
+      var $keys, $class;
+
+      $keys  = this.keys().asArray().powerset();
+      $class = this.class();
+
+      return $keys.collect($SC.Function(function($list) {
+        var $dict;
+
+        $dict = $class.new();
+        $list.do($SC.Function(function($key) {
+          $dict.put($key, $this.at($key));
+        }));
+
+        return $dict;
+      }));
+    };
+
+    spec.transformEvent = fn(function($event) {
+      return $event.putAll(this);
+    }, "event");
+
     // TODO: implements embedInStream
     // TODO: implements asSortedArray
     // TODO: implements asKeyValuePairs
-    // TODO: implements keysValuesArrayDo
+
+    spec.keysValuesArrayDo = function($argArray, $function) {
+      var $key, $val;
+      var array, j, i, imax;
+
+      array = this._$array._;
+      for (i = j = 0, imax = array.length; i < imax; i += 2, ++j) {
+        $key = array[i];
+        if ($key !== $nil) {
+          $val = $argArray.at($SC.Integer(i + 1));
+          $function.value($key, $val, $SC.Integer(j));
+        }
+      }
+    };
+
     // TODO: implements grow
     // TODO: implements fixCollisionsFrom
-    // TODO: implements scanFor
+
+    // istanbul ignore next
+    spec.scanFor = function($argKey) {
+      var array, i, imax;
+      var $elem;
+
+      array = this._$array._;
+      imax  = array.length;
+
+      for (i = 0; i < imax; i += 2) {
+        $elem = array[i];
+        if (BOOL($elem ["=="] ($argKey))) {
+          return $SC.Integer(i);
+        }
+      }
+      for (i = 0; i < imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $nil) {
+          return $SC.Integer(i);
+        }
+      }
+
+      return $SC.Integer(-2);
+    };
+
     // TODO: implements storeItemsOn
     // TODO: implements printItemsOn
+
+    spec._incrementSize = function() {
+      this._size += 1;
+      if (this._$array.size().__inc__() < this._size * 4) {
+        this.grow();
+      }
+    };
   });
 
-  function SCIdentityDictionary() {
-    this.__initializeWith__("Dictionary");
-  }
+  sc.lang.klass.refine("IdentityDictionary", function(spec, utils) {
+    var $nil = utils.$nil;
 
-  sc.lang.klass.define(SCIdentityDictionary, "IdentityDictionary : Dictionary", function() {
-    // TODO: implements at
-    // TODO: implements put
-    // TODO: implements putGet
-    // TODO: implements includesKey
-    // TODO: implements findKeyForValue
-    // TODO: implements scanFor
+    spec.$new = fn(function($n, $proto, $parent, $know) {
+      return this.__super__("new", [ $n ])
+        .proto_($proto).parent_($parent).know_($know);
+    }, "n=8; proto; parent; know=false");
+
+    spec.proto = function() {
+      return this._$proto;
+    };
+
+    spec.proto_ = function($value) {
+      this._$proto = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.parent = function() {
+      return this._$parent;
+    };
+
+    spec.parent_ = function($value) {
+      this._$parent = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.know = function() {
+      return this._$know;
+    };
+
+    spec.know_ = function($value) {
+      this._$know = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.putGet = fn(function($key, $value) {
+      var $array, $index, $prev;
+
+      $array = this._$array;
+      $index = this.scanFor($key);
+      $prev  = $array.at($index.__inc__());
+      $array.put($index.__inc__(), $value);
+      if ($array.at($index) === $nil) {
+        $array.put($index, $key);
+        this._incrementSize();
+      }
+
+      return $prev;
+    }, "key; value");
+
+    spec.findKeyForValue = fn(function($argValue) {
+      var $ret = null;
+
+      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
+        if ($argValue === $val) {
+          $ret = $key;
+          return 65535;
+        }
+      }));
+
+      return $ret || $nil;
+    }, "argValue");
+
+    // istanbul ignore next
+    spec.scanFor = function($argKey) {
+      var array, i, imax;
+      var $elem;
+
+      array = this._$array._;
+      imax  = array.length;
+
+      for (i = 0; i < imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $argKey) {
+          return $SC.Integer(i);
+        }
+      }
+      for (i = 0; i < imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $nil) {
+          return $SC.Integer(i);
+        }
+      }
+
+      return $SC.Integer(-2);
+    };
+
     // TODO: implements freezeAsParent
     // TODO: implements insertParent
     // TODO: implements storeItemsOn
@@ -8079,21 +9565,75 @@ SCScript.install(function(sc) {
 // src/sc/classlib/Collections/Environment.js
 SCScript.install(function(sc) {
 
-  function SCEnvironment() {
-    this.__initializeWith__("IdentityDictionary");
-  }
+  var fn   = sc.lang.fn;
+  var main = sc.lang.main;
 
-  sc.lang.klass.define(SCEnvironment, "Environment : IdentityDictionary", function() {
-    // TODO: implements $make
-    // TODO: implements $use
-    // TODO: implements make
-    // TODO: implements use
-    // TODO: implements eventAt
-    // TODO: implements composeEvents
-    // TODO: implements $pop
-    // TODO: implements $push
-    // TODO: implements pop
-    // TODO: implements push
+  sc.lang.klass.refine("Environment", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    var envStack = [];
+
+    spec.$make = function($function) {
+      return this.new().make($function);
+    };
+
+    spec.$use = function($function) {
+      return this.new().use($function);
+    };
+
+    spec.make = fn(function($function) {
+      var $saveEnvir;
+
+      $saveEnvir = main.$currentEnv;
+      try {
+        $function.value(this);
+      } catch (e) {}
+      main.$currentEnv = $saveEnvir;
+
+      return this;
+    }, "function");
+
+    spec.use = fn(function($function) {
+      var $result, $saveEnvir;
+
+      $saveEnvir = main.$currentEnv;
+      try {
+        $result = $function.value(this);
+      } catch (e) {}
+      main.$currentEnv = $saveEnvir;
+
+      return $result || /* istanbul ignore next */ $nil;
+    }, "function");
+
+    spec.eventAt = fn(function($key) {
+      return this.at($key);
+    }, "key");
+
+    spec.composeEvents = fn(function($event) {
+      return this.copy().putAll($event);
+    }, "event");
+
+    spec.$pop = function() {
+      if (envStack.length) {
+        main.$currentEnv = envStack.pop();
+      }
+      return this;
+    };
+
+    spec.$push = fn(function($envir) {
+      envStack.push(main.$currentEnv);
+      main.$currentEnv = $envir;
+      return this;
+    }, "envir");
+
+    spec.pop = function() {
+      return this.class().pop();
+    };
+
+    spec.push = function() {
+      return this.class().push(this);
+    };
+
     // TODO: implements linkDoc
     // TODO: implements unlinkDoc
   });
@@ -8103,11 +9643,7 @@ SCScript.install(function(sc) {
 // src/sc/classlib/Collections/Event.js
 SCScript.install(function(sc) {
 
-  function SCEvent() {
-    this.__initializeWith__("Environment");
-  }
-
-  sc.lang.klass.define(SCEvent, "Event : Environment", function() {
+  sc.lang.klass.refine("Event", function() {
     // TODO: implements $default
     // TODO: implements $silent
     // TODO: implements $addEventType

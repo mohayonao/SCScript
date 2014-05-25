@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">148.39</p>
+      <p class="stat">131.20</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">86</p>
+      <p class="stat">412</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">2.86</p>
+      <p class="stat">33.10</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.10</p>
+      <p class="stat">3.57</p>
     </div>
   </div>
 </div>
@@ -95,52 +95,378 @@
 
   require(&quot;../Core/AbstractFunction&quot;);
 
-  function SCStream() {
-    this.__initializeWith__(&quot;AbstractFunction&quot;);
-  }
+  var fn  = sc.lang.fn;
+  var $SC = sc.lang.$SC;
 
-  sc.lang.klass.define(SCStream, &quot;Stream : AbstractFunction&quot;, function() {
-    // TODO: implements parent
-    // TODO: implements next
-    // TODO: implements iter
-    // TODO: implements value
-    // TODO: implements valueArray
-    // TODO: implements nextN
-    // TODO: implements all
-    // TODO: implements put
-    // TODO: implements putN
-    // TODO: implements putAll
-    // TODO: implements do
-    // TODO: implements subSample
-    // TODO: implements loop
-    // TODO: implements generate
-    // TODO: implements collect
-    // TODO: implements reject
-    // TODO: implements select
-    // TODO: implements dot
-    // TODO: implements interlace
-    // TODO: implements ++
-    // TODO: implements appendStream
-    // TODO: implements collate
-    // TODO: implements &lt;&gt;
-    // TODO: implements composeUnaryOp
-    // TODO: implements composeBinaryOp
-    // TODO: implements reverseComposeBinaryOp
-    // TODO: implements composeNAryOp
-    // TODO: implements embedInStream
-    // TODO: implements while
-    // TODO: implements asEventStreamPlayer
-    // TODO: implements play
+  sc.lang.klass.define(&quot;Stream&quot;, function(spec, utils) {
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_0 = utils.$int_0;
+    var SCArray = $SC(&quot;Array&quot;);
+
+    spec.constructor = function SCStream() {
+      this.__super__(&quot;AbstractFunction&quot;);
+    };
+
+    spec.parent = function() {
+      return $nil;
+    };
+
+    spec.next = function() {
+      return this._subclassResponsibility(&quot;next&quot;);
+    };
+
+    spec.iter = utils.nop;
+
+    spec.value = fn(function($inval) {
+      return this.next($inval);
+    }, &quot;inval&quot;);
+
+    spec.valueArray = function() {
+      return this.next();
+    };
+
+    spec.nextN = fn(function($n, $inval) {
+      var $this = this;
+      return SCArray.fill($n, $SC.Function(function() {
+        return $this.next($inval);
+      }));
+    }, &quot;n; inval&quot;);
+
+    spec.all = fn(function($inval) {
+      var $array;
+
+      $array = $nil;
+      this.do($SC.Function(function($item) {
+        $array = $array.add($item);
+      }), $inval);
+
+      return $array;
+    }, &quot;inval&quot;);
+
+    spec.put = function() {
+      return this._subclassResponsibility(&quot;put&quot;);
+    };
+
+    spec.putN = fn(function($n, $item) {
+      var $this = this;
+      $n.do($SC.Function(function() {
+        $this.put($item);
+      }));
+      return this;
+    }, &quot;n; item&quot;);
+
+    spec.putAll = fn(function($aCollection) {
+      var $this = this;
+      $aCollection.do($SC.Function(function($item) {
+        $this.put($item);
+      }));
+      return this;
+    }, &quot;aCollection&quot;);
+
+    spec.do = fn(function($function, $inval) {
+      var $this = this;
+      var $item, $i;
+
+      $i = $int_0;
+      $SC.Function(function() {
+        $item = $this.next($inval);
+        return $item.notNil();
+      }).while($SC.Function(function() { // TODO: use SegFunction
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
+      }));
+
+      return this;
+    }, &quot;function; inval&quot;);
+
+    spec.subSample = fn(function($offset, $skipSize) {
+      var $this = this;
+      var SCRoutine = $SC(&quot;Routine&quot;);
+
+      return SCRoutine.new($SC.Function(function() {
+        $offset.do($SC.Function(function() {
+          $this.next();
+        }));
+        $SC.Function(function() {
+          $this.next().yield();
+          $skipSize.do($SC.Function(function() {
+            $this.next();
+          }));
+        }).loop();
+      }));
+    }, &quot;offset=0; skipSize=0&quot;);
+
+    spec.generate = fn(function($function) {
+      var $this = this;
+      var $item, $i;
+
+      $i = $int_0;
+      $SC.Function(function() {
+        $item = $this.next($item);
+        return $item.notNil();
+      }).while($SC.Function(function() { // TODO: use SegFunction
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
+      }));
+
+      return this;
+    }, &quot;function&quot;);
+
+    spec.collect = fn(function($argCollectFunc) {
+      var $this = this;
+      var $nextFunc, $resetFunc;
+
+      $nextFunc = $SC.Function(function($inval) {
+        var $nextval;
+
+        $nextval = $this.next($inval);
+        if ($nextval !== $nil) {
+          return $argCollectFunc.value($nextval, $inval);
+        }
+        return $nil;
+      });
+      $resetFunc = $SC.Function(function() {
+        return $this.reset();
+      });
+
+      return $SC(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
+    }, &quot;argCollectFunc&quot;);
+
+    spec.reject = fn(function($function) {
+      var $this = this;
+      var $nextFunc, $resetFunc;
+
+      $nextFunc = $SC.Function(function($inval) {
+        var $nextval;
+
+        $nextval = $this.next($inval);
+        $SC.Function(function() {
+          return $nextval.notNil().and($SC.Function(function() {
+            return $function.value($nextval, $inval);
+          }));
+        }).while($SC.Function(function() { // TODO: use SegFunction
+          $nextval = $this.next($inval);
+          return $nextval;
+        }));
+
+        return $nextval;
+      });
+      $resetFunc = $SC.Function(function() {
+        return $this.reset();
+      });
+
+      return $SC(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
+    }, &quot;function&quot;);
+
+    spec.select = fn(function($function) {
+      var $this = this;
+      var $nextFunc, $resetFunc;
+
+      $nextFunc = $SC.Function(function($inval) {
+        var $nextval;
+
+        $nextval = $this.next($inval);
+        $SC.Function(function() {
+          return $nextval.notNil().and($SC.Function(function() {
+            return $function.value($nextval, $inval).not();
+          }));
+        }).while($SC.Function(function() { // TODO: use SegFunction
+          $nextval = $this.next($inval);
+          return $nextval;
+        }));
+
+        return $nextval;
+      });
+      $resetFunc = $SC.Function(function() {
+        return $this.reset();
+      });
+
+      return $SC(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
+    }, &quot;function&quot;);
+
+    spec.dot = fn(function($function, $stream) {
+      var $this = this;
+
+      return $SC(&quot;FuncStream&quot;).new($SC.Function(function($inval) {
+        var $x, $y;
+
+        $x = $this.next($inval);
+        $y = $stream.next($inval);
+
+        if ($x !== $nil &amp;&amp; $y !== $nil) {
+          return $function.value($x, $y, $inval);
+        }
+
+        return $nil;
+      }), $SC.Function(function() {
+        $this.reset();
+        return $stream.reset();
+      }));
+    }, &quot;function; stream&quot;);
+
+    spec.interlace = fn(function($function, $stream) {
+      var $this = this;
+      var $nextx, $nexty;
+
+      $nextx = this.next();
+      $nexty = $stream.next();
+
+      return $SC(&quot;FuncStream&quot;).new($SC.Function(function($inval) {
+        var $val;
+
+        if ($nextx === $nil) {
+          if ($nextx === $nil) {
+            return $nil;
+          } else {
+            $val = $nexty;
+            $nexty = $stream.next($inval);
+            return $val;
+          }
+        } else {
+          if ($nexty === $nil ||
+              BOOL($function.value($nextx, $nexty, $inval))) {
+            $val   = $nextx;
+            $nextx = $this.next($inval);
+            return $val;
+          } else {
+            $val   = $nexty;
+            $nexty = $stream.next($inval);
+            return $val;
+          }
+        }
+      }), $SC.Function(function() {
+        $this.reset();
+        $stream.reset();
+        $nextx = $this.next();
+        $nexty = $stream.next();
+        return $nexty;
+      }));
+    }, &quot;function; stream&quot;);
+
+    spec[&quot;++&quot;] = function($stream) {
+      return this.appendStream($stream);
+    };
+
+    spec.appendStream = fn(function($stream) {
+      var $this = this;
+      var $reset;
+
+      $reset = $false;
+      return $SC(&quot;Routine&quot;).new($SC.Function(function($inval) {
+        if (BOOL($reset)) {
+          $this.reset();
+          $stream.reset();
+        }
+        $reset = $true;
+        $inval = $this.embedInStream($inval);
+        return $stream.embedInStream($inval);
+      }));
+    }, &quot;stream&quot;);
+
+    spec.collate = fn(function($stream) {
+      return this.interlace($SC.Function(function($x, $y) {
+        return $x [&quot;&lt;&quot;] ($y);
+      }), $stream);
+    }, &quot;stream&quot;);
+
+    spec[&quot;&lt;&gt;&quot;] = function($obj) {
+      return $SC(&quot;Pchain&quot;).new(this, $obj).asStream();
+    };
+
+    spec.composeUnaryOp = fn(function($argSelector) {
+      return $SC(&quot;UnaryOpStream&quot;).new($argSelector, this);
+    }, &quot;argSelector&quot;);
+
+    spec.composeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+      if ($adverb === $nil) {
+        return $SC(&quot;BinaryOpStream&quot;).new(
+          $argSelector, this, $argStream.asStream()
+        );
+      }
+      if ($adverb.__sym__() === &quot;x&quot;) {
+        return $SC(&quot;BinaryOpXStream&quot;).new(
+          $argSelector, this, $argStream.asStream()
+        );
+      }
+
+      return $nil;
+    }, &quot;argSelector; argStream; adverb&quot;);
+
+    spec.reverseComposeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+      if ($adverb === $nil) {
+        return $SC(&quot;BinaryOpStream&quot;).new(
+          $argSelector, $argStream.asStream(), this
+        );
+      }
+      if ($adverb.__sym__() === &quot;x&quot;) {
+        return $SC(&quot;BinaryOpXStream&quot;).new(
+          $argSelector, $argStream.asStream(), this
+        );
+      }
+
+      return $nil;
+    }, &quot;argSelector; argStream; adverb&quot;);
+
+    spec.composeNAryOp = fn(function($argSelector, $anArgList) {
+      return $SC(&quot;NAryOpStream&quot;).new(
+        $argSelector, this, $anArgList.collect($SC.Function(function($_) {
+          return $_.asStream();
+        }))
+      );
+    }, &quot;argStream; anArgList&quot;);
+
+    spec.embedInStream = fn(function($inval) {
+      var $this = this;
+      var $outval;
+
+      $SC.Function(function() {
+        $outval = $this.value($inval);
+        return $outval.notNil();
+      }).while($SC.Function(function() { // TODO: use SegFunction
+        $inval = $outval.yield();
+        return $inval;
+      }));
+
+      return $inval;
+    }, &quot;inval&quot;);
+
+    spec.asEventStreamPlayer = fn(function($protoEvent) {
+      return $SC(&quot;EventStreamPlayer&quot;).new(this, $protoEvent);
+    }, &quot;protoEvent&quot;);
+
+    spec.play = fn(function($clock, $quant) {
+      if ($clock === $nil) {
+        $clock = $SC(&quot;TempoClock&quot;).default();
+      }
+      $clock.play(this, $quant.asQuant());
+      return this;
+    }, &quot;clock; quant&quot;);
+
     // TODO: implements trace
-    // TODO: implements constrain
-    // TODO: implements repeat
+
+    spec.repeat = fn(function($repeats) {
+      var $this = this;
+
+      return $SC.Function(function($inval) {
+        return $repeats.value($inval).do($SC.Function(function() {
+          $inval = $this.reset().embedInStream($inval);
+          return $inval;
+        }));
+      }).r();
+    }, &quot;repeats=inf&quot;);
+
   });
 
-  function SCPauseStream() {
-    this.__initializeWith__(&quot;Stream&quot;);
-  }
+  sc.lang.klass.define(&quot;PauseStream : Stream&quot;, function(spec) {
+    spec.constructor = function SCPauseStream() {
+      this.__super__(&quot;Stream&quot;);
+    };
 
-  sc.lang.klass.define(SCPauseStream, &quot;PauseStream : Stream&quot;, function() {
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
@@ -167,11 +493,11 @@
     // TODO: implements threadPlayer
   });
 
-  function SCTask() {
-    this.__initializeWith__(&quot;PauseStream&quot;);
-  }
+  sc.lang.klass.define(&quot;Task : PauseStream&quot;, function(spec) {
+    spec.constructor = function SCTask() {
+      this.__super__(&quot;PauseStream&quot;);
+    };
 
-  sc.lang.klass.define(SCTask, &quot;Task : PauseStream&quot;, function() {
     // TODO: implements storeArgs
   });
 

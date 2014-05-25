@@ -4,156 +4,204 @@
   require("./klass");
   require("../fn");
 
-  var $SC   = sc.lang.$SC;
-  var fn    = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $SC    = sc.lang.$SC;
+  var fn     = sc.lang.fn;
+  var klass  = sc.lang.klass;
+
+  var $nil, $true, $false;
+  var $symbols, $chars, $integers, $floats;
 
   function SCNil() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
     this._ = null;
   }
-  klass.define(SCNil, "Nil", {
+  klass.define("Nil", {
+    constructor: SCNil,
     __tag: sc.C.TAG_NIL
   });
 
   function SCSymbol() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
     this._ = "";
   }
-  klass.define(SCSymbol, "Symbol", {
+  klass.define("Symbol", {
+    constructor: SCSymbol,
     __tag: sc.C.TAG_SYM
   });
 
   function SCBoolean() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
   }
-  klass.define(SCBoolean, "Boolean");
+  klass.define("Boolean", {
+    constructor: SCBoolean
+  });
 
   function SCTrue() {
-    this.__initializeWith__("Boolean");
+    this.__super__("Boolean");
     this._ = true;
   }
-  klass.define(SCTrue, "True : Boolean", {
+  klass.define("True : Boolean", {
+    constructor: SCTrue,
     __tag: sc.C.TAG_TRUE
   });
 
   function SCFalse() {
-    this.__initializeWith__("Boolean");
+    this.__super__("Boolean");
     this._ = false;
   }
-  klass.define(SCFalse, "False : Boolean", {
+  klass.define("False : Boolean", {
+    constructor: SCFalse,
     __tag: sc.C.TAG_FALSE
   });
 
-  function SCMagnitude() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCMagnitude, "Magnitude");
+  klass.define("Magnitude", {
+    constructor: function SCMagnitude() {
+      this.__super__("Object");
+    }
+  });
 
   function SCChar() {
-    this.__initializeWith__("Magnitude");
+    this.__super__("Magnitude");
     this._ = "\0";
   }
-  klass.define(SCChar, "Char : Magnitude", {
+  klass.define("Char : Magnitude", {
+    constructor: SCChar,
     __tag: sc.C.TAG_CHAR
   });
 
-  function SCNumber() {
-    this.__initializeWith__("Magnitude");
-  }
-  klass.define(SCNumber, "Number : Magnitude");
+  klass.define("Number : Magnitude", {
+    constructor: function SCNumber() {
+      this.__super__("Magnitude");
+    }
+  });
 
-  function SCSimpleNumber() {
-    this.__initializeWith__("Number");
-  }
-  klass.define(SCSimpleNumber, "SimpleNumber : Number");
+  klass.define("SimpleNumber : Number", {
+    constructor: function SCSimpleNumber() {
+      this.__super__("Number");
+    }
+  });
 
   function SCInteger() {
-    this.__initializeWith__("SimpleNumber");
+    this.__super__("SimpleNumber");
     this._ = 0;
   }
-  klass.define(SCInteger, "Integer : SimpleNumber", {
+  klass.define("Integer : SimpleNumber", {
+    constructor: SCInteger,
     __tag: sc.C.TAG_INT
   });
 
   function SCFloat() {
-    this.__initializeWith__("SimpleNumber");
+    this.__super__("SimpleNumber");
     this._ = 0.0;
   }
-  klass.define(SCFloat, "Float : SimpleNumber", {
+  klass.define("Float : SimpleNumber", {
+    constructor: SCFloat,
     __tag: sc.C.TAG_FLOAT
   });
 
-  function SCCollection() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCCollection, "Collection");
+  klass.define("Collection", {
+    constructor: function SCCollection() {
+      this.__super__("Object");
+    }
+  });
 
-  function SCSequenceableCollection() {
-    this.__initializeWith__("Collection");
-  }
-  klass.define(SCSequenceableCollection, "SequenceableCollection : Collection");
+  klass.define("SequenceableCollection : Collection", {
+    constructor: function SCSequenceableCollection() {
+      this.__super__("Collection");
+    }
+  });
 
-  function SCArrayedCollection() {
-    this.__initializeWith__("SequenceableCollection");
-    this._immutable = false;
-    this._ = [];
-  }
-  klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
+  klass.define("ArrayedCollection : SequenceableCollection", {
+    constructor: function SCArrayedCollection() {
+      this.__super__("SequenceableCollection");
+      this.__immutable = false;
+      this._ = [];
+    }
+  });
 
-  function SCRawArray() {
-    this.__initializeWith__("ArrayedCollection");
-  }
-  klass.define(SCRawArray, "RawArray : ArrayedCollection");
+  klass.define("RawArray : ArrayedCollection", {
+    constructor: function SCRawArray() {
+      this.__super__("ArrayedCollection");
+    }
+  });
 
   function SCArray() {
-    this.__initializeWith__("ArrayedCollection");
+    this.__super__("ArrayedCollection");
   }
-  klass.define(SCArray, "Array : ArrayedCollection", {
+  klass.define("Array : ArrayedCollection", {
+    constructor: SCArray,
     __tag: sc.C.TAG_ARRAY
   });
 
-  function SCString(value) {
-    this.__initializeWith__("RawArray");
-    this._ = value;
+  function SCString() {
+    this.__super__("RawArray");
   }
-  klass.define(SCString, "String : RawArray", {
+  klass.define("String : RawArray", {
+    constructor: SCString,
     __tag: sc.C.TAG_STR
   });
 
-  function SCAbstractFunction() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCAbstractFunction, "AbstractFunction");
+  klass.define("Set : Collection", {
+    constructor: function SCSet() {
+      this.__super__("Collection");
+    }
+  });
+
+  klass.define("Dictionary : Set", {
+    constructor: function SCDictionary() {
+      this.__super__("Set");
+    }
+  });
+
+  klass.define("IdentityDictionary : Dictionary", {
+    constructor: function SCIdentityDictionary() {
+      this.__super__("Dictionary");
+    }
+  });
+
+  klass.define("Environment : IdentityDictionary", {
+    constructor: function SCEnvironment() {
+      this.__super__("IdentityDictionary");
+    }
+  });
+
+  klass.define("Event : Environment", {
+    constructor: function SCEvent() {
+      this.__super__("Environment");
+    }
+  });
+
+  klass.define("AbstractFunction", {
+    constructor: function SCAbstractFunction() {
+      this.__super__("Object");
+    }
+  });
 
   function SCFunction() {
-    this.__initializeWith__("AbstractFunction");
+    this.__super__("AbstractFunction");
     // istanbul ignore next
     this._ = function() {};
   }
-  klass.define(SCFunction, "Function : AbstractFunction", {
+  klass.define("Function : AbstractFunction", {
+    constructor: SCFunction,
     __tag: sc.C.TAG_FUNCTION
   });
 
-  function SCRef(args) {
-    this.__initializeWith__("Object");
-    this._value = args[0] || /* istanbul ignore next */ $nil;
+  function SCRef() {
+    this.__super__("Object");
   }
-  sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
-
-  function SCInterpreter() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCInterpreter, "Interpreter");
+  klass.define("Ref : AbstractFunction", {
+    constructor: SCRef
+  });
 
   // $SC
-  var $nil      = new SCNil();
-  var $true     = new SCTrue();
-  var $false    = new SCFalse();
-  var $integers = {};
-  var $floats   = {};
-  var $symbols  = {};
-  var $chars    = {};
+  $nil      = new SCNil();
+  $true     = new SCTrue();
+  $false    = new SCFalse();
+  $integers = {};
+  $floats   = {};
+  $symbols  = {};
+  $chars    = {};
 
   $SC.Nil = function() {
     return $nil;
@@ -231,14 +279,24 @@
   $SC.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
-    instance._immutable = !!immutable;
+    instance.__immutable = !!immutable;
     return instance;
   };
 
-  $SC.String = function(value, immutable) {
+  $SC.String = function(value, mutable) {
     var instance = new SCString();
     instance._ = String(value).split("").map($SC.Char);
-    instance._immutable = !!immutable;
+    instance.__immutable = !mutable;
+    return instance;
+  };
+
+  $SC.Event = function(value) {
+    var instance, i, imax, j;
+    i = imax = j = value;
+    instance = $SC("Event").new();
+    for (i = j = 0, imax = value.length >> 1; i < imax; ++i) {
+      instance.put(value[j++], value[j++]);
+    }
     return instance;
   };
 
@@ -249,9 +307,9 @@
   };
 
   $SC.Ref = function(value) {
-    return new SCRef([ value ]);
+    var instance = new SCRef();
+    instance._$value = value;
+    return instance;
   };
-
-  sc.lang.klass.$interpreter = new SCInterpreter();
 
 })(sc);

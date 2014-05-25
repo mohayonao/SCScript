@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">116.15</p>
+      <p class="stat">119.96</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">776</p>
+      <p class="stat">885</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">99.17</p>
+      <p class="stat">100.76</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">8.66</p>
+      <p class="stat">10.03</p>
     </div>
   </div>
 </div>
@@ -119,7 +119,7 @@
     };
 
     spec._ThrowIfImmutable = function() {
-      if (this._immutable) {
+      if (this.__immutable) {
         throw new Error(&quot;Attempted write to immutable object.&quot;);
       }
     };
@@ -432,7 +432,7 @@
       }
       raw = this._.slice(start, end + 1);
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, &quot;start; end&quot;);
@@ -469,7 +469,7 @@
         }
       }
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, &quot;first; second; last&quot;);
@@ -524,7 +524,7 @@
 
       this._ThrowIfImmutable();
 
-      if ($aCollection.isSequenceableCollection().valueOf()) {
+      if (BOOL($aCollection.isCollection())) {
         $aCollection.do($SC.Function(function($item) {
           $this._.push($this.__elem__($item));
         }));
@@ -565,7 +565,7 @@
         }
       }
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, &quot;size; item&quot;);
@@ -591,7 +591,7 @@
       raw = this._.slice();
       raw.unshift(this.__elem__($item));
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
     }, &quot;item&quot;);
@@ -617,7 +617,7 @@
 
       raw = this._.slice();
 
-      instance = new this.__Spec();
+      instance = new this.__Spec([]);
       instance._ = raw;
       if ($anArray !== $nil) {
         instance.addAll($anArray);
@@ -852,17 +852,126 @@
         return $elem.asString().__str__();
       }).join(&quot;, &quot;) + &quot; ]&quot;);
     };
+
+    // istanbul ignore next
+    spec._sort = function($function) {
+      this._ThrowIfImmutable();
+      this._.sort(function($a, $b) {
+        return BOOL($function.value($a, $b)) ? -1 : 1;
+      });
+    };
   });
 
   sc.lang.klass.refine(&quot;RawArray&quot;, function(spec, utils) {
+    var SCArray = $SC(&quot;Array&quot;);
+
     spec.archiveAsCompileString = utils.alwaysReturn$true;
     spec.archiveAsObject = utils.alwaysReturn$true;
+
     spec.rate = function() {
       return $SC.Symbol(&quot;scalar&quot;);
     };
 
     // TODO: implements readFromStream
-    // TODO: implements powerset
+
+    spec.powerset = function() {
+      return this.as(SCArray).powerset();
+    };
+  });
+
+  sc.lang.klass.define(&quot;Int8Array : RawArray&quot;, function(spec) {
+    var int8 = new Int8Array(1);
+
+    spec.constructor = function SCInt8Array() {
+      this.__super__(&quot;RawArray&quot;);
+    };
+
+    spec.valueOf = function() {
+      return new Int8Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int8[0] = item.__int__();
+      return $SC.Integer(int8[0]);
+    };
+  });
+
+  sc.lang.klass.define(&quot;Int16Array : RawArray&quot;, function(spec) {
+    var int16 = new Int16Array(1);
+
+    spec.constructor = function SCInt16Array() {
+      this.__super__(&quot;RawArray&quot;);
+    };
+
+    spec.valueOf = function() {
+      return new Int16Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int16[0] = item.__int__();
+      return $SC.Integer(int16[0]);
+    };
+  });
+
+  sc.lang.klass.define(&quot;Int32Array : RawArray&quot;, function(spec) {
+    var int32 = new Int32Array(1);
+
+    spec.constructor = function SCInt32Array() {
+      this.__super__(&quot;RawArray&quot;);
+    };
+
+    spec.valueOf = function() {
+      return new Int32Array(this._.map(function($elem) {
+        return $elem.__int__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      int32[0] = item.__int__();
+      return $SC.Integer(int32[0]);
+    };
+  });
+
+  sc.lang.klass.define(&quot;FloatArray : RawArray&quot;, function(spec) {
+    var float32 = new Float32Array(1);
+
+    spec.constructor = function SCFloatArray() {
+      this.__super__(&quot;RawArray&quot;);
+    };
+
+    spec.valueOf = function() {
+      return new Float32Array(this._.map(function($elem) {
+        return $elem.__num__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      float32[0] = item.__num__();
+      return $SC.Float(float32[0]);
+    };
+  });
+
+  sc.lang.klass.define(&quot;DoubleArray : RawArray&quot;, function(spec) {
+    var float64 = new Float64Array(1);
+
+    spec.constructor = function SCDoubleArray() {
+      this.__super__(&quot;RawArray&quot;);
+    };
+
+    spec.valueOf = function() {
+      return new Float64Array(this._.map(function($elem) {
+        return $elem.__num__();
+      }));
+    };
+
+    spec.__elem__ = function(item) {
+      float64[0] = item.__num__();
+      return $SC.Float(float64[0]);
+    };
   });
 
 });</textarea>

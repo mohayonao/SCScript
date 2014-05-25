@@ -34,11 +34,6 @@ SCScript.install(function(sc) {
 
     // TODO: implements unixCmdActions
     // TODO: implements unixCmdActions_
-
-    spec.$new = function() {
-      throw new Error("String.new is illegal, should use literal.");
-    };
-
     // TODO: implements $initClass
     // TODO: implements $doUnixCmdAction
     // TODO: implements unixCmd

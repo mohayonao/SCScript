@@ -425,8 +425,8 @@
           error({ line: 1, column: 19, index: 18 }, Message.UnexpectedNumber),
           error({ line: 1, column: 21, index: 20 }, Message.UnexpectedToken, "]"),
         ],
-        "if {true} .value": [
-          error({ line: 1, column: 11, index: 10 }, Message.UnexpectedToken, ".")
+        "~ID": [
+          error({ line: 1, column: 4, index: 3 }, Message.UnexpectedIdentifier),
         ],
       };
 

@@ -6,28 +6,32 @@ SCScript.install(function(sc) {
   var fn  = sc.lang.fn;
 
   sc.lang.klass.refine("Ref", function(spec, utils) {
+    spec.$new = function($thing) {
+      return this.__super__("new").value_($thing);
+    };
+
     spec.valueOf = function() {
-      return this._value.valueOf();
+      return this._$value.valueOf();
     };
 
     spec.value = function() {
-      return this._value;
+      return this._$value;
     };
 
     spec.value_ = fn(function($value) {
-      this._value = $value;
+      this._$value = $value;
       return this;
     }, "value");
 
     // $new
 
     spec.set = fn(function($thing) {
-      this._value = $thing;
+      this._$value = $thing;
       return this;
     }, "thing");
 
     spec.get = function() {
-      return this._value;
+      return this._$value;
     };
 
     spec.dereference = spec.value;
@@ -48,11 +52,11 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
 
     spec.at = function($key) {
-      return this._value.at($key);
+      return this._$value.at($key);
     };
 
     spec.put = function($key, $val) {
-      return this._value.put($key, $val);
+      return this._$value.put($key, $val);
     };
 
     // TODO: implements seq

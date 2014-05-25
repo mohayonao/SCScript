@@ -95,7 +95,7 @@ SCScript.install(function(sc) {
     };
 
     spec.isKindOf = function($aClass) {
-      return $SC.Boolean(this instanceof $aClass._Spec);
+      return $SC.Boolean(this instanceof $aClass.__Spec);
     };
 
     spec.isMemberOf = function($aClass) {
@@ -165,7 +165,7 @@ SCScript.install(function(sc) {
     // TODO: implements contentsCopy
 
     spec.shallowCopy = function() {
-      var a = new this.__class._Spec();
+      var a = new this.__Spec([]);
 
       Object.keys(this).forEach(function(key) {
         a[key] = copy(this[key]);
@@ -231,9 +231,18 @@ SCScript.install(function(sc) {
     // TODO: implements equals
     // TODO: implements compareObject
     // TODO: implements instVarHash
-    // TODO: implements basicHash
-    // TODO: implements hash
-    // TODO: implements identityHash
+
+    spec.basicHash = function() {
+      return $SC.Integer(this.__hash);
+    };
+
+    spec.hash = function() {
+      return $SC.Integer(this.__hash);
+    };
+
+    spec.identityHash = function() {
+      return $SC.Integer(this.__hash);
+    };
 
     spec["->"] = function($obj) {
       return $SC("Association").new(this, $obj);

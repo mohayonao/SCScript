@@ -3,6 +3,7 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
+  var fn  = sc.lang.fn;
   var $SC = sc.lang.$SC;
 
   sc.lang.klass.refine("Symbol", function(spec, utils) {
@@ -64,9 +65,12 @@ SCScript.install(function(sc) {
     // TODO: implements blend
     // TODO: implements ++
     // TODO: implements asBinOpString
-    // TODO: implements applyTo
-    // TODO: implements performBinaryOpOnSomething
 
+    spec.applyTo = fn(function($firstArg, $$args) {
+      return $firstArg.perform.apply($firstArg, [ this ].concat($$args._));
+    }, "first; *args");
+
+    spec.performBinaryOpOnSomething = utils.nop;
     spec.neg = utils.nop;
     spec.bitNot = utils.nop;
     spec.abs = utils.nop;

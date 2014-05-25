@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">128.30</p>
+      <p class="stat">122.83</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">99</p>
+      <p class="stat">641</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">14.42</p>
+      <p class="stat">92.22</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.23</p>
+      <p class="stat">6.21</p>
     </div>
   </div>
 </div>
@@ -93,15 +93,26 @@
     <textarea id="file-source" class="col-md-12">SCScript.install(function(sc) {
   &quot;use strict&quot;;
 
+  require(&quot;./Association&quot;);
   require(&quot;./Set&quot;);
 
-  function SCDictionary() {
-    this.__initializeWith__(&quot;Set&quot;);
-    this._ = {};
-  }
+  var slice = [].slice;
+  var fn    = sc.lang.fn;
+  var $SC   = sc.lang.$SC;
 
-  sc.lang.klass.define(SCDictionary, &quot;Dictionary : Set&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.refine(&quot;Dictionary&quot;, function(spec, utils) {
+    var BOOL   = utils.BOOL;
+    var $nil   = utils.$nil;
+    var $true  = utils.$true;
+    var $false = utils.$false;
+    var $int_1 = utils.$int_1;
+    var SCSet  = $SC(&quot;Set&quot;);
+    var SCArray = $SC(&quot;Array&quot;);
+    var SCAssociation = $SC(&quot;Association&quot;);
+
+    spec.$new = fn(function($n) {
+      return this.__super__(&quot;new&quot;, [ $n ]);
+    }, &quot;n=8&quot;);
 
     spec.valueOf = function() {
       var obj;
@@ -109,7 +120,7 @@
 
       obj = {};
 
-      array = this._array._;
+      array = this._$array._;
       for (i = 0, imax = array.length; i &lt; imax; i += 2) {
         if (array[i] !== $nil) {
           obj[array[i].valueOf()] = array[i + 1].valueOf();
@@ -119,66 +130,597 @@
       return obj;
     };
 
-    // TODO: implements $newFrom
-    // TODO: implements at
-    // TODO: implements atFail
-    // TODO: implements matchAt
-    // TODO: implements trueAt
-    // TODO: implements add
-    // TODO: implements put
-    // TODO: implements putAll
-    // TODO: implements putPairs
-    // TODO: implements getPairs
-    // TODO: implements associationAt
-    // TODO: implements associationAtFail
-    // TODO: implements keys
-    // TODO: implements values
-    // TODO: implements includes
-    // TODO: implements includesKey
-    // TODO: implements removeAt
-    // TODO: implements removeAtFail
-    // TODO: implements remove
-    // TODO: implements removeFail
-    // TODO: implements keysValuesDo
-    // TODO: implements keysValuesChange
-    // TODO: implements do
-    // TODO: implements keysDo
-    // TODO: implements associationsDo
-    // TODO: implements pairsDo
-    // TODO: implements collect
-    // TODO: implements select
-    // TODO: implements reject
-    // TODO: implements invert
-    // TODO: implements merge
+    spec.$newFrom = fn(function($aCollection) {
+      var $newCollection;
+
+      $newCollection = this.new($aCollection.size());
+      $aCollection.keysValuesDo($SC.Function(function($k, $v) {
+        $newCollection.put($k, $v);
+      }));
+
+      return $newCollection;
+    }, &quot;aCollection&quot;);
+
+    spec.at = fn(function($key) {
+      return this._$array.at(this.scanFor($key).__inc__());
+    }, &quot;key&quot;);
+
+    spec.atFail = fn(function($key, $function) {
+      var $val;
+
+      $val = this.at($key);
+      if ($val === $nil) {
+        $val = $function.value();
+      }
+
+      return $val;
+    }, &quot;key; function&quot;);
+
+    spec.matchAt = fn(function($key) {
+      var ret = null;
+
+      this.keysValuesDo($SC.Function(function($k, $v) {
+        if (BOOL($k.matchItem($key))) {
+          ret = $v;
+          return sc.C.LOOP_BREAK;
+        }
+      }));
+
+      return ret || $nil;
+    }, &quot;key&quot;);
+
+    spec.trueAt = fn(function($key) {
+      var $ret;
+
+      $ret = this.at($key);
+
+      return $ret !== $nil ? $ret : $false;
+    }, &quot;key&quot;);
+
+    spec.add = fn(function($anAssociation) {
+      this.put($anAssociation.key(), $anAssociation.value());
+      return this;
+    }, &quot;anAssociation&quot;);
+
+    spec.put = fn(function($key, $value) {
+      var $array, $index;
+
+      if ($value === $nil) {
+        this.removeAt($key);
+      } else {
+        $array = this._$array;
+        $index = this.scanFor($key);
+        $array.put($index.__inc__(), $value);
+        if ($array.at($index) === $nil) {
+          $array.put($index, $key);
+          this._incrementSize();
+        }
+      }
+
+      return this;
+    }, &quot;key; value&quot;);
+
+    spec.putAll = function() {
+      var $this = this;
+      var func;
+
+      func = $SC.Function(function($key, $value) {
+        $this.put($key, $value);
+      });
+
+      slice.call(arguments).forEach(function($dict) {
+        $dict.keysValuesDo(func);
+      }, this);
+
+      return this;
+    };
+
+    spec.putPairs = fn(function($args) {
+      var $this = this;
+
+      $args.pairsDo($SC.Function(function($key, $val) {
+        $this.put($key, $val);
+      }));
+
+      return this;
+    }, &quot;args&quot;);
+
+    spec.getPairs = fn(function($args) {
+      var $this = this;
+      var $result;
+
+      if ($args === $nil) {
+        $args = this.keys();
+      }
+
+      $result = $nil;
+      $args.do($SC.Function(function($key) {
+        var $val;
+        $val = $this.at($key);
+        if ($val !== $nil) {
+          $result = $result.add($key).add($val);
+        }
+      }));
+
+      return $result;
+    }, &quot;args&quot;);
+
+    spec.associationAt = fn(function($key) {
+      var $res;
+      var array, index;
+
+      array = this._$array._;
+      index = this.scanFor($key).__int__();
+
+      // istanbul ignore else
+      if (index &gt;= 0) {
+        $res = SCAssociation.new(array[index], array[index + 1]);
+      }
+
+      return $res || /* istanbul ignore next */ $nil;
+    }, &quot;key&quot;);
+
+    spec.associationAtFail = fn(function($argkey, $function) {
+      var $index, $key;
+
+      $index = this.scanFor($argkey);
+      $key   = this._$array.at($index);
+
+      if ($key === $nil) {
+        return $function.value();
+      }
+
+      return SCAssociation.new($key, this._$array.at($index.__inc__()));
+    }, &quot;argKey; function&quot;);
+
+    spec.keys = fn(function($species) {
+      var $set;
+
+      if ($species === $nil) {
+        $species = SCSet;
+      }
+
+      $set = $species.new(this.size());
+      this.keysDo($SC.Function(function($key) {
+        $set.add($key);
+      }));
+
+      return $set;
+    }, &quot;species&quot;);
+
+    spec.values = function() {
+      var $list;
+
+      $list = $SC(&quot;List&quot;).new(this.size());
+      this.do($SC.Function(function($value) {
+        $list.add($value);
+      }));
+
+      return $list;
+    };
+
+    spec.includes = fn(function($item1) {
+      var $ret = null;
+
+      this.do($SC.Function(function($item2) {
+        if (BOOL($item1 [&quot;==&quot;] ($item2))) {
+          $ret = $true;
+          return sc.C.LOOP_BREAK;
+        }
+      }));
+
+      return $ret || $false;
+    }, &quot;item1&quot;);
+
+    spec.includesKey = fn(function($key) {
+      return this.at($key).notNil();
+    }, &quot;key&quot;);
+
+    spec.removeAt = fn(function($key) {
+      var $array;
+      var $val, $index, $atKeyIndex;
+
+      $array = this._$array;
+      $index = this.scanFor($key);
+      $atKeyIndex = $array.at($index);
+      if ($atKeyIndex === $nil) {
+        return $nil;
+      }
+
+      $val = $array.at($index.__inc__());
+      $array.put($index, $nil);
+      $array.put($index.__inc__(), $nil);
+
+      this._size -= 1;
+
+      // this.fixCollisionsFrom($index);
+
+      return $val;
+    }, &quot;key&quot;);
+
+    spec.removeAtFail = fn(function($key, $function) {
+      var $array;
+      var $val, $index, $atKeyIndex;
+
+      $array = this._$array;
+      $index = this.scanFor($key);
+      $atKeyIndex = $array.at($index);
+
+      if ($atKeyIndex === $nil) {
+        return $function.value();
+      }
+
+      $val = $array.at($index.__inc__());
+      $array.put($index, $nil);
+      $array.put($index.__inc__(), $nil);
+
+      this._size -= 1;
+
+      // this.fixCollisionsFrom($index);
+
+      return $val;
+    }, &quot;key; function&quot;);
+
+    spec.remove = function() {
+      throw new Error(&quot;shouldNotImplement&quot;);
+    };
+
+    spec.removeFail = function() {
+      throw new Error(&quot;shouldNotImplement&quot;);
+    };
+
+    spec.keysValuesDo = fn(function($function) {
+      this.keysValuesArrayDo(this._$array, $function);
+      return this;
+    }, &quot;function&quot;);
+
+    spec.keysValuesChange = fn(function($function) {
+      var $this = this;
+
+      this.keysValuesDo($SC.Function(function($key, $value, $i) {
+        $this.put($key, $function.value($key, $value, $i));
+      }));
+
+      return this;
+    }, &quot;function&quot;);
+
+    spec.do = fn(function($function) {
+      this.keysValuesDo($SC.Function(function($key, $value, $i) {
+        $function.value($value, $i);
+      }));
+      return this;
+    }, &quot;function&quot;);
+
+    spec.keysDo = fn(function($function) {
+      this.keysValuesDo($SC.Function(function($key, $val, $i) {
+        $function.value($key, $i);
+      }));
+      return this;
+    }, &quot;function&quot;);
+
+    spec.associationsDo = fn(function($function) {
+      this.keysValuesDo($SC.Function(function($key, $val, $i) {
+        var $assoc = SCAssociation.new($key, $val);
+        $function.value($assoc, $i);
+      }));
+      return this;
+    }, &quot;function&quot;);
+
+    spec.pairsDo = fn(function($function) {
+      this.keysValuesArrayDo(this._$array, $function);
+      return this;
+    }, &quot;function&quot;);
+
+    spec.collect = fn(function($function) {
+      var $res;
+
+      $res = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $elem) {
+        $res.put($key, $function.value($elem, $key));
+      }));
+
+      return $res;
+    }, &quot;function&quot;);
+
+    spec.select = fn(function($function) {
+      var $res;
+
+      $res = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $elem) {
+        if (BOOL($function.value($elem, $key))) {
+          $res.put($key, $elem);
+        }
+      }));
+
+      return $res;
+    }, &quot;function&quot;);
+
+    spec.reject = fn(function($function) {
+      var $res;
+
+      $res = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $elem) {
+        if (!BOOL($function.value($elem, $key))) {
+          $res.put($key, $elem);
+        }
+      }));
+
+      return $res;
+    }, &quot;function&quot;);
+
+    spec.invert = function() {
+      var $dict;
+
+      $dict = this.class().new(this.size());
+      this.keysValuesDo($SC.Function(function($key, $val) {
+        $dict.put($val, $key);
+      }));
+
+      return $dict;
+    };
+
+    spec.merge = fn(function($that, $func, $fill) {
+      var $this = this;
+      var $commonKeys, $myKeys, $otherKeys;
+      var $res;
+
+      $res = this.class().new();
+
+      $myKeys    = this.keys();
+      $otherKeys = $that.keys();
+
+      if (BOOL($myKeys [&quot;==&quot;] ($otherKeys))) {
+        $commonKeys = $myKeys;
+      } else {
+        $commonKeys = $myKeys.sect($otherKeys);
+      }
+
+      $commonKeys.do($SC.Function(function($key) {
+        $res.put($key, $func.value($this.at($key), $that.at($key), $key));
+      }));
+
+      if (BOOL($fill)) {
+        $myKeys.difference($otherKeys).do($SC.Function(function($key) {
+          $res.put($key, $this.at($key));
+        }));
+        $otherKeys.difference($myKeys).do($SC.Function(function($key) {
+          $res.put($key, $that.at($key));
+        }));
+      }
+
+      return $res;
+    }, &quot;that; func; fill=true&quot;);
+
     // TODO: implements blend
-    // TODO: implements findKeyForValue
-    // TODO: implements sortedKeysValuesDo
-    // TODO: implements choose
-    // TODO: implements order
-    // TODO: implements powerset
-    // TODO: implements transformEvent
+
+    spec.findKeyForValue = fn(function($argValue) {
+      var $ret = null;
+
+      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
+        if (BOOL($argValue [&quot;==&quot;] ($val))) {
+          $ret = $key;
+          return sc.C.LOOP_BREAK;
+        }
+      }));
+
+      return $ret || $nil;
+    }, &quot;argValue&quot;);
+
+    spec.sortedKeysValuesDo = fn(function($function, $sortFunc) {
+      var $this = this;
+      var $keys;
+
+      $keys = this.keys(SCArray);
+      $keys.sort($sortFunc);
+
+      $keys.do($SC.Function(function($key, $i) {
+        $function.value($key, $this.at($key), $i);
+      }));
+
+      return this;
+    }, &quot;$function; $sortFunc&quot;);
+
+    spec.choose = function() {
+      var $array;
+      var $size, $index;
+
+      if (BOOL(this.isEmpty())) {
+        return $nil;
+      }
+
+      $array = this._$array;
+      $size  = $array.size() [&quot;&gt;&gt;&quot;] ($int_1);
+
+      do {
+        $index = $size.rand() [&quot;&lt;&lt;&quot;] ($int_1);
+      } while ($array.at($index) === $nil);
+
+      return $array.at($index.__inc__());
+    };
+
+    spec.order = fn(function($func) {
+      var $assoc;
+
+      if (BOOL(this.isEmpty())) {
+        return $nil;
+      }
+
+      $assoc = $nil;
+      this.keysValuesDo($SC.Function(function($key, $val) {
+        $assoc = $assoc.add($key [&quot;-&gt;&quot;] ($val));
+      }));
+
+      return $assoc.sort($func).collect($SC.Function(function($_) {
+        return $_.key();
+      }));
+    }, &quot;func&quot;);
+
+    spec.powerset = function() {
+      var $this = this;
+      var $keys, $class;
+
+      $keys  = this.keys().asArray().powerset();
+      $class = this.class();
+
+      return $keys.collect($SC.Function(function($list) {
+        var $dict;
+
+        $dict = $class.new();
+        $list.do($SC.Function(function($key) {
+          $dict.put($key, $this.at($key));
+        }));
+
+        return $dict;
+      }));
+    };
+
+    spec.transformEvent = fn(function($event) {
+      return $event.putAll(this);
+    }, &quot;event&quot;);
+
     // TODO: implements embedInStream
     // TODO: implements asSortedArray
     // TODO: implements asKeyValuePairs
-    // TODO: implements keysValuesArrayDo
+
+    spec.keysValuesArrayDo = function($argArray, $function) {
+      var $key, $val;
+      var array, j, i, imax;
+
+      array = this._$array._;
+      for (i = j = 0, imax = array.length; i &lt; imax; i += 2, ++j) {
+        $key = array[i];
+        if ($key !== $nil) {
+          $val = $argArray.at($SC.Integer(i + 1));
+          $function.value($key, $val, $SC.Integer(j));
+        }
+      }
+    };
+
     // TODO: implements grow
     // TODO: implements fixCollisionsFrom
-    // TODO: implements scanFor
+
+    // istanbul ignore next
+    spec.scanFor = function($argKey) {
+      var array, i, imax;
+      var $elem;
+
+      array = this._$array._;
+      imax  = array.length;
+
+      for (i = 0; i &lt; imax; i += 2) {
+        $elem = array[i];
+        if (BOOL($elem [&quot;==&quot;] ($argKey))) {
+          return $SC.Integer(i);
+        }
+      }
+      for (i = 0; i &lt; imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $nil) {
+          return $SC.Integer(i);
+        }
+      }
+
+      return $SC.Integer(-2);
+    };
+
     // TODO: implements storeItemsOn
     // TODO: implements printItemsOn
+
+    spec._incrementSize = function() {
+      this._size += 1;
+      if (this._$array.size().__inc__() &lt; this._size * 4) {
+        this.grow();
+      }
+    };
   });
 
-  function SCIdentityDictionary() {
-    this.__initializeWith__(&quot;Dictionary&quot;);
-  }
+  sc.lang.klass.refine(&quot;IdentityDictionary&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
 
-  sc.lang.klass.define(SCIdentityDictionary, &quot;IdentityDictionary : Dictionary&quot;, function() {
-    // TODO: implements at
-    // TODO: implements put
-    // TODO: implements putGet
-    // TODO: implements includesKey
-    // TODO: implements findKeyForValue
-    // TODO: implements scanFor
+    spec.$new = fn(function($n, $proto, $parent, $know) {
+      return this.__super__(&quot;new&quot;, [ $n ])
+        .proto_($proto).parent_($parent).know_($know);
+    }, &quot;n=8; proto; parent; know=false&quot;);
+
+    spec.proto = function() {
+      return this._$proto;
+    };
+
+    spec.proto_ = function($value) {
+      this._$proto = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.parent = function() {
+      return this._$parent;
+    };
+
+    spec.parent_ = function($value) {
+      this._$parent = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.know = function() {
+      return this._$know;
+    };
+
+    spec.know_ = function($value) {
+      this._$know = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.putGet = fn(function($key, $value) {
+      var $array, $index, $prev;
+
+      $array = this._$array;
+      $index = this.scanFor($key);
+      $prev  = $array.at($index.__inc__());
+      $array.put($index.__inc__(), $value);
+      if ($array.at($index) === $nil) {
+        $array.put($index, $key);
+        this._incrementSize();
+      }
+
+      return $prev;
+    }, &quot;key; value&quot;);
+
+    spec.findKeyForValue = fn(function($argValue) {
+      var $ret = null;
+
+      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
+        if ($argValue === $val) {
+          $ret = $key;
+          return sc.C.LOOP_BREAK;
+        }
+      }));
+
+      return $ret || $nil;
+    }, &quot;argValue&quot;);
+
+    // istanbul ignore next
+    spec.scanFor = function($argKey) {
+      var array, i, imax;
+      var $elem;
+
+      array = this._$array._;
+      imax  = array.length;
+
+      for (i = 0; i &lt; imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $argKey) {
+          return $SC.Integer(i);
+        }
+      }
+      for (i = 0; i &lt; imax; i += 2) {
+        $elem = array[i];
+        if ($elem === $nil) {
+          return $SC.Integer(i);
+        }
+      }
+
+      return $SC.Integer(-2);
+    };
+
     // TODO: implements freezeAsParent
     // TODO: implements insertParent
     // TODO: implements storeItemsOn

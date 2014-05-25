@@ -3,19 +3,17 @@
 
   require("./sc");
   require("./scope");
+  require("./pre-compiler");
 
   var codegen = {};
-  var Syntax  = sc.lang.compiler.Syntax;
-  var Token   = sc.lang.compiler.Token;
-  var Message = sc.lang.compiler.Message;
-  var SegmentedMethod = {
-    idle : true,
-    sleep: true,
-    wait : true,
-    yield: true
-  };
 
-  var Scope = sc.lang.compiler.scope({
+  var compiler = sc.lang.compiler;
+  var Syntax   = compiler.Syntax;
+  var Token    = compiler.Token;
+  var Message  = compiler.Message;
+  var precompile = compiler.precompile;
+
+  var Scope = compiler.scope({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
@@ -61,10 +59,10 @@
 
       stream.push(stmt.head, stmt.vars, stmt.tail);
     },
-    begin_ref: function() {
+    begin_ref: function(scope) {
       var refId   = (this._refId | 0);
       var refName = "_ref" + refId;
-      this.add("var", refName);
+      this.add("var", refName, scope);
       this._refId = refId + 1;
       return refName;
     },
@@ -85,7 +83,14 @@
     if (typeof this.opts.bare === "undefined") {
       this.opts.bare = false;
     }
+    this.functionStack = [];
+    this.functionArray = [];
   }
+
+  CodeGen.prototype.compile = function(ast) {
+    ast = precompile(ast);
+    return this.generate(ast);
+  };
 
   CodeGen.prototype.toSourceNodeWhenNeeded = function(generated) {
     if (Array.isArray(generated)) {
@@ -368,7 +373,7 @@
   };
 
   CodeGen.prototype.CallExpression = function(node) {
-    if (isSegmentedMethod(node)) {
+    if (node.segmented) {
       this.state.calledSegmentedMethod = true;
     }
 
@@ -433,8 +438,19 @@
     return result;
   };
 
-  CodeGen.prototype.GlobalExpression = function(node) {
-    return "$SC.Global." + node.id.name;
+  CodeGen.prototype.EnvironmentExpresion = function(node, opts) {
+    var result;
+
+    if (opts) {
+      // setter
+      result = [ "$SC.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
+      opts.used = true;
+    } else {
+      // getter
+      result = "$SC.Environment('" + node.id.name + "')";
+    }
+
+    return result;
   };
 
   CodeGen.prototype.FunctionExpression = function(node) {
@@ -442,7 +458,7 @@
 
     info = getInformationOfFunction(node);
 
-    if (!isSegmentedBlock(node)) {
+    if (!node.segmented) {
       fn = CodeGen.prototype._SimpleFunction;
     } else {
       fn = CodeGen.prototype._SegmentedFunction;
@@ -641,13 +657,13 @@
       ref = this.scope.begin_ref();
       name = [
         "(" + ref + " = ", this.generate(opts.right),
-        ", $this." + node.name + "_(" + ref + "), " + ref + ")"
+        ", $SC.This()." + node.name + "_(" + ref + "), " + ref + ")"
       ];
       opts.used = true;
       this.scope.end_ref();
     } else {
       // getter
-      name = "$this." + node.name + "()";
+      name = "$SC.This()." + node.name + "()";
     }
 
     return name;
@@ -691,7 +707,7 @@
     return "$SC.Nil()";
   };
 
-  CodeGen.prototype.ObjectExpression = function(node) {
+  CodeGen.prototype.EventExpression = function(node) {
     return [
       "$SC.Event(", this.insertArrayElement(node.elements), ")"
     ];
@@ -701,7 +717,7 @@
     var result, body;
 
     if (node.body.length) {
-      body = this.withFunction([ "this", "SC" ], function() {
+      body = this.withFunction([ "SC" ], function() {
         return this._Statements(node.body);
       });
 
@@ -718,11 +734,9 @@
   };
 
   CodeGen.prototype.ThisExpression = function(node) {
-    if (node.name === "this") {
-      return "$this";
-    }
-
-    return [ "$this." + node.name + "()" ];
+    var name = node.name;
+    name = name.charAt(0).toUpperCase() + name.substr(1);
+    return [ "$SC." + name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {
@@ -747,6 +761,14 @@
 
       return [ this.generate(item.id), " = ", this.generate(item.init) ];
     });
+  };
+
+  CodeGen.prototype.ValueMethodEvaluator = function(node) {
+    return [ "$SC.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
+  };
+
+  CodeGen.prototype.ValueMethodResult = function(node) {
+    return [ "$SC.Result(" + node.id + ")" ];
   };
 
   CodeGen.prototype._Statements = function(elements) {
@@ -819,30 +841,10 @@
     return "A" <= ch0 && ch0 <= "Z";
   };
 
-  var isNode = function(node, key) {
-    return key !== "range" && key !== "loc" && typeof node[key] === "object";
-  };
-
-  var isSegmentedBlock = function(node) {
-    if (isSegmentedMethod(node)) {
-      return true;
-    }
-    return Object.keys(node).some(function(key) {
-      if (isNode(node, key)) {
-        return isSegmentedBlock(node[key]);
-      }
-      return false;
-    });
-  };
-
-  var isSegmentedMethod = function(node) {
-    return node.type === Syntax.CallExpression && !!SegmentedMethod[node.method.name];
-  };
-
   codegen.compile = function(ast, opts) {
-    return new CodeGen(opts).generate(ast);
+    return new CodeGen(opts).compile(ast);
   };
 
-  sc.lang.compiler.codegen = codegen;
+  compiler.codegen = codegen;
 
 })(sc);

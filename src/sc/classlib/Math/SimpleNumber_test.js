@@ -625,8 +625,6 @@
         [ 10, [ 10.01, 0.02 ], true  ],
       ]);
     });
-    it.skip("#hash", function() {
-    });
     it("#asInteger", function() {
       testCase(this, [
         [ $SC.Integer(10), [], $SC.Integer(10) ],

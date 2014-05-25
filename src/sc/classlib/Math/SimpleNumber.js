@@ -434,8 +434,6 @@ SCScript.install(function(sc) {
       return this.absdif($that) ["<"] ($precision);
     }, "that; precision=0.0001");
 
-    // TODO: implements hash
-
     spec.asInteger = function() {
       return $SC.Integer(this._);
     };

@@ -3,14 +3,20 @@
 
   require("./Dictionary");
 
+  var $ = sc.test.$;
+  var testCase = sc.test.testCase;
+
   var $SC = sc.lang.$SC;
 
   describe("SCDictionary", function() {
-    var SCDictionary;
+    var SCDictionary, SCAssociation, SCArray, SCSet;
     before(function() {
-      SCDictionary = $SC("Dictionary");
-      this.createInstance = function() {
-        return SCDictionary.new();
+      SCDictionary  = $SC("Dictionary");
+      SCAssociation = $SC("Association");
+      SCArray = $SC("Array");
+      SCSet   = $SC("Set");
+      this.createInstance = function(list) {
+        return SCDictionary.newFrom(list ? $(list) : $SC.Array());
       };
     });
     it("#valueOf", function() {
@@ -20,95 +26,541 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });
-    it.skip("#$newFrom", function() {
+    it("#$newFrom", function() {
+      var instance;
+
+      instance = SCDictionary.newFrom($SC.Array([
+        $SC.Integer(1), $SC.Integer(2),
+        $SC.Integer(3), $SC.Integer(4),
+      ]));
+
+      expect(instance).to.be.a("SCDictionary").that.eqls({ 1:2, 3: 4 });
     });
-    it.skip("#at", function() {
+    it("#at", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 3 ],
+          result: 4
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 2 ],
+          result: null
+        },
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
+          args  : [ $SC.Integer(0) ],
+          result: $SC.Float(1.0)
+        },
+      ]);
     });
-    it.skip("#atFail", function() {
+    it("#atFail", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 3, 0 ],
+          result: 4
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 2, 0 ],
+          result: 0
+        }
+      ]);
     });
-    it.skip("#matchAt", function() {
+    it("#matchAt", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 3 ],
+          result: 4
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 2 ],
+          result: null
+        }
+      ]);
     });
-    it.skip("#trueAt", function() {
+    it("#trueAt", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 3 ],
+          result: 4
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 2 ],
+          result: false
+        }
+      ]);
     });
-    it.skip("#add", function() {
+    it("#add", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ SCAssociation.new($SC.Integer(5), $SC.Integer(6)) ],
+          result: this,
+          after : { 1: 2, 3: 4, 5: 6 }
+        },
+      ]);
     });
-    it.skip("#put", function() {
+    it("#put", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ $SC.Integer(3), $SC.Nil() ],
+          result: this,
+          after : { 1: 2 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ $SC.Integer(3), $SC.Integer(5) ],
+          result: this,
+          after : { 1: 2, 3: 5 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ $SC.Integer(5), $SC.Integer(6) ],
+          result: this,
+          after : { 1: 2, 3: 4, 5: 6 }
+        },
+      ]);
     });
-    it.skip("#putAll", function() {
+    it("#putAll", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2 ],
+          args  : [ SCDictionary.newFrom($( [ 1, 2, 3, 4, 5, 6 ] )) ],
+          result: this,
+          after : { 1: 2, 3: 4, 5: 6 }
+        }
+      ]);
     });
-    it.skip("#putPairs", function() {
+    it("#putPairs", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2 ],
+          args  : [ $( [ 1, 2, 3, 4, 5, 6 ] ) ],
+          result: this,
+          after : { 1: 2, 3: 4, 5: 6 }
+        }
+      ]);
     });
-    it.skip("#getPairs", function() {
+    it("#getPairs", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [],
+          result: [ 1, 2, 3, 4 ]
+        },
+        {
+          source: [ 1, 2, 3, 4, 5, 6 ],
+          args  : [ $([ 2, 3, 5 ]) ],
+          result: [ 3, 4, 5, 6 ]
+        },
+      ]);
     });
-    it.skip("#associationAt", function() {
+    it("#associationAt", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 3 ],
+          result: SCAssociation.new($SC.Integer(3), $SC.Integer(4))
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 4 ],
+          result: SCAssociation.new($SC.Nil(), $SC.Nil())
+        },
+      ]);
     });
-    it.skip("#associationAtFail", function() {
+    it("#associationAtFail", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 3, 0 ],
+          result: SCAssociation.new($SC.Integer(3), $SC.Integer(4))
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 5, 0 ],
+          result: 0
+        },
+      ]);
     });
-    it.skip("#keys", function() {
+    it("#keys", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          result: SCSet.newFrom($([ 1, 3 ]))
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ SCArray ],
+          result: [ 1, 3 ]
+        },
+      ]);
     });
-    it.skip("#values", function() {
+    it("#values", sinon.test(function() {
+      this.stub(sc.lang.klass, "get").withArgs("List").returns(SCArray);
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          result: [ 2, 4 ]
+        },
+      ]);
+    }));
+    it("#includes", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 1 ],
+          result: false
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 2 ],
+          result: true
+        },
+      ]);
     });
-    it.skip("#includes", function() {
+    it("#includesKey", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 1 ],
+          result: true
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 2 ],
+          result: false
+        },
+      ]);
     });
-    it.skip("#includesKey", function() {
+    it("#removeAt", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 1 ],
+          result: 2,
+          after : { 3: 4 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 5 ],
+          result: null,
+          after : { 1: 2, 3: 4 }
+        },
+      ]);
     });
-    it.skip("#removeAt", function() {
+    it("#removeAtFail", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 1, 0 ],
+          result: 2,
+          after : { 3: 4 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 5, 0 ],
+          result: 0,
+          after : { 1: 2, 3: 4 }
+        },
+      ]);
     });
-    it.skip("#removeAtFail", function() {
+    it("#remove", function() {
+      var instance;
+
+      instance = this.createInstance();
+
+      expect(function() {
+        instance.remove();
+      }).to.throw("shouldNotImplement");
     });
-    it.skip("#remove", function() {
+    it("#removeFail", function() {
+      var instance;
+
+      instance = this.createInstance();
+
+      expect(function() {
+        instance.removeFail();
+      }).to.throw("shouldNotImplement");
     });
-    it.skip("#removeFail", function() {
+    it("#keysValuesDo", sinon.test(function() {
+      var instance, test;
+      var spy, $function;
+
+      spy = this.spy();
+      $function = $SC.Function(spy);
+
+      instance = this.createInstance([ 1, 2, 3, 4 ]);
+
+      test = instance.keysValuesDo($function);
+      expect(test).to.equal(instance);
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).js.to.eql([ 1, 2, 0 ]);
+      expect(spy.args[1]).js.to.eql([ 3, 4, 1 ]);
+    }));
+    it("#keysValuesChange", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ function($key, $value, $i) {
+            return $SC.Array([ $key, $value, $i ]);
+          } ],
+          result: this,
+          after : { 1: [ 1, 2, 0 ], 3: [ 3, 4, 1 ] }
+        }
+      ]);
     });
-    it.skip("#keysValuesDo", function() {
+    it("#do", sinon.test(function() {
+      var instance, test;
+      var spy, $function;
+
+      spy = this.spy();
+      $function = $SC.Function(spy);
+
+      instance = this.createInstance([ 1, 2, 3, 4 ]);
+
+      test = instance.do($function);
+      expect(test).to.equal(instance);
+
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).js.to.eql([ 2, 0 ]);
+      expect(spy.args[1]).js.to.eql([ 4, 1 ]);
+    }));
+    it("#keysDo", sinon.test(function() {
+      var instance, test;
+      var spy, $function;
+
+      spy = this.spy();
+      $function = $SC.Function(spy);
+
+      instance = this.createInstance([ 1, 2, 3, 4 ]);
+
+      test = instance.keysDo($function);
+      expect(test).to.equal(instance);
+
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).js.to.eql([ 1, 0 ]);
+      expect(spy.args[1]).js.to.eql([ 3, 1 ]);
+    }));
+    it("#associationsDo", sinon.test(function() {
+      var instance, test;
+      var spy, $function;
+
+      spy = this.spy();
+      $function = $SC.Function(spy);
+
+      instance = this.createInstance([ 1, 2, 3, 4 ]);
+
+      test = instance.associationsDo($function);
+      expect(test).to.equal(instance);
+
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).js.to.eql([ 1, 0 ]);
+      expect(spy.args[1]).js.to.eql([ 3, 1 ]);
+    }));
+    it("#pairsDo", sinon.test(function() {
+      var instance, test;
+      var spy, $function;
+
+      spy = this.spy();
+      $function = $SC.Function(spy);
+
+      instance = this.createInstance([ 1, 2, 3, 4 ]);
+
+      test = instance.pairsDo($function);
+      expect(test).to.equal(instance);
+
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).js.to.eql([ 1, 2, 0 ]);
+      expect(spy.args[1]).js.to.eql([ 3, 4, 1 ]);
+    }));
+    it("#collect", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ function($elem, $key) {
+            return $SC.Array([ $elem, $key ]);
+          } ],
+          result: { 1: [ 2, 1 ], 3: [ 4, 3 ] }
+        },
+      ]);
     });
-    it.skip("#keysValuesChange", function() {
+    it("#select", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ function($elem, $key) {
+            return $SC.Boolean($key.valueOf() === 1);
+          } ],
+          result: { 1: 2 }
+        },
+      ]);
     });
-    it.skip("#do", function() {
+    it("#reject", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ function($elem, $key) {
+            return $SC.Boolean($key.valueOf() === 1);
+          } ],
+          result: { 3: 4 }
+        },
+      ]);
     });
-    it.skip("#keysDo", function() {
+    it("#invert", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          result: { 2: 1, 4: 3 }
+        },
+        {
+          source: [ 1, 2, 3, 4, 5, 2 ],
+          result: { 4: 3, 2: 5 }
+        },
+      ]);
     });
-    it.skip("#associationsDo", function() {
-    });
-    it.skip("#pairsDo", function() {
-    });
-    it.skip("#collect", function() {
-    });
-    it.skip("#select", function() {
-    });
-    it.skip("#reject", function() {
-    });
-    it.skip("#invert", function() {
-    });
-    it.skip("#merge", function() {
+    it("#merge", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args: [
+            SCDictionary.newFrom($([ 5, 6, 7, 8 ])),
+            function($a, $b) {
+              return $a ["+"] ($b);
+            },
+          ],
+          result: { 1: 2, 3: 4, 5: 6, 7: 8 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args: [
+            SCDictionary.newFrom($([ 3, 4, 5, 6 ])),
+            function($a, $b) {
+              return $a ["+"] ($b);
+            },
+            false
+          ],
+          result: { 3: 8 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args: [
+            SCDictionary.newFrom($([ 1, 2, 3, 4 ])),
+            function($a, $b) {
+              return $a ["+"] ($b);
+            },
+            false
+          ],
+          result: { 1: 4, 3: 8 }
+        },
+      ]);
     });
     it.skip("#blend", function() {
     });
-    it.skip("#findKeyForValue", function() {
+    it("#findKeyForValue", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 2 ],
+          result: 1
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 1 ],
+          result: null
+        },
+      ]);
     });
-    it.skip("#sortedKeysValuesDo", function() {
+    it("#sortedKeysValuesDo", sinon.test(function() {
+      var instance, test;
+      var spy, $function, $sortFunc;
+
+      spy = this.spy();
+      $function = $SC.Function(spy);
+      $sortFunc = $SC.Function(function($a, $b) {
+        return $b ["<="] ($a);
+      });
+
+      instance = this.createInstance([ 1, 2, 3, 4 ]);
+
+      test = instance.sortedKeysValuesDo($function, $sortFunc);
+      expect(test).to.equal(instance);
+
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).js.to.eql([ 3, 4, 0 ]);
+      expect(spy.args[1]).js.to.eql([ 1, 2, 1 ]);
+    }));
+    it("#choose", function() {
+      testCase(this, [
+        {
+          source: [],
+          result: null
+        },
+        {
+          source: [ 1, 2, 3, 4, 5, 6 ],
+          result: 2
+        },
+      ], { randSeed: 0 });
     });
-    it.skip("#choose", function() {
+    it("#order", function() {
+      testCase(this, [
+        {
+          source: [],
+          result: null
+        },
+        {
+          source: [ 1, 2, 3, 4, 5, 6 ],
+          result: [ 1, 3, 5 ]
+        },
+        {
+          source: [ 1, 2, 3, 4, 5, 6 ],
+          args  : [ function($a, $b) {
+            return $b ["<="] ($a);
+          } ],
+          result: [ 5, 3, 1 ]
+        }
+      ]);
     });
-    it.skip("#order", function() {
+    it("#powerset", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          result: [
+            {},
+            { 1: 2 },
+            { 3: 4 },
+            { 1: 2, 3: 4 }
+          ]
+        }
+      ]);
     });
-    it.skip("#powerset", function() {
-    });
-    it.skip("#transformEvent", function() {
-    });
+    it("#transformEvent", sinon.test(function() {
+      var instance, test;
+      var $event;
+
+      $event = sc.test.object({
+        putAll: this.spy(sc.test.func)
+      });
+
+      instance = this.createInstance();
+      test = instance.transformEvent($event);
+
+      expect($event.putAll).to.be.calledWith(instance);
+      expect($event.putAll).to.be.calledLastIn(test);
+    }));
     it.skip("#embedInStream", function() {
     });
     it.skip("#asSortedArray", function() {
     });
     it.skip("#asKeyValuePairs", function() {
-    });
-    it.skip("#keysValuesArrayDo", function() {
-    });
-    it.skip("#grow", function() {
-    });
-    it.skip("#fixCollisionsFrom", function() {
-    });
-    it.skip("#scanFor", function() {
     });
     it.skip("#storeItemsOn", function() {
     });
@@ -120,8 +572,8 @@
     var SCIdentityDictionary;
     before(function() {
       SCIdentityDictionary = $SC("IdentityDictionary");
-      this.createInstance = function() {
-        return SCIdentityDictionary.new();
+      this.createInstance = function(list) {
+        return SCIdentityDictionary.newFrom(list ? $(list) : $SC.Array());
       };
     });
     it("#valueOf", function() {
@@ -131,17 +583,94 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });
-    it.skip("#at", function() {
+    it("<>proto", function() {
+      var instance, test;
+      var $value;
+
+      $value = sc.test.object();
+
+      instance = this.createInstance();
+
+      test = instance.proto_($value);
+      expect(test).to.equal(instance);
+
+      test = instance.proto();
+      expect(test).to.equal($value);
     });
-    it.skip("#put", function() {
+    it("<>parent", function() {
+      var instance, test;
+      var $value;
+
+      $value = sc.test.object();
+
+      instance = this.createInstance();
+
+      test = instance.parent_($value);
+      expect(test).to.equal(instance);
+
+      test = instance.parent();
+      expect(test).to.equal($value);
     });
-    it.skip("#putGet", function() {
+    it("<>know", function() {
+      var instance, test;
+      var $value;
+
+      $value = sc.test.object();
+
+      instance = this.createInstance();
+
+      test = instance.know();
+      expect(test).to.be.a("SCBoolean").that.is.false;
+
+      test = instance.know_($value);
+      expect(test).to.equal(instance);
+
+      test = instance.know();
+      expect(test).to.equal($value);
     });
-    it.skip("#includesKey", function() {
+    it("#at", function() {
+      testCase(this, [
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
+          args  : [ $SC.Integer(0) ],
+          result: $SC.Integer(1)
+        },
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
+          args  : [ $SC.Float(0.0) ],
+          result: $SC.Float(1.0)
+        },
+      ]);
     });
-    it.skip("#findKeyForValue", function() {
+    it("#putGet", function() {
+      testCase(this, [
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 1, 0 ],
+          result: 2,
+          after : { 1: 0, 3: 4 }
+        },
+        {
+          source: [ 1, 2, 3, 4 ],
+          args  : [ 5, 6 ],
+          result: null,
+          after : { 1: 2, 3: 4, 5: 6 }
+        },
+      ]);
     });
-    it.skip("#scanFor", function() {
+    it("#findKeyForValue", function() {
+      testCase(this, [
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1) ],
+          args  : [ $SC.Integer(1) ],
+          result: $SC.Integer(0)
+        },
+        {
+          source: [ $SC.Integer(0), $SC.Integer(1) ],
+          args  : [ $SC.Float(1.0) ],
+          result: null
+        },
+      ]);
     });
     it.skip("#freezeAsParent", function() {
     });

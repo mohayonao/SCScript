@@ -7,20 +7,21 @@
     var sc_lang;
     before(function() {
       sc_lang = sc.lang;
-      sc.lang = {
-        $SC: {},
-        klass: {
-          $interpreter: {}
-        }
-      };
     });
     after(function() {
       sc.lang = sc_lang;
     });
     it("should call given function with sc.lang.$SC", function() {
-      var spy = sinon.spy();
-      sc.SCScript(spy);
-      expect(spy).to.be.calledWith(sc.lang.klass.$interpreter, sc.lang.$SC);
+      var func = function() {};
+
+      sc.lang = {
+        main: {
+          run: sinon.spy()
+        }
+      };
+      sc.SCScript(func);
+
+      expect(sc.lang.main.run).to.be.calledWith(func);
     });
     describe(".install", function() {
       it("should call given function with sc", function() {

@@ -1,8 +1,10 @@
 require("./compiler");
 require("./dollarSC");
-require("./klass");
-require("./iterator");
 require("./fn");
+require("./klass");
 require("./io");
+require("./iterator");
+require("./klass");
+require("./main");
 require("../libs/random");
 require("../libs/mathlib");

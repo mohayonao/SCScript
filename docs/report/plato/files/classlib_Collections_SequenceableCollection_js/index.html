@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">127.92</p>
+      <p class="stat">127.96</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">1599</p>
+      <p class="stat">1656</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">91.46</p>
+      <p class="stat">91.20</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">20.19</p>
+      <p class="stat">21.05</p>
     </div>
   </div>
 </div>
@@ -1641,9 +1641,33 @@
     };
 
     // TODO: implements minNyquist
-    // TODO: implements sort
-    // TODO: implements sortBy
-    // TODO: implements sortMap
+
+    spec.sort = fn(function($function) {
+      if ($function === $nil) {
+        $function = $SC.Function(function($a, $b) {
+          return $a [&quot;&lt;=&quot;] ($b);
+        });
+      }
+      this._sort($function);
+      return this;
+    }, &quot;function&quot;);
+
+    spec.sortBy = fn(function($key) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $a.at($key) [&quot;&lt;=&quot;] ($b.at($key));
+      }));
+    }, &quot;key&quot;);
+
+    spec.sortMap = fn(function($function) {
+      return this.sort($SC.Function(function($a, $b) {
+        return $function.value($a) [&quot;&lt;=&quot;] ($function.value($b));
+      }));
+    }, &quot;function&quot;);
+
+    // spec._sort = function($function) {
+    //   this.mergeSort($function);
+    // };
+
     // TODO: implements sortedMedian
     // TODO: implements median
     // TODO: implements quickSort
@@ -1681,8 +1705,41 @@
       return this.put($index, $value);
     }, &quot;index; value&quot;);
 
-    // TODO: implements reduce
-    // TODO: implements join
+    spec.reduce = fn(function($operator) {
+      var once;
+      var $result;
+
+      if (this.size().__int__() === 1) {
+        return this.at($int_0);
+      }
+
+      once = true;
+      $result = $nil;
+      this.doAdjacentPairs($SC.Function(function($a, $b) {
+        if (once) {
+          once = false;
+          $result = $operator.applyTo($a, $b);
+        } else {
+          $result = $operator.applyTo($result, $b);
+        }
+      }));
+
+      return $result;
+    }, &quot;operator&quot;);
+
+    spec.join = fn(function($joiner) {
+      var items, joiner;
+
+      items = [];
+      this.do($SC.Function(function($item) {
+        items.push($item.__str__());
+      }));
+
+      joiner = ($joiner === $nil) ? &quot;&quot; : $joiner.__str__();
+
+      return $SC.String(items.join(joiner), true);
+    }, &quot;joiner&quot;);
+
     // TODO: implements nextTimeOnGrid
     // TODO: implements asQuant
     // TODO: implements schedBundleArrayOnClock

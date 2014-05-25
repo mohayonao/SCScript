@@ -3,10 +3,8 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var $SC   = sc.lang.$SC;
-  var fn    = sc.lang.fn;
-  var utils = sc.lang.klass.utils;
-  var $nil  = utils.$nil;
+  var $SC = sc.lang.$SC;
+  var fn  = sc.lang.fn;
 
   sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
     spec.composeUnaryOp = function($aSelector) {
@@ -610,21 +608,25 @@ SCScript.install(function(sc) {
     spec.isValidUGenInput = utils.alwaysReturn$true;
   });
 
-  function SCUnaryOpFunction(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$selector = args[0] || /* istanbul ignore next */ $nil;
-    this.$a        = args[1] || /* istanbul ignore next */ $nil;
-  }
+  sc.lang.klass.define("UnaryOpFunction : AbstractFunction", function(spec) {
+    spec.constructor = function SCUnaryOpFunction() {
+      this.__super__("AbstractFunction");
+    };
 
-  sc.lang.klass.define(SCUnaryOpFunction, "UnaryOpFunction : AbstractFunction", function(spec) {
+    spec.$new = function($selector, $a) {
+      return this._newCopyArgs({
+        selector: $selector,
+        a       : $a
+      });
+    };
 
     spec.value = function() {
-      var $a = this.$a;
-      return $a.value.apply($a, arguments).perform(this.$selector);
+      var $a = this._$a;
+      return $a.value.apply($a, arguments).perform(this._$selector);
     };
 
     spec.valueArray = function($args) {
-      return this.$a.valueArray($args).perform(this.$selector);
+      return this._$a.valueArray($args).perform(this._$selector);
     };
 
     // TODO: implements valueEnvir
@@ -637,24 +639,28 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  function SCBinaryOpFunction(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$selector = args[0] || /* istanbul ignore next */ $nil;
-    this.$a        = args[1] || /* istanbul ignore next */ $nil;
-    this.$b        = args[2] || /* istanbul ignore next */ $nil;
-    this.$adverb   = args[3] || /* istanbul ignore next */ $nil;
-  }
+  sc.lang.klass.define("BinaryOpFunction : AbstractFunction", function(spec) {
+    spec.constructor = function SCBinaryOpFunction() {
+      this.__super__("AbstractFunction");
+    };
 
-  sc.lang.klass.define(SCBinaryOpFunction, "BinaryOpFunction : AbstractFunction", function(spec) {
+    spec.$new = function($selector, $a, $b, $adverb) {
+      return this._newCopyArgs({
+        selector: $selector,
+        a       : $a,
+        b       : $b,
+        adverb  : $adverb
+      });
+    };
 
     spec.value = function() {
-      return this.$a.value.apply(this.$a, arguments)
-        .perform(this.$selector, this.$b.value.apply(this.$b, arguments), this.$adverb);
+      return this._$a.value.apply(this._$a, arguments)
+        .perform(this._$selector, this._$b.value.apply(this._$b, arguments), this._$adverb);
     };
 
     spec.valueArray = function($args) {
-      return this.$a.valueArray($args)
-        .perform(this.$selector, this.$b.valueArray($args, arguments), this.$adverb);
+      return this._$a.valueArray($args)
+        .perform(this._$selector, this._$b.valueArray($args, arguments), this._$adverb);
     };
 
     // TODO: implements valueEnvir
@@ -667,26 +673,30 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  function SCNAryOpFunction(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$selector = args[0] || /* istanbul ignore next */ $nil;
-    this.$a        = args[1] || /* istanbul ignore next */ $nil;
-    this.$arglist  = args[2] || /* istanbul ignore next */ $nil;
-  }
+  sc.lang.klass.define("NAryOpFunction : AbstractFunction", function(spec) {
+    spec.constructor = function SCNAryOpFunction() {
+      this.__super__("AbstractFunction");
+    };
 
-  sc.lang.klass.define(SCNAryOpFunction, "NAryOpFunction : AbstractFunction", function(spec) {
+    spec.$new = function($selector, $a, $arglist) {
+      return this._newCopyArgs({
+        selector: $selector,
+        a       : $a,
+        arglist : $arglist
+      });
+    };
 
     spec.value = function() {
       var args = arguments;
-      return this.$a.value.apply(this.$a, args)
-        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+      return this._$a.value.apply(this._$a, args)
+        .performList(this._$selector, this._$arglist.collect($SC.Function(function($_) {
           return $_.value.apply($_, args);
         })));
     };
 
     spec.valueArray = function($args) {
-      return this.$a.valueArray($args)
-        .performList(this.$selector, this.$arglist.collect($SC.Function(function($_) {
+      return this._$a.valueArray($args)
+        .performList(this._$selector, this._$arglist.collect($SC.Function(function($_) {
           return $_.valueArray($args);
         })));
     };
@@ -694,28 +704,33 @@ SCScript.install(function(sc) {
     // TODO: implements valueEnvir
     // TODO: implements valueArrayEnvir
 
-    spec.functionPerformList = function($selector, $arglist) {
-      return this.performList($selector, $arglist);
+    spec.functionPerformList = function($selector, _$arglist) {
+      return this.performList($selector, _$arglist);
     };
 
     // TODO: implements storeOn
   });
 
-  function SCFunctionList(args) {
-    this.__initializeWith__("AbstractFunction");
-    this.$array   = args[0] || /* istanbul ignore next */ $nil;
-    this._flopped = false;
-  }
-
-  sc.lang.klass.define(SCFunctionList, "FunctionList : AbstractFunction", function(spec, utils) {
+  sc.lang.klass.define("FunctionList : AbstractFunction", function(spec, utils) {
     var $int_0 = utils.$int_0;
 
+    spec.constructor = function SCFunctionList() {
+      this.__super__("AbstractFunction");
+      this._flopped = false;
+    };
+
+    spec.$new = function($functions) {
+      return this._newCopyArgs({
+        array: $functions
+      });
+    };
+
     spec.array = function() {
-      return this.$array;
+      return this._$array;
     };
 
     spec.array_ = fn(function($value) {
-      this.$array = $value;
+      this._$array = $value;
       return this;
     }, "value");
 
@@ -728,30 +743,30 @@ SCScript.install(function(sc) {
         throw new Error("cannot add a function to a flopped FunctionList");
       }
 
-      this.$array = this.$array.addAll($$functions);
+      this._$array = this._$array.addAll($$functions);
 
       return this;
     }, "*functions");
 
     spec.removeFunc = function($function) {
-      this.$array.remove($function);
+      this._$array.remove($function);
 
-      if (this.$array.size() < 2) {
-        return this.$array.at($int_0);
+      if (this._$array.size() < 2) {
+        return this._$array.at($int_0);
       }
 
       return this;
     };
 
     spec.replaceFunc = function($find, $replace) {
-      this.$array = this.$array.replace($find, $replace);
+      this._$array = this._$array.replace($find, $replace);
       return this;
     };
 
     spec.value = function() {
       var $res, args = arguments;
 
-      $res = this.$array.collect($SC.Function(function($_) {
+      $res = this._$array.collect($SC.Function(function($_) {
         return $_.value.apply($_, args);
       }));
 
@@ -761,7 +776,7 @@ SCScript.install(function(sc) {
     spec.valueArray = function($args) {
       var $res;
 
-      $res = this.$array.collect($SC.Function(function($_) {
+      $res = this._$array.collect($SC.Function(function($_) {
         return $_.valueArray($args);
       }));
 
@@ -772,13 +787,13 @@ SCScript.install(function(sc) {
     // TODO: implements valueArrayEnvir
 
     spec.do = function($function) {
-      this.$array.do($function);
+      this._$array.do($function);
       return this;
     };
 
     spec.flop = function() {
       if (!this._flopped) {
-        this.$array = this.$array.collect($SC.Function(function($_) {
+        this._$array = this._$array.collect($SC.Function(function($_) {
           return $_.flop();
         }));
       }
@@ -790,7 +805,7 @@ SCScript.install(function(sc) {
     // TODO: implements envirFlop
 
     spec.storeArgs = function() {
-      return $SC.Array([ this.$array ]);
+      return $SC.Array([ this._$array ]);
     };
 
   });

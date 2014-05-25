@@ -101,7 +101,13 @@
       b = $SC.String("");
       expect(a).to.not.equal(b);
     });
-    it("Function should return an instance of SCFunction", function() {
+    it("Event should return an instance of SCEvent", function() {
+      var a;
+      a = $SC.Event([ $SC.Integer(0), $SC.Integer(1) ]);
+      expect(a).to.be.a("SCEvent").that.eql({ 0: 1 });
+
+    });
+    it("Function shouldd return an instance of SCFunction", function() {
       var a;
 
       a = $SC.Function(function() {}, "a");
@@ -113,7 +119,7 @@
     it("Ref should return an instance of SCRef", function() {
       var a;
       a = $SC.Ref($SC.Integer(10));
-      expect(a._value).to.be.a("SCInteger").that.equals(10);
+      expect(a._$value).to.be.a("SCInteger").that.equals(10);
     });
   });
 

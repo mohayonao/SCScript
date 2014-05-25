@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">118.04</p>
+      <p class="stat">144.74</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">29</p>
+      <p class="stat">10</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">7.38</p>
+      <p class="stat">4.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.17</p>
+      <p class="stat">0.04</p>
     </div>
   </div>
 </div>
@@ -95,28 +95,9 @@
 
   require(&quot;./sc&quot;);
 
-  var $SC = function(name) {
+  sc.lang.$SC = function(name) {
     return sc.lang.klass.get(name);
   };
-
-  /* istanbul ignore next */
-  var shouldBeImplementedInClassLib = function() {};
-
-  $SC.Class = shouldBeImplementedInClassLib;
-  $SC.Integer = shouldBeImplementedInClassLib;
-  $SC.Float = shouldBeImplementedInClassLib;
-  $SC.Char = shouldBeImplementedInClassLib;
-  $SC.Array = shouldBeImplementedInClassLib;
-  $SC.String = shouldBeImplementedInClassLib;
-  $SC.Function = shouldBeImplementedInClassLib;
-  $SC.Ref = shouldBeImplementedInClassLib;
-  $SC.Symbol = shouldBeImplementedInClassLib;
-  $SC.Boolean = shouldBeImplementedInClassLib;
-  $SC.True = shouldBeImplementedInClassLib;
-  $SC.False = shouldBeImplementedInClassLib;
-  $SC.Nil = shouldBeImplementedInClassLib;
-
-  sc.lang.$SC = $SC;
 
 })(sc);</textarea>
   </div>

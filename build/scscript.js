@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.30" };
+var sc = { VERSION: "0.0.37" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -10,7 +10,7 @@ var sc = { VERSION: "0.0.30" };
   sc.libs = {};
 
   function SCScript(fn) {
-    return fn(sc.lang.klass.$interpreter, sc.lang.$SC);
+    return sc.lang.main.run(fn);
   }
 
   SCScript.install = function(installer) {
@@ -465,54 +465,12 @@ var sc = { VERSION: "0.0.30" };
 
 })(sc);
 
-// src/sc/lang/io.js
-(function(sc) {
-
-  var io = {};
-
-  var SCScript = sc.SCScript;
-  var buffer   = "";
-
-  io.post = function(msg) {
-    var items;
-
-    items  = (buffer + msg).split("\n");
-    buffer = items.pop();
-
-    items.forEach(function(msg) {
-      SCScript.stdout(msg);
-    });
-  };
-
-  sc.lang.io = io;
-
-})(sc);
-
 // src/sc/lang/dollarSC.js
 (function(sc) {
 
-  var $SC = function(name) {
+  sc.lang.$SC = function(name) {
     return sc.lang.klass.get(name);
   };
-
-  /* istanbul ignore next */
-  var shouldBeImplementedInClassLib = function() {};
-
-  $SC.Class = shouldBeImplementedInClassLib;
-  $SC.Integer = shouldBeImplementedInClassLib;
-  $SC.Float = shouldBeImplementedInClassLib;
-  $SC.Char = shouldBeImplementedInClassLib;
-  $SC.Array = shouldBeImplementedInClassLib;
-  $SC.String = shouldBeImplementedInClassLib;
-  $SC.Function = shouldBeImplementedInClassLib;
-  $SC.Ref = shouldBeImplementedInClassLib;
-  $SC.Symbol = shouldBeImplementedInClassLib;
-  $SC.Boolean = shouldBeImplementedInClassLib;
-  $SC.True = shouldBeImplementedInClassLib;
-  $SC.False = shouldBeImplementedInClassLib;
-  $SC.Nil = shouldBeImplementedInClassLib;
-
-  sc.lang.$SC = $SC;
 
 })(sc);
 
@@ -630,40 +588,65 @@ var sc = { VERSION: "0.0.30" };
 
 })(sc);
 
+// src/sc/libs/strlib.js
+(function(sc) {
+
+  var strlib = {};
+
+  strlib.article = function(name) {
+    if (/^[AEIOU]/i.test(name)) {
+      return "an";
+    }
+    return "a";
+  };
+
+  sc.libs.strlib = strlib;
+
+})(sc);
+
 // src/sc/lang/klass/klass.js
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var $SC    = sc.lang.$SC;
+  var strlib = sc.libs.strlib;
 
   var klass       = {};
   var metaClasses = {};
   var classes     = klass.classes = {};
+  var hash = 0x100000;
+
+  var isClassName = function(name) {
+    var ch = name.charCodeAt(0);
+    return 0x41 <= ch && ch <= 0x5a;
+  };
 
   var createClassInstance = function(MetaSpec) {
     var instance = new SCClass();
-    instance._MetaSpec = MetaSpec;
+    instance.__MetaSpec = MetaSpec;
     return instance;
   };
 
   var extend = function(constructor, superMetaClass) {
     function F() {}
-    F.prototype = superMetaClass._Spec.prototype;
+    F.prototype = superMetaClass.__Spec.prototype;
     constructor.prototype = new F();
 
     function Meta_F() {}
-    Meta_F.prototype = superMetaClass._MetaSpec.prototype;
+    Meta_F.prototype = superMetaClass.__MetaSpec.prototype;
 
     function MetaSpec() {}
     MetaSpec.prototype = new Meta_F();
+    MetaSpec.__superClass = superMetaClass.__MetaSpec;
 
     constructor.metaClass = createClassInstance(MetaSpec);
+    constructor.__superClass = superMetaClass.__Spec;
   };
 
-  var def = function(className, constructor, fn, opts) {
-    var classMethods, instanceMethods, setMethod, spec;
+  var def = function(className, constructor, spec, opts) {
+    var classMethods, instanceMethods, setMethod;
 
-    classMethods    = constructor.metaClass._MetaSpec.prototype;
+    classMethods    = constructor.metaClass.__MetaSpec.prototype;
     instanceMethods = constructor.prototype;
 
     setMethod = function(methods, methodName, func) {
@@ -675,44 +658,24 @@ var sc = { VERSION: "0.0.30" };
             className + bond + methodName + " is already defined."
         );
       }
-      methods[methodName] = func;
+      Object.defineProperty(methods, methodName, {
+        value: func, writable: true
+      });
     };
 
-    if (typeof fn === "function") {
-      fn(spec = {}, klass.utils);
-    } else {
-      spec = fn;
-    }
-
     Object.keys(spec).forEach(function(methodName) {
-      if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
-        setMethod(classMethods, methodName.substr(1), spec[methodName]);
-      } else {
-        setMethod(instanceMethods, methodName, spec[methodName]);
+      if (methodName !== "constructor") {
+        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+          setMethod(classMethods, methodName.substr(1), spec[methodName]);
+        } else {
+          setMethod(instanceMethods, methodName, spec[methodName]);
+        }
       }
     });
   };
 
-  var throwIfInvalidArgument = function(constructor, className) {
-    if (typeof constructor !== "function") {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "first argument must be a constructor, but got: " + typeof(constructor)
-      );
-    }
-
-    if (typeof className !== "string") {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "second argument must be a string, but got: " + String(className)
-      );
-    }
-  };
-
   var throwIfInvalidClassName = function(className, superClassName) {
-    var ch0 = className.charCodeAt(0);
-
-    if (ch0 < 0x41 || 0x5a < ch0) { // faster test than !/^[A-Z]/.test(className)
+    if (!isClassName(className)) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
           "classname should be CamelCase, but got '" + className + "'"
@@ -739,12 +702,15 @@ var sc = { VERSION: "0.0.30" };
   var registerClass = function(MetaClass, className, constructor) {
     var newClass;
 
-    newClass = new MetaClass._MetaSpec();
+    newClass = new MetaClass.__MetaSpec();
     newClass._name = className;
-    newClass._Spec = constructor;
-    constructor.prototype.__class = newClass;
-    constructor.prototype.__Spec  = constructor;
-    constructor.prototype.__className = className;
+    newClass.__Spec = constructor;
+    newClass.__superClass = MetaClass.__MetaSpec.__superClass;
+    Object.defineProperties(constructor.prototype, {
+      __class: { value: newClass, writable: true },
+      __Spec : { value: constructor, writable: true },
+      __className: { value: className }
+    });
     classes[className] = newClass;
 
     return newClass;
@@ -756,7 +722,7 @@ var sc = { VERSION: "0.0.30" };
     metaClass = constructor.metaClass;
     newClass  = registerClass(metaClass, className, constructor);
 
-    metaClass._Spec = constructor;
+    metaClass.__Spec = constructor;
     metaClass._isMetaClass = true;
     metaClass._name = "Meta_" + className;
     classes["Meta_" + className] = metaClass;
@@ -768,10 +734,39 @@ var sc = { VERSION: "0.0.30" };
     metaClasses[className] = metaClass;
   };
 
-  klass.define = function(constructor, className, fn) {
-    var items, superClassName;
+  var evalSpec = function(spec) {
+    var result;
+    if (typeof spec === "function") {
+      result = {};
+      spec(result, klass.utils);
+      return result;
+    }
+    return spec || /* istanbul ignore next */ {};
+  };
 
-    throwIfInvalidArgument(constructor, className);
+  var __super__ = function(that, root, funcName, args) {
+    var func, result;
+
+    that.__superClassP = that.__superClassP || root;
+
+    while (!func && that.__superClassP) {
+      func = that.__superClassP.prototype[funcName];
+      that.__superClassP = that.__superClassP.__superClass;
+    }
+
+    if (func) {
+      result = func.apply(that, args || []);
+    } else {
+      throw new Error("supermethod '" + funcName + "' not found");
+    }
+
+    delete that.__superClassP;
+
+    return result || /* istanbul ignore next */ $SC.Nil();
+  };
+
+  klass.define = function(className, spec) {
+    var items, superClassName, constructor;
 
     items = className.split(":");
     className      = items[0].trim();
@@ -779,18 +774,29 @@ var sc = { VERSION: "0.0.30" };
 
     throwIfInvalidClassName(className, superClassName);
 
+    spec = evalSpec(spec);
+
+    if (spec.hasOwnProperty("constructor")) {
+      constructor = spec.constructor;
+    } else {
+      throw new Error(
+        "sc.lang.klass.define: " +
+          "class should have a constructor."
+      );
+    }
+
     if (className !== "Object") {
       extend(constructor, metaClasses[superClassName]);
     }
 
-    fn = fn || {};
-
-    def(className, constructor, fn, {});
+    def(className, constructor, spec, {});
 
     buildClass(className, constructor);
+
+    return constructor;
   };
 
-  klass.refine = function(className, fn, opts) {
+  klass.refine = function(className, spec, opts) {
     var constructor;
 
     if (!metaClasses.hasOwnProperty(className)) {
@@ -800,9 +806,10 @@ var sc = { VERSION: "0.0.30" };
       );
     }
 
-    constructor = metaClasses[className]._Spec;
+    constructor = metaClasses[className].__Spec;
 
-    def(className, constructor, fn, opts || {});
+    spec = evalSpec(spec);
+    def(className, constructor, spec, opts || {});
   };
 
   klass.get = function(name) {
@@ -822,54 +829,76 @@ var sc = { VERSION: "0.0.30" };
   // basic classes
   function SCObject() {
     this._ = this;
+    Object.defineProperties(this, {
+      __immutable: {
+        value: false, writable: true
+      },
+      __hash: {
+        value: hash++
+      }
+    });
   }
 
   function SCClass() {
-    this._ = this;
+    SCObject.call(this);
     this._name = "Class";
-    this._Spec = null;
     this._isMetaClass = false;
   }
 
   SCObject.metaClass = createClassInstance(function() {});
 
-  klass.define(SCObject, "Object", {
+  klass.define("Object", {
+    constructor: SCObject,
     __tag: 1,
-    __initializeWith__: function(className, args) {
-      metaClasses[className]._Spec.apply(this, args);
+    __super__: function(funcName, args) {
+      if (isClassName(funcName)) {
+        return metaClasses[funcName].__Spec.call(this);
+      }
+
+      return __super__(this, this.__Spec.__superClass, funcName, args);
     },
     toString: function() {
       var name = this.__class._name;
-      if (/^[AEIOU]/.test(name)) {
-        return String("an " + name);
-      } else {
-        return String("a " + name);
-      }
+      return String(strlib.article(name) + " " + name);
     },
     valueOf: function() {
       return this._;
     }
   });
 
-  klass.define(SCClass, "Class", {
+  klass.define("Class", {
+    constructor: SCClass,
+    __super__: function(funcName, args) {
+      return __super__(this, this.__superClass, funcName, args);
+    },
     toString: function() {
       return String(this._name);
     }
   });
 
   classes.Class = createClassInstance();
-  classes.Class._Spec = SCClass;
+  classes.Class.__Spec = SCClass;
 
-  SCObject.metaClass._MetaSpec.prototype = classes.Class;
+  SCObject.metaClass.__MetaSpec.prototype = classes.Class;
 
-  registerClass(SCObject.metaClass, "Object", classes.Object._Spec);
+  registerClass(SCObject.metaClass, "Object", classes.Object.__Spec);
 
   klass.refine("Object", function(spec) {
     spec.$new = function() {
-      if (this._Spec === SCClass) {
+      if (this.__Spec === SCClass) {
         return $SC.Nil();
       }
-      return new this._Spec(slice.call(arguments));
+      return new this.__Spec(slice.call(arguments));
+    };
+    spec.$_newCopyArgs = function(dict) {
+      var instance;
+
+      instance = new this.__Spec(slice.call(arguments));
+      Object.keys(dict).forEach(function(key) {
+        instance["_$" + key] = dict[key] || $SC.Nil();
+      });
+
+      return instance;
     };
     spec.$initClass = function() {
     };
@@ -882,156 +911,204 @@ var sc = { VERSION: "0.0.30" };
 // src/sc/lang/klass/constructors.js
 (function(sc) {
 
-  var $SC   = sc.lang.$SC;
-  var fn    = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $SC    = sc.lang.$SC;
+  var fn     = sc.lang.fn;
+  var klass  = sc.lang.klass;
+
+  var $nil, $true, $false;
+  var $symbols, $chars, $integers, $floats;
 
   function SCNil() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
     this._ = null;
   }
-  klass.define(SCNil, "Nil", {
+  klass.define("Nil", {
+    constructor: SCNil,
     __tag: 773
   });
 
   function SCSymbol() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
     this._ = "";
   }
-  klass.define(SCSymbol, "Symbol", {
+  klass.define("Symbol", {
+    constructor: SCSymbol,
     __tag: 1027
   });
 
   function SCBoolean() {
-    this.__initializeWith__("Object");
+    this.__super__("Object");
   }
-  klass.define(SCBoolean, "Boolean");
+  klass.define("Boolean", {
+    constructor: SCBoolean
+  });
 
   function SCTrue() {
-    this.__initializeWith__("Boolean");
+    this.__super__("Boolean");
     this._ = true;
   }
-  klass.define(SCTrue, "True : Boolean", {
+  klass.define("True : Boolean", {
+    constructor: SCTrue,
     __tag: 775
   });
 
   function SCFalse() {
-    this.__initializeWith__("Boolean");
+    this.__super__("Boolean");
     this._ = false;
   }
-  klass.define(SCFalse, "False : Boolean", {
+  klass.define("False : Boolean", {
+    constructor: SCFalse,
     __tag: 774
   });
 
-  function SCMagnitude() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCMagnitude, "Magnitude");
+  klass.define("Magnitude", {
+    constructor: function SCMagnitude() {
+      this.__super__("Object");
+    }
+  });
 
   function SCChar() {
-    this.__initializeWith__("Magnitude");
+    this.__super__("Magnitude");
     this._ = "\0";
   }
-  klass.define(SCChar, "Char : Magnitude", {
+  klass.define("Char : Magnitude", {
+    constructor: SCChar,
     __tag: 1028
   });
 
-  function SCNumber() {
-    this.__initializeWith__("Magnitude");
-  }
-  klass.define(SCNumber, "Number : Magnitude");
+  klass.define("Number : Magnitude", {
+    constructor: function SCNumber() {
+      this.__super__("Magnitude");
+    }
+  });
 
-  function SCSimpleNumber() {
-    this.__initializeWith__("Number");
-  }
-  klass.define(SCSimpleNumber, "SimpleNumber : Number");
+  klass.define("SimpleNumber : Number", {
+    constructor: function SCSimpleNumber() {
+      this.__super__("Number");
+    }
+  });
 
   function SCInteger() {
-    this.__initializeWith__("SimpleNumber");
+    this.__super__("SimpleNumber");
     this._ = 0;
   }
-  klass.define(SCInteger, "Integer : SimpleNumber", {
+  klass.define("Integer : SimpleNumber", {
+    constructor: SCInteger,
     __tag: 770
   });
 
   function SCFloat() {
-    this.__initializeWith__("SimpleNumber");
+    this.__super__("SimpleNumber");
     this._ = 0.0;
   }
-  klass.define(SCFloat, "Float : SimpleNumber", {
+  klass.define("Float : SimpleNumber", {
+    constructor: SCFloat,
     __tag: 777
   });
 
-  function SCCollection() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCCollection, "Collection");
+  klass.define("Collection", {
+    constructor: function SCCollection() {
+      this.__super__("Object");
+    }
+  });
 
-  function SCSequenceableCollection() {
-    this.__initializeWith__("Collection");
-  }
-  klass.define(SCSequenceableCollection, "SequenceableCollection : Collection");
+  klass.define("SequenceableCollection : Collection", {
+    constructor: function SCSequenceableCollection() {
+      this.__super__("Collection");
+    }
+  });
 
-  function SCArrayedCollection() {
-    this.__initializeWith__("SequenceableCollection");
-    this._immutable = false;
-    this._ = [];
-  }
-  klass.define(SCArrayedCollection, "ArrayedCollection : SequenceableCollection");
+  klass.define("ArrayedCollection : SequenceableCollection", {
+    constructor: function SCArrayedCollection() {
+      this.__super__("SequenceableCollection");
+      this.__immutable = false;
+      this._ = [];
+    }
+  });
 
-  function SCRawArray() {
-    this.__initializeWith__("ArrayedCollection");
-  }
-  klass.define(SCRawArray, "RawArray : ArrayedCollection");
+  klass.define("RawArray : ArrayedCollection", {
+    constructor: function SCRawArray() {
+      this.__super__("ArrayedCollection");
+    }
+  });
 
   function SCArray() {
-    this.__initializeWith__("ArrayedCollection");
+    this.__super__("ArrayedCollection");
   }
-  klass.define(SCArray, "Array : ArrayedCollection", {
+  klass.define("Array : ArrayedCollection", {
+    constructor: SCArray,
     __tag: 11
   });
 
-  function SCString(value) {
-    this.__initializeWith__("RawArray");
-    this._ = value;
+  function SCString() {
+    this.__super__("RawArray");
   }
-  klass.define(SCString, "String : RawArray", {
+  klass.define("String : RawArray", {
+    constructor: SCString,
     __tag: 1034
   });
 
-  function SCAbstractFunction() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCAbstractFunction, "AbstractFunction");
+  klass.define("Set : Collection", {
+    constructor: function SCSet() {
+      this.__super__("Collection");
+    }
+  });
+
+  klass.define("Dictionary : Set", {
+    constructor: function SCDictionary() {
+      this.__super__("Set");
+    }
+  });
+
+  klass.define("IdentityDictionary : Dictionary", {
+    constructor: function SCIdentityDictionary() {
+      this.__super__("Dictionary");
+    }
+  });
+
+  klass.define("Environment : IdentityDictionary", {
+    constructor: function SCEnvironment() {
+      this.__super__("IdentityDictionary");
+    }
+  });
+
+  klass.define("Event : Environment", {
+    constructor: function SCEvent() {
+      this.__super__("Environment");
+    }
+  });
+
+  klass.define("AbstractFunction", {
+    constructor: function SCAbstractFunction() {
+      this.__super__("Object");
+    }
+  });
 
   function SCFunction() {
-    this.__initializeWith__("AbstractFunction");
+    this.__super__("AbstractFunction");
     // istanbul ignore next
     this._ = function() {};
   }
-  klass.define(SCFunction, "Function : AbstractFunction", {
+  klass.define("Function : AbstractFunction", {
+    constructor: SCFunction,
     __tag: 12
   });
 
-  function SCRef(args) {
-    this.__initializeWith__("Object");
-    this._value = args[0] || /* istanbul ignore next */ $nil;
+  function SCRef() {
+    this.__super__("Object");
   }
-  sc.lang.klass.define(SCRef, "Ref : AbstractFunction");
-
-  function SCInterpreter() {
-    this.__initializeWith__("Object");
-  }
-  klass.define(SCInterpreter, "Interpreter");
+  klass.define("Ref : AbstractFunction", {
+    constructor: SCRef
+  });
 
   // $SC
-  var $nil      = new SCNil();
-  var $true     = new SCTrue();
-  var $false    = new SCFalse();
-  var $integers = {};
-  var $floats   = {};
-  var $symbols  = {};
-  var $chars    = {};
+  $nil      = new SCNil();
+  $true     = new SCTrue();
+  $false    = new SCFalse();
+  $integers = {};
+  $floats   = {};
+  $symbols  = {};
+  $chars    = {};
 
   $SC.Nil = function() {
     return $nil;
@@ -1108,14 +1185,24 @@ var sc = { VERSION: "0.0.30" };
   $SC.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
-    instance._immutable = !!immutable;
+    instance.__immutable = !!immutable;
     return instance;
   };
 
-  $SC.String = function(value, immutable) {
+  $SC.String = function(value, mutable) {
     var instance = new SCString();
     instance._ = String(value).split("").map($SC.Char);
-    instance._immutable = !!immutable;
+    instance.__immutable = !mutable;
+    return instance;
+  };
+
+  $SC.Event = function(value) {
+    var instance, i, imax, j;
+    i = imax = j = value;
+    instance = $SC("Event").new();
+    for (i = j = 0, imax = value.length >> 1; i < imax; ++i) {
+      instance.put(value[j++], value[j++]);
+    }
     return instance;
   };
 
@@ -1126,10 +1213,10 @@ var sc = { VERSION: "0.0.30" };
   };
 
   $SC.Ref = function(value) {
-    return new SCRef([ value ]);
+    var instance = new SCRef();
+    instance._$value = value;
+    return instance;
   };
-
-  sc.lang.klass.$interpreter = new SCInterpreter();
 
 })(sc);
 
@@ -1161,11 +1248,74 @@ var sc = { VERSION: "0.0.30" };
       return utils.$int_1;
     },
     getMethod: function(className, methodName) {
-      return klass.get(className)._Spec.prototype[methodName];
+      return klass.get(className).__Spec.prototype[methodName];
     }
   };
 
   klass.utils = utils;
+
+})(sc);
+
+// src/sc/lang/main.js
+(function(sc) {
+
+  var main = {};
+
+  var $SC = sc.lang.$SC;
+  var random = sc.libs.random;
+
+  main.$currentEnv = null;
+
+  main.run = function(fn) {
+    if (!initialize.done) {
+      initialize();
+    }
+    return fn($SC);
+  };
+
+  function initialize() {
+    var $process;
+
+    $process = $SC("Main").new();
+    $process._$interpreter = $SC("Interpreter").new();
+    $process._$mainThread  = $SC("Thread").new();
+
+    main.$currentEnv = $SC("Environment").new();
+
+    // $interpreter._$s = SCServer.default();
+
+    random.current = $process._$mainThread._randgen;
+
+    // TODO:
+    // SoundSystem.addProcess($process);
+    // SoundSystem.start();
+
+    initialize.done = true;
+
+    main.$process = $process;
+  }
+
+  $SC.Environment = function(key, $value) {
+    if ($value) {
+      main.$currentEnv.put($SC.Symbol(key), $value);
+      return $value;
+    }
+    return main.$currentEnv.at($SC.Symbol(key));
+  };
+
+  $SC.This = function() {
+    return main.$process.interpreter();
+  };
+
+  $SC.ThisProcess = function() {
+    return main.$process;
+  };
+
+  $SC.ThisThread = function() {
+    return main.$process.mainThread();
+  };
+
+  sc.lang.main = main;
 
 })(sc);
 
@@ -1453,12 +1603,35 @@ var sc = { VERSION: "0.0.30" };
   };
 
   iterator.set$do = function($set) {
-    return js_array_iter($set._array._.filter(function($elem) {
+    return js_array_iter($set._$array._.filter(function($elem) {
       return $elem !== $nil;
     }));
   };
 
   sc.lang.iterator = iterator;
+
+})(sc);
+
+// src/sc/lang/io.js
+(function(sc) {
+
+  var io = {};
+
+  var SCScript = sc.SCScript;
+  var buffer   = "";
+
+  io.post = function(msg) {
+    var items;
+
+    items  = (buffer + msg).split("\n");
+    buffer = items.pop();
+
+    items.forEach(function(msg) {
+      SCScript.stdout(msg);
+    });
+  };
+
+  sc.lang.io = io;
 
 })(sc);
 
@@ -1487,17 +1660,19 @@ var sc = { VERSION: "0.0.30" };
       BlockExpression: "BlockExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",
-      GlobalExpression: "GlobalExpression",
+      EnvironmentExpresion: "EnvironmentExpresion",
       Identifier: "Identifier",
       ListExpression: "ListExpression",
       Label: "Label",
       Literal: "Literal",
-      ObjectExpression: "ObjectExpression",
+      EventExpression: "EventExpression",
       Program: "Program",
       ThisExpression: "ThisExpression",
       UnaryExpression: "UnaryExpression",
       VariableDeclaration: "VariableDeclaration",
-      VariableDeclarator: "VariableDeclarator"
+      VariableDeclarator: "VariableDeclarator",
+      ValueMethodEvaluator: "ValueMethodEvaluator",
+      ValueMethodResult: "ValueMethodResult"
     },
     Message: {
       ArgumentAlreadyDeclared: "argument '%0' already declared",
@@ -1536,8 +1711,315 @@ var sc = { VERSION: "0.0.30" };
   };
 
   SCScript.compile = function(source, opts) {
-    return compiler.codegen.compile(SCScript.parse(source, opts), opts);
+    var ast;
+
+    if (typeof source === "string") {
+      ast = SCScript.parse(source, opts);
+    } else {
+      ast = source;
+    }
+
+    return compiler.codegen.compile(ast, opts);
   };
+
+})(sc);
+
+// src/sc/lang/compiler/node.js
+(function(sc) {
+
+  var Syntax = sc.lang.compiler.Syntax;
+
+  var Node = {
+    createAssignmentExpression: function(operator, left, right, remain) {
+      var node = {
+        type: Syntax.AssignmentExpression,
+        operator: operator,
+        left: left,
+        right: right
+      };
+      if (remain) {
+        node.remain = remain;
+      }
+      return node;
+    },
+    createBinaryExpression: function(operator, left, right) {
+      var node = {
+        type: Syntax.BinaryExpression,
+        operator: operator.value,
+        left: left,
+        right: right
+      };
+      if (operator.adverb) {
+        node.adverb = operator.adverb;
+      }
+      return node;
+    },
+    createBlockExpression: function(body) {
+      return {
+        type: Syntax.BlockExpression,
+        body: body
+      };
+    },
+    createCallExpression: function(callee, method, args, stamp) {
+      var node;
+
+      node = {
+        type: Syntax.CallExpression,
+        callee: callee,
+        method: method,
+        args  : args,
+      };
+
+      if (stamp) {
+        node.stamp = stamp;
+      }
+
+      return node;
+    },
+    createEnvironmentExpresion: function(id) {
+      return {
+        type: Syntax.EnvironmentExpresion,
+        id: id
+      };
+    },
+    createFunctionExpression: function(args, body, closed, partial, blocklist) {
+      var node;
+
+      node = {
+        type: Syntax.FunctionExpression,
+        body: body
+      };
+      if (args) {
+        node.args = args;
+      }
+      if (closed) {
+        node.closed = true;
+      }
+      if (partial) {
+        node.partial = true;
+      }
+      if (blocklist) {
+        node.blocklist = true;
+      }
+      return node;
+    },
+    createIdentifier: function(name) {
+      return {
+        type: Syntax.Identifier,
+        name: name
+      };
+    },
+    createLabel: function(name) {
+      return {
+        type: Syntax.Label,
+        name: name
+      };
+    },
+    createListExpression: function(elements, immutable) {
+      var node = {
+        type: Syntax.ListExpression,
+        elements: elements
+      };
+      if (immutable) {
+        node.immutable = !!immutable;
+      }
+      return node;
+    },
+    createLiteral: function(token) {
+      return {
+        type: Syntax.Literal,
+        value: token.value,
+        valueType: token.type
+      };
+    },
+    createEventExpression: function(elements) {
+      return {
+        type: Syntax.EventExpression,
+        elements: elements
+      };
+    },
+    createProgram: function(body) {
+      return {
+        type: Syntax.Program,
+        body: body
+      };
+    },
+    createThisExpression: function(name) {
+      return {
+        type: Syntax.ThisExpression,
+        name: name
+      };
+    },
+    createUnaryExpression: function(operator, arg) {
+      return {
+        type: Syntax.UnaryExpression,
+        operator: operator,
+        arg: arg
+      };
+    },
+    createVariableDeclaration: function(declarations, kind) {
+      return {
+        type: Syntax.VariableDeclaration,
+        declarations: declarations,
+        kind: kind
+      };
+    },
+    createVariableDeclarator: function(id, init) {
+      var node = {
+        type: Syntax.VariableDeclarator,
+        id: id
+      };
+      if (init) {
+        node.init = init;
+      }
+      return node;
+    },
+    createValueMethodEvaluator: function(id, expr) {
+      return {
+        type: Syntax.ValueMethodEvaluator,
+        id  : id,
+        expr: expr,
+        segmented: true
+      };
+    },
+    createValueMethodResult: function(id) {
+      return {
+        type: Syntax.ValueMethodResult,
+        id: id
+      };
+    }
+  };
+
+  sc.lang.compiler.node = Node;
+
+})(sc);
+
+// src/sc/lang/compiler/pre-compiler.js
+(function(sc) {
+
+  var compiler = sc.lang.compiler;
+  var Syntax   = compiler.Syntax;
+  var Node     = sc.lang.compiler.node;
+
+  var SegmentedMethod = {
+    idle : true,
+    sleep: true,
+    wait : true,
+    yield: true,
+  };
+
+  function PreCompiler() {
+    this.functionStack = [];
+    this.functionArray = [];
+  }
+
+  PreCompiler.prototype.compile = function(ast) {
+    ast = this.traverse(ast);
+    this.functionArray.forEach(function(node) {
+      node.body = this.segment(node.body);
+    }, this);
+    return ast;
+  };
+
+  PreCompiler.prototype.traverse = function(node) {
+    var result;
+
+    if (Array.isArray(node)) {
+      result = this.traverse$Array(node);
+    } else if (node && typeof node === "object") {
+      result = this.traverse$Object(node);
+    } else {
+      result = node;
+    }
+
+    return result;
+  };
+
+  PreCompiler.prototype.traverse$Array = function(node) {
+    return node.map(function(node) {
+      return this.traverse(node);
+    }, this);
+  };
+
+  PreCompiler.prototype.traverse$Object = function(node) {
+    var result = {};
+
+    if (isFunctionExpression(node)) {
+      this.functionStack.push(result);
+    } else if (isSegmentedMethod(node)) {
+      result.segmented = true;
+      this.functionStack.forEach(function(node) {
+        if (!node.segmented) {
+          this.functionArray.push(node);
+          node.segmented = true;
+        }
+      }, this);
+    }
+
+    Object.keys(node).forEach(function(key) {
+      /* istanbul ignore next */
+      if (key === "range" || key === "loc") {
+        result[key] = node[key];
+      } else {
+        result[key] = this.traverse(node[key]);
+      }
+    }, this);
+
+    if (isFunctionExpression(result)) {
+      this.functionStack.pop();
+    }
+
+    return result;
+  };
+
+  PreCompiler.prototype.segment = function(list) {
+    var result = [];
+    var id = 0;
+    var i, imax;
+
+    function traverse(parent, node, key) {
+      var expr;
+
+      if (node && typeof node === "object") {
+        Object.keys(node).forEach(function(key) {
+          traverse(node, node[key], key);
+        });
+      }
+      if (isValueMethod(node)) {
+        expr = Node.createValueMethodEvaluator(id, node);
+        parent[key] = Node.createValueMethodResult(id++);
+        result.push(expr);
+      }
+
+    }
+
+    for (i = 0, imax = list.length; i < imax; ++i) {
+      traverse(list, list[i], i);
+      result.push(list[i]);
+    }
+
+    return result;
+  };
+
+  function isFunctionExpression(node) {
+    return node.type === Syntax.FunctionExpression;
+  }
+
+  function isSegmentedMethod(node) {
+    return node.type === Syntax.CallExpression &&
+      (SegmentedMethod.hasOwnProperty(node.method.name) || isValueMethod(node));
+  }
+
+  function isValueMethod(node) {
+    return node.type === Syntax.CallExpression &&
+      node.method.name.substr(0, 5) === "value";
+  }
+
+  function precompile(ast) {
+    return new PreCompiler().compile(ast);
+  }
+
+  sc.lang.compiler.precompile = precompile;
 
 })(sc);
 
@@ -1643,17 +2125,14 @@ var sc = { VERSION: "0.0.30" };
 (function(sc) {
 
   var codegen = {};
-  var Syntax  = sc.lang.compiler.Syntax;
-  var Token   = sc.lang.compiler.Token;
-  var Message = sc.lang.compiler.Message;
-  var SegmentedMethod = {
-    idle : true,
-    sleep: true,
-    wait : true,
-    yield: true
-  };
 
-  var Scope = sc.lang.compiler.scope({
+  var compiler = sc.lang.compiler;
+  var Syntax   = compiler.Syntax;
+  var Token    = compiler.Token;
+  var Message  = compiler.Message;
+  var precompile = compiler.precompile;
+
+  var Scope = compiler.scope({
     add_delegate: function(stmt, id, indent, peek, scope) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
@@ -1699,10 +2178,10 @@ var sc = { VERSION: "0.0.30" };
 
       stream.push(stmt.head, stmt.vars, stmt.tail);
     },
-    begin_ref: function() {
+    begin_ref: function(scope) {
       var refId   = (this._refId | 0);
       var refName = "_ref" + refId;
-      this.add("var", refName);
+      this.add("var", refName, scope);
       this._refId = refId + 1;
       return refName;
     },
@@ -1723,7 +2202,14 @@ var sc = { VERSION: "0.0.30" };
     if (typeof this.opts.bare === "undefined") {
       this.opts.bare = false;
     }
+    this.functionStack = [];
+    this.functionArray = [];
   }
+
+  CodeGen.prototype.compile = function(ast) {
+    ast = precompile(ast);
+    return this.generate(ast);
+  };
 
   CodeGen.prototype.toSourceNodeWhenNeeded = function(generated) {
     if (Array.isArray(generated)) {
@@ -2005,7 +2491,7 @@ var sc = { VERSION: "0.0.30" };
   };
 
   CodeGen.prototype.CallExpression = function(node) {
-    if (isSegmentedMethod(node)) {
+    if (node.segmented) {
       this.state.calledSegmentedMethod = true;
     }
 
@@ -2070,8 +2556,19 @@ var sc = { VERSION: "0.0.30" };
     return result;
   };
 
-  CodeGen.prototype.GlobalExpression = function(node) {
-    return "$SC.Global." + node.id.name;
+  CodeGen.prototype.EnvironmentExpresion = function(node, opts) {
+    var result;
+
+    if (opts) {
+      // setter
+      result = [ "$SC.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
+      opts.used = true;
+    } else {
+      // getter
+      result = "$SC.Environment('" + node.id.name + "')";
+    }
+
+    return result;
   };
 
   CodeGen.prototype.FunctionExpression = function(node) {
@@ -2079,7 +2576,7 @@ var sc = { VERSION: "0.0.30" };
 
     info = getInformationOfFunction(node);
 
-    if (!isSegmentedBlock(node)) {
+    if (!node.segmented) {
       fn = CodeGen.prototype._SimpleFunction;
     } else {
       fn = CodeGen.prototype._SegmentedFunction;
@@ -2278,13 +2775,13 @@ var sc = { VERSION: "0.0.30" };
       ref = this.scope.begin_ref();
       name = [
         "(" + ref + " = ", this.generate(opts.right),
-        ", $this." + node.name + "_(" + ref + "), " + ref + ")"
+        ", $SC.This()." + node.name + "_(" + ref + "), " + ref + ")"
       ];
       opts.used = true;
       this.scope.end_ref();
     } else {
       // getter
-      name = "$this." + node.name + "()";
+      name = "$SC.This()." + node.name + "()";
     }
 
     return name;
@@ -2328,7 +2825,7 @@ var sc = { VERSION: "0.0.30" };
     return "$SC.Nil()";
   };
 
-  CodeGen.prototype.ObjectExpression = function(node) {
+  CodeGen.prototype.EventExpression = function(node) {
     return [
       "$SC.Event(", this.insertArrayElement(node.elements), ")"
     ];
@@ -2338,7 +2835,7 @@ var sc = { VERSION: "0.0.30" };
     var result, body;
 
     if (node.body.length) {
-      body = this.withFunction([ "this", "SC" ], function() {
+      body = this.withFunction([ "SC" ], function() {
         return this._Statements(node.body);
       });
 
@@ -2355,11 +2852,9 @@ var sc = { VERSION: "0.0.30" };
   };
 
   CodeGen.prototype.ThisExpression = function(node) {
-    if (node.name === "this") {
-      return "$this";
-    }
-
-    return [ "$this." + node.name + "()" ];
+    var name = node.name;
+    name = name.charAt(0).toUpperCase() + name.substr(1);
+    return [ "$SC." + name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {
@@ -2384,6 +2879,14 @@ var sc = { VERSION: "0.0.30" };
 
       return [ this.generate(item.id), " = ", this.generate(item.init) ];
     });
+  };
+
+  CodeGen.prototype.ValueMethodEvaluator = function(node) {
+    return [ "$SC.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
+  };
+
+  CodeGen.prototype.ValueMethodResult = function(node) {
+    return [ "$SC.Result(" + node.id + ")" ];
   };
 
   CodeGen.prototype._Statements = function(elements) {
@@ -2456,187 +2959,11 @@ var sc = { VERSION: "0.0.30" };
     return "A" <= ch0 && ch0 <= "Z";
   };
 
-  var isNode = function(node, key) {
-    return key !== "range" && key !== "loc" && typeof node[key] === "object";
-  };
-
-  var isSegmentedBlock = function(node) {
-    if (isSegmentedMethod(node)) {
-      return true;
-    }
-    return Object.keys(node).some(function(key) {
-      if (isNode(node, key)) {
-        return isSegmentedBlock(node[key]);
-      }
-      return false;
-    });
-  };
-
-  var isSegmentedMethod = function(node) {
-    return node.type === Syntax.CallExpression && !!SegmentedMethod[node.method.name];
-  };
-
   codegen.compile = function(ast, opts) {
-    return new CodeGen(opts).generate(ast);
+    return new CodeGen(opts).compile(ast);
   };
 
-  sc.lang.compiler.codegen = codegen;
-
-})(sc);
-
-// src/sc/lang/compiler/node.js
-(function(sc) {
-
-  var Syntax = sc.lang.compiler.Syntax;
-
-  var Node = {
-    createAssignmentExpression: function(operator, left, right, remain) {
-      var node = {
-        type: Syntax.AssignmentExpression,
-        operator: operator,
-        left: left,
-        right: right
-      };
-      if (remain) {
-        node.remain = remain;
-      }
-      return node;
-    },
-    createBinaryExpression: function(operator, left, right) {
-      var node = {
-        type: Syntax.BinaryExpression,
-        operator: operator.value,
-        left: left,
-        right: right
-      };
-      if (operator.adverb) {
-        node.adverb = operator.adverb;
-      }
-      return node;
-    },
-    createBlockExpression: function(body) {
-      return {
-        type: Syntax.BlockExpression,
-        body: body
-      };
-    },
-    createCallExpression: function(callee, method, args, stamp) {
-      var node;
-
-      node = {
-        type: Syntax.CallExpression,
-        callee: callee,
-        method: method,
-        args  : args,
-      };
-
-      if (stamp) {
-        node.stamp = stamp;
-      }
-
-      return node;
-    },
-    createGlobalExpression: function(id) {
-      return {
-        type: Syntax.GlobalExpression,
-        id: id
-      };
-    },
-    createFunctionExpression: function(args, body, closed, partial, blocklist) {
-      var node;
-
-      node = {
-        type: Syntax.FunctionExpression,
-        body: body
-      };
-      if (args) {
-        node.args = args;
-      }
-      if (closed) {
-        node.closed = true;
-      }
-      if (partial) {
-        node.partial = true;
-      }
-      if (blocklist) {
-        node.blocklist = true;
-      }
-      return node;
-    },
-    createIdentifier: function(name) {
-      return {
-        type: Syntax.Identifier,
-        name: name
-      };
-    },
-    createLabel: function(name) {
-      return {
-        type: Syntax.Label,
-        name: name
-      };
-    },
-    createListExpression: function(elements, immutable) {
-      var node = {
-        type: Syntax.ListExpression,
-        elements: elements
-      };
-      if (immutable) {
-        node.immutable = !!immutable;
-      }
-      return node;
-    },
-    createLiteral: function(token) {
-      return {
-        type: Syntax.Literal,
-        value: token.value,
-        valueType: token.type
-      };
-    },
-    createObjectExpression: function(elements) {
-      return {
-        type: Syntax.ObjectExpression,
-        elements: elements
-      };
-    },
-    createProgram: function(body) {
-      return {
-        type: Syntax.Program,
-        body: body
-      };
-    },
-    createThisExpression: function(name) {
-      return {
-        type: Syntax.ThisExpression,
-        name: name
-      };
-    },
-    createUnaryExpression: function(operator, arg) {
-      return {
-        type: Syntax.UnaryExpression,
-        operator: operator,
-        arg: arg
-      };
-    },
-    createVariableDeclaration: function(declarations, kind) {
-      return {
-        type: Syntax.VariableDeclaration,
-        declarations: declarations,
-        kind: kind
-      };
-    },
-    createVariableDeclarator: function(id, init) {
-      var node = {
-        type: Syntax.VariableDeclarator,
-        id: id
-      };
-      if (init) {
-        node.init = init;
-      }
-      return node;
-    }
-  };
-
-  sc.lang.compiler.node = Node;
+  compiler.codegen = codegen;
 
 })(sc);
 
@@ -4046,7 +4373,8 @@ var sc = { VERSION: "0.0.30" };
 
     while ((stamp = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
       lookahead = this.lookahead;
-      if ((prev === "{" && (stamp !== "#" && stamp !== "{")) || (prev === "(" && stamp === "(")) {
+      if ((prev === "{" && (stamp === "(" || stamp === "[")) ||
+          (prev === "(" && stamp === "(")) {
         this.throwUnexpected(lookahead);
       }
       switch (stamp) {
@@ -4182,7 +4510,7 @@ var sc = { VERSION: "0.0.30" };
     var node, method;
     var marker;
 
-    method = Node.createIdentifier("newFrom");
+    method = Node.createIdentifier("_newFrom");
     method = Marker.create(this.lexer).apply(method);
 
     marker = Marker.create(this.lexer);
@@ -4460,7 +4788,11 @@ var sc = { VERSION: "0.0.30" };
 
     if (this.match("~")) {
       this.lex();
-      expr = Node.createGlobalExpression(this.parseIdentifier());
+      expr = this.parseIdentifier();
+      if (isClassName(expr)) {
+        this.throwUnexpected({ type: Token.Identifier, value: expr.id });
+      }
+      expr = Node.createEnvironmentExpresion(expr);
     } else {
       stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
       switch (stamp) {
@@ -4647,7 +4979,7 @@ var sc = { VERSION: "0.0.30" };
     } else if (this.match("..")) {
       expr = this.parseSeriesInitialiser(null, generator);
     } else if (this.match(")")) {
-      expr = Node.createObjectExpression([]);
+      expr = Node.createEventExpression([]);
     } else {
       expr = this.parseParenthesesGuess(generator, marker);
     }
@@ -4711,7 +5043,7 @@ var sc = { VERSION: "0.0.30" };
 
     this.state.innerElements = innerElements;
 
-    return Node.createObjectExpression(elements);
+    return Node.createEventExpression(elements);
   };
 
   SCParser.prototype.parseSeriesInitialiser = function(node, generator) {
@@ -4973,7 +5305,7 @@ var sc = { VERSION: "0.0.30" };
   var isLeftHandSide = function(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
-    case Syntax.GlobalExpression:
+    case Syntax.EnvironmentExpresion:
       return true;
     }
     return false;

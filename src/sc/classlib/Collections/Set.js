@@ -7,23 +7,19 @@ SCScript.install(function(sc) {
   var $SC = sc.lang.$SC;
   var iterator = sc.lang.iterator;
 
-  function SCSet(args) {
-    this.__initializeWith__("Collection");
-    var n = 2;
-    if (args && args[0]) {
-      n = args[0].__int__();
-    }
-    this.initSet($SC.Integer(Math.max(n, 2) * 2));
-  }
-
-  sc.lang.klass.define(SCSet, "Set : Collection", function(spec, utils) {
+  sc.lang.klass.refine("Set", function(spec, utils) {
     var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
     var SCArray = $SC("Array");
 
+    spec.$new = fn(function($n) {
+      $n = $SC.Integer(Math.max($n.__int__(), 2) * 2);
+      return this.__super__("new").initSet($n);
+    }, "n=2");
+
     spec.valueOf = function() {
-      return this._array._.filter(function($elem) {
+      return this._$array._.filter(function($elem) {
         return $elem !== $nil;
       }).map(function($elem) {
         return $elem.valueOf();
@@ -31,16 +27,16 @@ SCScript.install(function(sc) {
     };
 
     spec.array = function() {
-      return this._array;
+      return this._$array;
     };
 
     spec.array_ = function($value) {
-      this._array = $value;
+      this._$array = $value || /* istanbul ignore next */ $nil;
       return this;
     };
 
     spec.size = function() {
-      return this._size;
+      return $SC.Integer(this._size);
     };
 
     spec.species = function() {
@@ -48,7 +44,7 @@ SCScript.install(function(sc) {
     };
 
     spec.copy = function() {
-      return this.shallowCopy().array_(this._array.copy());
+      return this.shallowCopy().array_(this._$array.copy());
     };
 
     spec.do = function($function) {
@@ -60,8 +56,8 @@ SCScript.install(function(sc) {
     };
 
     spec.clear = function() {
-      this._array.fill();
-      this._size = $int_0;
+      this._$array.fill();
+      this._size = 0;
       return this;
     };
 
@@ -71,11 +67,11 @@ SCScript.install(function(sc) {
     };
 
     spec.includes = fn(function($item) {
-      return this._array.at(this.scanFor($item)).notNil();
+      return this._$array.at(this.scanFor($item)).notNil();
     }, "item");
 
     spec.findMatch = fn(function($item) {
-      return this._array.at(this.scanFor($item));
+      return this._$array.at(this.scanFor($item));
     }, "item");
 
     spec.add = fn(function($item) {
@@ -86,7 +82,7 @@ SCScript.install(function(sc) {
       }
 
       $index = this.scanFor($item);
-      if (this._array.at($index) === $nil) {
+      if (this._$array.at($index) === $nil) {
         this.putCheck($index, $item);
       }
 
@@ -97,9 +93,9 @@ SCScript.install(function(sc) {
       var $index;
 
       $index = this.scanFor($item);
-      if (this._array.at($index) !== $nil) {
-        this._array.put($index, $nil);
-        this._size = this._size.__dec__();
+      if (this._$array.at($index) !== $nil) {
+        this._$array.put($index, $nil);
+        this._size -= 1;
         // this.fixCollisionsFrom($index);
       }
 
@@ -110,11 +106,11 @@ SCScript.install(function(sc) {
       var $val;
       var $size, $array;
 
-      if (this._size.__int__() <= 0) {
+      if (this._size <= 0) {
         return $nil;
       }
 
-      $array = this._array;
+      $array = this._$array;
       $size  = $array.size();
 
       do {
@@ -129,7 +125,7 @@ SCScript.install(function(sc) {
       var $array, $size;
 
       $index = $int_0;
-      $array = this._array;
+      $array = this._$array;
       $size  = $array.size();
 
       while ($index < $size && ($val = $array.at($index)) === $nil) {
@@ -151,7 +147,7 @@ SCScript.install(function(sc) {
 
       $result = this.species().new();
 
-      this._array._.forEach(function($x) {
+      this._$array._.forEach(function($x) {
         $result.addAll($x);
       });
 
@@ -163,7 +159,7 @@ SCScript.install(function(sc) {
 
       $result = this.species().new();
 
-      this._array._.forEach(function($item) {
+      this._$array._.forEach(function($item) {
         if ($item !== $nil && BOOL($that.includes($item))) {
           $result.add($item);
         }
@@ -193,7 +189,7 @@ SCScript.install(function(sc) {
 
       $result = this.species().new();
 
-      this._array._.forEach(function($item) {
+      this._$array._.forEach(function($item) {
         if ($item !== $nil && !BOOL($that.includes($item))) {
           $result.add($item);
         }
@@ -230,50 +226,37 @@ SCScript.install(function(sc) {
     spec.asSet = utils.nop;
 
     spec.initSet = function($n) {
-      this._array = SCArray.newClear($n);
-      this._size  = $int_0;
+      this._$array = SCArray.newClear($n);
+      this._size   = 0;
+      return this;
     };
 
     spec.putCheck = function($index, $item) {
-      this._array.put($index, $item);
-      this._size = this._size.__inc__();
+      this._$array.put($index, $item);
+      this._size += 1;
       this.fullCheck();
       return this;
     };
 
     spec.fullCheck = function() {
-      if (this._array.size().__int__() < this._size.__int__() * 2) {
+      if (this._$array.size().__int__() < this._size * 2) {
         this.grow();
       }
     };
 
     spec.grow = function() {
-      var $this = this;
-      var oldElements;
-
-      oldElements = this._array._;
-      this._array = SCArray.newClear(
-        $SC.Integer(this._array.size().__int__() * 2)
-      );
-      this._size = $int_0;
-
-      oldElements.forEach(function($item) {
-        if ($item !== $nil) {
-          $this.noCheckAdd($item);
-        }
-      });
-    };
-
-    spec.noCheckAdd = function($item) {
-      this._array.put(this.scanFor($item), $item);
-      this._size = this._size.__inc__();
+      var array, i, imax;
+      array = this._$array._;
+      for (i = array.length, imax = i * 2; i < imax; ++i) {
+        array[i] = $nil;
+      }
     };
 
     // istanbul ignore next
     spec.scanFor = function($obj) {
       var array, index;
 
-      array = this._array._;
+      array = this._$array._;
 
       index = array.indexOf($obj);
       if (index !== -1) {

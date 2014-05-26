@@ -3,7 +3,7 @@
 
   require("./klass");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("sc.lang.klass", function() {
     var test;
@@ -53,9 +53,9 @@
   describe("SCObject", function() {
     var SCObject, SCNil, instance, $nil, test;
     before(function() {
-      SCObject = $SC("Object");
-      SCNil = $SC("Nil");
-      $nil = $SC.Nil();
+      SCObject = $("Object");
+      SCNil = $("Nil");
+      $nil = $.Nil();
     });
     beforeEach(function() {
       instance = SCObject.new();
@@ -90,18 +90,42 @@
     });
     it("#_newCopyArgs", function() {
       var instance = SCObject._newCopyArgs({
-        a: $SC.Integer(100), b: undefined
+        a: $.Integer(100), b: undefined
       });
       expect(instance._$a).to.be.a("SCInteger").that.equals(100);
       expect(instance._$b).to.be.a("SCNil");
+    });
+    describe("#$", function() {
+      it("call with no-arguments", sinon.test(function() {
+        var instance = SCObject.new();
+        instance.neg = function() {};
+        this.spy(instance, "neg");
+
+        instance.$("neg");
+        expect(instance.neg).to.be.called;
+      }));
+      it("call with arguments", sinon.test(function() {
+        var instance = SCObject.new();
+        instance.neg = function() {};
+        this.spy(instance, "neg");
+
+        instance.$("neg", [ 1, 2 ]);
+        expect(instance.neg).to.be.calledWith(1, 2);
+      }));
+      it("call undefined method", function() {
+        var instance = SCObject.new();
+        expect(function() {
+          instance.$("undefined-method");
+        }).to.throw("not understood");
+      });
     });
   });
 
   describe("SCClass", function() {
     var SCObject, SCClass;
     before(function() {
-      SCObject = $SC("Object");
-      SCClass = $SC("Class");
+      SCObject = $("Object");
+      SCClass = $("Class");
     });
     it(".new", function() {
       var test = SCClass.new();
@@ -150,8 +174,8 @@
           return this;
         }
       });
-      SCTestClass1 = $SC("TestClass1");
-      SCTestClass2 = $SC("TestClass2");
+      SCTestClass1 = $("TestClass1");
+      SCTestClass2 = $("TestClass2");
     });
     it("should call super constructor", function() {
       var instance = SCTestClass2.new();

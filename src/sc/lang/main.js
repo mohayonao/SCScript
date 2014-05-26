@@ -2,12 +2,12 @@
   "use strict";
 
   require("./klass");
-  require("./dollarSC");
+  require("./dollar");
   require("../libs/random");
 
   var main = {};
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var random = sc.libs.random;
 
   main.$currentEnv = null;
@@ -16,17 +16,17 @@
     if (!initialize.done) {
       initialize();
     }
-    return fn($SC);
+    return fn($);
   };
 
   function initialize() {
     var $process;
 
-    $process = $SC("Main").new();
-    $process._$interpreter = $SC("Interpreter").new();
-    $process._$mainThread  = $SC("Thread").new();
+    $process = $("Main").new();
+    $process._$interpreter = $("Interpreter").new();
+    $process._$mainThread  = $("Thread").new();
 
-    main.$currentEnv = $SC("Environment").new();
+    main.$currentEnv = $("Environment").new();
 
     // $interpreter._$s = SCServer.default();
 
@@ -41,23 +41,23 @@
     main.$process = $process;
   }
 
-  $SC.Environment = function(key, $value) {
+  $.Environment = function(key, $value) {
     if ($value) {
-      main.$currentEnv.put($SC.Symbol(key), $value);
+      main.$currentEnv.put($.Symbol(key), $value);
       return $value;
     }
-    return main.$currentEnv.at($SC.Symbol(key));
+    return main.$currentEnv.at($.Symbol(key));
   };
 
-  $SC.This = function() {
+  $.This = function() {
     return main.$process.interpreter();
   };
 
-  $SC.ThisProcess = function() {
+  $.ThisProcess = function() {
     return main.$process;
   };
 
-  $SC.ThisThread = function() {
+  $.ThisThread = function() {
     return main.$process.mainThread();
   };
 

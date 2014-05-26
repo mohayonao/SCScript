@@ -2,8 +2,8 @@ SCScript.install(function(sc) {
   "use strict";
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
     var BOOL   = utils.BOOL;
@@ -11,7 +11,7 @@ SCScript.install(function(sc) {
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_1 = utils.$int_1;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     spec.__num__ = function() {
       throw new Error("Wrong Type");
@@ -95,15 +95,15 @@ SCScript.install(function(sc) {
     };
 
     spec.isKindOf = function($aClass) {
-      return $SC.Boolean(this instanceof $aClass.__Spec);
+      return $.Boolean(this instanceof $aClass.__Spec);
     };
 
     spec.isMemberOf = function($aClass) {
-      return $SC.Boolean(this.__class === $aClass);
+      return $.Boolean(this.__class === $aClass);
     };
 
     spec.respondsTo = fn(function($aSymbol) {
-      return $SC.Boolean(typeof this[$aSymbol.__sym__()] === "function");
+      return $.Boolean(typeof this[$aSymbol.__sym__()] === "function");
     }, "aSymbol");
 
     // TODO: implements performMsg
@@ -186,7 +186,7 @@ SCScript.install(function(sc) {
       var $array, i, imax;
 
       if (BOOL($n.isSequenceableCollection())) {
-        return SCArray.fillND($n, $SC.Function(function() {
+        return SCArray.fillND($n, $.Function(function() {
           return $this.copy();
         }));
       }
@@ -221,11 +221,11 @@ SCScript.install(function(sc) {
     };
 
     spec["==="] = function($obj) {
-      return $SC.Boolean(this === $obj);
+      return $.Boolean(this === $obj);
     };
 
     spec["!=="] = function($obj) {
-      return $SC.Boolean(this !== $obj);
+      return $.Boolean(this !== $obj);
     };
 
     // TODO: implements equals
@@ -233,19 +233,19 @@ SCScript.install(function(sc) {
     // TODO: implements instVarHash
 
     spec.basicHash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec.hash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec.identityHash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec["->"] = function($obj) {
-      return $SC("Association").new(this, $obj);
+      return $("Association").new(this, $obj);
     };
 
     spec.next = utils.nop;
@@ -257,7 +257,7 @@ SCScript.install(function(sc) {
     }, "inval");
 
     spec.iter = function() {
-      return $SC("OneShotStream").new(this);
+      return $("OneShotStream").new(this);
     };
 
     spec.stop = utils.nop;
@@ -334,11 +334,6 @@ SCScript.install(function(sc) {
     };
 
     // TODO: implements doesNotUnderstand
-    spec._doesNotUnderstand = function(methodName) {
-      throw new Error("RECEIVER " + this.__str__() + ": " +
-                      "Message '" + methodName + "' not understood.");
-    };
-
     // TODO: implements shouldNotImplement
     // TODO: implements outOfContextReturn
     // TODO: implements immutableError
@@ -354,7 +349,7 @@ SCScript.install(function(sc) {
     };
 
     spec.asCollection = function() {
-      return $SC.Array([ this ]);
+      return $.Array([ this ]);
     };
 
     spec.asSymbol = function() {
@@ -362,7 +357,7 @@ SCScript.install(function(sc) {
     };
 
     spec.asString = function() {
-      return $SC.String(String(this));
+      return $.String(String(this));
     };
 
     // TODO: implements asCompileString
@@ -382,11 +377,11 @@ SCScript.install(function(sc) {
     spec.dereference = utils.nop;
 
     spec.reference = function() {
-      return $SC.Ref(this);
+      return $.Ref(this);
     };
 
     spec.asRef = function() {
-      return $SC.Ref(this);
+      return $.Ref(this);
     };
 
     spec.asArray = function() {
@@ -420,11 +415,11 @@ SCScript.install(function(sc) {
         a = [ this ];
       } else {
         a = [
-          this.bubble($depth, $SC.Integer(levels - 1))
+          this.bubble($depth, $.Integer(levels - 1))
         ];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "depth; levels");
 
     spec.obtain = fn(function($index, $default) {
@@ -444,7 +439,7 @@ SCScript.install(function(sc) {
     }, "index; item; default");
 
     spec.addFunc = fn(function($$functions) {
-      return $SC("FunctionList").new(this ["++"] ($$functions));
+      return $("FunctionList").new(this ["++"] ($$functions));
     }, "*functions");
 
     spec.removeFunc = function($function) {
@@ -467,9 +462,9 @@ SCScript.install(function(sc) {
     spec.while = fn(function($body) {
       var $this = this;
 
-      $SC.Function(function() {
+      $.Function(function() {
         return $this.value();
-      }).while($SC.Function(function() {
+      }).while($.Function(function() {
         return $body.value();
       }));
 
@@ -582,8 +577,8 @@ SCScript.install(function(sc) {
     }, "index; val; method=\\wrapPut");
 
     spec.fuzzyEqual = fn(function($that, $precision) {
-      return $SC.Float(0.0).max(
-        $SC.Float(1.0) ["-"] (
+      return $.Float(0.0).max(
+        $.Float(1.0) ["-"] (
           (this ["-"] ($that).abs()) ["/"] ($precision)
         )
       );
@@ -593,15 +588,15 @@ SCScript.install(function(sc) {
     spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.pair = fn(function($that) {
-      return $SC.Array([ this, $that ]);
+      return $.Array([ this, $that ]);
     }, "that");
 
     spec.pairs = fn(function($that) {
       var $list;
 
-      $list = $SC.Array();
-      this.asArray().do($SC.Function(function($a) {
-        $that.asArray().do($SC.Function(function($b) {
+      $list = $.Array();
+      this.asArray().do($.Function(function($a) {
+        $that.asArray().do($.Function(function($b) {
           $list = $list.add($a.asArray() ["++"] ($b));
         }));
       }));
@@ -650,7 +645,7 @@ SCScript.install(function(sc) {
 
     spec.asAudioRateInput = function() {
       if (this.rate().__sym__() !== "audio") {
-        return $SC("K2A").ar(this);
+        return $("K2A").ar(this);
       }
       return this;
     };

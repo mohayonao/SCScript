@@ -4,13 +4,13 @@ SCScript.install(function(sc) {
   require("./AbstractFunction");
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
     var BOOL = utils.BOOL;
     var $nil = utils.$nil;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     // TODO: implements def
 
@@ -58,7 +58,7 @@ SCScript.install(function(sc) {
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $SC("Routine").new(this);
+      return $("Routine").new(this);
     };
 
     spec.dup = fn(function($n) {
@@ -116,11 +116,11 @@ SCScript.install(function(sc) {
     };
 
     spec.r = function() {
-      return $SC("Routine").new(this);
+      return $("Routine").new(this);
     };
 
     spec.p = function() {
-      return $SC("Prout").new(this);
+      return $("Prout").new(this);
     };
 
     // TODO: implements matchItem
@@ -129,9 +129,9 @@ SCScript.install(function(sc) {
     spec.flop = function() {
       var $this = this;
       // if(def.argNames.isNil) { ^this };
-      return $SC.Function(function() {
-        var $$args = $SC.Array(slice.call(arguments));
-        return $$args.flop().collect($SC.Function(function($_) {
+      return $.Function(function() {
+        var $$args = $.Array(slice.call(arguments));
+        return $$args.flop().collect($.Function(function($_) {
           return $this.valueArray($_);
         }));
       });

@@ -3,16 +3,15 @@
 
   require("./Object");
 
-  var $ = sc.test.$;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("SCObject", function() {
     var SCObject;
     before(function() {
-      SCObject = $SC("Object");
+      SCObject = $("Object");
       this.createInstance = function(instance) {
         var testMethod;
         if (!instance) {
@@ -236,31 +235,31 @@
     it("#isKindOf", function() {
       var instance, test;
 
-      instance = $SC.Nil();
+      instance = $.Nil();
       test = instance.isKindOf(SCObject);
       expect(test).to.be.a("SCBoolean").that.is.true;
 
-      instance = $SC.Nil();
-      test = instance.isKindOf($SC("Nil"));
+      instance = $.Nil();
+      test = instance.isKindOf($("Nil"));
       expect(test).to.be.a("SCBoolean").that.is.true;
 
       instance = this.createInstance();
-      test = instance.isKindOf($SC("Nil"));
+      test = instance.isKindOf($("Nil"));
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
     it("#isMemberOf", function() {
       var instance, test;
 
-      instance = $SC.Nil();
+      instance = $.Nil();
       test = instance.isMemberOf(SCObject);
       expect(test).to.be.a("SCBoolean").that.is.false;
 
-      instance = $SC.Nil();
-      test = instance.isMemberOf($SC("Nil"));
+      instance = $.Nil();
+      test = instance.isMemberOf($("Nil"));
       expect(test).to.be.a("SCBoolean").that.is.true;
 
       instance = this.createInstance();
-      test = instance.isMemberOf($SC("Nil"));
+      test = instance.isMemberOf($("Nil"));
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
     it("#respondsTo", function() {
@@ -275,7 +274,7 @@
       var instance, test;
       var $selector, $arg1, $arg2;
 
-      $selector = $SC.Symbol("size");
+      $selector = $.Symbol("size");
       $arg1     = sc.test.object();
       $arg2     = sc.test.object();
 
@@ -287,17 +286,17 @@
       expect(instance.size).to.be.calledLastIn(test);
 
       expect(function() {
-        instance.perform($SC.Symbol("not-understood"));
+        instance.perform($.Symbol("not-understood"));
       }).to.throw("not understood");
     }));
     it("#performList", sinon.test(function() {
       var instance, test;
       var $selector, $arg1, $arg2, $arglist;
 
-      $selector = $SC.Symbol("size");
+      $selector = $.Symbol("size");
       $arg1     = sc.test.object();
       $arg2     = sc.test.object();
-      $arglist  = $SC.Array([ $arg1, $arg2 ]);
+      $arglist  = $.Array([ $arg1, $arg2 ]);
 
       instance = this.createInstance();
       this.stub(instance, "size", sc.test.func);
@@ -307,7 +306,7 @@
       expect(instance.size).to.be.calledLastIn(test);
 
       expect(function() {
-        instance.performList($SC.Symbol("not-understood"));
+        instance.performList($.Symbol("not-understood"));
       }).to.throw("not understood");
     }));
     it("#functionPerformList", function() {
@@ -340,7 +339,7 @@
     it("#shallowCopy", function() {
       var instance, test;
 
-      instance = this.createInstance($SC.Array());
+      instance = this.createInstance($.Array());
       instance._scalar = 100;
       instance._array  = [ 1, 2, 3 ];
       instance._object = { a: 10, b: 20, c: 30 };
@@ -373,11 +372,11 @@
       expect(test).to.be.a("SCArray").that.eqls([ instance, instance ]);
 
       instance = this.createInstance();
-      test = instance.dup($SC.Integer(3));
+      test = instance.dup($.Integer(3));
       expect(test).to.be.a("SCArray").that.eqls([ instance, instance, instance ]);
 
       instance = this.createInstance();
-      test = instance.dup($([ 3, 3 ]));
+      test = instance.dup(sc.test.encode([ 3, 3 ]));
       expect(test).to.be.a("SCArray").that.eqls([
         [ instance, instance, instance ],
         [ instance, instance, instance ],
@@ -796,12 +795,6 @@
         instance._subclassResponsibility("method");
       }).to.throw("should have been implemented by subclass");
     });
-    it("#_doesNotUnderstand", function() {
-      var instance = this.createInstance();
-      expect(function() {
-        instance._doesNotUnderstand("method");
-      }).to.throw("not understood");
-    });
     it.skip("#shouldNotImplement", function() {
     });
     it.skip("#outOfContextReturn", function() {
@@ -892,24 +885,24 @@
     it("#reference", sinon.test(function() {
       var instance, test;
 
-      this.stub($SC, "Ref", sc.test.func);
+      this.stub($, "Ref", sc.test.func);
 
       instance = this.createInstance();
 
       test = instance.reference();
-      expect($SC.Ref).to.be.calledWith(instance);
-      expect($SC.Ref).to.be.calledLastIn(test);
+      expect($.Ref).to.be.calledWith(instance);
+      expect($.Ref).to.be.calledLastIn(test);
     }));
     it("#asRef", sinon.test(function() {
       var instance, test;
 
-      this.stub($SC, "Ref", sc.test.func);
+      this.stub($, "Ref", sc.test.func);
 
       instance = this.createInstance();
 
       test = instance.asRef();
-      expect($SC.Ref).to.be.calledWith(instance);
-      expect($SC.Ref).to.be.calledLastIn(test);
+      expect($.Ref).to.be.calledWith(instance);
+      expect($.Ref).to.be.calledLastIn(test);
     }));
     it("#asArray", sinon.test(function() {
       var instance, test, spy;
@@ -992,7 +985,7 @@
       var $depth, $levels;
 
       $depth  = sc.test.object();
-      $levels = $SC.Integer(3);
+      $levels = $.Integer(3);
 
       instance = this.createInstance();
 
@@ -1002,12 +995,12 @@
     it("#obtain", function() {
       testCase(this, [
         {
-          source: $SC.Integer(10),
+          source: $.Integer(10),
           args  : [ 0, 100 ],
           result: 10
         },
         {
-          source: $SC.Integer(10),
+          source: $.Integer(10),
           args  : [ 1, 100 ],
           result: 100
         },
@@ -1016,12 +1009,12 @@
     it("#instill", function() {
       testCase(this, [
         {
-          source: $SC.Integer(10),
+          source: $.Integer(10),
           args  : [ 5, 30, 20 ],
           result: [ 10, 20, 20, 20, 20, 30 ]
         },
         {
-          source: $SC.Integer(10),
+          source: $.Integer(10),
           args  : [ 0, 30, 20 ],
           result: 30
         },
@@ -1039,7 +1032,7 @@
       $arg1 = sc.test.object();
       $arg2 = sc.test.object();
 
-      instance = this.createInstance($SC.Array([ $elem ]));
+      instance = this.createInstance($.Array([ $elem ]));
 
       test = instance.addFunc($arg1, $arg2);
       expect(spy.args[0][0]).to.be.a("SCArray").that.eqls([
@@ -1086,8 +1079,8 @@
 
       $body = sc.test.object({ value: this.spy() });
 
-      instance = this.createInstance($SC.Function(function() {
-        return $SC.Boolean(count++ < 2);
+      instance = this.createInstance($.Function(function() {
+        return $.Boolean(count++ < 2);
       }));
 
       test = instance.while($body);
@@ -1097,7 +1090,7 @@
     it("#switch", function() {
       testCase(this, [
         {
-          source: $SC.Integer(3),
+          source: $.Integer(3),
           args  : [
             0, "\\zero",
             1, "\\one",
@@ -1109,7 +1102,7 @@
           result: "\\three"
         },
         {
-          source: $SC.Integer(9),
+          source: $.Integer(9),
           args  : [
             0, "\\zero",
             1, "\\one",
@@ -1121,7 +1114,7 @@
           result: "\\others"
         },
         {
-          source: $SC.Integer(9),
+          source: $.Integer(9),
           args  : [
             0, "\\zero",
             1, "\\one",
@@ -1292,27 +1285,27 @@
     }));
     it("#blend", function() {
       testCase(this, [
-        [ $SC.Integer(0), [ 10       ], $SC.Float(5.0) ],
-        [ $SC.Integer(0), [ 10, 0.25 ], $SC.Float(2.5) ],
+        [ $.Integer(0), [ 10       ], $.Float(5.0) ],
+        [ $.Integer(0), [ 10, 0.25 ], $.Float(2.5) ],
       ]);
     });
     it("#blendAt", function() {
       testCase(this, [
-        [ $([ 1, 2, 3 ]), [ 1.5 ], $SC.Float(2.5) ],
+        [ sc.test.encode([ 1, 2, 3 ]), [ 1.5 ], $.Float(2.5) ],
       ]);
     });
     it("#blendPut", function() {
       testCase(this, [
         {
-          source: $([ 1, 2, 3 ]),
-          args  : [ $SC.Float(1.25), 5 ],
+          source: sc.test.encode([ 1, 2, 3 ]),
+          args  : [ $.Float(1.25), 5 ],
           result: [ 1, 3.75, 1.25 ]
         },
       ]);
     });
     it("#fuzzyEqual", function() {
       testCase(this, [
-        [ $SC.Float(2.5), [ $SC.Float(3.0) ], $SC.Float(0.5) ],
+        [ $.Float(2.5), [ $.Float(3.0) ], $.Float(0.5) ],
       ]);
     });
     it("#isUGen", function() {
@@ -1339,7 +1332,7 @@
     it("#pairs", function() {
       testCase(this, [
         {
-          source: $([ 1, 2 ]),
+          source: sc.test.encode([ 1, 2 ]),
           args  : [ [ 10, 20, 30 ] ],
           result: [
             [ 1, 10 ],
@@ -1379,15 +1372,15 @@
 
       instance = this.createInstance();
 
-      $aSelector = $SC.Symbol("==");
+      $aSelector = $.Symbol("==");
       test = instance.performBinaryOpOnSomething($aSelector);
       expect(test).to.be.a("SCBoolean").that.is.false;
 
-      $aSelector = $SC.Symbol("!=");
+      $aSelector = $.Symbol("!=");
       test = instance.performBinaryOpOnSomething($aSelector);
       expect(test).to.be.a("SCBoolean").that.is.true;
 
-      $aSelector = $SC.Symbol("+");
+      $aSelector = $.Symbol("+");
       expect(function() {
         instance.performBinaryOpOnSomething($aSelector);
       }).to.throw("binary operator '+' failed");
@@ -1515,7 +1508,7 @@
 
       instance = this.createInstance();
       instance.rate = function() {
-        return $SC.Symbol(rate);
+        return $.Symbol(rate);
       };
 
       rate = "audio";

@@ -4,8 +4,8 @@ SCScript.install(function(sc) {
   require("./Object");
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Nil", function(spec, utils) {
     var $nil = utils.$nil;
@@ -74,7 +74,7 @@ SCScript.install(function(sc) {
     spec.rejectAs = utils.nop;
 
     spec.dependants = function() {
-      return $SC("IdentitySet").new();
+      return $("IdentitySet").new();
     };
 
     spec.changed = utils.nop;
@@ -95,32 +95,32 @@ SCScript.install(function(sc) {
       if ($clock === $nil) {
         return $clock;
       }
-      return $SC.Function(function() {
+      return $.Function(function() {
         return $clock.nextTimeOnGrid();
       });
     }, "clock");
 
     spec.asQuant = function() {
-      return $SC("Quant").default();
+      return $("Quant").default();
     };
 
     spec.swapThisGroup = utils.nop;
     spec.performMsg = utils.nop;
 
     spec.printOn = fn(function($stream) {
-      $stream.putAll($SC.String("nil"));
+      $stream.putAll($.String("nil"));
       return this;
     }, "stream");
 
     spec.storeOn = fn(function($stream) {
-      $stream.putAll($SC.String("nil"));
+      $stream.putAll($.String("nil"));
       return this;
     }, "stream");
 
     spec.matchItem = utils.alwaysReturn$true;
 
     spec.add = fn(function($value) {
-      return $SC.Array([ $value ]);
+      return $.Array([ $value ]);
     }, "value");
 
     spec.addAll = fn(function($array) {
@@ -132,7 +132,7 @@ SCScript.install(function(sc) {
     };
 
     spec.asCollection = function() {
-      return $SC.Array();
+      return $.Array();
     };
 
     spec.remove = utils.nop;
@@ -148,7 +148,7 @@ SCScript.install(function(sc) {
       if (functions.length <= 1) {
         return functions[0];
       }
-      return $SC("FunctionList").new($SC.Array(functions));
+      return $("FunctionList").new($.Array(functions));
     };
 
     spec.removeFunc = utils.nop;
@@ -162,7 +162,7 @@ SCScript.install(function(sc) {
     spec.archiveAsCompileString = utils.alwaysReturn$true;
 
     spec.asSpec = function() {
-      return $SC("ControlSpec").new();
+      return $("ControlSpec").new();
     };
 
     spec.superclassesDo = utils.nop;

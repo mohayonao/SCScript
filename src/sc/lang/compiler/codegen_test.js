@@ -66,7 +66,7 @@
         var source = codegen.compile(ast, { bare: true });
         var test = esprima.parse(source);
         var compiled = esprima.parse(
-          "(function($SC) { return $SC.Nil(); })"
+          "(function($) { return $.Nil(); })"
         );
         expect(test).to.be.eqls(compiled);
       });

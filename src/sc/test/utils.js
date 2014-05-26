@@ -35,13 +35,13 @@
   });
 
   var encode = function(a) {
-    var $SC = sc.lang.$SC;
+    var $ = sc.lang.$;
 
     if (Array.isArray(a)) {
-      return $SC.Array(a.map(encode));
+      return $.Array(a.map(encode));
     }
     if (a === null) {
-      return $SC.Nil();
+      return $.Nil();
     }
     if (typeof a === "undefined") {
       return undefined;
@@ -51,31 +51,31 @@
     }
     if (typeof a === "number") {
       if ((a|0) === a) {
-        return $SC.Integer(a);
+        return $.Integer(a);
       } else {
-        return $SC.Float(a);
+        return $.Float(a);
       }
     }
     if (typeof a === "boolean") {
-      return $SC.Boolean(a);
+      return $.Boolean(a);
     }
     if (typeof a === "string") {
       if (a.length === 2 && a.charAt(0) === "$") {
-        return $SC.Char(a.charAt(1));
+        return $.Char(a.charAt(1));
       }
       if (a.charAt(0) === "\\") {
-        return $SC.Symbol(a.substr(1));
+        return $.Symbol(a.substr(1));
       }
-      return $SC.String(a);
+      return $.String(a);
     }
 
     if (typeof a === "function") {
-      return $SC.Function(a);
+      return $.Function(a);
     }
 
     return a;
   };
-  sc.test.$ = encode;
+  sc.test.encode = encode;
 
   var s = function(obj) {
     var str = JSON.stringify(obj) || (typeof obj);

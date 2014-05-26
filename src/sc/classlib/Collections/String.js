@@ -3,9 +3,9 @@ SCScript.install(function(sc) {
 
   require("./ArrayedCollection");
 
-  var fn  = sc.lang.fn;
-  var io  = sc.lang.io;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
+  var io = sc.lang.io;
 
   sc.lang.klass.refine("String", function(spec, utils) {
     var $nil   = utils.$nil;
@@ -40,17 +40,17 @@ SCScript.install(function(sc) {
     // TODO: implements unixCmdGetStdOut
 
     spec.asSymbol = function() {
-      return $SC.Symbol(this.__str__());
+      return $.Symbol(this.__str__());
     };
 
     spec.asInteger = function() {
       var m = /^[-+]?\d+/.exec(this.__str__());
-      return $SC.Integer(m ? m[0]|0 : 0);
+      return $.Integer(m ? m[0]|0 : 0);
     };
 
     spec.asFloat = function() {
       var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
-      return $SC.Float(m ? +m[0] : 0);
+      return $.Float(m ? +m[0] : 0);
     };
 
     spec.ascii = function() {
@@ -59,10 +59,10 @@ SCScript.install(function(sc) {
 
       a = new Array(raw.length);
       for (i = 0, imax = a.length; i < imax; ++i) {
-        a[i] = $SC.Integer(raw.charCodeAt(i));
+        a[i] = $.Integer(raw.charCodeAt(i));
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     // TODO: implements stripRTF
@@ -94,7 +94,7 @@ SCScript.install(function(sc) {
         b = func(braw[i]._).charCodeAt(0);
         cmp = a - b;
         if (cmp !== 0) {
-          return $SC.Integer(cmp < 0 ? -1 : +1);
+          return $.Integer(cmp < 0 ? -1 : +1);
         }
       }
 
@@ -104,41 +104,41 @@ SCScript.install(function(sc) {
         cmp = 1;
       }
 
-      return $SC.Integer(cmp);
+      return $.Integer(cmp);
     }, "aString; ignoreCase=false");
 
     spec["<"] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() < 0
       );
     };
 
     spec[">"] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() > 0
       );
     };
 
     spec["<="] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() <= 0
       );
     };
 
     spec[">="] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() >= 0
       );
     };
 
     spec["=="] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() === 0
       );
     };
 
     spec["!="] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() !== 0
       );
     };
@@ -162,11 +162,11 @@ SCScript.install(function(sc) {
     spec.asString = utils.nop;
 
     spec.asCompileString = function() {
-      return $SC.String("\"" + this.__str__() + "\"");
+      return $.String("\"" + this.__str__() + "\"");
     };
 
     spec.species = function() {
-      return $SC("String");
+      return $("String");
     };
 
     spec.postln = function() {
@@ -199,13 +199,13 @@ SCScript.install(function(sc) {
     // TODO: implements inform
 
     spec["++"] = function($anObject) {
-      return $SC.String(
+      return $.String(
         this.toString() + $anObject.asString().toString()
       );
     };
 
     spec["+"] = function($anObject) {
-      return $SC.String(
+      return $.String(
         this.toString() + " " + $anObject.asString().toString()
       );
     };

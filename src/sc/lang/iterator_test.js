@@ -2,10 +2,8 @@
   "use strict";
 
   require("./iterator");
-  require("./dollarSC");
 
-  var $SC = sc.lang.$SC;
-  var $ = sc.test.$;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("sc.lang.iterator", function() {
@@ -20,11 +18,11 @@
       });
       it("function$while", function() {
         var iter;
-        var i = 0, $nil = $SC.Nil();
+        var i = 0, $nil = $.Nil();
 
         iter = iterator.function$while(
-          $SC.Function(function() {
-            return $SC.Boolean(i++ < 5);
+          $.Function(function() {
+            return $.Boolean(i++ < 5);
           })
         );
         expect(iter.next()).to.be.a("JSArray").that.eqls([ $nil, $nil ]);
@@ -39,7 +37,7 @@
         var iter;
 
         iter = iterator.number$do(
-          $SC.Integer(5)
+          $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(0);
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
@@ -50,7 +48,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$do(
-          $SC.Integer(-5)
+          $.Integer(-5)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -58,7 +56,7 @@
         var iter;
 
         iter = iterator.number$reverseDo(
-          $SC.Integer(5)
+          $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(4);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -69,7 +67,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$reverseDo(
-          $SC.Integer(-5)
+          $.Integer(-5)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -77,7 +75,7 @@
         var iter;
 
         iter = iterator.number$for(
-          $SC.Integer(1), $SC.Integer(5)
+          $.Integer(1), $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(2);
@@ -88,7 +86,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$for(
-          $SC.Integer(5), $SC.Integer(1)
+          $.Integer(5), $.Integer(1)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(5);
         expect(iter.next()).to.be.a("SCInteger").that.equals(4);
@@ -102,7 +100,7 @@
         var iter;
 
         iter = iterator.number$forBy(
-          $SC.Integer(1), $SC.Integer(5), $SC.Integer(2)
+          $.Integer(1), $.Integer(5), $.Integer(2)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -111,7 +109,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$forBy(
-          $SC.Integer(5), $SC.Integer(1), $SC.Integer(-2)
+          $.Integer(5), $.Integer(1), $.Integer(-2)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(5);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -120,12 +118,12 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$forBy(
-          $SC.Integer(1), $SC.Integer(5), $SC.Integer(0)
+          $.Integer(1), $.Integer(5), $.Integer(0)
         );
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$forBy(
-          $SC.Integer(1), $SC.Integer(1), $SC.Integer(0)
+          $.Integer(1), $.Integer(1), $.Integer(0)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("JSNull");
@@ -134,7 +132,7 @@
         var iter;
 
         iter = iterator.number$forSeries(
-          $SC.Integer(1), $SC.Integer(3), $SC.Integer(5)
+          $.Integer(1), $.Integer(3), $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -143,7 +141,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$forSeries(
-          $SC.Integer(5), $SC.Integer(3), $SC.Integer(1)
+          $.Integer(5), $.Integer(3), $.Integer(1)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(5);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -152,7 +150,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.number$forSeries(
-          $SC.Integer(1), $SC.Integer(0), $SC.Integer(3)
+          $.Integer(1), $.Integer(0), $.Integer(3)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -160,7 +158,7 @@
         var iter;
 
         iter = iterator.integer$do(
-          $SC.Integer(5)
+          $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(0);
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
@@ -171,7 +169,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$do(
-          $SC.Integer(-5)
+          $.Integer(-5)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -179,7 +177,7 @@
         var iter;
 
         iter = iterator.integer$reverseDo(
-          $SC.Integer(5)
+          $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(4);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -190,7 +188,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$reverseDo(
-          $SC.Integer(-5)
+          $.Integer(-5)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -198,7 +196,7 @@
         var iter;
 
         iter = iterator.integer$for(
-          $SC.Integer(1), $SC.Integer(5)
+          $.Integer(1), $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(2);
@@ -209,7 +207,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$for(
-          $SC.Integer(5), $SC.Integer(1)
+          $.Integer(5), $.Integer(1)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(5);
         expect(iter.next()).to.be.a("SCInteger").that.equals(4);
@@ -223,7 +221,7 @@
         var iter;
 
         iter = iterator.integer$forBy(
-          $SC.Integer(1), $SC.Integer(5), $SC.Integer(2)
+          $.Integer(1), $.Integer(5), $.Integer(2)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -232,7 +230,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$forBy(
-          $SC.Integer(5), $SC.Integer(1), $SC.Integer(-2)
+          $.Integer(5), $.Integer(1), $.Integer(-2)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(5);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -241,12 +239,12 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$forBy(
-          $SC.Integer(1), $SC.Integer(5), $SC.Integer(0)
+          $.Integer(1), $.Integer(5), $.Integer(0)
         );
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$forBy(
-          $SC.Integer(1), $SC.Integer(1), $SC.Integer(0)
+          $.Integer(1), $.Integer(1), $.Integer(0)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("JSNull");
@@ -255,7 +253,7 @@
         var iter;
 
         iter = iterator.integer$forSeries(
-          $SC.Integer(1), $SC.Integer(3), $SC.Integer(5)
+          $.Integer(1), $.Integer(3), $.Integer(5)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -264,7 +262,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$forSeries(
-          $SC.Integer(5), $SC.Integer(3), $SC.Integer(1)
+          $.Integer(5), $.Integer(3), $.Integer(1)
         );
         expect(iter.next()).to.be.a("SCInteger").that.equals(5);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -273,7 +271,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.integer$forSeries(
-          $SC.Integer(1), $SC.Integer(0), $SC.Integer(3)
+          $.Integer(1), $.Integer(0), $.Integer(3)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -281,7 +279,7 @@
         var iter;
 
         iter = iterator.float$do(
-          $SC.Float(5.1)
+          $.Float(5.1)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(0, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(1, 1e-6);
@@ -292,7 +290,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$do(
-          $SC.Float(-5)
+          $.Float(-5)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -300,7 +298,7 @@
         var iter;
 
         iter = iterator.float$reverseDo(
-          $SC.Float(5.7)
+          $.Float(5.7)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(4.7, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(3.7, 1e-6);
@@ -312,7 +310,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$reverseDo(
-          $SC.Float(5.0)
+          $.Float(5.0)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(4.0, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(3.0, 1e-6);
@@ -323,7 +321,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$reverseDo(
-          $SC.Float(-5)
+          $.Float(-5)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
@@ -331,7 +329,7 @@
         var iter;
 
         iter = iterator.float$for(
-          $SC.Float(1.5), $SC.Float(5.5)
+          $.Float(1.5), $.Float(5.5)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(1.5, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(2.5, 1e-6);
@@ -342,7 +340,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$for(
-          $SC.Float(5.5), $SC.Float(1.5)
+          $.Float(5.5), $.Float(1.5)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(5.5, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(4.5, 1e-6);
@@ -356,7 +354,7 @@
         var iter;
 
         iter = iterator.float$forBy(
-          $SC.Float(1.5), $SC.Float(5.5), $SC.Float(2.5)
+          $.Float(1.5), $.Float(5.5), $.Float(2.5)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(1.5, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(4.0, 1e-6);
@@ -364,7 +362,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$forBy(
-          $SC.Float(5.5), $SC.Float(1.5), $SC.Float(-2.5)
+          $.Float(5.5), $.Float(1.5), $.Float(-2.5)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(5.5, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(3.0, 1e-6);
@@ -372,12 +370,12 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$forBy(
-          $SC.Float(1.5), $SC.Float(5.5), $SC.Float(0.0)
+          $.Float(1.5), $.Float(5.5), $.Float(0.0)
         );
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$forBy(
-          $SC.Float(1.5), $SC.Float(1.5), $SC.Float(0.5)
+          $.Float(1.5), $.Float(1.5), $.Float(0.5)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(1.5, 1e-6);
         expect(iter.next()).to.be.a("JSNull");
@@ -386,7 +384,7 @@
         var iter;
 
         iter = iterator.float$forSeries(
-          $SC.Float(1.5), $SC.Float(3.5), $SC.Float(5.5)
+          $.Float(1.5), $.Float(3.5), $.Float(5.5)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(1.5, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(3.5, 1e-6);
@@ -395,7 +393,7 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$forSeries(
-          $SC.Float(5.5), $SC.Float(3.5), $SC.Float(1.5)
+          $.Float(5.5), $.Float(3.5), $.Float(1.5)
         );
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(5.5, 1e-6);
         expect(iter.next()).to.be.a("SCFloat").that.is.closeTo(3.5, 1e-6);
@@ -404,17 +402,17 @@
         expect(iter.next()).to.be.a("JSNull");
 
         iter = iterator.float$forSeries(
-          $SC.Float(1.5), $SC.Float(0), $SC.Float(3.5)
+          $.Float(1.5), $.Float(0), $.Float(3.5)
         );
         expect(iter.next()).to.be.a("JSNull");
       });
       it("array$do", function() {
         var iter;
 
-        iter = iterator.array$do($([]));
+        iter = iterator.array$do(sc.test.encode([]));
         expect(iter.next()).to.be.a("JSNull");
 
-        iter = iterator.array$do($([ 1, 2, 3, 4 ]));
+        iter = iterator.array$do(sc.test.encode([ 1, 2, 3, 4 ]));
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(2);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -425,10 +423,10 @@
       it("array$reverseDo", function() {
         var iter;
 
-        iter = iterator.array$reverseDo($([]));
+        iter = iterator.array$reverseDo(sc.test.encode([]));
         expect(iter.next()).to.be.a("JSNull");
 
-        iter = iterator.array$reverseDo($([ 1, 2, 3, 4 ]));
+        iter = iterator.array$reverseDo(sc.test.encode([ 1, 2, 3, 4 ]));
         expect(iter.next()).to.be.a("SCInteger").that.equals(4);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
         expect(iter.next()).to.be.a("SCInteger").that.equals(2);
@@ -439,7 +437,7 @@
       it("set$reverseDo", function() {
         var iter;
         var $set = {
-          _$array: $([ null, 1, 2, null, 3, null ])
+          _$array: sc.test.encode([ null, 1, 2, null, 3, null ])
         };
 
         iter = iterator.set$do($set);
@@ -458,7 +456,7 @@
         };
 
         iter = iterator.integer$forBy(
-          $SC.Integer(1), $SC.Integer(5), $SC.Integer(2)
+          $.Integer(1), $.Integer(5), $.Integer(2)
         );
         iterator.execute(iter, $function);
 
@@ -478,8 +476,8 @@
         };
 
         iter = iterator.function$while(
-          $SC.Function(function() {
-            return $SC.Boolean(i++ < 3);
+          $.Function(function() {
+            return $.Boolean(i++ < 3);
           })
         );
         iterator.execute(iter, $function);
@@ -504,7 +502,7 @@
         };
 
         iter = iterator.integer$do(
-          $SC.Integer(Infinity)
+          $.Integer(Infinity)
         );
         iterator.execute(iter, $function);
 

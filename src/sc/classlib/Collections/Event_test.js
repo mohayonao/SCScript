@@ -3,12 +3,12 @@
 
   require("./Event");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCEvent", function() {
     var SCEvent;
     before(function() {
-      SCEvent = $SC("Event");
+      SCEvent = $("Event");
       this.createInstance = function() {
         return SCEvent.new();
       };
@@ -56,5 +56,30 @@
     });
     it.skip("#$makeParentEvents", function() {
     });
+    it("setter/getter", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      test = instance.$("a_", [ $.Integer(1) ]);
+
+      expect(test).to.be.a("SCInteger").that.equals(1);
+
+      test = instance.$("a");
+      expect(test).to.be.a("SCInteger").that.equals(1);
+    });
+    it("setter with warning", sinon.test(function() {
+      var instance, test;
+
+      this.stub(sc.SCScript, "stderr");
+
+      instance = this.createInstance();
+      test = instance.$("add_", [ $.Integer(1) ]);
+
+      expect(test).to.be.a("SCInteger").that.equals(1);
+      expect(sc.SCScript.stderr).to.be.called;
+
+      test = instance.at($.Symbol("add"));
+      expect(test).to.be.a("SCInteger").that.equals(1);
+    }));
   });
 })();

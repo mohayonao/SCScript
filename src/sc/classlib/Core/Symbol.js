@@ -3,8 +3,8 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Symbol", function(spec, utils) {
     var $nil = utils.$nil;
@@ -25,12 +25,12 @@ SCScript.install(function(sc) {
 
     spec.asInteger = function() {
       var m = /^[-+]?\d+/.exec(this._);
-      return $SC.Integer(m ? m[0]|0 : 0);
+      return $.Integer(m ? m[0]|0 : 0);
     };
 
     spec.asFloat = function() {
       var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this._);
-      return $SC.Float(m ? +m[0] : 0);
+      return $.Float(m ? +m[0] : 0);
     };
 
     spec.ascii = function() {
@@ -172,7 +172,7 @@ SCScript.install(function(sc) {
     // TODO: Implements help
 
     spec.asString = function() {
-      return $SC.String(this._);
+      return $.String(this._);
     };
 
     spec.shallowCopy = utils.nop;

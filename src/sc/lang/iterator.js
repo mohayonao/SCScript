@@ -2,12 +2,12 @@
   "use strict";
 
   require("./sc");
-  require("./dollarSC");
+  require("./dollar");
   require("./klass/utils");
 
   var iterator = {};
-  var $SC   = sc.lang.$SC;
-  var utils = sc.lang.klass.utils;
+  var $      = sc.lang.$;
+  var utils  = sc.lang.klass.utils;
   var $nil   = utils.$nil;
   var $int_0 = utils.$int_0;
   var $int_1 = utils.$int_1;
@@ -39,7 +39,7 @@
       if (Array.isArray($item)) {
         ret = $function.value($item[0], $item[1]);
       } else {
-        ret = $function.value($item, $SC.Integer(i++));
+        ret = $function.value($item, $.Integer(i++));
       }
       if (ret === sc.C.LOOP_BREAK) {
         break;
@@ -117,7 +117,7 @@
 
     $start = $start.__dec__();
     $end   = $int_0;
-    $step  = $SC.Integer(-1);
+    $step  = $.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -125,7 +125,7 @@
   iterator.number$for = function($start, $end) {
     var $step;
 
-    $step = ($start <= $end) ? $int_1 : $SC.Integer(-1);
+    $step = ($start <= $end) ? $int_1 : $.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -218,43 +218,43 @@
   };
 
   iterator.integer$do = function($endval) {
-    return js_numeric_iter$do($endval, $SC.Integer);
+    return js_numeric_iter$do($endval, $.Integer);
   };
 
   iterator.integer$reverseDo = function($startval) {
-    return js_numeric_iter$reverseDo($startval, $SC.Integer);
+    return js_numeric_iter$reverseDo($startval, $.Integer);
   };
 
   iterator.integer$for = function($startval, $endval) {
-    return js_numeric_iter$for($startval, $endval, $SC.Integer);
+    return js_numeric_iter$for($startval, $endval, $.Integer);
   };
 
   iterator.integer$forBy = function($startval, $endval, $stepval) {
-    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Integer);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $.Integer);
   };
 
   iterator.integer$forSeries = function($startval, $second, $last) {
-    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Integer);
+    return js_numeric_iter$forSeries($startval, $second, $last, $.Integer);
   };
 
   iterator.float$do = function($endval) {
-    return js_numeric_iter$do($endval, $SC.Float);
+    return js_numeric_iter$do($endval, $.Float);
   };
 
   iterator.float$reverseDo = function($startval) {
-    return js_numeric_iter$reverseDo($startval, $SC.Float);
+    return js_numeric_iter$reverseDo($startval, $.Float);
   };
 
   iterator.float$for = function($startval, $endval) {
-    return js_numeric_iter$for($startval, $endval, $SC.Float);
+    return js_numeric_iter$for($startval, $endval, $.Float);
   };
 
   iterator.float$forBy = function($startval, $endval, $stepval) {
-    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Float);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $.Float);
   };
 
   iterator.float$forSeries = function($startval, $second, $last) {
-    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Float);
+    return js_numeric_iter$forSeries($startval, $second, $last, $.Float);
   };
 
   var list_iter = function(list) {

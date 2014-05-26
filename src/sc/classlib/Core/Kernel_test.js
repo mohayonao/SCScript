@@ -3,13 +3,13 @@
 
   require("./Kernel");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCKernel", function() {
     var SCClass, SCMeta_Class;
     before(function() {
-      SCClass      = $SC("Class");
-      SCMeta_Class = $SC("Meta_Class");
+      SCClass      = $("Class");
+      SCMeta_Class = $("Meta_Class");
     });
     it("#class", function() {
       var test;
@@ -29,7 +29,7 @@
   describe("SCProcess", function() {
     var SCProcess;
     before(function() {
-      SCProcess = $SC("Process");
+      SCProcess = $("Process");
     });
     it(".new", function() {
       expect(function() {
@@ -41,7 +41,7 @@
   describe("SCInterpreter", function() {
     var SCInterpreter, $interpreter;
     before(function() {
-      SCInterpreter = $SC("Interpreter");
+      SCInterpreter = $("Interpreter");
       $interpreter = SCInterpreter.new();
     });
     it("<>a..z / #clearAll", function() {

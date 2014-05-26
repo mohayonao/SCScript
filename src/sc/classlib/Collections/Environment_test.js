@@ -3,12 +3,12 @@
 
   require("./Environment");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCEnvironment", function() {
     var SCEnvironment;
     before(function() {
-      SCEnvironment = $SC("Environment");
+      SCEnvironment = $("Environment");
       this.createInstance = function() {
         return SCEnvironment.new();
       };

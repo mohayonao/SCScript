@@ -5,7 +5,7 @@
   require("./klass/utils");
 
   var fn   = sc.lang.fn;
-  var $SC  = sc.lang.$SC;
+  var $    = sc.lang.$;
   var $nil = sc.lang.klass.utils.$nil;
 
   describe("sc.lang.fn", function() {
@@ -48,7 +48,7 @@
       func = fn(function() {}, "a=1; b=1.0");
 
       expect(func._argNames).to.be.a("JSArray").that.eqls([ "a", "b" ]);
-      expect(func._argVals ).to.be.a("JSArray").that.eqls([ $SC.Integer(1), $SC.Float(1.0) ]);
+      expect(func._argVals ).to.be.a("JSArray").that.eqls([ $.Integer(1), $.Float(1.0) ]);
     });
     it("'a, b, c': call($arg1, { c: $argC }) should pass [ $arg1, $nil, $argC ]", function() {
       var instance, spy;

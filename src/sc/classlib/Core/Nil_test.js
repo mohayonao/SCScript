@@ -3,14 +3,14 @@
 
   require("./Nil");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCNil", function() {
     var SCNil;
     before(function() {
-      SCNil = $SC("Nil");
+      SCNil = $("Nil");
       this.createInstance = function() {
-        return $SC.Nil();
+        return $.Nil();
       };
     });
     it("#__num__", function() {
@@ -254,7 +254,7 @@
       var instance, test;
       var $clock;
 
-      $clock = $SC.Nil();
+      $clock = $.Nil();
 
       instance = this.createInstance();
 

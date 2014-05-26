@@ -3,17 +3,16 @@
 
   require("./Array");
 
-  var $ = sc.test.$;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCArray", function() {
     var SCArray;
     before(function() {
-      SCArray = $SC("Array");
+      SCArray = $("Array");
       this.createInstance = function(source) {
-        return $SC.Array((source || []).map($));
+        return $.Array((source || []).map(sc.test.encode));
       };
     });
     it("#__tag", function() {
@@ -27,17 +26,17 @@
     it("#valueOf", function() {
       var instance, test;
 
-      instance = this.createInstance([ $SC.String("freq"), $SC.Integer(440) ]);
+      instance = this.createInstance([ $.String("freq"), $.Integer(440) ]);
 
       test = instance.valueOf();
       expect(test).to.be.a("JSArray").to.eql([ "freq", 440 ]);
     });
     it(".newClear", function() {
-      var test = SCArray.newClear($SC.Integer(4));
+      var test = SCArray.newClear($.Integer(4));
       expect(test).to.be.a("SCArray").that.eqls([ null, null, null, null ]);
     });
     it(".with", function() {
-      var test = SCArray.with($SC.Integer(0), $SC.Integer(1), $SC.Integer(2));
+      var test = SCArray.with($.Integer(0), $.Integer(1), $.Integer(2));
       expect(test).to.be.a("SCArray").that.eqls([ 0, 1, 2 ]);
     });
     it("#reverse", function() {

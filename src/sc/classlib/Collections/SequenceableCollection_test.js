@@ -3,18 +3,17 @@
 
   require("./SequenceableCollection");
 
-  var $ = sc.test.$;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCSequenceableCollection", function() {
     var SCSequenceableCollection, SCArray;
     before(function() {
-      SCSequenceableCollection = $SC("SequenceableCollection");
-      SCArray = $SC("Array");
+      SCSequenceableCollection = $("SequenceableCollection");
+      SCArray = $("Array");
       this.createInstance = function(source, immutable) {
-        var instance = $SC.Array((source||[]).map($), !!immutable);
+        var instance = $.Array((source||[]).map(sc.test.encode), !!immutable);
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "SequenceableCollection", testMethod);
         return instance;
@@ -69,7 +68,7 @@
     }));
     it(".series", function() {
       var test = SCSequenceableCollection.series.call(
-        SCArray, $SC.Integer(6), $SC.Integer(2), $SC.Integer(4)
+        SCArray, $.Integer(6), $.Integer(2), $.Integer(4)
       );
       expect(test).to.be.a("SCArray").to.eqls([
         2, 6, 10, 14, 18, 22
@@ -77,7 +76,7 @@
     });
     it(".geom", function() {
       var test = SCSequenceableCollection.geom.call(
-        SCArray, $SC.Integer(6), $SC.Integer(2), $SC.Integer(4)
+        SCArray, $.Integer(6), $.Integer(2), $.Integer(4)
       );
       expect(test).to.be.a("SCArray").to.eqls([
         2, 8, 32, 128, 512, 2048
@@ -85,7 +84,7 @@
     });
     it(".fib", function() {
       var test = SCSequenceableCollection.fib.call(
-        SCArray, $SC.Integer(6)
+        SCArray, $.Integer(6)
       );
       expect(test).to.be.a("SCArray").to.eqls([
         1.0, 1.0, 2.0, 3.0, 5.0, 8.0
@@ -101,12 +100,12 @@
       var test;
 
       test = SCSequenceableCollection.interpolation.call(
-        SCArray, $SC.Integer(1)
+        SCArray, $.Integer(1)
       );
       expect(test).to.be.a("SCArray").to.eqls([ 0.0 ]);
 
       test = SCSequenceableCollection.interpolation.call(
-        SCArray, $SC.Integer(5)
+        SCArray, $.Integer(5)
       );
       expect(test).to.be.a("SCArray").to.eqls([
         0.0, 0.25, 0.5, 0.75, 1.0
@@ -154,7 +153,7 @@
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 20, $SC.Float(30.0) ] ],
+          args  : [ [ 10, 20, $.Float(30.0) ] ],
           result: true
         },
         {
@@ -169,7 +168,7 @@
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ $SC.String("102030") ],
+          args  : [ $.String("102030") ],
           result: false
         },
       ]);
@@ -352,7 +351,7 @@
         {
           source: [ 10, 20, 30, 40, 50 ],
           args  : [ 25 ],
-          result: $SC.Float(1.5)
+          result: $.Float(1.5)
         },
       ]);
     });
@@ -634,7 +633,7 @@
         {
           source: [ 10, 20, 30, 40, 50 ],
           args  : [ function($a) {
-            return $SC.Boolean($a.valueOf() === 20);
+            return $.Boolean($a.valueOf() === 20);
           } ],
           result: [ [ 10, 20 ], [ 30, 40, 50 ] ]
         },
@@ -649,7 +648,7 @@
         {
           source: [ 10, 20, 30, 40, 50 ],
           args  : [ function($a) {
-            return $SC.Boolean($a.valueOf() === 20);
+            return $.Boolean($a.valueOf() === 20);
           } ],
           result: [ [ 10 ], [ 30, 40, 50 ] ]
         },
@@ -688,7 +687,7 @@
 
       $probability = sc.test.object({
         coin: function() {
-          return $SC.Boolean(i++ === 2);
+          return $.Boolean(i++ === 2);
         }
       });
 
@@ -742,7 +741,7 @@
         {
           source: [ [ 10, 20 ], [ 30, [ 40, 50 ] ] ],
           args  : [ function($item) {
-            return $SC.Boolean($item._[0].valueOf() === 30);
+            return $.Boolean($item._[0].valueOf() === 30);
           } ],
           result: [ [ 10, 20 ], 30, [ 40, 50 ] ]
         },
@@ -1142,9 +1141,9 @@
       var instance;
       var $aSelector, $theOperand, $adverb;
 
-      $aSelector  = $SC.Symbol("+");
+      $aSelector  = $.Symbol("+");
       $theOperand = sc.test.object();
-      $adverb     = $SC.Symbol("error");
+      $adverb     = $.Symbol("error");
 
       instance = this.createInstance();
 
@@ -1221,7 +1220,7 @@
     it("#ascii", function() {
       testCase(this, [
         {
-          source: [ $SC.Char("a"), $SC.Char("b"), $SC.Char("c") ],
+          source: [ $.Char("a"), $.Char("b"), $.Char("c") ],
           result: [ 97, 98, 99 ]
         },
       ]);
@@ -1370,7 +1369,7 @@
 
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
       test = instance.swap(
-        $SC.Integer(1), $SC.Integer(3)
+        $.Integer(1), $.Integer(3)
       );
       expect(test).to.equal(instance)
         .that.is.a("SCArray").and.eqls([ 1, 4, 3, 2, 5 ]);
@@ -1403,7 +1402,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
 
       test = instance.wrapAt(
-        $SC.Integer(7)
+        $.Integer(7)
       );
       expect(test).to.be.a("SCInteger").that.equals(3);
     });
@@ -1413,7 +1412,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
 
       test = instance.wrapPut(
-        $SC.Integer(7), $SC.Integer(0)
+        $.Integer(7), $.Integer(0)
       );
       expect(test).to.equals(instance)
         .that.is.a("SCArray").and.eqls([ 1, 2, 0, 4, 5 ]);

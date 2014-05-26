@@ -3,7 +3,7 @@
 
   require("./sc");
 
-  sc.lang.$SC = function(name) {
+  sc.lang.$ = function(name) {
     return sc.lang.klass.get(name);
   };
 

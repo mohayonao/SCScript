@@ -5,16 +5,16 @@
 
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("SCFunction", function() {
     var SCFunction, SCObject;
     before(function() {
-      SCFunction = $SC("Function");
-      SCObject = $SC("Object");
+      SCFunction = $("Function");
+      SCObject = $("Object");
       this.createInstance = function(func) {
-        return $SC.Function(func || function() {
+        return $.Function(func || function() {
         });
       };
     });
@@ -108,7 +108,7 @@
       expect(spy).to.be.calledLastIn(test);
       spy.reset();
 
-      test = instance.valueArray($SC.Array([ $arg1, $arg2, $arg3 ]));
+      test = instance.valueArray($.Array([ $arg1, $arg2, $arg3 ]));
       expect(spy).to.be.calledWith($arg1, $arg2, $arg3);
       expect(spy).to.be.calledLastIn(test);
     }));
@@ -151,8 +151,8 @@
       var $n;
 
       spy = this.spy(sc.test.func);
-      $n = $SC.Integer(3);
-      this.stub($SC("Array"), "fill", spy);
+      $n = $.Integer(3);
+      this.stub($("Array"), "fill", spy);
 
       instance = this.createInstance();
       test = instance.dup($n);
@@ -186,10 +186,10 @@
       var spy, $handler;
 
       spy = this.spy();
-      $handler = $SC.Function(spy);
+      $handler = $.Function(spy);
 
       instance = this.createInstance(function() {
-        return $SC.Integer(1);
+        return $.Integer(1);
       });
 
       test = instance.protect($handler);
@@ -201,7 +201,7 @@
       var spy, $handler;
 
       spy = this.spy();
-      $handler = $SC.Function(spy);
+      $handler = $.Function(spy);
 
       instance = this.createInstance(function() {
         throw new Error("error");
@@ -218,7 +218,7 @@
       testCase(this, [
         {
           source: function() {
-            return $SC.False();
+            return $.False();
           },
           args: [
             "\\ng",
@@ -228,7 +228,7 @@
         },
         {
           source: function() {
-            return $SC.False();
+            return $.False();
           },
           args: [
             "\\ng",
@@ -239,7 +239,7 @@
         },
         {
           source: function() {
-            return $SC.False();
+            return $.False();
           },
           args: [
             "\\ng",
@@ -292,8 +292,8 @@
       expect(test).to.be.a("SCFunction");
 
       test = test.value(
-        $SC.Array([ $SC.Integer( 1), $SC.Integer( 2)                  ]),
-        $SC.Array([ $SC.Integer(10), $SC.Integer(20), $SC.Integer(30) ])
+        $.Array([ $.Integer( 1), $.Integer( 2)                  ]),
+        $.Array([ $.Integer(10), $.Integer(20), $.Integer(30) ])
       );
       expect(test).to.be.a("SCArray").that.eqls([ 11, 22, 31 ]);
     });

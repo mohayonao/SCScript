@@ -3,20 +3,19 @@
 
   require("./Dictionary");
 
-  var $ = sc.test.$;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCDictionary", function() {
     var SCDictionary, SCAssociation, SCArray, SCSet;
     before(function() {
-      SCDictionary  = $SC("Dictionary");
-      SCAssociation = $SC("Association");
-      SCArray = $SC("Array");
-      SCSet   = $SC("Set");
+      SCDictionary  = $("Dictionary");
+      SCAssociation = $("Association");
+      SCArray = $("Array");
+      SCSet   = $("Set");
       this.createInstance = function(list) {
-        return SCDictionary.newFrom(list ? $(list) : $SC.Array());
+        return SCDictionary.newFrom(list ? sc.test.encode(list) : $.Array());
       };
     });
     it("#valueOf", function() {
@@ -29,9 +28,9 @@
     it("#$newFrom", function() {
       var instance;
 
-      instance = SCDictionary.newFrom($SC.Array([
-        $SC.Integer(1), $SC.Integer(2),
-        $SC.Integer(3), $SC.Integer(4),
+      instance = SCDictionary.newFrom($.Array([
+        $.Integer(1), $.Integer(2),
+        $.Integer(3), $.Integer(4),
       ]));
 
       expect(instance).to.be.a("SCDictionary").that.eqls({ 1:2, 3: 4 });
@@ -49,9 +48,9 @@
           result: null
         },
         {
-          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
-          args  : [ $SC.Integer(0) ],
-          result: $SC.Float(1.0)
+          source: [ $.Integer(0), $.Integer(1), $.Float(0.0), $.Float(1.0) ],
+          args  : [ $.Integer(0) ],
+          result: $.Float(1.0)
         },
       ]);
     });
@@ -101,7 +100,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ SCAssociation.new($SC.Integer(5), $SC.Integer(6)) ],
+          args  : [ SCAssociation.new($.Integer(5), $.Integer(6)) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         },
@@ -111,19 +110,19 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $SC.Integer(3), $SC.Nil() ],
+          args  : [ $.Integer(3), $.Nil() ],
           result: this,
           after : { 1: 2 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $SC.Integer(3), $SC.Integer(5) ],
+          args  : [ $.Integer(3), $.Integer(5) ],
           result: this,
           after : { 1: 2, 3: 5 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $SC.Integer(5), $SC.Integer(6) ],
+          args  : [ $.Integer(5), $.Integer(6) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         },
@@ -133,7 +132,7 @@
       testCase(this, [
         {
           source: [ 1, 2 ],
-          args  : [ SCDictionary.newFrom($( [ 1, 2, 3, 4, 5, 6 ] )) ],
+          args  : [ SCDictionary.newFrom(sc.test.encode( [ 1, 2, 3, 4, 5, 6 ] )) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         }
@@ -143,7 +142,7 @@
       testCase(this, [
         {
           source: [ 1, 2 ],
-          args  : [ $( [ 1, 2, 3, 4, 5, 6 ] ) ],
+          args  : [ sc.test.encode( [ 1, 2, 3, 4, 5, 6 ] ) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         }
@@ -158,7 +157,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ $([ 2, 3, 5 ]) ],
+          args  : [ sc.test.encode([ 2, 3, 5 ]) ],
           result: [ 3, 4, 5, 6 ]
         },
       ]);
@@ -168,12 +167,12 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ 3 ],
-          result: SCAssociation.new($SC.Integer(3), $SC.Integer(4))
+          result: SCAssociation.new($.Integer(3), $.Integer(4))
         },
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ 4 ],
-          result: SCAssociation.new($SC.Nil(), $SC.Nil())
+          result: SCAssociation.new($.Nil(), $.Nil())
         },
       ]);
     });
@@ -182,7 +181,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ 3, 0 ],
-          result: SCAssociation.new($SC.Integer(3), $SC.Integer(4))
+          result: SCAssociation.new($.Integer(3), $.Integer(4))
         },
         {
           source: [ 1, 2, 3, 4 ],
@@ -195,7 +194,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          result: SCSet.newFrom($([ 1, 3 ]))
+          result: SCSet.newFrom(sc.test.encode([ 1, 3 ]))
         },
         {
           source: [ 1, 2, 3, 4 ],
@@ -296,7 +295,7 @@
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $.Function(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -311,7 +310,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($key, $value, $i) {
-            return $SC.Array([ $key, $value, $i ]);
+            return $.Array([ $key, $value, $i ]);
           } ],
           result: this,
           after : { 1: [ 1, 2, 0 ], 3: [ 3, 4, 1 ] }
@@ -323,7 +322,7 @@
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $.Function(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -339,7 +338,7 @@
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $.Function(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -355,7 +354,7 @@
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $.Function(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -371,7 +370,7 @@
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $.Function(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -387,7 +386,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($elem, $key) {
-            return $SC.Array([ $elem, $key ]);
+            return $.Array([ $elem, $key ]);
           } ],
           result: { 1: [ 2, 1 ], 3: [ 4, 3 ] }
         },
@@ -398,7 +397,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($elem, $key) {
-            return $SC.Boolean($key.valueOf() === 1);
+            return $.Boolean($key.valueOf() === 1);
           } ],
           result: { 1: 2 }
         },
@@ -409,7 +408,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($elem, $key) {
-            return $SC.Boolean($key.valueOf() === 1);
+            return $.Boolean($key.valueOf() === 1);
           } ],
           result: { 3: 4 }
         },
@@ -432,7 +431,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args: [
-            SCDictionary.newFrom($([ 5, 6, 7, 8 ])),
+            SCDictionary.newFrom(sc.test.encode([ 5, 6, 7, 8 ])),
             function($a, $b) {
               return $a ["+"] ($b);
             },
@@ -442,7 +441,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args: [
-            SCDictionary.newFrom($([ 3, 4, 5, 6 ])),
+            SCDictionary.newFrom(sc.test.encode([ 3, 4, 5, 6 ])),
             function($a, $b) {
               return $a ["+"] ($b);
             },
@@ -453,7 +452,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args: [
-            SCDictionary.newFrom($([ 1, 2, 3, 4 ])),
+            SCDictionary.newFrom(sc.test.encode([ 1, 2, 3, 4 ])),
             function($a, $b) {
               return $a ["+"] ($b);
             },
@@ -484,8 +483,8 @@
       var spy, $function, $sortFunc;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
-      $sortFunc = $SC.Function(function($a, $b) {
+      $function = $.Function(spy);
+      $sortFunc = $.Function(function($a, $b) {
         return $b ["<="] ($a);
       });
 
@@ -571,9 +570,9 @@
   describe("SCIdentityDictionary", function() {
     var SCIdentityDictionary;
     before(function() {
-      SCIdentityDictionary = $SC("IdentityDictionary");
+      SCIdentityDictionary = $("IdentityDictionary");
       this.createInstance = function(list) {
-        return SCIdentityDictionary.newFrom(list ? $(list) : $SC.Array());
+        return SCIdentityDictionary.newFrom(list ? sc.test.encode(list) : $.Array());
       };
     });
     it("#valueOf", function() {
@@ -631,14 +630,14 @@
     it("#at", function() {
       testCase(this, [
         {
-          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
-          args  : [ $SC.Integer(0) ],
-          result: $SC.Integer(1)
+          source: [ $.Integer(0), $.Integer(1), $.Float(0.0), $.Float(1.0) ],
+          args  : [ $.Integer(0) ],
+          result: $.Integer(1)
         },
         {
-          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
-          args  : [ $SC.Float(0.0) ],
-          result: $SC.Float(1.0)
+          source: [ $.Integer(0), $.Integer(1), $.Float(0.0), $.Float(1.0) ],
+          args  : [ $.Float(0.0) ],
+          result: $.Float(1.0)
         },
       ]);
     });
@@ -661,13 +660,13 @@
     it("#findKeyForValue", function() {
       testCase(this, [
         {
-          source: [ $SC.Integer(0), $SC.Integer(1) ],
-          args  : [ $SC.Integer(1) ],
-          result: $SC.Integer(0)
+          source: [ $.Integer(0), $.Integer(1) ],
+          args  : [ $.Integer(1) ],
+          result: $.Integer(0)
         },
         {
-          source: [ $SC.Integer(0), $SC.Integer(1) ],
-          args  : [ $SC.Float(1.0) ],
+          source: [ $.Integer(0), $.Integer(1) ],
+          args  : [ $.Float(1.0) ],
           result: null
         },
       ]);

@@ -3,13 +3,13 @@
 
   require("./Ref");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCRef", function() {
     var SCRef, $nil;
     before(function() {
-      SCRef = $SC("Ref");
-      $nil = $SC.Nil();
+      SCRef = $("Ref");
+      $nil = $.Nil();
       this.createInstance = function(value) {
         return SCRef.new(value || $nil);
       };

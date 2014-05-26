@@ -3,19 +3,19 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var klass = sc.lang.klass;
 
   klass.refine("Class", function(spec) {
     spec.class = function() {
       if (this._isMetaClass) {
-        return $SC("Class");
+        return $("Class");
       }
-      return $SC("Meta_" + this._name);
+      return $("Meta_" + this._name);
     };
 
     spec.name = function() {
-      return $SC.String(this._name);
+      return $.String(this._name);
     };
 
     // TODO: implements superclass
@@ -83,7 +83,7 @@ SCScript.install(function(sc) {
       for (var i = 97; i <= 122; i++) {
         this["_$" + String.fromCharCode(i)] = $nil;
       }
-      // this._$s = $SC("Server").default(); // in SCMain
+      // this._$s = $("Server").default(); // in SCMain
     };
 
     (function() {

@@ -3,8 +3,8 @@ SCScript.install(function(sc) {
 
   require("../Streams/Stream");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var random = sc.libs.random;
 
   sc.lang.klass.define("Thread", function(spec, utils) {
@@ -25,7 +25,7 @@ SCScript.install(function(sc) {
     };
 
     spec.state = function() {
-      return $SC.Integer(this._state);
+      return $.Integer(this._state);
     };
 
     // spec.parent = function() {
@@ -119,7 +119,7 @@ SCScript.install(function(sc) {
     spec.copy = utils.nop;
 
     // spec.isPlaying = function() {
-    //   return $SC.Boolean(this._state._ === 5);
+    //   return $.Boolean(this._state._ === 5);
     // };
 
     // spec.threadPlayer = function() {
@@ -145,17 +145,17 @@ SCScript.install(function(sc) {
     }, "seed");
 
     spec.randData_ = fn(function($data) {
-      this._randgen.x = $data.at($SC.Integer(0)).__int__();
-      this._randgen.y = $data.at($SC.Integer(1)).__int__();
-      this._randgen.z = $data.at($SC.Integer(2)).__int__();
+      this._randgen.x = $data.at($.Integer(0)).__int__();
+      this._randgen.y = $data.at($.Integer(1)).__int__();
+      this._randgen.z = $data.at($.Integer(2)).__int__();
       return this;
     }, "data");
 
     spec.randData = function() {
-      return $SC("Int32Array").newFrom($SC.Array([
-        $SC.Integer(this._randgen.x),
-        $SC.Integer(this._randgen.y),
-        $SC.Integer(this._randgen.z),
+      return $("Int32Array").newFrom($.Array([
+        $.Integer(this._randgen.x),
+        $.Integer(this._randgen.y),
+        $.Integer(this._randgen.z),
       ]));
     };
 

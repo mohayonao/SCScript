@@ -11,7 +11,7 @@
     after(function() {
       sc.lang = sc_lang;
     });
-    it("should call given function with sc.lang.$SC", function() {
+    it("should call given function with sc.lang.$", function() {
       var func = function() {};
 
       sc.lang = {

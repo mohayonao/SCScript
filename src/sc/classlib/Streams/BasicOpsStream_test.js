@@ -3,12 +3,12 @@
 
   require("./BasicOpsStream");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCUnaryOpStream", function() {
     var SCUnaryOpStream;
     before(function() {
-      SCUnaryOpStream = $SC("UnaryOpStream");
+      SCUnaryOpStream = $("UnaryOpStream");
       this.createInstance = function() {
         return SCUnaryOpStream.new();
       };
@@ -24,7 +24,7 @@
   describe("SCBinaryOpStream", function() {
     var SCBinaryOpStream;
     before(function() {
-      SCBinaryOpStream = $SC("BinaryOpStream");
+      SCBinaryOpStream = $("BinaryOpStream");
       this.createInstance = function() {
         return SCBinaryOpStream.new();
       };
@@ -40,7 +40,7 @@
   describe("SCBinaryOpXStream", function() {
     var SCBinaryOpXStream;
     before(function() {
-      SCBinaryOpXStream = $SC("BinaryOpXStream");
+      SCBinaryOpXStream = $("BinaryOpXStream");
       this.createInstance = function() {
         return SCBinaryOpXStream.new();
       };
@@ -56,7 +56,7 @@
   describe("SCNAryOpStream", function() {
     var SCNAryOpStream;
     before(function() {
-      SCNAryOpStream = $SC("NAryOpStream");
+      SCNAryOpStream = $("NAryOpStream");
       this.createInstance = function() {
         return SCNAryOpStream.new();
       };

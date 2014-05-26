@@ -5,14 +5,14 @@
 
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCAbstractFunction", function() {
     var SCAbstractFunction;
     before(function() {
-      SCAbstractFunction = $SC("AbstractFunction");
+      SCAbstractFunction = $("AbstractFunction");
       this.createInstance = function(func) {
-        var instance = $SC.Function(func || function() {});
+        var instance = $.Function(func || function() {});
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "AbstractFunction", testMethod);
         return instance;
@@ -218,7 +218,7 @@
         this.stub(instance, "composeUnaryOp", sc.test.func);
 
         test = instance[methodName]();
-        expect(instance.composeUnaryOp).to.be.calledWith($SC.Symbol(methodName));
+        expect(instance.composeUnaryOp).to.be.calledWith($.Symbol(methodName));
         expect(instance.composeUnaryOp).to.be.calledLastIn(test);
       }));
     });
@@ -230,7 +230,7 @@
       this.stub(instance, "composeUnaryOp", sc.test.func);
 
       test = instance.ref();
-      expect(instance.composeUnaryOp).to.be.calledWith($SC.Symbol("asRef"));
+      expect(instance.composeUnaryOp).to.be.calledWith($.Symbol("asRef"));
       expect(instance.composeUnaryOp).to.be.calledLastIn(test);
     }));
 
@@ -301,7 +301,7 @@
 
         test = instance[methodName]($function, $adverb);
         expect(instance.composeBinaryOp).to.be.calledWith(
-          $SC.Symbol(methodName), $function, $adverb
+          $.Symbol(methodName), $function, $adverb
         );
         expect(instance.composeBinaryOp).to.be.calledLastIn(test);
       }));
@@ -317,7 +317,7 @@
 
       test = instance.rotate($function);
       expect(instance.composeBinaryOp).to.be.calledWith(
-        $SC.Symbol("rotate"), $function
+        $.Symbol("rotate"), $function
       );
       expect(instance.composeBinaryOp).to.be.calledLastIn(test);
     }));
@@ -332,7 +332,7 @@
 
       test = instance.dist($function);
       expect(instance.composeBinaryOp).to.be.calledWith(
-        $SC.Symbol("dist"), $function
+        $.Symbol("dist"), $function
       );
       expect(instance.composeBinaryOp).to.be.calledLastIn(test);
     }));
@@ -342,7 +342,7 @@
     });
     it("#imag", function() {
       testCase(this, [
-        [ null, [], $SC.Float(0.0) ]
+        [ null, [], $.Float(0.0) ]
       ]);
     });
     it("#clip", sinon.test(function() {
@@ -653,7 +653,7 @@
       spy = this.spy(sc.test.func);
       $result = sc.test.object({
         rate: function() {
-          return $SC.Symbol(rate);
+          return $.Symbol(rate);
         }
       });
       this.stub(sc.lang.klass, "get").withArgs("K2A").returns(sc.test.object({
@@ -695,11 +695,11 @@
   describe("SCUnaryOpFunction", function() {
     var SCUnaryOpFunction;
     before(function() {
-      SCUnaryOpFunction = $SC("UnaryOpFunction");
+      SCUnaryOpFunction = $("UnaryOpFunction");
       this.createInstance = function() {
         var instance;
 
-        instance = $SC.Function(function($a, $b) {
+        instance = $.Function(function($a, $b) {
           return $a ["+"] ($b);
         });
         instance = instance.neg();
@@ -712,7 +712,7 @@
 
       instance = this.createInstance("{|a, b| a + b }.neg ");
 
-      test = instance.value($SC.Integer(10), $SC.Integer(100));
+      test = instance.value($.Integer(10), $.Integer(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#valueArray", function() {
@@ -720,8 +720,8 @@
 
       instance = this.createInstance("{|a, b| a + b }.neg ");
 
-      test = instance.valueArray($SC.Array([
-        $SC.Integer(10), $SC.Integer(100)
+      test = instance.valueArray($.Array([
+        $.Integer(10), $.Integer(100)
       ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
@@ -748,14 +748,14 @@
   describe("SCBinaryOpFunction", function() {
     var SCBinaryOpFunction;
     before(function() {
-      SCBinaryOpFunction = $SC("BinaryOpFunction");
+      SCBinaryOpFunction = $("BinaryOpFunction");
       this.createInstance = function() {
         var instance;
 
-        instance = $SC.Function(function($a, $b) {
+        instance = $.Function(function($a, $b) {
           return $a ["+"] ($b);
         });
-        instance = instance ["*"] ($SC.Integer(-1));
+        instance = instance ["*"] ($.Integer(-1));
 
         return instance;
       };
@@ -765,7 +765,7 @@
 
       instance = this.createInstance("{|a, b| a * b} * -1");
 
-      test = instance.value($SC.Integer(10), $SC.Integer(100));
+      test = instance.value($.Integer(10), $.Integer(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#valueArray", function() {
@@ -773,8 +773,8 @@
 
       instance = this.createInstance("{|a, b| a * b} * -1");
 
-      test = instance.valueArray($SC.Array([
-        $SC.Integer(10), $SC.Integer(100)
+      test = instance.valueArray($.Array([
+        $.Integer(10), $.Integer(100)
       ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
@@ -801,14 +801,14 @@
   describe("SCNAryOpFunction", function() {
     var SCNAryOpFunction;
     before(function() {
-      SCNAryOpFunction = $SC("NAryOpFunction");
+      SCNAryOpFunction = $("NAryOpFunction");
       this.createInstance = function() {
         var instance;
 
-        instance = $SC.Function(function($a, $b) {
+        instance = $.Function(function($a, $b) {
           return $a ["+"] ($b);
         });
-        instance = instance.wrap($SC.Integer(-199), $SC.Integer(20));
+        instance = instance.wrap($.Integer(-199), $.Integer(20));
 
         return instance;
       };
@@ -818,7 +818,7 @@
 
       instance = this.createInstance("{|a, b| a + b}.wrap(-199, 20)");
 
-      test = instance.value($SC.Integer(10), $SC.Integer(100));
+      test = instance.value($.Integer(10), $.Integer(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#valueArray", function() {
@@ -826,8 +826,8 @@
 
       instance = this.createInstance("{|a, b| a + b}.wrap(-199, 20)");
 
-      test = instance.valueArray($SC.Array([
-        $SC.Integer(10), $SC.Integer(100)
+      test = instance.valueArray($.Array([
+        $.Integer(10), $.Integer(100)
       ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
@@ -855,27 +855,27 @@
     var SCFunctionList;
     var $int10, $int20, $int5;
     before(function() {
-      SCFunctionList = $SC("FunctionList");
+      SCFunctionList = $("FunctionList");
       this.createInstance = function() {
-        var instance = SCFunctionList.new($SC.Array([
-          $SC.Function(function($a, $b) {
+        var instance = SCFunctionList.new($.Array([
+          $.Function(function($a, $b) {
             return $a ["+"] ($b);
           }),
-          $SC.Function(function($a, $b) {
+          $.Function(function($a, $b) {
             return $a ["-"] ($b);
           }),
-          $SC.Function(function($a, $b) {
+          $.Function(function($a, $b) {
             return $a ["*"] ($b);
           }),
-          $SC.Function(function($a, $b) {
+          $.Function(function($a, $b) {
             return $a ["/"] ($b);
           }),
         ]));
         return instance;
       };
-      $int10 = $SC.Integer(10);
-      $int20 = $SC.Integer(20);
-      $int5  = $SC.Integer(5);
+      $int10 = $.Integer(10);
+      $int20 = $.Integer(20);
+      $int5  = $.Integer(5);
     });
     describe("operate function list", function() {
       var instance;
@@ -891,7 +891,7 @@
       it("<>array", function() {
         var test;
 
-        test = instance.array_($SC.Array([ $arg1, $arg2 ]));
+        test = instance.array_($.Array([ $arg1, $arg2 ]));
         expect(test).to.be.equal(instance);
         expect(instance.array()).to.be.a("SCArray").that.eqls([
           $arg1, $arg2
@@ -939,7 +939,7 @@
 
       instance = this.createInstance();
 
-      test = instance.value($SC.Array([ $int10, $int20 ]), $int5);
+      test = instance.value($.Array([ $int10, $int20 ]), $int5);
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
       ]);
@@ -950,7 +950,7 @@
       instance = this.createInstance();
       instance = instance.flop();
 
-      test = instance.value($SC.Array([ $int10, $int20 ]), $int5);
+      test = instance.value($.Array([ $int10, $int20 ]), $int5);
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 5, 50, 2 ], [ 25, 15, 100, 4 ]
       ]);
@@ -960,8 +960,8 @@
 
       instance = this.createInstance();
 
-      test = instance.valueArray($SC.Array([
-        $SC.Array([ $int10, $int20 ]), $int5
+      test = instance.valueArray($.Array([
+        $.Array([ $int10, $int20 ]), $int5
       ]));
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
@@ -973,8 +973,8 @@
       instance = this.createInstance();
       instance = instance.flop();
 
-      test = instance.valueArray($SC.Array([
-        $SC.Array([ $int10, $int20 ]), $int5
+      test = instance.valueArray($.Array([
+        $.Array([ $int10, $int20 ]), $int5
       ]));
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 5, 50, 2 ], [ 25, 15, 100, 4 ]
@@ -993,7 +993,7 @@
       $function = sc.test.object({ value: this.spy() });
 
       instance = this.createInstance();
-      instance.array_($SC.Array([ $elem1, $elem2 ]));
+      instance.array_($.Array([ $elem1, $elem2 ]));
 
       test = instance.do($function);
       expect(test).to.equal(instance);

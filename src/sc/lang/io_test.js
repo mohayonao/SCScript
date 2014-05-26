@@ -22,5 +22,12 @@
       expect(sc.SCScript.stdout).to.be.calledWith("def");
       sc.SCScript.stdout.reset();
     }));
+    it("warn", sinon.test(function() {
+      this.stub(sc.SCScript, "stderr");
+
+      io.warn("abc");
+      expect(sc.SCScript.stderr).to.be.calledWith("abc");
+    }));
   });
+
 })();

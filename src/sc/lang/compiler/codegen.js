@@ -28,7 +28,7 @@
       stmt.head.push(indent, "var ");
       stmt.vars.push($id(id));
       if (id.charAt(0) !== "_") {
-        stmt.vars.push(" = $SC.Nil()");
+        stmt.vars.push(" = $.Nil()");
       }
       stmt.tail.push(";", "\n");
     },
@@ -37,7 +37,7 @@
         ", ", $id(id)
       );
       if (id.charAt(0) !== "_") {
-        stmt.vars.push(" = $SC.Nil()");
+        stmt.vars.push(" = $.Nil()");
       }
     },
     begin: function(stream, args) {
@@ -153,7 +153,7 @@
     if (body.length) {
       result.push(body);
     } else {
-      result.push(this.base, "return $SC.Nil();");
+      result.push(this.base, "return $.Nil();");
     }
 
     this.scope.end();
@@ -283,14 +283,14 @@
       result = [
         this.stitchWith(elements, ",\n", function(item, i) {
           return this.addIndent(this._Assign(
-            item, operator, ref + ".at($SC.Integer(" + i + "))"
+            item, operator, ref + ".$('at', [ $.Integer(" + i + ") ])"
           ));
         })
       ];
 
       if (node.remain) {
         result.push(",\n", this.addIndent(this._Assign(
-          node.remain, operator, ref + ".copyToEnd($SC.Integer(" + lastUsedIndex + "))"
+          node.remain, operator, ref + ".$('copyToEnd', [ $.Integer(" + lastUsedIndex + ") ])"
         )));
       }
 
@@ -335,31 +335,24 @@
 
   CodeGen.prototype._EqualityOperator = function(node) {
     return [
-      "$SC.Boolean(",
+      "$.Boolean(",
       this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
       ")"
     ];
   };
 
   CodeGen.prototype._BinaryExpression = function(node) {
-    var result, operator, ch;
+    var result;
 
-    result   = [ this.generate(node.left) ];
-    operator = node.operator;
+    result = [
+      this.generate(node.left),
+      ".$('" + node.operator + "', [ ", this.generate(node.right)
+    ];
 
-    ch = operator.charCodeAt(0);
-
-    if (0x61 <= ch && ch <= 0x7a) {
-      result.push(".", operator);
-    } else {
-      result.push(" ['", operator, "'] ");
-    }
-
-    result.push("(", this.generate(node.right));
     if (node.adverb) {
       result.push(", ", this.generate(node.adverb));
     }
-    result.push(")");
+    result.push(" ])");
 
     return result;
   };
@@ -398,20 +391,26 @@
       ref = this.scope.begin_ref();
       result = [
         "(" + ref + " = ", this.generate(list[0]), ", ",
-        this.generate(node.callee), ".", node.method.name, "(" + ref + "), ",
+        this.generate(node.callee), ".$('" + node.method.name + "', [ " + ref + " ]), ",
         ref + ")"
       ];
       this.scope.end_ref();
     } else {
-      args = [
-        this.stitchWith(list, ", ", function(item) {
-          return this.generate(item);
-        }),
-        this.insertKeyValueElement(node.args.keywords, hasActualArgument)
-      ];
-      result = [
-        this.generate(node.callee), ".", node.method.name, "(", args, ")"
-      ];
+      if (list.length || node.args.keywords) {
+        args = [
+          this.stitchWith(list, ", ", function(item) {
+            return this.generate(item);
+          }),
+          this.insertKeyValueElement(node.args.keywords, hasActualArgument)
+        ];
+        result = [
+          this.generate(node.callee), ".$('" + node.method.name + "', [ ", args, " ])"
+        ];
+      } else {
+        result = [
+          this.generate(node.callee), ".$('" + node.method.name + "')"
+        ];
+      }
     }
 
     return result;
@@ -426,9 +425,9 @@
     result = [
       "(" + ref + " = ",
       this.generate(node.callee),
-      ", " + ref + "." + node.method.name + ".apply(" + ref + ", ",
+      ", " + ref + ".$('" + node.method.name + "', ",
       this.insertArrayElement(node.args.list), ".concat(",
-      this.generate(node.args.expand), ".asArray()._",
+      this.generate(node.args.expand), ".$('asArray')._",
       this.insertKeyValueElement(node.args.keywords, true),
       ")))"
     ];
@@ -443,11 +442,11 @@
 
     if (opts) {
       // setter
-      result = [ "$SC.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
+      result = [ "$.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
       opts.used = true;
     } else {
       // getter
-      result = "$SC.Environment('" + node.id.name + "')";
+      result = "$.Environment('" + node.id.name + "')";
     }
 
     return result;
@@ -536,7 +535,7 @@
       return this._Statements(node.body);
     });
 
-    return [ "$SC.Function(", body ];
+    return [ "$.Function(", body ];
   };
 
   CodeGen.prototype._SegmentedFunction = function(node, args) {
@@ -628,14 +627,14 @@
       return result;
     });
 
-    return [ "$SC.SegFunction(", body ];
+    return [ "$.SegFunction(", body ];
   };
 
   CodeGen.prototype.Identifier = function(node, opts) {
     var name = node.name;
 
     if (isClassName(name)) {
-      return "$SC('" + name + "')";
+      return "$('" + name + "')";
     }
 
     if (this.scope.find(name)) {
@@ -657,13 +656,13 @@
       ref = this.scope.begin_ref();
       name = [
         "(" + ref + " = ", this.generate(opts.right),
-        ", $SC.This()." + node.name + "_(" + ref + "), " + ref + ")"
+        ", $.This().$('" + node.name + "_', [ " + ref + " ]), " + ref + ")"
       ];
       opts.used = true;
       this.scope.end_ref();
     } else {
       // getter
-      name = "$SC.This()." + node.name + "()";
+      name = "$.This().$('" + node.name + "')";
     }
 
     return name;
@@ -673,7 +672,7 @@
     var result;
 
     result = [
-      "$SC.Array(",
+      "$.Array(",
       this.insertArrayElement(node.elements),
     ];
 
@@ -689,27 +688,27 @@
   CodeGen.prototype.Literal = function(node) {
     switch (node.valueType) {
     case Token.IntegerLiteral:
-      return "$SC.Integer(" + node.value + ")";
+      return "$.Integer(" + node.value + ")";
     case Token.FloatLiteral:
-      return "$SC.Float(" + node.value + ")";
+      return "$.Float(" + node.value + ")";
     case Token.CharLiteral:
-      return "$SC.Char('" + node.value + "')";
+      return "$.Char('" + node.value + "')";
     case Token.SymbolLiteral:
-      return "$SC.Symbol('" + node.value + "')";
+      return "$.Symbol('" + node.value + "')";
     case Token.StringLiteral:
-      return "$SC.String('" + node.value + "')";
+      return "$.String('" + node.value + "')";
     case Token.TrueLiteral:
-      return "$SC.True()";
+      return "$.True()";
     case Token.FalseLiteral:
-      return "$SC.False()";
+      return "$.False()";
     }
 
-    return "$SC.Nil()";
+    return "$.Nil()";
   };
 
   CodeGen.prototype.EventExpression = function(node) {
     return [
-      "$SC.Event(", this.insertArrayElement(node.elements), ")"
+      "$.Event(", this.insertArrayElement(node.elements), ")"
     ];
   };
 
@@ -717,7 +716,7 @@
     var result, body;
 
     if (node.body.length) {
-      body = this.withFunction([ "SC" ], function() {
+      body = this.withFunction([ "" ], function() { // "" compiled as $
         return this._Statements(node.body);
       });
 
@@ -736,13 +735,13 @@
   CodeGen.prototype.ThisExpression = function(node) {
     var name = node.name;
     name = name.charAt(0).toUpperCase() + name.substr(1);
-    return [ "$SC." + name + "()" ];
+    return [ "$." + name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {
     /* istanbul ignore else */
     if (node.operator === "`") {
-      return [ "$SC.Ref(", this.generate(node.arg), ")" ];
+      return [ "$.Ref(", this.generate(node.arg), ")" ];
     }
 
     /* istanbul ignore next */
@@ -764,11 +763,11 @@
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
-    return [ "$SC.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
+    return [ "$.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
   };
 
   CodeGen.prototype.ValueMethodResult = function(node) {
-    return [ "$SC.Result(" + node.id + ")" ];
+    return [ "$.Result(" + node.id + ")" ];
   };
 
   CodeGen.prototype._Statements = function(elements) {

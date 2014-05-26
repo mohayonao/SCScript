@@ -3,15 +3,15 @@
 
   require("./Number");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("SCNumber", function() {
     var SCNumber;
     before(function() {
-      SCNumber = $SC("Number");
+      SCNumber = $("Number");
       this.createInstance = function(value) {
-        var instance = $SC.Float(typeof value === "undefined" ? 0 : value);
+        var instance = $.Float(typeof value === "undefined" ? 0 : value);
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "Number", testMethod);
         return instance;

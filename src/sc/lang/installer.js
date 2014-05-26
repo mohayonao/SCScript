@@ -1,5 +1,5 @@
 require("./compiler");
-require("./dollarSC");
+require("./dollar");
 require("./fn");
 require("./klass");
 require("./io");

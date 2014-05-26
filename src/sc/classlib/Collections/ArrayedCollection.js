@@ -4,8 +4,8 @@ SCScript.install(function(sc) {
   require("./SequenceableCollection");
 
   var slice = [].slice;
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var iterator = sc.lang.iterator;
   var rand     = sc.libs.random;
   var mathlib  = sc.libs.mathlib;
@@ -36,7 +36,7 @@ SCScript.install(function(sc) {
     // TODO: implements indexedSize
 
     spec.size = function() {
-      return $SC.Integer(this._.length);
+      return $.Integer(this._.length);
     };
 
     // TODO: implements maxSize
@@ -66,7 +66,7 @@ SCScript.install(function(sc) {
       var i;
 
       if (Array.isArray($index._)) {
-        return $SC.Array($index._.map(function($index) {
+        return $.Array($index._.map(function($index) {
           i = $index.__int__();
           if (i < 0 || this._.length <= i) {
             return $nil;
@@ -84,7 +84,7 @@ SCScript.install(function(sc) {
       var i;
 
       if (Array.isArray($index._)) {
-        return $SC.Array($index._.map(function($index) {
+        return $.Array($index._.map(function($index) {
           i = mathlib.clip_idx($index.__int__(), this._.length);
           return this._[i];
         }, this));
@@ -99,7 +99,7 @@ SCScript.install(function(sc) {
       var i;
 
       if (Array.isArray($index._)) {
-        return $SC.Array($index._.map(function($index) {
+        return $.Array($index._.map(function($index) {
           var i = mathlib.wrap_idx($index.__int__(), this._.length);
           return this._[i];
         }, this));
@@ -114,7 +114,7 @@ SCScript.install(function(sc) {
       var i;
 
       if (Array.isArray($index._)) {
-        return $SC.Array($index._.map(function($index) {
+        return $.Array($index._.map(function($index) {
           var i = mathlib.fold_idx($index.__int__(), this._.length);
           return this._[i];
         }, this));
@@ -229,7 +229,7 @@ SCScript.install(function(sc) {
       var index;
 
       index = this._.indexOf($item);
-      return index === -1 ? $nil : $SC.Integer(index);
+      return index === -1 ? $nil : $.Integer(index);
     }, "item");
 
     spec.indexOfGreaterThan = fn(function($val) {
@@ -239,7 +239,7 @@ SCScript.install(function(sc) {
       val = $val.__num__();
       for (i = 0; i < imax; ++i) {
         if (raw[i].__num__() > val) {
-          return $SC.Integer(i);
+          return $.Integer(i);
         }
       }
 
@@ -250,12 +250,12 @@ SCScript.install(function(sc) {
       var raw = this._;
       var i = 0, $i;
 
-      $i = $SC.Integer(i);
+      $i = $.Integer(i);
       while (i < raw.length) {
         if (BOOL($func.value(raw[i], $i))) {
           this.takeAt($i);
         } else {
-          $i = $SC.Integer(++i);
+          $i = $.Integer(++i);
         }
       }
 
@@ -267,13 +267,13 @@ SCScript.install(function(sc) {
 
       this._ThrowIfImmutable();
 
-      $out     = $SC.Array();
+      $out     = $.Array();
       $array   = this;
       $find    = $find.asArray();
       $replace = $replace.asArray();
-      $SC.Function(function() {
+      $.Function(function() {
         return ($index = $array.find($find)).notNil();
-      }).while($SC.Function(function() {
+      }).while($.Function(function() {
         $out = $out ["++"] ($array.keep($index)) ["++"] ($replace);
         $array = $array.drop($index ["+"] ($find.size()));
       }));
@@ -433,7 +433,7 @@ SCScript.install(function(sc) {
       this._ThrowIfImmutable();
 
       if (BOOL($aCollection.isCollection())) {
-        $aCollection.do($SC.Function(function($item) {
+        $aCollection.do($.Function(function($item) {
           $this._.push($this.__elem__($item));
         }));
       } else {
@@ -541,7 +541,7 @@ SCScript.install(function(sc) {
       var i, imax;
 
       for (i = 0, imax = this._.length; i < imax; ++i) {
-        this.put($SC.Integer(i), $start);
+        this.put($.Integer(i), $start);
         $start = $start ["+"] ($step);
       }
 
@@ -597,7 +597,7 @@ SCScript.install(function(sc) {
       for (i = 0, imax = raw.length; i < imax; ++i) {
         x += raw[i].__num__();
         if (x >= r) {
-          return $SC.Integer(i);
+          return $.Integer(i);
         }
       }
 
@@ -613,7 +613,7 @@ SCScript.install(function(sc) {
 
       $minItem = this.minItem();
       $maxItem = this.maxItem();
-      return this.collect($SC.Function(function($el) {
+      return this.collect($.Function(function($el) {
         return $el.linlin($minItem, $maxItem, $min, $max);
       }));
     }, "min=0.0; max=1.0");
@@ -632,7 +632,7 @@ SCScript.install(function(sc) {
     };
 
     spec.shape = function() {
-      return $SC.Array([ this.size() ]) ["++"] (this.at($int_0).shape());
+      return $.Array([ this.size() ]) ["++"] (this.at($int_0).shape());
     };
 
     spec.reshape = function() {
@@ -646,7 +646,7 @@ SCScript.install(function(sc) {
         size *= shape[i].__int__();
       }
 
-      $result = this.flat().wrapExtend($SC.Integer(size));
+      $result = this.flat().wrapExtend($.Integer(size));
       for (i = imax - 1; i >= 1; --i) {
         $result = $result.clump(shape[i]);
       }
@@ -660,7 +660,7 @@ SCScript.install(function(sc) {
       $index = $int_0;
       $flat  = this.flat();
 
-      return $another.deepCollect($SC.Integer(0x7FFFFFFF), $SC.Function(function() {
+      return $another.deepCollect($.Integer(0x7FFFFFFF), $.Function(function() {
         var $item = $flat.perform($indexing, $index);
         $index = $index.__inc__();
         return $item;
@@ -681,7 +681,7 @@ SCScript.install(function(sc) {
         return this.at($int_0).unbubble($depth, $levels.__dec__());
       }
 
-      return this.collect($SC.Function(function($item) {
+      return this.collect($.Function(function($item) {
         return $item.unbubble($depth.__dec__());
       }));
     }, "depth=0; levels=1");
@@ -689,12 +689,12 @@ SCScript.install(function(sc) {
     spec.bubble = fn(function($depth, $levels) {
       if ($depth.__int__() <= 0) {
         if ($levels.__int__() <= 1) {
-          return $SC.Array([ this ]);
+          return $.Array([ this ]);
         }
-        return $SC.Array([ this.bubble($depth, $levels.__dec__()) ]);
+        return $.Array([ this.bubble($depth, $levels.__dec__()) ]);
       }
 
-      return this.collect($SC.Function(function($item) {
+      return this.collect($.Function(function($item) {
         return $item.bubble($depth.__dec__(), $levels);
       }));
     }, "depth=0; levels=1");
@@ -720,7 +720,7 @@ SCScript.install(function(sc) {
       }
 
       cuts = $$cuts._.slice(1);
-      return $list.collect($SC.Function(function($item) {
+      return $list.collect($.Function(function($item) {
         return $item.slice.apply($item, cuts);
       })).unbubble();
     }, "*cuts");
@@ -738,10 +738,10 @@ SCScript.install(function(sc) {
 
       a = new Array(product);
       for (i = 0; i < product; ++i) {
-        a[i] = $SC.Integer(i);
+        a[i] = $.Integer(i);
       }
 
-      $a = $SC.Array(a);
+      $a = $.Array(a);
       return $a.reshape.apply($a, args);
     };
 
@@ -752,11 +752,11 @@ SCScript.install(function(sc) {
     // TODO: implements clumpBundles
 
     spec.includes = function($item) {
-      return $SC.Boolean(this._.indexOf($item) !== -1);
+      return $.Boolean(this._.indexOf($item) !== -1);
     };
 
     spec.asString = function() {
-      return $SC.String("[ " + this._.map(function($elem) {
+      return $.String("[ " + this._.map(function($elem) {
         return $elem.asString().__str__();
       }).join(", ") + " ]");
     };
@@ -771,13 +771,13 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.refine("RawArray", function(spec, utils) {
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     spec.archiveAsCompileString = utils.alwaysReturn$true;
     spec.archiveAsObject = utils.alwaysReturn$true;
 
     spec.rate = function() {
-      return $SC.Symbol("scalar");
+      return $.Symbol("scalar");
     };
 
     // TODO: implements readFromStream
@@ -802,7 +802,7 @@ SCScript.install(function(sc) {
 
     spec.__elem__ = function(item) {
       int8[0] = item.__int__();
-      return $SC.Integer(int8[0]);
+      return $.Integer(int8[0]);
     };
   });
 
@@ -821,7 +821,7 @@ SCScript.install(function(sc) {
 
     spec.__elem__ = function(item) {
       int16[0] = item.__int__();
-      return $SC.Integer(int16[0]);
+      return $.Integer(int16[0]);
     };
   });
 
@@ -840,7 +840,7 @@ SCScript.install(function(sc) {
 
     spec.__elem__ = function(item) {
       int32[0] = item.__int__();
-      return $SC.Integer(int32[0]);
+      return $.Integer(int32[0]);
     };
   });
 
@@ -859,7 +859,7 @@ SCScript.install(function(sc) {
 
     spec.__elem__ = function(item) {
       float32[0] = item.__num__();
-      return $SC.Float(float32[0]);
+      return $.Float(float32[0]);
     };
   });
 
@@ -878,7 +878,7 @@ SCScript.install(function(sc) {
 
     spec.__elem__ = function(item) {
       float64[0] = item.__num__();
-      return $SC.Float(float64[0]);
+      return $.Float(float64[0]);
     };
   });
 

@@ -3,8 +3,8 @@ SCScript.install(function(sc) {
 
   require("./Magnitude");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Number", function(spec, utils) {
@@ -41,7 +41,7 @@ SCScript.install(function(sc) {
     spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
       var $this = this;
 
-      return $aSeqColl.collect($SC.Function(function($item) {
+      return $aSeqColl.collect($.Function(function($item) {
         return $item.perform($aSelector, $this, $adverb);
       }));
     };
@@ -51,13 +51,13 @@ SCScript.install(function(sc) {
     spec.rho = utils.nop;
 
     spec.theta = function() {
-      return $SC.Float(0.0);
+      return $.Float(0.0);
     };
 
     spec.real = utils.nop;
 
     spec.imag = function() {
-      return $SC.Float(0.0);
+      return $.Float(0.0);
     };
 
     // TODO: implements @

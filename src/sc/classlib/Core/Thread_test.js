@@ -3,12 +3,12 @@
 
   require("./Thread");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCThread", function() {
     var SCThread;
     before(function() {
-      SCThread = $SC("Thread");
+      SCThread = $("Thread");
       this.createInstance = function() {
         return SCThread.new();
       };
@@ -96,7 +96,7 @@
   describe("SCRoutine", function() {
     var SCRoutine;
     before(function() {
-      SCRoutine = $SC("Routine");
+      SCRoutine = $("Routine");
       this.createInstance = function() {
         return SCRoutine.new();
       };

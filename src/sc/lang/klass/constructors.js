@@ -4,9 +4,9 @@
   require("./klass");
   require("../fn");
 
-  var $SC    = sc.lang.$SC;
-  var fn     = sc.lang.fn;
-  var klass  = sc.lang.klass;
+  var $     = sc.lang.$;
+  var fn    = sc.lang.fn;
+  var klass = sc.lang.klass;
 
   var $nil, $true, $false;
   var $symbols, $chars, $integers, $floats;
@@ -194,7 +194,7 @@
     constructor: SCRef
   });
 
-  // $SC
+  // $
   $nil      = new SCNil();
   $true     = new SCTrue();
   $false    = new SCFalse();
@@ -203,27 +203,27 @@
   $symbols  = {};
   $chars    = {};
 
-  $SC.Nil = function() {
+  $.Nil = function() {
     return $nil;
   };
 
-  $SC.Boolean = function($value) {
+  $.Boolean = function($value) {
     return $value ? $true : $false;
   };
 
-  $SC.True = function() {
+  $.True = function() {
     return $true;
   };
 
-  $SC.False = function() {
+  $.False = function() {
     return $false;
   };
 
-  $SC.Integer = function(value) {
+  $.Integer = function(value) {
     var instance;
 
     if (!global.isFinite(value)) {
-      return $SC.Float(+value);
+      return $.Float(+value);
     }
 
     value = value|0;
@@ -237,7 +237,7 @@
     return $integers[value];
   };
 
-  $SC.Float = function(value) {
+  $.Float = function(value) {
     var instance;
 
     value = +value;
@@ -251,7 +251,7 @@
     return $floats[value];
   };
 
-  $SC.Symbol = function(value) {
+  $.Symbol = function(value) {
     var instance;
     if (!$symbols.hasOwnProperty(value)) {
       instance = new SCSymbol();
@@ -261,7 +261,7 @@
     return $symbols[value];
   };
 
-  $SC.Char = function(value) {
+  $.Char = function(value) {
     var instance;
 
     value = String(value).charAt(0);
@@ -276,37 +276,37 @@
   };
 
 
-  $SC.Array = function(value, immutable) {
+  $.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
     instance.__immutable = !!immutable;
     return instance;
   };
 
-  $SC.String = function(value, mutable) {
+  $.String = function(value, mutable) {
     var instance = new SCString();
-    instance._ = String(value).split("").map($SC.Char);
+    instance._ = String(value).split("").map($.Char);
     instance.__immutable = !mutable;
     return instance;
   };
 
-  $SC.Event = function(value) {
+  $.Event = function(value) {
     var instance, i, imax, j;
     i = imax = j = value;
-    instance = $SC("Event").new();
+    instance = $("Event").new();
     for (i = j = 0, imax = value.length >> 1; i < imax; ++i) {
       instance.put(value[j++], value[j++]);
     }
     return instance;
   };
 
-  $SC.Function = function(value, def) {
+  $.Function = function(value, def) {
     var instance = new SCFunction();
     instance._ = def ? fn(value, def) : value;
     return instance;
   };
 
-  $SC.Ref = function(value) {
+  $.Ref = function(value) {
     var instance = new SCRef();
     instance._$value = value;
     return instance;

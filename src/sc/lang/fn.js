@@ -1,45 +1,45 @@
 (function(sc) {
   "use strict";
 
-  require("./dollarSC");
+  require("./dollar");
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   var _getDefaultValue = function(value) {
     var ch;
 
     switch (value) {
     case "nil":
-      return $SC.Nil();
+      return $.Nil();
     case "true":
-      return $SC.True();
+      return $.True();
     case "false":
-      return $SC.False();
+      return $.False();
     case "inf":
-      return $SC.Float(Infinity);
+      return $.Float(Infinity);
     case "-inf":
-      return $SC.Float(-Infinity);
+      return $.Float(-Infinity);
     }
 
     ch = value.charAt(0);
     switch (ch) {
     case "$":
-      return $SC.Char(value.charAt(1));
+      return $.Char(value.charAt(1));
     case "\\":
-      return $SC.Symbol(value.substr(1));
+      return $.Symbol(value.substr(1));
     }
 
     if (value.indexOf(".") !== -1) {
-      return $SC.Float(+value);
+      return $.Float(+value);
     }
 
-    return $SC.Integer(+value);
+    return $.Integer(+value);
   };
 
   var getDefaultValue = function(value) {
     if (value.charAt(0) === "[") {
-      return $SC.Array(value.slice(1, -2).split(",").map(function(value) {
+      return $.Array(value.slice(1, -2).split(",").map(function(value) {
         return _getDefaultValue(value.trim());
       }));
     }
@@ -77,7 +77,7 @@
       copy(args, given, Math.min(argNames.length, given.length));
 
       if (remain) {
-        args.push($SC.Array(given.slice(argNames.length)));
+        args.push($.Array(given.slice(argNames.length)));
       }
 
       return func.apply(this, args);

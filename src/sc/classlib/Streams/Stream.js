@@ -3,8 +3,8 @@ SCScript.install(function(sc) {
 
   require("../Core/AbstractFunction");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.define("Stream", function(spec, utils) {
     var BOOL   = utils.BOOL;
@@ -12,7 +12,7 @@ SCScript.install(function(sc) {
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_0 = utils.$int_0;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     spec.constructor = function SCStream() {
       this.__super__("AbstractFunction");
@@ -38,7 +38,7 @@ SCScript.install(function(sc) {
 
     spec.nextN = fn(function($n, $inval) {
       var $this = this;
-      return SCArray.fill($n, $SC.Function(function() {
+      return SCArray.fill($n, $.Function(function() {
         return $this.next($inval);
       }));
     }, "n; inval");
@@ -47,7 +47,7 @@ SCScript.install(function(sc) {
       var $array;
 
       $array = $nil;
-      this.do($SC.Function(function($item) {
+      this.do($.Function(function($item) {
         $array = $array.add($item);
       }), $inval);
 
@@ -60,7 +60,7 @@ SCScript.install(function(sc) {
 
     spec.putN = fn(function($n, $item) {
       var $this = this;
-      $n.do($SC.Function(function() {
+      $n.do($.Function(function() {
         $this.put($item);
       }));
       return this;
@@ -68,7 +68,7 @@ SCScript.install(function(sc) {
 
     spec.putAll = fn(function($aCollection) {
       var $this = this;
-      $aCollection.do($SC.Function(function($item) {
+      $aCollection.do($.Function(function($item) {
         $this.put($item);
       }));
       return this;
@@ -79,10 +79,10 @@ SCScript.install(function(sc) {
       var $item, $i;
 
       $i = $int_0;
-      $SC.Function(function() {
+      $.Function(function() {
         $item = $this.next($inval);
         return $item.notNil();
-      }).while($SC.Function(function() { // TODO: use SegFunction
+      }).while($.Function(function() { // TODO: use SegFunction
         $function.value($item, $i);
         $i = $i.__inc__();
         return $i;
@@ -93,15 +93,15 @@ SCScript.install(function(sc) {
 
     spec.subSample = fn(function($offset, $skipSize) {
       var $this = this;
-      var SCRoutine = $SC("Routine");
+      var SCRoutine = $("Routine");
 
-      return SCRoutine.new($SC.Function(function() {
-        $offset.do($SC.Function(function() {
+      return SCRoutine.new($.Function(function() {
+        $offset.do($.Function(function() {
           $this.next();
         }));
-        $SC.Function(function() {
+        $.Function(function() {
           $this.next().yield();
-          $skipSize.do($SC.Function(function() {
+          $skipSize.do($.Function(function() {
             $this.next();
           }));
         }).loop();
@@ -113,10 +113,10 @@ SCScript.install(function(sc) {
       var $item, $i;
 
       $i = $int_0;
-      $SC.Function(function() {
+      $.Function(function() {
         $item = $this.next($item);
         return $item.notNil();
-      }).while($SC.Function(function() { // TODO: use SegFunction
+      }).while($.Function(function() { // TODO: use SegFunction
         $function.value($item, $i);
         $i = $i.__inc__();
         return $i;
@@ -129,7 +129,7 @@ SCScript.install(function(sc) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $SC.Function(function($inval) {
+      $nextFunc = $.Function(function($inval) {
         var $nextval;
 
         $nextval = $this.next($inval);
@@ -138,69 +138,69 @@ SCScript.install(function(sc) {
         }
         return $nil;
       });
-      $resetFunc = $SC.Function(function() {
+      $resetFunc = $.Function(function() {
         return $this.reset();
       });
 
-      return $SC("FuncStream").new($nextFunc, $resetFunc);
+      return $("FuncStream").new($nextFunc, $resetFunc);
     }, "argCollectFunc");
 
     spec.reject = fn(function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $SC.Function(function($inval) {
+      $nextFunc = $.Function(function($inval) {
         var $nextval;
 
         $nextval = $this.next($inval);
-        $SC.Function(function() {
-          return $nextval.notNil().and($SC.Function(function() {
+        $.Function(function() {
+          return $nextval.notNil().and($.Function(function() {
             return $function.value($nextval, $inval);
           }));
-        }).while($SC.Function(function() { // TODO: use SegFunction
+        }).while($.Function(function() { // TODO: use SegFunction
           $nextval = $this.next($inval);
           return $nextval;
         }));
 
         return $nextval;
       });
-      $resetFunc = $SC.Function(function() {
+      $resetFunc = $.Function(function() {
         return $this.reset();
       });
 
-      return $SC("FuncStream").new($nextFunc, $resetFunc);
+      return $("FuncStream").new($nextFunc, $resetFunc);
     }, "function");
 
     spec.select = fn(function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $SC.Function(function($inval) {
+      $nextFunc = $.Function(function($inval) {
         var $nextval;
 
         $nextval = $this.next($inval);
-        $SC.Function(function() {
-          return $nextval.notNil().and($SC.Function(function() {
+        $.Function(function() {
+          return $nextval.notNil().and($.Function(function() {
             return $function.value($nextval, $inval).not();
           }));
-        }).while($SC.Function(function() { // TODO: use SegFunction
+        }).while($.Function(function() { // TODO: use SegFunction
           $nextval = $this.next($inval);
           return $nextval;
         }));
 
         return $nextval;
       });
-      $resetFunc = $SC.Function(function() {
+      $resetFunc = $.Function(function() {
         return $this.reset();
       });
 
-      return $SC("FuncStream").new($nextFunc, $resetFunc);
+      return $("FuncStream").new($nextFunc, $resetFunc);
     }, "function");
 
     spec.dot = fn(function($function, $stream) {
       var $this = this;
 
-      return $SC("FuncStream").new($SC.Function(function($inval) {
+      return $("FuncStream").new($.Function(function($inval) {
         var $x, $y;
 
         $x = $this.next($inval);
@@ -211,7 +211,7 @@ SCScript.install(function(sc) {
         }
 
         return $nil;
-      }), $SC.Function(function() {
+      }), $.Function(function() {
         $this.reset();
         return $stream.reset();
       }));
@@ -224,7 +224,7 @@ SCScript.install(function(sc) {
       $nextx = this.next();
       $nexty = $stream.next();
 
-      return $SC("FuncStream").new($SC.Function(function($inval) {
+      return $("FuncStream").new($.Function(function($inval) {
         var $val;
 
         if ($nextx === $nil) {
@@ -247,7 +247,7 @@ SCScript.install(function(sc) {
             return $val;
           }
         }
-      }), $SC.Function(function() {
+      }), $.Function(function() {
         $this.reset();
         $stream.reset();
         $nextx = $this.next();
@@ -265,7 +265,7 @@ SCScript.install(function(sc) {
       var $reset;
 
       $reset = $false;
-      return $SC("Routine").new($SC.Function(function($inval) {
+      return $("Routine").new($.Function(function($inval) {
         if (BOOL($reset)) {
           $this.reset();
           $stream.reset();
@@ -277,27 +277,27 @@ SCScript.install(function(sc) {
     }, "stream");
 
     spec.collate = fn(function($stream) {
-      return this.interlace($SC.Function(function($x, $y) {
+      return this.interlace($.Function(function($x, $y) {
         return $x ["<"] ($y);
       }), $stream);
     }, "stream");
 
     spec["<>"] = function($obj) {
-      return $SC("Pchain").new(this, $obj).asStream();
+      return $("Pchain").new(this, $obj).asStream();
     };
 
     spec.composeUnaryOp = fn(function($argSelector) {
-      return $SC("UnaryOpStream").new($argSelector, this);
+      return $("UnaryOpStream").new($argSelector, this);
     }, "argSelector");
 
     spec.composeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
-        return $SC("BinaryOpStream").new(
+        return $("BinaryOpStream").new(
           $argSelector, this, $argStream.asStream()
         );
       }
       if ($adverb.__sym__() === "x") {
-        return $SC("BinaryOpXStream").new(
+        return $("BinaryOpXStream").new(
           $argSelector, this, $argStream.asStream()
         );
       }
@@ -307,12 +307,12 @@ SCScript.install(function(sc) {
 
     spec.reverseComposeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
-        return $SC("BinaryOpStream").new(
+        return $("BinaryOpStream").new(
           $argSelector, $argStream.asStream(), this
         );
       }
       if ($adverb.__sym__() === "x") {
-        return $SC("BinaryOpXStream").new(
+        return $("BinaryOpXStream").new(
           $argSelector, $argStream.asStream(), this
         );
       }
@@ -321,8 +321,8 @@ SCScript.install(function(sc) {
     }, "argSelector; argStream; adverb");
 
     spec.composeNAryOp = fn(function($argSelector, $anArgList) {
-      return $SC("NAryOpStream").new(
-        $argSelector, this, $anArgList.collect($SC.Function(function($_) {
+      return $("NAryOpStream").new(
+        $argSelector, this, $anArgList.collect($.Function(function($_) {
           return $_.asStream();
         }))
       );
@@ -332,10 +332,10 @@ SCScript.install(function(sc) {
       var $this = this;
       var $outval;
 
-      $SC.Function(function() {
+      $.Function(function() {
         $outval = $this.value($inval);
         return $outval.notNil();
-      }).while($SC.Function(function() { // TODO: use SegFunction
+      }).while($.Function(function() { // TODO: use SegFunction
         $inval = $outval.yield();
         return $inval;
       }));
@@ -344,12 +344,12 @@ SCScript.install(function(sc) {
     }, "inval");
 
     spec.asEventStreamPlayer = fn(function($protoEvent) {
-      return $SC("EventStreamPlayer").new(this, $protoEvent);
+      return $("EventStreamPlayer").new(this, $protoEvent);
     }, "protoEvent");
 
     spec.play = fn(function($clock, $quant) {
       if ($clock === $nil) {
-        $clock = $SC("TempoClock").default();
+        $clock = $("TempoClock").default();
       }
       $clock.play(this, $quant.asQuant());
       return this;
@@ -360,8 +360,8 @@ SCScript.install(function(sc) {
     spec.repeat = fn(function($repeats) {
       var $this = this;
 
-      return $SC.Function(function($inval) {
-        return $repeats.value($inval).do($SC.Function(function() {
+      return $.Function(function($inval) {
+        return $repeats.value($inval).do($.Function(function() {
           $inval = $this.reset().embedInStream($inval);
           return $inval;
         }));

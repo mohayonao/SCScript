@@ -2,11 +2,11 @@
   "use strict";
 
   require("../sc");
-  require("../dollarSC");
+  require("../dollar");
   require("../../libs/strlib");
 
-  var slice = [].slice;
-  var $SC    = sc.lang.$SC;
+  var slice  = [].slice;
+  var $      = sc.lang.$;
   var strlib = sc.libs.strlib;
 
   var klass       = {};
@@ -63,7 +63,7 @@
 
     Object.keys(spec).forEach(function(methodName) {
       if (methodName !== "constructor") {
-        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+        if (methodName !== "$" && methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
           setMethod(classMethods, methodName.substr(1), spec[methodName]);
         } else {
           setMethod(instanceMethods, methodName, spec[methodName]);
@@ -160,7 +160,7 @@
 
     delete that.__superClassP;
 
-    return result || /* istanbul ignore next */ $SC.Nil();
+    return result || /* istanbul ignore next */ $.Nil();
   };
 
   klass.define = function(className, spec) {
@@ -284,7 +284,7 @@
   klass.refine("Object", function(spec) {
     spec.$new = function() {
       if (this.__Spec === SCClass) {
-        return $SC.Nil();
+        return $.Nil();
       }
       return new this.__Spec(slice.call(arguments));
     };
@@ -293,12 +293,28 @@
 
       instance = new this.__Spec(slice.call(arguments));
       Object.keys(dict).forEach(function(key) {
-        instance["_$" + key] = dict[key] || $SC.Nil();
+        instance["_$" + key] = dict[key] || $.Nil();
       });
 
       return instance;
     };
     spec.$initClass = function() {
+    };
+
+    spec.$ = function(methodName, args) {
+      if (this[methodName]) {
+        if (args) {
+          return this[methodName].apply(this, args);
+        } else {
+          return this[methodName]();
+        }
+      }
+      return this._doesNotUnderstand(methodName, args);
+    };
+
+    spec._doesNotUnderstand = function(methodName) {
+      throw new Error("RECEIVER " + this.__str__() + ": " +
+                      "Message '" + methodName + "' not understood.");
     };
   });
 

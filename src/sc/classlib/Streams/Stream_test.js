@@ -3,12 +3,12 @@
 
   require("./Stream");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCStream", function() {
     var SCStream;
     before(function() {
-      SCStream = $SC("Stream");
+      SCStream = $("Stream");
       this.createInstance = function() {
         return SCStream.new();
       };
@@ -87,7 +87,7 @@
   describe("SCPauseStream", function() {
     var SCPauseStream;
     before(function() {
-      SCPauseStream = $SC("PauseStream");
+      SCPauseStream = $("PauseStream");
       this.createInstance = function() {
         return SCPauseStream.new();
       };
@@ -148,7 +148,7 @@
   describe("SCTask", function() {
     var SCTask;
     before(function() {
-      SCTask = $SC("Task");
+      SCTask = $("Task");
       this.createInstance = function() {
         return SCTask.new();
       };

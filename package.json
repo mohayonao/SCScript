@@ -15,7 +15,7 @@
     }
   ],
   "engines": {
-    "node": ">=0.8.0"
+    "node": ">=0.10.0"
   },
   "main": "index.js",
   "devDependencies": {
@@ -29,8 +29,8 @@
     "grunt-jscs-checker": "^0.4.4",
     "grunt-plato": "^1.0.0",
     "istanbul": "^0.2.10",
-    "mocha": "^1.18.2",
-    "sinon": "^1.9.1",
+    "mocha": "^1.19.0",
+    "sinon": "^1.10.0",
     "sinon-chai": "^2.5.0"
   },
   "scripts": {

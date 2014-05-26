@@ -9,7 +9,6 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Dictionary", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -68,7 +67,7 @@ SCScript.install(function(sc) {
       var ret = null;
 
       this.keysValuesDo($.Function(function($k, $v) {
-        if (BOOL($k.matchItem($key))) {
+        if ($k.matchItem($key).__bool__()) {
           ret = $v;
           return sc.C.LOOP_BREAK;
         }
@@ -211,7 +210,7 @@ SCScript.install(function(sc) {
       var $ret = null;
 
       this.do($.Function(function($item2) {
-        if (BOOL($item1 ["=="] ($item2))) {
+        if ($item1 ["=="] ($item2).__bool__()) {
           $ret = $true;
           return sc.C.LOOP_BREAK;
         }
@@ -335,7 +334,7 @@ SCScript.install(function(sc) {
 
       $res = this.class().new(this.size());
       this.keysValuesDo($.Function(function($key, $elem) {
-        if (BOOL($function.value($elem, $key))) {
+        if ($function.value($elem, $key).__bool__()) {
           $res.put($key, $elem);
         }
       }));
@@ -348,7 +347,7 @@ SCScript.install(function(sc) {
 
       $res = this.class().new(this.size());
       this.keysValuesDo($.Function(function($key, $elem) {
-        if (!BOOL($function.value($elem, $key))) {
+        if (!$function.value($elem, $key).__bool__()) {
           $res.put($key, $elem);
         }
       }));
@@ -377,7 +376,7 @@ SCScript.install(function(sc) {
       $myKeys    = this.keys();
       $otherKeys = $that.keys();
 
-      if (BOOL($myKeys ["=="] ($otherKeys))) {
+      if ($myKeys ["=="] ($otherKeys).__bool__()) {
         $commonKeys = $myKeys;
       } else {
         $commonKeys = $myKeys.sect($otherKeys);
@@ -387,7 +386,7 @@ SCScript.install(function(sc) {
         $res.put($key, $func.value($this.at($key), $that.at($key), $key));
       }));
 
-      if (BOOL($fill)) {
+      if ($fill.__bool__()) {
         $myKeys.difference($otherKeys).do($.Function(function($key) {
           $res.put($key, $this.at($key));
         }));
@@ -405,7 +404,7 @@ SCScript.install(function(sc) {
       var $ret = null;
 
       this.keysValuesArrayDo(this._$array, $.Function(function($key, $val) {
-        if (BOOL($argValue ["=="] ($val))) {
+        if ($argValue ["=="] ($val).__bool__()) {
           $ret = $key;
           return sc.C.LOOP_BREAK;
         }
@@ -432,7 +431,7 @@ SCScript.install(function(sc) {
       var $array;
       var $size, $index;
 
-      if (BOOL(this.isEmpty())) {
+      if (this.isEmpty().__bool__()) {
         return $nil;
       }
 
@@ -449,7 +448,7 @@ SCScript.install(function(sc) {
     spec.order = fn(function($func) {
       var $assoc;
 
-      if (BOOL(this.isEmpty())) {
+      if (this.isEmpty().__bool__()) {
         return $nil;
       }
 
@@ -517,7 +516,7 @@ SCScript.install(function(sc) {
 
       for (i = 0; i < imax; i += 2) {
         $elem = array[i];
-        if (BOOL($elem ["=="] ($argKey))) {
+        if ($elem ["=="] ($argKey).__bool__()) {
           return $.Integer(i);
         }
       }

@@ -3,15 +3,10 @@
 
   require("./utils");
 
-  var $     = sc.lang.$;
   var utils = sc.lang.klass.utils;
 
   describe("sc.lang.klass.utils", function() {
     var test;
-    it("BOOL", function() {
-      expect(utils.BOOL($.True() )).to.be.a("JSBoolean").that.is.true;
-      expect(utils.BOOL($.False())).to.be.a("JSBoolean").that.is.false;
-    });
     it("$nil", function() {
       test = utils.$nil;
       expect(test).to.be.a("SCNil");

@@ -6,7 +6,6 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -185,7 +184,7 @@ SCScript.install(function(sc) {
       var $this = this;
       var $array, i, imax;
 
-      if (BOOL($n.isSequenceableCollection())) {
+      if ($n.isSequenceableCollection().__bool__()) {
         return SCArray.fillND($n, $.Function(function() {
           return $this.copy();
         }));
@@ -476,7 +475,7 @@ SCScript.install(function(sc) {
 
       args = slice.call(arguments);
       for (i = 0, imax = args.length >> 1; i < imax; i++) {
-        if (BOOL(this ["=="] (args[i * 2]))) {
+        if (this ["=="] (args[i * 2]).__bool__()) {
           return args[i * 2 + 1].value();
         }
       }

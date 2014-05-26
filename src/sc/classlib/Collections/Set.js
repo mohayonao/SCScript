@@ -8,7 +8,6 @@ SCScript.install(function(sc) {
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Set", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
     var SCArray = $("Array");
@@ -160,7 +159,7 @@ SCScript.install(function(sc) {
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil && BOOL($that.includes($item))) {
+        if ($item !== $nil && $that.includes($item).__bool__()) {
           $result.add($item);
         }
       });
@@ -190,12 +189,12 @@ SCScript.install(function(sc) {
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil && !BOOL($that.includes($item))) {
+        if ($item !== $nil && !$that.includes($item).__bool__()) {
           $result.add($item);
         }
       });
       $that.do($.Function(function($item) {
-        if (!BOOL($this.includes($item))) {
+        if (!$this.includes($item).__bool__()) {
           $result.add($item);
         }
       }));

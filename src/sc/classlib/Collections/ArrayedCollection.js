@@ -11,7 +11,6 @@ SCScript.install(function(sc) {
   var mathlib  = sc.libs.mathlib;
 
   sc.lang.klass.refine("ArrayedCollection", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
     var $int_1 = utils.$int_1;
@@ -252,7 +251,7 @@ SCScript.install(function(sc) {
 
       $i = $.Integer(i);
       while (i < raw.length) {
-        if (BOOL($func.value(raw[i], $i))) {
+        if ($func.value(raw[i], $i).__bool__()) {
           this.takeAt($i);
         } else {
           $i = $.Integer(++i);
@@ -432,7 +431,7 @@ SCScript.install(function(sc) {
 
       this._ThrowIfImmutable();
 
-      if (BOOL($aCollection.isCollection())) {
+      if ($aCollection.isCollection().__bool__()) {
         $aCollection.do($.Function(function($item) {
           $this._.push($this.__elem__($item));
         }));
@@ -765,7 +764,7 @@ SCScript.install(function(sc) {
     spec._sort = function($function) {
       this._ThrowIfImmutable();
       this._.sort(function($a, $b) {
-        return BOOL($function.value($a, $b)) ? -1 : 1;
+        return $function.value($a, $b).__bool__() ? -1 : 1;
       });
     };
   });

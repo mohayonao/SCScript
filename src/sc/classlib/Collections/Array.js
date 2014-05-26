@@ -10,7 +10,6 @@ SCScript.install(function(sc) {
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Array", function(spec, utils) {
-    var BOOL    = utils.BOOL;
     var $nil    = utils.$nil;
     var SCArray = $("Array");
 
@@ -548,7 +547,7 @@ SCScript.install(function(sc) {
       var i, imax;
 
       for (i = 0, imax = raw.length; i < imax; ++i) {
-        if (BOOL(raw[i].isSequenceableCollection())) {
+        if (raw[i].isSequenceableCollection().__bool__()) {
           return $.True();
         }
       }

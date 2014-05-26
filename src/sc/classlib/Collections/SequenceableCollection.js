@@ -8,7 +8,6 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -115,7 +114,7 @@ SCScript.install(function(sc) {
         return $false;
       }
       this.do($.Function(function($item, $i) {
-        if (BOOL($item ["!="] ($aCollection.at($i)))) {
+        if ($item ["!="] ($aCollection.at($i)).__bool__()) {
           $res = $false;
           return sc.C.LOOP_BREAK;
         }
@@ -207,8 +206,8 @@ SCScript.install(function(sc) {
       offset = $offset.__int__();
       for (i = 0, imax = size - offset; i < imax; ++i) {
         $index = $.Integer(i + offset);
-        if (BOOL(this.at($index) ["=="] ($first))) {
-          if (BOOL(this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist))) {
+        if (this.at($index) ["=="] ($first).__bool__()) {
+          if (this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist).__bool__()) {
             return $index;
           }
         }
@@ -260,7 +259,7 @@ SCScript.install(function(sc) {
     spec.indexInBetween = fn(function($val) {
       var $a, $b, $div, $i;
 
-      if (BOOL(this.isEmpty())) {
+      if (this.isEmpty().__bool__()) {
         return $nil;
       }
       $i = this.indexOfGreaterThan($val);
@@ -276,7 +275,7 @@ SCScript.install(function(sc) {
       $b = this.at($i);
       $div = $b ["-"] ($a);
 
-      // if (BOOL($div ["=="] ($int_0))) {
+      // if ($div ["=="] ($int_0).__bool__()) {
       //   return $i;
       // }
 
@@ -293,7 +292,7 @@ SCScript.install(function(sc) {
         var $diff = $b ["-"] ($a);
         if ($step === $nil) {
           $step = $diff;
-        } else if (BOOL($step ["!="] ($diff))) {
+        } else if ($step ["!="] ($diff).__bool__()) {
           $res = $false;
           return sc.C.LOOP_BREAK;
         }
@@ -492,12 +491,12 @@ SCScript.install(function(sc) {
       $sublist = this.species().new();
       this.doAdjacentPairs($.Function(function($a, $b, $i) {
         $sublist = $sublist.add($a);
-        if (BOOL($function.value($a, $b, $i))) {
+        if ($function.value($a, $b, $i).__bool__()) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         }
       }));
-      if (BOOL(this.notEmpty())) {
+      if (this.notEmpty().__bool__()) {
         $sublist = $sublist.add(this.last());
       }
       $list = $list.add($sublist);
@@ -511,7 +510,7 @@ SCScript.install(function(sc) {
       $list = $.Array();
       $sublist = this.species().new();
       this.do($.Function(function($item, $i) {
-        if (BOOL($function.value($item, $i))) {
+        if ($function.value($item, $i).__bool__()) {
           $list = $list.add($sublist);
           $sublist = $this.species().new();
         } else {
@@ -617,7 +616,7 @@ SCScript.install(function(sc) {
 
       $list = this.species().new(this.size());
       this.do($.Function(function($item, $i) {
-        if ($item._flatIf && BOOL($func.value($item, $i))) {
+        if ($item._flatIf && $func.value($item, $i).__bool__()) {
           $list = $list.addAll($item._flatIf($func));
         } else {
           $list = $list.add($item);
@@ -634,7 +633,7 @@ SCScript.install(function(sc) {
       $maxsize = $int_0;
       this.do($.Function(function($sublist) {
         var $sz;
-        if (BOOL($sublist.isSequenceableCollection())) {
+        if ($sublist.isSequenceableCollection().__bool__()) {
           $sz = $sublist.size();
         } else {
           $sz = $int_1;
@@ -649,7 +648,7 @@ SCScript.install(function(sc) {
       }));
 
       this.do($.Function(function($isublist) {
-        if (BOOL($isublist.isSequenceableCollection())) {
+        if ($isublist.isSequenceableCollection().__bool__()) {
           $list.do($.Function(function($jsublist, $j) {
             $jsublist.add($isublist.wrapAt($j));
           }));
@@ -667,7 +666,7 @@ SCScript.install(function(sc) {
       var $this = this, $maxsize;
 
       $maxsize = this.maxValue($.Function(function($sublist) {
-        if (BOOL($sublist.isSequenceableCollection())) {
+        if ($sublist.isSequenceableCollection().__bool__()) {
           return $sublist.size();
         }
         return $int_1;
@@ -675,7 +674,7 @@ SCScript.install(function(sc) {
 
       return this.species().fill($maxsize, $.Function(function($i) {
         return $func.valueArray($this.collect($.Function(function($sublist) {
-          if (BOOL($sublist.isSequenceableCollection())) {
+          if ($sublist.isSequenceableCollection().__bool__()) {
             return $sublist.wrapAt($i);
           } else {
             return $sublist;
@@ -1187,7 +1186,7 @@ SCScript.install(function(sc) {
           this, $aSelector, $theOperand
         );
       }
-      if (BOOL($adverb.isInteger())) {
+      if ($adverb.isInteger().__bool__()) {
         return _performBinaryOpOnSeqColl_adverb_int(
           this, $aSelector, $theOperand, $adverb.valueOf()
         );

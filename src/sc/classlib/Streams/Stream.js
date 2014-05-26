@@ -7,7 +7,6 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
 
   sc.lang.klass.define("Stream", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -237,7 +236,7 @@ SCScript.install(function(sc) {
           }
         } else {
           if ($nexty === $nil ||
-              BOOL($function.value($nextx, $nexty, $inval))) {
+              $function.value($nextx, $nexty, $inval).__bool__()) {
             $val   = $nextx;
             $nextx = $this.next($inval);
             return $val;
@@ -266,7 +265,7 @@ SCScript.install(function(sc) {
 
       $reset = $false;
       return $("Routine").new($.Function(function($inval) {
-        if (BOOL($reset)) {
+        if ($reset.__bool__()) {
           $this.reset();
           $stream.reset();
         }

@@ -11,7 +11,6 @@
   var $nil   = utils.$nil;
   var $int_0 = utils.$int_0;
   var $int_1 = utils.$int_1;
-  var BOOL   = utils.BOOL;
 
   var __stop__ = function() {
     return null;
@@ -52,7 +51,7 @@
   iterator.function$while = function($function) {
     var iter = {
       next: function() {
-        if (BOOL($function.value())) {
+        if ($function.value().__bool__()) {
           return [ $nil, $nil ];
         }
         iter.next = __stop__;

@@ -135,7 +135,6 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.define("NAryOpStream : Stream", function(spec, utils) {
-    var BOOL = utils.BOOL;
     var $nil = utils.$nil;
 
     spec.constructor = function SCNAryOpStream() {
@@ -156,7 +155,7 @@ SCScript.install(function(sc) {
         this._arglist = [];
       }
       this._isNumeric = this._arglist.every(function($item) {
-        return $item.__tag === sc.C.TAG_SYM || BOOL($item.isNumber());
+        return $item.__tag === sc.C.TAG_SYM || $item.isNumber().__bool__();
       });
     };
 

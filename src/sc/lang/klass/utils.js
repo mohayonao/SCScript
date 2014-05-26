@@ -8,9 +8,6 @@
   var klass = sc.lang.klass;
 
   var utils = {
-    BOOL: function(a) {
-      return a.__bool__();
-    },
     $nil  : $.Nil(),
     $true : $.True(),
     $false: $.False(),

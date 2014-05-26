@@ -8,7 +8,6 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
-    var BOOL = utils.BOOL;
     var $nil = utils.$nil;
     var SCArray = $("Array");
 
@@ -103,7 +102,7 @@ SCScript.install(function(sc) {
       args.unshift(this);
 
       for (i = 0, imax = args.length >> 1; i < imax; ++i) {
-        if (BOOL(args[i * 2].value())) {
+        if (args[i * 2].value().__bool__()) {
           return args[i * 2 + 1].value();
         }
       }

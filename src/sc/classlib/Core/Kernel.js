@@ -47,6 +47,20 @@ SCScript.install(function(sc) {
     // TODO: implements $findAllReferences
     // TODO: implements allSubclasses
     // TODO: implements superclasses
+
+    spec["[]"] = function($anArray) {
+      var $newCollection;
+      var array, i, imax;
+
+      $newCollection = this.new($anArray.size());
+
+      array = $anArray._;
+      for (i = 0, imax = array.length; i < imax; ++i) {
+        $newCollection.$("add", [ array[i] ]);
+      }
+
+      return $newCollection;
+    };
   });
 
 

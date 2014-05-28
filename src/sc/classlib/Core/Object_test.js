@@ -1498,7 +1498,7 @@
       var instance = this.createInstance();
       expect(instance.asControlInput).to.be.nop;
     });
-    it("asAudioRateInput", sinon.test(function() {
+    it("#asAudioRateInput", sinon.test(function() {
       var instance, test, spy, rate;
 
       spy = this.spy(sc.test.func);
@@ -1522,65 +1522,123 @@
       expect(spy).to.be.calledWith(instance);
       expect(spy).to.be.calledLastIn(test);
     }));
-    it.skip("slotSize", function() {
+    it.skip("#slotSize", function() {
     });
-    it.skip("slotAt", function() {
+    it.skip("#slotAt", function() {
     });
-    it.skip("slotPut", function() {
+    it.skip("#slotPut", function() {
     });
-    it.skip("slotKey", function() {
+    it.skip("#slotKey", function() {
     });
-    it.skip("slotIndex", function() {
+    it.skip("#slotIndex", function() {
     });
-    it.skip("slotsDo", function() {
+    it.skip("#slotsDo", function() {
     });
-    it.skip("slotValuesDo", function() {
+    it.skip("#slotValuesDo", function() {
     });
-    it.skip("getSlots", function() {
+    it.skip("#getSlots", function() {
     });
-    it.skip("setSlots", function() {
+    it.skip("#setSlots", function() {
     });
-    it.skip("instVarSize", function() {
+    it.skip("#instVarSize", function() {
     });
-    it.skip("instVarAt", function() {
+    it.skip("#instVarAt", function() {
     });
-    it.skip("instVarPut", function() {
+    it.skip("#instVarPut", function() {
     });
-    it.skip("writeArchive", function() {
+    it.skip("#writeArchive", function() {
     });
-    it.skip("$readArchive", function() {
+    it.skip(".readArchive", function() {
     });
-    it.skip("asArchive", function() {
+    it.skip("#asArchive", function() {
     });
-    it.skip("initFromArchive", function() {
+    it.skip("#initFromArchive", function() {
     });
-    it.skip("archiveAsCompileString", function() {
+    it.skip("#archiveAsCompileString", function() {
     });
-    it.skip("archiveAsObject", function() {
+    it.skip("#archiveAsObject", function() {
     });
-    it.skip("checkCanArchive", function() {
+    it.skip("#checkCanArchive", function() {
     });
-    it.skip("writeTextArchive", function() {
+    it.skip("#writeTextArchive", function() {
     });
-    it.skip("$readTextArchive", function() {
+    it.skip(".readTextArchive", function() {
     });
-    it.skip("asTextArchive", function() {
+    it.skip("#asTextArchive", function() {
     });
-    it.skip("getContainedObjects", function() {
+    it.skip("#getContainedObjects", function() {
     });
-    it.skip("writeBinaryArchive", function() {
+    it.skip("#riteBinaryArchive", function() {
     });
-    it.skip("$readBinaryArchive", function() {
+    it.skip(".readBinaryArchive", function() {
     });
-    it.skip("asBinaryArchive", function() {
+    it.skip("#asBinaryArchive", function() {
     });
-    it.skip("genNext", function() {
+    it.skip("#genNext", function() {
     });
-    it.skip("genCurrent", function() {
+    it.skip("#genCurrent", function() {
     });
-    it.skip("$classRedirect", function() {
+    it.skip(".classRedirect", function() {
     });
-    it.skip("help", function() {
+    it.skip("#help", function() {
     });
+    it("#[]", sinon.test(function() {
+      var instance, test;
+      var $index;
+
+      $index = sc.test.object();
+
+      instance = this.createInstance();
+      instance.at = this.spy(sc.test.func);
+
+      test = instance["[]"]($index);
+      expect(instance.at).to.be.calledWith($index);
+      expect(instance.at).to.be.calledLastIn(test);
+    }));
+    it("#[]_", sinon.test(function() {
+      var instance, test;
+      var $index, $value;
+
+      $index = sc.test.object();
+      $value = sc.test.object();
+
+      instance = this.createInstance();
+      instance.put = this.spy(sc.test.func);
+
+      test = instance["[]_"]($index, $value);
+      expect(instance.put).to.be.calledWith($index, $value);
+      expect(instance.put).to.be.calledLastIn(test);
+    }));
+    it("#[..]", sinon.test(function() {
+      var instance, test;
+      var $first, $second, $last;
+
+      $first  = sc.test.object();
+      $second = sc.test.object();
+      $last   = sc.test.object();
+
+      instance = this.createInstance();
+      instance.copySeries = this.spy(sc.test.func);
+
+      test = instance["[..]"]($first, $second, $last);
+      expect(instance.copySeries).to.be.calledWith($first, $second, $last);
+      expect(instance.copySeries).to.be.calledLastIn(test);
+    }));
+    it("#[..]_", sinon.test(function() {
+      var instance, test;
+      var $first, $second, $last, $value;
+
+      $first  = sc.test.object();
+      $second = sc.test.object();
+      $last   = sc.test.object();
+      $value  = sc.test.object();
+
+      instance = this.createInstance();
+      instance.putSeries = this.spy(sc.test.func);
+
+      test = instance["[..]_"]($first, $second, $last, $value);
+      expect(instance.putSeries).to.be.calledWith($first, $second, $last, $value);
+      expect(instance.putSeries).to.be.calledLastIn(test);
+    }));
   });
 })();

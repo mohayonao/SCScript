@@ -14,21 +14,6 @@ SCScript.install(function(sc) {
     var $int_1 = utils.$int_1;
     var SCArray = $("Array");
 
-    // e.g. Array [ 1, 2, 3 ]
-    spec.$_newFrom = function($anArray) {
-      var $newCollection;
-      var array, i, imax;
-
-      $newCollection = this.new($anArray.size());
-
-      array = $anArray._;
-      for (i = 0, imax = array.length; i < imax; ++i) {
-        $newCollection.add(array[i]);
-      }
-
-      return $newCollection;
-    };
-
     spec.$newFrom = fn(function($aCollection) {
       var $newCollection;
 

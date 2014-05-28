@@ -5,8 +5,9 @@ SCScript.install(function(sc) {
 
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.define("Stream", function(spec, utils) {
+  klass.define("Stream", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -227,7 +228,7 @@ SCScript.install(function(sc) {
         var $val;
 
         if ($nextx === $nil) {
-          if ($nextx === $nil) {
+          if ($nexty === $nil) {
             return $nil;
           } else {
             $val = $nexty;
@@ -369,7 +370,84 @@ SCScript.install(function(sc) {
 
   });
 
-  sc.lang.klass.define("PauseStream : Stream", function(spec) {
+  klass.define("OneShotStream : Stream", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function OneShotStream() {
+      this.__super__("Stream");
+      this._once = true;
+    };
+
+    spec.$new = function($value) {
+      return this._newCopyArgs({
+        value: $value
+      });
+    };
+
+    spec.next = function() {
+      if (this._once) {
+        this._once = false;
+        return this._$value;
+      }
+      return $nil;
+    };
+
+    spec.reset = function() {
+      this._once = true;
+      return this;
+    };
+
+    // TODO: implements storeArgs
+  });
+
+  // EmbedOnce
+
+  klass.define("FuncStream : Stream", function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCFuncStream() {
+      this.__super__("Stream");
+    };
+
+    spec.envir = function() {
+      return this._$envir;
+    };
+
+    spec.envir_ = function($value) {
+      this._$envir = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.$new = function($nextFunc, $resetFunc) {
+      return this._newCopyArgs({
+        nextFunc : $nextFunc,
+        resetFunc: $resetFunc,
+        envir    : sc.lang.main.$currentEnv
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $this = this;
+      return this._$envir.use($.Function(function() {
+        return $this._$nextFunc.value($inval).processRest($inval);
+      }));
+    }, "inval");
+
+    spec.reset = function() {
+      var $this = this;
+      return this._$envir.use($.Function(function() {
+        return $this._$resetFunc.value();
+      }));
+    };
+
+    // TODO: implements storeArgs
+
+  });
+
+  // StreamClutch
+  // CleanupStream
+
+  klass.define("PauseStream : Stream", function(spec) {
     spec.constructor = function SCPauseStream() {
       this.__super__("Stream");
     };
@@ -400,7 +478,7 @@ SCScript.install(function(sc) {
     // TODO: implements threadPlayer
   });
 
-  sc.lang.klass.define("Task : PauseStream", function(spec) {
+  klass.define("Task : PauseStream", function(spec) {
     spec.constructor = function SCTask() {
       this.__super__("PauseStream");
     };

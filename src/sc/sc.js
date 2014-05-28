@@ -12,12 +12,12 @@
     installer(sc);
   };
 
-  // istanbul ignore next
+  /* istanbul ignore next */
   SCScript.stdout = function(msg) {
     console.log(msg);
   };
 
-  // istanbul ignore next
+  /* istanbul ignore next */
   SCScript.stderr = function(msg) {
     console.error(msg);
   };

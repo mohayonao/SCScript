@@ -1582,6 +1582,10 @@
     });
     it.skip("#help", function() {
     });
+    it("#processRest", function() {
+      var instance = this.createInstance();
+      expect(instance.processRest).to.be.nop;
+    });
     it("#[]", sinon.test(function() {
       var instance, test;
       var $index;

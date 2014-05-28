@@ -680,6 +680,8 @@ SCScript.install(function(sc) {
     // TODO: implements $classRedirect
     // TODO: implements help
 
+    spec.processRest = utils.nop;
+
     spec["[]"] = function($index) {
       return this.$("at", [ $index ]);
     };

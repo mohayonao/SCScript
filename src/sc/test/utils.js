@@ -12,8 +12,10 @@
   require("../classlib/Core/Boolean");
   require("../classlib/Core/Char");
   require("../classlib/Core/Function");
+  require("../classlib/Core/Kernel");
   require("../classlib/Core/Nil");
   require("../classlib/Core/Symbol");
+  require("../classlib/Core/Thread");
   require("../classlib/Math/Integer");
   require("../classlib/Math/Float");
 

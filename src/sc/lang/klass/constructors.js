@@ -179,7 +179,7 @@
 
   function SCFunction() {
     this.__super__("AbstractFunction");
-    // istanbul ignore next
+    /* istanbul ignore next */
     this._ = function() {};
   }
   klass.define("Function : AbstractFunction", {

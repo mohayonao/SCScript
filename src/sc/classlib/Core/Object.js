@@ -679,6 +679,22 @@ SCScript.install(function(sc) {
     // TODO: implements genCurrent
     // TODO: implements $classRedirect
     // TODO: implements help
+
+    spec["[]"] = function($index) {
+      return this.$("at", [ $index ]);
+    };
+
+    spec["[]_"] = function($index, $value) {
+      return this.$("put", [ $index, $value ]);
+    };
+
+    spec["[..]"] = function($first, $second, $last) {
+      return this.$("copySeries", [ $first, $second, $last ]);
+    };
+
+    spec["[..]_"] = function($first, $second, $last, $value) {
+      return this.$("putSeries", [ $first, $second, $last, $value ]);
+    };
   });
 
 });

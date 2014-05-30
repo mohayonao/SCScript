@@ -8,7 +8,6 @@ SCScript.install(function(sc) {
   var random = sc.libs.random;
 
   sc.lang.klass.define("Thread", function(spec, utils) {
-    var $nil = utils.$nil;
 
     spec.constructor = function SCThread() {
       this.__super__("Stream");
@@ -132,15 +131,7 @@ SCScript.install(function(sc) {
     // TODO: implements findThreadPlayer
 
     spec.randSeed_ = fn(function($seed) {
-      var seed;
-
-      if ($seed === $nil) {
-        seed = Math.random() * 4294967295;
-      } else {
-        seed = $seed.__int__();
-      }
-      this._randgen.setSeed(seed >>> 0);
-
+      this._randgen.setSeed($seed.__int__() >>> 0);
       return this;
     }, "seed");
 

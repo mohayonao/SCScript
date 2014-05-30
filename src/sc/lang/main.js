@@ -12,11 +12,11 @@
 
   main.$currentEnv = null;
 
-  main.run = function(fn) {
+  main.run = function(func) {
     if (!initialize.done) {
       initialize();
     }
-    return fn($);
+    return func($);
   };
 
   function initialize() {

@@ -760,7 +760,7 @@ SCScript.install(function(sc) {
       }).join(", ") + " ]");
     };
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec._sort = function($function) {
       this._ThrowIfImmutable();
       this._.sort(function($a, $b) {

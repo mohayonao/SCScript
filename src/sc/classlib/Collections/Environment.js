@@ -23,6 +23,7 @@ SCScript.install(function(sc) {
       var $saveEnvir;
 
       $saveEnvir = main.$currentEnv;
+      main.$currentEnv = this;
       try {
         $function.value(this);
       } catch (e) {}
@@ -35,6 +36,7 @@ SCScript.install(function(sc) {
       var $result, $saveEnvir;
 
       $saveEnvir = main.$currentEnv;
+      main.$currentEnv = this;
       try {
         $result = $function.value(this);
       } catch (e) {}

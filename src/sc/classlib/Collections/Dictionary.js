@@ -159,7 +159,7 @@ SCScript.install(function(sc) {
       array = this._$array._;
       index = this.scanFor($key).__int__();
 
-      // istanbul ignore else
+      /* istanbul ignore else */
       if (index >= 0) {
         $res = SCAssociation.new(array[index], array[index + 1]);
       }
@@ -506,7 +506,7 @@ SCScript.install(function(sc) {
     // TODO: implements grow
     // TODO: implements fixCollisionsFrom
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec.scanFor = function($argKey) {
       var array, i, imax;
       var $elem;
@@ -604,7 +604,7 @@ SCScript.install(function(sc) {
       return $ret || $nil;
     }, "argValue");
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec.scanFor = function($argKey) {
       var array, i, imax;
       var $elem;

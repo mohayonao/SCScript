@@ -94,10 +94,7 @@ SCScript.install(function(sc) {
 
     spec.constructor = function SCInterpreter() {
       this.__super__("Object");
-      for (var i = 97; i <= 122; i++) {
-        this["_$" + String.fromCharCode(i)] = $nil;
-      }
-      // this._$s = $("Server").default(); // in SCMain
+      this._$ = {};
     };
 
     (function() {
@@ -105,13 +102,13 @@ SCScript.install(function(sc) {
 
       function getter(name) {
         return function() {
-          return this["_$" + name];
+          return this._$[name] || /* istanbul ignore next */ $nil;
         };
       }
 
       function setter(name) {
         return function($value) {
-          this["_$" + name] = $value || /* istanbul ignore next */ $nil;
+          this._$[name] = $value || /* istanbul ignore next */ $nil;
           return this;
         };
       }
@@ -124,10 +121,7 @@ SCScript.install(function(sc) {
     })();
 
     spec.clearAll = function() {
-      var i;
-      for (i = 97; i <= 122; i++) {
-        this["_$" + String.fromCharCode(i)] = $nil;
-      }
+      this._$ = {};
       return this;
     };
   });

@@ -251,7 +251,7 @@ SCScript.install(function(sc) {
       }
     };
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec.scanFor = function($obj) {
       var array, index;
 

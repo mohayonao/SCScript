@@ -72,12 +72,13 @@
     }
 
     if (typeof a === "function") {
-      return $.Function(a);
+      return $.Function(function() {
+        return [ a ];
+      });
     }
 
     return a;
   };
-  sc.test.encode = encode;
 
   var s = function(obj) {
     var str = JSON.stringify(obj) || (typeof obj);
@@ -275,15 +276,20 @@
     return instance;
   };
 
-  sc.test.object = function(properties) {
-    var instance = sc.lang.klass.classes.Object.new();
+  sc.test.object = function(source) {
+    var instance;
 
-    if (properties) {
-      Object.keys(properties).forEach(function(key) {
+    if (typeof source === "undefined") {
+      instance = sc.lang.klass.classes.Object.new();
+    } else if (isDictionary(source)) {
+      instance = sc.lang.klass.classes.Object.new();
+      Object.keys(source).forEach(function(key) {
         Object.defineProperty(instance, key, {
-          value: properties[key]
+          value: source[key]
         });
       });
+    } else {
+      instance = encode(source);
     }
     instance.__testid = instance.__hash;
 

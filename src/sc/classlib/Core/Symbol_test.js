@@ -3,6 +3,7 @@
 
   require("./Symbol");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -65,7 +66,7 @@
       var instance, test;
       var $obj;
 
-      $obj = sc.test.object({
+      $obj = $$({
         ascii: sc.test.func
       });
 
@@ -133,8 +134,8 @@
       var instance, test;
       var $a, $b;
 
-      $a = $.Integer(10);
-      $b = $.Integer(20);
+      $a = $$(10);
+      $b = $$(20);
 
       instance = this.createInstance("*");
 

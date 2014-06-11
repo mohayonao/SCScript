@@ -302,7 +302,17 @@
 
   $.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = def ? fn(value, def) : value;
+    var func = value(); // TODO: fix later
+    if (!Array.isArray(func)) {
+      throw new Error("!!!?????");
+    }
+    if (func.length === 0) {
+      func[0] = function() {
+        return $.Nil();
+      };
+    }
+    func = func[0];
+    instance._ = def ? fn(func, def) : func;
     return instance;
   };
 

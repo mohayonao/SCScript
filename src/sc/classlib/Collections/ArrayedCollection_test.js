@@ -3,6 +3,7 @@
 
   require("./ArrayedCollection");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -13,7 +14,7 @@
     before(function() {
       SCArrayedCollection = $("ArrayedCollection");
       this.createInstance = function(source, immutable) {
-        var instance = $.Array((source || []).map(sc.test.encode), !!immutable);
+        var instance = $.Array((source || []).map($$), !!immutable);
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "ArrayedCollection", testMethod);
         return instance;
@@ -23,7 +24,7 @@
       var instance, test;
       var $obj;
 
-      $obj = sc.test.object();
+      $obj = $$();
 
       instance = this.createInstance();
 
@@ -518,7 +519,7 @@
       var $array;
 
       spy = this.spy(sc.test.func);
-      $array = sc.test.object();
+      $array = $$();
 
       instance = this.createInstance([ 1, 2, 3 ]);
       instance.overWrite = spy;
@@ -974,7 +975,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
       this.stub(iterator, "array$do", function() {
         return iter;
       });
@@ -992,7 +993,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
       this.stub(iterator, "array$reverseDo", function() {
         return iter;
       });
@@ -1298,7 +1299,7 @@
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCInt8Array.newFrom(sc.test.encode([ 0, 255, 256 ]));
+      instance = SCInt8Array.newFrom($$([ 0, 255, 256 ]));
       test = instance.valueOf();
 
       expected = new Int8Array([ 0, -1, 0 ]);
@@ -1314,7 +1315,7 @@
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCInt16Array.newFrom(sc.test.encode([ 0, 65535, 65536 ]));
+      instance = SCInt16Array.newFrom($$([ 0, 65535, 65536 ]));
       test = instance.valueOf();
 
       expected = new Int16Array([ 0, -1, 0 ]);
@@ -1330,7 +1331,7 @@
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCInt32Array.newFrom(sc.test.encode([ 0, 4294967295, 4294967296 ]));
+      instance = SCInt32Array.newFrom($$([ 0, 4294967295, 4294967296 ]));
       test = instance.valueOf();
 
       expected = new Int32Array([ 0, -1, 0 ]);
@@ -1346,7 +1347,7 @@
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCFloatArray.newFrom(sc.test.encode([ 0, 0.5, -0.5 ]));
+      instance = SCFloatArray.newFrom($$([ 0, 0.5, -0.5 ]));
       test = instance.valueOf();
 
       expected = new Float32Array([ 0, 0.5, -0.5 ]);
@@ -1362,7 +1363,7 @@
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCDoubleArray.newFrom(sc.test.encode([ 0, 0.5, -0.5 ]));
+      instance = SCDoubleArray.newFrom($$([ 0, 0.5, -0.5 ]));
       test = instance.valueOf();
 
       expected = new Float64Array([ 0, 0.5, -0.5 ]);

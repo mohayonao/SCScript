@@ -3,6 +3,8 @@
 
   require("./Boolean");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCBoolean", function() {
@@ -44,7 +46,7 @@
 
       spy = this.spy(sc.test.func);
       this.stub($, "Boolean", function() {
-        return sc.test.object({
+        return $$({
           not: spy
         });
       });
@@ -99,10 +101,10 @@
       var instance, test;
       var $trueFunc, $falseFunc;
 
-      $trueFunc = sc.test.object({
+      $trueFunc = $$({
         value: sc.test.func
       });
-      $falseFunc = sc.test.object({
+      $falseFunc = $$({
         value: function() {
           throw new Error("not reached");
         }
@@ -125,7 +127,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 
@@ -142,7 +144,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 
@@ -159,7 +161,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: function() {
           return this;
         },
@@ -206,12 +208,12 @@
       var instance, test;
       var $trueFunc, $falseFunc;
 
-      $trueFunc = sc.test.object({
+      $trueFunc = $$({
         value: function() {
           throw new Error("not reached");
         }
       });
-      $falseFunc = sc.test.object({
+      $falseFunc = $$({
         value: sc.test.func
       });
 
@@ -235,7 +237,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 
@@ -252,7 +254,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 

@@ -271,10 +271,14 @@ SCScript.install(function(sc) {
       $find    = $find.asArray();
       $replace = $replace.asArray();
       $.Function(function() {
-        return ($index = $array.find($find)).notNil();
+        return [ function() {
+          return ($index = $array.find($find)).notNil();
+        } ];
       }).while($.Function(function() {
-        $out = $out ["++"] ($array.keep($index)) ["++"] ($replace);
-        $array = $array.drop($index ["+"] ($find.size()));
+        return [ function() {
+          $out = $out ["++"] ($array.keep($index)) ["++"] ($replace);
+          $array = $array.drop($index ["+"] ($find.size()));
+        } ];
       }));
 
       return $out ["++"] ($array);
@@ -432,8 +436,10 @@ SCScript.install(function(sc) {
       this._ThrowIfImmutable();
 
       if ($aCollection.isCollection().__bool__()) {
-        $aCollection.do($.Function(function($item) {
-          $this._.push($this.__elem__($item));
+        $aCollection.do($.Function(function() {
+          return [ function($item) {
+            $this._.push($this.__elem__($item));
+          } ];
         }));
       } else {
         this.add($aCollection);
@@ -612,8 +618,10 @@ SCScript.install(function(sc) {
 
       $minItem = this.minItem();
       $maxItem = this.maxItem();
-      return this.collect($.Function(function($el) {
-        return $el.$("linlin", [ $minItem, $maxItem, $min, $max ]);
+      return this.collect($.Function(function() {
+        return [ function($el) {
+          return $el.$("linlin", [ $minItem, $maxItem, $min, $max ]);
+        } ];
       }));
     }, "min=0.0; max=1.0");
 
@@ -660,9 +668,11 @@ SCScript.install(function(sc) {
       $flat  = this.flat();
 
       return $another.deepCollect($.Integer(0x7FFFFFFF), $.Function(function() {
-        var $item = $flat.perform($indexing, $index);
-        $index = $index.__inc__();
-        return $item;
+        return [ function() {
+          var $item = $flat.perform($indexing, $index);
+          $index = $index.__inc__();
+          return $item;
+        } ];
       }));
     }, "another; indexing=\\wrapAt");
 
@@ -680,8 +690,10 @@ SCScript.install(function(sc) {
         return this.at($int_0).unbubble($depth, $levels.__dec__());
       }
 
-      return this.collect($.Function(function($item) {
-        return $item.unbubble($depth.__dec__());
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.unbubble($depth.__dec__());
+        } ];
       }));
     }, "depth=0; levels=1");
 
@@ -693,8 +705,10 @@ SCScript.install(function(sc) {
         return $.Array([ this.bubble($depth, $levels.__dec__()) ]);
       }
 
-      return this.collect($.Function(function($item) {
-        return $item.bubble($depth.__dec__(), $levels);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.bubble($depth.__dec__(), $levels);
+        } ];
       }));
     }, "depth=0; levels=1");
 
@@ -719,8 +733,10 @@ SCScript.install(function(sc) {
       }
 
       cuts = $$cuts._.slice(1);
-      return $list.collect($.Function(function($item) {
-        return $item.$("slice", cuts);
+      return $list.collect($.Function(function() {
+        return [ function($item) {
+          return $item.$("slice", cuts);
+        } ];
       })).unbubble();
     }, "*cuts");
 

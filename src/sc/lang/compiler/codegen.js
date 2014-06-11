@@ -14,31 +14,23 @@
   var precompile = compiler.precompile;
 
   var Scope = compiler.scope({
-    add_delegate: function(stmt, id, indent, peek, scope) {
+    add_delegate: function(stmt, id, indent, peek, opts) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
       } else {
         this._appendVariable(stmt, id);
       }
-      if (scope) {
+      if (opts.scope) {
         peek.declared[id] = true;
       }
     },
     _addNewVariableStatement: function(stmt, id, indent) {
       stmt.head.push(indent, "var ");
       stmt.vars.push($id(id));
-      if (id.charAt(0) !== "_") {
-        stmt.vars.push(" = $.Nil()");
-      }
       stmt.tail.push(";", "\n");
     },
     _appendVariable: function(stmt, id) {
-      stmt.vars.push(
-        ", ", $id(id)
-      );
-      if (id.charAt(0) !== "_") {
-        stmt.vars.push(" = $.Nil()");
-      }
+      stmt.vars.push(", ", $id(id));
     },
     begin: function(stream, args) {
       var declared = this.getDeclaredVariable();
@@ -62,7 +54,7 @@
     begin_ref: function(scope) {
       var refId   = (this._refId | 0);
       var refName = "_ref" + refId;
-      this.add("var", refName, scope);
+      this.add("var", refName, { scope: scope, init: false });
       this._refId = refId + 1;
       return refName;
     },
@@ -135,7 +127,7 @@
 
   CodeGen.prototype.withFunction = function(args, fn) {
     var result;
-    var argItems, base, body;
+    var argItems, base;
 
     argItems = this.stitchWith(args, ", ", function(item) {
       return this.generate(item);
@@ -147,15 +139,7 @@
     this.base += "  ";
 
     this.scope.begin(result, args);
-
-    body = fn.call(this);
-
-    if (body.length) {
-      result.push(body);
-    } else {
-      result.push(this.base, "return $.Nil();");
-    }
-
+    result.push(fn.call(this));
     this.scope.end();
 
     this.base = base;
@@ -211,21 +195,14 @@
   };
 
   CodeGen.prototype.stitchWith = function(elements, bond, fn) {
-    var result, item;
-    var count, i, imax;
+    var result, i, imax;
 
     result = [];
-    for (i = count = 0, imax = elements.length; i < imax; ++i) {
-      if (count) {
+    for (i = 0, imax = elements.length; i < imax; ++i) {
+      if (i) {
         result.push(bond);
       }
-
-      item = fn.call(this, elements[i], i);
-
-      if (typeof item !== "undefined") {
-        result.push(item);
-        count += 1;
-      }
+      result.push(fn.call(this, elements[i], i));
     }
 
     return result;
@@ -453,20 +430,107 @@
   };
 
   CodeGen.prototype.FunctionExpression = function(node) {
-    var fn, info;
-
-    info = getInformationOfFunction(node);
-
-    if (!node.segmented) {
-      fn = CodeGen.prototype._SimpleFunction;
-    } else {
-      fn = CodeGen.prototype._SegmentedFunction;
-    }
+    var info = getInformationOfFunction(node);
 
     return [
-      fn.call(this, node, info.args),
-      this._FunctionMetadata(info), ")"
+      "$.Function(",
+      this._FunctionBody(node, info.args),
+      this._FunctionMetadata(info),
+      ")"
     ];
+  };
+
+  CodeGen.prototype._FunctionBody = function(node, args) {
+    var fargs, body, assignArguments;
+
+    fargs = args.map(function(_, i) {
+      return "_arg" + i;
+    });
+
+    assignArguments = function(item, i) {
+      return $id(args[i]) + " = " + fargs[i];
+    };
+
+    body = this.withFunction([], function() {
+      var result = [];
+      var fragments = [], syncBlockScope;
+      var elements = node.body;
+      var i, imax;
+      var functionBodies;
+
+      if (elements.length) {
+        for (i = 0, imax = args.length; i < imax; ++i) {
+          this.scope.add("var", args[i], { init: false });
+        }
+
+        syncBlockScope = this.state.syncBlockScope;
+        this.state.syncBlockScope = this.scope.peek();
+
+        functionBodies = this.withIndent(function() {
+          var fragments = [];
+          var i = 0, imax = elements.length;
+          var lastIndex = imax - 1;
+
+          fragments.push("\n");
+
+          var loop = function() {
+            var fragments = [];
+            var stmt, j = 0;
+
+            while (i < imax) {
+              if (i === 0) {
+                if (args.length) {
+                  stmt = this.stitchWith(args, "; ", assignArguments);
+                  fragments.push([ this.addIndent(stmt), ";", "\n" ]);
+                }
+              } else if (j) {
+                fragments.push("\n");
+              }
+
+              this.state.calledSegmentedMethod = false;
+              stmt = this.generate(elements[i]);
+
+              if (i === lastIndex || this.state.calledSegmentedMethod) {
+                stmt = [ "return ", stmt ];
+              }
+              fragments.push([ this.addIndent(stmt), ";" ]);
+              j += 1;
+
+              i += 1;
+              if (this.state.calledSegmentedMethod) {
+                break;
+              }
+            }
+
+            return fragments;
+          };
+
+          while (i < imax) {
+            if (i) {
+              fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
+            } else {
+              fragments.push(this.addIndent(this.withFunction(fargs, loop)));
+            }
+          }
+
+          fragments.push("\n");
+
+          return fragments;
+        });
+
+        fragments.push("return [", functionBodies, this.addIndent("];"));
+      } else {
+        fragments.push("return [];");
+      }
+
+      result.push([ this.addIndent(fragments) ]);
+
+      this.state.syncBlockScope = syncBlockScope;
+
+      return result;
+    });
+
+    return body;
   };
 
   var format_argument = function(node) {
@@ -526,108 +590,6 @@
     }
 
     return result;
-  };
-
-  CodeGen.prototype._SimpleFunction = function(node, args) {
-    var body;
-
-    body = this.withFunction(args, function() {
-      return this._Statements(node.body);
-    });
-
-    return [ "$.Function(", body ];
-  };
-
-  CodeGen.prototype._SegmentedFunction = function(node, args) {
-    var fargs, body, assignArguments;
-
-    fargs = args.map(function(_, i) {
-      return "_arg" + i;
-    });
-
-    assignArguments = function(item, i) {
-      return "$" + args[i] + " = " + fargs[i];
-    };
-
-    body = this.withFunction([], function() {
-      var result = [];
-      var fragments = [], syncBlockScope;
-      var elements = node.body;
-      var i, imax;
-      var functionBodies;
-
-      for (i = 0, imax = args.length; i < imax; ++i) {
-        this.scope.add("var", args[i]);
-      }
-
-      syncBlockScope = this.state.syncBlockScope;
-      this.state.syncBlockScope = this.scope.peek();
-
-      functionBodies = this.withIndent(function() {
-        var fragments = [];
-        var i = 0, imax = elements.length;
-        var lastIndex = imax - 1;
-
-        fragments.push("\n");
-
-        var loop = function() {
-          var fragments = [];
-          var stmt;
-          var count = 0;
-
-          while (i < imax) {
-            if (i === 0) {
-              if (args.length) {
-                stmt = this.stitchWith(args, "; ", assignArguments);
-                fragments.push([ this.addIndent(stmt), ";", "\n" ]);
-              }
-            } else if (count) {
-              fragments.push("\n");
-            }
-
-            this.state.calledSegmentedMethod = false;
-            stmt = this.generate(elements[i]);
-
-            if (stmt.length) {
-              if (i === lastIndex || this.state.calledSegmentedMethod) {
-                stmt = [ "return ", stmt ];
-              }
-              fragments.push([ this.addIndent(stmt), ";" ]);
-              count += 1;
-            }
-
-            i += 1;
-            if (this.state.calledSegmentedMethod) {
-              break;
-            }
-          }
-
-          return fragments;
-        };
-
-        while (i < imax) {
-          if (i) {
-            fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
-          } else {
-            fragments.push(this.addIndent(this.withFunction(fargs, loop)));
-          }
-        }
-
-        fragments.push("\n");
-
-        return fragments;
-      });
-
-      fragments.push("return [", functionBodies, this.addIndent("];"));
-
-      result.push([ this.addIndent(fragments) ]);
-
-      this.state.syncBlockScope = syncBlockScope;
-
-      return result;
-    });
-
-    return [ "$.SegFunction(", body ];
   };
 
   CodeGen.prototype.Identifier = function(node, opts) {
@@ -752,13 +714,19 @@
     var scope = this.state.syncBlockScope;
 
     return this.stitchWith(node.declarations, ", ", function(item) {
-      this.scope.add("var", item.id.name, scope);
+      var result;
 
-      if (!item.init) {
-        return;
+      this.scope.add("var", item.id.name, { scope: scope, init: false });
+
+      result = [ this.generate(item.id) ];
+
+      if (item.init) {
+        result.push(" = ", this.generate(item.init));
+      } else {
+        result.push(" = $.Nil()");
       }
 
-      return [ this.generate(item.id), " = ", this.generate(item.init) ];
+      return result;
     });
   };
 
@@ -777,10 +745,6 @@
       var stmt;
 
       stmt = this.generate(item);
-
-      if (stmt.length === 0) {
-        return;
-      }
 
       if (i === lastIndex) {
         stmt = [ "return ", stmt ];

@@ -3,6 +3,7 @@
 
   require("./Integer");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -385,10 +386,10 @@
       var instance, test;
       var $scale, $stepsPerOctave;
 
-      $scale = sc.test.object({
+      $scale = $$({
         performDegreeToKey: this.spy(sc.test.func)
       });
-      $stepsPerOctave = sc.test.object();
+      $stepsPerOctave = $$();
 
       instance = this.createInstance();
 
@@ -401,7 +402,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
 
       this.stub(iterator, "integer$do", function() {
         return iter;
@@ -419,7 +420,7 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object({ value: this.spy() });
+      $function = $$({ value: this.spy() });
 
       instance = this.createInstance();
       test = instance.generate($function);
@@ -449,7 +450,7 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object();
+      $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "collectAs", sc.test.func);
@@ -464,7 +465,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
 
       this.stub(iterator, "integer$reverseDo", function() {
         return iter;
@@ -483,8 +484,8 @@
       var $endval, $function;
 
       iter = {};
-      $endval   = sc.test.object();
-      $function = sc.test.object();
+      $endval   = $$();
+      $function = $$();
 
       this.stub(iterator, "integer$for", function() {
         return iter;
@@ -501,9 +502,9 @@
     it("#forBy", sinon.test(function() {
       var instance, test;
       var iter = {};
-      var $endval   = sc.test.object();
-      var $stepval  = sc.test.object();
-      var $function = sc.test.object();
+      var $endval   = $$();
+      var $stepval  = $$();
+      var $function = $$();
 
       this.stub(iterator, "integer$forBy", function() {
         return iter;
@@ -521,9 +522,9 @@
       var $hi, $step;
 
       spy = this.spy(sc.test.func);
-      $hi = sc.test.object();
-      $step = sc.test.object();
-      this.stub(sc.lang.klass, "get").withArgs("Interval").returns(sc.test.object({
+      $hi = $$();
+      $step = $$();
+      this.stub(sc.lang.klass, "get").withArgs("Interval").returns($$({
         new: spy
       }));
 

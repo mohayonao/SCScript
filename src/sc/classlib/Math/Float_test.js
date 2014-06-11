@@ -3,6 +3,7 @@
 
   require("./Float");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -102,8 +103,8 @@
     });
     it("#div", function() {
       testCase(this, [
-        [ 10.5, [ 2 ], $.Integer(5) ],
-        [ 10.5, [ 1.5 ], $.Integer(7) ],
+        [ 10.5, [ 2 ], $$(5) ],
+        [ 10.5, [ 1.5 ], $$(7) ],
       ]);
     });
     it("#max", function() {
@@ -357,17 +358,17 @@
     });
     it("#as32Bits", function() {
       testCase(this, [
-        [ 3.14, [], $.Integer(1078523331) ]
+        [ 3.14, [], $$(1078523331) ]
       ]);
     });
     it("#high32Bits", function() {
       testCase(this, [
-        [ 3.14, [], $.Integer(1074339512) ]
+        [ 3.14, [], $$(1074339512) ]
       ]);
     });
     it("#low32Bits", function() {
       testCase(this, [
-        [ 3.14, [], $.Integer(1374389535) ]
+        [ 3.14, [], $$(1374389535) ]
       ]);
     });
     it(".from32Bits", function() {
@@ -385,7 +386,7 @@
       var $function;
 
       iter = [];
-      $function = sc.test.object();
+      $function = $$();
       this.stub(iterator, "float$do", function() {
         return iter;
       });
@@ -403,7 +404,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
 
       this.stub(iterator, "float$reverseDo", function() {
         return iter;

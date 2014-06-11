@@ -3,6 +3,8 @@
 
   require("./Thread");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCThread", function() {
@@ -77,7 +79,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      test = instance.randSeed_($.Integer(0));
+      test = instance.randSeed_($$(0));
 
       expect(test).to.equal(instance);
 
@@ -90,7 +92,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      test = instance.randData_(sc.test.encode([ 1, 2, 3 ]));
+      test = instance.randData_($$([ 1, 2, 3 ]));
 
       test = instance.randData();
       expect(test).to.be.a("SCInt32Array").that.eqls(

@@ -3,6 +3,8 @@
 
   require("./Event");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCEvent", function() {
@@ -60,7 +62,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      test = instance.$("a_", [ $.Integer(1) ]);
+      test = instance.$("a_", [ $$(1) ]);
 
       expect(test).to.be.a("SCInteger").that.equals(1);
 
@@ -73,12 +75,12 @@
       this.stub(sc.SCScript, "stderr");
 
       instance = this.createInstance();
-      test = instance.$("add_", [ $.Integer(1) ]);
+      test = instance.$("add_", [ $$(1) ]);
 
       expect(test).to.be.a("SCInteger").that.equals(1);
       expect(sc.SCScript.stderr).to.be.called;
 
-      test = instance.at($.Symbol("add"));
+      test = instance.at($$("\\add"));
       expect(test).to.be.a("SCInteger").that.equals(1);
     }));
   });

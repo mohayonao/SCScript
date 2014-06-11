@@ -3,6 +3,8 @@
 
   require("./Nil");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCNil", function() {
@@ -64,7 +66,7 @@
       var instance, test;
       var $obj;
 
-      $obj = sc.test.object();
+      $obj = $$();
 
       instance = this.createInstance();
 
@@ -75,7 +77,7 @@
       var instance, test;
       var $obj;
 
-      $obj = sc.test.object({
+      $obj = $$({
         value: sc.test.func
       });
 
@@ -106,7 +108,7 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object({
+      $function = $$({
         value: sc.test.func
       });
 
@@ -119,7 +121,7 @@
       var instance, test;
       var $stream;
 
-      $stream = sc.test.object();
+      $stream = $$();
 
       instance = this.createInstance();
 
@@ -198,7 +200,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("IdentitySet").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("IdentitySet").returns($$({
         new: spy
       }));
 
@@ -231,7 +233,7 @@
       var instance, test;
       var $event;
 
-      $event = sc.test.object();
+      $event = $$();
 
       instance = this.createInstance();
 
@@ -254,14 +256,14 @@
       var instance, test;
       var $clock;
 
-      $clock = $.Nil();
+      $clock = $$(null);
 
       instance = this.createInstance();
 
       test = instance.nextTimeOnGrid($clock);
       expect(test).to.be.a("SCNil");
 
-      $clock = sc.test.object();
+      $clock = $$();
       $clock.nextTimeOnGrid = this.spy(sc.test.func);
 
       test = instance.nextTimeOnGrid($clock);
@@ -275,7 +277,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Quant").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Quant").returns($$({
         "default": spy
       }));
 
@@ -296,7 +298,7 @@
       var instance, test;
       var $stream;
 
-      $stream = sc.test.object({
+      $stream = $$({
         putAll: this.spy()
       });
 
@@ -310,7 +312,7 @@
       var instance, test;
       var $stream;
 
-      $stream = sc.test.object({
+      $stream = $$({
         putAll: this.spy()
       });
 
@@ -331,7 +333,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance();
 
@@ -342,7 +344,7 @@
       var instance, test;
       var $array;
 
-      $array = sc.test.object();
+      $array = $$();
 
       instance = this.createInstance();
 
@@ -353,7 +355,7 @@
       var instance, test;
       var $array;
 
-      $array = sc.test.object();
+      $array = $$();
 
       instance = this.createInstance();
 
@@ -380,7 +382,7 @@
       var instance, test;
       var $prevVal;
 
-      $prevVal = sc.test.object();
+      $prevVal = $$();
 
       instance = this.createInstance();
 
@@ -392,14 +394,14 @@
       var $arg1, $arg2, $arg3;
 
       stub = this.stub(sc.lang.klass, "get");
-      stub.withArgs("FunctionList").returns(sc.test.object({
+      stub.withArgs("FunctionList").returns($$({
         new: function(arg) {
           return arg;
         }
       }));
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
-      $arg3 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
+      $arg3 = $$();
 
       instance = this.createInstance();
       test = instance.addFunc($arg1);
@@ -441,7 +443,7 @@
 
       spy = this.spy(sc.test.func);
       stub = this.stub(sc.lang.klass, "get");
-      stub.withArgs("ControlSpec").returns(sc.test.object({
+      stub.withArgs("ControlSpec").returns($$({
         new: spy
       }));
 

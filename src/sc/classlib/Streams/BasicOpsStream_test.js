@@ -3,13 +3,16 @@
 
   require("./BasicOpsStream");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   function arrayToFuncStream() {
     var args = arguments, i = 0, j = 0;
-    return $("FuncStream").new($.Function(function() {
-      return sc.test.encode(args[i][j++]);
-    }), $.Function(function() {
+    return $("FuncStream").new($$(function() {
+      var item = args[i][j++];
+      return typeof item !== "undefined" ? $$(item) : undefined;
+    }), $$(function() {
       i = (i + 1) % args.length;
       j = 0;
       return $.Nil();
@@ -130,7 +133,7 @@
     before(function() {
       SCBinaryOpXStream = $("BinaryOpXStream");
       this.createInstance = function(op, $stream, $argStream) {
-        return $stream.composeBinaryOp($.Symbol(op), $argStream, $.Symbol("x"));
+        return $stream.composeBinaryOp($.Symbol(op), $argStream, $$("\\x"));
       };
       $("Environment").new().push();
     });
@@ -250,7 +253,7 @@
         }.value ;
       */
       $stream  = arrayToFuncStream([ 1, 2, 3, 4, 5 ]);
-      $argList = sc.test.encode([ 2, 4 ]);
+      $argList = $$([ 2, 4 ]);
       instance = this.createInstance("clip", $stream, $argList);
 
       expect(instance.next()).to.be.a("SCInteger").that.equals(2);
@@ -284,7 +287,7 @@
         }.value;
       */
       $stream  = arrayToFuncStream([ 1, 2, 3, 4, 5 ]);
-      $argList = sc.test.encode([ arrayToFuncStream([ 3, 2, 3 ]), 4 ]);
+      $argList = $$([ arrayToFuncStream([ 3, 2, 3 ]), 4 ]);
       instance = this.createInstance("clip", $stream, $argList);
 
       expect(instance.next()).to.be.a("SCInteger").that.equals(3);

@@ -3,6 +3,8 @@
 
   require("./Environment");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCEnvironment", function() {
@@ -10,7 +12,7 @@
     before(function() {
       SCEnvironment = $("Environment");
       this.createInstance = function(list) {
-        return SCEnvironment.newFrom(list ? sc.test.encode(list) : $.Array());
+        return SCEnvironment.newFrom($$(list || []));
       };
       SCEnvironment.push(SCEnvironment.new());
     });
@@ -28,7 +30,7 @@
       var instance, test;
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
-      test = instance.eventAt($.Integer(1));
+      test = instance.eventAt($$(1));
 
       expect(test).to.be.a("SCInteger").equals(2);
     });
@@ -36,7 +38,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      test = instance.composeEvents(sc.test.encode([ 1, 2, 3, 4 ]));
+      test = instance.composeEvents($$([ 1, 2, 3, 4 ]));
 
       expect(test).to.not.equal(instance);
       expect(test).to.be.a("SCEnvironment").that.eqls({ 1: 2, 3: 4 });
@@ -48,12 +50,12 @@
     it("push/pop", function() {
       var test;
 
-      $.Environment("a", $.Integer(1));
+      $.Environment("a", $$(1));
       test = $.Environment("a");
       expect(test).to.be.a("SCInteger").that.equals(1);
 
       SCEnvironment.new().push();
-      $.Environment("a", $.Integer(2));
+      $.Environment("a", $$(2));
       test = $.Environment("a");
       expect(test).to.be.a("SCInteger").that.equals(2);
 
@@ -65,9 +67,9 @@
       var test;
       var $function;
 
-      $.Environment("a", $.Integer(1));
-      $function = $.Function(function() {
-        $.Environment("a", $.Integer(100));
+      $.Environment("a", $$(1));
+      $function = $$(function() {
+        $.Environment("a", $$(100));
         return $.Environment("a").neg();
       });
 
@@ -81,9 +83,9 @@
       var test;
       var $function;
 
-      $.Environment("a", $.Integer(1));
-      $function = $.Function(function() {
-        $.Environment("a", $.Integer(100));
+      $.Environment("a", $$(1));
+      $function = $$(function() {
+        $.Environment("a", $$(100));
         return $.Environment("a").neg();
       });
 

@@ -127,12 +127,16 @@ SCScript.install(function(sc) {
 
     spec.flop = function() {
       var $this = this;
-      // if(def.argNames.isNil) { ^this };
+
       return $.Function(function() {
-        var $$args = $.Array(slice.call(arguments));
-        return $$args.flop().collect($.Function(function($_) {
-          return $this.valueArray($_);
-        }));
+        return [ function() {
+          var $$args = $.Array(slice.call(arguments));
+          return $$args.flop().collect($.Function(function() {
+            return [ function($_) {
+              return $this.valueArray($_);
+            } ];
+          }));
+        } ];
       });
     };
 

@@ -193,10 +193,12 @@ SCScript.install(function(sc) {
           $result.add($item);
         }
       });
-      $that.do($.Function(function($item) {
-        if (!$this.includes($item).__bool__()) {
-          $result.add($item);
-        }
+      $that.do($.Function(function() {
+        return [ function($item) {
+          if (!$this.includes($item).__bool__()) {
+            $result.add($item);
+          }
+        } ];
       }));
 
       return $result;

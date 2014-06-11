@@ -3,6 +3,8 @@
 
   require("./iterator");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
@@ -21,7 +23,7 @@
         var i = 0, $nil = $.Nil();
 
         iter = iterator.function$while(
-          $.Function(function() {
+          $$(function() {
             return $.Boolean(i++ < 5);
           })
         );
@@ -409,10 +411,10 @@
       it("array$do", function() {
         var iter;
 
-        iter = iterator.array$do(sc.test.encode([]));
+        iter = iterator.array$do($$([]));
         expect(iter.next()).to.be.a("JSNull");
 
-        iter = iterator.array$do(sc.test.encode([ 1, 2, 3, 4 ]));
+        iter = iterator.array$do($$([ 1, 2, 3, 4 ]));
         expect(iter.next()).to.be.a("SCInteger").that.equals(1);
         expect(iter.next()).to.be.a("SCInteger").that.equals(2);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
@@ -423,10 +425,10 @@
       it("array$reverseDo", function() {
         var iter;
 
-        iter = iterator.array$reverseDo(sc.test.encode([]));
+        iter = iterator.array$reverseDo($$([]));
         expect(iter.next()).to.be.a("JSNull");
 
-        iter = iterator.array$reverseDo(sc.test.encode([ 1, 2, 3, 4 ]));
+        iter = iterator.array$reverseDo($$([ 1, 2, 3, 4 ]));
         expect(iter.next()).to.be.a("SCInteger").that.equals(4);
         expect(iter.next()).to.be.a("SCInteger").that.equals(3);
         expect(iter.next()).to.be.a("SCInteger").that.equals(2);
@@ -437,7 +439,7 @@
       it("set$reverseDo", function() {
         var iter;
         var $set = {
-          _$array: sc.test.encode([ null, 1, 2, null, 3, null ])
+          _$array: $$([ null, 1, 2, null, 3, null ])
         };
 
         iter = iterator.set$do($set);
@@ -476,7 +478,7 @@
         };
 
         iter = iterator.function$while(
-          $.Function(function() {
+          $$(function() {
             return $.Boolean(i++ < 3);
           })
         );

@@ -28,7 +28,7 @@
     "grunt-este-watch": "^0.1.16",
     "grunt-jscs-checker": "^0.4.4",
     "grunt-plato": "^1.0.0",
-    "istanbul": "^0.2.10",
+    "istanbul": "^0.2.11",
     "mocha": "^1.19.0",
     "sinon": "^1.10.0",
     "sinon-chai": "^2.5.0"

@@ -629,8 +629,14 @@ SCScript.install(function(sc) {
       return this._$a.valueArray($args).perform(this._$selector);
     };
 
-    // TODO: implements valueEnvir
-    // TODO: implements valueArrayEnvir
+    spec.valueEnvir = function() {
+      var $a = this._$a;
+      return $a.valueEnvir.apply($a, arguments).perform(this._$selector);
+    };
+
+    spec.valueArrayEnvir = function($args) {
+      return this._$a.valueArrayEnvir($args).perform(this._$selector);
+    };
 
     spec.functionPerformList = function($selector, $arglist) {
       return this.performList($selector, $arglist);

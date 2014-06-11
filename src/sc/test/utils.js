@@ -36,7 +36,7 @@
 
   });
 
-  var encode = function(a) {
+  var encode = function(a, opts) {
     var $ = sc.lang.$;
 
     if (Array.isArray(a)) {
@@ -74,7 +74,7 @@
     if (typeof a === "function") {
       return $.Function(function() {
         return [ a ];
-      });
+      }, typeof opts === "string" ? opts : undefined);
     }
 
     return a;
@@ -276,7 +276,7 @@
     return instance;
   };
 
-  sc.test.object = function(source) {
+  sc.test.object = function(source, opts) {
     var instance;
 
     if (typeof source === "undefined") {
@@ -289,7 +289,7 @@
         });
       });
     } else {
-      instance = encode(source);
+      instance = encode(source, opts);
     }
     instance.__testid = instance.__hash;
 

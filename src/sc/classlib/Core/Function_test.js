@@ -14,11 +14,15 @@
     before(function() {
       SCFunction = $("Function");
       SCObject = $("Object");
-      this.createInstance = function(func) {
+      this.createInstance = function(func, def) {
         return $.Function(function() {
           return [ func || function() {} ];
-        });
+        }, def);
       };
+      $("Environment").new().push();
+    });
+    after(function() {
+      $("Environment").pop();
     });
     it.skip("<def", function() {
     });
@@ -114,12 +118,47 @@
       expect(spy).to.be.calledWith($arg1, $arg2, $arg3);
       expect(spy).to.be.calledLastIn(test);
     }));
-    it.skip("#valueEnvir", function() {
-    });
-    it.skip("#valueArrayEnvir", function() {
-    });
-    it.skip("#functionPerformList", function() {
-    });
+    it("#valueEnvir", sinon.test(function() {
+      var instance, test, spy;
+      var $arg1;
+
+      spy = this.spy(sc.test.func);
+      $arg1 = $$();
+
+      instance = this.createInstance(spy, "a=1; b=2; c=3");
+      $.Environment("c", $$(300));
+
+      test = instance.valueEnvir($arg1);
+
+      expect(spy.args[0]).js.that.eqls([ $arg1, 2, 300 ]);
+      expect(spy).to.be.calledLastIn(test);
+    }));
+    it("#valueArrayEnvir", sinon.test(function() {
+      var instance, test, spy;
+      var $arg1, $arg2;
+
+      spy = this.spy(sc.test.func);
+      $arg1 = $$();
+      $arg2 = $$(null);
+
+      instance = this.createInstance(spy, "a=1; b=2; c=3");
+      $.Environment("c", $$(300));
+
+      test = instance.valueArrayEnvir($$([ $arg1, $arg2 ]));
+
+      expect(spy.args[0]).js.that.eqls([ $arg1, null, 300 ]);
+      expect(spy).to.be.calledLastIn(test);
+    }));
+    it("#functionPerformList", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(instance, "value", sc.test.func);
+
+      test = instance.functionPerformList($$("\\value"), $$([ 1, 2, 3 ]));
+      expect(instance.value.args[0]).js.to.eqls([ 1, 2, 3 ]);
+      expect(instance.value).to.be.calledLastIn(test);
+    }));
     it.skip("#valueWithEnvir", function() {
     });
     it.skip("#performWithEnvir", function() {

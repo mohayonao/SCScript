@@ -3,6 +3,7 @@
 
   require("./String");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -27,7 +28,7 @@
       var instance, test;
       var $ch;
 
-      $ch = $.Char("a");
+      $ch = $$("$a");
 
       instance = this.createInstance();
 
@@ -35,7 +36,7 @@
       expect(test).to.equal($ch);
 
       expect(function() {
-        instance.__elem__($.Integer(0));
+        instance.__elem__($$(0));
       }).to.throw("Wrong type");
     });
     it("#valueOf", function() {
@@ -158,10 +159,10 @@
       var $aSelector, $aNumber;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      $aNumber = sc.test.object({
+      $aSelector = $$();
+      $aNumber = $$({
         asString: function() {
-          return sc.test.object({
+          return $$({
             perform: spy
           });
         }
@@ -178,10 +179,10 @@
       var $aSelector, $aComplex;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      $aComplex = sc.test.object({
+      $aSelector = $$();
+      $aComplex = $$({
         asString: function() {
-          return sc.test.object({
+          return $$({
             perform: spy
           });
         }

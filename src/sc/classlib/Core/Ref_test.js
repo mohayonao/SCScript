@@ -3,22 +3,23 @@
 
   require("./Ref");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCRef", function() {
-    var SCRef, $nil;
+    var SCRef;
     before(function() {
       SCRef = $("Ref");
-      $nil = $.Nil();
       this.createInstance = function(value) {
-        return SCRef.new(value || $nil);
+        return SCRef.new(value || $$(null));
       };
     });
     it("#valueOf", function() {
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
@@ -29,11 +30,11 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
-      test = instance.value_($nil);
+      test = instance.value_($$(null));
       expect(test).to.equal(instance);
 
       test = instance.value();
@@ -57,7 +58,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
@@ -68,7 +69,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
@@ -83,7 +84,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
@@ -94,7 +95,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
@@ -105,7 +106,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
@@ -116,7 +117,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance($value);
 
@@ -135,7 +136,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object({
+      $value = $$({
         at: this.spy(sc.test.func)
       });
 
@@ -149,7 +150,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object({
+      $value = $$({
         put: this.spy(sc.test.func)
       });
 

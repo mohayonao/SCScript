@@ -3,6 +3,7 @@
 
   require("./Function");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -14,7 +15,8 @@
       SCFunction = $("Function");
       SCObject = $("Object");
       this.createInstance = function(func) {
-        return $.Function(func || function() {
+        return $.Function(function() {
+          return [ func || function() {} ];
         });
       };
     });
@@ -71,9 +73,9 @@
       var $arg1, $arg2, $arg3;
 
       spy = this.spy(sc.test.func);
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
-      $arg3 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
+      $arg3 = $$();
 
       instance = this.createInstance(spy);
 
@@ -97,9 +99,9 @@
       var $arg1, $arg2, $arg3;
 
       spy = this.spy(sc.test.func);
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
-      $arg3 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
+      $arg3 = $$();
 
       instance = this.createInstance(spy);
       test = instance.valueArray($arg1);
@@ -108,7 +110,7 @@
       expect(spy).to.be.calledLastIn(test);
       spy.reset();
 
-      test = instance.valueArray($.Array([ $arg1, $arg2, $arg3 ]));
+      test = instance.valueArray($$([ $arg1, $arg2, $arg3 ]));
       expect(spy).to.be.calledWith($arg1, $arg2, $arg3);
       expect(spy).to.be.calledLastIn(test);
     }));
@@ -136,7 +138,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
         new: spy
       }));
 
@@ -151,7 +153,7 @@
       var $n;
 
       spy = this.spy(sc.test.func);
-      $n = $.Integer(3);
+      $n = $$(3);
       this.stub($("Array"), "fill", spy);
 
       instance = this.createInstance();
@@ -186,10 +188,10 @@
       var spy, $handler;
 
       spy = this.spy();
-      $handler = $.Function(spy);
+      $handler = $$(spy);
 
       instance = this.createInstance(function() {
-        return $.Integer(1);
+        return $$(1);
       });
 
       test = instance.protect($handler);
@@ -201,7 +203,7 @@
       var spy, $handler;
 
       spy = this.spy();
-      $handler = $.Function(spy);
+      $handler = $$(spy);
 
       instance = this.createInstance(function() {
         throw new Error("error");
@@ -218,7 +220,7 @@
       testCase(this, [
         {
           source: function() {
-            return $.False();
+            return $$(false);
           },
           args: [
             "\\ng",
@@ -228,7 +230,7 @@
         },
         {
           source: function() {
-            return $.False();
+            return $$(false);
           },
           args: [
             "\\ng",
@@ -239,7 +241,7 @@
         },
         {
           source: function() {
-            return $.False();
+            return $$(false);
           },
           args: [
             "\\ng",
@@ -253,7 +255,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
         new: spy
       }));
 
@@ -267,7 +269,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Prout").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Prout").returns($$({
         new: spy
       }));
 
@@ -292,8 +294,8 @@
       expect(test).to.be.a("SCFunction");
 
       test = test.value(
-        $.Array([ $.Integer( 1), $.Integer( 2)                  ]),
-        $.Array([ $.Integer(10), $.Integer(20), $.Integer(30) ])
+        $$([  1,  2     ]),
+        $$([ 10, 20, 30 ])
       );
       expect(test).to.be.a("SCArray").that.eqls([ 11, 22, 31 ]);
     });
@@ -308,7 +310,7 @@
       var $body;
 
       iter = {};
-      $body = sc.test.object();
+      $body = $$();
 
       this.stub(iterator, "function$while", function() {
         return iter;

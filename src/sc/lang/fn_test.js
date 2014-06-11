@@ -4,6 +4,8 @@
   require("./fn");
   require("./klass/utils");
 
+  var $$ = sc.test.object;
+
   var fn   = sc.lang.fn;
   var $    = sc.lang.$;
   var $nil = sc.lang.klass.utils.$nil;
@@ -54,9 +56,9 @@
       var instance, spy;
       var $arg1, $argC, $argD;
 
-      $arg1 = sc.test.object();
-      $argC = sc.test.object();
-      $argD = sc.test.object();
+      $arg1 = $$();
+      $argC = $$();
+      $argD = $$();
 
       spy = sinon.spy();
       instance = {
@@ -83,11 +85,11 @@
       var instance, spy;
       var $arg1, $arg2, $arg3, $arg4, $arg5;
 
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
-      $arg3 = sc.test.object();
-      $arg4 = sc.test.object();
-      $arg5 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
+      $arg3 = $$();
+      $arg4 = $$();
+      $arg5 = $$();
 
       spy = sinon.spy();
       instance = {

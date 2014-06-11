@@ -3,6 +3,7 @@
 
   require("./SimpleNumber");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -36,7 +37,7 @@
       test = instance.__dec__();
       expect(test).to.be.a("SCFloat").that.equals(0);
 
-      instance = $.Integer(1);
+      instance = $$(1);
       test = instance.__dec__();
       expect(test).to.be.a("SCInteger").that.equals(0);
     });
@@ -47,7 +48,7 @@
       test = instance.__inc__();
       expect(test).to.be.a("SCFloat").that.equals(2);
 
-      instance = $.Integer(1);
+      instance = $$(1);
       test = instance.__inc__();
       expect(test).to.be.a("SCInteger").that.equals(2);
     });
@@ -65,7 +66,7 @@
     it("#__num__", function() {
       var instance, test;
 
-      instance = $.Integer(2014);
+      instance = $$(2014);
       test = instance.__num__();
       expect(test).to.be.a("JSNumber").that.equals(2014);
     });
@@ -77,7 +78,7 @@
     });
     it("#numChannels", function() {
       testCase(this, [
-        [ 100, [], $.Integer(1) ],
+        [ 100, [], $$(1) ],
       ]);
     });
     it("#magnitude", sinon.test(function() {
@@ -570,18 +571,18 @@
     });
     it("#==", function() {
       testCase(this, [
-        [ $.Integer(10), [ $.Integer(10) ], true ],
-        [ $.Integer(10), [ $.Float(10.0) ], true ],
-        [ $.Float(10.0), [ $.Integer(10) ], true ],
+        [ $$(10), [ $$(10) ], true ],
+        [ $$(10), [ $.Float(10.0) ], true ],
+        [ $.Float(10.0), [ $$(10) ], true ],
         [ $.Float(10.0), [ $.Float(10.0) ], true ],
         [ $.Float(10.0), [ $.Float(10.5) ], false ],
       ]);
     });
     it("#!=", function() {
       testCase(this, [
-        [ $.Integer(10), [ $.Integer(10) ], false ],
-        [ $.Integer(10), [ $.Float(10.0) ], false ],
-        [ $.Float(10.0), [ $.Integer(10) ], false ],
+        [ $$(10), [ $$(10) ], false ],
+        [ $$(10), [ $.Float(10.0) ], false ],
+        [ $.Float(10.0), [ $$(10) ], false ],
         [ $.Float(10.0), [ $.Float(10.0) ], false ],
         [ $.Float(10.0), [ $.Float(10.5) ], true  ],
       ]);
@@ -627,13 +628,13 @@
     });
     it("#asInteger", function() {
       testCase(this, [
-        [ $.Integer(10), [], $.Integer(10) ],
-        [ $.Float(10.5), [], $.Integer(10) ],
+        [ $$(10), [], $$(10) ],
+        [ $.Float(10.5), [], $$(10) ],
       ]);
     });
     it("#asFloat", function() {
       testCase(this, [
-        [ $.Integer(10), [], $.Float(10.0) ],
+        [ $$(10), [], $.Float(10.0) ],
         [ $.Float(10.5), [], $.Float(10.5) ],
       ]);
     });
@@ -840,8 +841,8 @@
       spy1 = this.spy(sc.test.func);
       spy2 = this.spy(sc.test.func);
       this.stub(sc.lang.klass, "get")
-        .withArgs("Silent").returns(sc.test.object({ ar: spy1 }))
-        .withArgs("DC"    ).returns(sc.test.object({ ar: spy2 }));
+        .withArgs("Silent").returns($$({ ar: spy1 }))
+        .withArgs("DC"    ).returns($$({ ar: spy2 }));
 
       instance = this.createInstance(0);
       test = instance.asAudioRateInput();

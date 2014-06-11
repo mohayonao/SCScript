@@ -113,11 +113,13 @@ SCScript.install(function(sc) {
       if (this.size() !== $aCollection.size()) {
         return $false;
       }
-      this.do($.Function(function($item, $i) {
-        if ($item ["!="] ($aCollection.$("at", [ $i ])).__bool__()) {
-          $res = $false;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          if ($item ["!="] ($aCollection.$("at", [ $i ])).__bool__()) {
+            $res = $false;
+            return sc.C.LOOP_BREAK;
+          }
+        } ];
       }));
 
       return $res || $true;
@@ -173,11 +175,13 @@ SCScript.install(function(sc) {
     spec.indexOf = fn(function($item) {
       var $ret = null;
 
-      this.do($.Function(function($elem, $i) {
-        if ($item === $elem) {
-          $ret = $i;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($item === $elem) {
+            $ret = $i;
+            return sc.C.LOOP_BREAK;
+          }
+        } ];
       }));
 
       return $ret || $nil;
@@ -186,10 +190,12 @@ SCScript.install(function(sc) {
     spec.indicesOfEqual = fn(function($item) {
       var indices = [];
 
-      this.do($.Function(function($elem, $i) {
-        if ($item === $elem) {
-          indices.push($i);
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($item === $elem) {
+            indices.push($i);
+          }
+        } ];
       }));
 
       return indices.length ? $.Array(indices) : $nil;
@@ -231,8 +237,10 @@ SCScript.install(function(sc) {
     }, "arr; offset=0");
 
     spec.indexOfGreaterThan = fn(function($val) {
-      return this.detectIndex($.Function(function($item) {
-        return $.Boolean($item > $val);
+      return this.detectIndex($.Function(function() {
+        return [ function($item) {
+          return $.Boolean($item > $val);
+        } ];
       }));
     }, "val");
 
@@ -288,14 +296,16 @@ SCScript.install(function(sc) {
       if (this.size() <= 1) {
         return $true;
       }
-      this.doAdjacentPairs($.Function(function($a, $b) {
-        var $diff = $b.$("-", [ $a ]);
-        if ($step === $nil) {
-          $step = $diff;
-        } else if ($step ["!="] ($diff).__bool__()) {
-          $res = $false;
-          return sc.C.LOOP_BREAK;
-        }
+      this.doAdjacentPairs($.Function(function() {
+        return [ function($a, $b) {
+          var $diff = $b.$("-", [ $a ]);
+          if ($step === $nil) {
+            $step = $diff;
+          } else if ($step ["!="] ($diff).__bool__()) {
+            $res = $false;
+            return sc.C.LOOP_BREAK;
+          }
+        } ];
       }));
 
       return $res || $true;
@@ -310,8 +320,10 @@ SCScript.install(function(sc) {
         ($newSize.__dec__()).max($int_1)
       );
 
-      return this.species().fill($newSize, $.Function(function($i) {
-        return $this.at($i ["*"] ($factor).round($.Float(1.0)).asInteger());
+      return this.species().fill($newSize, $.Function(function() {
+        return [ function($i) {
+          return $this.at($i ["*"] ($factor).round($.Float(1.0)).asInteger());
+        } ];
       }));
     }, "newSize");
 
@@ -324,8 +336,10 @@ SCScript.install(function(sc) {
         ($newSize.__dec__()).max($int_1)
       );
 
-      return this.species().fill($newSize, $.Function(function($i) {
-        return $this.blendAt($i ["*"] ($factor));
+      return this.species().fill($newSize, $.Function(function() {
+        return [ function($i) {
+          return $this.blendAt($i ["*"] ($factor));
+        } ];
       }));
     }, "newSize");
 
@@ -460,8 +474,10 @@ SCScript.install(function(sc) {
     spec.pairsDo = function($function) {
       var $this = this, $int2 = $.Integer(2);
 
-      $int_0.forBy(this.size() ["-"] ($int2), $int2, $.Function(function($i) {
-        return $function.value($this.at($i), $this.at($i.__inc__()), $i);
+      $int_0.forBy(this.size() ["-"] ($int2), $int2, $.Function(function() {
+        return [ function($i) {
+          return $function.value($this.at($i), $this.at($i.__inc__()), $i);
+        } ];
       }));
 
       return this;
@@ -489,12 +505,14 @@ SCScript.install(function(sc) {
 
       $list = $.Array();
       $sublist = this.species().new();
-      this.doAdjacentPairs($.Function(function($a, $b, $i) {
-        $sublist = $sublist.add($a);
-        if ($function.value($a, $b, $i).__bool__()) {
-          $list = $list.add($sublist);
-          $sublist = $this.species().new();
-        }
+      this.doAdjacentPairs($.Function(function() {
+        return [ function($a, $b, $i) {
+          $sublist = $sublist.add($a);
+          if ($function.value($a, $b, $i).__bool__()) {
+            $list = $list.add($sublist);
+            $sublist = $this.species().new();
+          }
+        } ];
       }));
       if (this.notEmpty().__bool__()) {
         $sublist = $sublist.add(this.last());
@@ -509,13 +527,15 @@ SCScript.install(function(sc) {
 
       $list = $.Array();
       $sublist = this.species().new();
-      this.do($.Function(function($item, $i) {
-        if ($function.value($item, $i).__bool__()) {
-          $list = $list.add($sublist);
-          $sublist = $this.species().new();
-        } else {
-          $sublist = $sublist.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          if ($function.value($item, $i).__bool__()) {
+            $list = $list.add($sublist);
+            $sublist = $this.species().new();
+          } else {
+            $sublist = $sublist.add($item);
+          }
+        } ];
       }));
       $list = $list.add($sublist);
 
@@ -527,12 +547,14 @@ SCScript.install(function(sc) {
 
       $list = $.Array();
       $sublist = this.species().new($groupSize);
-      this.do($.Function(function($item) {
-        $sublist.add($item);
-        if ($sublist.size() >= $groupSize) {
-          $list.add($sublist);
-          $sublist = $this.species().new($groupSize);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          $sublist.add($item);
+          if ($sublist.size() >= $groupSize) {
+            $list.add($sublist);
+            $sublist = $this.species().new($groupSize);
+          }
+        } ];
       }));
       if ($sublist.size() > 0) {
         $list = $list.add($sublist);
@@ -547,13 +569,15 @@ SCScript.install(function(sc) {
       $list = $.Array();
       $subSize = $groupSizeList.at($int_0);
       $sublist = this.species().new($subSize);
-      this.do($.Function(function($item) {
-        $sublist = $sublist.add($item);
-        if ($sublist.size() >= $subSize) {
-          $list = $list.add($sublist);
-          $subSize = $groupSizeList.$("wrapAt", [ $.Integer(++i) ]);
-          $sublist = $this.species().new($subSize);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          $sublist = $sublist.add($item);
+          if ($sublist.size() >= $subSize) {
+            $list = $list.add($sublist);
+            $subSize = $groupSizeList.$("wrapAt", [ $.Integer(++i) ]);
+            $sublist = $this.species().new($subSize);
+          }
+        } ];
       }));
       if ($sublist.size() > 0) {
         $list = $list.add($sublist);
@@ -564,7 +588,9 @@ SCScript.install(function(sc) {
 
     spec.curdle = fn(function($probability) {
       return this.separate($.Function(function() {
-        return $probability.$("coin");
+        return [ function() {
+          return $probability.$("coin");
+        } ];
       }));
     }, "probability");
 
@@ -581,12 +607,14 @@ SCScript.install(function(sc) {
       numLevels = numLevels - 1;
 
       $list = this.species().new();
-      this.do($.Function(function($item) {
-        if ($item._flatten) {
-          $list = $list.addAll($item._flatten(numLevels));
-        } else {
-          $list = $list.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          if ($item._flatten) {
+            $list = $list.addAll($item._flatten(numLevels));
+          } else {
+            $list = $list.add($item);
+          }
+        } ];
       }));
 
       return $list;
@@ -597,12 +625,14 @@ SCScript.install(function(sc) {
     };
 
     spec._flat = fn(function($list) {
-      this.do($.Function(function($item) {
-        if ($item._flat) {
-          $list = $item._flat($list);
-        } else {
-          $list = $list.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          if ($item._flat) {
+            $list = $item._flat($list);
+          } else {
+            $list = $list.add($item);
+          }
+        } ];
       }));
       return $list;
     }, "list");
@@ -615,12 +645,14 @@ SCScript.install(function(sc) {
       var $list;
 
       $list = this.species().new(this.size());
-      this.do($.Function(function($item, $i) {
-        if ($item._flatIf && $func.value($item, $i).__bool__()) {
-          $list = $list.addAll($item._flatIf($func));
-        } else {
-          $list = $list.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          if ($item._flatIf && $func.value($item, $i).__bool__()) {
+            $list = $list.addAll($item._flatIf($func));
+          } else {
+            $list = $list.add($item);
+          }
+        } ];
       }));
 
       return $list;
@@ -631,32 +663,42 @@ SCScript.install(function(sc) {
 
       $size = this.size();
       $maxsize = $int_0;
-      this.do($.Function(function($sublist) {
-        var $sz;
-        if ($sublist.isSequenceableCollection().__bool__()) {
-          $sz = $sublist.size();
-        } else {
-          $sz = $int_1;
-        }
-        if ($sz > $maxsize) {
-          $maxsize = $sz;
-        }
+      this.do($.Function(function() {
+        return [ function($sublist) {
+          var $sz;
+          if ($sublist.isSequenceableCollection().__bool__()) {
+            $sz = $sublist.size();
+          } else {
+            $sz = $int_1;
+          }
+          if ($sz > $maxsize) {
+            $maxsize = $sz;
+          }
+        } ];
       }));
 
       $list = this.species().fill($maxsize, $.Function(function() {
-        return $this.species().new($size);
+        return [ function() {
+          return $this.species().new($size);
+        } ];
       }));
 
-      this.do($.Function(function($isublist) {
-        if ($isublist.isSequenceableCollection().__bool__()) {
-          $list.do($.Function(function($jsublist, $j) {
-            $jsublist.add($isublist.wrapAt($j));
-          }));
-        } else {
-          $list.do($.Function(function($jsublist) {
-            $jsublist.add($isublist);
-          }));
-        }
+      this.do($.Function(function() {
+        return [ function($isublist) {
+          if ($isublist.isSequenceableCollection().__bool__()) {
+            $list.do($.Function(function() {
+              return [ function($jsublist, $j) {
+                $jsublist.add($isublist.wrapAt($j));
+              } ];
+            }));
+          } else {
+            $list.do($.Function(function() {
+              return [ function($jsublist) {
+                $jsublist.add($isublist);
+              } ];
+            }));
+          }
+        } ];
       }));
 
       return $list;
@@ -665,21 +707,27 @@ SCScript.install(function(sc) {
     spec.flopWith = fn(function($func) {
       var $this = this, $maxsize;
 
-      $maxsize = this.maxValue($.Function(function($sublist) {
-        if ($sublist.isSequenceableCollection().__bool__()) {
-          return $sublist.size();
-        }
-        return $int_1;
+      $maxsize = this.maxValue($.Function(function() {
+        return [ function($sublist) {
+          if ($sublist.isSequenceableCollection().__bool__()) {
+            return $sublist.size();
+          }
+          return $int_1;
+        } ];
       }));
 
-      return this.species().fill($maxsize, $.Function(function($i) {
-        return $func.valueArray($this.collect($.Function(function($sublist) {
-          if ($sublist.isSequenceableCollection().__bool__()) {
-            return $sublist.wrapAt($i);
-          } else {
-            return $sublist;
-          }
-        })));
+      return this.species().fill($maxsize, $.Function(function() {
+        return [ function($i) {
+          return $func.valueArray($this.collect($.Function(function() {
+            return [ function($sublist) {
+              if ($sublist.isSequenceableCollection().__bool__()) {
+                return $sublist.wrapAt($i);
+              } else {
+                return $sublist;
+              }
+            } ];
+          })));
+        } ];
       }));
     }, "func");
 
@@ -707,8 +755,10 @@ SCScript.install(function(sc) {
     spec.isSequenceableCollection = utils.alwaysReturn$true;
 
     spec.containsSeqColl = function() {
-      return this.any($.Function(function($_) {
-        return $_.isSequenceableCollection();
+      return this.any($.Function(function() {
+        return [ function($_) {
+          return $_.isSequenceableCollection();
+        } ];
       }));
     };
 
@@ -1169,8 +1219,10 @@ SCScript.install(function(sc) {
     };
 
     spec.performUnaryOp = function($aSelector) {
-      return this.collect($.Function(function($item) {
-        return $item.perform($aSelector);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.perform($aSelector);
+        } ];
       }));
     };
 
@@ -1253,14 +1305,18 @@ SCScript.install(function(sc) {
 
       } else if (adverb > 0) {
 
-        $newList = $theOperand.collect($.Function(function($item) {
-          return $item.perform($aSelector, $this, $.Integer(adverb - 1));
+        $newList = $theOperand.collect($.Function(function() {
+          return [ function($item) {
+            return $item.perform($aSelector, $this, $.Integer(adverb - 1));
+          } ];
         }));
 
       } else {
 
-        $newList = $this.collect($.Function(function($item) {
-          return $theOperand.perform($aSelector, $item, $.Integer(adverb + 1));
+        $newList = $this.collect($.Function(function() {
+          return [ function($item) {
+            return $theOperand.perform($aSelector, $item, $.Integer(adverb + 1));
+          } ];
         }));
 
       }
@@ -1289,10 +1345,14 @@ SCScript.install(function(sc) {
 
       $size = $theOperand.size() ["*"] ($this.size());
       $newList = $this.species().new($size);
-      $theOperand.do($.Function(function($a) {
-        $this.do($.Function(function($b) {
-          $newList.add($a.perform($aSelector, $b));
-        }));
+      $theOperand.do($.Function(function() {
+        return [ function($a) {
+          $this.do($.Function(function() {
+            return [ function($b) {
+              $newList.add($a.perform($aSelector, $b));
+            } ];
+          }));
+        } ];
       }));
 
       return $newList;
@@ -1331,20 +1391,26 @@ SCScript.install(function(sc) {
     }
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
-      return this.collect($.Function(function($item) {
-        return $aNumber.perform($aSelector, $item, $adverb);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $aNumber.perform($aSelector, $item, $adverb);
+        } ];
       }));
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
-      return this.collect($.Function(function($item) {
-        return $aComplex.perform($aSelector, $item, $adverb);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $aComplex.perform($aSelector, $item, $adverb);
+        } ];
       }));
     };
 
     spec.asFraction = function($denominator, $fasterBetter) {
-      return this.collect($.Function(function($item) {
-        return $item.$("asFraction", [ $denominator, $fasterBetter ] );
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.$("asFraction", [ $denominator, $fasterBetter ] );
+        } ];
       }));
     };
 
@@ -1352,8 +1418,10 @@ SCScript.install(function(sc) {
     // TODO: implements asRect
 
     spec.ascii = function() {
-      return this.collect($.Function(function($item) {
-        return $item.$("ascii");
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.$("ascii");
+        } ];
       }));
     };
 
@@ -1361,8 +1429,10 @@ SCScript.install(function(sc) {
       if (this.size().__int__() === 1) {
         return this.first().$("rate");
       }
-      return this.collect($.Function(function($item) {
-        return $item.$("rate");
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.$("rate");
+        } ];
       })).minItem();
     };
 
@@ -1551,8 +1621,10 @@ SCScript.install(function(sc) {
 
     spec.sort = fn(function($function) {
       if ($function === $nil) {
-        $function = $.Function(function($a, $b) {
-          return $a.$("<=", [ $b ]);
+        $function = $.Function(function() {
+          return [ function($a, $b) {
+            return $a.$("<=", [ $b ]);
+          } ];
         });
       }
       this._sort($function);
@@ -1560,14 +1632,18 @@ SCScript.install(function(sc) {
     }, "function");
 
     spec.sortBy = fn(function($key) {
-      return this.sort($.Function(function($a, $b) {
-        return $a.$("at", [ $key ]).$("<=", [ $b.$("at", [ $key ]) ]);
+      return this.sort($.Function(function() {
+        return [ function($a, $b) {
+          return $a.$("at", [ $key ]).$("<=", [ $b.$("at", [ $key ]) ]);
+        } ];
       }));
     }, "key");
 
     spec.sortMap = fn(function($function) {
-      return this.sort($.Function(function($a, $b) {
-        return $function.value($a).$("<=", [ $function.value($b) ]);
+      return this.sort($.Function(function() {
+        return [ function($a, $b) {
+          return $function.value($a).$("<=", [ $function.value($b) ]);
+        } ];
       }));
     }, "function");
 
@@ -1622,13 +1698,15 @@ SCScript.install(function(sc) {
 
       once = true;
       $result = $nil;
-      this.doAdjacentPairs($.Function(function($a, $b) {
-        if (once) {
-          once = false;
-          $result = $operator.applyTo($a, $b);
-        } else {
-          $result = $operator.applyTo($result, $b);
-        }
+      this.doAdjacentPairs($.Function(function() {
+        return [ function($a, $b) {
+          if (once) {
+            once = false;
+            $result = $operator.applyTo($a, $b);
+          } else {
+            $result = $operator.applyTo($result, $b);
+          }
+        } ];
       }));
 
       return $result;
@@ -1638,8 +1716,10 @@ SCScript.install(function(sc) {
       var items, joiner;
 
       items = [];
-      this.do($.Function(function($item) {
-        items.push($item.__str__());
+      this.do($.Function(function() {
+        return [ function($item) {
+          items.push($item.__str__());
+        } ];
       }));
 
       joiner = ($joiner === $nil) ? "" : $joiner.__str__();

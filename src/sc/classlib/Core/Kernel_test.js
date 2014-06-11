@@ -4,6 +4,8 @@
   require("./Kernel");
   require("../Collections/Set");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCClass", function() {
@@ -27,7 +29,7 @@
     });
     it("#[]", function() {
       var test;
-      test = $("Set")["[]"](sc.test.encode([ 1, 2, 3, 4 ]));
+      test = $("Set")["[]"]($$([ 1, 2, 3, 4 ]));
       expect(test).to.be.a("SCSet").that.eqls([ 1, 2, 3, 4 ]);
     });
   });
@@ -86,7 +88,7 @@
       "abcdefghijklmnopqrstuvwxyz".split("").forEach(function(ch) {
         var test, $value;
 
-        $value = sc.test.object();
+        $value = $$();
 
         test = instance[ch]();
         expect(test).to.be.a("SCNil");

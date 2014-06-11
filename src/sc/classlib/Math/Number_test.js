@@ -3,6 +3,8 @@
 
   require("./Number");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
@@ -71,16 +73,16 @@
       var instance, test;
       var $elem, $aSelector, $aSeqColl, $adverb;
 
-      $elem = sc.test.object({
+      $elem = $$({
         perform: this.spy(sc.test.func)
       });
-      $aSelector = sc.test.object();
-      $aSeqColl = sc.test.object({
+      $aSelector = $$();
+      $aSeqColl = $$({
         collect: function($func) {
           return $func.value($elem);
         }
       });
-      $adverb = sc.test.object();
+      $adverb = $$();
 
       instance = this.createInstance();
 
@@ -119,8 +121,8 @@
       var $endValue, $function;
 
       iter = {};
-      $endValue = sc.test.object();
-      $function = sc.test.object();
+      $endValue = $$();
+      $function = $$();
       this.stub(iterator, "number$for", function() {
         return iter;
       });
@@ -138,9 +140,9 @@
       var $endValue, $stepValue, $function;
 
       iter = {};
-      $endValue  = sc.test.object();
-      $stepValue = sc.test.object();
-      $function  = sc.test.object();
+      $endValue  = $$();
+      $stepValue = $$();
+      $function  = $$();
 
       this.stub(iterator, "number$forBy", function() {
         return iter;
@@ -159,9 +161,9 @@
       var $second, $last, $function;
 
       iter = {};
-      $second   = sc.test.object();
-      $last     = sc.test.object();
-      $function = sc.test.object();
+      $second   = $$();
+      $last     = $$();
+      $function = $$();
 
       this.stub(iterator, "number$forSeries", function() {
         return iter;

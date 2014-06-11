@@ -3,6 +3,8 @@
 
   require("./Association");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCAssociation", function() {
@@ -16,7 +18,7 @@
     it("#valueOf", function() {
       var instance, test;
 
-      instance = this.createInstance($.Integer(1), $.Integer(2));
+      instance = this.createInstance($$(1), $$(2));
 
       test = instance.valueOf();
       expect(test).to.be.a("JSNumber").that.equals(1);
@@ -25,7 +27,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance();
 
@@ -39,7 +41,7 @@
       var instance, test;
       var $key;
 
-      $key = sc.test.object();
+      $key = $$();
 
       instance = this.createInstance();
 
@@ -53,9 +55,9 @@
       var instance, test;
       var $anAssociation;
 
-      instance = this.createInstance($.Integer(1), $.Integer(2));
+      instance = this.createInstance($$(1), $$(2));
 
-      $anAssociation = $.Nil();
+      $anAssociation = $$(null);
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.false;
 
@@ -63,7 +65,7 @@
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.false;
 
-      $anAssociation = SCAssociation.new($.Integer(1), $.Integer(3));
+      $anAssociation = SCAssociation.new($$(1), $$(3));
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
@@ -79,13 +81,13 @@
       var instance, test;
       var $anAssociation;
 
-      instance = this.createInstance($.Integer(1), $.Integer(2));
+      instance = this.createInstance($$(1), $$(2));
 
-      $anAssociation = SCAssociation.new($.Integer(2), $.Integer(3));
+      $anAssociation = SCAssociation.new($$(2), $$(3));
       test = instance ["<"] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.true;
 
-      $anAssociation = SCAssociation.new($.Integer(0), $.Integer(3));
+      $anAssociation = SCAssociation.new($$(0), $$(3));
       test = instance ["<"] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.false;
     });

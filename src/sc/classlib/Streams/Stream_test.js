@@ -3,6 +3,8 @@
 
   require("./Stream");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("SCStream", function() {
@@ -15,9 +17,9 @@
         var instance;
         var testMethod = this.test.title.substr(1);
         if (typeof value === "function") {
-          instance = SCFuncStream.new($.Function(value), sc.test.encode(resetFunc));
+          instance = SCFuncStream.new($$(value), $$(resetFunc));
         } else {
-          instance = SCOneShotStream.new(sc.test.encode(value));
+          instance = SCOneShotStream.new($$(value));
         }
         sc.test.setSingletonMethod(instance, "Stream", testMethod);
         return instance;
@@ -57,7 +59,7 @@
       var count = 0;
 
       instance = this.createInstance(function() {
-        return $.Integer(count++);
+        return $$(count++);
       });
 
       expect(instance.value()).to.be.a("SCInteger").that.equals(0);
@@ -78,10 +80,10 @@
       var count = 0;
 
       instance = this.createInstance(function() {
-        return $.Integer(count++);
+        return $$(count++);
       });
 
-      test = instance.nextN($.Integer(5));
+      test = instance.nextN($$(5));
       expect(test).to.be.a("SCArray").that.eqls([ 0, 1, 2, 3, 4 ]);
     });
     it("#all", function() {
@@ -89,7 +91,7 @@
       var count = 0;
 
       instance = this.createInstance(function() {
-        return count < 5 ? $.Integer(count++) : $.Nil();
+        return count < 5 ? $$(count++) : $$(null);
       });
 
       test = instance.all();
@@ -108,13 +110,13 @@
     it("#do", function() {
       var instance, test;
       var count = 0;
-      var $result = $.Array();
+      var $result = $$([]);
 
       instance = this.createInstance(function() {
-        return count < 5 ? $.Integer(count++) : $.Nil();
+        return count < 5 ? $$(count++) : $$(null);
       });
 
-      test = instance.do($.Function(function($a) {
+      test = instance.do($$(function($a) {
         $result.add($a);
       }));
 
@@ -126,13 +128,13 @@
     it("#generate", function() {
       var instance, test;
       var count = 0;
-      var $result = $.Array();
+      var $result = $$([]);
 
       instance = this.createInstance(function() {
-        return count < 5 ? $.Integer(count++) : $.Nil();
+        return count < 5 ? $$(count++) : $$(null);
       });
 
-      test = instance.generate($.Function(function($a) {
+      test = instance.generate($$(function($a) {
         $result.add($a);
       }));
 
@@ -144,13 +146,13 @@
       var count = 0;
 
       instance = this.createInstance(function() {
-        return count < 5 ? $.Integer(count++) : $.Nil();
+        return count < 5 ? $$(count++) : $$(null);
       }, function() {
         count = 0;
-        return $.Nil();
+        return $$(null);
       });
 
-      instance = instance.collect($.Function(function($a) {
+      instance = instance.collect($$(function($a) {
         return $a.neg();
       }));
 
@@ -174,13 +176,13 @@
       var count = 0;
 
       instance = this.createInstance(function() {
-        return $.Integer(count++);
+        return $$(count++);
       }, function() {
         count = 0;
-        return $.Nil();
+        return $$(null);
       });
 
-      instance = instance.reject($.Function(function($a) {
+      instance = instance.reject($$(function($a) {
         return $a.odd();
       }));
 
@@ -198,13 +200,13 @@
       var count = 0;
 
       instance = this.createInstance(function() {
-        return $.Integer(count++);
+        return $$(count++);
       }, function() {
         count = 0;
-        return $.Nil();
+        return $$(null);
       });
 
-      instance = instance.select($.Function(function($a) {
+      instance = instance.select($$(function($a) {
         return $a.odd();
       }));
 
@@ -224,19 +226,19 @@
       var $stream;
 
       instance = this.createInstance(function() {
-        return values1.length ? $.Integer(values1.shift()) : $.Nil();
+        return values1.length ? $$(values1.shift()) : $$(null);
       }, function() {
         values1 = [ 0, 1, 2, 3, 4 ];
-        return $.Nil();
+        return $$(null);
       });
-      $stream = $("FuncStream").new($.Function(function() {
-        return values2.length ? $.Integer(values2.shift()) : $.Nil();
-      }), $.Function(function() {
+      $stream = $("FuncStream").new($$(function() {
+        return values2.length ? $$(values2.shift()) : $$(null);
+      }), $$(function() {
         values2 = [ 10, 20, 30 ];
-        return $.Nil();
+        return $$(null);
       }));
 
-      instance = instance.dot($.Function(function($a, $b) {
+      instance = instance.dot($$(function($a, $b) {
         return $a ["+"] ($b);
       }), $stream);
 
@@ -257,19 +259,19 @@
       var $stream;
 
       instance = this.createInstance(function() {
-        return values1.length ? $.Integer(values1.shift()) : $.Nil();
+        return values1.length ? $$(values1.shift()) : $$(null);
       }, function() {
         values1 = [ 0, 5, 7 ];
-        return $.Nil();
+        return $$(null);
       });
-      $stream = $("FuncStream").new($.Function(function() {
-        return values2.length ? $.Integer(values2.shift()) : $.Nil();
-      }), $.Function(function() {
+      $stream = $("FuncStream").new($$(function() {
+        return values2.length ? $$(values2.shift()) : $$(null);
+      }), $$(function() {
         values2 = [ 1, 2 ];
-        return $.Nil();
+        return $$(null);
       }));
 
-      instance = instance.interlace($.Function(function($a, $b) {
+      instance = instance.interlace($$(function($a, $b) {
         return $a ["<"] ($b);
       }), $stream);
 
@@ -292,7 +294,7 @@
       var instance, test;
       var $stream;
 
-      $stream = sc.test.object();
+      $stream = $$();
 
       instance = this.createInstance();
       this.stub(instance, "appendStream", sc.test.func);
@@ -311,10 +313,10 @@
       values2 = [ 0, 6 ];
 
       instance = this.createInstance(function() {
-        return values1.length ? $.Integer(values1.shift()) : $.Nil();
+        return values1.length ? $$(values1.shift()) : $$(null);
       });
-      $stream = $("FuncStream").new($.Function(function() {
-        return values2.length ? $.Integer(values2.shift()) : $.Nil();
+      $stream = $("FuncStream").new($$(function() {
+        return values2.length ? $$(values2.shift()) : $$(null);
       }));
 
       instance = instance.collate($stream);
@@ -329,12 +331,12 @@
       var instance, test;
       var $obj, $new, $asStream;
 
-      $obj = sc.test.object();
+      $obj = $$();
       $new = this.spy(function() {
-        return sc.test.object({ asStream: $asStream });
+        return $$({ asStream: $asStream });
       });
       $asStream = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Pchain").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Pchain").returns($$({
         new: $new
       }));
 
@@ -348,9 +350,9 @@
       var instance, test;
       var $argSelector, $new;
 
-      $argSelector = sc.test.object();
+      $argSelector = $$();
       $new = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("UnaryOpStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("UnaryOpStream").returns($$({
         new: $new
       }));
 
@@ -364,11 +366,11 @@
       var instance, test;
       var $argSelector, $argStream, $new;
 
-      $argSelector = sc.test.object();
+      $argSelector = $$();
       $argStream   = SCStream.new();
       $new = this.spy(sc.test.func);
 
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns($$({
         new: $new
       }));
 
@@ -382,12 +384,12 @@
       var instance, test;
       var $argSelector, $argStream, $adverb, $new;
 
-      $argSelector = sc.test.object();
+      $argSelector = $$();
       $argStream   = SCStream.new();
-      $adverb      = $.Symbol("x");
+      $adverb      = $$("\\x");
       $new = this.spy(sc.test.func);
 
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns($$({
         new: $new
       }));
 
@@ -401,9 +403,9 @@
       var instance, test;
       var $argSelector, $argStream, $adverb;
 
-      $argSelector = sc.test.object();
+      $argSelector = $$();
       $argStream   = SCStream.new();
-      $adverb      = $.Symbol("unknown");
+      $adverb      = $$("\\unknown");
 
       instance = this.createInstance();
 
@@ -414,11 +416,11 @@
       var instance, test;
       var $argSelector, $argStream, $new;
 
-      $argSelector = sc.test.object();
+      $argSelector = $$();
       $argStream   = SCStream.new();
       $new = this.spy(sc.test.func);
 
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns($$({
         new: $new
       }));
 
@@ -432,12 +434,12 @@
       var instance, test;
       var $argSelector, $argStream, $adverb, $new;
 
-      $argSelector = sc.test.object();
+      $argSelector = $$();
       $argStream   = SCStream.new();
-      $adverb      = $.Symbol("x");
+      $adverb      = $$("\\x");
       $new = this.spy(sc.test.func);
 
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns($$({
         new: $new
       }));
 
@@ -451,9 +453,9 @@
       var instance, test;
       var $argSelector, $argStream, $adverb;
 
-      $argSelector = sc.test.object();
+      $argSelector = $$();
       $argStream   = SCStream.new();
-      $adverb      = $.Symbol("unknown");
+      $adverb      = $$("\\unknown");
 
       instance = this.createInstance();
 
@@ -464,11 +466,11 @@
       var instance, test;
       var $argSelector, $anArgList, $new;
 
-      $argSelector = sc.test.object();
-      $anArgList   = $.Array([ $.Integer(1), $.Integer(2) ]);
+      $argSelector = $$();
+      $anArgList   = $$([ $$(1), $$(2) ]);
 
       $new = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("NAryOpStream").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("NAryOpStream").returns($$({
         new: $new
       }));
 
@@ -495,7 +497,7 @@
     before(function() {
       SCOneShotStream = $("OneShotStream");
       this.createInstance = function(value) {
-        return SCOneShotStream.new(sc.test.encode(value));
+        return SCOneShotStream.new($$(value));
       };
     });
     it("#next / #reset", function() {
@@ -520,7 +522,7 @@
     before(function() {
       SCFuncStream = $("FuncStream");
       this.createInstance = function(nextFunc, resetFunc) {
-        return SCFuncStream.new(sc.test.encode(nextFunc), sc.test.encode(resetFunc));
+        return SCFuncStream.new($$(nextFunc), $$(resetFunc));
       };
       $("Environment").new().push();
     });
@@ -532,7 +534,7 @@
 
       instance = this.createInstance();
 
-      test = instance.envir_($.Integer(10));
+      test = instance.envir_($$(10));
       expect(test).to.equal(instance);
 
       test = instance.envir();
@@ -543,14 +545,14 @@
       var count = 0;
 
       instance = this.createInstance(function() {
-        return $.Environment("a")  ["+"] ($.Integer(count++));
+        return $.Environment("a")  ["+"] ($$(count++));
       }, function() {
         var saved = count;
         count = 0;
-        return $.Integer(saved);
+        return $$(saved);
       });
       instance.envir_(
-        $("Environment").newFrom(sc.test.encode([ "\\a", 1000 ]))
+        $("Environment").newFrom($$([ "\\a", 1000 ]))
       );
       expect(instance.next()).to.be.a("SCInteger").that.equals(1000);
       expect(instance.next()).to.be.a("SCInteger").that.equals(1001);
@@ -560,7 +562,7 @@
       expect(test).to.be.a("SCInteger").that.equals(3);
 
       instance.envir_(
-        $("Environment").newFrom(sc.test.encode([ "\\a", 2000 ]))
+        $("Environment").newFrom($$([ "\\a", 2000 ]))
       );
       expect(instance.next()).to.be.a("SCInteger").that.equals(2000);
       expect(instance.next()).to.be.a("SCInteger").that.equals(2001);

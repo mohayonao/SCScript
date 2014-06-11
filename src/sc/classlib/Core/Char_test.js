@@ -3,6 +3,7 @@
 
   require("./Char");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -282,7 +283,7 @@
       var test, instance;
       var $h;
 
-      $h = $.Char("h");
+      $h = $$("$h");
 
       instance = this.createInstance("c");
 

@@ -186,7 +186,9 @@ SCScript.install(function(sc) {
 
       if ($n.isSequenceableCollection().__bool__()) {
         return SCArray.fillND($n, $.Function(function() {
-          return $this.copy();
+          return [ function() {
+            return $this.copy();
+          } ];
         }));
       }
 
@@ -462,9 +464,13 @@ SCScript.install(function(sc) {
       var $this = this;
 
       $.Function(function() {
-        return $this.value();
+        return [ function() {
+          return $this.value();
+        } ];
       }).while($.Function(function() {
-        return $body.value();
+        return [ function() {
+          return $body.value();
+        } ];
       }));
 
       return this;
@@ -594,10 +600,14 @@ SCScript.install(function(sc) {
       var $list;
 
       $list = $.Array();
-      this.asArray().do($.Function(function($a) {
-        $that.asArray().do($.Function(function($b) {
-          $list = $list.add($a.asArray() ["++"] ($b));
-        }));
+      this.asArray().do($.Function(function() {
+        return [ function($a) {
+          $that.asArray().do($.Function(function() {
+            return [ function($b) {
+              $list = $list.add($a.asArray() ["++"] ($b));
+            } ];
+          }));
+        } ];
       }));
 
       return $list;

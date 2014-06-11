@@ -96,7 +96,9 @@ SCScript.install(function(sc) {
         return $clock;
       }
       return $.Function(function() {
-        return $clock.$("nextTimeOnGrid");
+        return [ function() {
+          return $clock.$("nextTimeOnGrid");
+        } ];
       });
     }, "clock");
 

@@ -110,10 +110,16 @@
     it("Function shouldd return an instance of SCFunction", function() {
       var a;
 
-      a = $.Function(function() {}, "a");
+      a = $.Function(function() {
+        return [ function($a) {
+          return $a;
+        } ];
+      }, "a");
       expect(a).to.be.a("SCFunction");
 
-      a = $.Function(function() {});
+      a = $.Function(function() {
+        return [];
+      });
       expect(a).to.be.a("SCFunction");
     });
     it("Ref should return an instance of SCRef", function() {

@@ -101,7 +101,7 @@
             ]
           }
         },
-        "{|a, a| }": {
+        "{|a, a| a}": {
           error: "already declared",
           ast: {
             type: Syntax.Program,
@@ -126,12 +126,17 @@
                     },
                   ]
                 },
-                body: []
+                body: [
+                  {
+                    type: Syntax.Identifier,
+                    name: "a"
+                  }
+                ]
               }
             ]
           }
         },
-        "{|a| var a; }": {
+        "{|a| var a; a }": {
           error: "already declared",
           ast: {
             type: Syntax.Program,
@@ -162,6 +167,10 @@
                         },
                       },
                     ]
+                  },
+                  {
+                    type: Syntax.Identifier,
+                    name: "a"
                   }
                 ]
               }
@@ -194,7 +203,7 @@
         var items = cases[key];
         var ast   = items.ast;
         var error = items.error;
-        it("s(key)", function() {
+        it(s(key), function() {
           expect(function() {
             codegen.compile(ast);
           }).to.throw(error);

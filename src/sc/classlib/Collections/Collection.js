@@ -105,7 +105,7 @@ SCScript.install(function(sc) {
     var fillND = function($this, $dimensions, $function, $args) {
       var $n, $obj, $argIndex;
 
-      $n = $dimensions.first();
+      $n = $dimensions.$("first");
       $obj = $this.new($n);
       $argIndex = $args.size();
       $args = $args ["++"] ($int_0);
@@ -115,7 +115,7 @@ SCScript.install(function(sc) {
           $obj.add($function.valueArray($args.put($argIndex, $i)));
         }));
       } else {
-        $dimensions = $dimensions.drop($int_1);
+        $dimensions = $dimensions.$("drop", [ $int_1 ]);
         $n.do($.Function(function($i) {
           $obj = $obj.add(fillND($this, $dimensions, $function, $args.put($argIndex, $i)));
         }));
@@ -142,7 +142,7 @@ SCScript.install(function(sc) {
         return $false;
       }
       this.do($.Function(function($item) {
-        if (!$aCollection.includes($item).__bool__()) {
+        if (!$aCollection.$("includes", [ $item ]).__bool__()) {
           $res = $false;
           return sc.C.LOOP_BREAK;
         }
@@ -175,7 +175,7 @@ SCScript.install(function(sc) {
 
     spec.flatSize = function() {
       return this.sum($.Function(function($_) {
-        return $_.flatSize();
+        return $_.$("flatSize");
       }));
     };
 
@@ -220,7 +220,7 @@ SCScript.install(function(sc) {
 
     spec.removeEvery = fn(function($list) {
       this.removeAllSuchThat($.Function(function($_) {
-        return $list.includes($_);
+        return $list.$("includes", [ $_ ]);
       }));
       return this;
     }, "list");
@@ -243,9 +243,9 @@ SCScript.install(function(sc) {
     spec.atAll = fn(function($keys) {
       var $this = this;
 
-      return $keys.collect($.Function(function($index) {
+      return $keys.$("collect", [ $.Function(function($index) {
         return $this.at($index);
-      }));
+      }) ]);
     }, "keys");
 
     spec.putEach = fn(function($keys, $values) {
@@ -841,9 +841,9 @@ SCScript.install(function(sc) {
         return this.species().new();
       }
       if ($axis !== $nil) {
-        $index = $axis ["*"] ($.Integer(2));
+        $index = $axis.$("*", [ $.Integer(2) ]);
       } else {
-        $index = this.minItem() ["+"] (this.maxItem());
+        $index = this.minItem().$("+", [ this.maxItem() ]);
       }
 
       return $index ["-"] (this);
@@ -854,7 +854,7 @@ SCScript.install(function(sc) {
 
       $result = this.species().new();
       this.do($.Function(function($item) {
-        if ($that.includes($item).__bool__()) {
+        if ($that.$("includes", [ $item ]).__bool__()) {
           $result = $result.add($item);
         }
       }));
@@ -898,7 +898,7 @@ SCScript.install(function(sc) {
     }, "that");
 
     spec.isSubsetOf = fn(function($that) {
-      return $that.includesAll(this);
+      return $that.$("includesAll", [ this ]);
     }, "that");
 
     spec.asArray = function() {

@@ -465,7 +465,7 @@ SCScript.install(function(sc) {
 
     spec.nextPowerOf = fn(function($base) {
       return $base.pow(
-        (this.log() ["/"] ($base.log())).ceil()
+        (this.log() ["/"] ($base.$("log"))).ceil()
       );
     }, "base");
 
@@ -477,7 +477,7 @@ SCScript.install(function(sc) {
 
     spec.previousPowerOf = fn(function($base) {
       return $base.pow(
-        (this.log() ["/"] ($base.log())).ceil().__dec__()
+        (this.log() ["/"] ($base.$("log"))).ceil().__dec__()
       );
     }, "base");
 
@@ -488,7 +488,7 @@ SCScript.install(function(sc) {
       $diff = $round ["-"] (this);
 
       if ($diff.abs() < $tolerance) {
-        return this ["+"] ($strength ["*"] ($diff));
+        return this ["+"] ($strength.$("*", [ $diff ]));
       }
 
       return this;
@@ -630,9 +630,9 @@ SCScript.install(function(sc) {
       var $diff, $modhalf;
 
       $diff = this.absdif($aNumber) ["%"] ($mod);
-      $modhalf = $mod ["*"] ($.Float(0.5));
+      $modhalf = $mod.$("*", [ $.Float(0.5) ]);
 
-      return $modhalf ["-"] ($diff.absdif($modhalf));
+      return $modhalf.$("-", [ $diff.absdif($modhalf) ]);
     }, "aNumber=0.0; mod=1.0");
 
     spec.lcurve = fn(function($a, $m, $n, $tau) {
@@ -642,18 +642,18 @@ SCScript.install(function(sc) {
 
       if ($tau.__num__() === 1.0) {
         // a * (m * exp(x) + 1) / (n * exp(x) + 1)
-        return $a ["*"] (
-          $m ["*"] ($x.exp()).__inc__()
-        ) ["/"] (
-          $n ["*"] ($x.exp()).__inc__()
-        );
+        return $a.$("*", [
+          $m.$("*", [ $x.exp() ]).__inc__()
+        ]).$("/", [
+          $n.$("*", [ $x.exp() ]).__inc__()
+        ]);
       } else {
         $rTau = $tau.reciprocal();
-        return $a ["*"] (
-          $m ["*"] ($x.exp()) ["*"] ($rTau).__inc__()
-        ) ["/"] (
-          $n ["*"] ($x.exp()) ["*"] ($rTau).__inc__()
-        );
+        return $a.$("*", [
+          $m.$("*", [ $x.exp() ]) ["*"] ($rTau).__inc__()
+        ]).$("/", [
+          $n.$("*", [ $x.exp() ]) ["*"] ($rTau).__inc__()
+        ]);
       }
     }, "a=1.0; m=0.0; n=1.0; tau=1.0");
 
@@ -666,9 +666,9 @@ SCScript.install(function(sc) {
 
     spec.gaussCurve = fn(function($a, $b, $c) {
       // ^a * (exp(squared(this - b) / (-2.0 * squared(c))))
-      return $a ["*"] ((
-        (this ["-"] ($b).squared()) ["/"] ($.Float(-2.0) ["*"] ($c.squared()))
-      ).exp());
+      return $a.$("*", [ ((
+        (this ["-"] ($b).squared()) ["/"] ($.Float(-2.0) ["*"] ($c.$("squared")))
+      ).exp()) ]);
     }, "a=1.0; b=0.0; c=1.0");
 
     // TODO: implements asPoint

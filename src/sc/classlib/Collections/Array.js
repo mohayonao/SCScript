@@ -626,8 +626,8 @@ SCScript.install(function(sc) {
     spec.shift = fn(function($n, $filler) {
       var $fill, $remain;
 
-      $fill = SCArray.fill($n.abs(), $filler);
-      $remain = this.drop($n.neg());
+      $fill = SCArray.fill($n.$("abs"), $filler);
+      $remain = this.drop($n.$("neg"));
 
       if ($n < 0) {
         return $remain ["++"] ($fill);

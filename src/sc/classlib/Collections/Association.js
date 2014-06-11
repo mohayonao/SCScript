@@ -42,7 +42,7 @@ SCScript.install(function(sc) {
 
     spec["=="] = function($anAssociation) {
       if ($anAssociation.key) {
-        return this._$key ["=="] ($anAssociation.key());
+        return this._$key ["=="] ($anAssociation.$("key"));
       }
       return $false;
     };
@@ -52,7 +52,7 @@ SCScript.install(function(sc) {
     };
 
     spec["<"] = function($anAssociation) {
-      return this._$key ["<"] ($anAssociation.key());
+      return this._$key.$("<", [ $anAssociation.$("key") ]);
     };
 
     // TODO: implements printOn

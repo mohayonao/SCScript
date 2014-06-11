@@ -41,9 +41,9 @@ SCScript.install(function(sc) {
     spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
       var $this = this;
 
-      return $aSeqColl.collect($.Function(function($item) {
+      return $aSeqColl.$("collect", [ $.Function(function($item) {
         return $item.perform($aSelector, $this, $adverb);
-      }));
+      }) ]);
     };
 
     // TODO: implements performBinaryOpOnPoint

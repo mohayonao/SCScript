@@ -312,12 +312,12 @@ SCScript.install(function(sc) {
     }, "index; function");
 
     spec.atInc = fn(function($index, $inc) {
-      this.put($index, this.at($index) ["+"] ($inc));
+      this.put($index, this.at($index).$("+", [ $inc ]));
       return this;
     }, "index; inc=1");
 
     spec.atDec = fn(function($index, $dec) {
-      this.put($index, this.at($index) ["-"] ($dec));
+      this.put($index, this.at($index).$("-", [ $dec ]));
       return this;
     }, "index; dec=1");
 
@@ -541,7 +541,7 @@ SCScript.install(function(sc) {
 
       for (i = 0, imax = this._.length; i < imax; ++i) {
         this.put($.Integer(i), $start);
-        $start = $start ["+"] ($step);
+        $start = $start.$("+", [ $step ]);
       }
 
       return this;
@@ -613,7 +613,7 @@ SCScript.install(function(sc) {
       $minItem = this.minItem();
       $maxItem = this.maxItem();
       return this.collect($.Function(function($el) {
-        return $el.linlin($minItem, $maxItem, $min, $max);
+        return $el.$("linlin", [ $minItem, $maxItem, $min, $max ]);
       }));
     }, "min=0.0; max=1.0");
 
@@ -631,7 +631,7 @@ SCScript.install(function(sc) {
     };
 
     spec.shape = function() {
-      return $.Array([ this.size() ]) ["++"] (this.at($int_0).shape());
+      return $.Array([ this.size() ]) ["++"] (this.at($int_0).$("shape"));
     };
 
     spec.reshape = function() {
@@ -720,7 +720,7 @@ SCScript.install(function(sc) {
 
       cuts = $$cuts._.slice(1);
       return $list.collect($.Function(function($item) {
-        return $item.slice.apply($item, cuts);
+        return $item.$("slice", cuts);
       })).unbubble();
     }, "*cuts");
 

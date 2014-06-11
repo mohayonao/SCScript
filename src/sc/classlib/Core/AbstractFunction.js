@@ -794,7 +794,7 @@ SCScript.install(function(sc) {
     spec.flop = function() {
       if (!this._flopped) {
         this._$array = this._$array.collect($.Function(function($_) {
-          return $_.flop();
+          return $_.$("flop");
         }));
       }
       this._flopped = true;

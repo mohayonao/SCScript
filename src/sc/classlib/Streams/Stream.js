@@ -278,7 +278,7 @@ SCScript.install(function(sc) {
 
     spec.collate = fn(function($stream) {
       return this.interlace($.Function(function($x, $y) {
-        return $x ["<"] ($y);
+        return $x.$("<", [ $y ]);
       }), $stream);
     }, "stream");
 

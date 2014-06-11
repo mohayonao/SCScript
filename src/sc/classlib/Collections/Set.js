@@ -159,7 +159,7 @@ SCScript.install(function(sc) {
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil && $that.includes($item).__bool__()) {
+        if ($item !== $nil && $that.$("includes", [ $item ]).__bool__()) {
           $result.add($item);
         }
       });
@@ -189,7 +189,7 @@ SCScript.install(function(sc) {
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil && !$that.includes($item).__bool__()) {
+        if ($item !== $nil && !$that.$("includes", [ $item ]).__bool__()) {
           $result.add($item);
         }
       });
@@ -203,7 +203,7 @@ SCScript.install(function(sc) {
     }, "that");
 
     spec.isSubsetOf = fn(function($that) {
-      return $that.includesAll(this);
+      return $that.$("includesAll", [ this ]);
     }, "that");
 
     spec["&"] = function($that) {

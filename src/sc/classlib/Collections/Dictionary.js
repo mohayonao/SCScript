@@ -41,9 +41,9 @@ SCScript.install(function(sc) {
       var $newCollection;
 
       $newCollection = this.new($aCollection.size());
-      $aCollection.keysValuesDo($.Function(function($k, $v) {
+      $aCollection.$("keysValuesDo", [ $.Function(function($k, $v) {
         $newCollection.put($k, $v);
-      }));
+      }) ]);
 
       return $newCollection;
     }, "aCollection");
@@ -85,7 +85,7 @@ SCScript.install(function(sc) {
     }, "key");
 
     spec.add = fn(function($anAssociation) {
-      this.put($anAssociation.key(), $anAssociation.value());
+      this.put($anAssociation.$("key"), $anAssociation.$("value"));
       return this;
     }, "anAssociation");
 
@@ -125,9 +125,9 @@ SCScript.install(function(sc) {
     spec.putPairs = fn(function($args) {
       var $this = this;
 
-      $args.pairsDo($.Function(function($key, $val) {
+      $args.$("pairsDo", [ $.Function(function($key, $val) {
         $this.put($key, $val);
-      }));
+      }) ]);
 
       return this;
     }, "args");
@@ -454,11 +454,11 @@ SCScript.install(function(sc) {
 
       $assoc = $nil;
       this.keysValuesDo($.Function(function($key, $val) {
-        $assoc = $assoc.add($key ["->"] ($val));
+        $assoc = $assoc.add($key.$("->", [ $val ]));
       }));
 
       return $assoc.sort($func).collect($.Function(function($_) {
-        return $_.key();
+        return $_.$("key");
       }));
     }, "func");
 
@@ -482,7 +482,7 @@ SCScript.install(function(sc) {
     };
 
     spec.transformEvent = fn(function($event) {
-      return $event.putAll(this);
+      return $event.$("putAll", [ this ]);
     }, "event");
 
     // TODO: implements embedInStream
@@ -497,7 +497,7 @@ SCScript.install(function(sc) {
       for (i = j = 0, imax = array.length; i < imax; i += 2, ++j) {
         $key = array[i];
         if ($key !== $nil) {
-          $val = $argArray.at($.Integer(i + 1));
+          $val = $argArray.$("at", [ $.Integer(i + 1) ]);
           $function.value($key, $val, $.Integer(j));
         }
       }

@@ -515,35 +515,35 @@ SCScript.install(function(sc) {
     // TODO: implements freeze
 
     spec["&"] = function($that) {
-      return this.bitAnd($that);
+      return this.$("bitAnd", [ $that ]);
     };
 
     spec["|"] = function($that) {
-      return this.bitOr($that);
+      return this.$("bitOr", [ $that ]);
     };
 
     spec["%"] = function($that) {
-      return this.mod($that);
+      return this.$("mod", [ $that ]);
     };
 
     spec["**"] = function($that) {
-      return this.pow($that);
+      return this.$("pow", [ $that ]);
     };
 
     spec["<<"] = function($that) {
-      return this.leftShift($that);
+      return this.$("leftShift", [ $that ]);
     };
 
     spec[">>"] = function($that) {
-      return this.rightShift($that);
+      return this.$("rightShift", [ $that ]);
     };
 
     spec["+>>"] = function($that) {
-      return this.unsignedRightShift($that);
+      return this.$("unsignedRightShift" , [ $that ]);
     };
 
     spec["<!"] = function($that) {
-      return this.firstArg($that);
+      return this.$("firstArg", [ $that ]);
     };
 
     spec.asInt = function() {
@@ -551,26 +551,26 @@ SCScript.install(function(sc) {
     };
 
     spec.blend = fn(function($that, $blendFrac) {
-      return this ["+"] ($blendFrac ["*"] ($that ["-"] (this)));
+      return this.$("+", [ $blendFrac.$("*", [ $that.$("-", [ this ]) ]) ]);
     }, "that; blendFrac=0.5");
 
     spec.blendAt = fn(function($index, $method) {
       var $iMin;
 
-      $iMin = $index.roundUp($int_1).asInteger().__dec__();
+      $iMin = $index.$("roundUp", [ $int_1 ]).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
-        $index.absdif($iMin)
+        $index.$("absdif", [ $iMin ])
       );
     }, "index; method=\\clipAt");
 
     spec.blendPut = fn(function($index, $val, $method) {
       var $iMin, $ratio;
 
-      $iMin = $index.floor().asInteger();
-      $ratio = $index.absdif($iMin);
-      this.perform($method, $iMin, $val ["*"] ($int_1 ["-"] ($ratio)));
-      this.perform($method, $iMin.__inc__(), $val ["*"] ($ratio));
+      $iMin = $index.$("floor").asInteger();
+      $ratio = $index.$("absdif", [ $iMin ]);
+      this.perform($method, $iMin, $val.$("*", [ $int_1 ["-"] ($ratio) ]));
+      this.perform($method, $iMin.__inc__(), $val.$("*", [ $ratio ]));
 
       return this;
     }, "index; val; method=\\wrapPut");
@@ -578,7 +578,7 @@ SCScript.install(function(sc) {
     spec.fuzzyEqual = fn(function($that, $precision) {
       return $.Float(0.0).max(
         $.Float(1.0) ["-"] (
-          (this ["-"] ($that).abs()) ["/"] ($precision)
+          this.$("-", [ $that ]).$("abs").$("/", [ $precision ])
         )
       );
     }, "that; precision=1.0");

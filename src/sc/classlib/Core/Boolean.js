@@ -76,7 +76,7 @@ SCScript.install(function(sc) {
     spec.or = spec["||"];
 
     spec.nand = fn(function($that) {
-      return $that.value().not();
+      return $that.value().$("not");
     }, "that");
 
     spec.asInteger = utils.alwaysReturn$int_1;

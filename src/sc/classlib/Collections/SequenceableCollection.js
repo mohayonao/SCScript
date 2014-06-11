@@ -31,7 +31,7 @@ SCScript.install(function(sc) {
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
-        $obj.add($start ["+"] ($step ["*"] ($.Integer(i))));
+        $obj.add($start.$("+", [ $step.$("*", [ $.Integer(i) ]) ]));
       }
 
       return $obj;
@@ -43,7 +43,7 @@ SCScript.install(function(sc) {
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
         $obj.add($start);
-        $start = $start ["*"] ($grow);
+        $start = $start.$("*", [ $grow ]);
       }
 
       return $obj;
@@ -56,7 +56,7 @@ SCScript.install(function(sc) {
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
         $obj.add($b);
         $temp = $b;
-        $b = $a ["+"] ($b);
+        $b = $a.$("+", [ $b ]);
         $a = $temp;
       }
 
@@ -75,9 +75,9 @@ SCScript.install(function(sc) {
         return $obj.add($start);
       }
 
-      $step = ($end ["-"] ($start)) ["/"] ($size.__dec__());
+      $step = ($end.$("-", [ $start ])).$("/", [ $size.__dec__() ]);
       for (i = 0, imax = $size.__int__(); i < imax; ++i) {
-        $obj.add($start ["+"] ($.Integer(i) ["*"] ($step)));
+        $obj.add($start.$("+", [ $.Integer(i) ["*"] ($step) ]));
       }
 
       return $obj;
@@ -101,7 +101,7 @@ SCScript.install(function(sc) {
     };
 
     spec.wchoose = fn(function($weights) {
-      return this.at($weights.windex());
+      return this.at($weights.$("windex"));
     }, "weights");
 
     spec["=="] = function($aCollection) {
@@ -114,7 +114,7 @@ SCScript.install(function(sc) {
         return $false;
       }
       this.do($.Function(function($item, $i) {
-        if ($item ["!="] ($aCollection.at($i)).__bool__()) {
+        if ($item ["!="] ($aCollection.$("at", [ $i ])).__bool__()) {
           $res = $false;
           return sc.C.LOOP_BREAK;
         }
@@ -249,7 +249,7 @@ SCScript.install(function(sc) {
 
       $i = $j.__dec__();
 
-      if ($val ["-"] (this.at($i)) < this.at($j) ["-"] ($val)) {
+      if ($val.$("-", [ this.at($i) ]) < this.at($j).$("-", [ $val ])) {
         return $i;
       }
 
@@ -273,13 +273,13 @@ SCScript.install(function(sc) {
 
       $a = this.at($i.__dec__());
       $b = this.at($i);
-      $div = $b ["-"] ($a);
+      $div = $b.$("-", [ $a ]);
 
       // if ($div ["=="] ($int_0).__bool__()) {
       //   return $i;
       // }
 
-      return (($val ["-"] ($a)) ["/"] ($div)) ["+"] ($i.__dec__());
+      return $val.$("-", [ $a ]).$("/", [ $div ]).$("+", [ $i.__dec__() ]);
     }, "val");
 
     spec.isSeries = fn(function($step) {
@@ -289,7 +289,7 @@ SCScript.install(function(sc) {
         return $true;
       }
       this.doAdjacentPairs($.Function(function($a, $b) {
-        var $diff = $b ["-"] ($a);
+        var $diff = $b.$("-", [ $a ]);
         if ($step === $nil) {
           $step = $diff;
         } else if ($step ["!="] ($diff).__bool__()) {
@@ -551,7 +551,7 @@ SCScript.install(function(sc) {
         $sublist = $sublist.add($item);
         if ($sublist.size() >= $subSize) {
           $list = $list.add($sublist);
-          $subSize = $groupSizeList.wrapAt($.Integer(++i));
+          $subSize = $groupSizeList.$("wrapAt", [ $.Integer(++i) ]);
           $sublist = $this.species().new($subSize);
         }
       }));
@@ -564,7 +564,7 @@ SCScript.install(function(sc) {
 
     spec.curdle = fn(function($probability) {
       return this.separate($.Function(function() {
-        return $probability.coin();
+        return $probability.$("coin");
       }));
     }, "probability");
 
@@ -1344,7 +1344,7 @@ SCScript.install(function(sc) {
 
     spec.asFraction = function($denominator, $fasterBetter) {
       return this.collect($.Function(function($item) {
-        return $item.asFraction($denominator, $fasterBetter);
+        return $item.$("asFraction", [ $denominator, $fasterBetter ] );
       }));
     };
 
@@ -1353,16 +1353,16 @@ SCScript.install(function(sc) {
 
     spec.ascii = function() {
       return this.collect($.Function(function($item) {
-        return $item.ascii();
+        return $item.$("ascii");
       }));
     };
 
     spec.rate = function() {
       if (this.size().__int__() === 1) {
-        return this.first().rate();
+        return this.first().$("rate");
       }
       return this.collect($.Function(function($item) {
-        return $item.rate();
+        return $item.$("rate");
       })).minItem();
     };
 
@@ -1552,7 +1552,7 @@ SCScript.install(function(sc) {
     spec.sort = fn(function($function) {
       if ($function === $nil) {
         $function = $.Function(function($a, $b) {
-          return $a ["<="] ($b);
+          return $a.$("<=", [ $b ]);
         });
       }
       this._sort($function);
@@ -1561,13 +1561,13 @@ SCScript.install(function(sc) {
 
     spec.sortBy = fn(function($key) {
       return this.sort($.Function(function($a, $b) {
-        return $a.at($key) ["<="] ($b.at($key));
+        return $a.$("at", [ $key ]).$("<=", [ $b.$("at", [ $key ]) ]);
       }));
     }, "key");
 
     spec.sortMap = fn(function($function) {
       return this.sort($.Function(function($a, $b) {
-        return $function.value($a) ["<="] ($function.value($b));
+        return $function.value($a).$("<=", [ $function.value($b) ]);
       }));
     }, "function");
 
@@ -1603,12 +1603,12 @@ SCScript.install(function(sc) {
     // TODO: implements $streamContenstsLimit
 
     spec.wrapAt = fn(function($index) {
-      $index = $index ["%"] (this.size());
+      $index = $index.$("%", [ this.size() ]);
       return this.at($index);
     }, "index");
 
     spec.wrapPut = fn(function($index, $value) {
-      $index = $index ["%"] (this.size());
+      $index = $index.$("%", [ this.size() ]);
       return this.put($index, $value);
     }, "index; value");
 

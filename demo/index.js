@@ -15,22 +15,24 @@ window.onload = function() {
 
   var getCode = function(editor) {
     var code, cursor, line, range, callback;
+    var cssName = "blink1";
 
     code = editor.getSelection();
     if (!code) {
       cursor = editor.getCursor();
       line   = cursor.line;
-      range = getRange(editor, line);
+      range  = getRange(editor, line);
       if (range) {
         editor.setSelection({ line: range[0], ch: 0 }, { line: range[1], ch: Infinity });
         code = editor.getSelection();
         callback = function() {
           editor.setSelection(cursor);
         };
+        cssName = "blink2";
       }
     }
 
-    blink(".codemirror-focused .codemirror-selected", callback);
+    blink(cssName, ".codemirror-focused .codemirror-selected", callback);
 
     return code;
   };
@@ -89,7 +91,7 @@ window.onload = function() {
     };
   })();
 
-  var blink = function(selector, callback) {
+  var blink = function(cssName, selector, callback) {
     var rule = getCssRule(selector);
     if (rule) {
       setTimeout(function() {
@@ -97,8 +99,8 @@ window.onload = function() {
         if (callback) {
           callback();
         }
-      }, 250);
-      rule.style.setProperty("-webkit-animation", "blink 0.5s");
+      }, 500);
+      rule.style.setProperty("-webkit-animation", cssName + " 0.5s");
     }
   };
 

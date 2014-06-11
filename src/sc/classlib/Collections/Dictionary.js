@@ -72,7 +72,7 @@ SCScript.install(function(sc) {
         return [ function($k, $v) {
           if ($k.matchItem($key).__bool__()) {
             ret = $v;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -227,7 +227,7 @@ SCScript.install(function(sc) {
         return [ function($item2) {
           if ($item1 ["=="] ($item2).__bool__()) {
             $ret = $true;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -445,7 +445,7 @@ SCScript.install(function(sc) {
         return [ function($key, $val) {
           if ($argValue ["=="] ($val).__bool__()) {
             $ret = $key;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -648,7 +648,7 @@ SCScript.install(function(sc) {
         return [ function($key, $val) {
           if ($argValue === $val) {
             $ret = $key;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));

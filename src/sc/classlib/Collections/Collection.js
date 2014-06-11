@@ -151,7 +151,7 @@ SCScript.install(function(sc) {
         return [ function($item) {
           if (!$aCollection.$("includes", [ $item ]).__bool__()) {
             $res = $false;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -292,7 +292,7 @@ SCScript.install(function(sc) {
         return [ function($item2) {
           if ($item1 === $item2) {
             $res = $true;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -307,7 +307,7 @@ SCScript.install(function(sc) {
         return [ function($item2) {
           if ($item1 ["=="] ($item2).__bool__()) {
             $res = $true;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -322,7 +322,7 @@ SCScript.install(function(sc) {
         return [ function($item) {
           if ($this.includes($item).__bool__()) {
             $res = $true;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -337,7 +337,7 @@ SCScript.install(function(sc) {
         return [ function($item) {
           if (!$this.includes($item).__bool__()) {
             $res = $false;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -411,7 +411,7 @@ SCScript.install(function(sc) {
         return [ function($elem, $i) {
           if ($function.value($elem, $i).__bool__()) {
             $res = $elem;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -426,7 +426,7 @@ SCScript.install(function(sc) {
         return [ function($elem, $i) {
           if ($function.value($elem, $i).__bool__()) {
             $res = $i;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -493,7 +493,7 @@ SCScript.install(function(sc) {
           if ($function.value($elem, $i).__bool__()) {
             $res = $elem;
           } else {
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -508,7 +508,7 @@ SCScript.install(function(sc) {
           if ($function.value($elem, $i).__bool__()) {
             $res = $i;
           } else {
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -578,7 +578,7 @@ SCScript.install(function(sc) {
         return [ function($elem, $i) {
           if ($function.value($elem, $i).__bool__()) {
             $res = $true;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));
@@ -593,7 +593,7 @@ SCScript.install(function(sc) {
         return [ function($elem, $i) {
           if (!$function.value($elem, $i).__bool__()) {
             $res = $false;
-            return sc.C.LOOP_BREAK;
+            this.__break__();
           }
         } ];
       }));

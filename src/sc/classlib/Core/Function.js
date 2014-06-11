@@ -33,15 +33,15 @@ SCScript.install(function(sc) {
     };
 
     spec.update = function() {
-      return this._.apply(this, arguments);
+      return this._.resume(arguments);
     };
 
     spec.value = function() {
-      return this._.apply(this, arguments);
+      return this._.resume(arguments);
     };
 
     spec.valueArray = function($args) {
-      return this._.apply(this, $args.asArray()._);
+      return this._.resume($args.asArray()._);
     };
 
     var envir = function(func, args) {
@@ -59,12 +59,12 @@ SCScript.install(function(sc) {
 
     spec.valueEnvir = function() {
       var args = envir(this._, arguments);
-      return this._.apply(this, args);
+      return this._.resume(args);
     };
 
     spec.valueArrayEnvir = function($args) {
       var args = envir(this._, $args.asArray()._);
-      return this._.apply(this, args);
+      return this._.resume(args);
     };
 
     spec.functionPerformList = fn(function($selector, $arglist) {

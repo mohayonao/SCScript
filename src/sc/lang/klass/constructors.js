@@ -2,11 +2,11 @@
   "use strict";
 
   require("./klass");
-  require("../fn");
+  require("../jscode");
 
-  var $     = sc.lang.$;
-  var fn    = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $      = sc.lang.$;
+  var klass  = sc.lang.klass;
+  var jscode = sc.lang.jscode;
 
   var $nil, $true, $false;
   var $symbols, $chars, $integers, $floats;
@@ -302,14 +302,7 @@
 
   $.Function = function(value, def) {
     var instance = new SCFunction();
-    var func = value(); // TODO: fix later
-    if (func.length === 0) {
-      func[0] = function() {
-        return $.Nil();
-      };
-    }
-    func = func[0];
-    instance._ = def ? fn(func, def) : func;
+    instance._ = jscode.create(value, def);
     return instance;
   };
 

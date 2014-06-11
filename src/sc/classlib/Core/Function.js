@@ -44,9 +44,33 @@ SCScript.install(function(sc) {
       return this._.apply(this, $args.asArray()._);
     };
 
-    // TODO: implements valueEnvir
-    // TODO: implements valueArrayEnvir
-    // TODO: implements functionPerformList
+    var envir = function(func, args) {
+      return func._argNames.map(function(name, i) {
+        var val;
+        if (this[i]) {
+          return this[i];
+        }
+        val = $.Environment(name);
+        if (val !== $nil) {
+          return val;
+        }
+      }, args);
+    };
+
+    spec.valueEnvir = function() {
+      var args = envir(this._, arguments);
+      return this._.apply(this, args);
+    };
+
+    spec.valueArrayEnvir = function($args) {
+      var args = envir(this._, $args.asArray()._);
+      return this._.apply(this, args);
+    };
+
+    spec.functionPerformList = fn(function($selector, $arglist) {
+      return this[$selector.__str__()].apply(this, $arglist.asArray()._);
+    }, "selector; arglist");
+
     // TODO: implements valueWithEnvir
     // TODO: implements performWithEnvir
     // TODO: implements performKeyValuePairs

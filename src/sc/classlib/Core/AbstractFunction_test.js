@@ -649,7 +649,7 @@
       expect(instance.value).to.be.calledWith($for);
       expect(instance.value).to.be.calledLastIn(test);
     }));
-    it("asAudioRateInput", sinon.test(function() {
+    it("#asAudioRateInput", sinon.test(function() {
       var instance, test, spy, rate;
       var $result;
 
@@ -704,16 +704,20 @@
 
         instance = $$(function($a, $b) {
           return $a ["+"] ($b);
-        });
+        }, "a; b");
         instance = instance.neg();
 
         return instance;
       };
+      $("Environment").new().push();
+    });
+    after(function() {
+      $("Environment").pop();
     });
     it("#value", function() {
       var instance, test;
 
-      instance = this.createInstance("{|a, b| a + b }.neg ");
+      instance = this.createInstance("{|a, b| a + b }.neg");
 
       test = instance.value($$(10), $$(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
@@ -721,14 +725,30 @@
     it("#valueArray", function() {
       var instance, test;
 
-      instance = this.createInstance("{|a, b| a + b }.neg ");
+      instance = this.createInstance("{|a, b| a + b }.neg");
 
       test = instance.valueArray($$([ 10, 100 ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
-    it.skip("#valueEnvir", function() {
+    it("#valueEnvir", function() {
+      var instance, test;
+
+      instance = this.createInstance("{|a, b| a + b }.neg");
+
+      $.Environment("b", $$(100));
+
+      test = instance.valueEnvir($$(10));
+      expect(test).to.be.a("SCInteger").that.equals(-110);
     });
-    it.skip("#valueArrayEnvir", function() {
+    it("#valueArrayEnvir", function() {
+      var instance, test;
+
+      instance = this.createInstance("{|a, b| a + b }.neg");
+
+      $.Environment("b", $$(100));
+
+      test = instance.valueArrayEnvir($$([ 10 ]));
+      expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#functionPerformList", sinon.test(function() {
       var test, instance;

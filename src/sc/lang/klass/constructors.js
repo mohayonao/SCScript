@@ -303,9 +303,6 @@
   $.Function = function(value, def) {
     var instance = new SCFunction();
     var func = value(); // TODO: fix later
-    if (!Array.isArray(func)) {
-      throw new Error("!!!?????");
-    }
     if (func.length === 0) {
       func[0] = function() {
         return $.Nil();

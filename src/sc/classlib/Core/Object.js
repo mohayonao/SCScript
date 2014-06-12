@@ -4,6 +4,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
     var $nil   = utils.$nil;
@@ -494,7 +495,8 @@ SCScript.install(function(sc) {
     };
 
     spec.yield = function() {
-      // TODO: implements yield
+      bytecode.yield(this);
+      return this;
     };
 
     // TODO: implements alwaysYield

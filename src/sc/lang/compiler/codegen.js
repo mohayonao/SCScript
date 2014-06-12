@@ -731,11 +731,11 @@
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
-    return [ "$.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
+    return [ "this.push(", this.generate(node.expr), ")" ];
   };
 
-  CodeGen.prototype.ValueMethodResult = function(node) {
-    return [ "$.Result(" + node.id + ")" ];
+  CodeGen.prototype.ValueMethodResult = function() {
+    return "this.shift()";
   };
 
   CodeGen.prototype._Statements = function(elements) {

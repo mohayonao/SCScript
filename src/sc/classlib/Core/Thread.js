@@ -18,7 +18,7 @@ SCScript.install(function(sc) {
     };
 
     spec._init = function() {
-      this._state   = sc.C.THREAD_STATE_INIT;
+      this._state   = sc.C.STATE_INIT;
       this._randgen = new random.RandGen((Math.random() * 4294967295) >>> 0);
       return this;
     };

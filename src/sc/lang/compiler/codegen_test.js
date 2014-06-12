@@ -47,7 +47,7 @@
           }).to.not.throw();
 
           test = codegen.compile(ast).split("\n");
-          expect(test).to.eqls(compiled);
+          expect(test).to.eql(compiled);
         });
       });
     });

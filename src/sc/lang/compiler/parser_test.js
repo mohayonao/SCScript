@@ -64,7 +64,7 @@
             mocha_it(s(source), function() {
               result = items.ast;
               test   = SCScript.parse(source, { range: true, loc: true });
-              expect(test).to.eqls(result);
+              expect(test).to.eql(result);
             });
           }
         }
@@ -195,7 +195,7 @@
           test   = SCScript.parse(source, {
             range: true, binaryPrecedence: items.binaryPrecedence
           });
-          expect(test).to.eqls(result);
+          expect(test).to.eql(result);
         });
       });
     });
@@ -435,7 +435,7 @@
 
         it(s(source), function() {
           var test = SCScript.parse(source, { tolerant: true });
-          expect(test.errors).to.eqls(result);
+          expect(test.errors).to.eql(result);
         });
       });
     });

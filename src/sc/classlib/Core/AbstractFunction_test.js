@@ -359,10 +359,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.clip($lo, $hi);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("clip");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $lo, $hi ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\clip", [ $lo, $hi ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#wrap", sinon.test(function() {
@@ -376,10 +375,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.wrap($lo, $hi);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("wrap");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $lo, $hi ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\wrap", [ $lo, $hi ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#fold", sinon.test(function() {
@@ -393,10 +391,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.fold($lo, $hi);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("fold");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $lo, $hi ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\fold", [ $lo, $hi ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#blend", sinon.test(function() {
@@ -410,10 +407,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.blend($that, $blendFrac);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("blend");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $that, $blendFrac ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\blend", [ $that, $blendFrac ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#linlin", sinon.test(function() {
@@ -430,10 +426,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.linlin($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("linlin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\linlin", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#linexp", sinon.test(function() {
@@ -450,10 +445,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.linexp($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("linexp");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\linexp", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#explin", sinon.test(function() {
@@ -470,10 +464,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.explin($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("explin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\explin", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#expexp", sinon.test(function() {
@@ -490,10 +483,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.expexp($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("expexp");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\expexp", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#lincurve", sinon.test(function() {
@@ -511,10 +503,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.lincurve($inMin, $inMax, $outMin, $outMax, $curve, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("lincurve");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\lincurve", [ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#curvelin", sinon.test(function() {
@@ -532,10 +523,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.curvelin($inMin, $inMax, $outMin, $outMax, $curve, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("curvelin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\curvelin", [ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#bilin", sinon.test(function() {
@@ -554,12 +544,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.bilin($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("bilin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([
-          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
-        ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\bilin", [ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#biexp", sinon.test(function() {
@@ -578,12 +565,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.biexp($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("biexp");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([
-          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
-        ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\biexp", [ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#moddif", sinon.test(function() {
@@ -597,10 +581,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.moddif($function, $mod);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("moddif");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $function, $mod ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\moddif", [ $function, $mod ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#degreeToKey", sinon.test(function() {
@@ -612,10 +595,9 @@
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.degreeToKey($scale, $stepsPerOctave);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("degreeToKey");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $scale, $stepsPerOctave ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\degreeToKey", [ $scale, $stepsPerOctave ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#applyTo", sinon.test(function() {
@@ -1015,8 +997,8 @@
       test = instance.do($function);
       expect(test).to.equal(instance);
       expect($function.value).to.callCount(2);
-      expect($function.value.args[0][0]).to.equal($elem1);
-      expect($function.value.args[1][0]).to.equal($elem2);
+      expect($function.value.args[0]).to.eql($$([ $elem1, 0 ])._);
+      expect($function.value.args[1]).to.eql($$([ $elem2, 1 ])._);
     }));
     it("#flop", function() {
       var instance, test;

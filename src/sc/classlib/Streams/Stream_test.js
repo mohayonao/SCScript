@@ -476,9 +476,7 @@
 
       instance = this.createInstance();
       test = instance.composeNAryOp($argSelector, $anArgList);
-      expect($new.args[0][0]).to.equal($argSelector);
-      expect($new.args[0][1]).to.equal(instance);
-      expect($new.args[0][2]).to.be.a("SCArray").that.eqls([ 1, 2 ]);
+      expect($new.args[0]).to.eql($$([ $argSelector, instance, [ 1, 2 ] ])._);
     }));
     it.skip("#embedInStream", function() {
     });

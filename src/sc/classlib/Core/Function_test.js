@@ -130,7 +130,7 @@
 
       test = instance.valueEnvir($arg1);
 
-      expect(spy.args[0]).js.that.eqls([ $arg1, 2, 300 ]);
+      expect(spy.args[0]).that.eqls($$([ $arg1, 2, 300 ])._);
       expect(spy).to.be.calledLastIn(test);
     }));
     it("#valueArrayEnvir", sinon.test(function() {
@@ -146,7 +146,7 @@
 
       test = instance.valueArrayEnvir($$([ $arg1, $arg2 ]));
 
-      expect(spy.args[0]).js.that.eqls([ $arg1, null, 300 ]);
+      expect(spy.args[0]).that.eqls($$([ $arg1, null, 300 ])._);
       expect(spy).to.be.calledLastIn(test);
     }));
     it("#functionPerformList", sinon.test(function() {
@@ -156,7 +156,7 @@
       this.stub(instance, "value", sc.test.func);
 
       test = instance.functionPerformList($$("\\value"), $$([ 1, 2, 3 ]));
-      expect(instance.value.args[0]).js.to.eqls([ 1, 2, 3 ]);
+      expect(instance.value.args[0]).to.eql($$([ 1, 2, 3 ])._);
       expect(instance.value).to.be.calledLastIn(test);
     }));
     it.skip("#valueWithEnvir", function() {

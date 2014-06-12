@@ -740,13 +740,13 @@
           lexer = new Lexer(source, opts);
           lexer.tokenize();
 
-          expect(lexer.errors).to.eqls(error);
+          expect(lexer.errors).to.eql(error);
         });
       } else {
         mocha_it(s(source), function() {
           var lexer = new Lexer(source, opts);
           var test  = lexer.tokenize(source, opts);
-          expect(test).to.eqls(result);
+          expect(test).to.eql(result);
         });
       }
     });

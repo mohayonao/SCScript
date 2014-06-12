@@ -1091,7 +1091,7 @@
       instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asArray();
-      expect($new.args[0][0]).to.be.a("SCInteger").that.equals(3);
+      expect($new.args[0]).to.eql($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1110,7 +1110,7 @@
       instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asBag();
-      expect($new.args[0][0]).to.be.a("SCInteger").that.equals(3);
+      expect($new.args[0]).to.eql($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1129,7 +1129,7 @@
       instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asList();
-      expect($new.args[0][0]).to.be.a("SCInteger").that.equals(3);
+      expect($new.args[0]).to.eql($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1148,7 +1148,7 @@
       instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asSet();
-      expect($new.args[0]).js.to.eql([ 3 ]);
+      expect($new.args[0]).to.eql($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1168,7 +1168,7 @@
       instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asSortedList($function);
-      expect($new.args[0]).js.to.eql([ 3, $function ]);
+      expect($new.args[0]).to.eql($$([ 3, $function ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));

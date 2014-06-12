@@ -21,16 +21,9 @@
 
       instance.func(null, null, null, null);
 
-      expect(spy.args[0][0]).to.be.a("SCNil");
-      expect(spy.args[0][1]).to.be.a("SCNil");
-      expect(spy.args[0][2]).to.be.a("SCBoolean").that.is.true;
-      expect(spy.args[0][3]).to.be.a("SCBoolean").that.is.false;
-      expect(spy.args[0][4]).to.be.a("SCInteger").that.equals(0);
-      expect(spy.args[0][5]).to.be.a("SCFloat").that.equals(0.0);
-      expect(spy.args[0][6]).to.be.a("SCFloat").that.equals(Infinity);
-      expect(spy.args[0][7]).to.be.a("SCFloat").that.equals(-Infinity);
-      expect(spy.args[0][8]).to.be.a("SCSymbol").that.equals("symbol");
-      expect(spy.args[0][9]).to.be.a("SCChar").that.equals("j");
+      expect(spy.args[0]).to.eql($$([
+        null, null, true, false, 0, $.Float(0.0), Infinity, -Infinity, "\\symbol", "$j"
+      ])._);
     });
     it("default arguments (list)", function() {
       var instance, spy;
@@ -42,7 +35,7 @@
 
       instance.func();
 
-      expect(spy.args[0][0]).to.be.a("SCArray").that.eqls([ 0, 1, 2 ]);
+      expect(spy.args[0]).to.eql($$([ [ 0, 1, 2 ] ])._);
     });
     it("meta data", function() {
       var func;
@@ -79,7 +72,7 @@
 
       instance.func();
 
-      expect(spy.args[0][0]).to.be.a("SCArray").that.eqls([ ]);
+      expect(spy.args[0]).to.eql($$([ [] ])._);
     });
     it("'a, b, *c': call(1, 2, 3, 4, 5) should pass [ 1, 2, [ 3, 4, 5 ] ]", function() {
       var instance, spy;
@@ -98,9 +91,7 @@
 
       instance.func($arg1, $arg2, $arg3, $arg4, $arg5);
 
-      expect(spy.args[0][0]).to.equal($arg1);
-      expect(spy.args[0][1]).to.equal($arg2);
-      expect(spy.args[0][2]).to.be.a("SCArray").that.eqls([ $arg3, $arg4, $arg5 ]);
+      expect(spy.args[0]).to.eql($$([ $arg1, $arg2, [ $arg3, $arg4, $arg5 ] ])._);
     });
   });
 })();

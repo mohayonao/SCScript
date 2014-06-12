@@ -984,21 +984,22 @@
     it.skip("#valueArrayEnvir", function() {
     });
     it("#do", sinon.test(function() {
-      var instance, test;
+      var instance, test, spy;
       var $elem1, $elem2, $function;
 
+      spy = this.spy();
       $elem1 = $$();
       $elem2 = $$();
-      $function = $$({ value: this.spy() });
+      $function = $$(spy);
 
       instance = this.createInstance();
       instance.array_($$([ $elem1, $elem2 ]));
 
       test = instance.do($function);
       expect(test).to.equal(instance);
-      expect($function.value).to.callCount(2);
-      expect($function.value.args[0]).to.eql($$([ $elem1, 0 ])._);
-      expect($function.value.args[1]).to.eql($$([ $elem2, 1 ])._);
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).to.eql($$([ $elem1, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ $elem2, 1 ])._);
     }));
     it("#flop", function() {
       var instance, test;

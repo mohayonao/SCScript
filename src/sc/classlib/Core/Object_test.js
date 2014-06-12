@@ -9,6 +9,7 @@
 
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
+  var bytecode = sc.lang.bytecode;
 
   describe("SCObject", function() {
     var SCObject;
@@ -1126,8 +1127,16 @@
         },
       ]);
     });
-    it.skip("#yield", function() {
-    });
+    it("#yield", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "yield");
+
+      test = instance.yield();
+      expect(test).to.equal(instance);
+      expect(bytecode.yield).to.be.calledWith(instance);
+    }));
     it.skip("#alwaysYield", function() {
     });
     it.skip("#yieldAndReset", function() {

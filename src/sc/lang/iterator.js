@@ -24,34 +24,22 @@
     var iter = {
       next: function() {
         iter.next = __stop__;
-        return value;
+        return [ value, $int_0 ];
       }
     };
     return iter;
   };
 
-  // TODO: async function
   iterator.execute = function(iter, $function) {
-    var $item, ret, i = 0;
-
-    while (($item = iter.next()) !== null) {
-      if (Array.isArray($item)) {
-        ret = $function.value($item[0], $item[1]);
-      } else {
-        ret = $function.value($item, $.Integer(i++));
-      }
-      if (ret === sc.C.LOOP_BREAK) {
-        break;
-      }
-    }
+    $function._.setIterator(iter).resume();
   };
 
   iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
-    var iter = {
+    var bytecode = $function._, iter = {
       next: function() {
-        if ($function.value().__bool__()) {
+        if (bytecode.resume().__bool__()) {
           return [ $nil, $nil ];
         }
         iter.next = __stop__;
@@ -63,28 +51,28 @@
   };
 
   var sc_incremental_iter = function($start, $end, $step) {
-    var $i = $start, iter = {
+    var $i = $start, j = 0, iter = {
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i > $end) {
           iter.next = __stop__;
         }
-        return $ret;
+        return [ $ret, $.Integer(j++) ];
       }
     };
     return iter;
   };
 
   var sc_decremental_iter = function($start, $end, $step) {
-    var $i = $start, iter = {
+    var $i = $start, j = 0, iter = {
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i < $end) {
           iter.next = __stop__;
         }
-        return $ret;
+        return [ $ret, $.Integer(j++) ];
       }
     };
     return iter;
@@ -142,28 +130,28 @@
   };
 
   var js_incremental_iter = function(start, end, step, type) {
-    var i = start, iter = {
+    var i = start, j = 0, iter = {
       next: function() {
         var ret = i;
         i += step;
         if (i > end) {
           iter.next = __stop__;
         }
-        return type(ret);
+        return [ type(ret), $.Integer(j++) ];
       }
     };
     return iter;
   };
 
   var js_decremental_iter = function(start, end, step, type) {
-    var i = start, iter = {
+    var i = start, j = 0, iter = {
       next: function() {
         var ret = i;
         i += step;
         if (i < end) {
           iter.next = __stop__;
         }
-        return type(ret);
+        return [ type(ret), $.Integer(j++) ];
       }
     };
     return iter;
@@ -263,7 +251,7 @@
         if (i >= list.length) {
           iter.next = __stop__;
         }
-        return $ret;
+        return [ $ret, $.Integer(i - 1) ];
       }
     };
     return iter;

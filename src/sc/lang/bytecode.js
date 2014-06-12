@@ -7,9 +7,9 @@
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
 
-  var jscode = {};
+  var bytecode = {};
 
-  function JSCode(initializer, def) {
+  function Bytecode(initializer, def) {
     this._initializer = initializer;
     this._def   = def;
     this._code  = [];
@@ -17,7 +17,7 @@
     this.init(initializer);
   }
 
-  JSCode.prototype.init = function() {
+  Bytecode.prototype.init = function() {
     var code = this._initializer();
     if (code.length === 0) {
       code[0] = function() {
@@ -35,7 +35,7 @@
     this._code = code;
   };
 
-  JSCode.prototype.resume = function(args) {
+  Bytecode.prototype.resume = function(args) {
     var result;
 
     this._break = false;
@@ -48,15 +48,15 @@
     return result || /* istanbul ignore next */ $.Nil();
   };
 
-  JSCode.prototype.__break__ = function() {
+  Bytecode.prototype.__break__ = function() {
     this._break = true;
     return sc.C.LOOP_BREAK;
   };
 
-  jscode.create = function(initializer, def) {
-    return new JSCode(initializer, def);
+  bytecode.create = function(initializer, def) {
+    return new Bytecode(initializer, def);
   };
 
-  sc.lang.jscode = jscode;
+  sc.lang.bytecode = bytecode;
 
 })(sc);

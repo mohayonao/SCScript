@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">127.96</p>
+      <p class="stat">129.95</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">1656</p>
+      <p class="stat">1735</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">91.20</p>
+      <p class="stat">93.68</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">21.05</p>
+      <p class="stat">21.93</p>
     </div>
   </div>
 </div>
@@ -96,11 +96,10 @@
   require(&quot;./Collection&quot;);
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine(&quot;SequenceableCollection&quot;, function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -124,7 +123,7 @@
 
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i &lt; imax; ++i) {
-        $obj.add($start [&quot;+&quot;] ($step [&quot;*&quot;] ($SC.Integer(i))));
+        $obj.add($start.$(&quot;+&quot;, [ $step.$(&quot;*&quot;, [ $.Integer(i) ]) ]));
       }
 
       return $obj;
@@ -136,7 +135,7 @@
       $obj = this.new($size);
       for (i = 0, imax = $size.__int__(); i &lt; imax; ++i) {
         $obj.add($start);
-        $start = $start [&quot;*&quot;] ($grow);
+        $start = $start.$(&quot;*&quot;, [ $grow ]);
       }
 
       return $obj;
@@ -149,7 +148,7 @@
       for (i = 0, imax = $size.__int__(); i &lt; imax; ++i) {
         $obj.add($b);
         $temp = $b;
-        $b = $a [&quot;+&quot;] ($b);
+        $b = $a.$(&quot;+&quot;, [ $b ]);
         $a = $temp;
       }
 
@@ -168,9 +167,9 @@
         return $obj.add($start);
       }
 
-      $step = ($end [&quot;-&quot;] ($start)) [&quot;/&quot;] ($size.__dec__());
+      $step = ($end.$(&quot;-&quot;, [ $start ])).$(&quot;/&quot;, [ $size.__dec__() ]);
       for (i = 0, imax = $size.__int__(); i &lt; imax; ++i) {
-        $obj.add($start [&quot;+&quot;] ($SC.Integer(i) [&quot;*&quot;] ($step)));
+        $obj.add($start.$(&quot;+&quot;, [ $.Integer(i) [&quot;*&quot;] ($step) ]));
       }
 
       return $obj;
@@ -194,7 +193,7 @@
     };
 
     spec.wchoose = fn(function($weights) {
-      return this.at($weights.windex());
+      return this.at($weights.$(&quot;windex&quot;));
     }, &quot;weights&quot;);
 
     spec[&quot;==&quot;] = function($aCollection) {
@@ -206,11 +205,13 @@
       if (this.size() !== $aCollection.size()) {
         return $false;
       }
-      this.do($SC.Function(function($item, $i) {
-        if (BOOL($item [&quot;!=&quot;] ($aCollection.at($i)))) {
-          $res = $false;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          if ($item [&quot;!=&quot;] ($aCollection.$(&quot;at&quot;, [ $i ])).__bool__()) {
+            $res = $false;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $true;
@@ -223,9 +224,9 @@
 
       i = $start.__int__();
       end = $end.__int__();
-      $newColl = this.species().new($SC.Integer(end - i));
+      $newColl = this.species().new($.Integer(end - i));
       while (i &lt;= end) {
-        $newColl.add(this.at($SC.Integer(i++)));
+        $newColl.add(this.at($.Integer(i++)));
       }
 
       return $newColl;
@@ -236,11 +237,11 @@
 
       n = $n.__int__();
       if (n &gt;= 0) {
-        return this.copyRange($int_0, $SC.Integer(n - 1));
+        return this.copyRange($int_0, $.Integer(n - 1));
       }
       size = this.size().__int__();
 
-      return this.copyRange($SC.Integer(size + n), $SC.Integer(size - 1));
+      return this.copyRange($.Integer(size + n), $.Integer(size - 1));
     }, &quot;n&quot;);
 
     spec.drop = fn(function($n) {
@@ -249,14 +250,14 @@
       n = $n.__int__();
       size = this.size().__int__();
       if (n &gt;= 0) {
-        return this.copyRange($n, $SC.Integer(size - 1));
+        return this.copyRange($n, $.Integer(size - 1));
       }
 
-      return this.copyRange($int_0, $SC.Integer(size + n - 1));
+      return this.copyRange($int_0, $.Integer(size + n - 1));
     }, &quot;n&quot;);
 
     spec.copyToEnd = fn(function($start) {
-      return this.copyRange($start, $SC.Integer(this.size().__int__() - 1));
+      return this.copyRange($start, $.Integer(this.size().__int__() - 1));
     }, &quot;start&quot;);
 
     spec.copyFromStart = fn(function($end) {
@@ -266,11 +267,13 @@
     spec.indexOf = fn(function($item) {
       var $ret = null;
 
-      this.do($SC.Function(function($elem, $i) {
-        if ($item === $elem) {
-          $ret = $i;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($item === $elem) {
+            $ret = $i;
+            this.break();
+          }
+        } ];
       }));
 
       return $ret || $nil;
@@ -279,13 +282,15 @@
     spec.indicesOfEqual = fn(function($item) {
       var indices = [];
 
-      this.do($SC.Function(function($elem, $i) {
-        if ($item === $elem) {
-          indices.push($i);
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($item === $elem) {
+            indices.push($i);
+          }
+        } ];
       }));
 
-      return indices.length ? $SC.Array(indices) : $nil;
+      return indices.length ? $.Array(indices) : $nil;
     }, &quot;item&quot;);
 
     spec.find = fn(function($sublist, $offset) {
@@ -298,9 +303,9 @@
       size   = this.size().__int__();
       offset = $offset.__int__();
       for (i = 0, imax = size - offset; i &lt; imax; ++i) {
-        $index = $SC.Integer(i + offset);
-        if (BOOL(this.at($index) [&quot;==&quot;] ($first))) {
-          if (BOOL(this.copyRange($index, $index [&quot;+&quot;] ($subSize_1)) [&quot;==&quot;] ($sublist))) {
+        $index = $.Integer(i + offset);
+        if (this.at($index) [&quot;==&quot;] ($first).__bool__()) {
+          if (this.copyRange($index, $index [&quot;+&quot;] ($subSize_1)) [&quot;==&quot;] ($sublist).__bool__()) {
             return $index;
           }
         }
@@ -324,8 +329,10 @@
     }, &quot;arr; offset=0&quot;);
 
     spec.indexOfGreaterThan = fn(function($val) {
-      return this.detectIndex($SC.Function(function($item) {
-        return $SC.Boolean($item &gt; $val);
+      return this.detectIndex($.Function(function() {
+        return [ function($item) {
+          return $.Boolean($item &gt; $val);
+        } ];
       }));
     }, &quot;val&quot;);
 
@@ -342,7 +349,7 @@
 
       $i = $j.__dec__();
 
-      if ($val [&quot;-&quot;] (this.at($i)) &lt; this.at($j) [&quot;-&quot;] ($val)) {
+      if ($val.$(&quot;-&quot;, [ this.at($i) ]) &lt; this.at($j).$(&quot;-&quot;, [ $val ])) {
         return $i;
       }
 
@@ -352,7 +359,7 @@
     spec.indexInBetween = fn(function($val) {
       var $a, $b, $div, $i;
 
-      if (BOOL(this.isEmpty())) {
+      if (this.isEmpty().__bool__()) {
         return $nil;
       }
       $i = this.indexOfGreaterThan($val);
@@ -366,13 +373,13 @@
 
       $a = this.at($i.__dec__());
       $b = this.at($i);
-      $div = $b [&quot;-&quot;] ($a);
+      $div = $b.$(&quot;-&quot;, [ $a ]);
 
-      // if (BOOL($div [&quot;==&quot;] ($int_0))) {
+      // if ($div [&quot;==&quot;] ($int_0).__bool__()) {
       //   return $i;
       // }
 
-      return (($val [&quot;-&quot;] ($a)) [&quot;/&quot;] ($div)) [&quot;+&quot;] ($i.__dec__());
+      return $val.$(&quot;-&quot;, [ $a ]).$(&quot;/&quot;, [ $div ]).$(&quot;+&quot;, [ $i.__dec__() ]);
     }, &quot;val&quot;);
 
     spec.isSeries = fn(function($step) {
@@ -381,14 +388,16 @@
       if (this.size() &lt;= 1) {
         return $true;
       }
-      this.doAdjacentPairs($SC.Function(function($a, $b) {
-        var $diff = $b [&quot;-&quot;] ($a);
-        if ($step === $nil) {
-          $step = $diff;
-        } else if (BOOL($step [&quot;!=&quot;] ($diff))) {
-          $res = $false;
-          return sc.C.LOOP_BREAK;
-        }
+      this.doAdjacentPairs($.Function(function() {
+        return [ function($a, $b) {
+          var $diff = $b.$(&quot;-&quot;, [ $a ]);
+          if ($step === $nil) {
+            $step = $diff;
+          } else if ($step [&quot;!=&quot;] ($diff).__bool__()) {
+            $res = $false;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $true;
@@ -403,8 +412,10 @@
         ($newSize.__dec__()).max($int_1)
       );
 
-      return this.species().fill($newSize, $SC.Function(function($i) {
-        return $this.at($i [&quot;*&quot;] ($factor).round($SC.Float(1.0)).asInteger());
+      return this.species().fill($newSize, $.Function(function() {
+        return [ function($i) {
+          return $this.at($i [&quot;*&quot;] ($factor).round($.Float(1.0)).asInteger());
+        } ];
       }));
     }, &quot;newSize&quot;);
 
@@ -417,8 +428,10 @@
         ($newSize.__dec__()).max($int_1)
       );
 
-      return this.species().fill($newSize, $SC.Function(function($i) {
-        return $this.blendAt($i [&quot;*&quot;] ($factor));
+      return this.species().fill($newSize, $.Function(function() {
+        return [ function($i) {
+          return $this.blendAt($i [&quot;*&quot;] ($factor));
+        } ];
       }));
     }, &quot;newSize&quot;);
 
@@ -457,7 +470,7 @@
       var size = this.size().__int__();
 
       if (size &gt; 0) {
-        return $SC.Integer(size - 1);
+        return $.Integer(size - 1);
       }
 
       return $nil;
@@ -467,7 +480,7 @@
       var size = this.size().__int__();
 
       if (size &gt; 0) {
-        return $SC.Integer((size - 1) &gt;&gt; 1);
+        return $.Integer((size - 1) &gt;&gt; 1);
       }
 
       return $nil;
@@ -487,7 +500,7 @@
       var size = this.size().__int__();
 
       if (size &gt; 0) {
-        return this.at($SC.Integer(size - 1));
+        return this.at($.Integer(size - 1));
       }
 
       return $nil;
@@ -497,7 +510,7 @@
       var size = this.size().__int__();
 
       if (size &gt; 0) {
-        return this.at($SC.Integer((size - 1) &gt;&gt; 1));
+        return this.at($.Integer((size - 1) &gt;&gt; 1));
       }
 
       return $nil;
@@ -521,7 +534,7 @@
       var size = this.size().__int__();
 
       if (size &gt; 0) {
-        return this.put($SC.Integer(size - 1), $obj);
+        return this.put($.Integer(size - 1), $obj);
       }
 
       return this;
@@ -551,10 +564,12 @@
     }, &quot;index; item; default&quot;);
 
     spec.pairsDo = function($function) {
-      var $this = this, $int2 = $SC.Integer(2);
+      var $this = this, $int2 = $.Integer(2);
 
-      $int_0.forBy(this.size() [&quot;-&quot;] ($int2), $int2, $SC.Function(function($i) {
-        return $function.value($this.at($i), $this.at($i.__inc__()), $i);
+      $int_0.forBy(this.size() [&quot;-&quot;] ($int2), $int2, $.Function(function() {
+        return [ function($i) {
+          return $function.value($this.at($i), $this.at($i.__inc__()), $i);
+        } ];
       }));
 
       return this;
@@ -570,7 +585,7 @@
 
       size = this.size().__int__();
       for (i = 0, imax = size - 1; i &lt; imax; ++i) {
-        $i = $SC.Integer(i);
+        $i = $.Integer(i);
         $function.value(this.at($i), this.at($i.__inc__()), $i);
       }
 
@@ -580,16 +595,18 @@
     spec.separate = fn(function($function) {
       var $this = this, $list, $sublist;
 
-      $list = $SC.Array();
+      $list = $.Array();
       $sublist = this.species().new();
-      this.doAdjacentPairs($SC.Function(function($a, $b, $i) {
-        $sublist = $sublist.add($a);
-        if (BOOL($function.value($a, $b, $i))) {
-          $list = $list.add($sublist);
-          $sublist = $this.species().new();
-        }
+      this.doAdjacentPairs($.Function(function() {
+        return [ function($a, $b, $i) {
+          $sublist = $sublist.add($a);
+          if ($function.value($a, $b, $i).__bool__()) {
+            $list = $list.add($sublist);
+            $sublist = $this.species().new();
+          }
+        } ];
       }));
-      if (BOOL(this.notEmpty())) {
+      if (this.notEmpty().__bool__()) {
         $sublist = $sublist.add(this.last());
       }
       $list = $list.add($sublist);
@@ -600,15 +617,17 @@
     spec.delimit = function($function) {
       var $this = this, $list, $sublist;
 
-      $list = $SC.Array();
+      $list = $.Array();
       $sublist = this.species().new();
-      this.do($SC.Function(function($item, $i) {
-        if (BOOL($function.value($item, $i))) {
-          $list = $list.add($sublist);
-          $sublist = $this.species().new();
-        } else {
-          $sublist = $sublist.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          if ($function.value($item, $i).__bool__()) {
+            $list = $list.add($sublist);
+            $sublist = $this.species().new();
+          } else {
+            $sublist = $sublist.add($item);
+          }
+        } ];
       }));
       $list = $list.add($sublist);
 
@@ -618,14 +637,16 @@
     spec.clump = fn(function($groupSize) {
       var $this = this, $list, $sublist;
 
-      $list = $SC.Array();
+      $list = $.Array();
       $sublist = this.species().new($groupSize);
-      this.do($SC.Function(function($item) {
-        $sublist.add($item);
-        if ($sublist.size() &gt;= $groupSize) {
-          $list.add($sublist);
-          $sublist = $this.species().new($groupSize);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          $sublist.add($item);
+          if ($sublist.size() &gt;= $groupSize) {
+            $list.add($sublist);
+            $sublist = $this.species().new($groupSize);
+          }
+        } ];
       }));
       if ($sublist.size() &gt; 0) {
         $list = $list.add($sublist);
@@ -637,16 +658,18 @@
     spec.clumps = fn(function($groupSizeList) {
       var $this = this, $list, $subSize, $sublist, i = 0;
 
-      $list = $SC.Array();
+      $list = $.Array();
       $subSize = $groupSizeList.at($int_0);
       $sublist = this.species().new($subSize);
-      this.do($SC.Function(function($item) {
-        $sublist = $sublist.add($item);
-        if ($sublist.size() &gt;= $subSize) {
-          $list = $list.add($sublist);
-          $subSize = $groupSizeList.wrapAt($SC.Integer(++i));
-          $sublist = $this.species().new($subSize);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          $sublist = $sublist.add($item);
+          if ($sublist.size() &gt;= $subSize) {
+            $list = $list.add($sublist);
+            $subSize = $groupSizeList.$(&quot;wrapAt&quot;, [ $.Integer(++i) ]);
+            $sublist = $this.species().new($subSize);
+          }
+        } ];
       }));
       if ($sublist.size() &gt; 0) {
         $list = $list.add($sublist);
@@ -656,8 +679,10 @@
     }, &quot;groupSizeList&quot;);
 
     spec.curdle = fn(function($probability) {
-      return this.separate($SC.Function(function() {
-        return $probability.coin();
+      return this.separate($.Function(function() {
+        return [ function() {
+          return $probability.$(&quot;coin&quot;);
+        } ];
       }));
     }, &quot;probability&quot;);
 
@@ -674,12 +699,14 @@
       numLevels = numLevels - 1;
 
       $list = this.species().new();
-      this.do($SC.Function(function($item) {
-        if ($item._flatten) {
-          $list = $list.addAll($item._flatten(numLevels));
-        } else {
-          $list = $list.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          if ($item._flatten) {
+            $list = $list.addAll($item._flatten(numLevels));
+          } else {
+            $list = $list.add($item);
+          }
+        } ];
       }));
 
       return $list;
@@ -690,12 +717,14 @@
     };
 
     spec._flat = fn(function($list) {
-      this.do($SC.Function(function($item) {
-        if ($item._flat) {
-          $list = $item._flat($list);
-        } else {
-          $list = $list.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          if ($item._flat) {
+            $list = $item._flat($list);
+          } else {
+            $list = $list.add($item);
+          }
+        } ];
       }));
       return $list;
     }, &quot;list&quot;);
@@ -708,12 +737,14 @@
       var $list;
 
       $list = this.species().new(this.size());
-      this.do($SC.Function(function($item, $i) {
-        if ($item._flatIf &amp;&amp; BOOL($func.value($item, $i))) {
-          $list = $list.addAll($item._flatIf($func));
-        } else {
-          $list = $list.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          if ($item._flatIf &amp;&amp; $func.value($item, $i).__bool__()) {
+            $list = $list.addAll($item._flatIf($func));
+          } else {
+            $list = $list.add($item);
+          }
+        } ];
       }));
 
       return $list;
@@ -724,32 +755,42 @@
 
       $size = this.size();
       $maxsize = $int_0;
-      this.do($SC.Function(function($sublist) {
-        var $sz;
-        if (BOOL($sublist.isSequenceableCollection())) {
-          $sz = $sublist.size();
-        } else {
-          $sz = $int_1;
-        }
-        if ($sz &gt; $maxsize) {
-          $maxsize = $sz;
-        }
+      this.do($.Function(function() {
+        return [ function($sublist) {
+          var $sz;
+          if ($sublist.isSequenceableCollection().__bool__()) {
+            $sz = $sublist.size();
+          } else {
+            $sz = $int_1;
+          }
+          if ($sz &gt; $maxsize) {
+            $maxsize = $sz;
+          }
+        } ];
       }));
 
-      $list = this.species().fill($maxsize, $SC.Function(function() {
-        return $this.species().new($size);
+      $list = this.species().fill($maxsize, $.Function(function() {
+        return [ function() {
+          return $this.species().new($size);
+        } ];
       }));
 
-      this.do($SC.Function(function($isublist) {
-        if (BOOL($isublist.isSequenceableCollection())) {
-          $list.do($SC.Function(function($jsublist, $j) {
-            $jsublist.add($isublist.wrapAt($j));
-          }));
-        } else {
-          $list.do($SC.Function(function($jsublist) {
-            $jsublist.add($isublist);
-          }));
-        }
+      this.do($.Function(function() {
+        return [ function($isublist) {
+          if ($isublist.isSequenceableCollection().__bool__()) {
+            $list.do($.Function(function() {
+              return [ function($jsublist, $j) {
+                $jsublist.add($isublist.wrapAt($j));
+              } ];
+            }));
+          } else {
+            $list.do($.Function(function() {
+              return [ function($jsublist) {
+                $jsublist.add($isublist);
+              } ];
+            }));
+          }
+        } ];
       }));
 
       return $list;
@@ -758,21 +799,27 @@
     spec.flopWith = fn(function($func) {
       var $this = this, $maxsize;
 
-      $maxsize = this.maxValue($SC.Function(function($sublist) {
-        if (BOOL($sublist.isSequenceableCollection())) {
-          return $sublist.size();
-        }
-        return $int_1;
+      $maxsize = this.maxValue($.Function(function() {
+        return [ function($sublist) {
+          if ($sublist.isSequenceableCollection().__bool__()) {
+            return $sublist.size();
+          }
+          return $int_1;
+        } ];
       }));
 
-      return this.species().fill($maxsize, $SC.Function(function($i) {
-        return $func.valueArray($this.collect($SC.Function(function($sublist) {
-          if (BOOL($sublist.isSequenceableCollection())) {
-            return $sublist.wrapAt($i);
-          } else {
-            return $sublist;
-          }
-        })));
+      return this.species().fill($maxsize, $.Function(function() {
+        return [ function($i) {
+          return $func.valueArray($this.collect($.Function(function() {
+            return [ function($sublist) {
+              if ($sublist.isSequenceableCollection().__bool__()) {
+                return $sublist.wrapAt($i);
+              } else {
+                return $sublist;
+              }
+            } ];
+          })));
+        } ];
       }));
     }, &quot;func&quot;);
 
@@ -800,470 +847,474 @@
     spec.isSequenceableCollection = utils.alwaysReturn$true;
 
     spec.containsSeqColl = function() {
-      return this.any($SC.Function(function($_) {
-        return $_.isSequenceableCollection();
+      return this.any($.Function(function() {
+        return [ function($_) {
+          return $_.isSequenceableCollection();
+        } ];
       }));
     };
 
     spec.neg = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;neg&quot;));
+      return this.performUnaryOp($.Symbol(&quot;neg&quot;));
     };
 
     spec.bitNot = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;bitNot&quot;));
+      return this.performUnaryOp($.Symbol(&quot;bitNot&quot;));
     };
 
     spec.abs = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;abs&quot;));
+      return this.performUnaryOp($.Symbol(&quot;abs&quot;));
     };
 
     spec.ceil = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;ceil&quot;));
+      return this.performUnaryOp($.Symbol(&quot;ceil&quot;));
     };
 
     spec.floor = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;floor&quot;));
+      return this.performUnaryOp($.Symbol(&quot;floor&quot;));
     };
 
     spec.frac = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;frac&quot;));
+      return this.performUnaryOp($.Symbol(&quot;frac&quot;));
     };
 
     spec.sign = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;sign&quot;));
+      return this.performUnaryOp($.Symbol(&quot;sign&quot;));
     };
 
     spec.squared = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;squared&quot;));
+      return this.performUnaryOp($.Symbol(&quot;squared&quot;));
     };
 
     spec.cubed = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;cubed&quot;));
+      return this.performUnaryOp($.Symbol(&quot;cubed&quot;));
     };
 
     spec.sqrt = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;sqrt&quot;));
+      return this.performUnaryOp($.Symbol(&quot;sqrt&quot;));
     };
 
     spec.exp = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;exp&quot;));
+      return this.performUnaryOp($.Symbol(&quot;exp&quot;));
     };
 
     spec.reciprocal = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;reciprocal&quot;));
+      return this.performUnaryOp($.Symbol(&quot;reciprocal&quot;));
     };
 
     spec.midicps = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;midicps&quot;));
+      return this.performUnaryOp($.Symbol(&quot;midicps&quot;));
     };
 
     spec.cpsmidi = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;cpsmidi&quot;));
+      return this.performUnaryOp($.Symbol(&quot;cpsmidi&quot;));
     };
 
     spec.midiratio = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;midiratio&quot;));
+      return this.performUnaryOp($.Symbol(&quot;midiratio&quot;));
     };
 
     spec.ratiomidi = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;ratiomidi&quot;));
+      return this.performUnaryOp($.Symbol(&quot;ratiomidi&quot;));
     };
 
     spec.ampdb = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;ampdb&quot;));
+      return this.performUnaryOp($.Symbol(&quot;ampdb&quot;));
     };
 
     spec.dbamp = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;dbamp&quot;));
+      return this.performUnaryOp($.Symbol(&quot;dbamp&quot;));
     };
 
     spec.octcps = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;octcps&quot;));
+      return this.performUnaryOp($.Symbol(&quot;octcps&quot;));
     };
 
     spec.cpsoct = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;cpsoct&quot;));
+      return this.performUnaryOp($.Symbol(&quot;cpsoct&quot;));
     };
 
     spec.log = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;log&quot;));
+      return this.performUnaryOp($.Symbol(&quot;log&quot;));
     };
 
     spec.log2 = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;log2&quot;));
+      return this.performUnaryOp($.Symbol(&quot;log2&quot;));
     };
 
     spec.log10 = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;log10&quot;));
+      return this.performUnaryOp($.Symbol(&quot;log10&quot;));
     };
 
     spec.sin = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;sin&quot;));
+      return this.performUnaryOp($.Symbol(&quot;sin&quot;));
     };
 
     spec.cos = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;cos&quot;));
+      return this.performUnaryOp($.Symbol(&quot;cos&quot;));
     };
 
     spec.tan = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;tan&quot;));
+      return this.performUnaryOp($.Symbol(&quot;tan&quot;));
     };
 
     spec.asin = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;asin&quot;));
+      return this.performUnaryOp($.Symbol(&quot;asin&quot;));
     };
 
     spec.acos = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;acos&quot;));
+      return this.performUnaryOp($.Symbol(&quot;acos&quot;));
     };
 
     spec.atan = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;atan&quot;));
+      return this.performUnaryOp($.Symbol(&quot;atan&quot;));
     };
 
     spec.sinh = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;sinh&quot;));
+      return this.performUnaryOp($.Symbol(&quot;sinh&quot;));
     };
 
     spec.cosh = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;cosh&quot;));
+      return this.performUnaryOp($.Symbol(&quot;cosh&quot;));
     };
 
     spec.tanh = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;tanh&quot;));
+      return this.performUnaryOp($.Symbol(&quot;tanh&quot;));
     };
 
     spec.rand = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;rand&quot;));
+      return this.performUnaryOp($.Symbol(&quot;rand&quot;));
     };
 
     spec.rand2 = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;rand2&quot;));
+      return this.performUnaryOp($.Symbol(&quot;rand2&quot;));
     };
 
     spec.linrand = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;linrand&quot;));
+      return this.performUnaryOp($.Symbol(&quot;linrand&quot;));
     };
 
     spec.bilinrand = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;bilinrand&quot;));
+      return this.performUnaryOp($.Symbol(&quot;bilinrand&quot;));
     };
 
     spec.sum3rand = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;sum3rand&quot;));
+      return this.performUnaryOp($.Symbol(&quot;sum3rand&quot;));
     };
 
     spec.distort = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;distort&quot;));
+      return this.performUnaryOp($.Symbol(&quot;distort&quot;));
     };
 
     spec.softclip = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;softclip&quot;));
+      return this.performUnaryOp($.Symbol(&quot;softclip&quot;));
     };
 
     spec.coin = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;coin&quot;));
+      return this.performUnaryOp($.Symbol(&quot;coin&quot;));
     };
 
     spec.even = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;even&quot;));
+      return this.performUnaryOp($.Symbol(&quot;even&quot;));
     };
 
     spec.odd = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;odd&quot;));
+      return this.performUnaryOp($.Symbol(&quot;odd&quot;));
     };
 
     spec.isPositive = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;isPositive&quot;));
+      return this.performUnaryOp($.Symbol(&quot;isPositive&quot;));
     };
 
     spec.isNegative = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;isNegative&quot;));
+      return this.performUnaryOp($.Symbol(&quot;isNegative&quot;));
     };
 
     spec.isStrictlyPositive = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;isStrictlyPositive&quot;));
+      return this.performUnaryOp($.Symbol(&quot;isStrictlyPositive&quot;));
     };
 
     spec.rectWindow = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;rectWindow&quot;));
+      return this.performUnaryOp($.Symbol(&quot;rectWindow&quot;));
     };
 
     spec.hanWindow = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;hanWindow&quot;));
+      return this.performUnaryOp($.Symbol(&quot;hanWindow&quot;));
     };
 
     spec.welWindow = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;welWindow&quot;));
+      return this.performUnaryOp($.Symbol(&quot;welWindow&quot;));
     };
 
     spec.triWindow = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;triWindow&quot;));
+      return this.performUnaryOp($.Symbol(&quot;triWindow&quot;));
     };
 
     spec.scurve = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;scurve&quot;));
+      return this.performUnaryOp($.Symbol(&quot;scurve&quot;));
     };
 
     spec.ramp = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;ramp&quot;));
+      return this.performUnaryOp($.Symbol(&quot;ramp&quot;));
     };
 
     spec.asFloat = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;asFloat&quot;));
+      return this.performUnaryOp($.Symbol(&quot;asFloat&quot;));
     };
 
     spec.asInteger = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;asInteger&quot;));
+      return this.performUnaryOp($.Symbol(&quot;asInteger&quot;));
     };
 
     spec.nthPrime = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;nthPrime&quot;));
+      return this.performUnaryOp($.Symbol(&quot;nthPrime&quot;));
     };
 
     spec.prevPrime = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;prevPrime&quot;));
+      return this.performUnaryOp($.Symbol(&quot;prevPrime&quot;));
     };
 
     spec.nextPrime = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;nextPrime&quot;));
+      return this.performUnaryOp($.Symbol(&quot;nextPrime&quot;));
     };
 
     spec.indexOfPrime = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;indexOfPrime&quot;));
+      return this.performUnaryOp($.Symbol(&quot;indexOfPrime&quot;));
     };
 
     spec.real = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;real&quot;));
+      return this.performUnaryOp($.Symbol(&quot;real&quot;));
     };
 
     spec.imag = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;imag&quot;));
+      return this.performUnaryOp($.Symbol(&quot;imag&quot;));
     };
 
     spec.magnitude = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;magnitude&quot;));
+      return this.performUnaryOp($.Symbol(&quot;magnitude&quot;));
     };
 
     spec.magnitudeApx = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;magnitudeApx&quot;));
+      return this.performUnaryOp($.Symbol(&quot;magnitudeApx&quot;));
     };
 
     spec.phase = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;phase&quot;));
+      return this.performUnaryOp($.Symbol(&quot;phase&quot;));
     };
 
     spec.angle = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;angle&quot;));
+      return this.performUnaryOp($.Symbol(&quot;angle&quot;));
     };
 
     spec.rho = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;rho&quot;));
+      return this.performUnaryOp($.Symbol(&quot;rho&quot;));
     };
 
     spec.theta = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;theta&quot;));
+      return this.performUnaryOp($.Symbol(&quot;theta&quot;));
     };
 
     spec.degrad = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;degrad&quot;));
+      return this.performUnaryOp($.Symbol(&quot;degrad&quot;));
 
     };
     spec.raddeg = function() {
-      return this.performUnaryOp($SC.Symbol(&quot;raddeg&quot;));
+      return this.performUnaryOp($.Symbol(&quot;raddeg&quot;));
     };
 
     spec[&quot;+&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;+&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;+&quot;), $aNumber, $adverb);
     };
 
     spec[&quot;-&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;-&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;-&quot;), $aNumber, $adverb);
     };
 
     spec[&quot;*&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;*&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;*&quot;), $aNumber, $adverb);
     };
 
     spec[&quot;/&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;/&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;/&quot;), $aNumber, $adverb);
     };
 
     spec.div = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;div&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;div&quot;), $aNumber, $adverb);
     };
 
     spec.mod = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;mod&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;mod&quot;), $aNumber, $adverb);
     };
 
     spec.pow = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;pow&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;pow&quot;), $aNumber, $adverb);
     };
 
     spec.min = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;min&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;min&quot;), $aNumber, $adverb);
     };
 
     spec.max = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;max&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;max&quot;), $aNumber, $adverb);
     };
 
     spec[&quot;&lt;&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;&lt;&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;&lt;&quot;), $aNumber, $adverb);
     };
 
     spec[&quot;&lt;=&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;&lt;=&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;&lt;=&quot;), $aNumber, $adverb);
     };
 
     spec[&quot;&gt;&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;&gt;&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;&gt;&quot;), $aNumber, $adverb);
     };
 
     spec[&quot;&gt;=&quot;] = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;&gt;=&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;&gt;=&quot;), $aNumber, $adverb);
     };
 
     spec.bitAnd = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;bitAnd&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;bitAnd&quot;), $aNumber, $adverb);
     };
 
     spec.bitOr = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;bitOr&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;bitOr&quot;), $aNumber, $adverb);
     };
 
     spec.bitXor = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;bitXor&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;bitXor&quot;), $aNumber, $adverb);
     };
 
     spec.bitHammingDistance = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;bitHammingDistance&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;bitHammingDistance&quot;), $aNumber, $adverb);
     };
 
     spec.lcm = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;lcm&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;lcm&quot;), $aNumber, $adverb);
     };
 
     spec.gcd = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;gcd&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;gcd&quot;), $aNumber, $adverb);
     };
 
     spec.round = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;round&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;round&quot;), $aNumber, $adverb);
     };
 
     spec.roundUp = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;roundUp&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;roundUp&quot;), $aNumber, $adverb);
     };
 
     spec.trunc = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;trunc&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;trunc&quot;), $aNumber, $adverb);
     };
 
     spec.atan2 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;atan2&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;atan2&quot;), $aNumber, $adverb);
     };
 
     spec.hypot = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;hypot&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;hypot&quot;), $aNumber, $adverb);
     };
 
     spec.hypotApx = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;hypotApx&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;hypotApx&quot;), $aNumber, $adverb);
     };
 
     spec.leftShift = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;leftShift&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;leftShift&quot;), $aNumber, $adverb);
     };
 
     spec.rightShift = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;rightShift&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;rightShift&quot;), $aNumber, $adverb);
     };
 
     spec.unsignedRightShift = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;unsignedRightShift&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;unsignedRightShift&quot;), $aNumber, $adverb);
     };
 
     spec.ring1 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;ring1&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;ring1&quot;), $aNumber, $adverb);
     };
 
     spec.ring2 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;ring2&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;ring2&quot;), $aNumber, $adverb);
     };
 
     spec.ring3 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;ring3&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;ring3&quot;), $aNumber, $adverb);
     };
 
     spec.ring4 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;ring4&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;ring4&quot;), $aNumber, $adverb);
     };
 
     spec.difsqr = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;difsqr&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;difsqr&quot;), $aNumber, $adverb);
     };
 
     spec.sumsqr = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;sumsqr&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;sumsqr&quot;), $aNumber, $adverb);
     };
 
     spec.sqrsum = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;sqrsum&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;sqrsum&quot;), $aNumber, $adverb);
     };
 
     spec.sqrdif = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;sqrdif&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;sqrdif&quot;), $aNumber, $adverb);
     };
 
     spec.absdif = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;absdif&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;absdif&quot;), $aNumber, $adverb);
     };
 
     spec.thresh = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;thresh&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;thresh&quot;), $aNumber, $adverb);
     };
 
     spec.amclip = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;amclip&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;amclip&quot;), $aNumber, $adverb);
     };
 
     spec.scaleneg = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;scaleneg&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;scaleneg&quot;), $aNumber, $adverb);
     };
 
     spec.clip2 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;clip2&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;clip2&quot;), $aNumber, $adverb);
     };
 
     spec.fold2 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;fold2&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;fold2&quot;), $aNumber, $adverb);
     };
 
     spec.wrap2 = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;wrap2&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;wrap2&quot;), $aNumber, $adverb);
     };
 
     spec.excess = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;excess&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;excess&quot;), $aNumber, $adverb);
     };
 
     spec.firstArg = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;firstArg&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;firstArg&quot;), $aNumber, $adverb);
     };
 
     spec.rrand = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;rrand&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;rrand&quot;), $aNumber, $adverb);
     };
 
     spec.exprand = function($aNumber, $adverb) {
-      return this.performBinaryOp($SC.Symbol(&quot;exprand&quot;), $aNumber, $adverb);
+      return this.performBinaryOp($.Symbol(&quot;exprand&quot;), $aNumber, $adverb);
     };
 
     spec.performUnaryOp = function($aSelector) {
-      return this.collect($SC.Function(function($item) {
-        return $item.perform($aSelector);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.perform($aSelector);
+        } ];
       }));
     };
 
@@ -1279,7 +1330,7 @@
           this, $aSelector, $theOperand
         );
       }
-      if (BOOL($adverb.isInteger())) {
+      if ($adverb.isInteger().__bool__()) {
         return _performBinaryOpOnSeqColl_adverb_int(
           this, $aSelector, $theOperand, $adverb.valueOf()
         );
@@ -1321,7 +1372,7 @@
 
       size = $size.__int__();
       for (i = 0; i &lt; size; ++i) {
-        $i = $SC.Integer(i);
+        $i = $.Integer(i);
         $newList.add(
           $theOperand.wrapAt($i).perform($aSelector, $this.wrapAt($i))
         );
@@ -1340,20 +1391,24 @@
 
         size = $size.__int__();
         for (i = 0; i &lt; size; ++i) {
-          $i = $SC.Integer(i);
+          $i = $.Integer(i);
           $newList.add($theOperand.wrapAt($i).perform($aSelector, $this.wrapAt($i)));
         }
 
       } else if (adverb &gt; 0) {
 
-        $newList = $theOperand.collect($SC.Function(function($item) {
-          return $item.perform($aSelector, $this, $SC.Integer(adverb - 1));
+        $newList = $theOperand.collect($.Function(function() {
+          return [ function($item) {
+            return $item.perform($aSelector, $this, $.Integer(adverb - 1));
+          } ];
         }));
 
       } else {
 
-        $newList = $this.collect($SC.Function(function($item) {
-          return $theOperand.perform($aSelector, $item, $SC.Integer(adverb + 1));
+        $newList = $this.collect($.Function(function() {
+          return [ function($item) {
+            return $theOperand.perform($aSelector, $item, $.Integer(adverb + 1));
+          } ];
         }));
 
       }
@@ -1370,7 +1425,7 @@
 
       size = $size.__int__();
       for (i = 0; i &lt; size; ++i) {
-        $i = $SC.Integer(i);
+        $i = $.Integer(i);
         $newList.add($theOperand.at($i).perform($aSelector, $this));
       }
 
@@ -1382,10 +1437,14 @@
 
       $size = $theOperand.size() [&quot;*&quot;] ($this.size());
       $newList = $this.species().new($size);
-      $theOperand.do($SC.Function(function($a) {
-        $this.do($SC.Function(function($b) {
-          $newList.add($a.perform($aSelector, $b));
-        }));
+      $theOperand.do($.Function(function() {
+        return [ function($a) {
+          $this.do($.Function(function() {
+            return [ function($b) {
+              $newList.add($a.perform($aSelector, $b));
+            } ];
+          }));
+        } ];
       }));
 
       return $newList;
@@ -1400,7 +1459,7 @@
 
       size = $size.__int__();
       for (i = 0; i &lt; size; ++i) {
-        $i = $SC.Integer(i);
+        $i = $.Integer(i);
         $newList.add($theOperand.wrapAt($i).perform($aSelector, $this.wrapAt($i)));
       }
 
@@ -1416,7 +1475,7 @@
 
       size = $size.__int__();
       for (i = 0; i &lt; size; ++i) {
-        $i = $SC.Integer(i);
+        $i = $.Integer(i);
         $newList.add($theOperand.foldAt($i).perform($aSelector, $this.foldAt($i)));
       }
 
@@ -1424,20 +1483,26 @@
     }
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
-      return this.collect($SC.Function(function($item) {
-        return $aNumber.perform($aSelector, $item, $adverb);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $aNumber.perform($aSelector, $item, $adverb);
+        } ];
       }));
     };
 
     spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
-      return this.collect($SC.Function(function($item) {
-        return $aComplex.perform($aSelector, $item, $adverb);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $aComplex.perform($aSelector, $item, $adverb);
+        } ];
       }));
     };
 
     spec.asFraction = function($denominator, $fasterBetter) {
-      return this.collect($SC.Function(function($item) {
-        return $item.asFraction($denominator, $fasterBetter);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.$(&quot;asFraction&quot;, [ $denominator, $fasterBetter ] );
+        } ];
       }));
     };
 
@@ -1445,17 +1510,21 @@
     // TODO: implements asRect
 
     spec.ascii = function() {
-      return this.collect($SC.Function(function($item) {
-        return $item.ascii();
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.$(&quot;ascii&quot;);
+        } ];
       }));
     };
 
     spec.rate = function() {
       if (this.size().__int__() === 1) {
-        return this.first().rate();
+        return this.first().$(&quot;rate&quot;);
       }
-      return this.collect($SC.Function(function($item) {
-        return $item.rate();
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.$(&quot;rate&quot;);
+        } ];
       })).minItem();
     };
 
@@ -1474,169 +1543,169 @@
 
     spec.clip = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;clip&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;clip&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.wrap = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;wrap&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;wrap&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.fold = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;fold&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;fold&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.linlin = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;linlin&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;linlin&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.linexp = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;linexp&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;linexp&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.explin = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;explin&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;explin&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.expexp = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;expexp&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;expexp&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.lincurve = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;lincurve&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;lincurve&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.curvelin = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;curvelin&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;curvelin&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.bilin = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;bilin&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;bilin&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.biexp = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;biexp&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;biexp&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.moddif = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;moddif&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;moddif&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.range = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;range&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;range&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.exprange = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;exprange&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;exprange&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.curverange = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;curverange&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;curverange&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.unipolar = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;unipolar&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;unipolar&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.bipolar = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;bipolar&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;bipolar&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.lag = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;lag&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;lag&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.lag2 = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;lag2&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;lag2&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.lag3 = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;lag3&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;lag3&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.lagud = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;lagud&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;lagud&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.lag2ud = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;lag2ud&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;lag2ud&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.lag3ud = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;lag3ud&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;lag3ud&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.varlag = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;varlag&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;varlag&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.slew = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;slew&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;slew&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.blend = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;blend&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;blend&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.checkBadValues = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;checkBadValues&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;checkBadValues&quot;) ].concat(slice.call(arguments))
       );
     };
 
     spec.prune = function() {
       return this.multiChannelPerform.apply(
-        this, [ $SC.Symbol(&quot;prune&quot;) ].concat(slice.call(arguments))
+        this, [ $.Symbol(&quot;prune&quot;) ].concat(slice.call(arguments))
       );
     };
 
@@ -1644,8 +1713,10 @@
 
     spec.sort = fn(function($function) {
       if ($function === $nil) {
-        $function = $SC.Function(function($a, $b) {
-          return $a [&quot;&lt;=&quot;] ($b);
+        $function = $.Function(function() {
+          return [ function($a, $b) {
+            return $a.$(&quot;&lt;=&quot;, [ $b ]);
+          } ];
         });
       }
       this._sort($function);
@@ -1653,14 +1724,18 @@
     }, &quot;function&quot;);
 
     spec.sortBy = fn(function($key) {
-      return this.sort($SC.Function(function($a, $b) {
-        return $a.at($key) [&quot;&lt;=&quot;] ($b.at($key));
+      return this.sort($.Function(function() {
+        return [ function($a, $b) {
+          return $a.$(&quot;at&quot;, [ $key ]).$(&quot;&lt;=&quot;, [ $b.$(&quot;at&quot;, [ $key ]) ]);
+        } ];
       }));
     }, &quot;key&quot;);
 
     spec.sortMap = fn(function($function) {
-      return this.sort($SC.Function(function($a, $b) {
-        return $function.value($a) [&quot;&lt;=&quot;] ($function.value($b));
+      return this.sort($.Function(function() {
+        return [ function($a, $b) {
+          return $function.value($a).$(&quot;&lt;=&quot;, [ $function.value($b) ]);
+        } ];
       }));
     }, &quot;function&quot;);
 
@@ -1696,12 +1771,12 @@
     // TODO: implements $streamContenstsLimit
 
     spec.wrapAt = fn(function($index) {
-      $index = $index [&quot;%&quot;] (this.size());
+      $index = $index.$(&quot;%&quot;, [ this.size() ]);
       return this.at($index);
     }, &quot;index&quot;);
 
     spec.wrapPut = fn(function($index, $value) {
-      $index = $index [&quot;%&quot;] (this.size());
+      $index = $index.$(&quot;%&quot;, [ this.size() ]);
       return this.put($index, $value);
     }, &quot;index; value&quot;);
 
@@ -1715,13 +1790,15 @@
 
       once = true;
       $result = $nil;
-      this.doAdjacentPairs($SC.Function(function($a, $b) {
-        if (once) {
-          once = false;
-          $result = $operator.applyTo($a, $b);
-        } else {
-          $result = $operator.applyTo($result, $b);
-        }
+      this.doAdjacentPairs($.Function(function() {
+        return [ function($a, $b) {
+          if (once) {
+            once = false;
+            $result = $operator.applyTo($a, $b);
+          } else {
+            $result = $operator.applyTo($result, $b);
+          }
+        } ];
       }));
 
       return $result;
@@ -1731,13 +1808,15 @@
       var items, joiner;
 
       items = [];
-      this.do($SC.Function(function($item) {
-        items.push($item.__str__());
+      this.do($.Function(function() {
+        return [ function($item) {
+          items.push($item.__str__());
+        } ];
       }));
 
       joiner = ($joiner === $nil) ? &quot;&quot; : $joiner.__str__();
 
-      return $SC.String(items.join(joiner), true);
+      return $.String(items.join(joiner), true);
     }, &quot;joiner&quot;);
 
     // TODO: implements nextTimeOnGrid

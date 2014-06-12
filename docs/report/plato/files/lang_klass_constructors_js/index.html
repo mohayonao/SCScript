@@ -45,7 +45,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">120.68</p>
+      <p class="stat">120.70</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -63,7 +63,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">42.62</p>
+      <p class="stat">42.23</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
@@ -94,11 +94,11 @@
   &quot;use strict&quot;;
 
   require(&quot;./klass&quot;);
-  require(&quot;../fn&quot;);
+  require(&quot;../bytecode&quot;);
 
-  var $SC    = sc.lang.$SC;
-  var fn     = sc.lang.fn;
-  var klass  = sc.lang.klass;
+  var $       = sc.lang.$;
+  var klass   = sc.lang.klass;
+  var bytecode = sc.lang.bytecode;
 
   var $nil, $true, $false;
   var $symbols, $chars, $integers, $floats;
@@ -271,7 +271,7 @@
 
   function SCFunction() {
     this.__super__(&quot;AbstractFunction&quot;);
-    // istanbul ignore next
+    /* istanbul ignore next */
     this._ = function() {};
   }
   klass.define(&quot;Function : AbstractFunction&quot;, {
@@ -286,7 +286,7 @@
     constructor: SCRef
   });
 
-  // $SC
+  // $
   $nil      = new SCNil();
   $true     = new SCTrue();
   $false    = new SCFalse();
@@ -295,27 +295,27 @@
   $symbols  = {};
   $chars    = {};
 
-  $SC.Nil = function() {
+  $.Nil = function() {
     return $nil;
   };
 
-  $SC.Boolean = function($value) {
+  $.Boolean = function($value) {
     return $value ? $true : $false;
   };
 
-  $SC.True = function() {
+  $.True = function() {
     return $true;
   };
 
-  $SC.False = function() {
+  $.False = function() {
     return $false;
   };
 
-  $SC.Integer = function(value) {
+  $.Integer = function(value) {
     var instance;
 
     if (!global.isFinite(value)) {
-      return $SC.Float(+value);
+      return $.Float(+value);
     }
 
     value = value|0;
@@ -329,7 +329,7 @@
     return $integers[value];
   };
 
-  $SC.Float = function(value) {
+  $.Float = function(value) {
     var instance;
 
     value = +value;
@@ -343,7 +343,7 @@
     return $floats[value];
   };
 
-  $SC.Symbol = function(value) {
+  $.Symbol = function(value) {
     var instance;
     if (!$symbols.hasOwnProperty(value)) {
       instance = new SCSymbol();
@@ -353,7 +353,7 @@
     return $symbols[value];
   };
 
-  $SC.Char = function(value) {
+  $.Char = function(value) {
     var instance;
 
     value = String(value).charAt(0);
@@ -368,37 +368,37 @@
   };
 
 
-  $SC.Array = function(value, immutable) {
+  $.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
     instance.__immutable = !!immutable;
     return instance;
   };
 
-  $SC.String = function(value, mutable) {
+  $.String = function(value, mutable) {
     var instance = new SCString();
-    instance._ = String(value).split(&quot;&quot;).map($SC.Char);
+    instance._ = String(value).split(&quot;&quot;).map($.Char);
     instance.__immutable = !mutable;
     return instance;
   };
 
-  $SC.Event = function(value) {
+  $.Event = function(value) {
     var instance, i, imax, j;
     i = imax = j = value;
-    instance = $SC(&quot;Event&quot;).new();
+    instance = $(&quot;Event&quot;).new();
     for (i = j = 0, imax = value.length &gt;&gt; 1; i &lt; imax; ++i) {
       instance.put(value[j++], value[j++]);
     }
     return instance;
   };
 
-  $SC.Function = function(value, def) {
+  $.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = def ? fn(value, def) : value;
+    instance._ = bytecode.create(value, def);
     return instance;
   };
 
-  $SC.Ref = function(value) {
+  $.Ref = function(value) {
     var instance = new SCRef();
     instance._$value = value;
     return instance;

@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/classlib/Core/Nil.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(99 / 99)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(100 / 100)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(4 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(25 / 25)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(26 / 26)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(99 / 99)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(100 / 100)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -389,7 +389,9 @@
 171
 172
 173
-174</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+174
+175
+176</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -488,6 +490,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -497,11 +501,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
@@ -509,9 +508,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">7</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">8</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -568,8 +572,8 @@
   require("./Object");
 &nbsp;
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 &nbsp;
   sc.lang.klass.refine("Nil", function(spec, utils) {
     var $nil = utils.$nil;
@@ -638,7 +642,7 @@
     spec.rejectAs = utils.nop;
 &nbsp;
     spec.dependants = function() {
-      return $SC("IdentitySet").new();
+      return $("IdentitySet").new();
     };
 &nbsp;
     spec.changed = utils.nop;
@@ -659,32 +663,34 @@
       if ($clock === $nil) {
         return $clock;
       }
-      return $SC.Function(function() {
-        return $clock.nextTimeOnGrid();
+      return $.Function(function() {
+        return [ function() {
+          return $clock.$("nextTimeOnGrid");
+        } ];
       });
     }, "clock");
 &nbsp;
     spec.asQuant = function() {
-      return $SC("Quant").default();
+      return $("Quant").default();
     };
 &nbsp;
     spec.swapThisGroup = utils.nop;
     spec.performMsg = utils.nop;
 &nbsp;
     spec.printOn = fn(function($stream) {
-      $stream.putAll($SC.String("nil"));
+      $stream.putAll($.String("nil"));
       return this;
     }, "stream");
 &nbsp;
     spec.storeOn = fn(function($stream) {
-      $stream.putAll($SC.String("nil"));
+      $stream.putAll($.String("nil"));
       return this;
     }, "stream");
 &nbsp;
     spec.matchItem = utils.alwaysReturn$true;
 &nbsp;
     spec.add = fn(function($value) {
-      return $SC.Array([ $value ]);
+      return $.Array([ $value ]);
     }, "value");
 &nbsp;
     spec.addAll = fn(function($array) {
@@ -696,7 +702,7 @@
     };
 &nbsp;
     spec.asCollection = function() {
-      return $SC.Array();
+      return $.Array();
     };
 &nbsp;
     spec.remove = utils.nop;
@@ -712,7 +718,7 @@
       if (functions.length &lt;= 1) {
         return functions[0];
       }
-      return $SC("FunctionList").new($SC.Array(functions));
+      return $("FunctionList").new($.Array(functions));
     };
 &nbsp;
     spec.removeFunc = utils.nop;
@@ -726,7 +732,7 @@
     spec.archiveAsCompileString = utils.alwaysReturn$true;
 &nbsp;
     spec.asSpec = function() {
-      return $SC("ControlSpec").new();
+      return $("ControlSpec").new();
     };
 &nbsp;
     spec.superclassesDo = utils.nop;
@@ -740,7 +746,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon May 26 2014 07:17:48 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jun 13 2014 07:41:01 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

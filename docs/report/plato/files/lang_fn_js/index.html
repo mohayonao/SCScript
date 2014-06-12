@@ -93,45 +93,45 @@
     <textarea id="file-source" class="col-md-12">(function(sc) {
   &quot;use strict&quot;;
 
-  require(&quot;./dollarSC&quot;);
+  require(&quot;./dollar&quot;);
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   var _getDefaultValue = function(value) {
     var ch;
 
     switch (value) {
     case &quot;nil&quot;:
-      return $SC.Nil();
+      return $.Nil();
     case &quot;true&quot;:
-      return $SC.True();
+      return $.True();
     case &quot;false&quot;:
-      return $SC.False();
+      return $.False();
     case &quot;inf&quot;:
-      return $SC.Float(Infinity);
+      return $.Float(Infinity);
     case &quot;-inf&quot;:
-      return $SC.Float(-Infinity);
+      return $.Float(-Infinity);
     }
 
     ch = value.charAt(0);
     switch (ch) {
     case &quot;$&quot;:
-      return $SC.Char(value.charAt(1));
+      return $.Char(value.charAt(1));
     case &quot;\\&quot;:
-      return $SC.Symbol(value.substr(1));
+      return $.Symbol(value.substr(1));
     }
 
     if (value.indexOf(&quot;.&quot;) !== -1) {
-      return $SC.Float(+value);
+      return $.Float(+value);
     }
 
-    return $SC.Integer(+value);
+    return $.Integer(+value);
   };
 
   var getDefaultValue = function(value) {
     if (value.charAt(0) === &quot;[&quot;) {
-      return $SC.Array(value.slice(1, -2).split(&quot;,&quot;).map(function(value) {
+      return $.Array(value.slice(1, -2).split(&quot;,&quot;).map(function(value) {
         return _getDefaultValue(value.trim());
       }));
     }
@@ -169,7 +169,7 @@
       copy(args, given, Math.min(argNames.length, given.length));
 
       if (remain) {
-        args.push($SC.Array(given.slice(argNames.length)));
+        args.push($.Array(given.slice(argNames.length)));
       }
 
       return func.apply(this, args);

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">92.77</p>
+      <p class="stat">94.30</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">706</p>
+      <p class="stat">711</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">188.51</p>
+      <p class="stat">189.02</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">8.50</p>
+      <p class="stat">8.53</p>
     </div>
   </div>
 </div>
@@ -96,15 +96,14 @@
   require(&quot;./ArrayedCollection&quot;);
 
   var slice = [].slice;
+  var $     = sc.lang.$;
   var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
   var rand  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine(&quot;Array&quot;, function(spec, utils) {
-    var BOOL    = utils.BOOL;
     var $nil    = utils.$nil;
-    var SCArray = $SC(&quot;Array&quot;);
+    var SCArray = $(&quot;Array&quot;);
 
     spec.$newClear = fn(function($indexedSize) {
       var array, indexedSize, i;
@@ -115,16 +114,16 @@
         array[i] = $nil;
       }
 
-      return $SC.Array(array);
+      return $.Array(array);
     }, &quot;indexedSize=0&quot;);
 
     spec.$with = function() {
-      return $SC.Array(slice.call(arguments));
+      return $.Array(slice.call(arguments));
     };
 
     spec.reverse = function() {
       // &lt;-- _ArrayReverse --&gt;
-      return $SC.Array(this._.slice().reverse());
+      return $.Array(this._.slice().reverse());
     };
 
     spec.scramble = function() {
@@ -142,7 +141,7 @@
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.mirror = function() {
@@ -152,7 +151,7 @@
       // &lt;-- _ArrayMirror --&gt;
       size = raw.length * 2 - 1;
       if (size &lt; 2) {
-        return $SC.Array(raw.slice(0));
+        return $.Array(raw.slice(0));
       }
 
       a = new Array(size);
@@ -163,7 +162,7 @@
         a[i] = raw[j];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.mirror1 = function() {
@@ -173,7 +172,7 @@
       // &lt;-- _ArrayMirror1 --&gt;
       size = raw.length * 2 - 2;
       if (size &lt; 2) {
-        return $SC.Array(raw.slice(0));
+        return $.Array(raw.slice(0));
       }
 
       a = new Array(size);
@@ -184,7 +183,7 @@
         a[i] = raw[j];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.mirror2 = function() {
@@ -194,7 +193,7 @@
       // &lt;-- _ArrayMirror2 --&gt;
       size = raw.length * 2;
       if (size &lt; 2) {
-        return $SC.Array(raw.slice(0));
+        return $.Array(raw.slice(0));
       }
 
       a = new Array(size);
@@ -205,7 +204,7 @@
         a[i] = raw[j];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.stutter = fn(function($n) {
@@ -221,7 +220,7 @@
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;n=2&quot;);
 
     spec.rotate = fn(function($n) {
@@ -243,7 +242,7 @@
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;n=1&quot;);
 
     spec.pyramid = fn(function($patternType) {
@@ -369,7 +368,7 @@
         break;
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, &quot;n=1&quot;);
 
     spec.pyramidg = fn(function($patternType) {
@@ -383,75 +382,75 @@
       switch (patternType) {
       case 1:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 2:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         break;
       case 3:
         for (i = lastIndex; i &gt;= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 4:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 5:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         for (i = lastIndex - 1; i &gt;= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 6:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         for (i = lastIndex - 1; i &gt;= 0; --i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         break;
       case 7:
         for (i = lastIndex; i &gt;= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         for (i = 1; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 8:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         for (i = lastIndex - 1; i &gt;= 0; --i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 9:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         for (i = 1; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 10:
         for (i = 0; i &lt;= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         for (i = lastIndex - 1; i &gt;= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       }
 
-      return $SC.Array(list);
+      return $.Array(list);
     }, &quot;n=1&quot;);
 
     spec.sputter = fn(function($probability, $maxlen) {
@@ -469,7 +468,7 @@
         }
       }
 
-      return $SC.Array(list);
+      return $.Array(list);
     }, &quot;probability=0.25; maxlen=100&quot;);
 
     spec.lace = fn(function($length) {
@@ -478,7 +477,7 @@
       var a, i, $item;
 
       if ($length === $nil) {
-        $length = $SC.Integer(wrap);
+        $length = $.Integer(wrap);
       }
 
       length = $length.__int__();
@@ -493,7 +492,7 @@
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;length&quot;);
 
     spec.permute = fn(function($nthPermutation) {
@@ -515,7 +514,7 @@
         obj2[j] = $item;
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, &quot;nthPermutation=0&quot;);
 
     spec.allTuples = fn(function($maxTuples) {
@@ -549,10 +548,10 @@
             obj3[j] = obj1[j];
           }
         }
-        obj2[i] = $SC.Array(obj3);
+        obj2[i] = $.Array(obj3);
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, &quot;maxTuples=16384&quot;);
 
     spec.wrapExtend = fn(function($size) {
@@ -569,7 +568,7 @@
         a = raw.slice(0, size);
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;size&quot;);
 
     spec.foldExtend = fn(function($size) {
@@ -587,7 +586,7 @@
         a = raw.slice(0, size);
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;size&quot;);
 
     spec.clipExtend = fn(function($size) {
@@ -608,7 +607,7 @@
         a = raw.slice(0, size);
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;size&quot;);
 
     spec.slide = fn(function($windowLength, $stepSize) {
@@ -632,7 +631,7 @@
         }
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, &quot;windowLength=3; stepSize=1&quot;);
 
     spec.containsSeqColl = function() {
@@ -640,12 +639,12 @@
       var i, imax;
 
       for (i = 0, imax = raw.length; i &lt; imax; ++i) {
-        if (BOOL(raw[i].isSequenceableCollection())) {
-          return $SC.True();
+        if (raw[i].isSequenceableCollection().__bool__()) {
+          return $.True();
         }
       }
 
-      return $SC.False();
+      return $.False();
     };
 
     spec.unlace = fn(function($clumpSize, $numChan) {
@@ -666,13 +665,13 @@
               b[j + k] = raw[i * numChan + k + j * clumpSize];
             }
           }
-          a[i] = $SC.Array(b);
+          a[i] = $.Array(b);
         }
       } else {
         a = [];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;clumpSize=2; numChan=1&quot;);
 
     // TODO: implements interlace
@@ -696,7 +695,7 @@
       size = obj1.length;
 
       if (size === 0) {
-        obj2[0] = $SC.Array([]);
+        obj2[0] = $.Array([]);
       } else {
         for (i = 0; i &lt; maxSize; ++i) {
           obj3 = new Array(size);
@@ -707,11 +706,11 @@
               obj3[j] = obj1[j];
             }
           }
-          obj2[i] = $SC.Array(obj3);
+          obj2[i] = $.Array(obj3);
         }
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     };
 
     // TODO: implements envirPairs
@@ -719,8 +718,8 @@
     spec.shift = fn(function($n, $filler) {
       var $fill, $remain;
 
-      $fill = SCArray.fill($n.abs(), $filler);
-      $remain = this.drop($n.neg());
+      $fill = SCArray.fill($n.$(&quot;abs&quot;), $filler);
+      $remain = this.drop($n.$(&quot;neg&quot;));
 
       if ($n &lt; 0) {
         return $remain [&quot;++&quot;] ($fill);
@@ -746,29 +745,35 @@
             elemArr.push(raw[j]);
           }
         }
-        result[i] = $SC.Array(elemArr);
+        result[i] = $.Array(elemArr);
       }
 
-      return $SC.Array(result);
+      return $.Array(result);
     };
 
     // TODO: implements source
 
     spec.asUGenInput = function($for) {
-      return this.collect($SC.Function(function($_) {
-        return $_.asUGenInput($for);
+      return this.collect($.Function(function() {
+        return [ function($_) {
+          return $_.asUGenInput($for);
+        } ];
       }));
     };
 
     spec.asAudioRateInput = function($for) {
-      return this.collect($SC.Function(function($_) {
-        return $_.asAudioRateInput($for);
+      return this.collect($.Function(function() {
+        return [ function($_) {
+          return $_.asAudioRateInput($for);
+        } ];
       }));
     };
 
     spec.asControlInput = function() {
-      return this.collect($SC.Function(function($_) {
-        return $_.asControlInput();
+      return this.collect($.Function(function() {
+        return [ function($_) {
+          return $_.asControlInput();
+        } ];
       }));
     };
 
@@ -787,7 +792,7 @@
     // TODO: implements fork
 
     spec.madd = fn(function($mul, $add) {
-      return $SC(&quot;MulAdd&quot;).new(this, $mul, $add);
+      return $(&quot;MulAdd&quot;).new(this, $mul, $add);
     }, &quot;mul=1.0; add=0.0&quot;);
 
     // TODO: implements asRawOSC

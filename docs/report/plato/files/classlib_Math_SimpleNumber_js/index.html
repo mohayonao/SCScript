@@ -45,7 +45,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.44</p>
+      <p class="stat">126.29</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">85.33</p>
+      <p class="stat">89.34</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">8.45</p>
+      <p class="stat">8.57</p>
     </div>
   </div>
 </div>
@@ -95,8 +95,8 @@
 
   require(&quot;./Number&quot;);
 
-  var fn   = sc.lang.fn;
-  var $SC  = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var rand = sc.libs.random;
 
   function prOpSimpleNumber(selector, func) {
@@ -106,16 +106,16 @@
       switch (tag) {
       case sc.C.TAG_INT:
       case sc.C.TAG_FLOAT:
-        return $SC.Boolean(func(this._, $aNumber._));
+        return $.Boolean(func(this._, $aNumber._));
       }
 
       if ($aNumber.isSequenceableCollection().valueOf()) {
         return $aNumber.performBinaryOpOnSimpleNumber(
-          $SC.Symbol(selector), this, $adverb
+          $.Symbol(selector), this, $adverb
         );
       }
 
-      return $SC.False();
+      return $.False();
     };
   }
 
@@ -123,9 +123,9 @@
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
     var $int_1 = utils.$int_1;
-    var SCArray = $SC(&quot;Array&quot;);
+    var SCArray = $(&quot;Array&quot;);
 
-    spec.__newFrom__ = $SC.Float;
+    spec.__newFrom__ = $.Float;
 
     spec.__bool__ = function() {
       return this._ !== 0;
@@ -151,7 +151,7 @@
     };
 
     spec.isValidUGenInput = function() {
-      return $SC.Boolean(!isNaN(this._));
+      return $.Boolean(!isNaN(this._));
     };
 
     spec.numChannels = utils.alwaysReturn$int_1;
@@ -161,7 +161,7 @@
     };
 
     spec.angle = function() {
-      return $SC.Float(this._ &gt;= 0 ? 0 : Math.PI);
+      return $.Float(this._ &gt;= 0 ? 0 : Math.PI);
     };
 
     spec.neg = function() {
@@ -207,99 +207,99 @@
     };
 
     spec.sqrt = function() {
-      return $SC.Float(Math.sqrt(this._));
+      return $.Float(Math.sqrt(this._));
     };
 
     spec.exp = function() {
-      return $SC.Float(Math.exp(this._));
+      return $.Float(Math.exp(this._));
     };
 
     spec.reciprocal = function() {
-      return $SC.Float(1 / this._);
+      return $.Float(1 / this._);
     };
 
     spec.midicps = function() {
-      return $SC.Float(
+      return $.Float(
         440 * Math.pow(2, (this._ - 69) * 1/12)
       );
     };
 
     spec.cpsmidi = function() {
-      return $SC.Float(
+      return $.Float(
         Math.log(Math.abs(this._) * 1/440) * Math.LOG2E * 12 + 69
       );
     };
 
     spec.midiratio = function() {
-      return $SC.Float(
+      return $.Float(
         Math.pow(2, this._ * 1/12)
       );
     };
 
     spec.ratiomidi = function() {
-      return $SC.Float(
+      return $.Float(
         Math.log(Math.abs(this._)) * Math.LOG2E * 12
       );
     };
 
     spec.ampdb = function() {
-      return $SC.Float(
+      return $.Float(
         Math.log(this._) * Math.LOG10E * 20
       );
     };
 
     spec.dbamp = function() {
-      return $SC.Float(
+      return $.Float(
         Math.pow(10, this._ * 0.05)
       );
     };
 
     spec.octcps = function() {
-      return $SC.Float(
+      return $.Float(
         440 * Math.pow(2, this._ - 4.75)
       );
     };
 
     spec.cpsoct = function() {
-      return $SC.Float(
+      return $.Float(
         Math.log(Math.abs(this._) * 1/440) * Math.LOG2E + 4.75
       );
     };
 
     spec.log = function() {
-      return $SC.Float(Math.log(this._));
+      return $.Float(Math.log(this._));
     };
 
     spec.log2 = function() {
-      return $SC.Float(Math.log(Math.abs(this._)) * Math.LOG2E);
+      return $.Float(Math.log(Math.abs(this._)) * Math.LOG2E);
     };
 
     spec.log10 = function() {
-      return $SC.Float(Math.log(this._) * Math.LOG10E);
+      return $.Float(Math.log(this._) * Math.LOG10E);
     };
 
     spec.sin = function() {
-      return $SC.Float(Math.sin(this._));
+      return $.Float(Math.sin(this._));
     };
 
     spec.cos = function() {
-      return $SC.Float(Math.cos(this._));
+      return $.Float(Math.cos(this._));
     };
 
     spec.tan = function() {
-      return $SC.Float(Math.tan(this._));
+      return $.Float(Math.tan(this._));
     };
 
     spec.asin = function() {
-      return $SC.Float(Math.asin(this._));
+      return $.Float(Math.asin(this._));
     };
 
     spec.acos = function() {
-      return $SC.Float(Math.acos(this._));
+      return $.Float(Math.acos(this._));
     };
 
     spec.atan = function() {
-      return $SC.Float(Math.atan(this._));
+      return $.Float(Math.atan(this._));
     };
 
     function _sinh(a) {
@@ -307,7 +307,7 @@
     }
 
     spec.sinh = function() {
-      return $SC.Float(_sinh(this._));
+      return $.Float(_sinh(this._));
     };
 
     function _cosh(a) {
@@ -315,11 +315,11 @@
     }
 
     spec.cosh = function() {
-      return $SC.Float(_cosh(this._));
+      return $.Float(_cosh(this._));
     };
 
     spec.tanh = function() {
-      return $SC.Float(_sinh(this._) / _cosh(this._));
+      return $.Float(_sinh(this._) / _cosh(this._));
     };
 
     spec.rand = function() {
@@ -353,42 +353,42 @@
     };
 
     spec.distort = function() {
-      return $SC.Float(
+      return $.Float(
         this._ / (1 + Math.abs(this._))
       );
     };
 
     spec.softclip = function() {
       var a = this._, abs_a = Math.abs(a);
-      return $SC.Float(abs_a &lt;= 0.5 ? a : (abs_a - 0.25) / a);
+      return $.Float(abs_a &lt;= 0.5 ? a : (abs_a - 0.25) / a);
     };
 
     spec.coin = function() {
-      return $SC.Boolean(rand.next() &lt; this._);
+      return $.Boolean(rand.next() &lt; this._);
     };
 
     spec.isPositive = function() {
-      return $SC.Boolean(this._ &gt;= 0);
+      return $.Boolean(this._ &gt;= 0);
     };
 
     spec.isNegative = function() {
-      return $SC.Boolean(this._ &lt; 0);
+      return $.Boolean(this._ &lt; 0);
     };
 
     spec.isStrictlyPositive = function() {
-      return $SC.Boolean(this._ &gt; 0);
+      return $.Boolean(this._ &gt; 0);
     };
 
     spec.isNaN = function() {
-      return $SC.Boolean(isNaN(this._));
+      return $.Boolean(isNaN(this._));
     };
 
     spec.asBoolean = function() {
-      return $SC.Boolean(this._ &gt; 0);
+      return $.Boolean(this._ &gt; 0);
     };
 
     spec.booleanValue = function() {
-      return $SC.Boolean(this._ &gt; 0);
+      return $.Boolean(this._ &gt; 0);
     };
 
     spec.binaryValue = function() {
@@ -398,58 +398,58 @@
     spec.rectWindow = function() {
       var a = this._;
       if (a &lt; 0 || 1 &lt; a) {
-        return $SC.Float(0);
+        return $.Float(0);
       }
-      return $SC.Float(1);
+      return $.Float(1);
     };
 
     spec.hanWindow = function() {
       var a = this._;
       if (a &lt; 0 || 1 &lt; a) {
-        return $SC.Float(0);
+        return $.Float(0);
       }
-      return $SC.Float(0.5 - 0.5 * Math.cos(a * 2 * Math.PI));
+      return $.Float(0.5 - 0.5 * Math.cos(a * 2 * Math.PI));
     };
 
     spec.welWindow = function() {
       var a = this._;
       if (a &lt; 0 || 1 &lt; a) {
-        return $SC.Float(0);
+        return $.Float(0);
       }
-      return $SC.Float(Math.sin(a * Math.PI));
+      return $.Float(Math.sin(a * Math.PI));
     };
 
     spec.triWindow = function() {
       var a = this._;
       if (a &lt; 0 || 1 &lt; a) {
-        return $SC.Float(0);
+        return $.Float(0);
       }
       if (a &lt; 0.5) {
-        return $SC.Float(2 * a);
+        return $.Float(2 * a);
       }
-      return $SC.Float(-2 * a + 2);
+      return $.Float(-2 * a + 2);
     };
 
     spec.scurve = function() {
       var a = this._;
       if (a &lt;= 0) {
-        return $SC.Float(0);
+        return $.Float(0);
       }
       if (1 &lt;= a) {
-        return $SC.Float(1);
+        return $.Float(1);
       }
-      return $SC.Float(a * a * (3 - 2 * a));
+      return $.Float(a * a * (3 - 2 * a));
     };
 
     spec.ramp = function() {
       var a = this._;
       if (a &lt;= 0) {
-        return $SC.Float(0);
+        return $.Float(0);
       }
       if (1 &lt;= a) {
-        return $SC.Float(1);
+        return $.Float(1);
       }
-      return $SC.Float(a);
+      return $.Float(a);
     };
 
     // +: implemented by subclass
@@ -466,7 +466,7 @@
     // bitXor: implemented by subclass
 
     spec.bitTest = function($bit) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.bitAnd($int_1.leftShift($bit)).valueOf() !== 0
       );
     };
@@ -502,11 +502,11 @@
     // exprand : implemented by subclass
 
     spec[&quot;==&quot;] = function($aNumber) {
-      return $SC.Boolean(this._ === $aNumber._);
+      return $.Boolean(this._ === $aNumber._);
     };
 
     spec[&quot;!=&quot;] = function($aNumber) {
-      return $SC.Boolean(this._ !== $aNumber._);
+      return $.Boolean(this._ !== $aNumber._);
     };
 
     spec[&quot;&lt;&quot;] = prOpSimpleNumber(&quot;&lt;&quot;, function(a, b) {
@@ -527,22 +527,22 @@
     }, &quot;that; precision=0.0001&quot;);
 
     spec.asInteger = function() {
-      return $SC.Integer(this._);
+      return $.Integer(this._);
     };
 
     spec.asFloat = function() {
-      return $SC.Float(this._);
+      return $.Float(this._);
     };
 
     // TODO: implements asComplex
     // TODO: implements asRect
 
     spec.degrad = function() {
-      return $SC.Float(this._ * Math.PI / 180);
+      return $.Float(this._ * Math.PI / 180);
     };
 
     spec.raddeg = function() {
-      return $SC.Float(this._ * 180 / Math.PI);
+      return $.Float(this._ * 180 / Math.PI);
     };
 
     // TODO: implements performBinaryOpOnSimpleNumber
@@ -550,26 +550,26 @@
     // TODO: implements performBinaryOpOnSignal
 
     spec.nextPowerOfTwo = function() {
-      return $SC.Float(
+      return $.Float(
         Math.pow(2, Math.ceil(Math.log(this._) / Math.log(2)))
       );
     };
 
     spec.nextPowerOf = fn(function($base) {
       return $base.pow(
-        (this.log() [&quot;/&quot;] ($base.log())).ceil()
+        (this.log() [&quot;/&quot;] ($base.$(&quot;log&quot;))).ceil()
       );
     }, &quot;base&quot;);
 
     spec.nextPowerOfThree = function() {
-      return $SC.Float(
+      return $.Float(
         Math.pow(3, Math.ceil(Math.log(this._) / Math.log(3)))
       );
     };
 
     spec.previousPowerOf = fn(function($base) {
       return $base.pow(
-        (this.log() [&quot;/&quot;] ($base.log())).ceil().__dec__()
+        (this.log() [&quot;/&quot;] ($base.$(&quot;log&quot;))).ceil().__dec__()
       );
     }, &quot;base&quot;);
 
@@ -580,7 +580,7 @@
       $diff = $round [&quot;-&quot;] (this);
 
       if ($diff.abs() &lt; $tolerance) {
-        return this [&quot;+&quot;] ($strength [&quot;*&quot;] ($diff));
+        return this [&quot;+&quot;] ($strength.$(&quot;*&quot;, [ $diff ]));
       }
 
       return this;
@@ -654,7 +654,7 @@
           $res = this.linlin($inMin, $inMax, $outMin, $outMax);
         } else {
           $grow = $curve.exp();
-          $a = $outMax [&quot;-&quot;] ($outMin) [&quot;/&quot;] ($SC.Float(1.0) [&quot;-&quot;] ($grow));
+          $a = $outMax [&quot;-&quot;] ($outMin) [&quot;/&quot;] ($.Float(1.0) [&quot;-&quot;] ($grow));
           $b = $outMin [&quot;+&quot;] ($a);
           $scaled = (this [&quot;-&quot;] ($inMin)) [&quot;/&quot;] ($inMax [&quot;-&quot;] ($inMin));
 
@@ -675,7 +675,7 @@
           $res = this.linlin($inMin, $inMax, $outMin, $outMax);
         } else {
           $grow = $curve.exp();
-          $a = $inMax [&quot;-&quot;] ($inMin) [&quot;/&quot;] ($SC.Float(1.0) [&quot;-&quot;] ($grow));
+          $a = $inMax [&quot;-&quot;] ($inMin) [&quot;/&quot;] ($.Float(1.0) [&quot;-&quot;] ($grow));
           $b = $inMin [&quot;+&quot;] ($a);
 
           $res = ((($b [&quot;-&quot;] (this)) [&quot;/&quot;] ($a)).log()
@@ -693,9 +693,9 @@
 
       if ($res === null) {
         if (this &gt;= $inCenter) {
-          $res = this.linlin($inCenter, $inMax, $outCenter, $outMax, $SC.Symbol(&quot;none&quot;));
+          $res = this.linlin($inCenter, $inMax, $outCenter, $outMax, $.Symbol(&quot;none&quot;));
         } else {
-          $res = this.linlin($inMin, $inCenter, $outMin, $outCenter, $SC.Symbol(&quot;none&quot;));
+          $res = this.linlin($inMin, $inCenter, $outMin, $outCenter, $.Symbol(&quot;none&quot;));
         }
       }
 
@@ -709,9 +709,9 @@
 
       if ($res === null) {
         if (this &gt;= $inCenter) {
-          $res = this.explin($inCenter, $inMax, $outCenter, $outMax, $SC.Symbol(&quot;none&quot;));
+          $res = this.explin($inCenter, $inMax, $outCenter, $outMax, $.Symbol(&quot;none&quot;));
         } else {
-          $res = this.explin($inMin, $inCenter, $outMin, $outCenter, $SC.Symbol(&quot;none&quot;));
+          $res = this.explin($inMin, $inCenter, $outMin, $outCenter, $.Symbol(&quot;none&quot;));
         }
       }
 
@@ -722,9 +722,9 @@
       var $diff, $modhalf;
 
       $diff = this.absdif($aNumber) [&quot;%&quot;] ($mod);
-      $modhalf = $mod [&quot;*&quot;] ($SC.Float(0.5));
+      $modhalf = $mod.$(&quot;*&quot;, [ $.Float(0.5) ]);
 
-      return $modhalf [&quot;-&quot;] ($diff.absdif($modhalf));
+      return $modhalf.$(&quot;-&quot;, [ $diff.absdif($modhalf) ]);
     }, &quot;aNumber=0.0; mod=1.0&quot;);
 
     spec.lcurve = fn(function($a, $m, $n, $tau) {
@@ -734,33 +734,33 @@
 
       if ($tau.__num__() === 1.0) {
         // a * (m * exp(x) + 1) / (n * exp(x) + 1)
-        return $a [&quot;*&quot;] (
-          $m [&quot;*&quot;] ($x.exp()).__inc__()
-        ) [&quot;/&quot;] (
-          $n [&quot;*&quot;] ($x.exp()).__inc__()
-        );
+        return $a.$(&quot;*&quot;, [
+          $m.$(&quot;*&quot;, [ $x.exp() ]).__inc__()
+        ]).$(&quot;/&quot;, [
+          $n.$(&quot;*&quot;, [ $x.exp() ]).__inc__()
+        ]);
       } else {
         $rTau = $tau.reciprocal();
-        return $a [&quot;*&quot;] (
-          $m [&quot;*&quot;] ($x.exp()) [&quot;*&quot;] ($rTau).__inc__()
-        ) [&quot;/&quot;] (
-          $n [&quot;*&quot;] ($x.exp()) [&quot;*&quot;] ($rTau).__inc__()
-        );
+        return $a.$(&quot;*&quot;, [
+          $m.$(&quot;*&quot;, [ $x.exp() ]) [&quot;*&quot;] ($rTau).__inc__()
+        ]).$(&quot;/&quot;, [
+          $n.$(&quot;*&quot;, [ $x.exp() ]) [&quot;*&quot;] ($rTau).__inc__()
+        ]);
       }
     }, &quot;a=1.0; m=0.0; n=1.0; tau=1.0&quot;);
 
     spec.gauss = fn(function($standardDeviation) {
       // ^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
-      return ($SC.Float(-2.0) [&quot;*&quot;] ($SC.Float(1.0).rand().log()).sqrt() [&quot;*&quot;] (
-        $SC.Float(2 * Math.PI).rand().sin()
+      return ($.Float(-2.0) [&quot;*&quot;] ($.Float(1.0).rand().log()).sqrt() [&quot;*&quot;] (
+        $.Float(2 * Math.PI).rand().sin()
       ) [&quot;*&quot;] ($standardDeviation)) [&quot;+&quot;] (this);
     }, &quot;standardDeviation&quot;);
 
     spec.gaussCurve = fn(function($a, $b, $c) {
       // ^a * (exp(squared(this - b) / (-2.0 * squared(c))))
-      return $a [&quot;*&quot;] ((
-        (this [&quot;-&quot;] ($b).squared()) [&quot;/&quot;] ($SC.Float(-2.0) [&quot;*&quot;] ($c.squared()))
-      ).exp());
+      return $a.$(&quot;*&quot;, [ ((
+        (this [&quot;-&quot;] ($b).squared()) [&quot;/&quot;] ($.Float(-2.0) [&quot;*&quot;] ($c.$(&quot;squared&quot;)))
+      ).exp()) ]);
     }, &quot;a=1.0; b=0.0; c=1.0&quot;);
 
     // TODO: implements asPoint
@@ -776,14 +776,14 @@
     // TODO: implements storeOn
 
     spec.rate = function() {
-      return $SC.Symbol(&quot;scalar&quot;);
+      return $.Symbol(&quot;scalar&quot;);
     };
 
     spec.asAudioRateInput = function() {
       if (this._ === 0) {
-        return $SC(&quot;Silent&quot;).ar();
+        return $(&quot;Silent&quot;).ar();
       }
-      return $SC(&quot;DC&quot;).ar(this);
+      return $(&quot;DC&quot;).ar(this);
     };
 
     spec.madd = fn(function($mul, $add) {
@@ -818,7 +818,7 @@
       step = $step.__num__();
       size = (Math.floor((last - this._) / step + 0.001)|0) + 1;
 
-      return SCArray.series($SC.Integer(size), this, $step);
+      return SCArray.series($.Integer(size), this, $step);
     }, &quot;second; last&quot;);
 
     // TODO: implements seriesIter

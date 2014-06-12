@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">112.67</p>
+      <p class="stat">112.82</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">850</p>
+      <p class="stat">813</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">104.16</p>
+      <p class="stat">103.05</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">9.05</p>
+      <p class="stat">8.72</p>
     </div>
   </div>
 </div>
@@ -106,31 +106,23 @@
   var precompile = compiler.precompile;
 
   var Scope = compiler.scope({
-    add_delegate: function(stmt, id, indent, peek, scope) {
+    add_delegate: function(stmt, id, indent, peek, opts) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
       } else {
         this._appendVariable(stmt, id);
       }
-      if (scope) {
+      if (opts.scope) {
         peek.declared[id] = true;
       }
     },
     _addNewVariableStatement: function(stmt, id, indent) {
       stmt.head.push(indent, &quot;var &quot;);
       stmt.vars.push($id(id));
-      if (id.charAt(0) !== &quot;_&quot;) {
-        stmt.vars.push(&quot; = $SC.Nil()&quot;);
-      }
       stmt.tail.push(&quot;;&quot;, &quot;\n&quot;);
     },
     _appendVariable: function(stmt, id) {
-      stmt.vars.push(
-        &quot;, &quot;, $id(id)
-      );
-      if (id.charAt(0) !== &quot;_&quot;) {
-        stmt.vars.push(&quot; = $SC.Nil()&quot;);
-      }
+      stmt.vars.push(&quot;, &quot;, $id(id));
     },
     begin: function(stream, args) {
       var declared = this.getDeclaredVariable();
@@ -154,7 +146,7 @@
     begin_ref: function(scope) {
       var refId   = (this._refId | 0);
       var refName = &quot;_ref&quot; + refId;
-      this.add(&quot;var&quot;, refName, scope);
+      this.add(&quot;var&quot;, refName, { scope: scope, init: false });
       this._refId = refId + 1;
       return refName;
     },
@@ -227,7 +219,7 @@
 
   CodeGen.prototype.withFunction = function(args, fn) {
     var result;
-    var argItems, base, body;
+    var argItems, base;
 
     argItems = this.stitchWith(args, &quot;, &quot;, function(item) {
       return this.generate(item);
@@ -239,15 +231,7 @@
     this.base += &quot;  &quot;;
 
     this.scope.begin(result, args);
-
-    body = fn.call(this);
-
-    if (body.length) {
-      result.push(body);
-    } else {
-      result.push(this.base, &quot;return $SC.Nil();&quot;);
-    }
-
+    result.push(fn.call(this));
     this.scope.end();
 
     this.base = base;
@@ -303,21 +287,14 @@
   };
 
   CodeGen.prototype.stitchWith = function(elements, bond, fn) {
-    var result, item;
-    var count, i, imax;
+    var result, i, imax;
 
     result = [];
-    for (i = count = 0, imax = elements.length; i &lt; imax; ++i) {
-      if (count) {
+    for (i = 0, imax = elements.length; i &lt; imax; ++i) {
+      if (i) {
         result.push(bond);
       }
-
-      item = fn.call(this, elements[i], i);
-
-      if (typeof item !== &quot;undefined&quot;) {
-        result.push(item);
-        count += 1;
-      }
+      result.push(fn.call(this, elements[i], i));
     }
 
     return result;
@@ -375,14 +352,14 @@
       result = [
         this.stitchWith(elements, &quot;,\n&quot;, function(item, i) {
           return this.addIndent(this._Assign(
-            item, operator, ref + &quot;.at($SC.Integer(&quot; + i + &quot;))&quot;
+            item, operator, ref + &quot;.$(&#039;at&#039;, [ $.Integer(&quot; + i + &quot;) ])&quot;
           ));
         })
       ];
 
       if (node.remain) {
         result.push(&quot;,\n&quot;, this.addIndent(this._Assign(
-          node.remain, operator, ref + &quot;.copyToEnd($SC.Integer(&quot; + lastUsedIndex + &quot;))&quot;
+          node.remain, operator, ref + &quot;.$(&#039;copyToEnd&#039;, [ $.Integer(&quot; + lastUsedIndex + &quot;) ])&quot;
         )));
       }
 
@@ -427,31 +404,24 @@
 
   CodeGen.prototype._EqualityOperator = function(node) {
     return [
-      &quot;$SC.Boolean(&quot;,
+      &quot;$.Boolean(&quot;,
       this.generate(node.left), &quot; &quot; + node.operator + &quot; &quot;, this.generate(node.right),
       &quot;)&quot;
     ];
   };
 
   CodeGen.prototype._BinaryExpression = function(node) {
-    var result, operator, ch;
+    var result;
 
-    result   = [ this.generate(node.left) ];
-    operator = node.operator;
+    result = [
+      this.generate(node.left),
+      &quot;.$(&#039;&quot; + node.operator + &quot;&#039;, [ &quot;, this.generate(node.right)
+    ];
 
-    ch = operator.charCodeAt(0);
-
-    if (0x61 &lt;= ch &amp;&amp; ch &lt;= 0x7a) {
-      result.push(&quot;.&quot;, operator);
-    } else {
-      result.push(&quot; [&#039;&quot;, operator, &quot;&#039;] &quot;);
-    }
-
-    result.push(&quot;(&quot;, this.generate(node.right));
     if (node.adverb) {
       result.push(&quot;, &quot;, this.generate(node.adverb));
     }
-    result.push(&quot;)&quot;);
+    result.push(&quot; ])&quot;);
 
     return result;
   };
@@ -490,20 +460,26 @@
       ref = this.scope.begin_ref();
       result = [
         &quot;(&quot; + ref + &quot; = &quot;, this.generate(list[0]), &quot;, &quot;,
-        this.generate(node.callee), &quot;.&quot;, node.method.name, &quot;(&quot; + ref + &quot;), &quot;,
+        this.generate(node.callee), &quot;.$(&#039;&quot; + node.method.name + &quot;&#039;, [ &quot; + ref + &quot; ]), &quot;,
         ref + &quot;)&quot;
       ];
       this.scope.end_ref();
     } else {
-      args = [
-        this.stitchWith(list, &quot;, &quot;, function(item) {
-          return this.generate(item);
-        }),
-        this.insertKeyValueElement(node.args.keywords, hasActualArgument)
-      ];
-      result = [
-        this.generate(node.callee), &quot;.&quot;, node.method.name, &quot;(&quot;, args, &quot;)&quot;
-      ];
+      if (list.length || node.args.keywords) {
+        args = [
+          this.stitchWith(list, &quot;, &quot;, function(item) {
+            return this.generate(item);
+          }),
+          this.insertKeyValueElement(node.args.keywords, hasActualArgument)
+        ];
+        result = [
+          this.generate(node.callee), &quot;.$(&#039;&quot; + node.method.name + &quot;&#039;, [ &quot;, args, &quot; ])&quot;
+        ];
+      } else {
+        result = [
+          this.generate(node.callee), &quot;.$(&#039;&quot; + node.method.name + &quot;&#039;)&quot;
+        ];
+      }
     }
 
     return result;
@@ -518,9 +494,9 @@
     result = [
       &quot;(&quot; + ref + &quot; = &quot;,
       this.generate(node.callee),
-      &quot;, &quot; + ref + &quot;.&quot; + node.method.name + &quot;.apply(&quot; + ref + &quot;, &quot;,
+      &quot;, &quot; + ref + &quot;.$(&#039;&quot; + node.method.name + &quot;&#039;, &quot;,
       this.insertArrayElement(node.args.list), &quot;.concat(&quot;,
-      this.generate(node.args.expand), &quot;.asArray()._&quot;,
+      this.generate(node.args.expand), &quot;.$(&#039;asArray&#039;)._&quot;,
       this.insertKeyValueElement(node.args.keywords, true),
       &quot;)))&quot;
     ];
@@ -535,31 +511,118 @@
 
     if (opts) {
       // setter
-      result = [ &quot;$SC.Environment(&#039;&quot; + node.id.name + &quot;&#039;, &quot;, this.generate(opts.right), &quot;)&quot; ];
+      result = [ &quot;$.Environment(&#039;&quot; + node.id.name + &quot;&#039;, &quot;, this.generate(opts.right), &quot;)&quot; ];
       opts.used = true;
     } else {
       // getter
-      result = &quot;$SC.Environment(&#039;&quot; + node.id.name + &quot;&#039;)&quot;;
+      result = &quot;$.Environment(&#039;&quot; + node.id.name + &quot;&#039;)&quot;;
     }
 
     return result;
   };
 
   CodeGen.prototype.FunctionExpression = function(node) {
-    var fn, info;
-
-    info = getInformationOfFunction(node);
-
-    if (!node.segmented) {
-      fn = CodeGen.prototype._SimpleFunction;
-    } else {
-      fn = CodeGen.prototype._SegmentedFunction;
-    }
+    var info = getInformationOfFunction(node);
 
     return [
-      fn.call(this, node, info.args),
-      this._FunctionMetadata(info), &quot;)&quot;
+      &quot;$.Function(&quot;,
+      this._FunctionBody(node, info.args),
+      this._FunctionMetadata(info),
+      &quot;)&quot;
     ];
+  };
+
+  CodeGen.prototype._FunctionBody = function(node, args) {
+    var fargs, body, assignArguments;
+
+    fargs = args.map(function(_, i) {
+      return &quot;_arg&quot; + i;
+    });
+
+    assignArguments = function(item, i) {
+      return $id(args[i]) + &quot; = &quot; + fargs[i];
+    };
+
+    body = this.withFunction([], function() {
+      var result = [];
+      var fragments = [], syncBlockScope;
+      var elements = node.body;
+      var i, imax;
+      var functionBodies;
+
+      if (elements.length) {
+        for (i = 0, imax = args.length; i &lt; imax; ++i) {
+          this.scope.add(&quot;var&quot;, args[i], { init: false });
+        }
+
+        syncBlockScope = this.state.syncBlockScope;
+        this.state.syncBlockScope = this.scope.peek();
+
+        functionBodies = this.withIndent(function() {
+          var fragments = [];
+          var i = 0, imax = elements.length;
+          var lastIndex = imax - 1;
+
+          fragments.push(&quot;\n&quot;);
+
+          var loop = function() {
+            var fragments = [];
+            var stmt, j = 0;
+
+            while (i &lt; imax) {
+              if (i === 0) {
+                if (args.length) {
+                  stmt = this.stitchWith(args, &quot;; &quot;, assignArguments);
+                  fragments.push([ this.addIndent(stmt), &quot;;&quot;, &quot;\n&quot; ]);
+                }
+              } else if (j) {
+                fragments.push(&quot;\n&quot;);
+              }
+
+              this.state.calledSegmentedMethod = false;
+              stmt = this.generate(elements[i]);
+
+              if (i === lastIndex || this.state.calledSegmentedMethod) {
+                stmt = [ &quot;return &quot;, stmt ];
+              }
+              fragments.push([ this.addIndent(stmt), &quot;;&quot; ]);
+              j += 1;
+
+              i += 1;
+              if (this.state.calledSegmentedMethod) {
+                break;
+              }
+            }
+
+            return fragments;
+          };
+
+          while (i &lt; imax) {
+            if (i) {
+              fragments.push(&quot;,&quot;, &quot;\n&quot;, this.addIndent(this.withFunction([], loop)));
+            } else {
+              fragments.push(this.addIndent(this.withFunction(fargs, loop)));
+            }
+          }
+
+          fragments.push(&quot;\n&quot;);
+
+          return fragments;
+        });
+
+        fragments.push(&quot;return [&quot;, functionBodies, this.addIndent(&quot;];&quot;));
+      } else {
+        fragments.push(&quot;return [];&quot;);
+      }
+
+      result.push([ this.addIndent(fragments) ]);
+
+      this.state.syncBlockScope = syncBlockScope;
+
+      return result;
+    });
+
+    return body;
   };
 
   var format_argument = function(node) {
@@ -621,113 +684,11 @@
     return result;
   };
 
-  CodeGen.prototype._SimpleFunction = function(node, args) {
-    var body;
-
-    body = this.withFunction(args, function() {
-      return this._Statements(node.body);
-    });
-
-    return [ &quot;$SC.Function(&quot;, body ];
-  };
-
-  CodeGen.prototype._SegmentedFunction = function(node, args) {
-    var fargs, body, assignArguments;
-
-    fargs = args.map(function(_, i) {
-      return &quot;_arg&quot; + i;
-    });
-
-    assignArguments = function(item, i) {
-      return &quot;$&quot; + args[i] + &quot; = &quot; + fargs[i];
-    };
-
-    body = this.withFunction([], function() {
-      var result = [];
-      var fragments = [], syncBlockScope;
-      var elements = node.body;
-      var i, imax;
-      var functionBodies;
-
-      for (i = 0, imax = args.length; i &lt; imax; ++i) {
-        this.scope.add(&quot;var&quot;, args[i]);
-      }
-
-      syncBlockScope = this.state.syncBlockScope;
-      this.state.syncBlockScope = this.scope.peek();
-
-      functionBodies = this.withIndent(function() {
-        var fragments = [];
-        var i = 0, imax = elements.length;
-        var lastIndex = imax - 1;
-
-        fragments.push(&quot;\n&quot;);
-
-        var loop = function() {
-          var fragments = [];
-          var stmt;
-          var count = 0;
-
-          while (i &lt; imax) {
-            if (i === 0) {
-              if (args.length) {
-                stmt = this.stitchWith(args, &quot;; &quot;, assignArguments);
-                fragments.push([ this.addIndent(stmt), &quot;;&quot;, &quot;\n&quot; ]);
-              }
-            } else if (count) {
-              fragments.push(&quot;\n&quot;);
-            }
-
-            this.state.calledSegmentedMethod = false;
-            stmt = this.generate(elements[i]);
-
-            if (stmt.length) {
-              if (i === lastIndex || this.state.calledSegmentedMethod) {
-                stmt = [ &quot;return &quot;, stmt ];
-              }
-              fragments.push([ this.addIndent(stmt), &quot;;&quot; ]);
-              count += 1;
-            }
-
-            i += 1;
-            if (this.state.calledSegmentedMethod) {
-              break;
-            }
-          }
-
-          return fragments;
-        };
-
-        while (i &lt; imax) {
-          if (i) {
-            fragments.push(&quot;,&quot;, &quot;\n&quot;, this.addIndent(this.withFunction([], loop)));
-          } else {
-            fragments.push(this.addIndent(this.withFunction(fargs, loop)));
-          }
-        }
-
-        fragments.push(&quot;\n&quot;);
-
-        return fragments;
-      });
-
-      fragments.push(&quot;return [&quot;, functionBodies, this.addIndent(&quot;];&quot;));
-
-      result.push([ this.addIndent(fragments) ]);
-
-      this.state.syncBlockScope = syncBlockScope;
-
-      return result;
-    });
-
-    return [ &quot;$SC.SegFunction(&quot;, body ];
-  };
-
   CodeGen.prototype.Identifier = function(node, opts) {
     var name = node.name;
 
     if (isClassName(name)) {
-      return &quot;$SC(&#039;&quot; + name + &quot;&#039;)&quot;;
+      return &quot;$(&#039;&quot; + name + &quot;&#039;)&quot;;
     }
 
     if (this.scope.find(name)) {
@@ -749,13 +710,13 @@
       ref = this.scope.begin_ref();
       name = [
         &quot;(&quot; + ref + &quot; = &quot;, this.generate(opts.right),
-        &quot;, $SC.This().&quot; + node.name + &quot;_(&quot; + ref + &quot;), &quot; + ref + &quot;)&quot;
+        &quot;, $.This().$(&#039;&quot; + node.name + &quot;_&#039;, [ &quot; + ref + &quot; ]), &quot; + ref + &quot;)&quot;
       ];
       opts.used = true;
       this.scope.end_ref();
     } else {
       // getter
-      name = &quot;$SC.This().&quot; + node.name + &quot;()&quot;;
+      name = &quot;$.This().$(&#039;&quot; + node.name + &quot;&#039;)&quot;;
     }
 
     return name;
@@ -765,7 +726,7 @@
     var result;
 
     result = [
-      &quot;$SC.Array(&quot;,
+      &quot;$.Array(&quot;,
       this.insertArrayElement(node.elements),
     ];
 
@@ -781,27 +742,27 @@
   CodeGen.prototype.Literal = function(node) {
     switch (node.valueType) {
     case Token.IntegerLiteral:
-      return &quot;$SC.Integer(&quot; + node.value + &quot;)&quot;;
+      return &quot;$.Integer(&quot; + node.value + &quot;)&quot;;
     case Token.FloatLiteral:
-      return &quot;$SC.Float(&quot; + node.value + &quot;)&quot;;
+      return &quot;$.Float(&quot; + node.value + &quot;)&quot;;
     case Token.CharLiteral:
-      return &quot;$SC.Char(&#039;&quot; + node.value + &quot;&#039;)&quot;;
+      return &quot;$.Char(&#039;&quot; + node.value + &quot;&#039;)&quot;;
     case Token.SymbolLiteral:
-      return &quot;$SC.Symbol(&#039;&quot; + node.value + &quot;&#039;)&quot;;
+      return &quot;$.Symbol(&#039;&quot; + node.value + &quot;&#039;)&quot;;
     case Token.StringLiteral:
-      return &quot;$SC.String(&#039;&quot; + node.value + &quot;&#039;)&quot;;
+      return &quot;$.String(&#039;&quot; + node.value + &quot;&#039;)&quot;;
     case Token.TrueLiteral:
-      return &quot;$SC.True()&quot;;
+      return &quot;$.True()&quot;;
     case Token.FalseLiteral:
-      return &quot;$SC.False()&quot;;
+      return &quot;$.False()&quot;;
     }
 
-    return &quot;$SC.Nil()&quot;;
+    return &quot;$.Nil()&quot;;
   };
 
   CodeGen.prototype.EventExpression = function(node) {
     return [
-      &quot;$SC.Event(&quot;, this.insertArrayElement(node.elements), &quot;)&quot;
+      &quot;$.Event(&quot;, this.insertArrayElement(node.elements), &quot;)&quot;
     ];
   };
 
@@ -809,7 +770,7 @@
     var result, body;
 
     if (node.body.length) {
-      body = this.withFunction([ &quot;SC&quot; ], function() {
+      body = this.withFunction([ &quot;&quot; ], function() { // &quot;&quot; compiled as $
         return this._Statements(node.body);
       });
 
@@ -828,13 +789,13 @@
   CodeGen.prototype.ThisExpression = function(node) {
     var name = node.name;
     name = name.charAt(0).toUpperCase() + name.substr(1);
-    return [ &quot;$SC.&quot; + name + &quot;()&quot; ];
+    return [ &quot;$.&quot; + name + &quot;()&quot; ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {
     /* istanbul ignore else */
     if (node.operator === &quot;`&quot;) {
-      return [ &quot;$SC.Ref(&quot;, this.generate(node.arg), &quot;)&quot; ];
+      return [ &quot;$.Ref(&quot;, this.generate(node.arg), &quot;)&quot; ];
     }
 
     /* istanbul ignore next */
@@ -845,22 +806,28 @@
     var scope = this.state.syncBlockScope;
 
     return this.stitchWith(node.declarations, &quot;, &quot;, function(item) {
-      this.scope.add(&quot;var&quot;, item.id.name, scope);
+      var result;
 
-      if (!item.init) {
-        return;
+      this.scope.add(&quot;var&quot;, item.id.name, { scope: scope, init: false });
+
+      result = [ this.generate(item.id) ];
+
+      if (item.init) {
+        result.push(&quot; = &quot;, this.generate(item.init));
+      } else {
+        result.push(&quot; = $.Nil()&quot;);
       }
 
-      return [ this.generate(item.id), &quot; = &quot;, this.generate(item.init) ];
+      return result;
     });
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
-    return [ &quot;$SC.Value(&quot; + node.id + &quot;, &quot;, this.generate(node.expr), &quot;)&quot; ];
+    return [ &quot;this.push(&quot;, this.generate(node.expr), &quot;)&quot; ];
   };
 
-  CodeGen.prototype.ValueMethodResult = function(node) {
-    return [ &quot;$SC.Result(&quot; + node.id + &quot;)&quot; ];
+  CodeGen.prototype.ValueMethodResult = function() {
+    return &quot;this.shift()&quot;;
   };
 
   CodeGen.prototype._Statements = function(elements) {
@@ -870,10 +837,6 @@
       var stmt;
 
       stmt = this.generate(item);
-
-      if (stmt.length === 0) {
-        return;
-      }
 
       if (i === lastIndex) {
         stmt = [ &quot;return &quot;, stmt ];

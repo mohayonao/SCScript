@@ -95,9 +95,9 @@
 
   require(&quot;./ArrayedCollection&quot;);
 
-  var fn  = sc.lang.fn;
-  var io  = sc.lang.io;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
+  var io = sc.lang.io;
 
   sc.lang.klass.refine(&quot;String&quot;, function(spec, utils) {
     var $nil   = utils.$nil;
@@ -132,17 +132,17 @@
     // TODO: implements unixCmdGetStdOut
 
     spec.asSymbol = function() {
-      return $SC.Symbol(this.__str__());
+      return $.Symbol(this.__str__());
     };
 
     spec.asInteger = function() {
       var m = /^[-+]?\d+/.exec(this.__str__());
-      return $SC.Integer(m ? m[0]|0 : 0);
+      return $.Integer(m ? m[0]|0 : 0);
     };
 
     spec.asFloat = function() {
       var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
-      return $SC.Float(m ? +m[0] : 0);
+      return $.Float(m ? +m[0] : 0);
     };
 
     spec.ascii = function() {
@@ -151,10 +151,10 @@
 
       a = new Array(raw.length);
       for (i = 0, imax = a.length; i &lt; imax; ++i) {
-        a[i] = $SC.Integer(raw.charCodeAt(i));
+        a[i] = $.Integer(raw.charCodeAt(i));
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     // TODO: implements stripRTF
@@ -186,7 +186,7 @@
         b = func(braw[i]._).charCodeAt(0);
         cmp = a - b;
         if (cmp !== 0) {
-          return $SC.Integer(cmp &lt; 0 ? -1 : +1);
+          return $.Integer(cmp &lt; 0 ? -1 : +1);
         }
       }
 
@@ -196,41 +196,41 @@
         cmp = 1;
       }
 
-      return $SC.Integer(cmp);
+      return $.Integer(cmp);
     }, &quot;aString; ignoreCase=false&quot;);
 
     spec[&quot;&lt;&quot;] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() &lt; 0
       );
     };
 
     spec[&quot;&gt;&quot;] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() &gt; 0
       );
     };
 
     spec[&quot;&lt;=&quot;] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() &lt;= 0
       );
     };
 
     spec[&quot;&gt;=&quot;] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() &gt;= 0
       );
     };
 
     spec[&quot;==&quot;] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() === 0
       );
     };
 
     spec[&quot;!=&quot;] = function($aString) {
-      return $SC.Boolean(
+      return $.Boolean(
         this.compare($aString, $false).valueOf() !== 0
       );
     };
@@ -254,11 +254,11 @@
     spec.asString = utils.nop;
 
     spec.asCompileString = function() {
-      return $SC.String(&quot;\&quot;&quot; + this.__str__() + &quot;\&quot;&quot;);
+      return $.String(&quot;\&quot;&quot; + this.__str__() + &quot;\&quot;&quot;);
     };
 
     spec.species = function() {
-      return $SC(&quot;String&quot;);
+      return $(&quot;String&quot;);
     };
 
     spec.postln = function() {
@@ -291,13 +291,13 @@
     // TODO: implements inform
 
     spec[&quot;++&quot;] = function($anObject) {
-      return $SC.String(
+      return $.String(
         this.toString() + $anObject.asString().toString()
       );
     };
 
     spec[&quot;+&quot;] = function($anObject) {
-      return $SC.String(
+      return $.String(
         this.toString() + &quot; &quot; + $anObject.asString().toString()
       );
     };

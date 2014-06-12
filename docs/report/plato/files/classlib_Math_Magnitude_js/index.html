@@ -95,40 +95,40 @@
 
   require(&quot;../Core/Object&quot;);
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine(&quot;Magnitude&quot;, function(spec) {
     spec[&quot;==&quot;] = function($aMagnitude) {
-      return $SC.Boolean(this.valueOf() === $aMagnitude.valueOf());
+      return $.Boolean(this.valueOf() === $aMagnitude.valueOf());
     };
 
     spec[&quot;!=&quot;] = function($aMagnitude) {
-      return $SC.Boolean(this.valueOf() !== $aMagnitude.valueOf());
+      return $.Boolean(this.valueOf() !== $aMagnitude.valueOf());
     };
 
     spec[&quot;&lt;&quot;] = function($aMagnitude) {
-      return $SC.Boolean(this &lt; $aMagnitude);
+      return $.Boolean(this &lt; $aMagnitude);
     };
 
     spec[&quot;&gt;&quot;] = function($aMagnitude) {
-      return $SC.Boolean(this &gt; $aMagnitude);
+      return $.Boolean(this &gt; $aMagnitude);
     };
 
     spec[&quot;&lt;=&quot;] = function($aMagnitude) {
-      return $SC.Boolean(this &lt;= $aMagnitude);
+      return $.Boolean(this &lt;= $aMagnitude);
     };
 
     spec[&quot;&gt;=&quot;] = function($aMagnitude) {
-      return $SC.Boolean(this &gt;= $aMagnitude);
+      return $.Boolean(this &gt;= $aMagnitude);
     };
 
     spec.exclusivelyBetween = fn(function($lo, $hi) {
-      return $SC.Boolean($lo &lt; this &amp;&amp; this &lt; $hi);
+      return $.Boolean($lo &lt; this &amp;&amp; this &lt; $hi);
     }, &quot;lo; hi&quot;);
 
     spec.inclusivelyBetween = fn(function($lo, $hi) {
-      return $SC.Boolean($lo &lt;= this &amp;&amp; this &lt;= $hi);
+      return $.Boolean($lo &lt;= this &amp;&amp; this &lt;= $hi);
     }, &quot;lo; hi&quot;);
 
     spec.min = fn(function($aMagnitude) {

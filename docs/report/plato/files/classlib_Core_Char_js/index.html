@@ -95,7 +95,7 @@
 
   require(&quot;../Math/Magnitude&quot;);
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   sc.lang.klass.refine(&quot;Char&quot;, function(spec, utils) {
     spec.__str__ = function() {
@@ -103,23 +103,23 @@
     };
 
     spec.$nl = function() {
-      return $SC.Char(&quot;\n&quot;);
+      return $.Char(&quot;\n&quot;);
     };
 
     spec.$ff = function() {
-      return $SC.Char(&quot;\f&quot;);
+      return $.Char(&quot;\f&quot;);
     };
 
     spec.$tab = function() {
-      return $SC.Char(&quot;\t&quot;);
+      return $.Char(&quot;\t&quot;);
     };
 
     spec.$space = function() {
-      return $SC.Char(&quot; &quot;);
+      return $.Char(&quot; &quot;);
     };
 
     spec.$comma = function() {
-      return $SC.Char(&quot;,&quot;);
+      return $.Char(&quot;,&quot;);
     };
 
     spec.$new = function() {
@@ -129,19 +129,19 @@
     // TODO: implements hash
 
     spec.ascii = function() {
-      return $SC.Integer(this._.charCodeAt(0));
+      return $.Integer(this._.charCodeAt(0));
     };
 
     spec.digit = function() {
       var ascii = this._.charCodeAt(0);
       if (0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) {
-        return $SC.Integer(ascii - 0x30);
+        return $.Integer(ascii - 0x30);
       }
       if (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) {
-        return $SC.Integer(ascii - 0x37);
+        return $.Integer(ascii - 0x37);
       }
       if (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a) {
-        return $SC.Integer(ascii - 0x57);
+        return $.Integer(ascii - 0x57);
       }
       throw new Error(&quot;digitValue failed&quot;);
     };
@@ -153,34 +153,34 @@
     };
 
     spec.toUpper = function() {
-      return $SC.Char(this._.toUpperCase());
+      return $.Char(this._.toUpperCase());
     };
 
     spec.toLower = function() {
-      return $SC.Char(this._.toLowerCase());
+      return $.Char(this._.toLowerCase());
     };
 
     spec.isAlpha = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
+      return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
     };
 
     spec.isAlphaNum = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
+      return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
                          (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
     };
 
     spec.isPrint = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
+      return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
     };
 
     spec.isPunct = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
+      return $.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
                          (0x3a &lt;= ascii &amp;&amp; ascii &lt;= 0x40) ||
                          (0x5b &lt;= ascii &amp;&amp; ascii &lt;= 0x60) ||
                          (0x7b &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
@@ -188,37 +188,37 @@
 
     spec.isControl = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
+      return $.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
     };
 
     spec.isSpace = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
+      return $.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
     };
 
     spec.isVowl = function() {
       var ch = this._.charAt(0).toUpperCase();
-      return $SC.Boolean(&quot;AEIOU&quot;.indexOf(ch) !== -1);
+      return $.Boolean(&quot;AEIOU&quot;.indexOf(ch) !== -1);
     };
 
     spec.isDecDigit = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
+      return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
     };
 
     spec.isUpper = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
+      return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
     };
 
     spec.isLower = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+      return $.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
     };
 
     spec.isFileSafe = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
+      return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
                          ascii !== 0x2f &amp;&amp; // 0x2f is &#039;/&#039;
                          ascii !== 0x3a &amp;&amp; // 0x3a is &#039;:&#039;
                          ascii !== 0x22);  // 0x22 is &#039;&quot;&#039;
@@ -226,15 +226,15 @@
 
     spec.isPathSeparator = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean(ascii === 0x2f);
+      return $.Boolean(ascii === 0x2f);
     };
 
     spec[&quot;&lt;&quot;] = function($aChar) {
-      return $SC.Boolean(this.ascii() &lt; $aChar.ascii());
+      return $.Boolean(this.ascii() &lt; $aChar.ascii());
     };
 
     spec[&quot;++&quot;] = function($that) {
-      return $SC.String(this._ + $that.__str__());
+      return $.String(this._ + $that.__str__());
     };
 
     // TODO: implements $bullet
@@ -242,11 +242,11 @@
     // TODO: implements storeOn
 
     spec.archiveAsCompileString = function() {
-      return $SC.True();
+      return $.True();
     };
 
     spec.asString = function() {
-      return $SC.String(this._);
+      return $.String(this._);
     };
 
     spec.shallowCopy = utils.nop;

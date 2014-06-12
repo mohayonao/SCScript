@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.28</p>
+      <p class="stat">126.78</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">279</p>
+      <p class="stat">280</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">56.51</p>
+      <p class="stat">58.90</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.29</p>
+      <p class="stat">2.32</p>
     </div>
   </div>
 </div>
@@ -95,18 +95,17 @@
 
   require(&quot;./Collection&quot;);
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine(&quot;Set&quot;, function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
-    var SCArray = $SC(&quot;Array&quot;);
+    var SCArray = $(&quot;Array&quot;);
 
     spec.$new = fn(function($n) {
-      $n = $SC.Integer(Math.max($n.__int__(), 2) * 2);
+      $n = $.Integer(Math.max($n.__int__(), 2) * 2);
       return this.__super__(&quot;new&quot;).initSet($n);
     }, &quot;n=2&quot;);
 
@@ -128,7 +127,7 @@
     };
 
     spec.size = function() {
-      return $SC.Integer(this._size);
+      return $.Integer(this._size);
     };
 
     spec.species = function() {
@@ -252,7 +251,7 @@
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil &amp;&amp; BOOL($that.includes($item))) {
+        if ($item !== $nil &amp;&amp; $that.$(&quot;includes&quot;, [ $item ]).__bool__()) {
           $result.add($item);
         }
       });
@@ -282,21 +281,23 @@
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil &amp;&amp; !BOOL($that.includes($item))) {
+        if ($item !== $nil &amp;&amp; !$that.$(&quot;includes&quot;, [ $item ]).__bool__()) {
           $result.add($item);
         }
       });
-      $that.do($SC.Function(function($item) {
-        if (!BOOL($this.includes($item))) {
-          $result.add($item);
-        }
+      $that.do($.Function(function() {
+        return [ function($item) {
+          if (!$this.includes($item).__bool__()) {
+            $result.add($item);
+          }
+        } ];
       }));
 
       return $result;
     }, &quot;that&quot;);
 
     spec.isSubsetOf = fn(function($that) {
-      return $that.includesAll(this);
+      return $that.$(&quot;includesAll&quot;, [ this ]);
     }, &quot;that&quot;);
 
     spec[&quot;&amp;&quot;] = function($that) {
@@ -344,7 +345,7 @@
       }
     };
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec.scanFor = function($obj) {
       var array, index;
 
@@ -352,15 +353,15 @@
 
       index = array.indexOf($obj);
       if (index !== -1) {
-        return $SC.Integer(index);
+        return $.Integer(index);
       }
 
       index = array.indexOf($nil);
       if (index !== -1) {
-        return $SC.Integer(index);
+        return $.Integer(index);
       }
 
-      return $SC.Integer(-1);
+      return $.Integer(-1);
     };
 
     // TODO: implements fixCollisionsFrom

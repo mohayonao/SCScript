@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">127.70</p>
+      <p class="stat">129.87</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">153</p>
+      <p class="stat">180</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">29.32</p>
+      <p class="stat">33.24</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.90</p>
+      <p class="stat">1.21</p>
     </div>
   </div>
 </div>
@@ -96,13 +96,12 @@
   require(&quot;./AbstractFunction&quot;);
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine(&quot;Function&quot;, function(spec, utils) {
-    var BOOL = utils.BOOL;
     var $nil = utils.$nil;
-    var SCArray = $SC(&quot;Array&quot;);
+    var SCArray = $(&quot;Array&quot;);
 
     // TODO: implements def
 
@@ -126,20 +125,44 @@
     };
 
     spec.update = function() {
-      return this._.apply(this, arguments);
+      return this._.resume(arguments);
     };
 
     spec.value = function() {
-      return this._.apply(this, arguments);
+      return this._.resume(arguments);
     };
 
     spec.valueArray = function($args) {
-      return this._.apply(this, $args.asArray()._);
+      return this._.resume($args.asArray()._);
     };
 
-    // TODO: implements valueEnvir
-    // TODO: implements valueArrayEnvir
-    // TODO: implements functionPerformList
+    var envir = function(func, args) {
+      return func._argNames.map(function(name, i) {
+        var val;
+        if (this[i]) {
+          return this[i];
+        }
+        val = $.Environment(name);
+        if (val !== $nil) {
+          return val;
+        }
+      }, args);
+    };
+
+    spec.valueEnvir = function() {
+      var args = envir(this._, arguments);
+      return this._.resume(args);
+    };
+
+    spec.valueArrayEnvir = function($args) {
+      var args = envir(this._, $args.asArray()._);
+      return this._.resume(args);
+    };
+
+    spec.functionPerformList = fn(function($selector, $arglist) {
+      return this[$selector.__str__()].apply(this, $arglist.asArray()._);
+    }, &quot;selector; arglist&quot;);
+
     // TODO: implements valueWithEnvir
     // TODO: implements performWithEnvir
     // TODO: implements performKeyValuePairs
@@ -150,7 +173,7 @@
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $SC(&quot;Routine&quot;).new(this);
+      return $(&quot;Routine&quot;).new(this);
     };
 
     spec.dup = fn(function($n) {
@@ -195,7 +218,7 @@
       args.unshift(this);
 
       for (i = 0, imax = args.length &gt;&gt; 1; i &lt; imax; ++i) {
-        if (BOOL(args[i * 2].value())) {
+        if (args[i * 2].value().__bool__()) {
           return args[i * 2 + 1].value();
         }
       }
@@ -208,11 +231,11 @@
     };
 
     spec.r = function() {
-      return $SC(&quot;Routine&quot;).new(this);
+      return $(&quot;Routine&quot;).new(this);
     };
 
     spec.p = function() {
-      return $SC(&quot;Prout&quot;).new(this);
+      return $(&quot;Prout&quot;).new(this);
     };
 
     // TODO: implements matchItem
@@ -220,12 +243,16 @@
 
     spec.flop = function() {
       var $this = this;
-      // if(def.argNames.isNil) { ^this };
-      return $SC.Function(function() {
-        var $$args = $SC.Array(slice.call(arguments));
-        return $$args.flop().collect($SC.Function(function($_) {
-          return $this.valueArray($_);
-        }));
+
+      return $.Function(function() {
+        return [ function() {
+          var $$args = $.Array(slice.call(arguments));
+          return $$args.flop().collect($.Function(function() {
+            return [ function($_) {
+              return $this.valueArray($_);
+            } ];
+          }));
+        } ];
       });
     };
 

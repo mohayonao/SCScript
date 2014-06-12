@@ -388,7 +388,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">427</span>
+<span class="cline-any cline-yes">421</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -547,7 +547,7 @@
 &nbsp;
   require("../Math/Magnitude");
 &nbsp;
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 &nbsp;
   sc.lang.klass.refine("Char", function(spec, utils) {
     spec.__str__ = function() {
@@ -555,23 +555,23 @@
     };
 &nbsp;
     spec.$nl = function() {
-      return $SC.Char("\n");
+      return $.Char("\n");
     };
 &nbsp;
     spec.$ff = function() {
-      return $SC.Char("\f");
+      return $.Char("\f");
     };
 &nbsp;
     spec.$tab = function() {
-      return $SC.Char("\t");
+      return $.Char("\t");
     };
 &nbsp;
     spec.$space = function() {
-      return $SC.Char(" ");
+      return $.Char(" ");
     };
 &nbsp;
     spec.$comma = function() {
-      return $SC.Char(",");
+      return $.Char(",");
     };
 &nbsp;
     spec.$new = function() {
@@ -581,19 +581,19 @@
     // TODO: implements hash
 &nbsp;
     spec.ascii = function() {
-      return $SC.Integer(this._.charCodeAt(0));
+      return $.Integer(this._.charCodeAt(0));
     };
 &nbsp;
     spec.digit = function() {
       var ascii = this._.charCodeAt(0);
       if (0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) {
-        return $SC.Integer(ascii - 0x30);
+        return $.Integer(ascii - 0x30);
       }
       if (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) {
-        return $SC.Integer(ascii - 0x37);
+        return $.Integer(ascii - 0x37);
       }
       if (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a) {
-        return $SC.Integer(ascii - 0x57);
+        return $.Integer(ascii - 0x57);
       }
       throw new Error("digitValue failed");
     };
@@ -605,34 +605,34 @@
     };
 &nbsp;
     spec.toUpper = function() {
-      return $SC.Char(this._.toUpperCase());
+      return $.Char(this._.toUpperCase());
     };
 &nbsp;
     spec.toLower = function() {
-      return $SC.Char(this._.toLowerCase());
+      return $.Char(this._.toLowerCase());
     };
 &nbsp;
     spec.isAlpha = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
+      return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
     };
 &nbsp;
     spec.isAlphaNum = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
+      return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
                          (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
     };
 &nbsp;
     spec.isPrint = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
+      return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
     };
 &nbsp;
     spec.isPunct = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
+      return $.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
                          (0x3a &lt;= ascii &amp;&amp; ascii &lt;= 0x40) ||
                          (0x5b &lt;= ascii &amp;&amp; ascii &lt;= 0x60) ||
                          (0x7b &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
@@ -640,37 +640,37 @@
 &nbsp;
     spec.isControl = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
+      return $.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
     };
 &nbsp;
     spec.isSpace = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
+      return $.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
     };
 &nbsp;
     spec.isVowl = function() {
       var ch = this._.charAt(0).toUpperCase();
-      return $SC.Boolean("AEIOU".indexOf(ch) !== -1);
+      return $.Boolean("AEIOU".indexOf(ch) !== -1);
     };
 &nbsp;
     spec.isDecDigit = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
+      return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
     };
 &nbsp;
     spec.isUpper = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
+      return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
     };
 &nbsp;
     spec.isLower = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
+      return $.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
     };
 &nbsp;
     spec.isFileSafe = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
+      return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
                          ascii !== 0x2f &amp;&amp; // 0x2f is '/'
                          ascii !== 0x3a &amp;&amp; // 0x3a is ':'
                          ascii !== 0x22);  // 0x22 is '"'
@@ -678,15 +678,15 @@
 &nbsp;
     spec.isPathSeparator = function() {
       var ascii = this._.charCodeAt(0);
-      return $SC.Boolean(ascii === 0x2f);
+      return $.Boolean(ascii === 0x2f);
     };
 &nbsp;
     spec["&lt;"] = function($aChar) {
-      return $SC.Boolean(this.ascii() &lt; $aChar.ascii());
+      return $.Boolean(this.ascii() &lt; $aChar.ascii());
     };
 &nbsp;
     spec["++"] = function($that) {
-      return $SC.String(this._ + $that.__str__());
+      return $.String(this._ + $that.__str__());
     };
 &nbsp;
     // TODO: implements $bullet
@@ -694,11 +694,11 @@
     // TODO: implements storeOn
 &nbsp;
     spec.archiveAsCompileString = function() {
-      return $SC.True();
+      return $.True();
     };
 &nbsp;
     spec.asString = function() {
-      return $SC.String(this._);
+      return $.String(this._);
     };
 &nbsp;
     spec.shallowCopy = utils.nop;
@@ -710,7 +710,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon May 26 2014 07:17:48 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jun 13 2014 07:41:01 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

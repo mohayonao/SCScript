@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.37" };
+var sc = { VERSION: "0.0.47" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -17,12 +17,12 @@ var sc = { VERSION: "0.0.37" };
     installer(sc);
   };
 
-  // istanbul ignore next
+  /* istanbul ignore next */
   SCScript.stdout = function(msg) {
     console.log(msg);
   };
 
-  // istanbul ignore next
+  /* istanbul ignore next */
   SCScript.stderr = function(msg) {
     console.error(msg);
   };
@@ -465,10 +465,10 @@ var sc = { VERSION: "0.0.37" };
 
 })(sc);
 
-// src/sc/lang/dollarSC.js
+// src/sc/lang/dollar.js
 (function(sc) {
 
-  sc.lang.$SC = function(name) {
+  sc.lang.$ = function(name) {
     return sc.lang.klass.get(name);
   };
 
@@ -478,42 +478,42 @@ var sc = { VERSION: "0.0.37" };
 (function(sc) {
 
   var slice = [].slice;
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   var _getDefaultValue = function(value) {
     var ch;
 
     switch (value) {
     case "nil":
-      return $SC.Nil();
+      return $.Nil();
     case "true":
-      return $SC.True();
+      return $.True();
     case "false":
-      return $SC.False();
+      return $.False();
     case "inf":
-      return $SC.Float(Infinity);
+      return $.Float(Infinity);
     case "-inf":
-      return $SC.Float(-Infinity);
+      return $.Float(-Infinity);
     }
 
     ch = value.charAt(0);
     switch (ch) {
     case "$":
-      return $SC.Char(value.charAt(1));
+      return $.Char(value.charAt(1));
     case "\\":
-      return $SC.Symbol(value.substr(1));
+      return $.Symbol(value.substr(1));
     }
 
     if (value.indexOf(".") !== -1) {
-      return $SC.Float(+value);
+      return $.Float(+value);
     }
 
-    return $SC.Integer(+value);
+    return $.Integer(+value);
   };
 
   var getDefaultValue = function(value) {
     if (value.charAt(0) === "[") {
-      return $SC.Array(value.slice(1, -2).split(",").map(function(value) {
+      return $.Array(value.slice(1, -2).split(",").map(function(value) {
         return _getDefaultValue(value.trim());
       }));
     }
@@ -551,7 +551,7 @@ var sc = { VERSION: "0.0.37" };
       copy(args, given, Math.min(argNames.length, given.length));
 
       if (remain) {
-        args.push($SC.Array(given.slice(argNames.length)));
+        args.push($.Array(given.slice(argNames.length)));
       }
 
       return func.apply(this, args);
@@ -588,6 +588,148 @@ var sc = { VERSION: "0.0.37" };
 
 })(sc);
 
+// src/sc/lang/bytecode.js
+(function(sc) {
+
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
+
+  var bytecode = { current: null };
+
+  function Bytecode(initializer, def) {
+    this._initializer = initializer;
+    this._def   = def;
+    this._code  = [];
+    this._vals  = [];
+    this._state = 0;
+    this._iter  = null;
+    this._pushed = false;
+    this._parent = null;
+    this._child  = null;
+    this.init(initializer);
+  }
+
+  Bytecode.prototype.init = function() {
+    var code = this._initializer();
+    if (this._def && code.length) {
+      code[0] = fn(code[0], this._def);
+      this._argNames = code[0]._argNames;
+      this._argVals  = code[0]._argVals;
+    } else {
+      this._argNames = [];
+      this._argVals  = [];
+    }
+    this._code  = code;
+    this._index = 0;
+
+    return this;
+  };
+
+  Bytecode.prototype.setIterator = function(iter) {
+    this._iter = iter;
+    return this;
+  };
+
+  Bytecode.prototype.resume = function(args) {
+    var result;
+    var code, length, index, iter;
+
+    if (this._child) {
+      return this._child.resume(args);
+    }
+
+    if (bytecode.current && !this._parent) {
+      this._parent = bytecode.current;
+      this._parent._child = this;
+      this._parent._state = 5;
+    }
+
+    code   = this._code;
+    length = code.length;
+    index  = this._index;
+    iter   = this._iter;
+
+    bytecode.current = this;
+
+    this._state = 3;
+    while (index < length) {
+      if (iter) {
+        args = iter.next();
+        if (args === null) {
+          this._state = 6;
+          break;
+        }
+      }
+
+      result = code[index].apply(this, args);
+
+      if (!iter) {
+        index += 1;
+        if (index === length) {
+          this._state = 6;
+        }
+      }
+
+      if (this._state !== 3) {
+        break;
+      }
+    }
+    result = result || /* istanbul ignore next */ $.Nil();
+
+    bytecode.current = null;
+
+    if (this._state === 6) {
+      this._index = 0;
+      this._state = 6;
+      this._iter  = null;
+      if (this._parent) {
+        if (this._parent._pushed) {
+          this._parent.put(result, true);
+        }
+        this._parent._child = null;
+        this._parent._state = 3;
+      }
+      this._parent = null;
+    } else {
+      this._index = index;
+    }
+
+    return result;
+  };
+
+  Bytecode.prototype.push = function($value) {
+    this._vals.push($value);
+    this._pushed = true;
+    return $value;
+  };
+
+  Bytecode.prototype.shift = function() {
+    this._pushed = false;
+    return this._vals.shift();
+  };
+
+  Bytecode.prototype.put = function($value) {
+    this._vals[this._vals.length - 1] = $value;
+  };
+
+  Bytecode.prototype.break = function() {
+    this._state = 6;
+  };
+
+  bytecode.create = function(initializer, def) {
+    return new Bytecode(initializer, def);
+  };
+
+  bytecode.yield = function() {
+    var that = bytecode.current;
+
+    that._state = 5;
+  };
+
+  sc.lang.bytecode = bytecode;
+
+})(sc);
+
 // src/sc/libs/strlib.js
 (function(sc) {
 
@@ -607,8 +749,8 @@ var sc = { VERSION: "0.0.37" };
 // src/sc/lang/klass/klass.js
 (function(sc) {
 
-  var slice = [].slice;
-  var $SC    = sc.lang.$SC;
+  var slice  = [].slice;
+  var $      = sc.lang.$;
   var strlib = sc.libs.strlib;
 
   var klass       = {};
@@ -665,7 +807,7 @@ var sc = { VERSION: "0.0.37" };
 
     Object.keys(spec).forEach(function(methodName) {
       if (methodName !== "constructor") {
-        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
+        if (methodName !== "$" && methodName.charCodeAt(0) === 0x24) { // u+0024 is '$'
           setMethod(classMethods, methodName.substr(1), spec[methodName]);
         } else {
           setMethod(instanceMethods, methodName, spec[methodName]);
@@ -762,7 +904,7 @@ var sc = { VERSION: "0.0.37" };
 
     delete that.__superClassP;
 
-    return result || /* istanbul ignore next */ $SC.Nil();
+    return result || /* istanbul ignore next */ $.Nil();
   };
 
   klass.define = function(className, spec) {
@@ -886,7 +1028,7 @@ var sc = { VERSION: "0.0.37" };
   klass.refine("Object", function(spec) {
     spec.$new = function() {
       if (this.__Spec === SCClass) {
-        return $SC.Nil();
+        return $.Nil();
       }
       return new this.__Spec(slice.call(arguments));
     };
@@ -895,12 +1037,28 @@ var sc = { VERSION: "0.0.37" };
 
       instance = new this.__Spec(slice.call(arguments));
       Object.keys(dict).forEach(function(key) {
-        instance["_$" + key] = dict[key] || $SC.Nil();
+        instance["_$" + key] = dict[key] || $.Nil();
       });
 
       return instance;
     };
     spec.$initClass = function() {
+    };
+
+    spec.$ = function(methodName, args) {
+      if (this[methodName]) {
+        if (args) {
+          return this[methodName].apply(this, args);
+        } else {
+          return this[methodName]();
+        }
+      }
+      return this._doesNotUnderstand(methodName, args);
+    };
+
+    spec._doesNotUnderstand = function(methodName) {
+      throw new Error("RECEIVER " + this.__str__() + ": " +
+                      "Message '" + methodName + "' not understood.");
     };
   });
 
@@ -911,9 +1069,9 @@ var sc = { VERSION: "0.0.37" };
 // src/sc/lang/klass/constructors.js
 (function(sc) {
 
-  var $SC    = sc.lang.$SC;
-  var fn     = sc.lang.fn;
-  var klass  = sc.lang.klass;
+  var $       = sc.lang.$;
+  var klass   = sc.lang.klass;
+  var bytecode = sc.lang.bytecode;
 
   var $nil, $true, $false;
   var $symbols, $chars, $integers, $floats;
@@ -1086,7 +1244,7 @@ var sc = { VERSION: "0.0.37" };
 
   function SCFunction() {
     this.__super__("AbstractFunction");
-    // istanbul ignore next
+    /* istanbul ignore next */
     this._ = function() {};
   }
   klass.define("Function : AbstractFunction", {
@@ -1101,7 +1259,7 @@ var sc = { VERSION: "0.0.37" };
     constructor: SCRef
   });
 
-  // $SC
+  // $
   $nil      = new SCNil();
   $true     = new SCTrue();
   $false    = new SCFalse();
@@ -1110,27 +1268,27 @@ var sc = { VERSION: "0.0.37" };
   $symbols  = {};
   $chars    = {};
 
-  $SC.Nil = function() {
+  $.Nil = function() {
     return $nil;
   };
 
-  $SC.Boolean = function($value) {
+  $.Boolean = function($value) {
     return $value ? $true : $false;
   };
 
-  $SC.True = function() {
+  $.True = function() {
     return $true;
   };
 
-  $SC.False = function() {
+  $.False = function() {
     return $false;
   };
 
-  $SC.Integer = function(value) {
+  $.Integer = function(value) {
     var instance;
 
     if (!global.isFinite(value)) {
-      return $SC.Float(+value);
+      return $.Float(+value);
     }
 
     value = value|0;
@@ -1144,7 +1302,7 @@ var sc = { VERSION: "0.0.37" };
     return $integers[value];
   };
 
-  $SC.Float = function(value) {
+  $.Float = function(value) {
     var instance;
 
     value = +value;
@@ -1158,7 +1316,7 @@ var sc = { VERSION: "0.0.37" };
     return $floats[value];
   };
 
-  $SC.Symbol = function(value) {
+  $.Symbol = function(value) {
     var instance;
     if (!$symbols.hasOwnProperty(value)) {
       instance = new SCSymbol();
@@ -1168,7 +1326,7 @@ var sc = { VERSION: "0.0.37" };
     return $symbols[value];
   };
 
-  $SC.Char = function(value) {
+  $.Char = function(value) {
     var instance;
 
     value = String(value).charAt(0);
@@ -1182,37 +1340,37 @@ var sc = { VERSION: "0.0.37" };
     return $chars[value];
   };
 
-  $SC.Array = function(value, immutable) {
+  $.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
     instance.__immutable = !!immutable;
     return instance;
   };
 
-  $SC.String = function(value, mutable) {
+  $.String = function(value, mutable) {
     var instance = new SCString();
-    instance._ = String(value).split("").map($SC.Char);
+    instance._ = String(value).split("").map($.Char);
     instance.__immutable = !mutable;
     return instance;
   };
 
-  $SC.Event = function(value) {
+  $.Event = function(value) {
     var instance, i, imax, j;
     i = imax = j = value;
-    instance = $SC("Event").new();
+    instance = $("Event").new();
     for (i = j = 0, imax = value.length >> 1; i < imax; ++i) {
       instance.put(value[j++], value[j++]);
     }
     return instance;
   };
 
-  $SC.Function = function(value, def) {
+  $.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = def ? fn(value, def) : value;
+    instance._ = bytecode.create(value, def);
     return instance;
   };
 
-  $SC.Ref = function(value) {
+  $.Ref = function(value) {
     var instance = new SCRef();
     instance._$value = value;
     return instance;
@@ -1223,24 +1381,21 @@ var sc = { VERSION: "0.0.37" };
 // src/sc/lang/klass/utils.js
 (function(sc) {
 
-  var $SC   = sc.lang.$SC;
+  var $     = sc.lang.$;
   var klass = sc.lang.klass;
 
   var utils = {
-    BOOL: function(a) {
-      return a.__bool__();
-    },
-    $nil  : $SC.Nil(),
-    $true : $SC.True(),
-    $false: $SC.False(),
-    $int_0: $SC.Integer(0),
-    $int_1: $SC.Integer(1),
+    $nil  : $.Nil(),
+    $true : $.True(),
+    $false: $.False(),
+    $int_0: $.Integer(0),
+    $int_1: $.Integer(1),
     nop: function() {
       return this;
     },
-    alwaysReturn$nil  : $SC.Nil,
-    alwaysReturn$true : $SC.True,
-    alwaysReturn$false: $SC.False,
+    alwaysReturn$nil  : $.Nil,
+    alwaysReturn$true : $.True,
+    alwaysReturn$false: $.False,
     alwaysReturn$int_0: function() {
       return utils.$int_0;
     },
@@ -1261,26 +1416,26 @@ var sc = { VERSION: "0.0.37" };
 
   var main = {};
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var random = sc.libs.random;
 
   main.$currentEnv = null;
 
-  main.run = function(fn) {
+  main.run = function(func) {
     if (!initialize.done) {
       initialize();
     }
-    return fn($SC);
+    return func($);
   };
 
   function initialize() {
     var $process;
 
-    $process = $SC("Main").new();
-    $process._$interpreter = $SC("Interpreter").new();
-    $process._$mainThread  = $SC("Thread").new();
+    $process = $("Main").new();
+    $process._$interpreter = $("Interpreter").new();
+    $process._$mainThread  = $("Thread").new();
 
-    main.$currentEnv = $SC("Environment").new();
+    main.$currentEnv = $("Environment").new();
 
     // $interpreter._$s = SCServer.default();
 
@@ -1295,23 +1450,23 @@ var sc = { VERSION: "0.0.37" };
     main.$process = $process;
   }
 
-  $SC.Environment = function(key, $value) {
+  $.Environment = function(key, $value) {
     if ($value) {
-      main.$currentEnv.put($SC.Symbol(key), $value);
+      main.$currentEnv.put($.Symbol(key), $value);
       return $value;
     }
-    return main.$currentEnv.at($SC.Symbol(key));
+    return main.$currentEnv.at($.Symbol(key));
   };
 
-  $SC.This = function() {
+  $.This = function() {
     return main.$process.interpreter();
   };
 
-  $SC.ThisProcess = function() {
+  $.ThisProcess = function() {
     return main.$process;
   };
 
-  $SC.ThisThread = function() {
+  $.ThisThread = function() {
     return main.$process.mainThread();
   };
 
@@ -1323,12 +1478,11 @@ var sc = { VERSION: "0.0.37" };
 (function(sc) {
 
   var iterator = {};
-  var $SC   = sc.lang.$SC;
-  var utils = sc.lang.klass.utils;
+  var $      = sc.lang.$;
+  var utils  = sc.lang.klass.utils;
   var $nil   = utils.$nil;
   var $int_0 = utils.$int_0;
   var $int_1 = utils.$int_1;
-  var BOOL   = utils.BOOL;
 
   var __stop__ = function() {
     return null;
@@ -1342,34 +1496,22 @@ var sc = { VERSION: "0.0.37" };
     var iter = {
       next: function() {
         iter.next = __stop__;
-        return value;
+        return [ value, $int_0 ];
       }
     };
     return iter;
   };
 
-  // TODO: async function
   iterator.execute = function(iter, $function) {
-    var $item, ret, i = 0;
-
-    while (($item = iter.next()) !== null) {
-      if (Array.isArray($item)) {
-        ret = $function.value($item[0], $item[1]);
-      } else {
-        ret = $function.value($item, $SC.Integer(i++));
-      }
-      if (ret === 65535) {
-        break;
-      }
-    }
+    $function._.setIterator(iter).resume();
   };
 
   iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
-    var iter = {
+    var bytecode = $function._, iter = {
       next: function() {
-        if (BOOL($function.value())) {
+        if (bytecode.resume().__bool__()) {
           return [ $nil, $nil ];
         }
         iter.next = __stop__;
@@ -1381,28 +1523,28 @@ var sc = { VERSION: "0.0.37" };
   };
 
   var sc_incremental_iter = function($start, $end, $step) {
-    var $i = $start, iter = {
+    var $i = $start, j = 0, iter = {
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i > $end) {
           iter.next = __stop__;
         }
-        return $ret;
+        return [ $ret, $.Integer(j++) ];
       }
     };
     return iter;
   };
 
   var sc_decremental_iter = function($start, $end, $step) {
-    var $i = $start, iter = {
+    var $i = $start, j = 0, iter = {
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i < $end) {
           iter.next = __stop__;
         }
-        return $ret;
+        return [ $ret, $.Integer(j++) ];
       }
     };
     return iter;
@@ -1434,7 +1576,7 @@ var sc = { VERSION: "0.0.37" };
 
     $start = $start.__dec__();
     $end   = $int_0;
-    $step  = $SC.Integer(-1);
+    $step  = $.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -1442,7 +1584,7 @@ var sc = { VERSION: "0.0.37" };
   iterator.number$for = function($start, $end) {
     var $step;
 
-    $step = ($start <= $end) ? $int_1 : $SC.Integer(-1);
+    $step = ($start <= $end) ? $int_1 : $.Integer(-1);
 
     return sc_numeric_iter($start, $end, $step);
   };
@@ -1460,28 +1602,28 @@ var sc = { VERSION: "0.0.37" };
   };
 
   var js_incremental_iter = function(start, end, step, type) {
-    var i = start, iter = {
+    var i = start, j = 0, iter = {
       next: function() {
         var ret = i;
         i += step;
         if (i > end) {
           iter.next = __stop__;
         }
-        return type(ret);
+        return [ type(ret), $.Integer(j++) ];
       }
     };
     return iter;
   };
 
   var js_decremental_iter = function(start, end, step, type) {
-    var i = start, iter = {
+    var i = start, j = 0, iter = {
       next: function() {
         var ret = i;
         i += step;
         if (i < end) {
           iter.next = __stop__;
         }
-        return type(ret);
+        return [ type(ret), $.Integer(j++) ];
       }
     };
     return iter;
@@ -1535,43 +1677,43 @@ var sc = { VERSION: "0.0.37" };
   };
 
   iterator.integer$do = function($endval) {
-    return js_numeric_iter$do($endval, $SC.Integer);
+    return js_numeric_iter$do($endval, $.Integer);
   };
 
   iterator.integer$reverseDo = function($startval) {
-    return js_numeric_iter$reverseDo($startval, $SC.Integer);
+    return js_numeric_iter$reverseDo($startval, $.Integer);
   };
 
   iterator.integer$for = function($startval, $endval) {
-    return js_numeric_iter$for($startval, $endval, $SC.Integer);
+    return js_numeric_iter$for($startval, $endval, $.Integer);
   };
 
   iterator.integer$forBy = function($startval, $endval, $stepval) {
-    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Integer);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $.Integer);
   };
 
   iterator.integer$forSeries = function($startval, $second, $last) {
-    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Integer);
+    return js_numeric_iter$forSeries($startval, $second, $last, $.Integer);
   };
 
   iterator.float$do = function($endval) {
-    return js_numeric_iter$do($endval, $SC.Float);
+    return js_numeric_iter$do($endval, $.Float);
   };
 
   iterator.float$reverseDo = function($startval) {
-    return js_numeric_iter$reverseDo($startval, $SC.Float);
+    return js_numeric_iter$reverseDo($startval, $.Float);
   };
 
   iterator.float$for = function($startval, $endval) {
-    return js_numeric_iter$for($startval, $endval, $SC.Float);
+    return js_numeric_iter$for($startval, $endval, $.Float);
   };
 
   iterator.float$forBy = function($startval, $endval, $stepval) {
-    return js_numeric_iter$forBy($startval, $endval, $stepval, $SC.Float);
+    return js_numeric_iter$forBy($startval, $endval, $stepval, $.Float);
   };
 
   iterator.float$forSeries = function($startval, $second, $last) {
-    return js_numeric_iter$forSeries($startval, $second, $last, $SC.Float);
+    return js_numeric_iter$forSeries($startval, $second, $last, $.Float);
   };
 
   var list_iter = function(list) {
@@ -1581,7 +1723,7 @@ var sc = { VERSION: "0.0.37" };
         if (i >= list.length) {
           iter.next = __stop__;
         }
-        return $ret;
+        return [ $ret, $.Integer(i - 1) ];
       }
     };
     return iter;
@@ -1629,6 +1771,10 @@ var sc = { VERSION: "0.0.37" };
     items.forEach(function(msg) {
       SCScript.stdout(msg);
     });
+  };
+
+  io.warn = function(msg) {
+    SCScript.stderr(msg);
   };
 
   sc.lang.io = io;
@@ -2045,10 +2191,13 @@ var sc = { VERSION: "0.0.37" };
     return f;
   }
 
-  Scope.add = function(type, id, scope) {
+  Scope.add = function(type, id, opts) {
     var peek = this.stack[this.stack.length - 1];
-    var vars, args, declared, stmt, indent;
+    var scope, vars, args, declared, stmt, indent;
 
+    opts = opts || {};
+
+    scope = opts.scope;
     if (scope) {
       vars = scope.vars;
       args = scope.args;
@@ -2074,7 +2223,7 @@ var sc = { VERSION: "0.0.37" };
     switch (type) {
     case "var":
       if (!vars[id]) {
-        this.add_delegate(stmt, id, indent, peek, scope);
+        this.add_delegate(stmt, id, indent, peek, opts);
         vars[id] = true;
         delete declared[id];
       }
@@ -2133,31 +2282,23 @@ var sc = { VERSION: "0.0.37" };
   var precompile = compiler.precompile;
 
   var Scope = compiler.scope({
-    add_delegate: function(stmt, id, indent, peek, scope) {
+    add_delegate: function(stmt, id, indent, peek, opts) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
       } else {
         this._appendVariable(stmt, id);
       }
-      if (scope) {
+      if (opts.scope) {
         peek.declared[id] = true;
       }
     },
     _addNewVariableStatement: function(stmt, id, indent) {
       stmt.head.push(indent, "var ");
       stmt.vars.push($id(id));
-      if (id.charAt(0) !== "_") {
-        stmt.vars.push(" = $SC.Nil()");
-      }
       stmt.tail.push(";", "\n");
     },
     _appendVariable: function(stmt, id) {
-      stmt.vars.push(
-        ", ", $id(id)
-      );
-      if (id.charAt(0) !== "_") {
-        stmt.vars.push(" = $SC.Nil()");
-      }
+      stmt.vars.push(", ", $id(id));
     },
     begin: function(stream, args) {
       var declared = this.getDeclaredVariable();
@@ -2181,7 +2322,7 @@ var sc = { VERSION: "0.0.37" };
     begin_ref: function(scope) {
       var refId   = (this._refId | 0);
       var refName = "_ref" + refId;
-      this.add("var", refName, scope);
+      this.add("var", refName, { scope: scope, init: false });
       this._refId = refId + 1;
       return refName;
     },
@@ -2254,7 +2395,7 @@ var sc = { VERSION: "0.0.37" };
 
   CodeGen.prototype.withFunction = function(args, fn) {
     var result;
-    var argItems, base, body;
+    var argItems, base;
 
     argItems = this.stitchWith(args, ", ", function(item) {
       return this.generate(item);
@@ -2266,15 +2407,7 @@ var sc = { VERSION: "0.0.37" };
     this.base += "  ";
 
     this.scope.begin(result, args);
-
-    body = fn.call(this);
-
-    if (body.length) {
-      result.push(body);
-    } else {
-      result.push(this.base, "return $SC.Nil();");
-    }
-
+    result.push(fn.call(this));
     this.scope.end();
 
     this.base = base;
@@ -2330,21 +2463,14 @@ var sc = { VERSION: "0.0.37" };
   };
 
   CodeGen.prototype.stitchWith = function(elements, bond, fn) {
-    var result, item;
-    var count, i, imax;
+    var result, i, imax;
 
     result = [];
-    for (i = count = 0, imax = elements.length; i < imax; ++i) {
-      if (count) {
+    for (i = 0, imax = elements.length; i < imax; ++i) {
+      if (i) {
         result.push(bond);
       }
-
-      item = fn.call(this, elements[i], i);
-
-      if (typeof item !== "undefined") {
-        result.push(item);
-        count += 1;
-      }
+      result.push(fn.call(this, elements[i], i));
     }
 
     return result;
@@ -2401,14 +2527,14 @@ var sc = { VERSION: "0.0.37" };
       result = [
         this.stitchWith(elements, ",\n", function(item, i) {
           return this.addIndent(this._Assign(
-            item, operator, ref + ".at($SC.Integer(" + i + "))"
+            item, operator, ref + ".$('at', [ $.Integer(" + i + ") ])"
           ));
         })
       ];
 
       if (node.remain) {
         result.push(",\n", this.addIndent(this._Assign(
-          node.remain, operator, ref + ".copyToEnd($SC.Integer(" + lastUsedIndex + "))"
+          node.remain, operator, ref + ".$('copyToEnd', [ $.Integer(" + lastUsedIndex + ") ])"
         )));
       }
 
@@ -2453,31 +2579,24 @@ var sc = { VERSION: "0.0.37" };
 
   CodeGen.prototype._EqualityOperator = function(node) {
     return [
-      "$SC.Boolean(",
+      "$.Boolean(",
       this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
       ")"
     ];
   };
 
   CodeGen.prototype._BinaryExpression = function(node) {
-    var result, operator, ch;
+    var result;
 
-    result   = [ this.generate(node.left) ];
-    operator = node.operator;
+    result = [
+      this.generate(node.left),
+      ".$('" + node.operator + "', [ ", this.generate(node.right)
+    ];
 
-    ch = operator.charCodeAt(0);
-
-    if (0x61 <= ch && ch <= 0x7a) {
-      result.push(".", operator);
-    } else {
-      result.push(" ['", operator, "'] ");
-    }
-
-    result.push("(", this.generate(node.right));
     if (node.adverb) {
       result.push(", ", this.generate(node.adverb));
     }
-    result.push(")");
+    result.push(" ])");
 
     return result;
   };
@@ -2516,20 +2635,26 @@ var sc = { VERSION: "0.0.37" };
       ref = this.scope.begin_ref();
       result = [
         "(" + ref + " = ", this.generate(list[0]), ", ",
-        this.generate(node.callee), ".", node.method.name, "(" + ref + "), ",
+        this.generate(node.callee), ".$('" + node.method.name + "', [ " + ref + " ]), ",
         ref + ")"
       ];
       this.scope.end_ref();
     } else {
-      args = [
-        this.stitchWith(list, ", ", function(item) {
-          return this.generate(item);
-        }),
-        this.insertKeyValueElement(node.args.keywords, hasActualArgument)
-      ];
-      result = [
-        this.generate(node.callee), ".", node.method.name, "(", args, ")"
-      ];
+      if (list.length || node.args.keywords) {
+        args = [
+          this.stitchWith(list, ", ", function(item) {
+            return this.generate(item);
+          }),
+          this.insertKeyValueElement(node.args.keywords, hasActualArgument)
+        ];
+        result = [
+          this.generate(node.callee), ".$('" + node.method.name + "', [ ", args, " ])"
+        ];
+      } else {
+        result = [
+          this.generate(node.callee), ".$('" + node.method.name + "')"
+        ];
+      }
     }
 
     return result;
@@ -2544,9 +2669,9 @@ var sc = { VERSION: "0.0.37" };
     result = [
       "(" + ref + " = ",
       this.generate(node.callee),
-      ", " + ref + "." + node.method.name + ".apply(" + ref + ", ",
+      ", " + ref + ".$('" + node.method.name + "', ",
       this.insertArrayElement(node.args.list), ".concat(",
-      this.generate(node.args.expand), ".asArray()._",
+      this.generate(node.args.expand), ".$('asArray')._",
       this.insertKeyValueElement(node.args.keywords, true),
       ")))"
     ];
@@ -2561,31 +2686,118 @@ var sc = { VERSION: "0.0.37" };
 
     if (opts) {
       // setter
-      result = [ "$SC.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
+      result = [ "$.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
       opts.used = true;
     } else {
       // getter
-      result = "$SC.Environment('" + node.id.name + "')";
+      result = "$.Environment('" + node.id.name + "')";
     }
 
     return result;
   };
 
   CodeGen.prototype.FunctionExpression = function(node) {
-    var fn, info;
-
-    info = getInformationOfFunction(node);
-
-    if (!node.segmented) {
-      fn = CodeGen.prototype._SimpleFunction;
-    } else {
-      fn = CodeGen.prototype._SegmentedFunction;
-    }
+    var info = getInformationOfFunction(node);
 
     return [
-      fn.call(this, node, info.args),
-      this._FunctionMetadata(info), ")"
+      "$.Function(",
+      this._FunctionBody(node, info.args),
+      this._FunctionMetadata(info),
+      ")"
     ];
+  };
+
+  CodeGen.prototype._FunctionBody = function(node, args) {
+    var fargs, body, assignArguments;
+
+    fargs = args.map(function(_, i) {
+      return "_arg" + i;
+    });
+
+    assignArguments = function(item, i) {
+      return $id(args[i]) + " = " + fargs[i];
+    };
+
+    body = this.withFunction([], function() {
+      var result = [];
+      var fragments = [], syncBlockScope;
+      var elements = node.body;
+      var i, imax;
+      var functionBodies;
+
+      if (elements.length) {
+        for (i = 0, imax = args.length; i < imax; ++i) {
+          this.scope.add("var", args[i], { init: false });
+        }
+
+        syncBlockScope = this.state.syncBlockScope;
+        this.state.syncBlockScope = this.scope.peek();
+
+        functionBodies = this.withIndent(function() {
+          var fragments = [];
+          var i = 0, imax = elements.length;
+          var lastIndex = imax - 1;
+
+          fragments.push("\n");
+
+          var loop = function() {
+            var fragments = [];
+            var stmt, j = 0;
+
+            while (i < imax) {
+              if (i === 0) {
+                if (args.length) {
+                  stmt = this.stitchWith(args, "; ", assignArguments);
+                  fragments.push([ this.addIndent(stmt), ";", "\n" ]);
+                }
+              } else if (j) {
+                fragments.push("\n");
+              }
+
+              this.state.calledSegmentedMethod = false;
+              stmt = this.generate(elements[i]);
+
+              if (i === lastIndex || this.state.calledSegmentedMethod) {
+                stmt = [ "return ", stmt ];
+              }
+              fragments.push([ this.addIndent(stmt), ";" ]);
+              j += 1;
+
+              i += 1;
+              if (this.state.calledSegmentedMethod) {
+                break;
+              }
+            }
+
+            return fragments;
+          };
+
+          while (i < imax) {
+            if (i) {
+              fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
+            } else {
+              fragments.push(this.addIndent(this.withFunction(fargs, loop)));
+            }
+          }
+
+          fragments.push("\n");
+
+          return fragments;
+        });
+
+        fragments.push("return [", functionBodies, this.addIndent("];"));
+      } else {
+        fragments.push("return [];");
+      }
+
+      result.push([ this.addIndent(fragments) ]);
+
+      this.state.syncBlockScope = syncBlockScope;
+
+      return result;
+    });
+
+    return body;
   };
 
   var format_argument = function(node) {
@@ -2647,113 +2859,11 @@ var sc = { VERSION: "0.0.37" };
     return result;
   };
 
-  CodeGen.prototype._SimpleFunction = function(node, args) {
-    var body;
-
-    body = this.withFunction(args, function() {
-      return this._Statements(node.body);
-    });
-
-    return [ "$SC.Function(", body ];
-  };
-
-  CodeGen.prototype._SegmentedFunction = function(node, args) {
-    var fargs, body, assignArguments;
-
-    fargs = args.map(function(_, i) {
-      return "_arg" + i;
-    });
-
-    assignArguments = function(item, i) {
-      return "$" + args[i] + " = " + fargs[i];
-    };
-
-    body = this.withFunction([], function() {
-      var result = [];
-      var fragments = [], syncBlockScope;
-      var elements = node.body;
-      var i, imax;
-      var functionBodies;
-
-      for (i = 0, imax = args.length; i < imax; ++i) {
-        this.scope.add("var", args[i]);
-      }
-
-      syncBlockScope = this.state.syncBlockScope;
-      this.state.syncBlockScope = this.scope.peek();
-
-      functionBodies = this.withIndent(function() {
-        var fragments = [];
-        var i = 0, imax = elements.length;
-        var lastIndex = imax - 1;
-
-        fragments.push("\n");
-
-        var loop = function() {
-          var fragments = [];
-          var stmt;
-          var count = 0;
-
-          while (i < imax) {
-            if (i === 0) {
-              if (args.length) {
-                stmt = this.stitchWith(args, "; ", assignArguments);
-                fragments.push([ this.addIndent(stmt), ";", "\n" ]);
-              }
-            } else if (count) {
-              fragments.push("\n");
-            }
-
-            this.state.calledSegmentedMethod = false;
-            stmt = this.generate(elements[i]);
-
-            if (stmt.length) {
-              if (i === lastIndex || this.state.calledSegmentedMethod) {
-                stmt = [ "return ", stmt ];
-              }
-              fragments.push([ this.addIndent(stmt), ";" ]);
-              count += 1;
-            }
-
-            i += 1;
-            if (this.state.calledSegmentedMethod) {
-              break;
-            }
-          }
-
-          return fragments;
-        };
-
-        while (i < imax) {
-          if (i) {
-            fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
-          } else {
-            fragments.push(this.addIndent(this.withFunction(fargs, loop)));
-          }
-        }
-
-        fragments.push("\n");
-
-        return fragments;
-      });
-
-      fragments.push("return [", functionBodies, this.addIndent("];"));
-
-      result.push([ this.addIndent(fragments) ]);
-
-      this.state.syncBlockScope = syncBlockScope;
-
-      return result;
-    });
-
-    return [ "$SC.SegFunction(", body ];
-  };
-
   CodeGen.prototype.Identifier = function(node, opts) {
     var name = node.name;
 
     if (isClassName(name)) {
-      return "$SC('" + name + "')";
+      return "$('" + name + "')";
     }
 
     if (this.scope.find(name)) {
@@ -2775,13 +2885,13 @@ var sc = { VERSION: "0.0.37" };
       ref = this.scope.begin_ref();
       name = [
         "(" + ref + " = ", this.generate(opts.right),
-        ", $SC.This()." + node.name + "_(" + ref + "), " + ref + ")"
+        ", $.This().$('" + node.name + "_', [ " + ref + " ]), " + ref + ")"
       ];
       opts.used = true;
       this.scope.end_ref();
     } else {
       // getter
-      name = "$SC.This()." + node.name + "()";
+      name = "$.This().$('" + node.name + "')";
     }
 
     return name;
@@ -2791,7 +2901,7 @@ var sc = { VERSION: "0.0.37" };
     var result;
 
     result = [
-      "$SC.Array(",
+      "$.Array(",
       this.insertArrayElement(node.elements),
     ];
 
@@ -2807,27 +2917,27 @@ var sc = { VERSION: "0.0.37" };
   CodeGen.prototype.Literal = function(node) {
     switch (node.valueType) {
     case Token.IntegerLiteral:
-      return "$SC.Integer(" + node.value + ")";
+      return "$.Integer(" + node.value + ")";
     case Token.FloatLiteral:
-      return "$SC.Float(" + node.value + ")";
+      return "$.Float(" + node.value + ")";
     case Token.CharLiteral:
-      return "$SC.Char('" + node.value + "')";
+      return "$.Char('" + node.value + "')";
     case Token.SymbolLiteral:
-      return "$SC.Symbol('" + node.value + "')";
+      return "$.Symbol('" + node.value + "')";
     case Token.StringLiteral:
-      return "$SC.String('" + node.value + "')";
+      return "$.String('" + node.value + "')";
     case Token.TrueLiteral:
-      return "$SC.True()";
+      return "$.True()";
     case Token.FalseLiteral:
-      return "$SC.False()";
+      return "$.False()";
     }
 
-    return "$SC.Nil()";
+    return "$.Nil()";
   };
 
   CodeGen.prototype.EventExpression = function(node) {
     return [
-      "$SC.Event(", this.insertArrayElement(node.elements), ")"
+      "$.Event(", this.insertArrayElement(node.elements), ")"
     ];
   };
 
@@ -2835,7 +2945,7 @@ var sc = { VERSION: "0.0.37" };
     var result, body;
 
     if (node.body.length) {
-      body = this.withFunction([ "SC" ], function() {
+      body = this.withFunction([ "" ], function() { // "" compiled as $
         return this._Statements(node.body);
       });
 
@@ -2854,13 +2964,13 @@ var sc = { VERSION: "0.0.37" };
   CodeGen.prototype.ThisExpression = function(node) {
     var name = node.name;
     name = name.charAt(0).toUpperCase() + name.substr(1);
-    return [ "$SC." + name + "()" ];
+    return [ "$." + name + "()" ];
   };
 
   CodeGen.prototype.UnaryExpression = function(node) {
     /* istanbul ignore else */
     if (node.operator === "`") {
-      return [ "$SC.Ref(", this.generate(node.arg), ")" ];
+      return [ "$.Ref(", this.generate(node.arg), ")" ];
     }
 
     /* istanbul ignore next */
@@ -2871,22 +2981,28 @@ var sc = { VERSION: "0.0.37" };
     var scope = this.state.syncBlockScope;
 
     return this.stitchWith(node.declarations, ", ", function(item) {
-      this.scope.add("var", item.id.name, scope);
+      var result;
 
-      if (!item.init) {
-        return;
+      this.scope.add("var", item.id.name, { scope: scope, init: false });
+
+      result = [ this.generate(item.id) ];
+
+      if (item.init) {
+        result.push(" = ", this.generate(item.init));
+      } else {
+        result.push(" = $.Nil()");
       }
 
-      return [ this.generate(item.id), " = ", this.generate(item.init) ];
+      return result;
     });
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
-    return [ "$SC.Value(" + node.id + ", ", this.generate(node.expr), ")" ];
+    return [ "this.push(", this.generate(node.expr), ")" ];
   };
 
-  CodeGen.prototype.ValueMethodResult = function(node) {
-    return [ "$SC.Result(" + node.id + ")" ];
+  CodeGen.prototype.ValueMethodResult = function() {
+    return "this.shift()";
   };
 
   CodeGen.prototype._Statements = function(elements) {
@@ -2896,10 +3012,6 @@ var sc = { VERSION: "0.0.37" };
       var stmt;
 
       stmt = this.generate(item);
-
-      if (stmt.length === 0) {
-        return;
-      }
 
       if (i === lastIndex) {
         stmt = [ "return ", stmt ];
@@ -4145,10 +4257,10 @@ var sc = { VERSION: "0.0.37" };
 
         token = this.lex();
         right = this.parseAssignmentExpression();
-        methodName = renameGetterToSetter(left.method.name);
+        methodName = left.method.name + "_";
         left.method.name = methodName;
         left.args.list   = node.args.list.concat(right);
-        if (methodName.charAt(methodName.length - 1) === "_") {
+        if (left.stamp !== "[")  {
           left.stamp = "=";
         }
         node = marker.update().apply(left, true);
@@ -4510,7 +4622,7 @@ var sc = { VERSION: "0.0.37" };
     var node, method;
     var marker;
 
-    method = Node.createIdentifier("_newFrom");
+    method = Node.createIdentifier("[]");
     method = Marker.create(this.lexer).apply(method);
 
     marker = Marker.create(this.lexer);
@@ -4523,13 +4635,13 @@ var sc = { VERSION: "0.0.37" };
   SCParser.prototype.parseLeftHandSideListAt = function(expr) {
     var indexes, method;
 
-    method = Node.createIdentifier("at");
+    method = Node.createIdentifier("[]");
     method = Marker.create(this.lexer).apply(method);
 
     indexes = this.parseListIndexer();
     if (indexes) {
       if (indexes.length === 3) {
-        method.name = "copySeries";
+        method.name = "[..]";
       }
     } else {
       this.throwUnexpected(this.lookahead);
@@ -5259,14 +5371,6 @@ var sc = { VERSION: "0.0.37" };
     id = Node.createIdentifier(value);
 
     return marker.update().apply(id);
-  };
-
-  var renameGetterToSetter = function(methodName) {
-    switch (methodName) {
-    case "at"        : return "put";
-    case "copySeries": return "putSeries";
-    }
-    return methodName + "_";
   };
 
   var calcBinaryPrecedence = function(token, binaryPrecedence) {

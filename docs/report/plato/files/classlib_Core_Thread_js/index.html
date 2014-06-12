@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">128.53</p>
+      <p class="stat">132.20</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">196</p>
+      <p class="stat">187</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">18.37</p>
+      <p class="stat">13.61</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.70</p>
+      <p class="stat">0.64</p>
     </div>
   </div>
 </div>
@@ -95,12 +95,11 @@
 
   require(&quot;../Streams/Stream&quot;);
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var random = sc.libs.random;
 
   sc.lang.klass.define(&quot;Thread&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
 
     spec.constructor = function SCThread() {
       this.__super__(&quot;Stream&quot;);
@@ -111,13 +110,13 @@
     };
 
     spec._init = function() {
-      this._state   = sc.C.THREAD_STATE_INIT;
+      this._state   = sc.C.STATE_INIT;
       this._randgen = new random.RandGen((Math.random() * 4294967295) &gt;&gt;&gt; 0);
       return this;
     };
 
     spec.state = function() {
-      return $SC.Integer(this._state);
+      return $.Integer(this._state);
     };
 
     // spec.parent = function() {
@@ -211,7 +210,7 @@
     spec.copy = utils.nop;
 
     // spec.isPlaying = function() {
-    //   return $SC.Boolean(this._state._ === 5);
+    //   return $.Boolean(this._state._ === 5);
     // };
 
     // spec.threadPlayer = function() {
@@ -224,30 +223,22 @@
     // TODO: implements findThreadPlayer
 
     spec.randSeed_ = fn(function($seed) {
-      var seed;
-
-      if ($seed === $nil) {
-        seed = Math.random() * 4294967295;
-      } else {
-        seed = $seed.__int__();
-      }
-      this._randgen.setSeed(seed &gt;&gt;&gt; 0);
-
+      this._randgen.setSeed($seed.__int__() &gt;&gt;&gt; 0);
       return this;
     }, &quot;seed&quot;);
 
     spec.randData_ = fn(function($data) {
-      this._randgen.x = $data.at($SC.Integer(0)).__int__();
-      this._randgen.y = $data.at($SC.Integer(1)).__int__();
-      this._randgen.z = $data.at($SC.Integer(2)).__int__();
+      this._randgen.x = $data.at($.Integer(0)).__int__();
+      this._randgen.y = $data.at($.Integer(1)).__int__();
+      this._randgen.z = $data.at($.Integer(2)).__int__();
       return this;
     }, &quot;data&quot;);
 
     spec.randData = function() {
-      return $SC(&quot;Int32Array&quot;).newFrom($SC.Array([
-        $SC.Integer(this._randgen.x),
-        $SC.Integer(this._randgen.y),
-        $SC.Integer(this._randgen.z),
+      return $(&quot;Int32Array&quot;).newFrom($.Array([
+        $.Integer(this._randgen.x),
+        $.Integer(this._randgen.y),
+        $.Integer(this._randgen.z),
       ]));
     };
 

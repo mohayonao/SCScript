@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">117.49</p>
+      <p class="stat">117.80</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">307</p>
+      <p class="stat">323</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">54.14</p>
+      <p class="stat">54.37</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.61</p>
+      <p class="stat">2.79</p>
     </div>
   </div>
 </div>
@@ -94,11 +94,11 @@
   &quot;use strict&quot;;
 
   require(&quot;../sc&quot;);
-  require(&quot;../dollarSC&quot;);
+  require(&quot;../dollar&quot;);
   require(&quot;../../libs/strlib&quot;);
 
-  var slice = [].slice;
-  var $SC    = sc.lang.$SC;
+  var slice  = [].slice;
+  var $      = sc.lang.$;
   var strlib = sc.libs.strlib;
 
   var klass       = {};
@@ -155,7 +155,7 @@
 
     Object.keys(spec).forEach(function(methodName) {
       if (methodName !== &quot;constructor&quot;) {
-        if (methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
+        if (methodName !== &quot;$&quot; &amp;&amp; methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
           setMethod(classMethods, methodName.substr(1), spec[methodName]);
         } else {
           setMethod(instanceMethods, methodName, spec[methodName]);
@@ -252,7 +252,7 @@
 
     delete that.__superClassP;
 
-    return result || /* istanbul ignore next */ $SC.Nil();
+    return result || /* istanbul ignore next */ $.Nil();
   };
 
   klass.define = function(className, spec) {
@@ -376,7 +376,7 @@
   klass.refine(&quot;Object&quot;, function(spec) {
     spec.$new = function() {
       if (this.__Spec === SCClass) {
-        return $SC.Nil();
+        return $.Nil();
       }
       return new this.__Spec(slice.call(arguments));
     };
@@ -385,12 +385,28 @@
 
       instance = new this.__Spec(slice.call(arguments));
       Object.keys(dict).forEach(function(key) {
-        instance[&quot;_$&quot; + key] = dict[key] || $SC.Nil();
+        instance[&quot;_$&quot; + key] = dict[key] || $.Nil();
       });
 
       return instance;
     };
     spec.$initClass = function() {
+    };
+
+    spec.$ = function(methodName, args) {
+      if (this[methodName]) {
+        if (args) {
+          return this[methodName].apply(this, args);
+        } else {
+          return this[methodName]();
+        }
+      }
+      return this._doesNotUnderstand(methodName, args);
+    };
+
+    spec._doesNotUnderstand = function(methodName) {
+      throw new Error(&quot;RECEIVER &quot; + this.__str__() + &quot;: &quot; +
+                      &quot;Message &#039;&quot; + methodName + &quot;&#039; not understood.&quot;);
     };
   });
 

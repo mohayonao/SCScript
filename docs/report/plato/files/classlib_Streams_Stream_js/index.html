@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">131.20</p>
+      <p class="stat">136.81</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">412</p>
+      <p class="stat">563</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">33.10</p>
+      <p class="stat">44.77</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.57</p>
+      <p class="stat">4.70</p>
     </div>
   </div>
 </div>
@@ -95,16 +95,16 @@
 
   require(&quot;../Core/AbstractFunction&quot;);
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.define(&quot;Stream&quot;, function(spec, utils) {
-    var BOOL   = utils.BOOL;
+  klass.define(&quot;Stream&quot;, function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_0 = utils.$int_0;
-    var SCArray = $SC(&quot;Array&quot;);
+    var SCArray = $(&quot;Array&quot;);
 
     spec.constructor = function SCStream() {
       this.__super__(&quot;AbstractFunction&quot;);
@@ -130,8 +130,10 @@
 
     spec.nextN = fn(function($n, $inval) {
       var $this = this;
-      return SCArray.fill($n, $SC.Function(function() {
-        return $this.next($inval);
+      return SCArray.fill($n, $.Function(function() {
+        return [ function() {
+          return $this.next($inval);
+        } ];
       }));
     }, &quot;n; inval&quot;);
 
@@ -139,8 +141,10 @@
       var $array;
 
       $array = $nil;
-      this.do($SC.Function(function($item) {
-        $array = $array.add($item);
+      this.do($.Function(function() {
+        return [ function($item) {
+          $array = $array.add($item);
+        } ];
       }), $inval);
 
       return $array;
@@ -152,16 +156,20 @@
 
     spec.putN = fn(function($n, $item) {
       var $this = this;
-      $n.do($SC.Function(function() {
-        $this.put($item);
+      $n.do($.Function(function() {
+        return [ function() {
+          $this.put($item);
+        } ];
       }));
       return this;
     }, &quot;n; item&quot;);
 
     spec.putAll = fn(function($aCollection) {
       var $this = this;
-      $aCollection.do($SC.Function(function($item) {
-        $this.put($item);
+      $aCollection.do($.Function(function() {
+        return [ function($item) {
+          $this.put($item);
+        } ];
       }));
       return this;
     }, &quot;aCollection&quot;);
@@ -171,13 +179,17 @@
       var $item, $i;
 
       $i = $int_0;
-      $SC.Function(function() {
-        $item = $this.next($inval);
-        return $item.notNil();
-      }).while($SC.Function(function() { // TODO: use SegFunction
-        $function.value($item, $i);
-        $i = $i.__inc__();
-        return $i;
+      $.Function(function() {
+        return [ function() {
+          $item = $this.next($inval);
+          return $item.notNil();
+        } ];
+      }).while($.Function(function() {
+        return [ function() {
+          $function.value($item, $i);
+          $i = $i.__inc__();
+          return $i;
+        } ];
       }));
 
       return this;
@@ -185,18 +197,26 @@
 
     spec.subSample = fn(function($offset, $skipSize) {
       var $this = this;
-      var SCRoutine = $SC(&quot;Routine&quot;);
+      var SCRoutine = $(&quot;Routine&quot;);
 
-      return SCRoutine.new($SC.Function(function() {
-        $offset.do($SC.Function(function() {
-          $this.next();
-        }));
-        $SC.Function(function() {
-          $this.next().yield();
-          $skipSize.do($SC.Function(function() {
-            $this.next();
+      return SCRoutine.new($.Function(function() {
+        return [ function() {
+          $offset.do($.Function(function() {
+            return [ function() {
+              $this.next();
+            } ];
           }));
-        }).loop();
+          $.Function(function() {
+            return [ function() {
+              $this.next().yield();
+              $skipSize.do($.Function(function() {
+                return [ function() {
+                  $this.next();
+                } ];
+              }));
+            } ];
+          }).loop();
+        } ];
       }));
     }, &quot;offset=0; skipSize=0&quot;);
 
@@ -205,13 +225,17 @@
       var $item, $i;
 
       $i = $int_0;
-      $SC.Function(function() {
-        $item = $this.next($item);
-        return $item.notNil();
-      }).while($SC.Function(function() { // TODO: use SegFunction
-        $function.value($item, $i);
-        $i = $i.__inc__();
-        return $i;
+      $.Function(function() {
+        return [ function() {
+          $item = $this.next($item);
+          return $item.notNil();
+        } ];
+      }).while($.Function(function() {
+        return [ function() {
+          $function.value($item, $i);
+          $i = $i.__inc__();
+          return $i;
+        } ];
       }));
 
       return this;
@@ -221,91 +245,119 @@
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $SC.Function(function($inval) {
-        var $nextval;
+      $nextFunc = $.Function(function() {
+        return [ function($inval) {
+          var $nextval;
 
-        $nextval = $this.next($inval);
-        if ($nextval !== $nil) {
-          return $argCollectFunc.value($nextval, $inval);
-        }
-        return $nil;
+          $nextval = $this.next($inval);
+          if ($nextval !== $nil) {
+            return $argCollectFunc.value($nextval, $inval);
+          }
+          return $nil;
+        } ];
       });
-      $resetFunc = $SC.Function(function() {
-        return $this.reset();
+      $resetFunc = $.Function(function() {
+        return [ function() {
+          return $this.reset();
+        } ];
       });
 
-      return $SC(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
+      return $(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
     }, &quot;argCollectFunc&quot;);
 
     spec.reject = fn(function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $SC.Function(function($inval) {
-        var $nextval;
+      $nextFunc = $.Function(function() {
+        return [ function($inval) {
+          var $nextval;
 
-        $nextval = $this.next($inval);
-        $SC.Function(function() {
-          return $nextval.notNil().and($SC.Function(function() {
-            return $function.value($nextval, $inval);
-          }));
-        }).while($SC.Function(function() { // TODO: use SegFunction
           $nextval = $this.next($inval);
+          $.Function(function() {
+            return [ function() {
+              return $nextval.notNil().and($.Function(function() {
+                return [ function() {
+                  return $function.value($nextval, $inval);
+                } ];
+              }));
+            } ];
+          }).while($.Function(function() {
+            return [ function() {
+              $nextval = $this.next($inval);
+              return $nextval;
+            } ];
+          }));
+
           return $nextval;
-        }));
-
-        return $nextval;
+        } ];
       });
-      $resetFunc = $SC.Function(function() {
-        return $this.reset();
+      $resetFunc = $.Function(function() {
+        return [ function() {
+          return $this.reset();
+        } ];
       });
 
-      return $SC(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
+      return $(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
     }, &quot;function&quot;);
 
     spec.select = fn(function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $SC.Function(function($inval) {
-        var $nextval;
+      $nextFunc = $.Function(function() {
+        return [ function($inval) {
+          var $nextval;
 
-        $nextval = $this.next($inval);
-        $SC.Function(function() {
-          return $nextval.notNil().and($SC.Function(function() {
-            return $function.value($nextval, $inval).not();
-          }));
-        }).while($SC.Function(function() { // TODO: use SegFunction
           $nextval = $this.next($inval);
+          $.Function(function() {
+            return [ function() {
+              return $nextval.notNil().and($.Function(function() {
+                return [ function() {
+                  return $function.value($nextval, $inval).not();
+                } ];
+              }));
+            } ];
+          }).while($.Function(function() {
+            return [ function() {
+              $nextval = $this.next($inval);
+              return $nextval;
+            } ];
+          }));
+
           return $nextval;
-        }));
-
-        return $nextval;
+        } ];
       });
-      $resetFunc = $SC.Function(function() {
-        return $this.reset();
+      $resetFunc = $.Function(function() {
+        return [ function() {
+          return $this.reset();
+        } ];
       });
 
-      return $SC(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
+      return $(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
     }, &quot;function&quot;);
 
     spec.dot = fn(function($function, $stream) {
       var $this = this;
 
-      return $SC(&quot;FuncStream&quot;).new($SC.Function(function($inval) {
-        var $x, $y;
+      return $(&quot;FuncStream&quot;).new($.Function(function() {
+        return [ function($inval) {
+          var $x, $y;
 
-        $x = $this.next($inval);
-        $y = $stream.next($inval);
+          $x = $this.next($inval);
+          $y = $stream.next($inval);
 
-        if ($x !== $nil &amp;&amp; $y !== $nil) {
-          return $function.value($x, $y, $inval);
-        }
+          if ($x !== $nil &amp;&amp; $y !== $nil) {
+            return $function.value($x, $y, $inval);
+          }
 
-        return $nil;
-      }), $SC.Function(function() {
-        $this.reset();
-        return $stream.reset();
+          return $nil;
+        } ];
+      }), $.Function(function() {
+        return [ function() {
+          $this.reset();
+          return $stream.reset();
+        } ];
       }));
     }, &quot;function; stream&quot;);
 
@@ -316,35 +368,39 @@
       $nextx = this.next();
       $nexty = $stream.next();
 
-      return $SC(&quot;FuncStream&quot;).new($SC.Function(function($inval) {
-        var $val;
+      return $(&quot;FuncStream&quot;).new($.Function(function() {
+        return [ function($inval) {
+          var $val;
 
-        if ($nextx === $nil) {
           if ($nextx === $nil) {
-            return $nil;
+            if ($nexty === $nil) {
+              return $nil;
+            } else {
+              $val = $nexty;
+              $nexty = $stream.next($inval);
+              return $val;
+            }
           } else {
-            $val = $nexty;
-            $nexty = $stream.next($inval);
-            return $val;
+            if ($nexty === $nil ||
+              $function.value($nextx, $nexty, $inval).__bool__()) {
+              $val   = $nextx;
+              $nextx = $this.next($inval);
+              return $val;
+            } else {
+              $val   = $nexty;
+              $nexty = $stream.next($inval);
+              return $val;
+            }
           }
-        } else {
-          if ($nexty === $nil ||
-              BOOL($function.value($nextx, $nexty, $inval))) {
-            $val   = $nextx;
-            $nextx = $this.next($inval);
-            return $val;
-          } else {
-            $val   = $nexty;
-            $nexty = $stream.next($inval);
-            return $val;
-          }
-        }
-      }), $SC.Function(function() {
-        $this.reset();
-        $stream.reset();
-        $nextx = $this.next();
-        $nexty = $stream.next();
-        return $nexty;
+        } ];
+      }), $.Function(function() {
+        return [ function() {
+          $this.reset();
+          $stream.reset();
+          $nextx = $this.next();
+          $nexty = $stream.next();
+          return $nexty;
+        } ];
       }));
     }, &quot;function; stream&quot;);
 
@@ -357,39 +413,43 @@
       var $reset;
 
       $reset = $false;
-      return $SC(&quot;Routine&quot;).new($SC.Function(function($inval) {
-        if (BOOL($reset)) {
-          $this.reset();
-          $stream.reset();
-        }
-        $reset = $true;
-        $inval = $this.embedInStream($inval);
-        return $stream.embedInStream($inval);
+      return $(&quot;Routine&quot;).new($.Function(function() {
+        return [ function($inval) {
+          if ($reset.__bool__()) {
+            $this.reset();
+            $stream.reset();
+          }
+          $reset = $true;
+          $inval = $this.embedInStream($inval);
+          return $stream.embedInStream($inval);
+        } ];
       }));
     }, &quot;stream&quot;);
 
     spec.collate = fn(function($stream) {
-      return this.interlace($SC.Function(function($x, $y) {
-        return $x [&quot;&lt;&quot;] ($y);
+      return this.interlace($.Function(function() {
+        return [ function($x, $y) {
+          return $x.$(&quot;&lt;&quot;, [ $y ]);
+        } ];
       }), $stream);
     }, &quot;stream&quot;);
 
     spec[&quot;&lt;&gt;&quot;] = function($obj) {
-      return $SC(&quot;Pchain&quot;).new(this, $obj).asStream();
+      return $(&quot;Pchain&quot;).new(this, $obj).asStream();
     };
 
     spec.composeUnaryOp = fn(function($argSelector) {
-      return $SC(&quot;UnaryOpStream&quot;).new($argSelector, this);
+      return $(&quot;UnaryOpStream&quot;).new($argSelector, this);
     }, &quot;argSelector&quot;);
 
     spec.composeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
-        return $SC(&quot;BinaryOpStream&quot;).new(
+        return $(&quot;BinaryOpStream&quot;).new(
           $argSelector, this, $argStream.asStream()
         );
       }
       if ($adverb.__sym__() === &quot;x&quot;) {
-        return $SC(&quot;BinaryOpXStream&quot;).new(
+        return $(&quot;BinaryOpXStream&quot;).new(
           $argSelector, this, $argStream.asStream()
         );
       }
@@ -399,12 +459,12 @@
 
     spec.reverseComposeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
-        return $SC(&quot;BinaryOpStream&quot;).new(
+        return $(&quot;BinaryOpStream&quot;).new(
           $argSelector, $argStream.asStream(), this
         );
       }
       if ($adverb.__sym__() === &quot;x&quot;) {
-        return $SC(&quot;BinaryOpXStream&quot;).new(
+        return $(&quot;BinaryOpXStream&quot;).new(
           $argSelector, $argStream.asStream(), this
         );
       }
@@ -413,9 +473,11 @@
     }, &quot;argSelector; argStream; adverb&quot;);
 
     spec.composeNAryOp = fn(function($argSelector, $anArgList) {
-      return $SC(&quot;NAryOpStream&quot;).new(
-        $argSelector, this, $anArgList.collect($SC.Function(function($_) {
-          return $_.asStream();
+      return $(&quot;NAryOpStream&quot;).new(
+        $argSelector, this, $anArgList.collect($.Function(function() {
+          return [ function($_) {
+            return $_.asStream();
+          } ];
         }))
       );
     }, &quot;argStream; anArgList&quot;);
@@ -424,24 +486,28 @@
       var $this = this;
       var $outval;
 
-      $SC.Function(function() {
-        $outval = $this.value($inval);
-        return $outval.notNil();
-      }).while($SC.Function(function() { // TODO: use SegFunction
-        $inval = $outval.yield();
-        return $inval;
+      $.Function(function() {
+        return [ function() {
+          $outval = $this.value($inval);
+          return $outval.notNil();
+        } ];
+      }).while($.Function(function() {
+        return [ function() {
+          $inval = $outval.yield();
+          return $inval;
+        } ];
       }));
 
       return $inval;
     }, &quot;inval&quot;);
 
     spec.asEventStreamPlayer = fn(function($protoEvent) {
-      return $SC(&quot;EventStreamPlayer&quot;).new(this, $protoEvent);
+      return $(&quot;EventStreamPlayer&quot;).new(this, $protoEvent);
     }, &quot;protoEvent&quot;);
 
     spec.play = fn(function($clock, $quant) {
       if ($clock === $nil) {
-        $clock = $SC(&quot;TempoClock&quot;).default();
+        $clock = $(&quot;TempoClock&quot;).default();
       }
       $clock.play(this, $quant.asQuant());
       return this;
@@ -452,17 +518,102 @@
     spec.repeat = fn(function($repeats) {
       var $this = this;
 
-      return $SC.Function(function($inval) {
-        return $repeats.value($inval).do($SC.Function(function() {
-          $inval = $this.reset().embedInStream($inval);
-          return $inval;
-        }));
+      return $.Function(function() {
+        return [ function($inval) {
+          return $repeats.value($inval).do($.Function(function() {
+            return [ function() {
+              $inval = $this.reset().embedInStream($inval);
+              return $inval;
+            } ];
+          }));
+        } ];
       }).r();
     }, &quot;repeats=inf&quot;);
 
   });
 
-  sc.lang.klass.define(&quot;PauseStream : Stream&quot;, function(spec) {
+  klass.define(&quot;OneShotStream : Stream&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function OneShotStream() {
+      this.__super__(&quot;Stream&quot;);
+      this._once = true;
+    };
+
+    spec.$new = function($value) {
+      return this._newCopyArgs({
+        value: $value
+      });
+    };
+
+    spec.next = function() {
+      if (this._once) {
+        this._once = false;
+        return this._$value;
+      }
+      return $nil;
+    };
+
+    spec.reset = function() {
+      this._once = true;
+      return this;
+    };
+
+    // TODO: implements storeArgs
+  });
+
+  // EmbedOnce
+
+  klass.define(&quot;FuncStream : Stream&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
+
+    spec.constructor = function SCFuncStream() {
+      this.__super__(&quot;Stream&quot;);
+    };
+
+    spec.envir = function() {
+      return this._$envir;
+    };
+
+    spec.envir_ = function($value) {
+      this._$envir = $value || /* istanbul ignore next */ $nil;
+      return this;
+    };
+
+    spec.$new = function($nextFunc, $resetFunc) {
+      return this._newCopyArgs({
+        nextFunc : $nextFunc,
+        resetFunc: $resetFunc,
+        envir    : sc.lang.main.$currentEnv
+      });
+    };
+
+    spec.next = fn(function($inval) {
+      var $this = this;
+      return this._$envir.use($.Function(function() {
+        return [ function() {
+          return $this._$nextFunc.value($inval).processRest($inval);
+        } ];
+      }));
+    }, &quot;inval&quot;);
+
+    spec.reset = function() {
+      var $this = this;
+      return this._$envir.use($.Function(function() {
+        return [ function() {
+          return $this._$resetFunc.value();
+        } ];
+      }));
+    };
+
+    // TODO: implements storeArgs
+
+  });
+
+  // StreamClutch
+  // CleanupStream
+
+  klass.define(&quot;PauseStream : Stream&quot;, function(spec) {
     spec.constructor = function SCPauseStream() {
       this.__super__(&quot;Stream&quot;);
     };
@@ -493,7 +644,7 @@
     // TODO: implements threadPlayer
   });
 
-  sc.lang.klass.define(&quot;Task : PauseStream&quot;, function(spec) {
+  klass.define(&quot;Task : PauseStream&quot;, function(spec) {
     spec.constructor = function SCTask() {
       this.__super__(&quot;PauseStream&quot;);
     };

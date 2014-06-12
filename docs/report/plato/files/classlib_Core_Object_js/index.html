@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.77</p>
+      <p class="stat">127.60</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">690</p>
+      <p class="stat">714</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">54.43</p>
+      <p class="stat">56.31</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">6.16</p>
+      <p class="stat">6.62</p>
     </div>
   </div>
 </div>
@@ -94,16 +94,16 @@
   &quot;use strict&quot;;
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
+  var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine(&quot;Object&quot;, function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_1 = utils.$int_1;
-    var SCArray = $SC(&quot;Array&quot;);
+    var SCArray = $(&quot;Array&quot;);
 
     spec.__num__ = function() {
       throw new Error(&quot;Wrong Type&quot;);
@@ -187,15 +187,15 @@
     };
 
     spec.isKindOf = function($aClass) {
-      return $SC.Boolean(this instanceof $aClass.__Spec);
+      return $.Boolean(this instanceof $aClass.__Spec);
     };
 
     spec.isMemberOf = function($aClass) {
-      return $SC.Boolean(this.__class === $aClass);
+      return $.Boolean(this.__class === $aClass);
     };
 
     spec.respondsTo = fn(function($aSymbol) {
-      return $SC.Boolean(typeof this[$aSymbol.__sym__()] === &quot;function&quot;);
+      return $.Boolean(typeof this[$aSymbol.__sym__()] === &quot;function&quot;);
     }, &quot;aSymbol&quot;);
 
     // TODO: implements performMsg
@@ -277,9 +277,11 @@
       var $this = this;
       var $array, i, imax;
 
-      if (BOOL($n.isSequenceableCollection())) {
-        return SCArray.fillND($n, $SC.Function(function() {
-          return $this.copy();
+      if ($n.isSequenceableCollection().__bool__()) {
+        return SCArray.fillND($n, $.Function(function() {
+          return [ function() {
+            return $this.copy();
+          } ];
         }));
       }
 
@@ -313,11 +315,11 @@
     };
 
     spec[&quot;===&quot;] = function($obj) {
-      return $SC.Boolean(this === $obj);
+      return $.Boolean(this === $obj);
     };
 
     spec[&quot;!==&quot;] = function($obj) {
-      return $SC.Boolean(this !== $obj);
+      return $.Boolean(this !== $obj);
     };
 
     // TODO: implements equals
@@ -325,19 +327,19 @@
     // TODO: implements instVarHash
 
     spec.basicHash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec.hash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec.identityHash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec[&quot;-&gt;&quot;] = function($obj) {
-      return $SC(&quot;Association&quot;).new(this, $obj);
+      return $(&quot;Association&quot;).new(this, $obj);
     };
 
     spec.next = utils.nop;
@@ -349,7 +351,7 @@
     }, &quot;inval&quot;);
 
     spec.iter = function() {
-      return $SC(&quot;OneShotStream&quot;).new(this);
+      return $(&quot;OneShotStream&quot;).new(this);
     };
 
     spec.stop = utils.nop;
@@ -426,11 +428,6 @@
     };
 
     // TODO: implements doesNotUnderstand
-    spec._doesNotUnderstand = function(methodName) {
-      throw new Error(&quot;RECEIVER &quot; + this.__str__() + &quot;: &quot; +
-                      &quot;Message &#039;&quot; + methodName + &quot;&#039; not understood.&quot;);
-    };
-
     // TODO: implements shouldNotImplement
     // TODO: implements outOfContextReturn
     // TODO: implements immutableError
@@ -446,7 +443,7 @@
     };
 
     spec.asCollection = function() {
-      return $SC.Array([ this ]);
+      return $.Array([ this ]);
     };
 
     spec.asSymbol = function() {
@@ -454,7 +451,7 @@
     };
 
     spec.asString = function() {
-      return $SC.String(String(this));
+      return $.String(String(this));
     };
 
     // TODO: implements asCompileString
@@ -474,11 +471,11 @@
     spec.dereference = utils.nop;
 
     spec.reference = function() {
-      return $SC.Ref(this);
+      return $.Ref(this);
     };
 
     spec.asRef = function() {
-      return $SC.Ref(this);
+      return $.Ref(this);
     };
 
     spec.asArray = function() {
@@ -512,11 +509,11 @@
         a = [ this ];
       } else {
         a = [
-          this.bubble($depth, $SC.Integer(levels - 1))
+          this.bubble($depth, $.Integer(levels - 1))
         ];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, &quot;depth; levels&quot;);
 
     spec.obtain = fn(function($index, $default) {
@@ -536,7 +533,7 @@
     }, &quot;index; item; default&quot;);
 
     spec.addFunc = fn(function($$functions) {
-      return $SC(&quot;FunctionList&quot;).new(this [&quot;++&quot;] ($$functions));
+      return $(&quot;FunctionList&quot;).new(this [&quot;++&quot;] ($$functions));
     }, &quot;*functions&quot;);
 
     spec.removeFunc = function($function) {
@@ -559,10 +556,14 @@
     spec.while = fn(function($body) {
       var $this = this;
 
-      $SC.Function(function() {
-        return $this.value();
-      }).while($SC.Function(function() {
-        return $body.value();
+      $.Function(function() {
+        return [ function() {
+          return $this.value();
+        } ];
+      }).while($.Function(function() {
+        return [ function() {
+          return $body.value();
+        } ];
       }));
 
       return this;
@@ -573,7 +574,7 @@
 
       args = slice.call(arguments);
       for (i = 0, imax = args.length &gt;&gt; 1; i &lt; imax; i++) {
-        if (BOOL(this [&quot;==&quot;] (args[i * 2]))) {
+        if (this [&quot;==&quot;] (args[i * 2]).__bool__()) {
           return args[i * 2 + 1].value();
         }
       }
@@ -586,7 +587,8 @@
     };
 
     spec.yield = function() {
-      // TODO: implements yield
+      bytecode.yield(this);
+      return this;
     };
 
     // TODO: implements alwaysYield
@@ -613,35 +615,35 @@
     // TODO: implements freeze
 
     spec[&quot;&amp;&quot;] = function($that) {
-      return this.bitAnd($that);
+      return this.$(&quot;bitAnd&quot;, [ $that ]);
     };
 
     spec[&quot;|&quot;] = function($that) {
-      return this.bitOr($that);
+      return this.$(&quot;bitOr&quot;, [ $that ]);
     };
 
     spec[&quot;%&quot;] = function($that) {
-      return this.mod($that);
+      return this.$(&quot;mod&quot;, [ $that ]);
     };
 
     spec[&quot;**&quot;] = function($that) {
-      return this.pow($that);
+      return this.$(&quot;pow&quot;, [ $that ]);
     };
 
     spec[&quot;&lt;&lt;&quot;] = function($that) {
-      return this.leftShift($that);
+      return this.$(&quot;leftShift&quot;, [ $that ]);
     };
 
     spec[&quot;&gt;&gt;&quot;] = function($that) {
-      return this.rightShift($that);
+      return this.$(&quot;rightShift&quot;, [ $that ]);
     };
 
     spec[&quot;+&gt;&gt;&quot;] = function($that) {
-      return this.unsignedRightShift($that);
+      return this.$(&quot;unsignedRightShift&quot; , [ $that ]);
     };
 
     spec[&quot;&lt;!&quot;] = function($that) {
-      return this.firstArg($that);
+      return this.$(&quot;firstArg&quot;, [ $that ]);
     };
 
     spec.asInt = function() {
@@ -649,34 +651,34 @@
     };
 
     spec.blend = fn(function($that, $blendFrac) {
-      return this [&quot;+&quot;] ($blendFrac [&quot;*&quot;] ($that [&quot;-&quot;] (this)));
+      return this.$(&quot;+&quot;, [ $blendFrac.$(&quot;*&quot;, [ $that.$(&quot;-&quot;, [ this ]) ]) ]);
     }, &quot;that; blendFrac=0.5&quot;);
 
     spec.blendAt = fn(function($index, $method) {
       var $iMin;
 
-      $iMin = $index.roundUp($int_1).asInteger().__dec__();
+      $iMin = $index.$(&quot;roundUp&quot;, [ $int_1 ]).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
-        $index.absdif($iMin)
+        $index.$(&quot;absdif&quot;, [ $iMin ])
       );
     }, &quot;index; method=\\clipAt&quot;);
 
     spec.blendPut = fn(function($index, $val, $method) {
       var $iMin, $ratio;
 
-      $iMin = $index.floor().asInteger();
-      $ratio = $index.absdif($iMin);
-      this.perform($method, $iMin, $val [&quot;*&quot;] ($int_1 [&quot;-&quot;] ($ratio)));
-      this.perform($method, $iMin.__inc__(), $val [&quot;*&quot;] ($ratio));
+      $iMin = $index.$(&quot;floor&quot;).asInteger();
+      $ratio = $index.$(&quot;absdif&quot;, [ $iMin ]);
+      this.perform($method, $iMin, $val.$(&quot;*&quot;, [ $int_1 [&quot;-&quot;] ($ratio) ]));
+      this.perform($method, $iMin.__inc__(), $val.$(&quot;*&quot;, [ $ratio ]));
 
       return this;
     }, &quot;index; val; method=\\wrapPut&quot;);
 
     spec.fuzzyEqual = fn(function($that, $precision) {
-      return $SC.Float(0.0).max(
-        $SC.Float(1.0) [&quot;-&quot;] (
-          (this [&quot;-&quot;] ($that).abs()) [&quot;/&quot;] ($precision)
+      return $.Float(0.0).max(
+        $.Float(1.0) [&quot;-&quot;] (
+          this.$(&quot;-&quot;, [ $that ]).$(&quot;abs&quot;).$(&quot;/&quot;, [ $precision ])
         )
       );
     }, &quot;that; precision=1.0&quot;);
@@ -685,17 +687,21 @@
     spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.pair = fn(function($that) {
-      return $SC.Array([ this, $that ]);
+      return $.Array([ this, $that ]);
     }, &quot;that&quot;);
 
     spec.pairs = fn(function($that) {
       var $list;
 
-      $list = $SC.Array();
-      this.asArray().do($SC.Function(function($a) {
-        $that.asArray().do($SC.Function(function($b) {
-          $list = $list.add($a.asArray() [&quot;++&quot;] ($b));
-        }));
+      $list = $.Array();
+      this.asArray().do($.Function(function() {
+        return [ function($a) {
+          $that.asArray().do($.Function(function() {
+            return [ function($b) {
+              $list = $list.add($a.asArray() [&quot;++&quot;] ($b));
+            } ];
+          }));
+        } ];
       }));
 
       return $list;
@@ -742,7 +748,7 @@
 
     spec.asAudioRateInput = function() {
       if (this.rate().__sym__() !== &quot;audio&quot;) {
-        return $SC(&quot;K2A&quot;).ar(this);
+        return $(&quot;K2A&quot;).ar(this);
       }
       return this;
     };
@@ -777,6 +783,24 @@
     // TODO: implements genCurrent
     // TODO: implements $classRedirect
     // TODO: implements help
+
+    spec.processRest = utils.nop;
+
+    spec[&quot;[]&quot;] = function($index) {
+      return this.$(&quot;at&quot;, [ $index ]);
+    };
+
+    spec[&quot;[]_&quot;] = function($index, $value) {
+      return this.$(&quot;put&quot;, [ $index, $value ]);
+    };
+
+    spec[&quot;[..]&quot;] = function($first, $second, $last) {
+      return this.$(&quot;copySeries&quot;, [ $first, $second, $last ]);
+    };
+
+    spec[&quot;[..]_&quot;] = function($first, $second, $last, $value) {
+      return this.$(&quot;putSeries&quot;, [ $first, $second, $last, $value ]);
+    };
   });
 
 });</textarea>

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">134.60</p>
+      <p class="stat">133.37</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">121</p>
+      <p class="stat">129</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">20.30</p>
+      <p class="stat">24.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.57</p>
+      <p class="stat">0.65</p>
     </div>
   </div>
 </div>
@@ -95,19 +95,19 @@
 
   require(&quot;./Object&quot;);
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var klass = sc.lang.klass;
 
   klass.refine(&quot;Class&quot;, function(spec) {
     spec.class = function() {
       if (this._isMetaClass) {
-        return $SC(&quot;Class&quot;);
+        return $(&quot;Class&quot;);
       }
-      return $SC(&quot;Meta_&quot; + this._name);
+      return $(&quot;Meta_&quot; + this._name);
     };
 
     spec.name = function() {
-      return $SC.String(this._name);
+      return $.String(this._name);
     };
 
     // TODO: implements superclass
@@ -139,6 +139,20 @@
     // TODO: implements $findAllReferences
     // TODO: implements allSubclasses
     // TODO: implements superclasses
+
+    spec[&quot;[]&quot;] = function($anArray) {
+      var $newCollection;
+      var array, i, imax;
+
+      $newCollection = this.new($anArray.size());
+
+      array = $anArray._;
+      for (i = 0, imax = array.length; i &lt; imax; ++i) {
+        $newCollection.$(&quot;add&quot;, [ array[i] ]);
+      }
+
+      return $newCollection;
+    };
   });
 
 
@@ -172,10 +186,7 @@
 
     spec.constructor = function SCInterpreter() {
       this.__super__(&quot;Object&quot;);
-      for (var i = 97; i &lt;= 122; i++) {
-        this[&quot;_$&quot; + String.fromCharCode(i)] = $nil;
-      }
-      // this._$s = $SC(&quot;Server&quot;).default(); // in SCMain
+      this._$ = {};
     };
 
     (function() {
@@ -183,13 +194,13 @@
 
       function getter(name) {
         return function() {
-          return this[&quot;_$&quot; + name];
+          return this._$[name] || /* istanbul ignore next */ $nil;
         };
       }
 
       function setter(name) {
         return function($value) {
-          this[&quot;_$&quot; + name] = $value || /* istanbul ignore next */ $nil;
+          this._$[name] = $value || /* istanbul ignore next */ $nil;
           return this;
         };
       }
@@ -202,10 +213,7 @@
     })();
 
     spec.clearAll = function() {
-      var i;
-      for (i = 97; i &lt;= 122; i++) {
-        this[&quot;_$&quot; + String.fromCharCode(i)] = $nil;
-      }
+      this._$ = {};
       return this;
     };
   });

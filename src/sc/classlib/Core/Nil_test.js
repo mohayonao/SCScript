@@ -305,7 +305,7 @@
       instance = this.createInstance();
 
       test = instance.printOn($stream);
-      expect($stream.putAll.args[0][0]).to.be.a("SCString").that.equals("nil");
+      expect($stream.putAll.args[0]).to.eql($$([ "nil" ])._);
       expect(test).to.equal(instance);
     }));
     it("storeOn", sinon.test(function() {
@@ -319,7 +319,7 @@
       instance = this.createInstance();
 
       test = instance.storeOn($stream);
-      expect($stream.putAll.args[0][0]).to.be.a("SCString").that.equals("nil");
+      expect($stream.putAll.args[0]).to.eql($$([ "nil" ])._);
       expect(test).to.equal(instance);
     }));
     it("#matchItem", function() {

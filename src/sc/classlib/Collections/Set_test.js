@@ -212,7 +212,7 @@
       $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.sect($set);
-      expect(test.valueOf()).to.eqls([ 1, 3, 5 ]);
+      expect(test.valueOf()).to.eql([ 1, 3, 5 ]);
     });
     it("#union", function() {
       var instance, test;
@@ -222,7 +222,7 @@
       $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.union($set);
-      expect(test.valueOf()).to.eqls([ 1, 2, 3, 4, 5, 6, 7, 9 ]);
+      expect(test.valueOf()).to.eql([ 1, 2, 3, 4, 5, 6, 7, 9 ]);
     });
     it("#difference", function() {
       var instance, test;
@@ -232,7 +232,7 @@
       $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.difference($set);
-      expect(test.valueOf()).to.eqls([ 2, 4, 6 ]);
+      expect(test.valueOf()).to.eql([ 2, 4, 6 ]);
     });
     it("#symmetricDifference", function() {
       var instance, test;
@@ -242,7 +242,7 @@
       $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.symmetricDifference($set);
-      expect(test.valueOf()).to.eqls([ 2, 4, 6, 7, 9 ]);
+      expect(test.valueOf()).to.eql([ 2, 4, 6, 7, 9 ]);
     });
     it("#isSubsetOf", function() {
       var instance, test;

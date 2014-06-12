@@ -1037,9 +1037,7 @@
       instance = this.createInstance($$([ $elem ]));
 
       test = instance.addFunc($arg1, $arg2);
-      expect(spy.args[0][0]).to.be.a("SCArray").that.eqls([
-        $elem, $arg1, $arg2
-      ]);
+      expect(spy.args[0]).to.eql($$([ [ $elem, $arg1, $arg2 ] ])._);
       expect(spy).to.be.calledLastIn(test);
     }));
     it("#removeFunc", function() {

@@ -385,15 +385,6 @@
       );
     });
 
-    utils.addProperty(assertion_proto, "js", function() {
-      var obj = utils.flag(this, "object");
-      if (Array.isArray(obj)) {
-        utils.flag(this, "object", obj.map(function(x) {
-          return x.valueOf();
-        }));
-      }
-    });
-
     utils.addProperty(assertion_proto, "nop", function() {
       this.assert(
         utils.flag(this, "object") === sc.lang.klass.utils.nop,

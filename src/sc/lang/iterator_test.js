@@ -453,9 +453,10 @@
     describe("execute", function() {
       it("execute", sinon.test(function() {
         var iter;
-        var $function = {
-          value: this.spy()
-        };
+        var $function;
+
+        $function = $$(function() {});
+        this.stub($function, "value");
 
         iter = iterator.integer$forBy(
           $.Integer(1), $.Integer(5), $.Integer(2)
@@ -463,19 +464,17 @@
         iterator.execute(iter, $function);
 
         expect($function.value).to.callCount(3);
-        expect($function.value.args[0][0]).to.be.a("SCInteger").that.equals(1);
-        expect($function.value.args[1][0]).to.be.a("SCInteger").that.equals(3);
-        expect($function.value.args[2][0]).to.be.a("SCInteger").that.equals(5);
-
-        expect($function.value.args[0][1]).to.be.a("SCInteger").that.equals(0);
-        expect($function.value.args[1][1]).to.be.a("SCInteger").that.equals(1);
-        expect($function.value.args[2][1]).to.be.a("SCInteger").that.equals(2);
+        expect($function.value.args[0]).to.eql($$([ 1, 0 ])._);
+        expect($function.value.args[1]).to.eql($$([ 3, 1 ])._);
+        expect($function.value.args[2]).to.eql($$([ 5, 2 ])._);
       }));
       it("arguments", sinon.test(function() {
         var iter;
-        var i = 0, $function = {
-          value: this.spy()
-        };
+        var i = 0;
+        var $function;
+
+        $function = $$(function() {});
+        this.stub($function, "value");
 
         iter = iterator.function$while(
           $$(function() {
@@ -485,31 +484,30 @@
         iterator.execute(iter, $function);
 
         expect($function.value).to.callCount(3);
-        expect($function.value.args[0][0]).to.be.a("SCNil");
-        expect($function.value.args[1][0]).to.be.a("SCNil");
-        expect($function.value.args[2][0]).to.be.a("SCNil");
-
-        expect($function.value.args[0][1]).to.be.a("SCNil");
-        expect($function.value.args[1][1]).to.be.a("SCNil");
-        expect($function.value.args[2][1]).to.be.a("SCNil");
+        expect($function.value.args[0]).to.eql($$([ null, null ])._);
+        expect($function.value.args[1]).to.eql($$([ null, null ])._);
+        expect($function.value.args[2]).to.eql($$([ null, null ])._);
       }));
       it("loop break", sinon.test(function() {
         var iter;
-        var $function = {
-          value: this.spy(function($i) {
-            if ($i.valueOf() >= 5) {
-              return sc.C.LOOP_BREAK;
-            }
-          })
-        };
+        var $function;
+
+        $function = $$(function($i) {
+          if ($i.valueOf() === 2) {
+            this.__break__();
+          }
+        });
+        this.spy($function, "value");
 
         iter = iterator.integer$do(
-          $.Integer(Infinity)
+          $.Integer(100)
         );
         iterator.execute(iter, $function);
 
-        expect($function.value).to.callCount(6);
-        expect($function.value.args[0][0]).to.be.a("SCInteger").that.equals(0);
+        expect($function.value).to.callCount(3);
+        expect($function.value.args[0]).to.eql($$([ 0, 0 ])._);
+        expect($function.value.args[1]).to.eql($$([ 1, 1 ])._);
+        expect($function.value.args[2]).to.eql($$([ 2, 2 ])._);
       }));
     });
   });

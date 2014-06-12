@@ -303,8 +303,8 @@
       test = instance.keysValuesDo($function);
       expect(test).to.equal(instance);
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 2, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 4, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 1, 2, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 3, 4, 1 ])._);
     }));
     it("#keysValuesChange", function() {
       testCase(this, [
@@ -331,8 +331,8 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 2, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 4, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 2, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 4, 1 ])._);
     }));
     it("#keysDo", sinon.test(function() {
       var instance, test;
@@ -347,8 +347,8 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 1, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 3, 1 ])._);
     }));
     it("#associationsDo", sinon.test(function() {
       var instance, test;
@@ -363,8 +363,8 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 1 ]);
+      expect(spy.args[0]).to.eql($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
+      expect(spy.args[1]).to.eql($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
     }));
     it("#pairsDo", sinon.test(function() {
       var instance, test;
@@ -379,8 +379,8 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 2, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 4, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 1, 2, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 3, 4, 1 ])._);
     }));
     it("#collect", function() {
       testCase(this, [
@@ -495,8 +495,8 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 3, 4, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 1, 2, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 3, 4, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 1, 2, 1 ])._);
     }));
     it("#choose", function() {
       testCase(this, [

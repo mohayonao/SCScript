@@ -24,8 +24,14 @@
   right: 5px;
   width: 32px;
   height: 32px;
-  border-radius: 16px;
+  border-radius: 50%;
+  color: #fffffc;
   background: #7f8c8d;
+  font-size: 18px;
+  display: inline-block;
+  line-height: 32px;
+  text-align: center;
+  vertical-align: bottom;
   opacity: 0.25;
 }
 
@@ -62,18 +68,22 @@
 
 #sidemenu ul {
   list-style: none;
-  margin: 10px;
+  margin: 10px 0;
 }
 
 #sidemenu li {
   margin: 5px;
 }
 
-#sidemenu li i {
+#sidemenu li u {
   display: inline-block;
   width: 80px;
   font-style: normal;
   font-weight: 700;
+}
+
+#sidemenu li i {
+  margin-right: 5px;
 }
 
 #sidemenu a {

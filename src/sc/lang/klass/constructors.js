@@ -2,11 +2,11 @@
   "use strict";
 
   require("./klass");
-  require("../jscode");
+  require("../bytecode");
 
-  var $      = sc.lang.$;
-  var klass  = sc.lang.klass;
-  var jscode = sc.lang.jscode;
+  var $       = sc.lang.$;
+  var klass   = sc.lang.klass;
+  var bytecode = sc.lang.bytecode;
 
   var $nil, $true, $false;
   var $symbols, $chars, $integers, $floats;
@@ -302,7 +302,7 @@
 
   $.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = jscode.create(value, def);
+    instance._ = bytecode.create(value, def);
     return instance;
   };
 

@@ -1,17 +1,17 @@
 (function() {
   "use strict";
 
-  require("./jscode");
+  require("./bytecode");
 
   var $$ = sc.test.object;
 
-  var jscode = sc.lang.jscode;
+  var bytecode = sc.lang.bytecode;
 
-  describe("sc.lang.jscode", function() {
+  describe("sc.lang.bytecode", function() {
     it("empty function", function() {
       var f, test;
 
-      f = jscode.create(function() {
+      f = bytecode.create(function() {
         return [];
       });
 
@@ -21,7 +21,7 @@
     it("resume", function() {
       var f, test;
 
-      f = jscode.create(function() {
+      f = bytecode.create(function() {
         return [ function($a, $b) {
           return $$([ $a, $b ]);
         } ];
@@ -33,7 +33,7 @@
     it("break", function() {
       var f, test;
 
-      f = jscode.create(function() {
+      f = bytecode.create(function() {
         return [ function() {
           this.__break__();
         } ];

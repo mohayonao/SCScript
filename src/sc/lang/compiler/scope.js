@@ -22,10 +22,13 @@
     return f;
   }
 
-  Scope.add = function(type, id, scope) {
+  Scope.add = function(type, id, opts) {
     var peek = this.stack[this.stack.length - 1];
-    var vars, args, declared, stmt, indent;
+    var scope, vars, args, declared, stmt, indent;
 
+    opts = opts || {};
+
+    scope = opts.scope;
     if (scope) {
       vars = scope.vars;
       args = scope.args;
@@ -51,7 +54,7 @@
     switch (type) {
     case "var":
       if (!vars[id]) {
-        this.add_delegate(stmt, id, indent, peek, scope);
+        this.add_delegate(stmt, id, indent, peek, opts);
         vars[id] = true;
         delete declared[id];
       }

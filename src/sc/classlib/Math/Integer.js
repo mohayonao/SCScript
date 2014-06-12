@@ -3,8 +3,8 @@ SCScript.install(function(sc) {
 
   require("./SimpleNumber");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var iterator = sc.lang.iterator;
   var mathlib  = sc.libs.mathlib;
 
@@ -22,7 +22,7 @@ SCScript.install(function(sc) {
       }
 
       return $aNumber.performBinaryOpOnSimpleNumber(
-        $SC.Symbol(selector), this, $adverb
+        $.Symbol(selector), this, $adverb
       );
     };
   };
@@ -30,9 +30,9 @@ SCScript.install(function(sc) {
   sc.lang.klass.refine("Integer", function(spec, utils) {
     var $nil   = utils.$nil;
     var $int_1 = utils.$int_1;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
-    spec.__newFrom__ = $SC.Integer;
+    spec.__newFrom__ = $.Integer;
 
     spec.__int__ = function() {
       return this._;
@@ -49,51 +49,51 @@ SCScript.install(function(sc) {
     spec.isInteger = utils.alwaysReturn$true;
 
     spec.hash = function() {
-      return $SC.Float(this._).hash();
+      return $.Float(this._).hash();
     };
 
     [
-      [ "+", $SC.Integer, $SC.Float ],
-      [ "-", $SC.Integer, $SC.Float ],
-      [ "*", $SC.Integer, $SC.Float ],
-      [ "/", $SC.Float  , $SC.Float ],
-      [ "mod"     , $SC.Integer, $SC.Float   ],
-      [ "div"     , $SC.Integer, $SC.Integer ],
-      [ "pow"     , $SC.Float  , $SC.Float   ],
-      [ "min"     , $SC.Integer, $SC.Float   ],
-      [ "max"     , $SC.Integer, $SC.Float   ],
-      [ "bitAnd"  , $SC.Integer, $SC.Float   ],
-      [ "bitOr"   , $SC.Integer, $SC.Float   ],
-      [ "bitXor"  , $SC.Integer, $SC.Float   ],
-      [ "lcm"     , $SC.Integer, $SC.Float   ],
-      [ "gcd"     , $SC.Integer, $SC.Float   ],
-      [ "round"   , $SC.Integer, $SC.Float   ],
-      [ "roundUp" , $SC.Integer, $SC.Float   ],
-      [ "trunc"   , $SC.Integer, $SC.Float   ],
-      [ "atan2"   , $SC.Float  , $SC.Float   ],
-      [ "hypot"   , $SC.Float  , $SC.Float   ],
-      [ "hypotApx", $SC.Float  , $SC.Float   ],
-      [ "leftShift"         , $SC.Integer, $SC.Float ],
-      [ "rightShift"        , $SC.Integer, $SC.Float ],
-      [ "unsignedRightShift", $SC.Integer, $SC.Float ],
-      [ "ring1"   , $SC.Integer, $SC.Float   ],
-      [ "ring2"   , $SC.Integer, $SC.Float   ],
-      [ "ring3"   , $SC.Integer, $SC.Float   ],
-      [ "ring4"   , $SC.Integer, $SC.Float   ],
-      [ "difsqr"  , $SC.Integer, $SC.Float   ],
-      [ "sumsqr"  , $SC.Integer, $SC.Float   ],
-      [ "sqrsum"  , $SC.Integer, $SC.Float   ],
-      [ "sqrdif"  , $SC.Integer, $SC.Float   ],
-      [ "absdif"  , $SC.Integer, $SC.Float   ],
-      [ "thresh"  , $SC.Integer, $SC.Integer ],
-      [ "amclip"  , $SC.Integer, $SC.Float   ],
-      [ "scaleneg", $SC.Integer, $SC.Float   ],
-      [ "clip2"   , $SC.Integer, $SC.Float   ],
-      [ "fold2"   , $SC.Integer, $SC.Float   ],
-      [ "excess"  , $SC.Integer, $SC.Float   ],
-      [ "firstArg", $SC.Integer, $SC.Integer ],
-      [ "rrand"   , $SC.Integer, $SC.Float   ],
-      [ "exprand" , $SC.Float  , $SC.Float   ],
+      [ "+", $.Integer, $.Float ],
+      [ "-", $.Integer, $.Float ],
+      [ "*", $.Integer, $.Float ],
+      [ "/", $.Float  , $.Float ],
+      [ "mod"     , $.Integer, $.Float   ],
+      [ "div"     , $.Integer, $.Integer ],
+      [ "pow"     , $.Float  , $.Float   ],
+      [ "min"     , $.Integer, $.Float   ],
+      [ "max"     , $.Integer, $.Float   ],
+      [ "bitAnd"  , $.Integer, $.Float   ],
+      [ "bitOr"   , $.Integer, $.Float   ],
+      [ "bitXor"  , $.Integer, $.Float   ],
+      [ "lcm"     , $.Integer, $.Float   ],
+      [ "gcd"     , $.Integer, $.Float   ],
+      [ "round"   , $.Integer, $.Float   ],
+      [ "roundUp" , $.Integer, $.Float   ],
+      [ "trunc"   , $.Integer, $.Float   ],
+      [ "atan2"   , $.Float  , $.Float   ],
+      [ "hypot"   , $.Float  , $.Float   ],
+      [ "hypotApx", $.Float  , $.Float   ],
+      [ "leftShift"         , $.Integer, $.Float ],
+      [ "rightShift"        , $.Integer, $.Float ],
+      [ "unsignedRightShift", $.Integer, $.Float ],
+      [ "ring1"   , $.Integer, $.Float   ],
+      [ "ring2"   , $.Integer, $.Float   ],
+      [ "ring3"   , $.Integer, $.Float   ],
+      [ "ring4"   , $.Integer, $.Float   ],
+      [ "difsqr"  , $.Integer, $.Float   ],
+      [ "sumsqr"  , $.Integer, $.Float   ],
+      [ "sqrsum"  , $.Integer, $.Float   ],
+      [ "sqrdif"  , $.Integer, $.Float   ],
+      [ "absdif"  , $.Integer, $.Float   ],
+      [ "thresh"  , $.Integer, $.Integer ],
+      [ "amclip"  , $.Integer, $.Float   ],
+      [ "scaleneg", $.Integer, $.Float   ],
+      [ "clip2"   , $.Integer, $.Float   ],
+      [ "fold2"   , $.Integer, $.Float   ],
+      [ "excess"  , $.Integer, $.Float   ],
+      [ "firstArg", $.Integer, $.Integer ],
+      [ "rrand"   , $.Integer, $.Float   ],
+      [ "exprand" , $.Float  , $.Float   ],
     ].forEach(function(items) {
       spec[items[0]] = bop.apply(null, items);
     });
@@ -103,13 +103,13 @@ SCScript.install(function(sc) {
 
       switch (tag) {
       case sc.C.TAG_INT:
-        return $SC.Integer(mathlib.iwrap(this._, -$aNumber._, $aNumber._));
+        return $.Integer(mathlib.iwrap(this._, -$aNumber._, $aNumber._));
       case sc.C.TAG_FLOAT:
-        return $SC.Float(mathlib.wrap2(this._, $aNumber._));
+        return $.Float(mathlib.wrap2(this._, $aNumber._));
       }
 
       return $aNumber.performBinaryOpOnSimpleNumber(
-        $SC.Symbol("wrap2"), this, $adverb
+        $.Symbol("wrap2"), this, $adverb
       );
     };
 
@@ -118,13 +118,13 @@ SCScript.install(function(sc) {
 
       switch (tag) {
       case sc.C.TAG_INT:
-        return $SC.Integer(Math.round(mathlib.rrand(this._, $aNumber._)));
+        return $.Integer(Math.round(mathlib.rrand(this._, $aNumber._)));
       case sc.C.TAG_FLOAT:
-        return $SC.Float(mathlib.rrand(this._, $aNumber._));
+        return $.Float(mathlib.rrand(this._, $aNumber._));
       }
 
       return $aNumber.performBinaryOpOnSimpleNumber(
-        $SC.Symbol("rrand"), this, $adverb
+        $.Symbol("rrand"), this, $adverb
       );
     };
 
@@ -137,12 +137,12 @@ SCScript.install(function(sc) {
         return $hi;
       }
       if ($lo.__tag === sc.C.TAG_INT && $hi.__tag === sc.C.TAG_INT) {
-        return $SC.Integer(
+        return $.Integer(
           mathlib.clip(this._, $lo.__int__(), $hi.__int__())
         );
       }
 
-      return $SC.Float(
+      return $.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
     }, "lo; hi");
@@ -156,12 +156,12 @@ SCScript.install(function(sc) {
         return $hi;
       }
       if ($lo.__tag === sc.C.TAG_INT && $hi.__tag === sc.C.TAG_INT) {
-        return $SC.Integer(
+        return $.Integer(
           mathlib.iwrap(this._, $lo.__int__(), $hi.__int__())
         );
       }
 
-      return $SC.Float(
+      return $.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
     }, "lo; hi");
@@ -175,22 +175,22 @@ SCScript.install(function(sc) {
         return $hi;
       }
       if ($lo.__tag === sc.C.TAG_INT && $hi.__tag === sc.C.TAG_INT) {
-        return $SC.Integer(
+        return $.Integer(
           mathlib.ifold(this._, $lo.__int__(), $hi.__int__())
         );
       }
 
-      return $SC.Float(
+      return $.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
     }, "lo; hi");
 
     spec.even = function() {
-      return $SC.Boolean(!(this._ & 1));
+      return $.Boolean(!(this._ & 1));
     };
 
     spec.odd = function() {
-      return $SC.Boolean(!!(this._ & 1));
+      return $.Boolean(!!(this._ & 1));
     };
 
     spec.xrand = fn(function($exclude) {
@@ -207,7 +207,7 @@ SCScript.install(function(sc) {
         return this;
       }
 
-      return $SC.Integer(res);
+      return $.Integer(res);
     }, "exclude=0");
 
     spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
@@ -239,7 +239,7 @@ SCScript.install(function(sc) {
 
       $res = $class.new(this);
       for (i = 0, imax = this._; i < imax; ++i) {
-        $res.add($function.value($SC.Integer(i)));
+        $res.add($function.value($.Integer(i)));
       }
 
       return $res;
@@ -274,12 +274,12 @@ SCScript.install(function(sc) {
     }, "endval; stepval; function");
 
     spec.to = fn(function($hi, $step) {
-      return $SC("Interval").new(this, $hi, $step);
+      return $("Interval").new(this, $hi, $step);
     }, "hi; step=1");
 
     spec.asAscii = function() {
       // <-- _AsAscii -->
-      return $SC.Char(String.fromCharCode(this._|0));
+      return $.Char(String.fromCharCode(this._|0));
     };
 
     spec.asUnicode = utils.nop;
@@ -290,10 +290,10 @@ SCScript.install(function(sc) {
       // <!-- _AsAscii -->
       c = this._;
       if (0 <= c && c <= 9) {
-        return $SC.Char(String(c));
+        return $.Char(String(c));
       }
       if (10 <= c && c <= 35) {
-        return $SC.Char(String.fromCharCode(c + 55));
+        return $.Char(String.fromCharCode(c + 55));
       }
 
       throw new Error("Integer: asDigit must be 0 <= this <= 35");
@@ -306,10 +306,10 @@ SCScript.install(function(sc) {
       numDigits = $numDigits.__int__();
       array = new Array(numDigits);
       for (i = 0; i < numDigits; ++i) {
-        array.unshift($SC.Integer((raw >> i) & 1));
+        array.unshift($.Integer((raw >> i) & 1));
       }
 
-      return $SC.Array(array);
+      return $.Array(array);
     }, "numDigits=8");
 
     spec.asDigits = fn(function($base, $numDigits) {
@@ -319,7 +319,7 @@ SCScript.install(function(sc) {
       $num = this;
       if ($numDigits === $nil) {
         $numDigits = (
-          this.log() ["/"] ($base.log() ["+"] ($SC.Float(1e-10)))
+          this.log() ["/"] ($base.log() ["+"] ($.Float(1e-10)))
         ).asInteger().__inc__();
       }
 
@@ -331,7 +331,7 @@ SCScript.install(function(sc) {
         $num = $num.div($base);
       }
 
-      return $SC.Array(array);
+      return $.Array(array);
     }, "base=10; numDigits");
 
     // TODO: implements nextPowerOfTwo
@@ -375,7 +375,7 @@ SCScript.install(function(sc) {
     // TODO: implements isFun
 
     spec.bitNot = function() {
-      return $SC.Integer(~this._);
+      return $.Integer(~this._);
     };
   });
 

@@ -1,17 +1,17 @@
 (function() {
   "use strict";
 
-  require("./dollarSC");
+  require("./dollar");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
-  describe("sc.lang.$SC", function() {
+  describe("sc.lang.$", function() {
     if (!sc.lang.klass) {
       sc.lang.klass = { get: function() {} };
     }
     it("shold apply sc.lang.klass.get", sinon.test(function() {
       var stub = this.stub(sc.lang.klass, "get", sc.test.func);
-      var test = $SC("Class");
+      var test = $("Class");
       expect(stub).to.be.calledLastIn(test);
     }));
   });

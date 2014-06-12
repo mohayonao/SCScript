@@ -1,5 +1,5 @@
 /* jshint browser: true, devel: true */
-/* global SCScript, CodeMirror */
+/* global SCScript, CodeMirror, $ */
 window.onload = function() {
   "use strict";
 
@@ -15,27 +15,29 @@ window.onload = function() {
 
   var getCode = function(editor) {
     var code, cursor, line, range, callback;
+    var cssName = "blink1";
 
     code = editor.getSelection();
     if (!code) {
       cursor = editor.getCursor();
       line   = cursor.line;
-      range = getRange(editor, line);
+      range  = selectRegion(editor, line);
       if (range) {
         editor.setSelection({ line: range[0], ch: 0 }, { line: range[1], ch: Infinity });
         code = editor.getSelection();
         callback = function() {
           editor.setSelection(cursor);
         };
+        cssName = "blink2";
       }
     }
 
-    blink(".codemirror-focused .codemirror-selected", callback);
+    blink(cssName, ".codemirror-focused .codemirror-selected", callback);
 
     return code;
   };
 
-  var getRange = function(editor, begin) {
+  var selectRegion = function(editor, begin) {
     var lookAt, end, last, line;
     var depth, code;
 
@@ -89,7 +91,7 @@ window.onload = function() {
     };
   })();
 
-  var blink = function(selector, callback) {
+  var blink = function(cssName, selector, callback) {
     var rule = getCssRule(selector);
     if (rule) {
       setTimeout(function() {
@@ -97,12 +99,12 @@ window.onload = function() {
         if (callback) {
           callback();
         }
-      }, 250);
-      rule.style.setProperty("-webkit-animation", "blink 0.5s");
+      }, 500);
+      rule.style.setProperty("-webkit-animation", cssName + " 0.5s");
     }
   };
 
-  var execute = function() {
+  var evaluate = function() {
     var code, result;
 
     code = SCScript.compile(getCode(editor));
@@ -116,6 +118,33 @@ window.onload = function() {
     console.log(result);
   };
 
+  var boot = function() {
+    console.log("boot");
+  };
+
+  var stop = function() {
+    console.log("stop");
+  };
+
+  var readFromGist = function(gistid, callback) {
+    var url = "https://api.github.com/gists/" + gistid;
+    $.ajax({ url: url, type: "GET", dataType: "jsonp" }).then(function(result) {
+      var files, code;
+      files = result.data.files;
+      if (files) {
+        code = Object.keys(files).filter(function(key) {
+          return files[key].language === "SuperCollider";
+        }).map(function(key) {
+          return files[key].content;
+        }).join("\n");
+      } else {
+        code = "";
+        console.warn("gist:" + gistid + " not found");
+      }
+      callback(code);
+    });
+  };
+
   editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
     mode: "SCScript",
     theme: "sc-mode",
@@ -126,8 +155,12 @@ window.onload = function() {
     showCursorWhenSelecting: true,
     matchBrackets: true,
     extraKeys: {
-      "Ctrl-Enter": execute,
-      "Cmd-Enter" : execute
+      "Ctrl-Enter": evaluate,
+      "Ctrl-B": boot,
+      "Ctrl-.": stop,
+      "Cmd-Enter" : evaluate,
+      "Cmd-B": boot,
+      "Cmd-.": stop,
     }
   });
 
@@ -135,9 +168,26 @@ window.onload = function() {
     update(editor.getValue());
   });
 
+  if (/mac/i.test(window.navigator.platform)) {
+    $(".mac").show();
+  } else {
+    $(".win").show();
+  }
+
   if (window.location.hash) {
     prev = decodeURIComponent(window.location.hash.substr(1));
-    editor.setValue(prev);
+    if (/^gist:/.test(prev)) {
+      readFromGist(prev.substr(5), function(code) {
+        editor.setValue(code);
+        prev = code;
+      });
+    } else {
+      editor.setValue(prev);
+    }
   }
+
+  $("#menualt").on("click", function() {
+    $("#sidemenu").animate({ width: "toggle", opacity: "toggle" }, 500, "swing");
+  });
 
 };

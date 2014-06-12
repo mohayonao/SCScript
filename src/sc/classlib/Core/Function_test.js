@@ -3,20 +3,26 @@
 
   require("./Function");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("SCFunction", function() {
     var SCFunction, SCObject;
     before(function() {
-      SCFunction = $SC("Function");
-      SCObject = $SC("Object");
-      this.createInstance = function(func) {
-        return $SC.Function(func || function() {
-        });
+      SCFunction = $("Function");
+      SCObject = $("Object");
+      this.createInstance = function(func, def) {
+        return $.Function(function() {
+          return [ func || function() {} ];
+        }, def);
       };
+      $("Environment").new().push();
+    });
+    after(function() {
+      $("Environment").pop();
     });
     it.skip("<def", function() {
     });
@@ -71,9 +77,9 @@
       var $arg1, $arg2, $arg3;
 
       spy = this.spy(sc.test.func);
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
-      $arg3 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
+      $arg3 = $$();
 
       instance = this.createInstance(spy);
 
@@ -97,9 +103,9 @@
       var $arg1, $arg2, $arg3;
 
       spy = this.spy(sc.test.func);
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
-      $arg3 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
+      $arg3 = $$();
 
       instance = this.createInstance(spy);
       test = instance.valueArray($arg1);
@@ -108,16 +114,51 @@
       expect(spy).to.be.calledLastIn(test);
       spy.reset();
 
-      test = instance.valueArray($SC.Array([ $arg1, $arg2, $arg3 ]));
+      test = instance.valueArray($$([ $arg1, $arg2, $arg3 ]));
       expect(spy).to.be.calledWith($arg1, $arg2, $arg3);
       expect(spy).to.be.calledLastIn(test);
     }));
-    it.skip("#valueEnvir", function() {
-    });
-    it.skip("#valueArrayEnvir", function() {
-    });
-    it.skip("#functionPerformList", function() {
-    });
+    it("#valueEnvir", sinon.test(function() {
+      var instance, test, spy;
+      var $arg1;
+
+      spy = this.spy(sc.test.func);
+      $arg1 = $$();
+
+      instance = this.createInstance(spy, "a=1; b=2; c=3");
+      $.Environment("c", $$(300));
+
+      test = instance.valueEnvir($arg1);
+
+      expect(spy.args[0]).that.eqls($$([ $arg1, 2, 300 ])._);
+      expect(spy).to.be.calledLastIn(test);
+    }));
+    it("#valueArrayEnvir", sinon.test(function() {
+      var instance, test, spy;
+      var $arg1, $arg2;
+
+      spy = this.spy(sc.test.func);
+      $arg1 = $$();
+      $arg2 = $$(null);
+
+      instance = this.createInstance(spy, "a=1; b=2; c=3");
+      $.Environment("c", $$(300));
+
+      test = instance.valueArrayEnvir($$([ $arg1, $arg2 ]));
+
+      expect(spy.args[0]).that.eqls($$([ $arg1, null, 300 ])._);
+      expect(spy).to.be.calledLastIn(test);
+    }));
+    it("#functionPerformList", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(instance, "value", sc.test.func);
+
+      test = instance.functionPerformList($$("\\value"), $$([ 1, 2, 3 ]));
+      expect(instance.value.args[0]).to.eql($$([ 1, 2, 3 ])._);
+      expect(instance.value).to.be.calledLastIn(test);
+    }));
     it.skip("#valueWithEnvir", function() {
     });
     it.skip("#performWithEnvir", function() {
@@ -136,7 +177,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
         new: spy
       }));
 
@@ -151,8 +192,8 @@
       var $n;
 
       spy = this.spy(sc.test.func);
-      $n = $SC.Integer(3);
-      this.stub($SC("Array"), "fill", spy);
+      $n = $$(3);
+      this.stub($("Array"), "fill", spy);
 
       instance = this.createInstance();
       test = instance.dup($n);
@@ -186,10 +227,10 @@
       var spy, $handler;
 
       spy = this.spy();
-      $handler = $SC.Function(spy);
+      $handler = $$(spy);
 
       instance = this.createInstance(function() {
-        return $SC.Integer(1);
+        return $$(1);
       });
 
       test = instance.protect($handler);
@@ -201,7 +242,7 @@
       var spy, $handler;
 
       spy = this.spy();
-      $handler = $SC.Function(spy);
+      $handler = $$(spy);
 
       instance = this.createInstance(function() {
         throw new Error("error");
@@ -218,7 +259,7 @@
       testCase(this, [
         {
           source: function() {
-            return $SC.False();
+            return $$(false);
           },
           args: [
             "\\ng",
@@ -228,7 +269,7 @@
         },
         {
           source: function() {
-            return $SC.False();
+            return $$(false);
           },
           args: [
             "\\ng",
@@ -239,7 +280,7 @@
         },
         {
           source: function() {
-            return $SC.False();
+            return $$(false);
           },
           args: [
             "\\ng",
@@ -253,7 +294,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
         new: spy
       }));
 
@@ -267,7 +308,7 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub(sc.lang.klass, "get").withArgs("Prout").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("Prout").returns($$({
         new: spy
       }));
 
@@ -292,8 +333,8 @@
       expect(test).to.be.a("SCFunction");
 
       test = test.value(
-        $SC.Array([ $SC.Integer( 1), $SC.Integer( 2)                  ]),
-        $SC.Array([ $SC.Integer(10), $SC.Integer(20), $SC.Integer(30) ])
+        $$([  1,  2     ]),
+        $$([ 10, 20, 30 ])
       );
       expect(test).to.be.a("SCArray").that.eqls([ 11, 22, 31 ]);
     });
@@ -308,7 +349,7 @@
       var $body;
 
       iter = {};
-      $body = sc.test.object();
+      $body = $$();
 
       this.stub(iterator, "function$while", function() {
         return iter;

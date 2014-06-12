@@ -3,8 +3,8 @@ SCScript.install(function(sc) {
 
   require("./SimpleNumber");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var iterator = sc.lang.iterator;
   var mathlib  = sc.libs.mathlib;
 
@@ -22,7 +22,7 @@ SCScript.install(function(sc) {
       }
 
       return $aNumber.performBinaryOpOnSimpleNumber(
-        $SC.Symbol(selector), this, $adverb
+        $.Symbol(selector), this, $adverb
       );
     };
   };
@@ -52,48 +52,48 @@ SCScript.install(function(sc) {
     spec.asFloat = utils.nop;
 
     [
-      [ "+"  , $SC.Float, $SC.Float ],
-      [ "-"  , $SC.Float, $SC.Float ],
-      [ "*"  , $SC.Float, $SC.Float ],
-      [ "/"  , $SC.Float, $SC.Float ],
-      [ "mod"     , $SC.Float  , $SC.Float   ],
-      [ "div"     , $SC.Integer, $SC.Integer ],
-      [ "pow"     , $SC.Float  , $SC.Float   ],
-      [ "min"     , $SC.Float  , $SC.Float   ],
-      [ "max"     , $SC.Float  , $SC.Float   ],
-      [ "bitAnd"  , $SC.Float  , $SC.Float   ],
-      [ "bitOr"   , $SC.Float  , $SC.Float   ],
-      [ "bitXor"  , $SC.Float  , $SC.Float   ],
-      [ "lcm"     , $SC.Float  , $SC.Float   ],
-      [ "gcd"     , $SC.Float  , $SC.Float   ],
-      [ "round"   , $SC.Float  , $SC.Float   ],
-      [ "roundUp" , $SC.Float  , $SC.Float   ],
-      [ "trunc"   , $SC.Float  , $SC.Float   ],
-      [ "atan2"   , $SC.Float  , $SC.Float   ],
-      [ "hypot"   , $SC.Float  , $SC.Float   ],
-      [ "hypotApx", $SC.Float  , $SC.Float   ],
-      [ "leftShift"         , $SC.Float, $SC.Float ],
-      [ "rightShift"        , $SC.Float, $SC.Float ],
-      [ "unsignedRightShift", $SC.Float, $SC.Float ],
-      [ "ring1"   , $SC.Float, $SC.Float ],
-      [ "ring2"   , $SC.Float, $SC.Float ],
-      [ "ring3"   , $SC.Float, $SC.Float ],
-      [ "ring4"   , $SC.Float, $SC.Float ],
-      [ "difsqr"  , $SC.Float, $SC.Float ],
-      [ "sumsqr"  , $SC.Float, $SC.Float ],
-      [ "sqrsum"  , $SC.Float, $SC.Float ],
-      [ "sqrdif"  , $SC.Float, $SC.Float ],
-      [ "absdif"  , $SC.Float, $SC.Float ],
-      [ "thresh"  , $SC.Float, $SC.Float ],
-      [ "amclip"  , $SC.Float, $SC.Float ],
-      [ "scaleneg", $SC.Float, $SC.Float ],
-      [ "clip2"   , $SC.Float, $SC.Float ],
-      [ "fold2"   , $SC.Float, $SC.Float ],
-      [ "wrap2"   , $SC.Float, $SC.Float ],
-      [ "excess"  , $SC.Float, $SC.Float ],
-      [ "firstArg", $SC.Float, $SC.Float ],
-      [ "rrand"   , $SC.Float, $SC.Float ],
-      [ "exprand" , $SC.Float, $SC.Float ],
+      [ "+"  , $.Float, $.Float ],
+      [ "-"  , $.Float, $.Float ],
+      [ "*"  , $.Float, $.Float ],
+      [ "/"  , $.Float, $.Float ],
+      [ "mod"     , $.Float  , $.Float   ],
+      [ "div"     , $.Integer, $.Integer ],
+      [ "pow"     , $.Float  , $.Float   ],
+      [ "min"     , $.Float  , $.Float   ],
+      [ "max"     , $.Float  , $.Float   ],
+      [ "bitAnd"  , $.Float  , $.Float   ],
+      [ "bitOr"   , $.Float  , $.Float   ],
+      [ "bitXor"  , $.Float  , $.Float   ],
+      [ "lcm"     , $.Float  , $.Float   ],
+      [ "gcd"     , $.Float  , $.Float   ],
+      [ "round"   , $.Float  , $.Float   ],
+      [ "roundUp" , $.Float  , $.Float   ],
+      [ "trunc"   , $.Float  , $.Float   ],
+      [ "atan2"   , $.Float  , $.Float   ],
+      [ "hypot"   , $.Float  , $.Float   ],
+      [ "hypotApx", $.Float  , $.Float   ],
+      [ "leftShift"         , $.Float, $.Float ],
+      [ "rightShift"        , $.Float, $.Float ],
+      [ "unsignedRightShift", $.Float, $.Float ],
+      [ "ring1"   , $.Float, $.Float ],
+      [ "ring2"   , $.Float, $.Float ],
+      [ "ring3"   , $.Float, $.Float ],
+      [ "ring4"   , $.Float, $.Float ],
+      [ "difsqr"  , $.Float, $.Float ],
+      [ "sumsqr"  , $.Float, $.Float ],
+      [ "sqrsum"  , $.Float, $.Float ],
+      [ "sqrdif"  , $.Float, $.Float ],
+      [ "absdif"  , $.Float, $.Float ],
+      [ "thresh"  , $.Float, $.Float ],
+      [ "amclip"  , $.Float, $.Float ],
+      [ "scaleneg", $.Float, $.Float ],
+      [ "clip2"   , $.Float, $.Float ],
+      [ "fold2"   , $.Float, $.Float ],
+      [ "wrap2"   , $.Float, $.Float ],
+      [ "excess"  , $.Float, $.Float ],
+      [ "firstArg", $.Float, $.Float ],
+      [ "rrand"   , $.Float, $.Float ],
+      [ "exprand" , $.Float, $.Float ],
     ].forEach(function(items) {
       spec[items[0]] = bop.apply(null, items);
     });
@@ -107,7 +107,7 @@ SCScript.install(function(sc) {
         return $hi;
       }
 
-      return $SC.Float(
+      return $.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
     }, "lo; hi");
@@ -121,7 +121,7 @@ SCScript.install(function(sc) {
         return $hi;
       }
 
-      return $SC.Float(
+      return $.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
     }, "lo; hi");
@@ -135,7 +135,7 @@ SCScript.install(function(sc) {
         return $hi;
       }
 
-      return $SC.Float(
+      return $.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
     }, "lo; hi");
@@ -145,7 +145,7 @@ SCScript.install(function(sc) {
 
     spec.as32Bits = function() {
       // <-- _As32Bits -->
-      return $SC.Integer(
+      return $.Integer(
         new Int32Array(
           new Float32Array([ this._ ]).buffer
         )[0]
@@ -154,7 +154,7 @@ SCScript.install(function(sc) {
 
     spec.high32Bits = function() {
       // <-- _High32Bits -->
-      return $SC.Integer(
+      return $.Integer(
         new Int32Array(
           new Float64Array([ this._ ]).buffer
         )[1]
@@ -163,7 +163,7 @@ SCScript.install(function(sc) {
 
     spec.low32Bits = function() {
       // <-- _Low32Bits -->
-      return $SC.Integer(
+      return $.Integer(
         new Int32Array(
           new Float64Array([ this._ ]).buffer
         )[0]
@@ -172,7 +172,7 @@ SCScript.install(function(sc) {
 
     spec.$from32Bits = fn(function($word) {
       // <-- _From32Bits -->
-      return $SC.Float(
+      return $.Float(
         new Float32Array(
           new Int32Array([ $word.__num__() ]).buffer
         )[0]
@@ -181,7 +181,7 @@ SCScript.install(function(sc) {
 
     spec.$from64Bits = fn(function($hiWord, $loWord) {
       // <-- _From64Bits -->
-      return $SC.Float(
+      return $.Float(
         new Float64Array(
           new Int32Array([ $loWord.__num__(), $hiWord.__num__() ]).buffer
         )[0]
@@ -213,7 +213,7 @@ SCScript.install(function(sc) {
       var f64 = new Float64Array([ this._ ]);
       var i32 = new Int32Array(f64.buffer);
       i32[0] = ~i32[0];
-      return $SC.Float(f64[0]);
+      return $.Float(f64[0]);
     };
   });
 

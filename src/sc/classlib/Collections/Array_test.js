@@ -3,17 +3,17 @@
 
   require("./Array");
 
-  var $ = sc.test.$;
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCArray", function() {
     var SCArray;
     before(function() {
-      SCArray = $SC("Array");
+      SCArray = $("Array");
       this.createInstance = function(source) {
-        return $SC.Array((source || []).map($));
+        return $.Array((source || []).map($$));
       };
     });
     it("#__tag", function() {
@@ -27,17 +27,17 @@
     it("#valueOf", function() {
       var instance, test;
 
-      instance = this.createInstance([ $SC.String("freq"), $SC.Integer(440) ]);
+      instance = this.createInstance([ $$("freq"), $$(440) ]);
 
       test = instance.valueOf();
       expect(test).to.be.a("JSArray").to.eql([ "freq", 440 ]);
     });
     it(".newClear", function() {
-      var test = SCArray.newClear($SC.Integer(4));
+      var test = SCArray.newClear($$(4));
       expect(test).to.be.a("SCArray").that.eqls([ null, null, null, null ]);
     });
     it(".with", function() {
-      var test = SCArray.with($SC.Integer(0), $SC.Integer(1), $SC.Integer(2));
+      var test = SCArray.with($$(0), $$(1), $$(2));
       expect(test).to.be.a("SCArray").that.eqls([ 0, 1, 2 ]);
     });
     it("#reverse", function() {
@@ -708,25 +708,25 @@
       var $ugen1, $ugen2, $ugen3;
       var $for;
 
-      $elem1 = sc.test.object({
+      $elem1 = $$({
         asUGenInput: this.spy(function() {
           return $ugen1;
         })
       });
-      $elem2 = sc.test.object({
+      $elem2 = $$({
         asUGenInput: this.spy(function() {
           return $ugen2;
         })
       });
-      $elem3 = sc.test.object({
+      $elem3 = $$({
         asUGenInput: this.spy(function() {
           return $ugen3;
         })
       });
-      $ugen1 = sc.test.object();
-      $ugen2 = sc.test.object();
-      $ugen3 = sc.test.object();
-      $for = sc.test.object();
+      $ugen1 = $$();
+      $ugen2 = $$();
+      $ugen3 = $$();
+      $for = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
 
@@ -742,25 +742,25 @@
       var $ugen1, $ugen2, $ugen3;
       var $for;
 
-      $elem1 = sc.test.object({
+      $elem1 = $$({
         asAudioRateInput: this.spy(function() {
           return $ugen1;
         })
       });
-      $elem2 = sc.test.object({
+      $elem2 = $$({
         asAudioRateInput: this.spy(function() {
           return $ugen2;
         })
       });
-      $elem3 = sc.test.object({
+      $elem3 = $$({
         asAudioRateInput: this.spy(function() {
           return $ugen3;
         })
       });
-      $ugen1 = sc.test.object();
-      $ugen2 = sc.test.object();
-      $ugen3 = sc.test.object();
-      $for = sc.test.object();
+      $ugen1 = $$();
+      $ugen2 = $$();
+      $ugen3 = $$();
+      $for = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
 
@@ -775,24 +775,24 @@
       var $elem1, $elem2, $elem3;
       var $ugen1, $ugen2, $ugen3;
 
-      $elem1 = sc.test.object({
+      $elem1 = $$({
         asControlInput: this.spy(function() {
           return $ugen1;
         })
       });
-      $elem2 = sc.test.object({
+      $elem2 = $$({
         asControlInput: this.spy(function() {
           return $ugen2;
         })
       });
-      $elem3 = sc.test.object({
+      $elem3 = $$({
         asControlInput: this.spy(function() {
           return $ugen3;
         })
       });
-      $ugen1 = sc.test.object();
-      $ugen2 = sc.test.object();
-      $ugen3 = sc.test.object();
+      $ugen1 = $$();
+      $ugen2 = $$();
+      $ugen3 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
 
@@ -837,9 +837,9 @@
       var $mul, $add;
 
       spy = this.spy(sc.test.func);
-      $mul = sc.test.object();
-      $add = sc.test.object();
-      this.stub(sc.lang.klass, "get").withArgs("MulAdd").returns(sc.test.object({
+      $mul = $$();
+      $add = $$();
+      this.stub(sc.lang.klass, "get").withArgs("MulAdd").returns($$({
         new: spy
       }));
 

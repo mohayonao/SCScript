@@ -400,10 +400,10 @@
 
         token = this.lex();
         right = this.parseAssignmentExpression();
-        methodName = renameGetterToSetter(left.method.name);
+        methodName = left.method.name + "_";
         left.method.name = methodName;
         left.args.list   = node.args.list.concat(right);
-        if (methodName.charAt(methodName.length - 1) === "_") {
+        if (left.stamp !== "[")  {
           left.stamp = "=";
         }
         node = marker.update().apply(left, true);
@@ -765,7 +765,7 @@
     var node, method;
     var marker;
 
-    method = Node.createIdentifier("_newFrom");
+    method = Node.createIdentifier("[]");
     method = Marker.create(this.lexer).apply(method);
 
     marker = Marker.create(this.lexer);
@@ -778,13 +778,13 @@
   SCParser.prototype.parseLeftHandSideListAt = function(expr) {
     var indexes, method;
 
-    method = Node.createIdentifier("at");
+    method = Node.createIdentifier("[]");
     method = Marker.create(this.lexer).apply(method);
 
     indexes = this.parseListIndexer();
     if (indexes) {
       if (indexes.length === 3) {
-        method.name = "copySeries";
+        method.name = "[..]";
       }
     } else {
       this.throwUnexpected(this.lookahead);
@@ -1515,14 +1515,6 @@
     id = Node.createIdentifier(value);
 
     return marker.update().apply(id);
-  };
-
-  var renameGetterToSetter = function(methodName) {
-    switch (methodName) {
-    case "at"        : return "put";
-    case "copySeries": return "putSeries";
-    }
-    return methodName + "_";
   };
 
   var calcBinaryPrecedence = function(token, binaryPrecedence) {

@@ -3,7 +3,7 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var fn  = sc.lang.fn;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Ref", function(spec, utils) {
     spec.$new = function($thing) {

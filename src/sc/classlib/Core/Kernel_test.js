@@ -2,14 +2,17 @@
   "use strict";
 
   require("./Kernel");
+  require("../Collections/Set");
 
-  var $SC = sc.lang.$SC;
+  var $$ = sc.test.object;
 
-  describe("SCKernel", function() {
+  var $ = sc.lang.$;
+
+  describe("SCClass", function() {
     var SCClass, SCMeta_Class;
     before(function() {
-      SCClass      = $SC("Class");
-      SCMeta_Class = $SC("Meta_Class");
+      SCClass      = $("Class");
+      SCMeta_Class = $("Meta_Class");
     });
     it("#class", function() {
       var test;
@@ -24,35 +27,68 @@
       var test = SCClass.name();
       expect(test).to.be.a("SCString").that.equals("Class");
     });
+    it("#[]", function() {
+      var test;
+      test = $("Set")["[]"]($$([ 1, 2, 3, 4 ]));
+      expect(test).to.be.a("SCSet").that.eqls([ 1, 2, 3, 4 ]);
+    });
   });
 
   describe("SCProcess", function() {
     var SCProcess;
     before(function() {
-      SCProcess = $SC("Process");
+      SCProcess = $("Process");
+      this.createInstance = function() {
+        return SCProcess.new();
+      };
+    });
+    it("<interpreter", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      test = instance.interpreter();
+
+      expect(test).to.be.a("SCNil");
+    });
+    it("<mainThread", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      test = instance.mainThread();
+
+      expect(test).to.be.a("SCNil");
+    });
+  });
+
+  describe("SCMain", function() {
+    var SCMain;
+    before(function() {
+      SCMain = $("Main");
     });
     it(".new", function() {
       expect(function() {
-        SCProcess.new();
+        SCMain.new();
       }).to.not.throw();
     });
   });
 
   describe("SCInterpreter", function() {
-    var SCInterpreter, $interpreter;
+    var SCInterpreter;
     before(function() {
-      SCInterpreter = $SC("Interpreter");
-      $interpreter = SCInterpreter.new();
+      SCInterpreter = $("Interpreter");
+      this.createInstance = function() {
+        return SCInterpreter.new();
+      };
     });
     it("<>a..z / #clearAll", function() {
       var instance;
 
-      instance = $interpreter;
+      instance = this.createInstance();
 
       "abcdefghijklmnopqrstuvwxyz".split("").forEach(function(ch) {
         var test, $value;
 
-        $value = sc.test.object();
+        $value = $$();
 
         test = instance[ch]();
         expect(test).to.be.a("SCNil");

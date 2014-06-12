@@ -57,8 +57,8 @@
     },
     "-10pi": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Float(-31.41592653589793);",
+        "SCScript(function($) {",
+        "  return $.Float(-31.41592653589793);",
         "});",
       ],
       ast: {
@@ -84,8 +84,8 @@
     },
     "-a": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().neg();",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('neg');",
         "});",
       ],
       ast: {
@@ -131,8 +131,8 @@
     },
     "nil": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Nil();",
+        "SCScript(function($) {",
+        "  return $.Nil();",
         "});",
       ],
       ast: {
@@ -158,8 +158,8 @@
     },
     "true && false": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.True() ['&&'] ($SC.False());",
+        "SCScript(function($) {",
+        "  return $.True().$('&&', [ $.False() ]);",
         "});",
       ],
       ast: {
@@ -204,8 +204,8 @@
     },
     "`$a": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Ref($SC.Char('a'));",
+        "SCScript(function($) {",
+        "  return $.Ref($.Char('a'));",
         "});",
       ],
       ast: {
@@ -240,8 +240,8 @@
     },
     "a -.f b": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a() ['-'] ($SC.This().b(), $SC.Symbol('f'));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('-', [ $.This().$('b'), $.Symbol('f') ]);",
         "});",
       ],
       ast: {
@@ -294,8 +294,8 @@
     },
     "a /.1 b": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a() ['/'] ($SC.This().b(), $SC.Integer(1));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('/', [ $.This().$('b'), $.Integer(1) ]);",
         "});",
       ],
       ast: {
@@ -348,8 +348,8 @@
     },
     "a max:.1 b": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().max($SC.This().b(), $SC.Integer(1));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('max', [ $.This().$('b'), $.Integer(1) ]);",
         "});",
       ],
       ast: {
@@ -402,10 +402,10 @@
     },
     "[ 0, 0.5 ]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Array([",
-        "    $SC.Integer(0),",
-        "    $SC.Float(0.5),",
+        "SCScript(function($) {",
+        "  return $.Array([",
+        "    $.Integer(0),",
+        "    $.Float(0.5),",
         "  ]);",
         "});",
       ],
@@ -452,10 +452,10 @@
     },
     "#[ 0, 0.5 ]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Array([",
-        "    $SC.Integer(0),",
-        "    $SC.Float(0.5),",
+        "SCScript(function($) {",
+        "  return $.Array([",
+        "    $.Integer(0),",
+        "    $.Float(0.5),",
         "  ], true);",
         "});",
       ],
@@ -503,9 +503,9 @@
     },
     "#[ [] ]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Array([",
-        "    $SC.Array([], true),",
+        "SCScript(function($) {",
+        "  return $.Array([",
+        "    $.Array([], true),",
         "  ], true);",
         "});",
       ],
@@ -547,12 +547,12 @@
     },
     "[ a: 1, 2: 3 ]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Array([",
-        "    $SC.Symbol('a'),",
-        "    $SC.Integer(1),",
-        "    $SC.Integer(2),",
-        "    $SC.Integer(3),",
+        "SCScript(function($) {",
+        "  return $.Array([",
+        "    $.Symbol('a'),",
+        "    $.Integer(1),",
+        "    $.Integer(2),",
+        "    $.Integer(3),",
         "  ]);",
         "});",
       ],
@@ -619,9 +619,9 @@
     },
     "a = 2pi": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Float(6.283185307179586), $SC.This().a_(_ref0), _ref0);",
+        "  return (_ref0 = $.Float(6.283185307179586), $.This().$('a_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -665,11 +665,11 @@
     },
     "#a, b = c": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0, _ref1;",
-        "  return (_ref0 = $SC.This().c(),",
-        "    (_ref1 = _ref0.at($SC.Integer(0)), $SC.This().a_(_ref1), _ref1),",
-        "    (_ref1 = _ref0.at($SC.Integer(1)), $SC.This().b_(_ref1), _ref1),",
+        "  return (_ref0 = $.This().$('c'),",
+        "    (_ref1 = _ref0.$('at', [ $.Integer(0) ]), $.This().$('a_', [ _ref1 ]), _ref1),",
+        "    (_ref1 = _ref0.$('at', [ $.Integer(1) ]), $.This().$('b_', [ _ref1 ]), _ref1),",
         "  _ref0);",
         "});",
       ],
@@ -724,12 +724,12 @@
     },
     "#a, b ... c = d": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0, _ref1;",
-        "  return (_ref0 = $SC.This().d(),",
-        "    (_ref1 = _ref0.at($SC.Integer(0)), $SC.This().a_(_ref1), _ref1),",
-        "    (_ref1 = _ref0.at($SC.Integer(1)), $SC.This().b_(_ref1), _ref1),",
-        "    (_ref1 = _ref0.copyToEnd($SC.Integer(2)), $SC.This().c_(_ref1), _ref1),",
+        "  return (_ref0 = $.This().$('d'),",
+        "    (_ref1 = _ref0.$('at', [ $.Integer(0) ]), $.This().$('a_', [ _ref1 ]), _ref1),",
+        "    (_ref1 = _ref0.$('at', [ $.Integer(1) ]), $.This().$('b_', [ _ref1 ]), _ref1),",
+        "    (_ref1 = _ref0.$('copyToEnd', [ $.Integer(2) ]), $.This().$('c_', [ _ref1 ]), _ref1),",
         "  _ref0);",
         "});",
       ],
@@ -793,17 +793,17 @@
     },
     "#a, b = #c, d = [ 0, 1 ]": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0, _ref1, _ref2;",
-        "  return (_ref0 = (_ref1 = $SC.Array([",
-        "    $SC.Integer(0),",
-        "    $SC.Integer(1),",
+        "  return (_ref0 = (_ref1 = $.Array([",
+        "    $.Integer(0),",
+        "    $.Integer(1),",
         "  ]),",
-        "    (_ref2 = _ref1.at($SC.Integer(0)), $SC.This().c_(_ref2), _ref2),",
-        "    (_ref2 = _ref1.at($SC.Integer(1)), $SC.This().d_(_ref2), _ref2),",
+        "    (_ref2 = _ref1.$('at', [ $.Integer(0) ]), $.This().$('c_', [ _ref2 ]), _ref2),",
+        "    (_ref2 = _ref1.$('at', [ $.Integer(1) ]), $.This().$('d_', [ _ref2 ]), _ref2),",
         "  _ref1),",
-        "    (_ref1 = _ref0.at($SC.Integer(0)), $SC.This().a_(_ref1), _ref1),",
-        "    (_ref1 = _ref0.at($SC.Integer(1)), $SC.This().b_(_ref1), _ref1),",
+        "    (_ref1 = _ref0.$('at', [ $.Integer(0) ]), $.This().$('a_', [ _ref1 ]), _ref1),",
+        "    (_ref1 = _ref0.$('at', [ $.Integer(1) ]), $.This().$('b_', [ _ref1 ]), _ref1),",
         "  _ref0);",
         "});",
       ],
@@ -908,8 +908,8 @@
     },
     "1.neg": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(1).neg();",
+        "SCScript(function($) {",
+        "  return $.Integer(1).$('neg');",
         "});",
       ],
       ast: {
@@ -955,9 +955,9 @@
     },
     "a.b.c = 1": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Integer(1), $SC.This().a().b().c_(_ref0), _ref0);",
+        "  return (_ref0 = $.Integer(1), $.This().$('a').$('b').$('c_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -1034,8 +1034,8 @@
     },
     "a[0]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().at($SC.Integer(0));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[]', [ $.Integer(0) ]);",
         "});",
       ],
       ast: {
@@ -1055,7 +1055,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "at",
+              name: "[]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1092,8 +1092,8 @@
     },
     "a[..10]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().copySeries(null, null, $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]', [ null, null, $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -1113,7 +1113,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1152,8 +1152,8 @@
     },
     "a[2..]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().copySeries($SC.Integer(2), null, null);",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]', [ $.Integer(2), null, null ]);",
         "});",
       ],
       ast: {
@@ -1173,7 +1173,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1212,8 +1212,8 @@
     },
     "a[2..10]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().copySeries($SC.Integer(2), null, $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]', [ $.Integer(2), null, $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -1233,7 +1233,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1281,8 +1281,8 @@
     },
     "a[2, 4..]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().copySeries($SC.Integer(2), $SC.Integer(4), null);",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]', [ $.Integer(2), $.Integer(4), null ]);",
         "});",
       ],
       ast: {
@@ -1302,7 +1302,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1350,8 +1350,8 @@
     },
     "a[2, 4..10]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().copySeries($SC.Integer(2), $SC.Integer(4), $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]', [ $.Integer(2), $.Integer(4), $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -1371,7 +1371,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1428,8 +1428,8 @@
     },
     "a[..]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().copySeries(null, null, null);",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]', [ null, null, null ]);",
         "});",
       ],
       ast: {
@@ -1449,7 +1449,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1479,8 +1479,8 @@
     },
     "a[0] = 1": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().put($SC.Integer(0), $SC.Integer(1));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[]_', [ $.Integer(0), $.Integer(1) ]);",
         "});",
       ],
       ast: {
@@ -1500,7 +1500,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "put",
+              name: "[]_",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1547,10 +1547,10 @@
     },
     "a[..10] = 1": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().putSeries(" +
-          "null, null, $SC.Integer(10), $SC.Integer(1)" +
-          ");",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]_', [ " +
+          "null, null, $.Integer(10), $.Integer(1)" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -1570,7 +1570,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "putSeries",
+              name: "[..]_",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1619,10 +1619,10 @@
     },
     "a[2..] = 1": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().putSeries(" +
-          "$SC.Integer(2), null, null, $SC.Integer(1)" +
-          ");",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]_', [ " +
+          "$.Integer(2), null, null, $.Integer(1)" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -1642,7 +1642,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "putSeries",
+              name: "[..]_",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1691,10 +1691,10 @@
     },
     "a[2..10] = 1": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().putSeries(" +
-          "$SC.Integer(2), null, $SC.Integer(10), $SC.Integer(1)" +
-          ");",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]_', [ " +
+          "$.Integer(2), null, $.Integer(10), $.Integer(1)" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -1714,7 +1714,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "putSeries",
+              name: "[..]_",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1772,10 +1772,10 @@
     },
     "a[2, 4..] = 1": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().putSeries(" +
-          "$SC.Integer(2), $SC.Integer(4), null, $SC.Integer(1)" +
-          ");",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]_', [ " +
+          "$.Integer(2), $.Integer(4), null, $.Integer(1)" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -1795,7 +1795,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "putSeries",
+              name: "[..]_",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1853,10 +1853,10 @@
     },
     "a[2, 4..10] = 1": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().putSeries(" +
-          "$SC.Integer(2), $SC.Integer(4), $SC.Integer(10), $SC.Integer(1)" +
-          ");",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]_', [ " +
+          "$.Integer(2), $.Integer(4), $.Integer(10), $.Integer(1)" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -1876,7 +1876,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "putSeries",
+              name: "[..]_",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1943,10 +1943,10 @@
     },
     "a[..] = 1": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().putSeries(" +
-          "null, null, null, $SC.Integer(1)" +
-          ");",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]_', [ " +
+          "null, null, null, $.Integer(1)" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -1966,7 +1966,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "putSeries",
+              name: "[..]_",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -2006,12 +2006,12 @@
     },
     "a[0;1,2;3..4;5]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().copySeries(" +
-          "($SC.Integer(0), $SC.Integer(1)), " +
-          "($SC.Integer(2), $SC.Integer(3)), " +
-          "($SC.Integer(4), $SC.Integer(5))" +
-          ");",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('[..]', [ " +
+          "($.Integer(0), $.Integer(1)), " +
+          "($.Integer(2), $.Integer(3)), " +
+          "($.Integer(4), $.Integer(5))" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -2031,7 +2031,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -2124,13 +2124,13 @@
     },
     "a[b[c=0;1]=0;1]": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return $SC.This().a().at(" +
-          "($SC.This().b().put((" +
-          "(_ref0 = $SC.Integer(0), $SC.This().c_(_ref0), _ref0), " +
-          "$SC.Integer(1)), $SC.Integer(0)), $SC.Integer(1))" +
-          ");",
+        "  return $.This().$('a').$('[]', [ " +
+          "($.This().$('b').$('[]_', [ (" +
+          "(_ref0 = $.Integer(0), $.This().$('c_', [ _ref0 ]), _ref0), " +
+          "$.Integer(1)), $.Integer(0) ]), $.Integer(1))" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -2150,7 +2150,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "at",
+              name: "[]",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -2174,7 +2174,7 @@
                     },
                     method: {
                       type: Syntax.Identifier,
-                      name: "put",
+                      name: "[]_",
                       range: [ 3, 3 ],
                       loc: {
                         start: { line: 1, column: 3 },
@@ -2270,8 +2270,8 @@
     },
     "(..10)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(0).series(null, $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.Integer(0).$('series', [ null, $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -2329,8 +2329,8 @@
     },
     "(2..10)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(2).series(null, $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.Integer(2).$('series', [ null, $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -2388,8 +2388,8 @@
     },
     "(2, 4..10)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(2).series($SC.Integer(4), $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.Integer(2).$('series', [ $.Integer(4), $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -2456,10 +2456,10 @@
     },
     "(0;1, 2;3..4;5)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return ($SC.Integer(0), $SC.Integer(1)).series(" +
-          "($SC.Integer(2), $SC.Integer(3)), ($SC.Integer(4), $SC.Integer(5))" +
-          ");",
+        "SCScript(function($) {",
+        "  return ($.Integer(0), $.Integer(1)).$('series', [ " +
+          "($.Integer(2), $.Integer(3)), ($.Integer(4), $.Integer(5))" +
+          " ]);",
         "});",
       ],
       ast: {
@@ -2562,8 +2562,8 @@
     },
     "(:..)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(0).seriesIter(null, null);",
+        "SCScript(function($) {",
+        "  return $.Integer(0).$('seriesIter', [ null, null ]);",
         "});",
       ],
       ast: {
@@ -2612,8 +2612,8 @@
     },
     "(:..10)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(0).seriesIter(null, $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.Integer(0).$('seriesIter', [ null, $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -2671,8 +2671,8 @@
     },
     "(:2..)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(2).seriesIter(null, null);",
+        "SCScript(function($) {",
+        "  return $.Integer(2).$('seriesIter', [ null, null ]);",
         "});",
       ],
       ast: {
@@ -2721,8 +2721,8 @@
     },
     "(:2..10)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(2).seriesIter(null, $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.Integer(2).$('seriesIter', [ null, $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -2780,8 +2780,8 @@
     },
     "(:2, 4..)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(2).seriesIter($SC.Integer(4), null);",
+        "SCScript(function($) {",
+        "  return $.Integer(2).$('seriesIter', [ $.Integer(4), null ]);",
         "});",
       ],
       ast: {
@@ -2839,8 +2839,8 @@
     },
     "(:2, 4..10)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(2).seriesIter($SC.Integer(4), $SC.Integer(10));",
+        "SCScript(function($) {",
+        "  return $.Integer(2).$('seriesIter', [ $.Integer(4), $.Integer(10) ]);",
         "});",
       ],
       ast: {
@@ -2907,8 +2907,8 @@
     },
     "5 === 5.0": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Boolean($SC.Integer(5) === $SC.Float(5.0));",
+        "SCScript(function($) {",
+        "  return $.Boolean($.Integer(5) === $.Float(5.0));",
         "});",
       ],
       ast: {
@@ -2953,8 +2953,8 @@
     },
     "5 !== 5.0": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Boolean($SC.Integer(5) !== $SC.Float(5.0));",
+        "SCScript(function($) {",
+        "  return $.Boolean($.Integer(5) !== $.Float(5.0));",
         "});",
       ],
       ast: {
@@ -2999,8 +2999,8 @@
     },
     "5 == 5.0": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(5) ['=='] ($SC.Float(5.0));",
+        "SCScript(function($) {",
+        "  return $.Integer(5).$('==', [ $.Float(5.0) ]);",
         "});",
       ],
       ast: {
@@ -3043,11 +3043,17 @@
         }
       }
     },
-    "{ arg a, b, c=3; }": {
+    "{ arg a, b, c=3; nil }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function($a, $b, $c) {",
-        "    return $SC.Nil();",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $a, $b, $c;",
+        "    return [",
+        "      function(_arg0, _arg1, _arg2) {",
+        "        $a = _arg0; $b = _arg1; $c = _arg2;",
+        "        return $.Nil();",
+        "      }",
+        "    ];",
         "  }, 'a; b; c=3');",
         "});",
       ],
@@ -3121,26 +3127,43 @@
                 }
               ]
             },
-            body: [],
-            range: [ 0, 18 ],
+            body: [
+              {
+                type: Syntax.Literal,
+                value: "null",
+                valueType: Token.NilLiteral,
+                range: [ 17, 20 ],
+                loc: {
+                  start: { line: 1, column: 17 },
+                  end  : { line: 1, column: 20 }
+                }
+              }
+            ],
+            range: [ 0, 22 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 18 }
+              end  : { line: 1, column: 22 }
             }
           }
         ],
-        range: [ 0, 18 ],
+        range: [ 0, 22 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 18 }
+          end  : { line: 1, column: 22 }
         }
       }
     },
-    "{ arg a, b, c ... d; }": {
+    "{ arg a, b, c ... d; nil }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function($a, $b, $c, $d) {",
-        "    return $SC.Nil();",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $a, $b, $c, $d;",
+        "    return [",
+        "      function(_arg0, _arg1, _arg2, _arg3) {",
+        "        $a = _arg0; $b = _arg1; $c = _arg2; $d = _arg3;",
+        "        return $.Nil();",
+        "      }",
+        "    ];",
         "  }, 'a; b; c; *d');",
         "});",
       ],
@@ -3213,26 +3236,43 @@
                 }
               }
             },
-            body: [],
-            range: [ 0, 22 ],
+            body: [
+              {
+                type: Syntax.Literal,
+                value: "null",
+                valueType: Token.NilLiteral,
+                range: [ 21, 24 ],
+                loc: {
+                  start: { line: 1, column: 21 },
+                  end  : { line: 1, column: 24 }
+                }
+              }
+            ],
+            range: [ 0, 26 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 22 }
+              end  : { line: 1, column: 26 }
             }
           }
         ],
-        range: [ 0, 22 ],
+        range: [ 0, 26 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 22 }
+          end  : { line: 1, column: 26 }
         }
       }
     },
-    "{ arg ...args; }": {
+    "{ arg ...args; nil }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function($args) {",
-        "    return $SC.Nil();",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $args;",
+        "    return [",
+        "      function(_arg0) {",
+        "        $args = _arg0;",
+        "        return $.Nil();",
+        "      }",
+        "    ];",
         "  }, '*args');",
         "});",
       ],
@@ -3253,26 +3293,43 @@
                 }
               }
             },
-            body: [],
-            range: [ 0, 16 ],
+            body: [
+              {
+                type: Syntax.Literal,
+                value: "null",
+                valueType: Token.NilLiteral,
+                range: [ 15, 18 ],
+                loc: {
+                  start: { line: 1, column: 15 },
+                  end  : { line: 1, column: 18 }
+                }
+              }
+            ],
+            range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 16 }
+              end  : { line: 1, column: 20 }
             }
           }
         ],
-        range: [ 0, 16 ],
+        range: [ 0, 20 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 16 }
+          end  : { line: 1, column: 20 }
         }
       }
     },
     "{ |x = 1| x }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function($x) {",
-        "    return $x;",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $x;",
+        "    return [",
+        "      function(_arg0) {",
+        "        $x = _arg0;",
+        "        return $x;",
+        "      }",
+        "    ];",
         "  }, 'x=1');",
         "});",
       ],
@@ -3339,11 +3396,15 @@
     },
     "{ a; b; c }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function() {",
-        "    $SC.This().a();",
-        "    $SC.This().b();",
-        "    return $SC.This().c();",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    return [",
+        "      function() {",
+        "        $.This().$('a');",
+        "        $.This().$('b');",
+        "        return $.This().$('c');",
+        "      }",
+        "    ];",
         "  });",
         "});",
       ],
@@ -3397,11 +3458,16 @@
     },
     "{|x=1| var a = x * x; a * a; }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function($x) {",
-        "    var $a = $SC.Nil();",
-        "    $a = $x ['*'] ($x);",
-        "    return $a ['*'] ($a);",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $x, $a;",
+        "    return [",
+        "      function(_arg0) {",
+        "        $x = _arg0;",
+        "        $a = $x.$('*', [ $x ]);",
+        "        return $a.$('*', [ $a ]);",
+        "      }",
+        "    ];",
         "  }, 'x=1');",
         "});",
       ],
@@ -3541,11 +3607,11 @@
     },
     "a = #{}": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Function(function() {",
-        "    return $SC.Nil();",
-        "  }, '', true), $SC.This().a_(_ref0), _ref0);",
+        "  return (_ref0 = $.Function(function() {",
+        "    return [];",
+        "  }, '', true), $.This().$('a_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -3587,11 +3653,17 @@
         }
       }
     },
-    "{|a=#[ nil, true, false ], b= #[ inf, -inf ], c=#[ 0, 0.0, 2pi, $a, \\sym ]|}": {
+    "{|a=#[ nil, true, false ], b= #[ inf, -inf ], c=#[ 0, 0.0, 2pi, $a, \\sym ]| nil }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function($a, $b, $c) {",
-        "    return $SC.Nil();",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $a, $b, $c;",
+        "    return [",
+        "      function(_arg0, _arg1, _arg2) {",
+        "        $a = _arg0; $b = _arg1; $c = _arg2;",
+        "        return $.Nil();",
+        "      }",
+        "    ];",
         "  }, 'a=[ nil, true, false ]; " +
           "b=[ inf, -inf ]; c=[ 0, 0.0, 6.283185307179586, $a, \\sym ]');",
         "});",
@@ -3601,7 +3673,18 @@
         body: [
           {
             type: Syntax.FunctionExpression,
-            body: [],
+            body: [
+              {
+                type: Syntax.Literal,
+                value: "null",
+                valueType: Token.NilLiteral,
+                range: [ 76, 79 ],
+                loc: {
+                  start: { line: 1, column: 76 },
+                  end  : { line: 1, column: 79 }
+                }
+              }
+            ],
             args: {
               list: [
                 {
@@ -3790,25 +3873,25 @@
                 }
               ]
             },
-            range: [ 0, 76 ],
+            range: [ 0, 81 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 76 }
+              end  : { line: 1, column: 81 }
             }
           }
         ],
-        range: [ 0, 76 ],
+        range: [ 0, 81 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 76 }
+          end  : { line: 1, column: 81 }
         }
       }
     },
     "var level=0, slope=1, curve=1;": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  var $level = $SC.Nil(), $slope = $SC.Nil(), $curve = $SC.Nil();",
-        "  return $level = $SC.Integer(0), $slope = $SC.Integer(1), $curve = $SC.Integer(1);",
+        "SCScript(function($) {",
+        "  var $level, $slope, $curve;",
+        "  return $level = $.Integer(0), $slope = $.Integer(1), $curve = $.Integer(1);",
         "});",
       ],
       ast: {
@@ -3916,9 +3999,10 @@
     },
     "var a, b; a=nil;": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  var $a = $SC.Nil(), $b = $SC.Nil();",
-        "  return $a = $SC.Nil();",
+        "SCScript(function($) {",
+        "  var $a, $b;",
+        "  $a = $.Nil(), $b = $.Nil();",
+        "  return $a = $.Nil();",
         "});",
       ],
       ast: {
@@ -4007,10 +4091,11 @@
     },
     "var a; #a = [];": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  var $a = $SC.Nil(), _ref0;",
-        "  return (_ref0 = $SC.Array([]),",
-        "    $a = _ref0.at($SC.Integer(0)),",
+        "SCScript(function($) {",
+        "  var $a, _ref0;",
+        "  $a = $.Nil();",
+        "  return (_ref0 = $.Array([]),",
+        "    $a = _ref0.$('at', [ $.Integer(0) ]),",
         "  _ref0);",
         "});",
       ],
@@ -4084,14 +4169,15 @@
     },
     "{ |x, y| var a; a = x + y; x.wait; a }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.SegFunction(function() {",
-        "    var $x = $SC.Nil(), $y = $SC.Nil(), $a = $SC.Nil();", // $x, $y, $a = $SC.Nil()
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $x, $y, $a;",
         "    return [",
         "      function(_arg0, _arg1) {",
         "        $x = _arg0; $y = _arg1;",
-        "        $a = $x ['+'] ($y);",
-        "        return $x.wait();",
+        "        $a = $.Nil();",
+        "        $a = $x.$('+', [ $y ]);",
+        "        return $x.$('wait');",
         "      },",
         "      function() {",
         "        return $a;",
@@ -4272,20 +4358,20 @@
     },
     "{ if (true) { 1.wait }; 0 }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.SegFunction(function() {",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
         "    return [",
         "      function() {",
-        "        return $SC.True().if($SC.SegFunction(function() {",
+        "        return $.True().$('if', [ $.Function(function() {",
         "          return [",
         "            function() {",
-        "              return $SC.Integer(1).wait();",
+        "              return $.Integer(1).$('wait');",
         "            }",
         "          ];",
-        "        }));",
+        "        }) ]);",
         "      },",
         "      function() {",
-        "        return $SC.Integer(0);",
+        "        return $.Integer(0);",
         "      }",
         "    ];",
         "  });",
@@ -4397,14 +4483,14 @@
     },
     "{ wait(1); 0 }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.SegFunction(function() {",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
         "    return [",
         "      function() {",
-        "        return $SC.Integer(1).wait();",
+        "        return $.Integer(1).$('wait');",
         "      },",
         "      function() {",
-        "        return $SC.Integer(0);",
+        "        return $.Integer(0);",
         "      }",
         "    ];",
         "  });",
@@ -4474,12 +4560,12 @@
     },
     "max(0, 1, 2, *a, a: 5, b: 6)": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Integer(0), _ref0.max.apply(_ref0, [",
-        "    $SC.Integer(1),",
-        "    $SC.Integer(2),",
-        "  ].concat($SC.This().a().asArray()._, { a: $SC.Integer(5), b: $SC.Integer(6) })));",
+        "  return (_ref0 = $.Integer(0), _ref0.$('max', [",
+        "    $.Integer(1),",
+        "    $.Integer(2),",
+        "  ].concat($.This().$('a').$('asArray')._, { a: $.Integer(5), b: $.Integer(6) })));",
         "});",
       ],
       ast: {
@@ -4578,11 +4664,11 @@
     },
     "max(1, 2, *a)": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Integer(1), _ref0.max.apply(_ref0, [",
-        "    $SC.Integer(2),",
-        "  ].concat($SC.This().a().asArray()._)));",
+        "  return (_ref0 = $.Integer(1), _ref0.$('max', [",
+        "    $.Integer(2),",
+        "  ].concat($.This().$('a').$('asArray')._)));",
         "});",
       ],
       ast: {
@@ -4649,8 +4735,8 @@
     },
     "max(1, 2, a: 5)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(1).max($SC.Integer(2), { a: $SC.Integer(5) });",
+        "SCScript(function($) {",
+        "  return $.Integer(1).$('max', [ $.Integer(2), { a: $.Integer(5) } ]);",
         "});",
       ],
       ast: {
@@ -4720,10 +4806,10 @@
     },
     "max(0, *a, a: 3)": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Integer(0), _ref0.max.apply(_ref0, [" +
-          "].concat($SC.This().a().asArray()._, { a: $SC.Integer(3) })));",
+        "  return (_ref0 = $.Integer(0), _ref0.$('max', [" +
+          "].concat($.This().$('a').$('asArray')._, { a: $.Integer(3) })));",
         "});",
       ],
       ast: {
@@ -4791,10 +4877,10 @@
     },
     "max(0, *a)": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Integer(0), _ref0.max.apply(_ref0, [" +
-          "].concat($SC.This().a().asArray()._)));",
+        "  return (_ref0 = $.Integer(0), _ref0.$('max', [" +
+          "].concat($.This().$('a').$('asArray')._)));",
         "});",
       ],
       ast: {
@@ -4850,8 +4936,8 @@
     },
     "max(0, a: 1)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(0).max({ a: $SC.Integer(1) });",
+        "SCScript(function($) {",
+        "  return $.Integer(0).$('max', [ { a: $.Integer(1) } ]);",
         "});",
       ],
       ast: {
@@ -4910,8 +4996,8 @@
     },
     "max(*a, a: 2)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().max({ a: $SC.Integer(2) });",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('max', [ { a: $.Integer(2) } ]);",
         "});",
       ],
       ast: {
@@ -4969,8 +5055,8 @@
     },
     "max(*a)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().max();",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('max');",
         "});",
       ],
       ast: {
@@ -5016,11 +5102,11 @@
     },
     "max(0; 1, 2; 3, 4; 5, a: 6; 7, b: 8; 9)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return ($SC.Integer(0), $SC.Integer(1)).max(" +
-          "($SC.Integer(2), $SC.Integer(3)), " +
-          "($SC.Integer(4), $SC.Integer(5)), " +
-          "{ a: ($SC.Integer(6), $SC.Integer(7)), b: ($SC.Integer(8), $SC.Integer(9)) });",
+        "SCScript(function($) {",
+        "  return ($.Integer(0), $.Integer(1)).$('max', [ " +
+          "($.Integer(2), $.Integer(3)), " +
+          "($.Integer(4), $.Integer(5)), " +
+          "{ a: ($.Integer(6), $.Integer(7)), b: ($.Integer(8), $.Integer(9)) } ]);",
         "});",
       ],
       ast: {
@@ -5170,11 +5256,11 @@
     },
     "a = (1; 2; 3)": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
         "  return (_ref0 = " +
-          "($SC.Integer(1), $SC.Integer(2), $SC.Integer(3)), " +
-          "$SC.This().a_(_ref0), " +
+          "($.Integer(1), $.Integer(2), $.Integer(3)), " +
+          "$.This().$('a_', [ _ref0 ]), " +
           "_ref0);",
         "});",
       ],
@@ -5241,13 +5327,13 @@
     },
     "a = (var a = 1; a)": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
         "  return (_ref0 = (function() {",
-        "    var $a = $SC.Nil();",
-        "    $a = $SC.Integer(1);",
+        "    var $a;",
+        "    $a = $.Integer(1);",
         "    return $a;",
-        "  })(), $SC.This().a_(_ref0), _ref0);",
+        "  })(), $.This().$('a_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -5338,8 +5424,8 @@
     },
     "a.midicps.min(220)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().midicps().min($SC.Integer(220));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('midicps').$('min', [ $.Integer(220) ]);",
         "});",
       ],
       ast: {
@@ -5415,8 +5501,8 @@
     },
     "Point(3, 4)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC('Point').new($SC.Integer(3), $SC.Integer(4));",
+        "SCScript(function($) {",
+        "  return $('Point').$('new', [ $.Integer(3), $.Integer(4) ]);",
         "});",
       ],
       ast: {
@@ -5483,8 +5569,8 @@
     },
     "Point.new(3, 4)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC('Point').new($SC.Integer(3), $SC.Integer(4));",
+        "SCScript(function($) {",
+        "  return $('Point').$('new', [ $.Integer(3), $.Integer(4) ]);",
         "});",
       ],
       ast: {
@@ -5550,8 +5636,8 @@
     },
     "Point.new": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC('Point').new();",
+        "SCScript(function($) {",
+        "  return $('Point').$('new');",
         "});",
       ],
       ast: {
@@ -5596,10 +5682,16 @@
     },
     "Routine  {|i| i.postln}": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC('Routine').new($SC.Function(function($i) {",
-        "    return $i.postln();",
-        "  }, 'i'));",
+        "SCScript(function($) {",
+        "  return $('Routine').$('new', [ $.Function(function() {",
+        "    var $i;",
+        "    return [",
+        "      function(_arg0) {",
+        "        $i = _arg0;",
+        "        return $i.$('postln');",
+        "      }",
+        "    ];",
+        "  }, 'i') ]);",
         "});",
       ],
       ast: {
@@ -5707,10 +5799,10 @@
     },
     "r {}.value": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function() {",
-        "    return $SC.Nil();",
-        "  }).r().value();",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    return [];",
+        "  }).$('r').$('value');",
         "});"
       ],
       ast: {
@@ -5777,12 +5869,12 @@
     },
     "Set[3, 4, 5]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC('Set')._newFrom($SC.Array([",
-        "    $SC.Integer(3),",
-        "    $SC.Integer(4),",
-        "    $SC.Integer(5),",
-        "  ]));",
+        "SCScript(function($) {",
+        "  return $('Set').$('[]', [ $.Array([",
+        "    $.Integer(3),",
+        "    $.Integer(4),",
+        "    $.Integer(5),",
+        "  ]) ]);",
         "});",
       ],
       ast: {
@@ -5802,7 +5894,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "_newFrom",
+              name: "[]",
               range: [ 3, 3 ],
               loc: {
                 start: { line: 1, column: 3 },
@@ -5869,11 +5961,11 @@
     },
     "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC('Array')._newFrom($SC.Array([",
-        "    $SC.Integer(1),",
-        "    $SC.Integer(2),",
-        "  ])).at($SC.Integer(0));",
+        "SCScript(function($) {",
+        "  return $('Array').$('[]', [ $.Array([",
+        "    $.Integer(1),",
+        "    $.Integer(2),",
+        "  ]) ]).$('at', [ $.Integer(0) ]);",
         "});",
       ],
       ast: {
@@ -5895,7 +5987,7 @@
               },
               method: {
                 type: Syntax.Identifier,
-                name: "_newFrom",
+                name: "[]",
                 range: [ 6, 6 ],
                 loc: {
                   start: { line: 1, column: 6 },
@@ -5981,11 +6073,11 @@
     },
     "Array [ 1, 2 ][0]": { // (Array [ 1, 2 ])[0]
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC('Array')._newFrom($SC.Array([",
-        "    $SC.Integer(1),",
-        "    $SC.Integer(2),",
-        "  ])).at($SC.Integer(0));",
+        "SCScript(function($) {",
+        "  return $('Array').$('[]', [ $.Array([",
+        "    $.Integer(1),",
+        "    $.Integer(2),",
+        "  ]) ]).$('[]', [ $.Integer(0) ]);",
         "});",
       ],
       ast: {
@@ -6008,7 +6100,7 @@
               },
               method: {
                 type: Syntax.Identifier,
-                name: "_newFrom",
+                name: "[]",
                 range: [ 6, 6 ],
                 loc: {
                   start: { line: 1, column: 6 },
@@ -6057,7 +6149,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "at",
+              name: "[]",
               range: [ 14, 14 ],
               loc: {
                 start: { line: 1, column: 14 },
@@ -6094,8 +6186,8 @@
     },
     "a.(0, 1)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().value($SC.Integer(0), $SC.Integer(1));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('value', [ $.Integer(0), $.Integer(1) ]);",
         "});",
       ],
       ast: {
@@ -6162,8 +6254,8 @@
     },
     "a.[0]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().value().at($SC.Integer(0));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('value').$('[]', [ $.Integer(0) ]);",
         "});",
       ],
       ast: {
@@ -6204,7 +6296,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "at",
+              name: "[]",
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
@@ -6241,8 +6333,8 @@
     },
     "a.[0;1]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().value().at(($SC.Integer(0), $SC.Integer(1)));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('value').$('[]', [ ($.Integer(0), $.Integer(1)) ]);",
         "});",
       ],
       ast: {
@@ -6283,7 +6375,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "at",
+              name: "[]",
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
@@ -6332,8 +6424,8 @@
     },
     "a.[..5]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().value().copySeries(null, null, $SC.Integer(5));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('value').$('[..]', [ null, null, $.Integer(5) ]);",
         "});",
       ],
       ast: {
@@ -6374,7 +6466,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "copySeries",
+              name: "[..]",
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
@@ -6413,10 +6505,10 @@
     },
     "a.value(*[])": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.This().a(), _ref0.value.apply(_ref0, [" +
-          "].concat($SC.Array([]).asArray()._)));",
+        "  return (_ref0 = $.This().$('a'), _ref0.$('value', [" +
+          "].concat($.Array([]).$('asArray')._)));",
         "});",
       ],
       ast: {
@@ -6470,12 +6562,20 @@
     },
     "if (x<3) {\\abc} {\\def}": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().x() ['<'] ($SC.Integer(3)).if($SC.Function(function() {",
-        "    return $SC.Symbol('abc');",
-        "  }), $SC.Function(function() {",
-        "    return $SC.Symbol('def');",
-        "  }));",
+        "SCScript(function($) {",
+        "  return $.This().$('x').$('<', [ $.Integer(3) ]).$('if', [ $.Function(function() {",
+        "    return [",
+        "      function() {",
+        "        return $.Symbol('abc');",
+        "      }",
+        "    ];",
+        "  }), $.Function(function() {",
+        "    return [",
+        "      function() {",
+        "        return $.Symbol('def');",
+        "      }",
+        "    ];",
+        "  }) ]);",
         "});",
       ],
       ast: {
@@ -6583,10 +6683,16 @@
     },
     "z.do  {|x| x.play }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().z().do($SC.Function(function($x) {",
-        "    return $x.play();",
-        "  }, 'x'));",
+        "SCScript(function($) {",
+        "  return $.This().$('z').$('do', [ $.Function(function() {",
+        "    var $x;",
+        "    return [",
+        "      function(_arg0) {",
+        "        $x = _arg0;",
+        "        return $x.$('play');",
+        "      }",
+        "    ];",
+        "  }, 'x') ]);",
         "});",
       ],
       ast: {
@@ -6693,10 +6799,16 @@
     },
     "z.do #{|x| x.play }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().z().do($SC.Function(function($x) {",
-        "    return $x.play();",
-        "  }, 'x', true));",
+        "SCScript(function($) {",
+        "  return $.This().$('z').$('do', [ $.Function(function() {",
+        "    var $x;",
+        "    return [",
+        "      function(_arg0) {",
+        "        $x = _arg0;",
+        "        return $x.$('play');",
+        "      }",
+        "    ];",
+        "  }, 'x', true) ]);",
         "});",
       ],
       ast: {
@@ -6804,15 +6916,15 @@
     },
     "loop { 'x'.postln; 1.wait }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.SegFunction(function() {",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
         "    return [",
         "      function() {",
-        "        $SC.Symbol('x').postln();",
-        "        return $SC.Integer(1).wait();",
+        "        $.Symbol('x').$('postln');",
+        "        return $.Integer(1).$('wait');",
         "      }",
         "    ];",
-        "  }).loop();",
+        "  }).$('loop');",
         "});",
       ],
       ast: {
@@ -6919,8 +7031,8 @@
     },
     "~a": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Environment('a');",
+        "SCScript(function($) {",
+        "  return $.Environment('a');",
         "});",
       ],
       ast: {
@@ -6953,8 +7065,8 @@
     },
     "~a = 0": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Environment('a', $SC.Integer(0));",
+        "SCScript(function($) {",
+        "  return $.Environment('a', $.Integer(0));",
         "});",
       ],
       ast: {
@@ -7006,8 +7118,8 @@
     },
     "()": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Event([]);",
+        "SCScript(function($) {",
+        "  return $.Event([]);",
         "});",
       ],
       ast: {
@@ -7032,10 +7144,10 @@
     },
     "( \\answer : 42 )": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Event([",
-        "    $SC.Symbol('answer'),",
-        "    $SC.Integer(42),",
+        "SCScript(function($) {",
+        "  return $.Event([",
+        "    $.Symbol('answer'),",
+        "    $.Integer(42),",
         "  ]);",
         "});",
       ],
@@ -7082,16 +7194,16 @@
     },
     "x = ( a: 1, b: 2, 3: 4 )": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Event([",
-        "    $SC.Symbol('a'),",
-        "    $SC.Integer(1),",
-        "    $SC.Symbol('b'),",
-        "    $SC.Integer(2),",
-        "    $SC.Integer(3),",
-        "    $SC.Integer(4),",
-        "  ]), $SC.This().x_(_ref0), _ref0);",
+        "  return (_ref0 = $.Event([",
+        "    $.Symbol('a'),",
+        "    $.Integer(1),",
+        "    $.Symbol('b'),",
+        "    $.Integer(2),",
+        "    $.Integer(3),",
+        "    $.Integer(4),",
+        "  ]), $.This().$('x_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -7195,16 +7307,16 @@
     },
     "x = ( a : 1, b : 2, c : 3 )": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Event([",
-        "    $SC.This().a(),",
-        "    $SC.Integer(1),",
-        "    $SC.This().b(),",
-        "    $SC.Integer(2),",
-        "    $SC.This().c(),",
-        "    $SC.Integer(3),",
-        "  ]), $SC.This().x_(_ref0), _ref0);",
+        "  return (_ref0 = $.Event([",
+        "    $.This().$('a'),",
+        "    $.Integer(1),",
+        "    $.This().$('b'),",
+        "    $.Integer(2),",
+        "    $.This().$('c'),",
+        "    $.Integer(3),",
+        "  ]), $.This().$('x_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -7305,14 +7417,14 @@
     },
     "x = (1 + 2: 3, 4: 5)": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Event([",
-        "    $SC.Integer(1) ['+'] ($SC.Integer(2)),",
-        "    $SC.Integer(3),",
-        "    $SC.Integer(4),",
-        "    $SC.Integer(5),",
-        "  ]), $SC.This().x_(_ref0), _ref0);",
+        "  return (_ref0 = $.Event([",
+        "    $.Integer(1).$('+', [ $.Integer(2) ]),",
+        "    $.Integer(3),",
+        "    $.Integer(4),",
+        "    $.Integer(5),",
+        "  ]), $.This().$('x_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -7415,11 +7527,17 @@
     },
     "f = _ + _": {
       compiled: [
-        "SCScript(function($SC) {",
+        "SCScript(function($) {",
         "  var _ref0;",
-        "  return (_ref0 = $SC.Function(function($_0, $_1) {",
-        "    return $_0 ['+'] ($_1);",
-        "  }), $SC.This().f_(_ref0), _ref0);",
+        "  return (_ref0 = $.Function(function() {",
+        "    var $_0, $_1;",
+        "    return [",
+        "      function(_arg0, _arg1) {",
+        "        $_0 = _arg0; $_1 = _arg1;",
+        "        return $_0.$('+', [ $_1 ]);",
+        "      }",
+        "    ];",
+        "  }), $.This().$('f_', [ _ref0 ]), _ref0);",
         "});",
       ],
       ast: {
@@ -7529,12 +7647,18 @@
     },
     "[ _, _ ]": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Function(function($_0, $_1) {",
-        "    return $SC.Array([",
-        "      $_0,",
-        "      $_1,",
-        "    ]);",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    var $_0, $_1;",
+        "    return [",
+        "      function(_arg0, _arg1) {",
+        "        $_0 = _arg0; $_1 = _arg1;",
+        "        return $.Array([",
+        "          $_0,",
+        "          $_1,",
+        "        ]);",
+        "      }",
+        "    ];",
         "  });",
         "});"
       ],
@@ -7628,9 +7752,10 @@
     },
     "var a; var b;": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  var $a = $SC.Nil(), $b = $SC.Nil();",
-        "  return $SC.Nil();",
+        "SCScript(function($) {",
+        "  var $a, $b;",
+        "  $a = $.Nil();",
+        "  return $b = $.Nil();",
         "});",
       ],
       ast: {
@@ -7702,9 +7827,10 @@
     },
     "var a; a = 10;": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  var $a = $SC.Nil();",
-        "  return $a = $SC.Integer(10);",
+        "SCScript(function($) {",
+        "  var $a;",
+        "  $a = $.Nil();",
+        "  return $a = $.Integer(10);",
         "});",
       ],
       ast: {
@@ -7776,9 +7902,10 @@
     },
     "(var a; a = 10;)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  var $a = $SC.Nil();",
-        "  return $a = $SC.Integer(10);",
+        "SCScript(function($) {",
+        "  var $a;",
+        "  $a = $.Nil();",
+        "  return $a = $.Integer(10);",
         "});",
       ],
       ast: {
@@ -7850,11 +7977,16 @@
     },
     "var a = { var a; a }; a": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  var $a = $SC.Nil();",
-        "  $a = $SC.Function(function() {",
-        "    var $a = $SC.Nil();",
-        "    return $a;",
+        "SCScript(function($) {",
+        "  var $a;",
+        "  $a = $.Function(function() {",
+        "    var $a;",
+        "    return [",
+        "      function() {",
+        "        $a = $.Nil();",
+        "        return $a;",
+        "      }",
+        "    ];",
         "  });",
         "  return $a;",
         "});",
@@ -7956,8 +8088,8 @@
     },
     "this": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This();",
+        "SCScript(function($) {",
+        "  return $.This();",
         "});",
       ],
       ast: {
@@ -7982,8 +8114,8 @@
     },
     "thisProcess.platform;": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.ThisProcess().platform();",
+        "SCScript(function($) {",
+        "  return $.ThisProcess().$('platform');",
         "});",
       ],
       ast: {
@@ -8028,8 +8160,8 @@
     },
     "a.(Class)": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.This().a().value($SC('Class'));",
+        "SCScript(function($) {",
+        "  return $.This().$('a').$('value', [ $('Class') ]);",
         "});",
       ],
       ast: {
@@ -8085,8 +8217,8 @@
     },
     '"#{69.midicps}"': {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.Integer(69).midicps().asString();",
+        "SCScript(function($) {",
+        "  return $.Integer(69).$('midicps').$('asString');",
         "});",
       ],
       ast: {
@@ -8132,10 +8264,14 @@
     },
     '"\\#{}##{{69.midicps}.value}#{}hz"': {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.String('\\#{}#') ['++'] ($SC.Function(function() {",
-        "    return $SC.Integer(69).midicps();",
-        "  }).value().asString()) ['++'] ($SC.String('hz'));",
+        "SCScript(function($) {",
+        "  return $.String('\\#{}#').$('++', [ $.Function(function() {",
+        "    return [",
+        "      function() {",
+        "        return $.Integer(69).$('midicps');",
+        "      }",
+        "    ];",
+        "  }).$('value').$('asString') ]).$('++', [ $.String('hz') ]);",
         "});",
       ],
       ast: {
@@ -8214,14 +8350,14 @@
     },
     "{ neg(a.value) }": {
       compiled: [
-        "SCScript(function($SC) {",
-        "  return $SC.SegFunction(function() {",
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
         "    return [",
         "      function() {",
-        "        return $SC.Value(0, $SC.This().a().value());",
+        "        return this.push($.This().$('a').$('value'));",
         "      },",
         "      function() {",
-        "        return $SC.Result(0).neg();",
+        "        return this.shift().$('neg');",
         "      }",
         "    ];",
         "  });",

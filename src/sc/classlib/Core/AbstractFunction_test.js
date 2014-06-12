@@ -3,16 +3,19 @@
 
   require("./AbstractFunction");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCAbstractFunction", function() {
     var SCAbstractFunction;
     before(function() {
-      SCAbstractFunction = $SC("AbstractFunction");
+      SCAbstractFunction = $("AbstractFunction");
       this.createInstance = function(func) {
-        var instance = $SC.Function(func || function() {});
+        var instance = $.Function(function() {
+          return [ func || function() {} ];
+        });
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "AbstractFunction", testMethod);
         return instance;
@@ -24,8 +27,8 @@
       var $aSelector;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      this.stub(sc.lang.klass, "get").withArgs("UnaryOpFunction").returns(sc.test.object({
+      $aSelector = $$();
+      this.stub(sc.lang.klass, "get").withArgs("UnaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -40,10 +43,10 @@
       var $aSelector, $something, $adverb;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      $something = sc.test.object();
-      $adverb    = sc.test.object();
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns(sc.test.object({
+      $aSelector = $$();
+      $something = $$();
+      $adverb    = $$();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -58,10 +61,10 @@
       var $aSelector, $something, $adverb;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      $something = sc.test.object();
-      $adverb    = sc.test.object();
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns(sc.test.object({
+      $aSelector = $$();
+      $something = $$();
+      $adverb    = $$();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -76,9 +79,9 @@
       var $aSelector, $anArgList;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      $anArgList = sc.test.object();
-      this.stub(sc.lang.klass, "get").withArgs("NAryOpFunction").returns(sc.test.object({
+      $aSelector = $$();
+      $anArgList = $$();
+      this.stub(sc.lang.klass, "get").withArgs("NAryOpFunction").returns($$({
         new: spy
       }));
 
@@ -92,9 +95,9 @@
       var instance, test;
       var $aSelector, $aNumber, $adverb;
 
-      $aSelector = sc.test.object();
-      $aNumber   = sc.test.object();
-      $adverb    = sc.test.object();
+      $aSelector = $$();
+      $aNumber   = $$();
+      $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func);
@@ -107,9 +110,9 @@
       var instance, test;
       var $aSelector, $aSignal, $adverb;
 
-      $aSelector = sc.test.object();
-      $aSignal   = sc.test.object();
-      $adverb    = sc.test.object();
+      $aSelector = $$();
+      $aSignal   = $$();
+      $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func);
@@ -122,9 +125,9 @@
       var instance, test;
       var $aSelector, $aComplex, $adverb;
 
-      $aSelector = sc.test.object();
-      $aComplex  = sc.test.object();
-      $adverb    = sc.test.object();
+      $aSelector = $$();
+      $aComplex  = $$();
+      $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func);
@@ -137,9 +140,9 @@
       var instance, test;
       var $aSelector, $aSeqColl, $adverb;
 
-      $aSelector = sc.test.object();
-      $aSeqColl  = sc.test.object();
-      $adverb    = sc.test.object();
+      $aSelector = $$();
+      $aSeqColl  = $$();
+      $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func);
@@ -218,7 +221,7 @@
         this.stub(instance, "composeUnaryOp", sc.test.func);
 
         test = instance[methodName]();
-        expect(instance.composeUnaryOp).to.be.calledWith($SC.Symbol(methodName));
+        expect(instance.composeUnaryOp).to.be.calledWith($.Symbol(methodName));
         expect(instance.composeUnaryOp).to.be.calledLastIn(test);
       }));
     });
@@ -230,7 +233,7 @@
       this.stub(instance, "composeUnaryOp", sc.test.func);
 
       test = instance.ref();
-      expect(instance.composeUnaryOp).to.be.calledWith($SC.Symbol("asRef"));
+      expect(instance.composeUnaryOp).to.be.calledWith($$("\\asRef"));
       expect(instance.composeUnaryOp).to.be.calledLastIn(test);
     }));
 
@@ -293,15 +296,15 @@
         var instance, test;
         var $function, $adverb;
 
-        $function = sc.test.object();
-        $adverb   = sc.test.object();
+        $function = $$();
+        $adverb   = $$();
 
         instance = this.createInstance();
         this.stub(instance, "composeBinaryOp", sc.test.func);
 
         test = instance[methodName]($function, $adverb);
         expect(instance.composeBinaryOp).to.be.calledWith(
-          $SC.Symbol(methodName), $function, $adverb
+          $.Symbol(methodName), $function, $adverb
         );
         expect(instance.composeBinaryOp).to.be.calledLastIn(test);
       }));
@@ -310,14 +313,14 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object();
+      $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeBinaryOp", sc.test.func);
 
       test = instance.rotate($function);
       expect(instance.composeBinaryOp).to.be.calledWith(
-        $SC.Symbol("rotate"), $function
+        $$("\\rotate"), $function
       );
       expect(instance.composeBinaryOp).to.be.calledLastIn(test);
     }));
@@ -325,14 +328,14 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object();
+      $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeBinaryOp", sc.test.func);
 
       test = instance.dist($function);
       expect(instance.composeBinaryOp).to.be.calledWith(
-        $SC.Symbol("dist"), $function
+        $$("\\dist"), $function
       );
       expect(instance.composeBinaryOp).to.be.calledLastIn(test);
     }));
@@ -342,285 +345,267 @@
     });
     it("#imag", function() {
       testCase(this, [
-        [ null, [], $SC.Float(0.0) ]
+        [ null, [], $.Float(0.0) ]
       ]);
     });
     it("#clip", sinon.test(function() {
       var instance, test;
       var $lo, $hi;
 
-      $lo = sc.test.object();
-      $hi = sc.test.object();
+      $lo = $$();
+      $hi = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.clip($lo, $hi);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("clip");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $lo, $hi ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\clip", [ $lo, $hi ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#wrap", sinon.test(function() {
       var instance, test;
       var $lo, $hi;
 
-      $lo = sc.test.object();
-      $hi = sc.test.object();
+      $lo = $$();
+      $hi = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.wrap($lo, $hi);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("wrap");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $lo, $hi ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\wrap", [ $lo, $hi ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#fold", sinon.test(function() {
       var instance, test;
       var $lo, $hi;
 
-      $lo = sc.test.object();
-      $hi = sc.test.object();
+      $lo = $$();
+      $hi = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.fold($lo, $hi);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("fold");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $lo, $hi ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\fold", [ $lo, $hi ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#blend", sinon.test(function() {
       var instance, test;
       var $that, $blendFrac;
 
-      $that      = sc.test.object();
-      $blendFrac = sc.test.object();
+      $that      = $$();
+      $blendFrac = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.blend($that, $blendFrac);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("blend");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $that, $blendFrac ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\blend", [ $that, $blendFrac ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#linlin", sinon.test(function() {
       var instance, test;
       var $inMin, $inMax, $outMin, $outMax, $clip;
 
-      $inMin  = sc.test.object();
-      $inMax  = sc.test.object();
-      $outMin = sc.test.object();
-      $outMax = sc.test.object();
-      $clip   = sc.test.object();
+      $inMin  = $$();
+      $inMax  = $$();
+      $outMin = $$();
+      $outMax = $$();
+      $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.linlin($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("linlin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\linlin", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#linexp", sinon.test(function() {
       var instance, test;
       var $inMin, $inMax, $outMin, $outMax, $clip;
 
-      $inMin  = sc.test.object();
-      $inMax  = sc.test.object();
-      $outMin = sc.test.object();
-      $outMax = sc.test.object();
-      $clip   = sc.test.object();
+      $inMin  = $$();
+      $inMax  = $$();
+      $outMin = $$();
+      $outMax = $$();
+      $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.linexp($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("linexp");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\linexp", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#explin", sinon.test(function() {
       var instance, test;
       var $inMin, $inMax, $outMin, $outMax, $clip;
 
-      $inMin  = sc.test.object();
-      $inMax  = sc.test.object();
-      $outMin = sc.test.object();
-      $outMax = sc.test.object();
-      $clip   = sc.test.object();
+      $inMin  = $$();
+      $inMax  = $$();
+      $outMin = $$();
+      $outMax = $$();
+      $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.explin($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("explin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\explin", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#expexp", sinon.test(function() {
       var instance, test;
       var $inMin, $inMax, $outMin, $outMax, $clip;
 
-      $inMin  = sc.test.object();
-      $inMax  = sc.test.object();
-      $outMin = sc.test.object();
-      $outMax = sc.test.object();
-      $clip   = sc.test.object();
+      $inMin  = $$();
+      $inMax  = $$();
+      $outMin = $$();
+      $outMax = $$();
+      $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.expexp($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("expexp");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\expexp", [ $inMin, $inMax, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#lincurve", sinon.test(function() {
       var instance, test;
       var $inMin, $inMax, $outMin, $outMax, $curve, $clip;
 
-      $inMin  = sc.test.object();
-      $inMax  = sc.test.object();
-      $outMin = sc.test.object();
-      $outMax = sc.test.object();
-      $curve  = sc.test.object();
-      $clip   = sc.test.object();
+      $inMin  = $$();
+      $inMax  = $$();
+      $outMin = $$();
+      $outMax = $$();
+      $curve  = $$();
+      $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.lincurve($inMin, $inMax, $outMin, $outMax, $curve, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("lincurve");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\lincurve", [ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#curvelin", sinon.test(function() {
       var instance, test;
       var $inMin, $inMax, $outMin, $outMax, $curve, $clip;
 
-      $inMin  = sc.test.object();
-      $inMax  = sc.test.object();
-      $outMin = sc.test.object();
-      $outMax = sc.test.object();
-      $curve  = sc.test.object();
-      $clip   = sc.test.object();
+      $inMin  = $$();
+      $inMax  = $$();
+      $outMin = $$();
+      $outMax = $$();
+      $curve  = $$();
+      $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.curvelin($inMin, $inMax, $outMin, $outMax, $curve, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("curvelin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\curvelin", [ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#bilin", sinon.test(function() {
       var instance, test;
       var $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip;
 
-      $inCenter  = sc.test.object();
-      $inMin     = sc.test.object();
-      $inMax     = sc.test.object();
-      $outCenter = sc.test.object();
-      $outMin    = sc.test.object();
-      $outMax    = sc.test.object();
-      $clip      = sc.test.object();
+      $inCenter  = $$();
+      $inMin     = $$();
+      $inMax     = $$();
+      $outCenter = $$();
+      $outMin    = $$();
+      $outMax    = $$();
+      $clip      = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.bilin($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("bilin");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([
-          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
-        ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\bilin", [ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#biexp", sinon.test(function() {
       var instance, test;
       var $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip;
 
-      $inCenter  = sc.test.object();
-      $inMin     = sc.test.object();
-      $inMax     = sc.test.object();
-      $outCenter = sc.test.object();
-      $outMin    = sc.test.object();
-      $outMax    = sc.test.object();
-      $clip      = sc.test.object();
+      $inCenter  = $$();
+      $inMin     = $$();
+      $inMax     = $$();
+      $outCenter = $$();
+      $outMin    = $$();
+      $outMax    = $$();
+      $clip      = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.biexp($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("biexp");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([
-          $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
-        ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\biexp", [ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#moddif", sinon.test(function() {
       var instance, test;
       var $function, $mod;
 
-      $function = sc.test.object();
-      $mod      = sc.test.object();
+      $function = $$();
+      $mod      = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.moddif($function, $mod);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("moddif");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $function, $mod ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\moddif", [ $function, $mod ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#degreeToKey", sinon.test(function() {
       var instance, test;
-      var $scale          = sc.test.object();
-      var $stepsPerOctave = sc.test.object();
+      var $scale          = $$();
+      var $stepsPerOctave = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func);
 
       test = instance.degreeToKey($scale, $stepsPerOctave);
-      expect(instance.composeNAryOp.args[0][0])
-        .to.be.a("SCSymbol").that.equal("degreeToKey");
-      expect(instance.composeNAryOp.args[0][1])
-        .to.be.a("SCArray").that.eqls([ $scale, $stepsPerOctave ]);
+      expect(instance.composeNAryOp.args[0]).to.eql($$([
+        "\\degreeToKey", [ $scale, $stepsPerOctave ]
+      ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
     it("#applyTo", sinon.test(function() {
       var instance, test;
       var $arg1, $arg2;
 
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
 
       instance = this.createInstance();
       this.stub(instance, "value", sc.test.func);
@@ -637,7 +622,7 @@
       var instance, test;
       var $for;
 
-      $for = sc.test.object();
+      $for = $$();
 
       instance = this.createInstance();
       this.stub(instance, "value", sc.test.func);
@@ -646,17 +631,17 @@
       expect(instance.value).to.be.calledWith($for);
       expect(instance.value).to.be.calledLastIn(test);
     }));
-    it("asAudioRateInput", sinon.test(function() {
+    it("#asAudioRateInput", sinon.test(function() {
       var instance, test, spy, rate;
       var $result;
 
       spy = this.spy(sc.test.func);
-      $result = sc.test.object({
+      $result = $$({
         rate: function() {
-          return $SC.Symbol(rate);
+          return $.Symbol(rate);
         }
       });
-      this.stub(sc.lang.klass, "get").withArgs("K2A").returns(sc.test.object({
+      this.stub(sc.lang.klass, "get").withArgs("K2A").returns($$({
         ar: spy
       }));
 
@@ -695,46 +680,64 @@
   describe("SCUnaryOpFunction", function() {
     var SCUnaryOpFunction;
     before(function() {
-      SCUnaryOpFunction = $SC("UnaryOpFunction");
+      SCUnaryOpFunction = $("UnaryOpFunction");
       this.createInstance = function() {
         var instance;
 
-        instance = $SC.Function(function($a, $b) {
+        instance = $$(function($a, $b) {
           return $a ["+"] ($b);
-        });
+        }, "a; b");
         instance = instance.neg();
 
         return instance;
       };
+      $("Environment").new().push();
+    });
+    after(function() {
+      $("Environment").pop();
     });
     it("#value", function() {
       var instance, test;
 
-      instance = this.createInstance("{|a, b| a + b }.neg ");
+      instance = this.createInstance("{|a, b| a + b }.neg");
 
-      test = instance.value($SC.Integer(10), $SC.Integer(100));
+      test = instance.value($$(10), $$(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#valueArray", function() {
       var instance, test;
 
-      instance = this.createInstance("{|a, b| a + b }.neg ");
+      instance = this.createInstance("{|a, b| a + b }.neg");
 
-      test = instance.valueArray($SC.Array([
-        $SC.Integer(10), $SC.Integer(100)
-      ]));
+      test = instance.valueArray($$([ 10, 100 ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
-    it.skip("#valueEnvir", function() {
+    it("#valueEnvir", function() {
+      var instance, test;
+
+      instance = this.createInstance("{|a, b| a + b }.neg");
+
+      $.Environment("b", $$(100));
+
+      test = instance.valueEnvir($$(10));
+      expect(test).to.be.a("SCInteger").that.equals(-110);
     });
-    it.skip("#valueArrayEnvir", function() {
+    it("#valueArrayEnvir", function() {
+      var instance, test;
+
+      instance = this.createInstance("{|a, b| a + b }.neg");
+
+      $.Environment("b", $$(100));
+
+      test = instance.valueArrayEnvir($$([ 10 ]));
+      expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#functionPerformList", sinon.test(function() {
       var test, instance;
       var $selector, $arglist;
 
-      $selector = sc.test.object();
-      $arglist  = sc.test.object();
+      $selector = $$();
+      $arglist  = $$();
 
       instance = this.createInstance("{|a, b| a + b }.neg");
       this.stub(instance, "performList", sc.test.func);
@@ -748,14 +751,14 @@
   describe("SCBinaryOpFunction", function() {
     var SCBinaryOpFunction;
     before(function() {
-      SCBinaryOpFunction = $SC("BinaryOpFunction");
+      SCBinaryOpFunction = $("BinaryOpFunction");
       this.createInstance = function() {
         var instance;
 
-        instance = $SC.Function(function($a, $b) {
+        instance = $$(function($a, $b) {
           return $a ["+"] ($b);
         });
-        instance = instance ["*"] ($SC.Integer(-1));
+        instance = instance ["*"] ($$(-1));
 
         return instance;
       };
@@ -765,7 +768,7 @@
 
       instance = this.createInstance("{|a, b| a * b} * -1");
 
-      test = instance.value($SC.Integer(10), $SC.Integer(100));
+      test = instance.value($$(10), $$(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#valueArray", function() {
@@ -773,9 +776,7 @@
 
       instance = this.createInstance("{|a, b| a * b} * -1");
 
-      test = instance.valueArray($SC.Array([
-        $SC.Integer(10), $SC.Integer(100)
-      ]));
+      test = instance.valueArray($$([ 10, 100 ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it.skip("#valueEnvir", function() {
@@ -786,8 +787,8 @@
       var test, instance;
       var $selector, $arglist;
 
-      $selector = sc.test.object();
-      $arglist  = sc.test.object();
+      $selector = $$();
+      $arglist  = $$();
 
       instance = this.createInstance("{|a, b| a * b} * -1");
       this.stub(instance, "performList", sc.test.func);
@@ -801,14 +802,14 @@
   describe("SCNAryOpFunction", function() {
     var SCNAryOpFunction;
     before(function() {
-      SCNAryOpFunction = $SC("NAryOpFunction");
+      SCNAryOpFunction = $("NAryOpFunction");
       this.createInstance = function() {
         var instance;
 
-        instance = $SC.Function(function($a, $b) {
+        instance = $$(function($a, $b) {
           return $a ["+"] ($b);
         });
-        instance = instance.wrap($SC.Integer(-199), $SC.Integer(20));
+        instance = instance.wrap($$(-199), $$(20));
 
         return instance;
       };
@@ -818,7 +819,7 @@
 
       instance = this.createInstance("{|a, b| a + b}.wrap(-199, 20)");
 
-      test = instance.value($SC.Integer(10), $SC.Integer(100));
+      test = instance.value($$(10), $$(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it("#valueArray", function() {
@@ -826,9 +827,7 @@
 
       instance = this.createInstance("{|a, b| a + b}.wrap(-199, 20)");
 
-      test = instance.valueArray($SC.Array([
-        $SC.Integer(10), $SC.Integer(100)
-      ]));
+      test = instance.valueArray($$([ 10, 100 ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
     it.skip("#valueEnvir", function() {
@@ -839,8 +838,8 @@
       var test, instance;
       var $selector, $arglist;
 
-      $selector = sc.test.object();
-      $arglist  = sc.test.object();
+      $selector = $$();
+      $arglist  = $$();
 
       instance = this.createInstance("{|a, b| a + b}.wrap(-199, 20)");
       this.stub(instance, "performList", sc.test.func);
@@ -855,27 +854,27 @@
     var SCFunctionList;
     var $int10, $int20, $int5;
     before(function() {
-      SCFunctionList = $SC("FunctionList");
+      SCFunctionList = $("FunctionList");
       this.createInstance = function() {
-        var instance = SCFunctionList.new($SC.Array([
-          $SC.Function(function($a, $b) {
+        var instance = SCFunctionList.new($$([
+          function($a, $b) {
             return $a ["+"] ($b);
-          }),
-          $SC.Function(function($a, $b) {
+          },
+          function($a, $b) {
             return $a ["-"] ($b);
-          }),
-          $SC.Function(function($a, $b) {
+          },
+          function($a, $b) {
             return $a ["*"] ($b);
-          }),
-          $SC.Function(function($a, $b) {
+          },
+          function($a, $b) {
             return $a ["/"] ($b);
-          }),
+          },
         ]));
         return instance;
       };
-      $int10 = $SC.Integer(10);
-      $int20 = $SC.Integer(20);
-      $int5  = $SC.Integer(5);
+      $int10 = $$(10);
+      $int20 = $$(20);
+      $int5  = $$(5);
     });
     describe("operate function list", function() {
       var instance;
@@ -883,15 +882,15 @@
       before(function() {
         instance = this.createInstance();
 
-        $arg1 = sc.test.object();
-        $arg2 = sc.test.object();
-        $arg3 = sc.test.object();
-        $arg4 = sc.test.object();
+        $arg1 = $$();
+        $arg2 = $$();
+        $arg3 = $$();
+        $arg4 = $$();
       });
       it("<>array", function() {
         var test;
 
-        test = instance.array_($SC.Array([ $arg1, $arg2 ]));
+        test = instance.array_($$([ $arg1, $arg2 ]));
         expect(test).to.be.equal(instance);
         expect(instance.array()).to.be.a("SCArray").that.eqls([
           $arg1, $arg2
@@ -939,7 +938,7 @@
 
       instance = this.createInstance();
 
-      test = instance.value($SC.Array([ $int10, $int20 ]), $int5);
+      test = instance.value($$([ $int10, $int20 ]), $int5);
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
       ]);
@@ -950,7 +949,7 @@
       instance = this.createInstance();
       instance = instance.flop();
 
-      test = instance.value($SC.Array([ $int10, $int20 ]), $int5);
+      test = instance.value($$([ $int10, $int20 ]), $int5);
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 5, 50, 2 ], [ 25, 15, 100, 4 ]
       ]);
@@ -960,8 +959,8 @@
 
       instance = this.createInstance();
 
-      test = instance.valueArray($SC.Array([
-        $SC.Array([ $int10, $int20 ]), $int5
+      test = instance.valueArray($$([
+        [ $int10, $int20 ], $int5
       ]));
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
@@ -973,8 +972,8 @@
       instance = this.createInstance();
       instance = instance.flop();
 
-      test = instance.valueArray($SC.Array([
-        $SC.Array([ $int10, $int20 ]), $int5
+      test = instance.valueArray($$([
+        [ $int10, $int20 ], $int5
       ]));
       expect(test).to.be.a("SCArray").that.eqls([
         [ 15, 5, 50, 2 ], [ 25, 15, 100, 4 ]
@@ -985,21 +984,22 @@
     it.skip("#valueArrayEnvir", function() {
     });
     it("#do", sinon.test(function() {
-      var instance, test;
+      var instance, test, spy;
       var $elem1, $elem2, $function;
 
-      $elem1 = sc.test.object();
-      $elem2 = sc.test.object();
-      $function = sc.test.object({ value: this.spy() });
+      spy = this.spy();
+      $elem1 = $$();
+      $elem2 = $$();
+      $function = $$(spy);
 
       instance = this.createInstance();
-      instance.array_($SC.Array([ $elem1, $elem2 ]));
+      instance.array_($$([ $elem1, $elem2 ]));
 
       test = instance.do($function);
       expect(test).to.equal(instance);
-      expect($function.value).to.callCount(2);
-      expect($function.value.args[0][0]).to.equal($elem1);
-      expect($function.value.args[1][0]).to.equal($elem2);
+      expect(spy).to.callCount(2);
+      expect(spy.args[0]).to.eql($$([ $elem1, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ $elem2, 1 ])._);
     }));
     it("#flop", function() {
       var instance, test;

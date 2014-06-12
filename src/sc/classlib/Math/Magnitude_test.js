@@ -5,14 +5,14 @@
 
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCMagnitude", function() {
     var SCMagnitude;
     before(function() {
-      SCMagnitude = $SC("Magnitude");
+      SCMagnitude = $("Magnitude");
       this.createInstance = function(value) {
-        var instance = $SC.Float(typeof value === "undefined" ? 0 : value);
+        var instance = $.Float(typeof value === "undefined" ? 0 : value);
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "Magnitude", testMethod);
         return instance;
@@ -80,23 +80,23 @@
     });
     it("#min", function() {
       testCase(this, [
-        [ 1, [ 2 ], $SC.Float(1.0) ],
-        [ 2, [ 2 ], $SC.Float(2.0) ],
+        [ 1, [ 2 ], $.Float(1.0) ],
+        [ 2, [ 2 ], $.Float(2.0) ],
         [ 3, [ 2 ], 2 ],
       ]);
     });
     it("#max", function() {
       testCase(this, [
         [ 1, [ 2 ], 2 ],
-        [ 2, [ 2 ], $SC.Float(2.0) ],
-        [ 3, [ 2 ], $SC.Float(3.0) ],
+        [ 2, [ 2 ], $.Float(2.0) ],
+        [ 3, [ 2 ], $.Float(3.0) ],
       ]);
     });
     it("#clip", function() {
       testCase(this, [
         [ 1, [ 2, 4 ], 2 ],
         [ 2, [ 2, 4 ], 2 ],
-        [ 3, [ 2, 4 ], $SC.Float(3.0) ],
+        [ 3, [ 2, 4 ], $.Float(3.0) ],
         [ 4, [ 2, 4 ], 4 ],
         [ 5, [ 2, 4 ], 4 ],
       ]);

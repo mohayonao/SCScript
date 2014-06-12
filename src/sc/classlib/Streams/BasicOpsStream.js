@@ -135,7 +135,6 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.define("NAryOpStream : Stream", function(spec, utils) {
-    var BOOL = utils.BOOL;
     var $nil = utils.$nil;
 
     spec.constructor = function SCNAryOpStream() {
@@ -150,18 +149,15 @@ SCScript.install(function(sc) {
     };
 
     spec.arglist_ = function($list) {
-      if (Array.isArray($list._)) {
-        this._arglist = $list._;
-      } else {
-        this._arglist = [];
-      }
+      this._arglist = Array.isArray($list._) ? $list._ : /* istanbul ignore next */ [];
       this._isNumeric = this._arglist.every(function($item) {
-        return $item.__tag === sc.C.TAG_SYM || BOOL($item.isNumber());
+        return $item.__tag === sc.C.TAG_SYM || $item.isNumber().__bool__();
       });
+      return this;
     };
 
     spec.next = fn(function($inval) {
-      var $vala;
+      var $vala, $break;
       var values;
 
       $vala = this._$a.next($inval);
@@ -177,11 +173,15 @@ SCScript.install(function(sc) {
 
           $res = $item.next($inval);
           if ($res === $nil) {
+            $break = $nil;
             return $nil;
           }
 
           return $res;
         });
+        if ($break) {
+          return $break;
+        }
       }
 
       return $vala.perform.apply($vala, [ this._$operator ].concat(values));

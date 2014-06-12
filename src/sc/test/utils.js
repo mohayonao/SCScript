@@ -12,8 +12,10 @@
   require("../classlib/Core/Boolean");
   require("../classlib/Core/Char");
   require("../classlib/Core/Function");
+  require("../classlib/Core/Kernel");
   require("../classlib/Core/Nil");
   require("../classlib/Core/Symbol");
+  require("../classlib/Core/Thread");
   require("../classlib/Math/Integer");
   require("../classlib/Math/Float");
 
@@ -34,14 +36,14 @@
 
   });
 
-  var encode = function(a) {
-    var $SC = sc.lang.$SC;
+  var encode = function(a, opts) {
+    var $ = sc.lang.$;
 
     if (Array.isArray(a)) {
-      return $SC.Array(a.map(encode));
+      return $.Array(a.map(encode));
     }
     if (a === null) {
-      return $SC.Nil();
+      return $.Nil();
     }
     if (typeof a === "undefined") {
       return undefined;
@@ -51,31 +53,32 @@
     }
     if (typeof a === "number") {
       if ((a|0) === a) {
-        return $SC.Integer(a);
+        return $.Integer(a);
       } else {
-        return $SC.Float(a);
+        return $.Float(a);
       }
     }
     if (typeof a === "boolean") {
-      return $SC.Boolean(a);
+      return $.Boolean(a);
     }
     if (typeof a === "string") {
       if (a.length === 2 && a.charAt(0) === "$") {
-        return $SC.Char(a.charAt(1));
+        return $.Char(a.charAt(1));
       }
       if (a.charAt(0) === "\\") {
-        return $SC.Symbol(a.substr(1));
+        return $.Symbol(a.substr(1));
       }
-      return $SC.String(a);
+      return $.String(a);
     }
 
     if (typeof a === "function") {
-      return $SC.Function(a);
+      return $.Function(function() {
+        return [ a ];
+      }, typeof opts === "string" ? opts : undefined);
     }
 
     return a;
   };
-  sc.test.$ = encode;
 
   var s = function(obj) {
     var str = JSON.stringify(obj) || (typeof obj);
@@ -273,15 +276,20 @@
     return instance;
   };
 
-  sc.test.object = function(properties) {
-    var instance = sc.lang.klass.classes.Object.new();
+  sc.test.object = function(source, opts) {
+    var instance;
 
-    if (properties) {
-      Object.keys(properties).forEach(function(key) {
+    if (typeof source === "undefined") {
+      instance = sc.lang.klass.classes.Object.new();
+    } else if (isDictionary(source)) {
+      instance = sc.lang.klass.classes.Object.new();
+      Object.keys(source).forEach(function(key) {
         Object.defineProperty(instance, key, {
-          value: properties[key]
+          value: source[key]
         });
       });
+    } else {
+      instance = encode(source, opts);
     }
     instance.__testid = instance.__hash;
 
@@ -375,15 +383,6 @@
         "expected #{this} to be not called last",
         this.negate ? false : true
       );
-    });
-
-    utils.addProperty(assertion_proto, "js", function() {
-      var obj = utils.flag(this, "object");
-      if (Array.isArray(obj)) {
-        utils.flag(this, "object", obj.map(function(x) {
-          return x.valueOf();
-        }));
-      }
     });
 
     utils.addProperty(assertion_proto, "nop", function() {

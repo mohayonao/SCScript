@@ -3,20 +3,20 @@
 
   require("./Dictionary");
 
-  var $ = sc.test.$;
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCDictionary", function() {
     var SCDictionary, SCAssociation, SCArray, SCSet;
     before(function() {
-      SCDictionary  = $SC("Dictionary");
-      SCAssociation = $SC("Association");
-      SCArray = $SC("Array");
-      SCSet   = $SC("Set");
+      SCDictionary  = $("Dictionary");
+      SCAssociation = $("Association");
+      SCArray = $("Array");
+      SCSet   = $("Set");
       this.createInstance = function(list) {
-        return SCDictionary.newFrom(list ? $(list) : $SC.Array());
+        return SCDictionary.newFrom($$(list || []));
       };
     });
     it("#valueOf", function() {
@@ -29,9 +29,9 @@
     it("#$newFrom", function() {
       var instance;
 
-      instance = SCDictionary.newFrom($SC.Array([
-        $SC.Integer(1), $SC.Integer(2),
-        $SC.Integer(3), $SC.Integer(4),
+      instance = SCDictionary.newFrom($$([
+        $$(1), $$(2),
+        $$(3), $$(4),
       ]));
 
       expect(instance).to.be.a("SCDictionary").that.eqls({ 1:2, 3: 4 });
@@ -49,9 +49,9 @@
           result: null
         },
         {
-          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
-          args  : [ $SC.Integer(0) ],
-          result: $SC.Float(1.0)
+          source: [ $$(0), $$(1), $.Float(0.0), $.Float(1.0) ],
+          args  : [ $$(0) ],
+          result: $.Float(1.0)
         },
       ]);
     });
@@ -101,7 +101,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ SCAssociation.new($SC.Integer(5), $SC.Integer(6)) ],
+          args  : [ SCAssociation.new($$(5), $$(6)) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         },
@@ -111,19 +111,19 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $SC.Integer(3), $SC.Nil() ],
+          args  : [ $$(3), $$(null) ],
           result: this,
           after : { 1: 2 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $SC.Integer(3), $SC.Integer(5) ],
+          args  : [ $$(3), $$(5) ],
           result: this,
           after : { 1: 2, 3: 5 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $SC.Integer(5), $SC.Integer(6) ],
+          args  : [ $$(5), $$(6) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         },
@@ -133,7 +133,7 @@
       testCase(this, [
         {
           source: [ 1, 2 ],
-          args  : [ SCDictionary.newFrom($( [ 1, 2, 3, 4, 5, 6 ] )) ],
+          args  : [ SCDictionary.newFrom($$( [ 1, 2, 3, 4, 5, 6 ] )) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         }
@@ -143,7 +143,7 @@
       testCase(this, [
         {
           source: [ 1, 2 ],
-          args  : [ $( [ 1, 2, 3, 4, 5, 6 ] ) ],
+          args  : [ $$( [ 1, 2, 3, 4, 5, 6 ] ) ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         }
@@ -158,7 +158,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ $([ 2, 3, 5 ]) ],
+          args  : [ $$([ 2, 3, 5 ]) ],
           result: [ 3, 4, 5, 6 ]
         },
       ]);
@@ -168,12 +168,12 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ 3 ],
-          result: SCAssociation.new($SC.Integer(3), $SC.Integer(4))
+          result: SCAssociation.new($$(3), $$(4))
         },
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ 4 ],
-          result: SCAssociation.new($SC.Nil(), $SC.Nil())
+          result: SCAssociation.new($$(null), $$(null))
         },
       ]);
     });
@@ -182,7 +182,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ 3, 0 ],
-          result: SCAssociation.new($SC.Integer(3), $SC.Integer(4))
+          result: SCAssociation.new($$(3), $$(4))
         },
         {
           source: [ 1, 2, 3, 4 ],
@@ -195,7 +195,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          result: SCSet.newFrom($([ 1, 3 ]))
+          result: SCSet.newFrom($$([ 1, 3 ]))
         },
         {
           source: [ 1, 2, 3, 4 ],
@@ -296,22 +296,22 @@
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $$(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
       test = instance.keysValuesDo($function);
       expect(test).to.equal(instance);
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 2, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 4, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 1, 2, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 3, 4, 1 ])._);
     }));
     it("#keysValuesChange", function() {
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($key, $value, $i) {
-            return $SC.Array([ $key, $value, $i ]);
+            return $$([ $key, $value, $i ]);
           } ],
           result: this,
           after : { 1: [ 1, 2, 0 ], 3: [ 3, 4, 1 ] }
@@ -323,7 +323,7 @@
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $$(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -331,15 +331,15 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 2, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 4, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 2, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 4, 1 ])._);
     }));
     it("#keysDo", sinon.test(function() {
       var instance, test;
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $$(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -347,15 +347,15 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 1, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 3, 1 ])._);
     }));
     it("#associationsDo", sinon.test(function() {
       var instance, test;
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $$(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -363,15 +363,15 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 1 ]);
+      expect(spy.args[0]).to.eql($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
+      expect(spy.args[1]).to.eql($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
     }));
     it("#pairsDo", sinon.test(function() {
       var instance, test;
       var spy, $function;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
+      $function = $$(spy);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
@@ -379,15 +379,15 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 1, 2, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 3, 4, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 1, 2, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 3, 4, 1 ])._);
     }));
     it("#collect", function() {
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($elem, $key) {
-            return $SC.Array([ $elem, $key ]);
+            return $$([ $elem, $key ]);
           } ],
           result: { 1: [ 2, 1 ], 3: [ 4, 3 ] }
         },
@@ -398,7 +398,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($elem, $key) {
-            return $SC.Boolean($key.valueOf() === 1);
+            return $$($key.valueOf() === 1);
           } ],
           result: { 1: 2 }
         },
@@ -409,7 +409,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args  : [ function($elem, $key) {
-            return $SC.Boolean($key.valueOf() === 1);
+            return $$($key.valueOf() === 1);
           } ],
           result: { 3: 4 }
         },
@@ -432,7 +432,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args: [
-            SCDictionary.newFrom($([ 5, 6, 7, 8 ])),
+            SCDictionary.newFrom($$([ 5, 6, 7, 8 ])),
             function($a, $b) {
               return $a ["+"] ($b);
             },
@@ -442,7 +442,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args: [
-            SCDictionary.newFrom($([ 3, 4, 5, 6 ])),
+            SCDictionary.newFrom($$([ 3, 4, 5, 6 ])),
             function($a, $b) {
               return $a ["+"] ($b);
             },
@@ -453,7 +453,7 @@
         {
           source: [ 1, 2, 3, 4 ],
           args: [
-            SCDictionary.newFrom($([ 1, 2, 3, 4 ])),
+            SCDictionary.newFrom($$([ 1, 2, 3, 4 ])),
             function($a, $b) {
               return $a ["+"] ($b);
             },
@@ -484,8 +484,8 @@
       var spy, $function, $sortFunc;
 
       spy = this.spy();
-      $function = $SC.Function(spy);
-      $sortFunc = $SC.Function(function($a, $b) {
+      $function = $$(spy);
+      $sortFunc = $$(function($a, $b) {
         return $b ["<="] ($a);
       });
 
@@ -495,8 +495,8 @@
       expect(test).to.equal(instance);
 
       expect(spy).to.callCount(2);
-      expect(spy.args[0]).js.to.eql([ 3, 4, 0 ]);
-      expect(spy.args[1]).js.to.eql([ 1, 2, 1 ]);
+      expect(spy.args[0]).to.eql($$([ 3, 4, 0 ])._);
+      expect(spy.args[1]).to.eql($$([ 1, 2, 1 ])._);
     }));
     it("#choose", function() {
       testCase(this, [
@@ -546,7 +546,7 @@
       var instance, test;
       var $event;
 
-      $event = sc.test.object({
+      $event = $$({
         putAll: this.spy(sc.test.func)
       });
 
@@ -571,9 +571,9 @@
   describe("SCIdentityDictionary", function() {
     var SCIdentityDictionary;
     before(function() {
-      SCIdentityDictionary = $SC("IdentityDictionary");
+      SCIdentityDictionary = $("IdentityDictionary");
       this.createInstance = function(list) {
-        return SCIdentityDictionary.newFrom(list ? $(list) : $SC.Array());
+        return SCIdentityDictionary.newFrom($$(list || []));
       };
     });
     it("#valueOf", function() {
@@ -587,7 +587,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance();
 
@@ -601,7 +601,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance();
 
@@ -615,7 +615,7 @@
       var instance, test;
       var $value;
 
-      $value = sc.test.object();
+      $value = $$();
 
       instance = this.createInstance();
 
@@ -631,14 +631,14 @@
     it("#at", function() {
       testCase(this, [
         {
-          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
-          args  : [ $SC.Integer(0) ],
-          result: $SC.Integer(1)
+          source: [ $$(0), $$(1), $.Float(0.0), $.Float(1.0) ],
+          args  : [ $$(0) ],
+          result: $$(1)
         },
         {
-          source: [ $SC.Integer(0), $SC.Integer(1), $SC.Float(0.0), $SC.Float(1.0) ],
-          args  : [ $SC.Float(0.0) ],
-          result: $SC.Float(1.0)
+          source: [ $$(0), $$(1), $.Float(0.0), $.Float(1.0) ],
+          args  : [ $.Float(0.0) ],
+          result: $.Float(1.0)
         },
       ]);
     });
@@ -661,13 +661,13 @@
     it("#findKeyForValue", function() {
       testCase(this, [
         {
-          source: [ $SC.Integer(0), $SC.Integer(1) ],
-          args  : [ $SC.Integer(1) ],
-          result: $SC.Integer(0)
+          source: [ $$(0), $$(1) ],
+          args  : [ $$(1) ],
+          result: $$(0)
         },
         {
-          source: [ $SC.Integer(0), $SC.Integer(1) ],
-          args  : [ $SC.Float(1.0) ],
+          source: [ $$(0), $$(1) ],
+          args  : [ $.Float(1.0) ],
           result: null
         },
       ]);

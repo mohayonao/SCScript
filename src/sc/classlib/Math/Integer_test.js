@@ -3,17 +3,18 @@
 
   require("./Integer");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("SCInteger", function() {
     var SCInteger;
     before(function() {
-      SCInteger = $SC("Integer");
+      SCInteger = $("Integer");
       this.createInstance = function(value) {
-        return $SC.Integer(typeof value === "undefined" ? 0 : value);
+        return $.Integer(typeof value === "undefined" ? 0 : value);
       };
     });
     it("#__tag", function() {
@@ -62,244 +63,244 @@
     it("#+", function() {
       testCase(this, [
         [ 10, [ 20 ], 30 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(30.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(30.0) ],
         [ 10, [ "20" ], "10 20" ],
       ]);
     });
     it("#-", function() {
       testCase(this, [
         [ 10, [ 20 ], -10 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(-10.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(-10.0) ],
       ]);
     });
     it("#*", function() {
       testCase(this, [
         [ 10, [ 20 ], 200 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(200.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(200.0) ],
       ]);
     });
     it("#/", function() {
       testCase(this, [
         [ 10, [ 20 ], 0.5 ],
-        [ 10, [ $SC.Float(20.0) ], 0.5 ],
+        [ 10, [ $.Float(20.0) ], 0.5 ],
       ]);
     });
     it("#mod", function() {
       testCase(this, [
         [ 30, [ 20 ], 10 ],
-        [ 30, [ $SC.Float(20.0) ], $SC.Float(10) ],
+        [ 30, [ $.Float(20.0) ], $.Float(10) ],
       ]);
     });
     it("#div", function() {
       testCase(this, [
         [ 10, [ 20 ], 0 ],
-        [ 10, [ $SC.Float(20.0) ], 0 ],
+        [ 10, [ $.Float(20.0) ], 0 ],
       ]);
     });
     it("#max", function() {
       testCase(this, [
         [ 10, [ 20 ], 20 ],
-        [ 10, [ $SC.Float(0.0) ], $SC.Float(10.0) ],
+        [ 10, [ $.Float(0.0) ], $.Float(10.0) ],
       ]);
     });
     it("#min", function() {
       testCase(this, [
         [ 10, [ 20 ], 10 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(10.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(10.0) ],
       ]);
     });
     it("#bitAnd", function() {
       testCase(this, [
         [ 123, [ 456 ], 72 ],
-        [ 123, [ $SC.Float(456.0) ], $SC.Float(72.0) ],
+        [ 123, [ $.Float(456.0) ], $.Float(72.0) ],
       ]);
     });
     it("#bitOr", function() {
       testCase(this, [
         [ 123, [ 456 ], 507 ],
-        [ 123, [ $SC.Float(456.0) ], $SC.Float(507.0) ],
+        [ 123, [ $.Float(456.0) ], $.Float(507.0) ],
       ]);
     });
     it("#bitXor", function() {
       testCase(this, [
         [ 123, [ 456 ], 435 ],
-        [ 123, [ $SC.Float(456.0) ], $SC.Float(435.0) ],
+        [ 123, [ $.Float(456.0) ], $.Float(435.0) ],
       ]);
     });
     it("#lcm", function() {
       testCase(this, [
         [ 123, [ 456 ], 18696 ],
-        [ 123, [ $SC.Float(456.0) ], $SC.Float(18696.0) ],
+        [ 123, [ $.Float(456.0) ], $.Float(18696.0) ],
       ]);
     });
     it("#gcd", function() {
       testCase(this, [
         [ 123, [ 456 ], 3 ],
-        [ 123, [ $SC.Float(456.0) ], $SC.Float(3.0) ],
+        [ 123, [ $.Float(456.0) ], $.Float(3.0) ],
       ]);
     });
     it("#round", function() {
       testCase(this, [
         [ 123, [ 25 ], 125 ],
-        [ 123, [ $SC.Float(25.0) ], $SC.Float(125.0) ],
+        [ 123, [ $.Float(25.0) ], $.Float(125.0) ],
       ]);
     });
     it("#roundUp", function() {
       testCase(this, [
         [ 123, [ 25 ], 125 ],
-        [ 123, [ $SC.Float(25.0) ], $SC.Float(125.0) ],
+        [ 123, [ $.Float(25.0) ], $.Float(125.0) ],
       ]);
     });
     it("#trunc", function() {
       testCase(this, [
         [ 123, [ 25 ], 100 ],
-        [ 123, [ $SC.Float(25.0) ], $SC.Float(100.0) ],
+        [ 123, [ $.Float(25.0) ], $.Float(100.0) ],
       ]);
     });
     it("#atan2", function() {
       testCase(this, [
         [ 1, [ 2 ], 0.46364760900081 ],
-        [ 1, [ $SC.Float(2.0) ], 0.46364760900081 ],
+        [ 1, [ $.Float(2.0) ], 0.46364760900081 ],
       ], { closeTo: 1e-6 });
     });
     it("#hypot", function() {
       testCase(this, [
         [ 1, [ 2 ], 2.2360679774998 ],
-        [ 1, [ $SC.Float(2.0) ], 2.2360679774998 ],
+        [ 1, [ $.Float(2.0) ], 2.2360679774998 ],
       ], { closeTo: 1e-6 });
     });
     it("#hypotApx", function() {
       testCase(this, [
         [ 1, [ 2 ], 2.5857864320278 ],
-        [ 1, [ $SC.Float(2.0) ], 2.5857864320278 ],
+        [ 1, [ $.Float(2.0) ], 2.5857864320278 ],
       ], { closeTo: 1e-6 });
     });
     it("#leftShift", function() {
       testCase(this, [
         [ 11, [ 2 ], 44 ],
-        [ 11, [ $SC.Float(2.0) ], $SC.Float(44.0) ],
+        [ 11, [ $.Float(2.0) ], $.Float(44.0) ],
       ]);
     });
     it("#rightShift", function() {
       testCase(this, [
         [ 11, [ 2 ], 2 ],
-        [ 11, [ $SC.Float(2.0) ], $SC.Float(2.0) ],
+        [ 11, [ $.Float(2.0) ], $.Float(2.0) ],
       ]);
     });
     it("#unsignedRightShift", function() {
       testCase(this, [
         [ 11, [ 2 ], 2 ],
-        [ 11, [ $SC.Float(2.0) ], $SC.Float(2.0) ],
+        [ 11, [ $.Float(2.0) ], $.Float(2.0) ],
       ]);
     });
     it("#ring1", function() {
       testCase(this, [
         [ 10, [ 20 ], 210 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(210.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(210.0) ],
       ]);
     });
     it("#ring2", function() {
       testCase(this, [
         [ 10, [ 20 ], 230 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(230.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(230.0) ],
       ]);
     });
     it("#ring3", function() {
       testCase(this, [
         [ 10, [ 20 ], 2000 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(2000.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(2000.0) ],
       ]);
     });
     it("#ring4", function() {
       testCase(this, [
         [ 10, [ 20 ], -2000 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(-2000.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(-2000.0) ],
       ]);
     });
     it("#difsqr", function() {
       testCase(this, [
         [ 10, [ 20 ], -300 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(-300.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(-300.0) ],
       ]);
     });
     it("#sumsqr", function() {
       testCase(this, [
         [ 10, [ 20 ], 500 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(500.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(500.0) ],
       ]);
     });
     it("#sqrdif", function() {
       testCase(this, [
         [ 10, [ 20 ], 100 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(100.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(100.0) ],
       ]);
     });
     it("#absdif", function() {
       testCase(this, [
         [ 10, [ 20 ], 10 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(10.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(10.0) ],
       ]);
     });
     it("#thresh", function() {
       testCase(this, [
         [ 10, [ 20 ], 0 ],
-        [ 10, [ $SC.Float(20.0) ], 0 ],
+        [ 10, [ $.Float(20.0) ], 0 ],
       ]);
     });
     it("#amclip", function() {
       testCase(this, [
         [ 10, [ 20 ], 200 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(200.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(200.0) ],
       ]);
     });
     it("#scaleneg", function() {
       testCase(this, [
         [ 10, [ 20 ], 10 ],
-        [ 10, [ $SC.Float(20.0) ], $SC.Float(10.0) ],
+        [ 10, [ $.Float(20.0) ], $.Float(10.0) ],
       ]);
     });
     it("#clip2", function() {
       testCase(this, [
         [ 12, [ 3 ], 3 ],
-        [ 12, [ $SC.Float(3.0) ], $SC.Float(3.0) ],
+        [ 12, [ $.Float(3.0) ], $.Float(3.0) ],
       ]);
     });
     it("#wrap2", function() {
       testCase(this, [
         [ 12, [ 3 ], -2 ],
-        [ 12, [ $SC.Float(3.0) ], $SC.Float(0.0) ],
+        [ 12, [ $.Float(3.0) ], $.Float(0.0) ],
         [ 12, [ [ 3 ] ], [ -2 ] ],
       ]);
     });
     it("#fold2", function() {
       testCase(this, [
         [ 12, [ 3 ], 0 ],
-        [ 12, [ $SC.Float(3.0) ], $SC.Float(0.0) ],
+        [ 12, [ $.Float(3.0) ], $.Float(0.0) ],
       ]);
     });
     it("#excess", function() {
       testCase(this, [
         [ 12, [ 3 ], 9 ],
-        [ 12, [ $SC.Float(3.0) ], $SC.Float(9.0) ],
+        [ 12, [ $.Float(3.0) ], $.Float(9.0) ],
       ]);
     });
     it("#firstArg", function() {
       testCase(this, [
         [ 12, [ 3 ], 12 ],
-        [ 12, [ $SC.Float(3.0) ], 12 ],
+        [ 12, [ $.Float(3.0) ], 12 ],
       ]);
     });
     it("#rrand", function() {
       testCase(this, [
         [ 10, [ 20 ], 19 ],
-        [ 10, [ $SC.Float(20.0) ], 10.725309848785 ],
+        [ 10, [ $.Float(20.0) ], 10.725309848785 ],
         [ 10, [ [ 20 ] ], [ 12 ] ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
     it("#exprand", function() {
       testCase(this, [
         [ 10, [ 20 ], 18.119605359594 ],
-        [ 10, [ $SC.Float(20.0) ], 10.515598977718 ],
+        [ 10, [ $.Float(20.0) ], 10.515598977718 ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
     it("#clip", function() {
@@ -308,7 +309,7 @@
         [  10, [ -1, 2 ],  2 ],
         [   0, [ "\\a" ], "\\a" ],
         [   0, [ 0, "\\a" ], "\\a" ],
-        [   0, [ -1.5, +1.5 ], $SC.Float(0.0) ],
+        [   0, [ -1.5, +1.5 ], $.Float(0.0) ],
       ]);
     });
     it("#wrap", function() {
@@ -332,7 +333,7 @@
         [  20, [ -1, 2 ],  0 ],
         [   0, [ "\\a" ], "\\a" ],
         [   0, [ 0, "\\a" ], "\\a" ],
-        [   2, [ -1, $SC.Float(2.0) ], $SC.Float(-1.0) ],
+        [   2, [ -1, $.Float(2.0) ], $.Float(-1.0) ],
       ]);
     });
     it("#fold", function() {
@@ -341,7 +342,7 @@
         [  10, [ -1, 2 ],  0 ],
         [   0, [ "\\a" ], "\\a" ],
         [   0, [ 0, "\\a" ], "\\a" ],
-        [   2, [ -1, $SC.Float(2.0) ], $SC.Float(2.0) ],
+        [   2, [ -1, $.Float(2.0) ], $.Float(2.0) ],
       ]);
     });
     it("#even", function() {
@@ -385,10 +386,10 @@
       var instance, test;
       var $scale, $stepsPerOctave;
 
-      $scale = sc.test.object({
+      $scale = $$({
         performDegreeToKey: this.spy(sc.test.func)
       });
-      $stepsPerOctave = sc.test.object();
+      $stepsPerOctave = $$();
 
       instance = this.createInstance();
 
@@ -401,7 +402,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
 
       this.stub(iterator, "integer$do", function() {
         return iter;
@@ -419,7 +420,7 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object({ value: this.spy() });
+      $function = $$({ value: this.spy() });
 
       instance = this.createInstance();
       test = instance.generate($function);
@@ -440,7 +441,7 @@
           source: 5,
           args  : [ function($i) {
             return $i.__dec__();
-          }, $SC("Array") ],
+          }, $("Array") ],
           result: [ -1, 0, 1, 2, 3 ]
         },
       ]);
@@ -449,14 +450,13 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object();
+      $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "collectAs", sc.test.func);
 
       test = instance.collect($function);
-      expect(instance.collectAs.args[0][0]).to.equal($function);
-      expect(instance.collectAs.args[0][1]).to.equal($SC("Array"));
+      expect(instance.collectAs.args[0]).to.eql($$([ $function, $("Array") ])._);
       expect(instance.collectAs).to.be.calledLastIn(test);
     }));
     it("#reverseDo", sinon.test(function() {
@@ -464,7 +464,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
 
       this.stub(iterator, "integer$reverseDo", function() {
         return iter;
@@ -483,8 +483,8 @@
       var $endval, $function;
 
       iter = {};
-      $endval   = sc.test.object();
-      $function = sc.test.object();
+      $endval   = $$();
+      $function = $$();
 
       this.stub(iterator, "integer$for", function() {
         return iter;
@@ -501,9 +501,9 @@
     it("#forBy", sinon.test(function() {
       var instance, test;
       var iter = {};
-      var $endval   = sc.test.object();
-      var $stepval  = sc.test.object();
-      var $function = sc.test.object();
+      var $endval   = $$();
+      var $stepval  = $$();
+      var $function = $$();
 
       this.stub(iterator, "integer$forBy", function() {
         return iter;
@@ -521,9 +521,9 @@
       var $hi, $step;
 
       spy = this.spy(sc.test.func);
-      $hi = sc.test.object();
-      $step = sc.test.object();
-      this.stub(sc.lang.klass, "get").withArgs("Interval").returns(sc.test.object({
+      $hi = $$();
+      $step = $$();
+      this.stub(sc.lang.klass, "get").withArgs("Interval").returns($$({
         new: spy
       }));
 

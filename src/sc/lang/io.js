@@ -19,6 +19,10 @@
     });
   };
 
+  io.warn = function(msg) {
+    SCScript.stderr(msg);
+  };
+
   sc.lang.io = io;
 
 })(sc);

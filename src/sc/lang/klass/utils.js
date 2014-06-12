@@ -4,24 +4,21 @@
   require("./klass");
   require("./constructors");
 
-  var $SC   = sc.lang.$SC;
+  var $     = sc.lang.$;
   var klass = sc.lang.klass;
 
   var utils = {
-    BOOL: function(a) {
-      return a.__bool__();
-    },
-    $nil  : $SC.Nil(),
-    $true : $SC.True(),
-    $false: $SC.False(),
-    $int_0: $SC.Integer(0),
-    $int_1: $SC.Integer(1),
+    $nil  : $.Nil(),
+    $true : $.True(),
+    $false: $.False(),
+    $int_0: $.Integer(0),
+    $int_1: $.Integer(1),
     nop: function() {
       return this;
     },
-    alwaysReturn$nil  : $SC.Nil,
-    alwaysReturn$true : $SC.True,
-    alwaysReturn$false: $SC.False,
+    alwaysReturn$nil  : $.Nil,
+    alwaysReturn$true : $.True,
+    alwaysReturn$false: $.False,
     alwaysReturn$int_0: function() {
       return utils.$int_0;
     },

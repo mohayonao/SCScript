@@ -3,8 +3,8 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Boolean", function(spec, utils) {
     spec.__bool__ = function() {
@@ -20,7 +20,7 @@ SCScript.install(function(sc) {
     };
 
     spec.xor = function($bool) {
-      return $SC.Boolean(this === $bool).not();
+      return $.Boolean(this === $bool).not();
     };
 
     // TODO: implements if
@@ -76,7 +76,7 @@ SCScript.install(function(sc) {
     spec.or = spec["||"];
 
     spec.nand = fn(function($that) {
-      return $that.value().not();
+      return $that.value().$("not");
     }, "that");
 
     spec.asInteger = utils.alwaysReturn$int_1;

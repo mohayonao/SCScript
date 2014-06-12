@@ -5,18 +5,17 @@ SCScript.install(function(sc) {
   require("./Set");
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Dictionary", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_1 = utils.$int_1;
-    var SCSet  = $SC("Set");
-    var SCArray = $SC("Array");
-    var SCAssociation = $SC("Association");
+    var SCSet  = $("Set");
+    var SCArray = $("Array");
+    var SCAssociation = $("Association");
 
     spec.$new = fn(function($n) {
       return this.__super__("new", [ $n ]);
@@ -42,9 +41,11 @@ SCScript.install(function(sc) {
       var $newCollection;
 
       $newCollection = this.new($aCollection.size());
-      $aCollection.keysValuesDo($SC.Function(function($k, $v) {
-        $newCollection.put($k, $v);
-      }));
+      $aCollection.$("keysValuesDo", [ $.Function(function() {
+        return [ function($k, $v) {
+          $newCollection.put($k, $v);
+        } ];
+      }) ]);
 
       return $newCollection;
     }, "aCollection");
@@ -67,11 +68,13 @@ SCScript.install(function(sc) {
     spec.matchAt = fn(function($key) {
       var ret = null;
 
-      this.keysValuesDo($SC.Function(function($k, $v) {
-        if (BOOL($k.matchItem($key))) {
-          ret = $v;
-          return sc.C.LOOP_BREAK;
-        }
+      this.keysValuesDo($.Function(function() {
+        return [ function($k, $v) {
+          if ($k.matchItem($key).__bool__()) {
+            ret = $v;
+            this.break();
+          }
+        } ];
       }));
 
       return ret || $nil;
@@ -86,7 +89,7 @@ SCScript.install(function(sc) {
     }, "key");
 
     spec.add = fn(function($anAssociation) {
-      this.put($anAssociation.key(), $anAssociation.value());
+      this.put($anAssociation.$("key"), $anAssociation.$("value"));
       return this;
     }, "anAssociation");
 
@@ -112,8 +115,10 @@ SCScript.install(function(sc) {
       var $this = this;
       var func;
 
-      func = $SC.Function(function($key, $value) {
-        $this.put($key, $value);
+      func = $.Function(function() {
+        return [ function($key, $value) {
+          $this.put($key, $value);
+        } ];
       });
 
       slice.call(arguments).forEach(function($dict) {
@@ -126,9 +131,11 @@ SCScript.install(function(sc) {
     spec.putPairs = fn(function($args) {
       var $this = this;
 
-      $args.pairsDo($SC.Function(function($key, $val) {
-        $this.put($key, $val);
-      }));
+      $args.$("pairsDo", [ $.Function(function() {
+        return [ function($key, $val) {
+          $this.put($key, $val);
+        } ];
+      }) ]);
 
       return this;
     }, "args");
@@ -142,12 +149,14 @@ SCScript.install(function(sc) {
       }
 
       $result = $nil;
-      $args.do($SC.Function(function($key) {
-        var $val;
-        $val = $this.at($key);
-        if ($val !== $nil) {
-          $result = $result.add($key).add($val);
-        }
+      $args.do($.Function(function() {
+        return [ function($key) {
+          var $val;
+          $val = $this.at($key);
+          if ($val !== $nil) {
+            $result = $result.add($key).add($val);
+          }
+        } ];
       }));
 
       return $result;
@@ -160,7 +169,7 @@ SCScript.install(function(sc) {
       array = this._$array._;
       index = this.scanFor($key).__int__();
 
-      // istanbul ignore else
+      /* istanbul ignore else */
       if (index >= 0) {
         $res = SCAssociation.new(array[index], array[index + 1]);
       }
@@ -189,8 +198,10 @@ SCScript.install(function(sc) {
       }
 
       $set = $species.new(this.size());
-      this.keysDo($SC.Function(function($key) {
-        $set.add($key);
+      this.keysDo($.Function(function() {
+        return [ function($key) {
+          $set.add($key);
+        } ];
       }));
 
       return $set;
@@ -199,9 +210,11 @@ SCScript.install(function(sc) {
     spec.values = function() {
       var $list;
 
-      $list = $SC("List").new(this.size());
-      this.do($SC.Function(function($value) {
-        $list.add($value);
+      $list = $("List").new(this.size());
+      this.do($.Function(function() {
+        return [ function($value) {
+          $list.add($value);
+        } ];
       }));
 
       return $list;
@@ -210,11 +223,13 @@ SCScript.install(function(sc) {
     spec.includes = fn(function($item1) {
       var $ret = null;
 
-      this.do($SC.Function(function($item2) {
-        if (BOOL($item1 ["=="] ($item2))) {
-          $ret = $true;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($item2) {
+          if ($item1 ["=="] ($item2).__bool__()) {
+            $ret = $true;
+            this.break();
+          }
+        } ];
       }));
 
       return $ret || $false;
@@ -285,31 +300,39 @@ SCScript.install(function(sc) {
     spec.keysValuesChange = fn(function($function) {
       var $this = this;
 
-      this.keysValuesDo($SC.Function(function($key, $value, $i) {
-        $this.put($key, $function.value($key, $value, $i));
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $value, $i) {
+          $this.put($key, $function.value($key, $value, $i));
+        } ];
       }));
 
       return this;
     }, "function");
 
     spec.do = fn(function($function) {
-      this.keysValuesDo($SC.Function(function($key, $value, $i) {
-        $function.value($value, $i);
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $value, $i) {
+          $function.value($value, $i);
+        } ];
       }));
       return this;
     }, "function");
 
     spec.keysDo = fn(function($function) {
-      this.keysValuesDo($SC.Function(function($key, $val, $i) {
-        $function.value($key, $i);
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $val, $i) {
+          $function.value($key, $i);
+        } ];
       }));
       return this;
     }, "function");
 
     spec.associationsDo = fn(function($function) {
-      this.keysValuesDo($SC.Function(function($key, $val, $i) {
-        var $assoc = SCAssociation.new($key, $val);
-        $function.value($assoc, $i);
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $val, $i) {
+          var $assoc = SCAssociation.new($key, $val);
+          $function.value($assoc, $i);
+        } ];
       }));
       return this;
     }, "function");
@@ -323,8 +346,10 @@ SCScript.install(function(sc) {
       var $res;
 
       $res = this.class().new(this.size());
-      this.keysValuesDo($SC.Function(function($key, $elem) {
-        $res.put($key, $function.value($elem, $key));
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $elem) {
+          $res.put($key, $function.value($elem, $key));
+        } ];
       }));
 
       return $res;
@@ -334,10 +359,12 @@ SCScript.install(function(sc) {
       var $res;
 
       $res = this.class().new(this.size());
-      this.keysValuesDo($SC.Function(function($key, $elem) {
-        if (BOOL($function.value($elem, $key))) {
-          $res.put($key, $elem);
-        }
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $elem) {
+          if ($function.value($elem, $key).__bool__()) {
+            $res.put($key, $elem);
+          }
+        } ];
       }));
 
       return $res;
@@ -347,10 +374,12 @@ SCScript.install(function(sc) {
       var $res;
 
       $res = this.class().new(this.size());
-      this.keysValuesDo($SC.Function(function($key, $elem) {
-        if (!BOOL($function.value($elem, $key))) {
-          $res.put($key, $elem);
-        }
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $elem) {
+          if (!$function.value($elem, $key).__bool__()) {
+            $res.put($key, $elem);
+          }
+        } ];
       }));
 
       return $res;
@@ -360,8 +389,10 @@ SCScript.install(function(sc) {
       var $dict;
 
       $dict = this.class().new(this.size());
-      this.keysValuesDo($SC.Function(function($key, $val) {
-        $dict.put($val, $key);
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $val) {
+          $dict.put($val, $key);
+        } ];
       }));
 
       return $dict;
@@ -377,22 +408,28 @@ SCScript.install(function(sc) {
       $myKeys    = this.keys();
       $otherKeys = $that.keys();
 
-      if (BOOL($myKeys ["=="] ($otherKeys))) {
+      if ($myKeys ["=="] ($otherKeys).__bool__()) {
         $commonKeys = $myKeys;
       } else {
         $commonKeys = $myKeys.sect($otherKeys);
       }
 
-      $commonKeys.do($SC.Function(function($key) {
-        $res.put($key, $func.value($this.at($key), $that.at($key), $key));
+      $commonKeys.do($.Function(function() {
+        return [ function($key) {
+          $res.put($key, $func.value($this.at($key), $that.at($key), $key));
+        } ];
       }));
 
-      if (BOOL($fill)) {
-        $myKeys.difference($otherKeys).do($SC.Function(function($key) {
-          $res.put($key, $this.at($key));
+      if ($fill.__bool__()) {
+        $myKeys.difference($otherKeys).do($.Function(function() {
+          return [ function($key) {
+            $res.put($key, $this.at($key));
+          } ];
         }));
-        $otherKeys.difference($myKeys).do($SC.Function(function($key) {
-          $res.put($key, $that.at($key));
+        $otherKeys.difference($myKeys).do($.Function(function() {
+          return [ function($key) {
+            $res.put($key, $that.at($key));
+          } ];
         }));
       }
 
@@ -404,11 +441,13 @@ SCScript.install(function(sc) {
     spec.findKeyForValue = fn(function($argValue) {
       var $ret = null;
 
-      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
-        if (BOOL($argValue ["=="] ($val))) {
-          $ret = $key;
-          return sc.C.LOOP_BREAK;
-        }
+      this.keysValuesArrayDo(this._$array, $.Function(function() {
+        return [ function($key, $val) {
+          if ($argValue ["=="] ($val).__bool__()) {
+            $ret = $key;
+            this.break();
+          }
+        } ];
       }));
 
       return $ret || $nil;
@@ -421,8 +460,10 @@ SCScript.install(function(sc) {
       $keys = this.keys(SCArray);
       $keys.sort($sortFunc);
 
-      $keys.do($SC.Function(function($key, $i) {
-        $function.value($key, $this.at($key), $i);
+      $keys.do($.Function(function() {
+        return [ function($key, $i) {
+          $function.value($key, $this.at($key), $i);
+        } ];
       }));
 
       return this;
@@ -432,7 +473,7 @@ SCScript.install(function(sc) {
       var $array;
       var $size, $index;
 
-      if (BOOL(this.isEmpty())) {
+      if (this.isEmpty().__bool__()) {
         return $nil;
       }
 
@@ -449,17 +490,21 @@ SCScript.install(function(sc) {
     spec.order = fn(function($func) {
       var $assoc;
 
-      if (BOOL(this.isEmpty())) {
+      if (this.isEmpty().__bool__()) {
         return $nil;
       }
 
       $assoc = $nil;
-      this.keysValuesDo($SC.Function(function($key, $val) {
-        $assoc = $assoc.add($key ["->"] ($val));
+      this.keysValuesDo($.Function(function() {
+        return [ function($key, $val) {
+          $assoc = $assoc.add($key.$("->", [ $val ]));
+        } ];
       }));
 
-      return $assoc.sort($func).collect($SC.Function(function($_) {
-        return $_.key();
+      return $assoc.sort($func).collect($.Function(function() {
+        return [ function($_) {
+          return $_.$("key");
+        } ];
       }));
     }, "func");
 
@@ -470,20 +515,24 @@ SCScript.install(function(sc) {
       $keys  = this.keys().asArray().powerset();
       $class = this.class();
 
-      return $keys.collect($SC.Function(function($list) {
-        var $dict;
+      return $keys.collect($.Function(function() {
+        return [ function($list) {
+          var $dict;
 
-        $dict = $class.new();
-        $list.do($SC.Function(function($key) {
-          $dict.put($key, $this.at($key));
-        }));
+          $dict = $class.new();
+          $list.do($.Function(function() {
+            return [ function($key) {
+              $dict.put($key, $this.at($key));
+            } ];
+          }));
 
-        return $dict;
+          return $dict;
+        } ];
       }));
     };
 
     spec.transformEvent = fn(function($event) {
-      return $event.putAll(this);
+      return $event.$("putAll", [ this ]);
     }, "event");
 
     // TODO: implements embedInStream
@@ -498,8 +547,8 @@ SCScript.install(function(sc) {
       for (i = j = 0, imax = array.length; i < imax; i += 2, ++j) {
         $key = array[i];
         if ($key !== $nil) {
-          $val = $argArray.at($SC.Integer(i + 1));
-          $function.value($key, $val, $SC.Integer(j));
+          $val = $argArray.$("at", [ $.Integer(i + 1) ]);
+          $function.value($key, $val, $.Integer(j));
         }
       }
     };
@@ -507,7 +556,7 @@ SCScript.install(function(sc) {
     // TODO: implements grow
     // TODO: implements fixCollisionsFrom
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec.scanFor = function($argKey) {
       var array, i, imax;
       var $elem;
@@ -517,18 +566,18 @@ SCScript.install(function(sc) {
 
       for (i = 0; i < imax; i += 2) {
         $elem = array[i];
-        if (BOOL($elem ["=="] ($argKey))) {
-          return $SC.Integer(i);
+        if ($elem ["=="] ($argKey).__bool__()) {
+          return $.Integer(i);
         }
       }
       for (i = 0; i < imax; i += 2) {
         $elem = array[i];
         if ($elem === $nil) {
-          return $SC.Integer(i);
+          return $.Integer(i);
         }
       }
 
-      return $SC.Integer(-2);
+      return $.Integer(-2);
     };
 
     // TODO: implements storeItemsOn
@@ -595,17 +644,19 @@ SCScript.install(function(sc) {
     spec.findKeyForValue = fn(function($argValue) {
       var $ret = null;
 
-      this.keysValuesArrayDo(this._$array, $SC.Function(function($key, $val) {
-        if ($argValue === $val) {
-          $ret = $key;
-          return sc.C.LOOP_BREAK;
-        }
+      this.keysValuesArrayDo(this._$array, $.Function(function() {
+        return [ function($key, $val) {
+          if ($argValue === $val) {
+            $ret = $key;
+            this.break();
+          }
+        } ];
       }));
 
       return $ret || $nil;
     }, "argValue");
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec.scanFor = function($argKey) {
       var array, i, imax;
       var $elem;
@@ -616,17 +667,17 @@ SCScript.install(function(sc) {
       for (i = 0; i < imax; i += 2) {
         $elem = array[i];
         if ($elem === $argKey) {
-          return $SC.Integer(i);
+          return $.Integer(i);
         }
       }
       for (i = 0; i < imax; i += 2) {
         $elem = array[i];
         if ($elem === $nil) {
-          return $SC.Integer(i);
+          return $.Integer(i);
         }
       }
 
-      return $SC.Integer(-2);
+      return $.Integer(-2);
     };
 
     // TODO: implements freezeAsParent

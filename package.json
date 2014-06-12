@@ -1,6 +1,6 @@
 {
   "name": "scscript",
-  "version": "0.0.37",
+  "version": "0.0.47",
   "author": "Nao Yonamine <mohayonao@gmail.com>",
   "homepage": "http://mohayonao.github.io/SCScript/",
   "bugs": "https://github.com/mohayonao/SCScript/issues",
@@ -15,7 +15,7 @@
     }
   ],
   "engines": {
-    "node": ">=0.8.0"
+    "node": ">=0.10.0"
   },
   "main": "index.js",
   "devDependencies": {
@@ -28,9 +28,9 @@
     "grunt-este-watch": "^0.1.16",
     "grunt-jscs-checker": "^0.4.4",
     "grunt-plato": "^1.0.0",
-    "istanbul": "^0.2.10",
-    "mocha": "^1.18.2",
-    "sinon": "^1.9.1",
+    "istanbul": "^0.2.11",
+    "mocha": "^1.19.0",
+    "sinon": "^1.10.0",
     "sinon-chai": "^2.5.0"
   },
   "scripts": {

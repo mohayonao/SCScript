@@ -3,18 +3,18 @@
 
   require("./ArrayedCollection");
 
-  var $ = sc.test.$;
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("SCArrayedCollection", function() {
     var SCArrayedCollection;
     before(function() {
-      SCArrayedCollection = $SC("ArrayedCollection");
+      SCArrayedCollection = $("ArrayedCollection");
       this.createInstance = function(source, immutable) {
-        var instance = $SC.Array((source || []).map($), !!immutable);
+        var instance = $.Array((source || []).map($$), !!immutable);
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "ArrayedCollection", testMethod);
         return instance;
@@ -24,7 +24,7 @@
       var instance, test;
       var $obj;
 
-      $obj = sc.test.object();
+      $obj = $$();
 
       instance = this.createInstance();
 
@@ -519,7 +519,7 @@
       var $array;
 
       spy = this.spy(sc.test.func);
-      $array = sc.test.object();
+      $array = $$();
 
       instance = this.createInstance([ 1, 2, 3 ]);
       instance.overWrite = spy;
@@ -975,7 +975,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
       this.stub(iterator, "array$do", function() {
         return iter;
       });
@@ -993,7 +993,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
       this.stub(iterator, "array$reverseDo", function() {
         return iter;
       });
@@ -1215,7 +1215,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ $SC.Float(2.0) ],
+          args  : [ $.Float(2.0) ],
           result: false
         },
         {
@@ -1238,9 +1238,9 @@
   describe("SCRawArray", function() {
     var SCRawArray;
     before(function() {
-      SCRawArray = $SC("RawArray");
+      SCRawArray = $("RawArray");
       this.createInstance = function(source) {
-        var instance = $SC.String(source || "").copy();
+        var instance = $.String(source || "").copy();
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "RawArray", testMethod);
         return instance;
@@ -1294,12 +1294,12 @@
   describe("SCInt8Array", function() {
     var SCInt8Array;
     before(function() {
-      SCInt8Array = $SC("Int8Array");
+      SCInt8Array = $("Int8Array");
     });
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCInt8Array.newFrom($([ 0, 255, 256 ]));
+      instance = SCInt8Array.newFrom($$([ 0, 255, 256 ]));
       test = instance.valueOf();
 
       expected = new Int8Array([ 0, -1, 0 ]);
@@ -1310,12 +1310,12 @@
   describe("SCInt16Array", function() {
     var SCInt16Array;
     before(function() {
-      SCInt16Array = $SC("Int16Array");
+      SCInt16Array = $("Int16Array");
     });
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCInt16Array.newFrom($([ 0, 65535, 65536 ]));
+      instance = SCInt16Array.newFrom($$([ 0, 65535, 65536 ]));
       test = instance.valueOf();
 
       expected = new Int16Array([ 0, -1, 0 ]);
@@ -1326,12 +1326,12 @@
   describe("SCInt32Array", function() {
     var SCInt32Array;
     before(function() {
-      SCInt32Array = $SC("Int32Array");
+      SCInt32Array = $("Int32Array");
     });
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCInt32Array.newFrom($([ 0, 4294967295, 4294967296 ]));
+      instance = SCInt32Array.newFrom($$([ 0, 4294967295, 4294967296 ]));
       test = instance.valueOf();
 
       expected = new Int32Array([ 0, -1, 0 ]);
@@ -1342,12 +1342,12 @@
   describe("SCFloatArray", function() {
     var SCFloatArray;
     before(function() {
-      SCFloatArray = $SC("FloatArray");
+      SCFloatArray = $("FloatArray");
     });
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCFloatArray.newFrom($([ 0, 0.5, -0.5 ]));
+      instance = SCFloatArray.newFrom($$([ 0, 0.5, -0.5 ]));
       test = instance.valueOf();
 
       expected = new Float32Array([ 0, 0.5, -0.5 ]);
@@ -1358,12 +1358,12 @@
   describe("SCDoubleArray", function() {
     var SCDoubleArray;
     before(function() {
-      SCDoubleArray = $SC("DoubleArray");
+      SCDoubleArray = $("DoubleArray");
     });
     it("#valueOf", function() {
       var instance, test, expected;
 
-      instance = SCDoubleArray.newFrom($([ 0, 0.5, -0.5 ]));
+      instance = SCDoubleArray.newFrom($$([ 0, 0.5, -0.5 ]));
       test = instance.valueOf();
 
       expected = new Float64Array([ 0, 0.5, -0.5 ]);

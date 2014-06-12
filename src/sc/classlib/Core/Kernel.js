@@ -3,19 +3,19 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var klass = sc.lang.klass;
 
   klass.refine("Class", function(spec) {
     spec.class = function() {
       if (this._isMetaClass) {
-        return $SC("Class");
+        return $("Class");
       }
-      return $SC("Meta_" + this._name);
+      return $("Meta_" + this._name);
     };
 
     spec.name = function() {
-      return $SC.String(this._name);
+      return $.String(this._name);
     };
 
     // TODO: implements superclass
@@ -47,6 +47,20 @@ SCScript.install(function(sc) {
     // TODO: implements $findAllReferences
     // TODO: implements allSubclasses
     // TODO: implements superclasses
+
+    spec["[]"] = function($anArray) {
+      var $newCollection;
+      var array, i, imax;
+
+      $newCollection = this.new($anArray.size());
+
+      array = $anArray._;
+      for (i = 0, imax = array.length; i < imax; ++i) {
+        $newCollection.$("add", [ array[i] ]);
+      }
+
+      return $newCollection;
+    };
   });
 
 
@@ -80,10 +94,7 @@ SCScript.install(function(sc) {
 
     spec.constructor = function SCInterpreter() {
       this.__super__("Object");
-      for (var i = 97; i <= 122; i++) {
-        this["_$" + String.fromCharCode(i)] = $nil;
-      }
-      // this._$s = $SC("Server").default(); // in SCMain
+      this._$ = {};
     };
 
     (function() {
@@ -91,13 +102,13 @@ SCScript.install(function(sc) {
 
       function getter(name) {
         return function() {
-          return this["_$" + name];
+          return this._$[name] || /* istanbul ignore next */ $nil;
         };
       }
 
       function setter(name) {
         return function($value) {
-          this["_$" + name] = $value || /* istanbul ignore next */ $nil;
+          this._$[name] = $value || /* istanbul ignore next */ $nil;
           return this;
         };
       }
@@ -110,10 +121,7 @@ SCScript.install(function(sc) {
     })();
 
     spec.clearAll = function() {
-      var i;
-      for (i = 97; i <= 122; i++) {
-        this["_$" + String.fromCharCode(i)] = $nil;
-      }
+      this._$ = {};
       return this;
     };
   });

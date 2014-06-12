@@ -47,7 +47,7 @@
           }).to.not.throw();
 
           test = codegen.compile(ast).split("\n");
-          expect(test).to.eqls(compiled);
+          expect(test).to.eql(compiled);
         });
       });
     });
@@ -66,7 +66,7 @@
         var source = codegen.compile(ast, { bare: true });
         var test = esprima.parse(source);
         var compiled = esprima.parse(
-          "(function($SC) { return $SC.Nil(); })"
+          "(function($) { return $.Nil(); })"
         );
         expect(test).to.be.eqls(compiled);
       });
@@ -101,7 +101,7 @@
             ]
           }
         },
-        "{|a, a| }": {
+        "{|a, a| a}": {
           error: "already declared",
           ast: {
             type: Syntax.Program,
@@ -126,12 +126,17 @@
                     },
                   ]
                 },
-                body: []
+                body: [
+                  {
+                    type: Syntax.Identifier,
+                    name: "a"
+                  }
+                ]
               }
             ]
           }
         },
-        "{|a| var a; }": {
+        "{|a| var a; a }": {
           error: "already declared",
           ast: {
             type: Syntax.Program,
@@ -162,6 +167,10 @@
                         },
                       },
                     ]
+                  },
+                  {
+                    type: Syntax.Identifier,
+                    name: "a"
                   }
                 ]
               }
@@ -194,7 +203,7 @@
         var items = cases[key];
         var ast   = items.ast;
         var error = items.error;
-        it("s(key)", function() {
+        it(s(key), function() {
           expect(function() {
             codegen.compile(ast);
           }).to.throw(error);

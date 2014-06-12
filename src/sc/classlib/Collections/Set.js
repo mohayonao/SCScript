@@ -3,18 +3,17 @@ SCScript.install(function(sc) {
 
   require("./Collection");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Set", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     spec.$new = fn(function($n) {
-      $n = $SC.Integer(Math.max($n.__int__(), 2) * 2);
+      $n = $.Integer(Math.max($n.__int__(), 2) * 2);
       return this.__super__("new").initSet($n);
     }, "n=2");
 
@@ -36,7 +35,7 @@ SCScript.install(function(sc) {
     };
 
     spec.size = function() {
-      return $SC.Integer(this._size);
+      return $.Integer(this._size);
     };
 
     spec.species = function() {
@@ -160,7 +159,7 @@ SCScript.install(function(sc) {
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil && BOOL($that.includes($item))) {
+        if ($item !== $nil && $that.$("includes", [ $item ]).__bool__()) {
           $result.add($item);
         }
       });
@@ -190,21 +189,23 @@ SCScript.install(function(sc) {
       $result = this.species().new();
 
       this._$array._.forEach(function($item) {
-        if ($item !== $nil && !BOOL($that.includes($item))) {
+        if ($item !== $nil && !$that.$("includes", [ $item ]).__bool__()) {
           $result.add($item);
         }
       });
-      $that.do($SC.Function(function($item) {
-        if (!BOOL($this.includes($item))) {
-          $result.add($item);
-        }
+      $that.do($.Function(function() {
+        return [ function($item) {
+          if (!$this.includes($item).__bool__()) {
+            $result.add($item);
+          }
+        } ];
       }));
 
       return $result;
     }, "that");
 
     spec.isSubsetOf = fn(function($that) {
-      return $that.includesAll(this);
+      return $that.$("includesAll", [ this ]);
     }, "that");
 
     spec["&"] = function($that) {
@@ -252,7 +253,7 @@ SCScript.install(function(sc) {
       }
     };
 
-    // istanbul ignore next
+    /* istanbul ignore next */
     spec.scanFor = function($obj) {
       var array, index;
 
@@ -260,15 +261,15 @@ SCScript.install(function(sc) {
 
       index = array.indexOf($obj);
       if (index !== -1) {
-        return $SC.Integer(index);
+        return $.Integer(index);
       }
 
       index = array.indexOf($nil);
       if (index !== -1) {
-        return $SC.Integer(index);
+        return $.Integer(index);
       }
 
-      return $SC.Integer(-1);
+      return $.Integer(-1);
     };
 
     // TODO: implements fixCollisionsFrom

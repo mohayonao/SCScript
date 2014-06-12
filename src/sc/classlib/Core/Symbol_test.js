@@ -3,16 +3,17 @@
 
   require("./Symbol");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCSymbol", function() {
     var SCSymbol;
     before(function() {
-      SCSymbol = $SC("Symbol");
+      SCSymbol = $("Symbol");
       this.createInstance = function(value) {
-        return $SC.Symbol(value || "sym");
+        return $.Symbol(value || "sym");
       };
     });
     it("#__sym__", function() {
@@ -52,12 +53,12 @@
     });
     it("#asFloat", function() {
       testCase(this, [
-        [ "100", [], $SC.Float(100) ],
-        [ "+50", [], $SC.Float(+50) ],
-        [ "-50", [], $SC.Float(-50) ],
-        [ "5.5", [], $SC.Float(5.5) ],
-        [ "5oo", [], $SC.Float(  5) ],
-        [ "oo5", [], $SC.Float(  0) ],
+        [ "100", [], $.Float(100) ],
+        [ "+50", [], $.Float(+50) ],
+        [ "-50", [], $.Float(-50) ],
+        [ "5.5", [], $.Float(5.5) ],
+        [ "5oo", [], $.Float(  5) ],
+        [ "oo5", [], $.Float(  0) ],
         [ "+1.5e-5", [], +1.5e-5 ],
       ]);
     });
@@ -65,7 +66,7 @@
       var instance, test;
       var $obj;
 
-      $obj = sc.test.object({
+      $obj = $$({
         ascii: sc.test.func
       });
 
@@ -133,8 +134,8 @@
       var instance, test;
       var $a, $b;
 
-      $a = $SC.Integer(10);
-      $b = $SC.Integer(20);
+      $a = $$(10);
+      $b = $$(20);
 
       instance = this.createInstance("*");
 

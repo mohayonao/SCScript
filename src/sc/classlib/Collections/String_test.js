@@ -3,16 +3,17 @@
 
   require("./String");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCString", function() {
     var SCString;
     before(function() {
-      SCString = $SC("String");
+      SCString = $("String");
       this.createInstance = function(str) {
-        return $SC.String(str || "str");
+        return $.String(str || "str");
       };
     });
     it("#__str__", function() {
@@ -27,7 +28,7 @@
       var instance, test;
       var $ch;
 
-      $ch = $SC.Char("a");
+      $ch = $$("$a");
 
       instance = this.createInstance();
 
@@ -35,7 +36,7 @@
       expect(test).to.equal($ch);
 
       expect(function() {
-        instance.__elem__($SC.Integer(0));
+        instance.__elem__($$(0));
       }).to.throw("Wrong type");
     });
     it("#valueOf", function() {
@@ -76,12 +77,12 @@
     });
     it("#asFloat", function() {
       testCase(this, [
-        [ "100", [], $SC.Float(100) ],
-        [ "+50", [], $SC.Float(+50) ],
-        [ "-50", [], $SC.Float(-50) ],
-        [ "5.5", [], $SC.Float(5.5) ],
-        [ "5oo", [], $SC.Float(  5) ],
-        [ "oo5", [], $SC.Float(  0) ],
+        [ "100", [], $.Float(100) ],
+        [ "+50", [], $.Float(+50) ],
+        [ "-50", [], $.Float(-50) ],
+        [ "5.5", [], $.Float(5.5) ],
+        [ "5oo", [], $.Float(  5) ],
+        [ "oo5", [], $.Float(  0) ],
         [ "+1.5e-5", [], +1.5e-5 ],
       ]);
     });
@@ -158,10 +159,10 @@
       var $aSelector, $aNumber;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      $aNumber = sc.test.object({
+      $aSelector = $$();
+      $aNumber = $$({
         asString: function() {
-          return sc.test.object({
+          return $$({
             perform: spy
           });
         }
@@ -178,10 +179,10 @@
       var $aSelector, $aComplex;
 
       spy = this.spy(sc.test.func);
-      $aSelector = sc.test.object();
-      $aComplex = sc.test.object({
+      $aSelector = $$();
+      $aComplex = $$({
         asString: function() {
-          return sc.test.object({
+          return $$({
             perform: spy
           });
         }

@@ -3,12 +3,14 @@
 
   require("./Thread");
 
-  var $SC = sc.lang.$SC;
+  var $$ = sc.test.object;
+
+  var $ = sc.lang.$;
 
   describe("SCThread", function() {
     var SCThread;
     before(function() {
-      SCThread = $SC("Thread");
+      SCThread = $("Thread");
       this.createInstance = function() {
         return SCThread.new();
       };
@@ -21,7 +23,13 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
-    it.skip("<state", function() {
+    it("<state", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.state();
+      expect(test).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
     });
     it.skip("<parent", function() {
     });
@@ -51,7 +59,9 @@
     });
     it.skip("#init", function() {
     });
-    it.skip("#copy", function() {
+    it("#copy", function() {
+      var instance = this.createInstance();
+      expect(instance.copy).to.be.nop;
     });
     it.skip("#clock_", function() {
     });
@@ -65,21 +75,45 @@
     });
     it.skip("#findThreadPlayer", function() {
     });
-    it.skip("#randSeed_", function() {
+    it(">randSeed", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      test = instance.randSeed_($$(0));
+
+      expect(test).to.equal(instance);
+
+      test = instance.randData();
+      expect(test).to.be.a("SCInt32Array").that.eqls(
+        new Int32Array([ 204043952, -27998203, 716100824 ])
+      );
     });
-    it.skip("#randData_", function() {
-    });
-    it.skip("#randData", function() {
+    it("<>randData", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      test = instance.randData_($$([ 1, 2, 3 ]));
+
+      test = instance.randData();
+      expect(test).to.be.a("SCInt32Array").that.eqls(
+        new Int32Array([ 1, 2, 3 ])
+      );
     });
     it.skip("#failedPrimitiveName", function() {
     });
     it.skip("#handleError", function() {
     });
-    it.skip("#next", function() {
+    it("#next", function() {
+      var instance = this.createInstance();
+      expect(instance.next).to.be.nop;
     });
-    it.skip("#value", function() {
+    it("#value", function() {
+      var instance = this.createInstance();
+      expect(instance.value).to.be.nop;
     });
-    it.skip("#valueArray", function() {
+    it("#valueArray", function() {
+      var instance = this.createInstance();
+      expect(instance.valueArray).to.be.nop;
     });
     it.skip("#$primitiveError", function() {
     });
@@ -96,7 +130,7 @@
   describe("SCRoutine", function() {
     var SCRoutine;
     before(function() {
-      SCRoutine = $SC("Routine");
+      SCRoutine = $("Routine");
       this.createInstance = function() {
         return SCRoutine.new();
       };

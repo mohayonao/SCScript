@@ -3,40 +3,40 @@ SCScript.install(function(sc) {
 
   require("../Core/Object");
 
-  var fn  = sc.lang.fn;
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Magnitude", function(spec) {
     spec["=="] = function($aMagnitude) {
-      return $SC.Boolean(this.valueOf() === $aMagnitude.valueOf());
+      return $.Boolean(this.valueOf() === $aMagnitude.valueOf());
     };
 
     spec["!="] = function($aMagnitude) {
-      return $SC.Boolean(this.valueOf() !== $aMagnitude.valueOf());
+      return $.Boolean(this.valueOf() !== $aMagnitude.valueOf());
     };
 
     spec["<"] = function($aMagnitude) {
-      return $SC.Boolean(this < $aMagnitude);
+      return $.Boolean(this < $aMagnitude);
     };
 
     spec[">"] = function($aMagnitude) {
-      return $SC.Boolean(this > $aMagnitude);
+      return $.Boolean(this > $aMagnitude);
     };
 
     spec["<="] = function($aMagnitude) {
-      return $SC.Boolean(this <= $aMagnitude);
+      return $.Boolean(this <= $aMagnitude);
     };
 
     spec[">="] = function($aMagnitude) {
-      return $SC.Boolean(this >= $aMagnitude);
+      return $.Boolean(this >= $aMagnitude);
     };
 
     spec.exclusivelyBetween = fn(function($lo, $hi) {
-      return $SC.Boolean($lo < this && this < $hi);
+      return $.Boolean($lo < this && this < $hi);
     }, "lo; hi");
 
     spec.inclusivelyBetween = fn(function($lo, $hi) {
-      return $SC.Boolean($lo <= this && this <= $hi);
+      return $.Boolean($lo <= this && this <= $hi);
     }, "lo; hi");
 
     spec.min = fn(function($aMagnitude) {

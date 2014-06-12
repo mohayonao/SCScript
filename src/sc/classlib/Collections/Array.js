@@ -4,15 +4,14 @@ SCScript.install(function(sc) {
   require("./ArrayedCollection");
 
   var slice = [].slice;
+  var $     = sc.lang.$;
   var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
   var rand  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
   sc.lang.klass.refine("Array", function(spec, utils) {
-    var BOOL    = utils.BOOL;
     var $nil    = utils.$nil;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     spec.$newClear = fn(function($indexedSize) {
       var array, indexedSize, i;
@@ -23,16 +22,16 @@ SCScript.install(function(sc) {
         array[i] = $nil;
       }
 
-      return $SC.Array(array);
+      return $.Array(array);
     }, "indexedSize=0");
 
     spec.$with = function() {
-      return $SC.Array(slice.call(arguments));
+      return $.Array(slice.call(arguments));
     };
 
     spec.reverse = function() {
       // <-- _ArrayReverse -->
-      return $SC.Array(this._.slice().reverse());
+      return $.Array(this._.slice().reverse());
     };
 
     spec.scramble = function() {
@@ -50,7 +49,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.mirror = function() {
@@ -60,7 +59,7 @@ SCScript.install(function(sc) {
       // <-- _ArrayMirror -->
       size = raw.length * 2 - 1;
       if (size < 2) {
-        return $SC.Array(raw.slice(0));
+        return $.Array(raw.slice(0));
       }
 
       a = new Array(size);
@@ -71,7 +70,7 @@ SCScript.install(function(sc) {
         a[i] = raw[j];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.mirror1 = function() {
@@ -81,7 +80,7 @@ SCScript.install(function(sc) {
       // <-- _ArrayMirror1 -->
       size = raw.length * 2 - 2;
       if (size < 2) {
-        return $SC.Array(raw.slice(0));
+        return $.Array(raw.slice(0));
       }
 
       a = new Array(size);
@@ -92,7 +91,7 @@ SCScript.install(function(sc) {
         a[i] = raw[j];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.mirror2 = function() {
@@ -102,7 +101,7 @@ SCScript.install(function(sc) {
       // <-- _ArrayMirror2 -->
       size = raw.length * 2;
       if (size < 2) {
-        return $SC.Array(raw.slice(0));
+        return $.Array(raw.slice(0));
       }
 
       a = new Array(size);
@@ -113,7 +112,7 @@ SCScript.install(function(sc) {
         a[i] = raw[j];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     };
 
     spec.stutter = fn(function($n) {
@@ -129,7 +128,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "n=2");
 
     spec.rotate = fn(function($n) {
@@ -151,7 +150,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "n=1");
 
     spec.pyramid = fn(function($patternType) {
@@ -277,7 +276,7 @@ SCScript.install(function(sc) {
         break;
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, "n=1");
 
     spec.pyramidg = fn(function($patternType) {
@@ -291,75 +290,75 @@ SCScript.install(function(sc) {
       switch (patternType) {
       case 1:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 2:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         break;
       case 3:
         for (i = lastIndex; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 4:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 5:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         for (i = lastIndex - 1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 6:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         for (i = lastIndex - 1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         break;
       case 7:
         for (i = lastIndex; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         for (i = 1; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       case 8:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         for (i = lastIndex - 1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 9:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         for (i = 1; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(i, lastIndex + 1)));
+          list.push($.Array(raw.slice(i, lastIndex + 1)));
         }
         break;
       case 10:
         for (i = 0; i <= lastIndex; ++i) {
-          list.push($SC.Array(raw.slice(lastIndex - i, lastIndex + 1)));
+          list.push($.Array(raw.slice(lastIndex - i, lastIndex + 1)));
         }
         for (i = lastIndex - 1; i >= 0; --i) {
-          list.push($SC.Array(raw.slice(0, i + 1)));
+          list.push($.Array(raw.slice(0, i + 1)));
         }
         break;
       }
 
-      return $SC.Array(list);
+      return $.Array(list);
     }, "n=1");
 
     spec.sputter = fn(function($probability, $maxlen) {
@@ -377,7 +376,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      return $SC.Array(list);
+      return $.Array(list);
     }, "probability=0.25; maxlen=100");
 
     spec.lace = fn(function($length) {
@@ -386,7 +385,7 @@ SCScript.install(function(sc) {
       var a, i, $item;
 
       if ($length === $nil) {
-        $length = $SC.Integer(wrap);
+        $length = $.Integer(wrap);
       }
 
       length = $length.__int__();
@@ -401,7 +400,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "length");
 
     spec.permute = fn(function($nthPermutation) {
@@ -423,7 +422,7 @@ SCScript.install(function(sc) {
         obj2[j] = $item;
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, "nthPermutation=0");
 
     spec.allTuples = fn(function($maxTuples) {
@@ -457,10 +456,10 @@ SCScript.install(function(sc) {
             obj3[j] = obj1[j];
           }
         }
-        obj2[i] = $SC.Array(obj3);
+        obj2[i] = $.Array(obj3);
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, "maxTuples=16384");
 
     spec.wrapExtend = fn(function($size) {
@@ -477,7 +476,7 @@ SCScript.install(function(sc) {
         a = raw.slice(0, size);
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "size");
 
     spec.foldExtend = fn(function($size) {
@@ -495,7 +494,7 @@ SCScript.install(function(sc) {
         a = raw.slice(0, size);
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "size");
 
     spec.clipExtend = fn(function($size) {
@@ -516,7 +515,7 @@ SCScript.install(function(sc) {
         a = raw.slice(0, size);
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "size");
 
     spec.slide = fn(function($windowLength, $stepSize) {
@@ -540,7 +539,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     }, "windowLength=3; stepSize=1");
 
     spec.containsSeqColl = function() {
@@ -548,12 +547,12 @@ SCScript.install(function(sc) {
       var i, imax;
 
       for (i = 0, imax = raw.length; i < imax; ++i) {
-        if (BOOL(raw[i].isSequenceableCollection())) {
-          return $SC.True();
+        if (raw[i].isSequenceableCollection().__bool__()) {
+          return $.True();
         }
       }
 
-      return $SC.False();
+      return $.False();
     };
 
     spec.unlace = fn(function($clumpSize, $numChan) {
@@ -574,13 +573,13 @@ SCScript.install(function(sc) {
               b[j + k] = raw[i * numChan + k + j * clumpSize];
             }
           }
-          a[i] = $SC.Array(b);
+          a[i] = $.Array(b);
         }
       } else {
         a = [];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "clumpSize=2; numChan=1");
 
     // TODO: implements interlace
@@ -604,7 +603,7 @@ SCScript.install(function(sc) {
       size = obj1.length;
 
       if (size === 0) {
-        obj2[0] = $SC.Array([]);
+        obj2[0] = $.Array([]);
       } else {
         for (i = 0; i < maxSize; ++i) {
           obj3 = new Array(size);
@@ -615,11 +614,11 @@ SCScript.install(function(sc) {
               obj3[j] = obj1[j];
             }
           }
-          obj2[i] = $SC.Array(obj3);
+          obj2[i] = $.Array(obj3);
         }
       }
 
-      return $SC.Array(obj2);
+      return $.Array(obj2);
     };
 
     // TODO: implements envirPairs
@@ -627,8 +626,8 @@ SCScript.install(function(sc) {
     spec.shift = fn(function($n, $filler) {
       var $fill, $remain;
 
-      $fill = SCArray.fill($n.abs(), $filler);
-      $remain = this.drop($n.neg());
+      $fill = SCArray.fill($n.$("abs"), $filler);
+      $remain = this.drop($n.$("neg"));
 
       if ($n < 0) {
         return $remain ["++"] ($fill);
@@ -654,29 +653,35 @@ SCScript.install(function(sc) {
             elemArr.push(raw[j]);
           }
         }
-        result[i] = $SC.Array(elemArr);
+        result[i] = $.Array(elemArr);
       }
 
-      return $SC.Array(result);
+      return $.Array(result);
     };
 
     // TODO: implements source
 
     spec.asUGenInput = function($for) {
-      return this.collect($SC.Function(function($_) {
-        return $_.asUGenInput($for);
+      return this.collect($.Function(function() {
+        return [ function($_) {
+          return $_.asUGenInput($for);
+        } ];
       }));
     };
 
     spec.asAudioRateInput = function($for) {
-      return this.collect($SC.Function(function($_) {
-        return $_.asAudioRateInput($for);
+      return this.collect($.Function(function() {
+        return [ function($_) {
+          return $_.asAudioRateInput($for);
+        } ];
       }));
     };
 
     spec.asControlInput = function() {
-      return this.collect($SC.Function(function($_) {
-        return $_.asControlInput();
+      return this.collect($.Function(function() {
+        return [ function($_) {
+          return $_.asControlInput();
+        } ];
       }));
     };
 
@@ -695,7 +700,7 @@ SCScript.install(function(sc) {
     // TODO: implements fork
 
     spec.madd = fn(function($mul, $add) {
-      return $SC("MulAdd").new(this, $mul, $add);
+      return $("MulAdd").new(this, $mul, $add);
     }, "mul=1.0; add=0.0");
 
     // TODO: implements asRawOSC

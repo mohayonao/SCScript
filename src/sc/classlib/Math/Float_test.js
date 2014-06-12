@@ -3,17 +3,18 @@
 
   require("./Float");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
   describe("SCFloat", function() {
     var SCFloat;
     before(function() {
-      SCFloat = $SC("Float");
+      SCFloat = $("Float");
       this.createInstance = function(value) {
-        return $SC.Float(typeof value === "undefined" ? 0 : value);
+        return $.Float(typeof value === "undefined" ? 0 : value);
       };
     });
     it("#__tag", function() {
@@ -72,134 +73,134 @@
     it("#+", function() {
       testCase(this, [
         [ 10.5, [ 1 ], 11.5 ],
-        [ 10.5, [ 0.5 ], $SC.Float(11.0) ],
+        [ 10.5, [ 0.5 ], $.Float(11.0) ],
         [ 10.5, [ "1" ], "10.5 1" ],
       ]);
     });
     it("#-", function() {
       testCase(this, [
         [ 10.5, [ 1 ], 9.5 ],
-        [ 10.5, [ 0.5 ], $SC.Float(10.0) ],
+        [ 10.5, [ 0.5 ], $.Float(10.0) ],
       ]);
     });
     it("#*", function() {
       testCase(this, [
-        [ 10.5, [ 2 ], $SC.Float(21.0) ],
+        [ 10.5, [ 2 ], $.Float(21.0) ],
         [ 10.5, [ 1.5 ], 15.75 ],
       ]);
     });
     it("#/", function() {
       testCase(this, [
         [ 10.5, [ 2 ], 5.25 ],
-        [ 10.5, [ 1.5 ], $SC.Float(7.0) ],
+        [ 10.5, [ 1.5 ], $.Float(7.0) ],
       ]);
     });
     it("#mod", function() {
       testCase(this, [
         [ 10.5, [ 2 ], 0.5 ],
-        [ 10.5, [ 1.5 ], $SC.Float(0.0) ],
+        [ 10.5, [ 1.5 ], $.Float(0.0) ],
       ]);
     });
     it("#div", function() {
       testCase(this, [
-        [ 10.5, [ 2 ], $SC.Integer(5) ],
-        [ 10.5, [ 1.5 ], $SC.Integer(7) ],
+        [ 10.5, [ 2 ], $$(5) ],
+        [ 10.5, [ 1.5 ], $$(7) ],
       ]);
     });
     it("#max", function() {
       testCase(this, [
-        [ 10.5, [ 20 ], $SC.Float(20.0) ],
+        [ 10.5, [ 20 ], $.Float(20.0) ],
         [ 10.5, [ 1.5 ], 10.5 ],
       ]);
     });
     it("#min", function() {
       testCase(this, [
-        [ 10.5, [ 10 ], $SC.Float(10.0) ],
+        [ 10.5, [ 10 ], $.Float(10.0) ],
         [ 10.5, [ 1.5 ], 1.5 ],
       ]);
     });
     it("#bitAnd", function() {
       testCase(this, [
-        [ 123.5, [ 456 ], $SC.Float(72.0) ],
-        [ 123.5, [ $SC.Float(456.5) ], $SC.Float(72.0) ],
+        [ 123.5, [ 456 ], $.Float(72.0) ],
+        [ 123.5, [ $.Float(456.5) ], $.Float(72.0) ],
       ]);
     });
     it("#bitOr", function() {
       testCase(this, [
-        [ 123.5, [ 456 ], $SC.Float(507.0) ],
-        [ 123.5, [ $SC.Float(456.0) ], $SC.Float(507.0) ],
+        [ 123.5, [ 456 ], $.Float(507.0) ],
+        [ 123.5, [ $.Float(456.0) ], $.Float(507.0) ],
       ]);
     });
     it("#bitXor", function() {
       testCase(this, [
-        [ 123.5, [ 456 ], $SC.Float(435.0) ],
-        [ 123.5, [ $SC.Float(456.5) ], $SC.Float(435.0) ],
+        [ 123.5, [ 456 ], $.Float(435.0) ],
+        [ 123.5, [ $.Float(456.5) ], $.Float(435.0) ],
       ]);
     });
     it("#lcm", function() {
       testCase(this, [
-        [ 123.5, [ 456 ], $SC.Float(18696.0) ],
-        [ 123.5, [ $SC.Float(456.5) ], $SC.Float(18696.0) ],
+        [ 123.5, [ 456 ], $.Float(18696.0) ],
+        [ 123.5, [ $.Float(456.5) ], $.Float(18696.0) ],
       ]);
     });
     it("#gcd", function() {
       testCase(this, [
-        [ 123.5, [ 456 ], $SC.Float(3.0) ],
-        [ 123.5, [ $SC.Float(456.5) ], $SC.Float(3.0) ],
+        [ 123.5, [ 456 ], $.Float(3.0) ],
+        [ 123.5, [ $.Float(456.5) ], $.Float(3.0) ],
       ]);
     });
     it("#round", function() {
       testCase(this, [
-        [ 123.5, [ 25 ], $SC.Float(125.0) ],
+        [ 123.5, [ 25 ], $.Float(125.0) ],
         [ 123.5, [ 25.5 ], 127.5 ],
       ]);
     });
     it("#roundUp", function() {
       testCase(this, [
-        [ 123.5, [ 25 ], $SC.Float(125.0) ],
+        [ 123.5, [ 25 ], $.Float(125.0) ],
         [ 123.5, [ 25.5 ], 127.5 ],
       ]);
     });
     it("#trunc", function() {
       testCase(this, [
-        [ 123.5, [ 25 ], $SC.Float(100.0) ],
-        [ 123.5, [ 25.5 ], $SC.Float(102.0) ],
+        [ 123.5, [ 25 ], $.Float(100.0) ],
+        [ 123.5, [ 25.5 ], $.Float(102.0) ],
       ]);
     });
     it("#atan2", function() {
       testCase(this, [
         [ 1, [ 2 ], 0.46364760900081 ],
-        [ 1, [ $SC.Float(2.0) ], 0.46364760900081 ],
+        [ 1, [ $.Float(2.0) ], 0.46364760900081 ],
       ], { closeTo: 1e-6 });
     });
     it("#hypot", function() {
       testCase(this, [
         [ 1, [ 2 ], 2.2360679774998 ],
-        [ 1, [ $SC.Float(2.0) ], 2.2360679774998 ],
+        [ 1, [ $.Float(2.0) ], 2.2360679774998 ],
       ], { closeTo: 1e-6 });
     });
     it("#hypotApx", function() {
       testCase(this, [
         [ 1, [ 2 ], 2.5857864320278 ],
-        [ 1, [ $SC.Float(2.0) ], 2.5857864320278 ],
+        [ 1, [ $.Float(2.0) ], 2.5857864320278 ],
       ], { closeTo: 1e-6 });
     });
     it("#leftShift", function() {
       testCase(this, [
-        [ 11.5, [ 2 ], $SC.Float(44.0) ],
-        [ 11.5, [ 2.5 ], $SC.Float(44.0) ],
+        [ 11.5, [ 2 ], $.Float(44.0) ],
+        [ 11.5, [ 2.5 ], $.Float(44.0) ],
       ]);
     });
     it("#rightShift", function() {
       testCase(this, [
-        [ 11.5, [ 2 ], $SC.Float(2.0) ],
-        [ 11.5, [ 2.5 ], $SC.Float(2.0) ],
+        [ 11.5, [ 2 ], $.Float(2.0) ],
+        [ 11.5, [ 2.5 ], $.Float(2.0) ],
       ]);
     });
     it("#unsignedRightShift", function() {
       testCase(this, [
-        [ 11.5, [ 2 ], $SC.Float(2.0) ],
-        [ 11.5, [ 2.5 ], $SC.Float(2.0) ],
+        [ 11.5, [ 2 ], $.Float(2.0) ],
+        [ 11.5, [ 2.5 ], $.Float(2.0) ],
       ]);
     });
     it("#ring1", function() {
@@ -229,7 +230,7 @@
     it("#difsqr", function() {
       testCase(this, [
         [ 1.5, [ 2 ], -1.75 ],
-        [ 1.5, [ 2.5 ], $SC.Float(-4.0) ],
+        [ 1.5, [ 2.5 ], $.Float(-4.0) ],
       ]);
     });
     it("#sumsqr", function() {
@@ -241,24 +242,24 @@
     it("#sqrdif", function() {
       testCase(this, [
         [ 1.5, [ 2 ], 0.25 ],
-        [ 1.5, [ 2.5 ], $SC.Float(1.0) ],
+        [ 1.5, [ 2.5 ], $.Float(1.0) ],
       ]);
     });
     it("#absdif", function() {
       testCase(this, [
         [ 1.5, [ 2 ], 0.5 ],
-        [ 1.5, [ 2.5 ], $SC.Float(1.0) ],
+        [ 1.5, [ 2.5 ], $.Float(1.0) ],
       ]);
     });
     it("#thresh", function() {
       testCase(this, [
-        [ 1.5, [ 2 ], $SC.Float(0.0) ],
-        [ 1.5, [ 2.5 ], $SC.Float(0.0) ],
+        [ 1.5, [ 2 ], $.Float(0.0) ],
+        [ 1.5, [ 2.5 ], $.Float(0.0) ],
       ]);
     });
     it("#amclip", function() {
       testCase(this, [
-        [ 1.5, [ 2 ], $SC.Float(3.0) ],
+        [ 1.5, [ 2 ], $.Float(3.0) ],
         [ 1.5, [ 2.5 ], 3.75 ],
       ]);
     });
@@ -270,7 +271,7 @@
     });
     it("#clip2", function() {
       testCase(this, [
-        [ 12.3, [ 4 ], $SC.Float(4.0) ],
+        [ 12.3, [ 4 ], $.Float(4.0) ],
         [ 12.3, [ 4.5 ], 4.5 ],
       ]);
     });
@@ -319,7 +320,7 @@
         [ +3.0, [ -0.8, +0.8 ], +0.8 ],
         [ -1.0, [ -0.8, +0.8 ], -0.8 ],
         [ -3.0, [ -0.8, +0.8 ], -0.8 ],
-        [ -0.0, [ -0.8, +0.8 ], $SC.Float(-0.0) ],
+        [ -0.0, [ -0.8, +0.8 ], $.Float(-0.0) ],
         [ +9.1, [ -0.2, +0.2 ], +0.2 ],
         [ +0.0, [ "\\a" ], "\\a" ],
         [ +0.0, [ 0, "\\a" ], "\\a" ],
@@ -334,7 +335,7 @@
         [ +3.0, [ -0.8, +0.8 ], -0.2 ],
         [ -1.0, [ -0.8, +0.8 ], +0.6 ],
         [ -3.0, [ -0.8, +0.8 ], +0.2 ],
-        [ -0.0, [ -0.8, +0.8 ], $SC.Float(-0.0) ],
+        [ -0.0, [ -0.8, +0.8 ], $.Float(-0.0) ],
         [ +9.1, [ -0.2, +0.2 ], -0.1 ],
         [ +0.0, [ "\\a" ], "\\a" ],
         [ +0.0, [ 0, "\\a" ], "\\a" ],
@@ -357,27 +358,27 @@
     });
     it("#as32Bits", function() {
       testCase(this, [
-        [ 3.14, [], $SC.Integer(1078523331) ]
+        [ 3.14, [], $$(1078523331) ]
       ]);
     });
     it("#high32Bits", function() {
       testCase(this, [
-        [ 3.14, [], $SC.Integer(1074339512) ]
+        [ 3.14, [], $$(1074339512) ]
       ]);
     });
     it("#low32Bits", function() {
       testCase(this, [
-        [ 3.14, [], $SC.Integer(1374389535) ]
+        [ 3.14, [], $$(1374389535) ]
       ]);
     });
     it(".from32Bits", function() {
       testCase(this, [
-        [ null, [ 1074339512 ], $SC.Float(2.1424999237060547) ]
+        [ null, [ 1074339512 ], $.Float(2.1424999237060547) ]
       ]);
     });
     it(".from64Bits", function() {
       testCase(this, [
-        [ null, [ 1074339512, 1374389535 ], $SC.Float(3.14) ]
+        [ null, [ 1074339512, 1374389535 ], $.Float(3.14) ]
       ]);
     });
     it("#do", sinon.test(function() {
@@ -385,7 +386,7 @@
       var $function;
 
       iter = [];
-      $function = sc.test.object();
+      $function = $$();
       this.stub(iterator, "float$do", function() {
         return iter;
       });
@@ -403,7 +404,7 @@
       var $function;
 
       iter = {};
-      $function = sc.test.object();
+      $function = $$();
 
       this.stub(iterator, "float$reverseDo", function() {
         return iter;

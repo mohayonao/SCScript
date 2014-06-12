@@ -3,39 +3,25 @@ SCScript.install(function(sc) {
 
   require("../Core/Object");
 
-  var $SC = sc.lang.$SC;
+  var $  = sc.lang.$;
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Collection", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_0 = utils.$int_0;
     var $int_1 = utils.$int_1;
-    var SCArray = $SC("Array");
-
-    // e.g. Array [ 1, 2, 3 ]
-    spec.$_newFrom = function($anArray) {
-      var $newCollection;
-      var array, i, imax;
-
-      $newCollection = this.new($anArray.size());
-
-      array = $anArray._;
-      for (i = 0, imax = array.length; i < imax; ++i) {
-        $newCollection.add(array[i]);
-      }
-
-      return $newCollection;
-    };
+    var SCArray = $("Array");
 
     spec.$newFrom = fn(function($aCollection) {
       var $newCollection;
 
       $newCollection = this.new($aCollection.size());
-      $aCollection.do($SC.Function(function($item) {
-        $newCollection.add($item);
+      $aCollection.do($.Function(function() {
+        return [ function($item) {
+          $newCollection.add($item);
+        } ];
       }));
 
       return $newCollection;
@@ -54,7 +40,7 @@ SCScript.install(function(sc) {
       var $obj;
       var size, i;
 
-      if (BOOL($size.isSequenceableCollection())) {
+      if ($size.isSequenceableCollection().__bool__()) {
         return this.fillND($size, $function);
       }
 
@@ -62,7 +48,7 @@ SCScript.install(function(sc) {
 
       size = $size.__int__();
       for (i = 0; i < size; ++i) {
-        $obj.add($function.value($SC.Integer(i)));
+        $obj.add($function.value($.Integer(i)));
       }
 
       return $obj;
@@ -78,10 +64,10 @@ SCScript.install(function(sc) {
       cols = $cols.__int__();
 
       for (i = 0; i < rows; ++i) {
-        $row = $SC.Integer(i);
+        $row = $.Integer(i);
         $obj2 = $this.new($cols);
         for (j = 0; j < cols; ++j) {
-          $col = $SC.Integer(j);
+          $col = $.Integer(j);
           $obj2 = $obj2.add($function.value($row, $col));
         }
         $obj = $obj.add($obj2);
@@ -101,13 +87,13 @@ SCScript.install(function(sc) {
       cols   = $cols  .__int__();
 
       for (i = 0; i < planes; ++i) {
-        $plane = $SC.Integer(i);
+        $plane = $.Integer(i);
         $obj2 = $this.new($rows);
         for (j = 0; j < rows; ++j) {
-          $row = $SC.Integer(j);
+          $row = $.Integer(j);
           $obj3 = $this.new($cols);
           for (k = 0; k < cols; ++k) {
-            $col = $SC.Integer(k);
+            $col = $.Integer(k);
             $obj3 = $obj3.add($function.value($plane, $row, $col));
           }
           $obj2 = $obj2.add($obj3);
@@ -121,19 +107,23 @@ SCScript.install(function(sc) {
     var fillND = function($this, $dimensions, $function, $args) {
       var $n, $obj, $argIndex;
 
-      $n = $dimensions.first();
+      $n = $dimensions.$("first");
       $obj = $this.new($n);
       $argIndex = $args.size();
       $args = $args ["++"] ($int_0);
 
       if ($dimensions.size().__int__() <= 1) {
-        $n.do($SC.Function(function($i) {
-          $obj.add($function.valueArray($args.put($argIndex, $i)));
+        $n.do($.Function(function() {
+          return [ function($i) {
+            $obj.add($function.valueArray($args.put($argIndex, $i)));
+          } ];
         }));
       } else {
-        $dimensions = $dimensions.drop($int_1);
-        $n.do($SC.Function(function($i) {
-          $obj = $obj.add(fillND($this, $dimensions, $function, $args.put($argIndex, $i)));
+        $dimensions = $dimensions.$("drop", [ $int_1 ]);
+        $n.do($.Function(function() {
+          return [ function($i) {
+            $obj = $obj.add(fillND($this, $dimensions, $function, $args.put($argIndex, $i)));
+          } ];
         }));
       }
 
@@ -141,7 +131,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$fillND = fn(function($dimensions, $function) {
-      return fillND(this, $dimensions, $function, $SC.Array([]));
+      return fillND(this, $dimensions, $function, $.Array([]));
     }, "dimensions; function");
 
     spec["@"] = function($index) {
@@ -157,11 +147,13 @@ SCScript.install(function(sc) {
       if (this.size() !== $aCollection.size()) {
         return $false;
       }
-      this.do($SC.Function(function($item) {
-        if (!BOOL($aCollection.includes($item))) {
-          $res = $false;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          if (!$aCollection.$("includes", [ $item ]).__bool__()) {
+            $res = $false;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $true;
@@ -182,25 +174,29 @@ SCScript.install(function(sc) {
     spec.size = function() {
       var tally = 0;
 
-      this.do($SC.Function(function() {
-        tally++;
+      this.do($.Function(function() {
+        return [ function() {
+          tally++;
+        } ];
       }));
 
-      return $SC.Integer(tally);
+      return $.Integer(tally);
     };
 
     spec.flatSize = function() {
-      return this.sum($SC.Function(function($_) {
-        return $_.flatSize();
+      return this.sum($.Function(function() {
+        return [ function($_) {
+          return $_.$("flatSize");
+        } ];
       }));
     };
 
     spec.isEmpty = function() {
-      return $SC.Boolean(this.size().__int__() === 0);
+      return $.Boolean(this.size().__int__() === 0);
     };
 
     spec.notEmpty = function() {
-      return $SC.Boolean(this.size().__int__() !== 0);
+      return $.Boolean(this.size().__int__() !== 0);
     };
 
     spec.asCollection = utils.nop;
@@ -213,8 +209,10 @@ SCScript.install(function(sc) {
     spec.addAll = fn(function($aCollection) {
       var $this = this;
 
-      $aCollection.asCollection().do($SC.Function(function($item) {
-        return $this.add($item);
+      $aCollection.asCollection().do($.Function(function() {
+        return [ function($item) {
+          return $this.add($item);
+        } ];
       }));
 
       return this;
@@ -227,16 +225,20 @@ SCScript.install(function(sc) {
     spec.removeAll = fn(function($list) {
       var $this = this;
 
-      $list.do($SC.Function(function($item) {
-        $this.remove($item);
+      $list.do($.Function(function() {
+        return [ function($item) {
+          $this.remove($item);
+        } ];
       }));
 
       return this;
     }, "list");
 
     spec.removeEvery = fn(function($list) {
-      this.removeAllSuchThat($SC.Function(function($_) {
-        return $list.includes($_);
+      this.removeAllSuchThat($.Function(function() {
+        return [ function($_) {
+          return $list.$("includes", [ $_ ]);
+        } ];
       }));
       return this;
     }, "list");
@@ -246,11 +248,13 @@ SCScript.install(function(sc) {
 
       $removedItems = this.class().new();
       $copy = this.copy();
-      $copy.do($SC.Function(function($item) {
-        if (BOOL($function.value($item))) {
-          $this.remove($item);
-          $removedItems = $removedItems.add($item);
-        }
+      $copy.do($.Function(function() {
+        return [ function($item) {
+          if ($function.value($item).__bool__()) {
+            $this.remove($item);
+            $removedItems = $removedItems.add($item);
+          }
+        } ];
       }));
 
       return $removedItems;
@@ -259,9 +263,11 @@ SCScript.install(function(sc) {
     spec.atAll = fn(function($keys) {
       var $this = this;
 
-      return $keys.collect($SC.Function(function($index) {
-        return $this.at($index);
-      }));
+      return $keys.$("collect", [ $.Function(function() {
+        return [ function($index) {
+          return $this.at($index);
+        } ];
+      }) ]);
     }, "keys");
 
     spec.putEach = fn(function($keys, $values) {
@@ -282,11 +288,13 @@ SCScript.install(function(sc) {
     spec.includes = fn(function($item1) {
       var $res = null;
 
-      this.do($SC.Function(function($item2) {
-        if ($item1 === $item2) {
-          $res = $true;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($item2) {
+          if ($item1 === $item2) {
+            $res = $true;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $false;
@@ -295,11 +303,13 @@ SCScript.install(function(sc) {
     spec.includesEqual = fn(function($item1) {
       var $res = null;
 
-      this.do($SC.Function(function($item2) {
-        if (BOOL( $item1 ["=="] ($item2) )) {
-          $res = $true;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($item2) {
+          if ($item1 ["=="] ($item2).__bool__()) {
+            $res = $true;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $false;
@@ -308,11 +318,13 @@ SCScript.install(function(sc) {
     spec.includesAny = fn(function($aCollection) {
       var $this = this, $res = null;
 
-      $aCollection.do($SC.Function(function($item) {
-        if (BOOL($this.includes($item))) {
-          $res = $true;
-          return sc.C.LOOP_BREAK;
-        }
+      $aCollection.do($.Function(function() {
+        return [ function($item) {
+          if ($this.includes($item).__bool__()) {
+            $res = $true;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $false;
@@ -321,11 +333,13 @@ SCScript.install(function(sc) {
     spec.includesAll = fn(function($aCollection) {
       var $this = this, $res = null;
 
-      $aCollection.do($SC.Function(function($item) {
-        if (!BOOL($this.includes($item))) {
-          $res = $false;
-          return sc.C.LOOP_BREAK;
-        }
+      $aCollection.do($.Function(function() {
+        return [ function($item) {
+          if (!$this.includes($item).__bool__()) {
+            $res = $false;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $true;
@@ -351,8 +365,10 @@ SCScript.install(function(sc) {
       var $res;
 
       $res = $class.new(this.size());
-      this.do($SC.Function(function($elem, $i) {
-        return $res.add($function.value($elem, $i));
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          return $res.add($function.value($elem, $i));
+        } ];
       }));
 
       return $res;
@@ -362,10 +378,12 @@ SCScript.install(function(sc) {
       var $res;
 
       $res = $class.new(this.size());
-      this.do($SC.Function(function($elem, $i) {
-        if (BOOL($function.value($elem, $i))) {
-          $res = $res.add($elem);
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $res.add($elem);
+          }
+        } ];
       }));
 
       return $res;
@@ -375,10 +393,12 @@ SCScript.install(function(sc) {
       var $res;
 
       $res = $class.new(this.size());
-      this.do($SC.Function(function($elem, $i) {
-        if (!BOOL($function.value($elem, $i))) {
-          $res = $res.add($elem);
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if (!$function.value($elem, $i).__bool__()) {
+            $res = $res.add($elem);
+          }
+        } ];
       }));
 
       return $res;
@@ -387,11 +407,13 @@ SCScript.install(function(sc) {
     spec.detect = function($function) {
       var $res = null;
 
-      this.do($SC.Function(function($elem, $i) {
-        if (BOOL($function.value($elem, $i))) {
-          $res = $elem;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $elem;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $nil;
@@ -400,64 +422,80 @@ SCScript.install(function(sc) {
     spec.detectIndex = function($function) {
       var $res = null;
 
-      this.do($SC.Function(function($elem, $i) {
-        if (BOOL($function.value($elem, $i))) {
-          $res = $i;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $i;
+            this.break();
+          }
+        } ];
       }));
       return $res || $nil;
     };
 
     spec.doMsg = function() {
       var args = arguments;
-      this.do($SC.Function(function($item) {
-        $item.perform.apply($item, args);
+      this.do($.Function(function() {
+        return [ function($item) {
+          $item.perform.apply($item, args);
+        } ];
       }));
       return this;
     };
 
     spec.collectMsg = function() {
       var args = arguments;
-      return this.collect($SC.Function(function($item) {
-        return $item.perform.apply($item, args);
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $item.perform.apply($item, args);
+        } ];
       }));
     };
 
     spec.selectMsg = function() {
       var args = arguments;
-      return this.select($SC.Function(function($item) {
-        return $item.perform.apply($item, args);
+      return this.select($.Function(function() {
+        return [ function($item) {
+          return $item.perform.apply($item, args);
+        } ];
       }));
     };
 
     spec.rejectMsg = function() {
       var args = arguments;
-      return this.reject($SC.Function(function($item) {
-        return $item.perform.apply($item, args);
+      return this.reject($.Function(function() {
+        return [ function($item) {
+          return $item.perform.apply($item, args);
+        } ];
       }));
     };
 
     spec.detectMsg = fn(function($selector, $$args) {
-      return this.detect($SC.Function(function($item) {
-        return $item.performList($selector, $$args);
+      return this.detect($.Function(function() {
+        return [ function($item) {
+          return $item.performList($selector, $$args);
+        } ];
       }));
     }, "selector; *args");
 
     spec.detectIndexMsg = fn(function($selector, $$args) {
-      return this.detectIndex($SC.Function(function($item) {
-        return $item.performList($selector, $$args);
+      return this.detectIndex($.Function(function() {
+        return [ function($item) {
+          return $item.performList($selector, $$args);
+        } ];
       }));
     }, "selector; *args");
 
     spec.lastForWhich = function($function) {
       var $res = null;
-      this.do($SC.Function(function($elem, $i) {
-        if (BOOL($function.value($elem, $i))) {
-          $res = $elem;
-        } else {
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $elem;
+          } else {
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $nil;
@@ -465,12 +503,14 @@ SCScript.install(function(sc) {
 
     spec.lastIndexForWhich = function($function) {
       var $res = null;
-      this.do($SC.Function(function($elem, $i) {
-        if (BOOL($function.value($elem, $i))) {
-          $res = $i;
-        } else {
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $i;
+          } else {
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $nil;
@@ -480,8 +520,10 @@ SCScript.install(function(sc) {
       var $nextValue;
 
       $nextValue = $thisValue;
-      this.do($SC.Function(function($item, $i) {
-        $nextValue = $function.value($nextValue, $item, $i);
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          $nextValue = $function.value($nextValue, $item, $i);
+        } ];
       }));
 
       return $nextValue;
@@ -492,9 +534,11 @@ SCScript.install(function(sc) {
 
       size = this.size().__int__();
       $nextValue = $thisValue;
-      this.do($SC.Function(function($item, $i) {
-        $item = $this.at($SC.Integer(--size));
-        $nextValue = $function.value($nextValue, $item, $i);
+      this.do($.Function(function() {
+        return [ function($item, $i) {
+          $item = $this.at($.Integer(--size));
+          $nextValue = $function.value($nextValue, $item, $i);
+        } ];
       }));
 
       return $nextValue;
@@ -502,35 +546,41 @@ SCScript.install(function(sc) {
 
     spec.count = function($function) {
       var sum = 0;
-      this.do($SC.Function(function($elem, $i) {
-        if (BOOL($function.value($elem, $i))) {
-          sum++;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            sum++;
+          }
+        } ];
       }));
 
-      return $SC.Integer(sum);
+      return $.Integer(sum);
     };
 
     spec.occurrencesOf = fn(function($obj) {
       var sum = 0;
 
-      this.do($SC.Function(function($elem) {
-        if (BOOL($elem ["=="] ($obj))) {
-          sum++;
-        }
+      this.do($.Function(function() {
+        return [ function($elem) {
+          if ($elem ["=="] ($obj).__bool__()) {
+            sum++;
+          }
+        } ];
       }));
 
-      return $SC.Integer(sum);
+      return $.Integer(sum);
     }, "obj");
 
     spec.any = function($function) {
       var $res = null;
 
-      this.do($SC.Function(function($elem, $i) {
-        if (BOOL($function.value($elem, $i))) {
-          $res = $true;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $true;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $false;
@@ -539,11 +589,13 @@ SCScript.install(function(sc) {
     spec.every = function($function) {
       var $res = null;
 
-      this.do($SC.Function(function($elem, $i) {
-        if (!BOOL($function.value($elem, $i))) {
-          $res = $false;
-          return sc.C.LOOP_BREAK;
-        }
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if (!$function.value($elem, $i).__bool__()) {
+            $res = $false;
+            this.break();
+          }
+        } ];
       }));
 
       return $res || $true;
@@ -554,12 +606,16 @@ SCScript.install(function(sc) {
 
       $sum = $int_0;
       if ($function === $nil) {
-        this.do($SC.Function(function($elem) {
-          $sum = $sum ["+"] ($elem);
+        this.do($.Function(function() {
+          return [ function($elem) {
+            $sum = $sum ["+"] ($elem);
+          } ];
         }));
       } else {
-        this.do($SC.Function(function($elem, $i) {
-          $sum = $sum ["+"] ($function.value($elem, $i));
+        this.do($.Function(function() {
+          return [ function($elem, $i) {
+            $sum = $sum ["+"] ($function.value($elem, $i));
+          } ];
         }));
       }
 
@@ -575,12 +631,16 @@ SCScript.install(function(sc) {
 
       $product = $int_1;
       if ($function === $nil) {
-        this.do($SC.Function(function($elem) {
-          $product = $product ["*"] ($elem);
+        this.do($.Function(function() {
+          return [ function($elem) {
+            $product = $product ["*"] ($elem);
+          } ];
         }));
       } else {
-        this.do($SC.Function(function($elem, $i) {
-          $product = $product ["*"] ($function.value($elem, $i));
+        this.do($.Function(function() {
+          return [ function($elem, $i) {
+            $product = $product ["*"] ($function.value($elem, $i));
+          } ];
         }));
       }
 
@@ -591,11 +651,13 @@ SCScript.install(function(sc) {
       var $sum;
 
       $sum = $int_0;
-      this.do($SC.Function(function($elem) {
-        if (BOOL($elem.isSequenceableCollection())) {
-          $elem = $elem.at($int_0);
-        }
-        $sum = $sum ["+"] ($elem.abs());
+      this.do($.Function(function() {
+        return [ function($elem) {
+          if ($elem.isSequenceableCollection().__bool__()) {
+            $elem = $elem.at($int_0);
+          }
+          $sum = $sum ["+"] ($elem.abs());
+        } ];
       }));
 
       return $sum;
@@ -607,26 +669,30 @@ SCScript.install(function(sc) {
       $maxValue   = $nil;
       $maxElement = $nil;
       if ($function === $nil) {
-        this.do($SC.Function(function($elem) {
-          if ($maxElement === $nil) {
-            $maxElement = $elem;
-          } else if ($elem > $maxElement) {
-            $maxElement = $elem;
-          }
-        }));
-      } else {
-        this.do($SC.Function(function($elem, $i) {
-          var $val;
-          if ($maxValue === $nil) {
-            $maxValue = $function.value($elem, $i);
-            $maxElement = $elem;
-          } else {
-            $val = $function.value($elem, $i);
-            if ($val > $maxValue) {
-              $maxValue = $val;
+        this.do($.Function(function() {
+          return [ function($elem) {
+            if ($maxElement === $nil) {
+              $maxElement = $elem;
+            } else if ($elem > $maxElement) {
               $maxElement = $elem;
             }
-          }
+          } ];
+        }));
+      } else {
+        this.do($.Function(function() {
+          return [ function($elem, $i) {
+            var $val;
+            if ($maxValue === $nil) {
+              $maxValue = $function.value($elem, $i);
+              $maxElement = $elem;
+            } else {
+              $val = $function.value($elem, $i);
+              if ($val > $maxValue) {
+                $maxValue = $val;
+                $maxElement = $elem;
+              }
+            }
+          } ];
         }));
       }
 
@@ -639,26 +705,30 @@ SCScript.install(function(sc) {
       $minValue   = $nil;
       $minElement = $nil;
       if ($function === $nil) {
-        this.do($SC.Function(function($elem) {
-          if ($minElement === $nil) {
-            $minElement = $elem;
-          } else if ($elem < $minElement) {
-            $minElement = $elem;
-          }
-        }));
-      } else {
-        this.do($SC.Function(function($elem, $i) {
-          var $val;
-          if ($minValue === $nil) {
-            $minValue = $function.value($elem, $i);
-            $minElement = $elem;
-          } else {
-            $val = $function.value($elem, $i);
-            if ($val < $minValue) {
-              $minValue = $val;
+        this.do($.Function(function() {
+          return [ function($elem) {
+            if ($minElement === $nil) {
+              $minElement = $elem;
+            } else if ($elem < $minElement) {
               $minElement = $elem;
             }
-          }
+          } ];
+        }));
+      } else {
+        this.do($.Function(function() {
+          return [ function($elem, $i) {
+            var $val;
+            if ($minValue === $nil) {
+              $minValue = $function.value($elem, $i);
+              $minElement = $elem;
+            } else {
+              $val = $function.value($elem, $i);
+              if ($val < $minValue) {
+                $minValue = $val;
+                $minElement = $elem;
+              }
+            }
+          } ];
         }));
       }
 
@@ -671,28 +741,32 @@ SCScript.install(function(sc) {
       $maxValue = $nil;
       $maxIndex = $nil;
       if ($function === $nil) {
-        this.do($SC.Function(function($elem, $index) {
-          if ($maxValue === $nil) {
-            $maxValue = $elem;
-            $maxIndex = $index;
-          } else if ($elem > $maxValue) {
-            $maxValue = $elem;
-            $maxIndex = $index;
-          }
+        this.do($.Function(function() {
+          return [ function($elem, $index) {
+            if ($maxValue === $nil) {
+              $maxValue = $elem;
+              $maxIndex = $index;
+            } else if ($elem > $maxValue) {
+              $maxValue = $elem;
+              $maxIndex = $index;
+            }
+          } ];
         }));
       } else {
-        this.do($SC.Function(function($elem, $i) {
-          var $val;
-          if ($maxValue === $nil) {
-            $maxValue = $function.value($elem, $i);
-            $maxIndex = $i;
-          } else {
-            $val = $function.value($elem, $i);
-            if ($val > $maxValue) {
-              $maxValue = $val;
+        this.do($.Function(function() {
+          return [ function($elem, $i) {
+            var $val;
+            if ($maxValue === $nil) {
+              $maxValue = $function.value($elem, $i);
               $maxIndex = $i;
+            } else {
+              $val = $function.value($elem, $i);
+              if ($val > $maxValue) {
+                $maxValue = $val;
+                $maxIndex = $i;
+              }
             }
-          }
+          } ];
         }));
       }
 
@@ -705,28 +779,32 @@ SCScript.install(function(sc) {
       $maxValue = $nil;
       $minIndex = $nil;
       if ($function === $nil) {
-        this.do($SC.Function(function($elem, $index) {
-          if ($maxValue === $nil) {
-            $maxValue = $elem;
-            $minIndex = $index;
-          } else if ($elem < $maxValue) {
-            $maxValue = $elem;
-            $minIndex = $index;
-          }
+        this.do($.Function(function() {
+          return [ function($elem, $index) {
+            if ($maxValue === $nil) {
+              $maxValue = $elem;
+              $minIndex = $index;
+            } else if ($elem < $maxValue) {
+              $maxValue = $elem;
+              $minIndex = $index;
+            }
+          } ];
         }));
       } else {
-        this.do($SC.Function(function($elem, $i) {
-          var $val;
-          if ($maxValue === $nil) {
-            $maxValue = $function.value($elem, $i);
-            $minIndex = $i;
-          } else {
-            $val = $function.value($elem, $i);
-            if ($val < $maxValue) {
-              $maxValue = $val;
+        this.do($.Function(function() {
+          return [ function($elem, $i) {
+            var $val;
+            if ($maxValue === $nil) {
+              $maxValue = $function.value($elem, $i);
               $minIndex = $i;
+            } else {
+              $val = $function.value($elem, $i);
+              if ($val < $maxValue) {
+                $maxValue = $val;
+                $minIndex = $i;
+              }
             }
-          }
+          } ];
         }));
       }
 
@@ -738,18 +816,20 @@ SCScript.install(function(sc) {
 
       $maxValue   = $nil;
       $maxElement = $nil;
-      this.do($SC.Function(function($elem, $i) {
-        var $val;
-        if ($maxValue === $nil) {
-          $maxValue = $function.value($elem, $i);
-          $maxElement = $elem;
-        } else {
-          $val = $function.value($elem, $i);
-          if ($val > $maxValue) {
-            $maxValue = $val;
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          var $val;
+          if ($maxValue === $nil) {
+            $maxValue = $function.value($elem, $i);
             $maxElement = $elem;
+          } else {
+            $val = $function.value($elem, $i);
+            if ($val > $maxValue) {
+              $maxValue = $val;
+              $maxElement = $elem;
+            }
           }
-        }
+        } ];
       }));
 
       return $maxValue;
@@ -760,18 +840,20 @@ SCScript.install(function(sc) {
 
       $minValue   = $nil;
       $minElement = $nil;
-      this.do($SC.Function(function($elem, $i) {
-        var $val;
-        if ($minValue === $nil) {
-          $minValue = $function.value($elem, $i);
-          $minElement = $elem;
-        } else {
-          $val = $function.value($elem, $i);
-          if ($val < $minValue) {
-            $minValue = $val;
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          var $val;
+          if ($minValue === $nil) {
+            $minValue = $function.value($elem, $i);
             $minElement = $elem;
+          } else {
+            $val = $function.value($elem, $i);
+            if ($val < $minValue) {
+              $minValue = $val;
+              $minElement = $elem;
+            }
           }
-        }
+        } ];
       }));
 
       return $minValue;
@@ -785,29 +867,33 @@ SCScript.install(function(sc) {
         return this.size();
       }
 
-      this.do($SC.Function(function($sublist) {
-        var sz;
-        if (BOOL($sublist.isCollection())) {
-          sz = $sublist.maxSizeAtDepth($SC.Integer(rank - 1));
-        } else {
-          sz = 1;
-        }
-        if (sz > maxsize) {
-          maxsize = sz;
-        }
+      this.do($.Function(function() {
+        return [ function($sublist) {
+          var sz;
+          if ($sublist.isCollection().__bool__()) {
+            sz = $sublist.maxSizeAtDepth($.Integer(rank - 1));
+          } else {
+            sz = 1;
+          }
+          if (sz > maxsize) {
+            maxsize = sz;
+          }
+        } ];
       }));
 
-      return $SC.Integer(maxsize);
+      return $.Integer(maxsize);
     }, "rank");
 
     spec.maxDepth = fn(function($max) {
       var $res;
 
       $res = $max;
-      this.do($SC.Function(function($elem) {
-        if (BOOL($elem.isCollection())) {
-          $res = $res.max($elem.maxDepth($max.__inc__()));
-        }
+      this.do($.Function(function() {
+        return [ function($elem) {
+          if ($elem.isCollection().__bool__()) {
+            $res = $res.max($elem.maxDepth($max.__inc__()));
+          }
+        } ];
       }));
 
       return $res;
@@ -816,8 +902,10 @@ SCScript.install(function(sc) {
     spec.deepCollect = fn(function($depth, $function, $index, $rank) {
       if ($depth === $nil) {
         $rank = $rank.__inc__();
-        return this.collect($SC.Function(function($item, $i) {
-          return $item.deepCollect($depth, $function, $i, $rank);
+        return this.collect($.Function(function() {
+          return [ function($item, $i) {
+            return $item.deepCollect($depth, $function, $i, $rank);
+          } ];
         }));
       }
       if ($depth.__num__() <= 0) {
@@ -826,16 +914,20 @@ SCScript.install(function(sc) {
       $depth = $depth.__dec__();
       $rank  = $rank.__inc__();
 
-      return this.collect($SC.Function(function($item, $i) {
-        return $item.deepCollect($depth, $function, $i, $rank);
+      return this.collect($.Function(function() {
+        return [ function($item, $i) {
+          return $item.deepCollect($depth, $function, $i, $rank);
+        } ];
       }));
     }, "depth=1; function; index=0; rank=0");
 
     spec.deepDo = fn(function($depth, $function, $index, $rank) {
       if ($depth === $nil) {
         $rank = $rank.__inc__();
-        return this.do($SC.Function(function($item, $i) {
-          $item.deepDo($depth, $function, $i, $rank);
+        return this.do($.Function(function() {
+          return [ function($item, $i) {
+            $item.deepDo($depth, $function, $i, $rank);
+          } ];
         }));
       }
       if ($depth.__num__() <= 0) {
@@ -845,21 +937,23 @@ SCScript.install(function(sc) {
       $depth = $depth.__dec__();
       $rank  = $rank.__inc__();
 
-      return this.do($SC.Function(function($item, $i) {
-        $item.deepDo($depth, $function, $i, $rank);
+      return this.do($.Function(function() {
+        return [ function($item, $i) {
+          $item.deepDo($depth, $function, $i, $rank);
+        } ];
       }));
     }, "depth=1; function; index=0; rank=0");
 
     spec.invert = fn(function($axis) {
       var $index;
 
-      if (BOOL(this.isEmpty())) {
+      if (this.isEmpty().__bool__()) {
         return this.species().new();
       }
       if ($axis !== $nil) {
-        $index = $axis ["*"] ($SC.Integer(2));
+        $index = $axis.$("*", [ $.Integer(2) ]);
       } else {
-        $index = this.minItem() ["+"] (this.maxItem());
+        $index = this.minItem().$("+", [ this.maxItem() ]);
       }
 
       return $index ["-"] (this);
@@ -869,10 +963,12 @@ SCScript.install(function(sc) {
       var $result;
 
       $result = this.species().new();
-      this.do($SC.Function(function($item) {
-        if (BOOL($that.includes($item))) {
-          $result = $result.add($item);
-        }
+      this.do($.Function(function() {
+        return [ function($item) {
+          if ($that.$("includes", [ $item ]).__bool__()) {
+            $result = $result.add($item);
+          }
+        } ];
       }));
 
       return $result;
@@ -882,10 +978,12 @@ SCScript.install(function(sc) {
       var $result;
 
       $result = this.copy();
-      $that.do($SC.Function(function($item) {
-        if (!BOOL($result.includes($item))) {
-          $result = $result.add($item);
-        }
+      $that.do($.Function(function() {
+        return [ function($item) {
+          if (!$result.includes($item).__bool__()) {
+            $result = $result.add($item);
+          }
+        } ];
       }));
 
       return $result;
@@ -899,22 +997,26 @@ SCScript.install(function(sc) {
       var $this = this, $result;
 
       $result = this.species().new();
-      $this.do($SC.Function(function($item) {
-        if (!BOOL($that.includes($item))) {
-          $result = $result.add($item);
-        }
+      $this.do($.Function(function() {
+        return [ function($item) {
+          if (!$that.includes($item).__bool__()) {
+            $result = $result.add($item);
+          }
+        } ];
       }));
-      $that.do($SC.Function(function($item) {
-        if (!BOOL($this.includes($item))) {
-          $result = $result.add($item);
-        }
+      $that.do($.Function(function() {
+        return [ function($item) {
+          if (!$this.includes($item).__bool__()) {
+            $result = $result.add($item);
+          }
+        } ];
       }));
 
       return $result;
     }, "that");
 
     spec.isSubsetOf = fn(function($that) {
-      return $that.includesAll(this);
+      return $that.$("includesAll", [ this ]);
     }, "that");
 
     spec.asArray = function() {
@@ -922,19 +1024,19 @@ SCScript.install(function(sc) {
     };
 
     spec.asBag = function() {
-      return $SC("Bag").new(this.size()).addAll(this);
+      return $("Bag").new(this.size()).addAll(this);
     };
 
     spec.asList = function() {
-      return $SC("List").new(this.size()).addAll(this);
+      return $("List").new(this.size()).addAll(this);
     };
 
     spec.asSet = function() {
-      return $SC("Set").new(this.size()).addAll(this);
+      return $("Set").new(this.size()).addAll(this);
     };
 
     spec.asSortedList = function($function) {
-      return $SC("SortedList").new(this.size(), $function).addAll(this);
+      return $("SortedList").new(this.size(), $function).addAll(this);
     };
 
     // TODO: implements powerset
@@ -954,11 +1056,13 @@ SCScript.install(function(sc) {
 
     spec.asString = function() {
       var items = [];
-      this.do($SC.Function(function($elem) {
-        items.push($elem.__str__());
+      this.do($.Function(function() {
+        return [ function($elem) {
+          items.push($elem.__str__());
+        } ];
       }));
 
-      return $SC.String(
+      return $.String(
         this.__className + "[ " + items.join(", ") + " ]"
       );
     };

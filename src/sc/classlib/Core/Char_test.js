@@ -3,17 +3,18 @@
 
   require("./Char");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
   var fromCharCode = String.fromCharCode;
 
   describe("SCChar", function() {
     var SCChar;
     before(function() {
-      SCChar = $SC("Char");
+      SCChar = $("Char");
       this.createInstance = function(value) {
-        return $SC.Char(typeof value === "undefined" ? "a" : value);
+        return $.Char(typeof value === "undefined" ? "a" : value);
       };
     });
     it("#__tag", function() {
@@ -282,7 +283,7 @@
       var test, instance;
       var $h;
 
-      $h = $SC.Char("h");
+      $h = $$("$h");
 
       instance = this.createInstance("c");
 

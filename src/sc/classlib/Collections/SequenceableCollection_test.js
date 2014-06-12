@@ -3,18 +3,18 @@
 
   require("./SequenceableCollection");
 
-  var $ = sc.test.$;
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $SC = sc.lang.$SC;
+  var $ = sc.lang.$;
 
   describe("SCSequenceableCollection", function() {
     var SCSequenceableCollection, SCArray;
     before(function() {
-      SCSequenceableCollection = $SC("SequenceableCollection");
-      SCArray = $SC("Array");
+      SCSequenceableCollection = $("SequenceableCollection");
+      SCArray = $("Array");
       this.createInstance = function(source, immutable) {
-        var instance = $SC.Array((source||[]).map($), !!immutable);
+        var instance = $.Array((source||[]).map($$), !!immutable);
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "SequenceableCollection", testMethod);
         return instance;
@@ -32,7 +32,7 @@
       var instance, test;
       var $index;
 
-      $index = sc.test.object();
+      $index = $$();
 
       instance = this.createInstance();
       this.stub(instance, "clipAt", sc.test.func);
@@ -45,7 +45,7 @@
       var instance, test;
       var $index;
 
-      $index = sc.test.object();
+      $index = $$();
 
       instance = this.createInstance();
       this.stub(instance, "wrapAt", sc.test.func);
@@ -58,7 +58,7 @@
       var instance, test;
       var $index;
 
-      $index = sc.test.object();
+      $index = $$();
 
       instance = this.createInstance();
       this.stub(instance, "foldAt", sc.test.func);
@@ -69,25 +69,25 @@
     }));
     it(".series", function() {
       var test = SCSequenceableCollection.series.call(
-        SCArray, $SC.Integer(6), $SC.Integer(2), $SC.Integer(4)
+        SCArray, $$(6), $$(2), $$(4)
       );
-      expect(test).to.be.a("SCArray").to.eqls([
+      expect(test).to.be.a("SCArray").to.eql([
         2, 6, 10, 14, 18, 22
       ]);
     });
     it(".geom", function() {
       var test = SCSequenceableCollection.geom.call(
-        SCArray, $SC.Integer(6), $SC.Integer(2), $SC.Integer(4)
+        SCArray, $$(6), $$(2), $$(4)
       );
-      expect(test).to.be.a("SCArray").to.eqls([
+      expect(test).to.be.a("SCArray").to.eql([
         2, 8, 32, 128, 512, 2048
       ]);
     });
     it(".fib", function() {
       var test = SCSequenceableCollection.fib.call(
-        SCArray, $SC.Integer(6)
+        SCArray, $$(6)
       );
-      expect(test).to.be.a("SCArray").to.eqls([
+      expect(test).to.be.a("SCArray").to.eql([
         1.0, 1.0, 2.0, 3.0, 5.0, 8.0
       ]);
     });
@@ -101,14 +101,14 @@
       var test;
 
       test = SCSequenceableCollection.interpolation.call(
-        SCArray, $SC.Integer(1)
+        SCArray, $$(1)
       );
-      expect(test).to.be.a("SCArray").to.eqls([ 0.0 ]);
+      expect(test).to.be.a("SCArray").to.eql([ 0.0 ]);
 
       test = SCSequenceableCollection.interpolation.call(
-        SCArray, $SC.Integer(5)
+        SCArray, $$(5)
       );
-      expect(test).to.be.a("SCArray").to.eqls([
+      expect(test).to.be.a("SCArray").to.eql([
         0.0, 0.25, 0.5, 0.75, 1.0
       ]);
     });
@@ -154,7 +154,7 @@
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 20, $SC.Float(30.0) ] ],
+          args  : [ [ 10, 20, $.Float(30.0) ] ],
           result: true
         },
         {
@@ -169,7 +169,7 @@
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ $SC.String("102030") ],
+          args  : [ $$("102030") ],
           result: false
         },
       ]);
@@ -352,7 +352,7 @@
         {
           source: [ 10, 20, 30, 40, 50 ],
           args  : [ 25 ],
-          result: $SC.Float(1.5)
+          result: $$(1.5)
         },
       ]);
     });
@@ -585,21 +585,21 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object({ value: this.spy() });
+      $function = $$({ value: this.spy() });
 
       instance = this.createInstance([ 10, 20, 30, 40 ]);
 
       test = instance.pairsDo($function);
       expect($function.value).to.callCount(2);
-      expect($function.value.args[0]).js.to.eql([ 10, 20, 0 ]);
-      expect($function.value.args[1]).js.to.eql([ 30, 40, 2 ]);
+      expect($function.value.args[0]).to.eql($$([ 10, 20, 0 ])._);
+      expect($function.value.args[1]).to.eql($$([ 30, 40, 2 ])._);
       expect(test).to.equal(instance);
     }));
     it("#keysValuesDo", sinon.test(function() {
       var instance, test;
       var $function;
 
-      $function = sc.test.object();
+      $function = $$();
 
       instance = this.createInstance([ 10, 20, 30, 40 ]);
       this.stub(instance, "pairsDo", sc.test.func);
@@ -612,7 +612,7 @@
       var instance, test;
       var $function;
 
-      $function = sc.test.object({
+      $function = $$({
         value: this.spy()
       });
 
@@ -620,9 +620,9 @@
 
       test = instance.doAdjacentPairs($function);
       expect($function.value).to.callCount(3);
-      expect($function.value.args[0]).js.to.eql([ 10, 20, 0 ]);
-      expect($function.value.args[1]).js.to.eql([ 20, 30, 1 ]);
-      expect($function.value.args[2]).js.to.eql([ 30, 40, 2 ]);
+      expect($function.value.args[0]).to.eql($$([ 10, 20, 0 ])._);
+      expect($function.value.args[1]).to.eql($$([ 20, 30, 1 ])._);
+      expect($function.value.args[2]).to.eql($$([ 30, 40, 2 ])._);
       expect(test).to.equal(instance);
     }));
     it("#separate", function() {
@@ -634,7 +634,7 @@
         {
           source: [ 10, 20, 30, 40, 50 ],
           args  : [ function($a) {
-            return $SC.Boolean($a.valueOf() === 20);
+            return $$($a.valueOf() === 20);
           } ],
           result: [ [ 10, 20 ], [ 30, 40, 50 ] ]
         },
@@ -649,7 +649,7 @@
         {
           source: [ 10, 20, 30, 40, 50 ],
           args  : [ function($a) {
-            return $SC.Boolean($a.valueOf() === 20);
+            return $$($a.valueOf() === 20);
           } ],
           result: [ [ 10 ], [ 30, 40, 50 ] ]
         },
@@ -686,9 +686,9 @@
       var test, instance, i = 0;
       var $probability;
 
-      $probability = sc.test.object({
+      $probability = $$({
         coin: function() {
-          return $SC.Boolean(i++ === 2);
+          return $$(i++ === 2);
         }
       });
 
@@ -742,7 +742,7 @@
         {
           source: [ [ 10, 20 ], [ 30, [ 40, 50 ] ] ],
           args  : [ function($item) {
-            return $SC.Boolean($item._[0].valueOf() === 30);
+            return $$($item._[0].valueOf() === 30);
           } ],
           result: [ [ 10, 20 ], 30, [ 40, 50 ] ]
         },
@@ -916,7 +916,9 @@
         this.stub(instance, "performUnaryOp", sc.test.func);
 
         test = instance[methodName]();
-        expect(instance.performUnaryOp.args[0]).js.to.eql([ methodName ]);
+        expect(instance.performUnaryOp.args[0]).to.eql($$([
+          $.Symbol(methodName)
+        ])._);
         expect(instance.performUnaryOp).to.be.calledLastIn(test);
       }));
     });
@@ -972,14 +974,16 @@
     ].forEach(function(methodName) {
       it("#" + methodName, sinon.test(function() {
         var instance, test;
-        var $aNumber = sc.test.object(), $adverb = sc.test.object();
+        var $aNumber = $$(), $adverb = $$();
 
         instance = this.createInstance();
         this.stub(instance, "performBinaryOp", sc.test.func);
 
         test = instance[methodName]($aNumber, $adverb);
         expect(instance.performBinaryOp).to.callCount(1);
-        expect(instance.performBinaryOp.args[0]).js.to.eql([ methodName, $aNumber, $adverb ]);
+        expect(instance.performBinaryOp.args[0]).to.eql($$([
+          $.Symbol(methodName), $aNumber, $adverb
+        ])._);
         expect(instance.performBinaryOp).to.be.calledLastIn(test);
       }));
     });
@@ -988,13 +992,13 @@
       var instance, test;
       var $elem, $aSelector, $returned;
 
-      $elem = sc.test.object({
+      $elem = $$({
         perform: this.spy(function() {
           return $returned;
         })
       });
-      $aSelector = sc.test.object();
-      $returned = sc.test.object();
+      $aSelector = $$();
+      $returned = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1007,11 +1011,11 @@
       var instance, test;
       var $aSelector, $theOperand, $adverb;
 
-      $aSelector  = sc.test.object();
-      $theOperand = sc.test.object({
+      $aSelector  = $$();
+      $theOperand = $$({
         performBinaryOpOnSeqColl: this.spy(sc.test.func)
       });
-      $adverb = sc.test.object();
+      $adverb = $$();
 
       instance = this.createInstance();
 
@@ -1142,9 +1146,9 @@
       var instance;
       var $aSelector, $theOperand, $adverb;
 
-      $aSelector  = $SC.Symbol("+");
-      $theOperand = sc.test.object();
-      $adverb     = $SC.Symbol("error");
+      $aSelector  = $$("\\+");
+      $theOperand = $$();
+      $adverb     = $$("\\error");
 
       instance = this.createInstance();
 
@@ -1156,15 +1160,15 @@
       var instance, test;
       var $elem, $aSelector, $aNumber, $adverb, $returned;
 
-      $elem      = sc.test.object();
-      $aSelector = sc.test.object();
-      $aNumber   = sc.test.object({
+      $elem      = $$();
+      $aSelector = $$();
+      $aNumber   = $$({
         perform: this.spy(function() {
           return $returned;
         })
       });
-      $adverb   = sc.test.object();
-      $returned = sc.test.object();
+      $adverb   = $$();
+      $returned = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1177,15 +1181,15 @@
       var instance, test;
       var $elem, $aSelector, $aComplex, $adverb, $returned;
 
-      $elem      = sc.test.object();
-      $aSelector = sc.test.object();
-      $aComplex  = sc.test.object({
+      $elem      = $$();
+      $aSelector = $$();
+      $aComplex  = $$({
         perform: this.spy(function() {
           return $returned;
         })
       });
-      $adverb   = sc.test.object();
-      $returned = sc.test.object();
+      $adverb   = $$();
+      $returned = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1198,14 +1202,14 @@
       var instance, test;
       var $elem, $denominator, $fasterBetter, $returned;
 
-      $elem = sc.test.object({
+      $elem = $$({
         asFraction: this.spy(function() {
           return $returned;
         })
       });
-      $denominator  = sc.test.object();
-      $fasterBetter = sc.test.object();
-      $returned     = sc.test.object();
+      $denominator  = $$();
+      $fasterBetter = $$();
+      $returned     = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1221,7 +1225,7 @@
     it("#ascii", function() {
       testCase(this, [
         {
-          source: [ $SC.Char("a"), $SC.Char("b"), $SC.Char("c") ],
+          source: [ $$("$a"), $$("$b"), $$("$c") ],
           result: [ 97, 98, 99 ]
         },
       ]);
@@ -1247,14 +1251,14 @@
       var $arg1, $arg2;
 
       spy = this.spy(sc.test.func);
-      $arg1 = sc.test.object();
-      $arg2 = sc.test.object();
+      $arg1 = $$();
+      $arg2 = $$();
       this.stub(sc.lang.klass.utils, "getMethod")
         .withArgs("Object", "multiChannelPerform").returns(spy);
 
       instance = this.createInstance();
       test = instance.multiChannelPerform($arg1, $arg2);
-      expect(test).to.be.a("SCArray").to.eqls([]);
+      expect(test).to.be.a("SCArray").to.eql([]);
       expect(sc.lang.klass.utils.getMethod).to.be.not.called;
 
       instance = this.createInstance([ 1, 2, 3 ]);
@@ -1301,17 +1305,17 @@
         var instance, test;
         var $arg1, $arg2, $arg3;
 
-        $arg1 = sc.test.object();
-        $arg2 = sc.test.object();
-        $arg3 = sc.test.object();
+        $arg1 = $$();
+        $arg2 = $$();
+        $arg3 = $$();
 
         instance = this.createInstance();
         this.stub(instance, "multiChannelPerform", sc.test.func);
 
         test = instance[methodName]($arg1, $arg2, $arg3);
-        expect(instance.multiChannelPerform.args[0]).js.to.eql([
-          methodName, $arg1, $arg2, $arg3
-        ]);
+        expect(instance.multiChannelPerform.args[0]).to.eql($$([
+          $.Symbol(methodName), $arg1, $arg2, $arg3
+        ])._);
         expect(instance.multiChannelPerform).to.be.calledLastIn(test);
       }));
     });
@@ -1370,7 +1374,7 @@
 
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
       test = instance.swap(
-        $SC.Integer(1), $SC.Integer(3)
+        $$(1), $$(3)
       );
       expect(test).to.equal(instance)
         .that.is.a("SCArray").and.eqls([ 1, 4, 3, 2, 5 ]);
@@ -1403,7 +1407,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
 
       test = instance.wrapAt(
-        $SC.Integer(7)
+        $$(7)
       );
       expect(test).to.be.a("SCInteger").that.equals(3);
     });
@@ -1413,7 +1417,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
 
       test = instance.wrapPut(
-        $SC.Integer(7), $SC.Integer(0)
+        $$(7), $$(0)
       );
       expect(test).to.equals(instance)
         .that.is.a("SCArray").and.eqls([ 1, 2, 0, 4, 5 ]);

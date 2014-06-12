@@ -3,14 +3,16 @@
 
   require("./Boolean");
 
-  var $SC = sc.lang.$SC;
+  var $$ = sc.test.object;
+
+  var $ = sc.lang.$;
 
   describe("SCBoolean", function() {
     var SCBoolean;
     before(function() {
-      SCBoolean = $SC("Boolean");
+      SCBoolean = $("Boolean");
       this.createInstance = function(value) {
-        var instance = $SC.Boolean(!!value);
+        var instance = $.Boolean(!!value);
         var testMethod = this.test.title.substr(1);
         sc.test.setSingletonMethod(instance, "Boolean", testMethod);
         return instance;
@@ -43,8 +45,8 @@
       var instance, test, spy;
 
       spy = this.spy(sc.test.func);
-      this.stub($SC, "Boolean", function() {
-        return sc.test.object({
+      this.stub($, "Boolean", function() {
+        return $$({
           not: spy
         });
       });
@@ -85,9 +87,9 @@
   describe("SCTrue", function() {
     var SCTrue;
     before(function() {
-      SCTrue = $SC("True");
+      SCTrue = $("True");
       this.createInstance = function() {
-        return $SC.True();
+        return $.True();
       };
     });
     it(".new", function() {
@@ -99,10 +101,10 @@
       var instance, test;
       var $trueFunc, $falseFunc;
 
-      $trueFunc = sc.test.object({
+      $trueFunc = $$({
         value: sc.test.func
       });
-      $falseFunc = sc.test.object({
+      $falseFunc = $$({
         value: function() {
           throw new Error("not reached");
         }
@@ -125,7 +127,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 
@@ -142,7 +144,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 
@@ -159,7 +161,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: function() {
           return this;
         },
@@ -192,9 +194,9 @@
   describe("SCFalse", function() {
     var SCFalse;
     before(function() {
-      SCFalse = $SC("False");
+      SCFalse = $("False");
       this.createInstance = function() {
-        return $SC.False();
+        return $.False();
       };
     });
     it(".new", function() {
@@ -206,12 +208,12 @@
       var instance, test;
       var $trueFunc, $falseFunc;
 
-      $trueFunc = sc.test.object({
+      $trueFunc = $$({
         value: function() {
           throw new Error("not reached");
         }
       });
-      $falseFunc = sc.test.object({
+      $falseFunc = $$({
         value: sc.test.func
       });
 
@@ -235,7 +237,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 
@@ -252,7 +254,7 @@
       var instance, test;
       var $that;
 
-      $that = sc.test.object({
+      $that = $$({
         value: sc.test.func
       });
 

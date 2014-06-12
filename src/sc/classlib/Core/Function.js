@@ -4,13 +4,12 @@ SCScript.install(function(sc) {
   require("./AbstractFunction");
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
-    var BOOL = utils.BOOL;
     var $nil = utils.$nil;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     // TODO: implements def
 
@@ -34,20 +33,44 @@ SCScript.install(function(sc) {
     };
 
     spec.update = function() {
-      return this._.apply(this, arguments);
+      return this._.resume(arguments);
     };
 
     spec.value = function() {
-      return this._.apply(this, arguments);
+      return this._.resume(arguments);
     };
 
     spec.valueArray = function($args) {
-      return this._.apply(this, $args.asArray()._);
+      return this._.resume($args.asArray()._);
     };
 
-    // TODO: implements valueEnvir
-    // TODO: implements valueArrayEnvir
-    // TODO: implements functionPerformList
+    var envir = function(func, args) {
+      return func._argNames.map(function(name, i) {
+        var val;
+        if (this[i]) {
+          return this[i];
+        }
+        val = $.Environment(name);
+        if (val !== $nil) {
+          return val;
+        }
+      }, args);
+    };
+
+    spec.valueEnvir = function() {
+      var args = envir(this._, arguments);
+      return this._.resume(args);
+    };
+
+    spec.valueArrayEnvir = function($args) {
+      var args = envir(this._, $args.asArray()._);
+      return this._.resume(args);
+    };
+
+    spec.functionPerformList = fn(function($selector, $arglist) {
+      return this[$selector.__str__()].apply(this, $arglist.asArray()._);
+    }, "selector; arglist");
+
     // TODO: implements valueWithEnvir
     // TODO: implements performWithEnvir
     // TODO: implements performKeyValuePairs
@@ -58,7 +81,7 @@ SCScript.install(function(sc) {
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $SC("Routine").new(this);
+      return $("Routine").new(this);
     };
 
     spec.dup = fn(function($n) {
@@ -103,7 +126,7 @@ SCScript.install(function(sc) {
       args.unshift(this);
 
       for (i = 0, imax = args.length >> 1; i < imax; ++i) {
-        if (BOOL(args[i * 2].value())) {
+        if (args[i * 2].value().__bool__()) {
           return args[i * 2 + 1].value();
         }
       }
@@ -116,11 +139,11 @@ SCScript.install(function(sc) {
     };
 
     spec.r = function() {
-      return $SC("Routine").new(this);
+      return $("Routine").new(this);
     };
 
     spec.p = function() {
-      return $SC("Prout").new(this);
+      return $("Prout").new(this);
     };
 
     // TODO: implements matchItem
@@ -128,12 +151,16 @@ SCScript.install(function(sc) {
 
     spec.flop = function() {
       var $this = this;
-      // if(def.argNames.isNil) { ^this };
-      return $SC.Function(function() {
-        var $$args = $SC.Array(slice.call(arguments));
-        return $$args.flop().collect($SC.Function(function($_) {
-          return $this.valueArray($_);
-        }));
+
+      return $.Function(function() {
+        return [ function() {
+          var $$args = $.Array(slice.call(arguments));
+          return $$args.flop().collect($.Function(function() {
+            return [ function($_) {
+              return $this.valueArray($_);
+            } ];
+          }));
+        } ];
       });
     };
 

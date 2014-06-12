@@ -8,22 +8,36 @@
         margin: 0; padding: 0;
       }
     </style>
+    <link rel="stylesheet" href="../assets/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="../assets/codemirror.css"/>
     <link rel="stylesheet" href="./sc-mode.css"/>
-    <style>
-      .CodeMirror {
-        font-family: Monaco, Consolas, "Lucida Console", monospace;
-        font-size: 14px;
-        height: 100%
-      }
-      @-webkit-keyframes blink {
-        5% { background-color: #a0d8ef; }
-      100% { background-color: #ffffff; }
-      }
-    </style>
+    <link rel="stylesheet" href="./index.css"/>
   </head>
   <body>
     <textarea id="editor"></textarea>
+    <div id="sidemenu">
+      <h1>SCScript</h1>
+      <div>JavaScript port of SuperCollider</div>
+      <h2>SHORTCUT</h2>
+      <ul class="win">
+        <li><u>Ctrl+Enter</u>: Evaluate Selection, Line or Region</li>
+        <li><u>Ctrl+B</u>: Boot Server</li>
+        <li><u>Ctrl+.</u>: Stop</li>
+      </ul>
+      <ul class="mac">
+        <li><u>Cmd+Enter</u>: Evaluate Selection, Line or Region</li>
+        <li><u>Cmd+B</u>: Boot Server</li>
+        <li><u>Cmd+.</u>: Stop</li>
+      </ul>
+      <h2>EXAMPLES</h2>
+      <h2>SEE ALSO</h2>
+      <ul>
+        <li><i class="fa fa-github"></i><a href="https://github.com/mohayonao/SCScript" target="github">GitHub Repository</a></li>
+        <li><i class="fa fa-cube"></i><a href="http://doc.sccode.org" target="schelp">SuperCollider Help</a></h1>
+      </ul>
+    </div>
+    <i id="menualt" class="fa fa-bars"><i>
+    <script src="../assets/jquery.min.js"></script>
     <script src="../assets/codemirror.js"></script>
     <script src="../assets/matchbrackets.js"></script>
     <script src="../build/scscript.js"></script>

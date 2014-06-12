@@ -2,16 +2,16 @@ SCScript.install(function(sc) {
   "use strict";
 
   var slice = [].slice;
-  var fn    = sc.lang.fn;
-  var $SC   = sc.lang.$SC;
+  var $  = sc.lang.$;
+  var fn = sc.lang.fn;
+  var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
-    var BOOL   = utils.BOOL;
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int_1 = utils.$int_1;
-    var SCArray = $SC("Array");
+    var SCArray = $("Array");
 
     spec.__num__ = function() {
       throw new Error("Wrong Type");
@@ -95,15 +95,15 @@ SCScript.install(function(sc) {
     };
 
     spec.isKindOf = function($aClass) {
-      return $SC.Boolean(this instanceof $aClass.__Spec);
+      return $.Boolean(this instanceof $aClass.__Spec);
     };
 
     spec.isMemberOf = function($aClass) {
-      return $SC.Boolean(this.__class === $aClass);
+      return $.Boolean(this.__class === $aClass);
     };
 
     spec.respondsTo = fn(function($aSymbol) {
-      return $SC.Boolean(typeof this[$aSymbol.__sym__()] === "function");
+      return $.Boolean(typeof this[$aSymbol.__sym__()] === "function");
     }, "aSymbol");
 
     // TODO: implements performMsg
@@ -185,9 +185,11 @@ SCScript.install(function(sc) {
       var $this = this;
       var $array, i, imax;
 
-      if (BOOL($n.isSequenceableCollection())) {
-        return SCArray.fillND($n, $SC.Function(function() {
-          return $this.copy();
+      if ($n.isSequenceableCollection().__bool__()) {
+        return SCArray.fillND($n, $.Function(function() {
+          return [ function() {
+            return $this.copy();
+          } ];
         }));
       }
 
@@ -221,11 +223,11 @@ SCScript.install(function(sc) {
     };
 
     spec["==="] = function($obj) {
-      return $SC.Boolean(this === $obj);
+      return $.Boolean(this === $obj);
     };
 
     spec["!=="] = function($obj) {
-      return $SC.Boolean(this !== $obj);
+      return $.Boolean(this !== $obj);
     };
 
     // TODO: implements equals
@@ -233,19 +235,19 @@ SCScript.install(function(sc) {
     // TODO: implements instVarHash
 
     spec.basicHash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec.hash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec.identityHash = function() {
-      return $SC.Integer(this.__hash);
+      return $.Integer(this.__hash);
     };
 
     spec["->"] = function($obj) {
-      return $SC("Association").new(this, $obj);
+      return $("Association").new(this, $obj);
     };
 
     spec.next = utils.nop;
@@ -257,7 +259,7 @@ SCScript.install(function(sc) {
     }, "inval");
 
     spec.iter = function() {
-      return $SC("OneShotStream").new(this);
+      return $("OneShotStream").new(this);
     };
 
     spec.stop = utils.nop;
@@ -334,11 +336,6 @@ SCScript.install(function(sc) {
     };
 
     // TODO: implements doesNotUnderstand
-    spec._doesNotUnderstand = function(methodName) {
-      throw new Error("RECEIVER " + this.__str__() + ": " +
-                      "Message '" + methodName + "' not understood.");
-    };
-
     // TODO: implements shouldNotImplement
     // TODO: implements outOfContextReturn
     // TODO: implements immutableError
@@ -354,7 +351,7 @@ SCScript.install(function(sc) {
     };
 
     spec.asCollection = function() {
-      return $SC.Array([ this ]);
+      return $.Array([ this ]);
     };
 
     spec.asSymbol = function() {
@@ -362,7 +359,7 @@ SCScript.install(function(sc) {
     };
 
     spec.asString = function() {
-      return $SC.String(String(this));
+      return $.String(String(this));
     };
 
     // TODO: implements asCompileString
@@ -382,11 +379,11 @@ SCScript.install(function(sc) {
     spec.dereference = utils.nop;
 
     spec.reference = function() {
-      return $SC.Ref(this);
+      return $.Ref(this);
     };
 
     spec.asRef = function() {
-      return $SC.Ref(this);
+      return $.Ref(this);
     };
 
     spec.asArray = function() {
@@ -420,11 +417,11 @@ SCScript.install(function(sc) {
         a = [ this ];
       } else {
         a = [
-          this.bubble($depth, $SC.Integer(levels - 1))
+          this.bubble($depth, $.Integer(levels - 1))
         ];
       }
 
-      return $SC.Array(a);
+      return $.Array(a);
     }, "depth; levels");
 
     spec.obtain = fn(function($index, $default) {
@@ -444,7 +441,7 @@ SCScript.install(function(sc) {
     }, "index; item; default");
 
     spec.addFunc = fn(function($$functions) {
-      return $SC("FunctionList").new(this ["++"] ($$functions));
+      return $("FunctionList").new(this ["++"] ($$functions));
     }, "*functions");
 
     spec.removeFunc = function($function) {
@@ -467,10 +464,14 @@ SCScript.install(function(sc) {
     spec.while = fn(function($body) {
       var $this = this;
 
-      $SC.Function(function() {
-        return $this.value();
-      }).while($SC.Function(function() {
-        return $body.value();
+      $.Function(function() {
+        return [ function() {
+          return $this.value();
+        } ];
+      }).while($.Function(function() {
+        return [ function() {
+          return $body.value();
+        } ];
       }));
 
       return this;
@@ -481,7 +482,7 @@ SCScript.install(function(sc) {
 
       args = slice.call(arguments);
       for (i = 0, imax = args.length >> 1; i < imax; i++) {
-        if (BOOL(this ["=="] (args[i * 2]))) {
+        if (this ["=="] (args[i * 2]).__bool__()) {
           return args[i * 2 + 1].value();
         }
       }
@@ -494,7 +495,8 @@ SCScript.install(function(sc) {
     };
 
     spec.yield = function() {
-      // TODO: implements yield
+      bytecode.yield(this);
+      return this;
     };
 
     // TODO: implements alwaysYield
@@ -521,35 +523,35 @@ SCScript.install(function(sc) {
     // TODO: implements freeze
 
     spec["&"] = function($that) {
-      return this.bitAnd($that);
+      return this.$("bitAnd", [ $that ]);
     };
 
     spec["|"] = function($that) {
-      return this.bitOr($that);
+      return this.$("bitOr", [ $that ]);
     };
 
     spec["%"] = function($that) {
-      return this.mod($that);
+      return this.$("mod", [ $that ]);
     };
 
     spec["**"] = function($that) {
-      return this.pow($that);
+      return this.$("pow", [ $that ]);
     };
 
     spec["<<"] = function($that) {
-      return this.leftShift($that);
+      return this.$("leftShift", [ $that ]);
     };
 
     spec[">>"] = function($that) {
-      return this.rightShift($that);
+      return this.$("rightShift", [ $that ]);
     };
 
     spec["+>>"] = function($that) {
-      return this.unsignedRightShift($that);
+      return this.$("unsignedRightShift" , [ $that ]);
     };
 
     spec["<!"] = function($that) {
-      return this.firstArg($that);
+      return this.$("firstArg", [ $that ]);
     };
 
     spec.asInt = function() {
@@ -557,34 +559,34 @@ SCScript.install(function(sc) {
     };
 
     spec.blend = fn(function($that, $blendFrac) {
-      return this ["+"] ($blendFrac ["*"] ($that ["-"] (this)));
+      return this.$("+", [ $blendFrac.$("*", [ $that.$("-", [ this ]) ]) ]);
     }, "that; blendFrac=0.5");
 
     spec.blendAt = fn(function($index, $method) {
       var $iMin;
 
-      $iMin = $index.roundUp($int_1).asInteger().__dec__();
+      $iMin = $index.$("roundUp", [ $int_1 ]).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
-        $index.absdif($iMin)
+        $index.$("absdif", [ $iMin ])
       );
     }, "index; method=\\clipAt");
 
     spec.blendPut = fn(function($index, $val, $method) {
       var $iMin, $ratio;
 
-      $iMin = $index.floor().asInteger();
-      $ratio = $index.absdif($iMin);
-      this.perform($method, $iMin, $val ["*"] ($int_1 ["-"] ($ratio)));
-      this.perform($method, $iMin.__inc__(), $val ["*"] ($ratio));
+      $iMin = $index.$("floor").asInteger();
+      $ratio = $index.$("absdif", [ $iMin ]);
+      this.perform($method, $iMin, $val.$("*", [ $int_1 ["-"] ($ratio) ]));
+      this.perform($method, $iMin.__inc__(), $val.$("*", [ $ratio ]));
 
       return this;
     }, "index; val; method=\\wrapPut");
 
     spec.fuzzyEqual = fn(function($that, $precision) {
-      return $SC.Float(0.0).max(
-        $SC.Float(1.0) ["-"] (
-          (this ["-"] ($that).abs()) ["/"] ($precision)
+      return $.Float(0.0).max(
+        $.Float(1.0) ["-"] (
+          this.$("-", [ $that ]).$("abs").$("/", [ $precision ])
         )
       );
     }, "that; precision=1.0");
@@ -593,17 +595,21 @@ SCScript.install(function(sc) {
     spec.numChannels = utils.alwaysReturn$int_1;
 
     spec.pair = fn(function($that) {
-      return $SC.Array([ this, $that ]);
+      return $.Array([ this, $that ]);
     }, "that");
 
     spec.pairs = fn(function($that) {
       var $list;
 
-      $list = $SC.Array();
-      this.asArray().do($SC.Function(function($a) {
-        $that.asArray().do($SC.Function(function($b) {
-          $list = $list.add($a.asArray() ["++"] ($b));
-        }));
+      $list = $.Array();
+      this.asArray().do($.Function(function() {
+        return [ function($a) {
+          $that.asArray().do($.Function(function() {
+            return [ function($b) {
+              $list = $list.add($a.asArray() ["++"] ($b));
+            } ];
+          }));
+        } ];
       }));
 
       return $list;
@@ -650,7 +656,7 @@ SCScript.install(function(sc) {
 
     spec.asAudioRateInput = function() {
       if (this.rate().__sym__() !== "audio") {
-        return $SC("K2A").ar(this);
+        return $("K2A").ar(this);
       }
       return this;
     };
@@ -685,6 +691,24 @@ SCScript.install(function(sc) {
     // TODO: implements genCurrent
     // TODO: implements $classRedirect
     // TODO: implements help
+
+    spec.processRest = utils.nop;
+
+    spec["[]"] = function($index) {
+      return this.$("at", [ $index ]);
+    };
+
+    spec["[]_"] = function($index, $value) {
+      return this.$("put", [ $index, $value ]);
+    };
+
+    spec["[..]"] = function($first, $second, $last) {
+      return this.$("copySeries", [ $first, $second, $last ]);
+    };
+
+    spec["[..]_"] = function($first, $second, $last, $value) {
+      return this.$("putSeries", [ $first, $second, $last, $value ]);
+    };
   });
 
 });

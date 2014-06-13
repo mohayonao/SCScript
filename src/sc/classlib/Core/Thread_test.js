@@ -11,17 +11,11 @@
     var SCThread;
     before(function() {
       SCThread = $("Thread");
-      this.createInstance = function() {
-        return SCThread.new();
+      this.createInstance = function(func_array) {
+        return SCThread.new($.Function(function() {
+          return func_array || [];
+        }));
       };
-    });
-    it("#valueOf", function() {
-      var instance, test;
-
-      instance = this.createInstance();
-
-      test = instance.valueOf();
-      expect(test).to.equal(instance);
     });
     it("<state", function() {
       var instance, test;
@@ -131,31 +125,116 @@
     var SCRoutine;
     before(function() {
       SCRoutine = $("Routine");
-      this.createInstance = function() {
-        return SCRoutine.new();
+      this.createInstance = function(func_array) {
+        return SCRoutine.new($.Function(function() {
+          return func_array || [];
+        }));
       };
     });
-    it("#valueOf", function() {
-      var instance, test;
+    it(".new", function() {
+      var instance;
 
-      instance = this.createInstance();
+      instance = SCRoutine.new($.Function(function() {
+        return [];
+      }));
+      expect(instance).to.be.a("SCRoutine");
 
-      test = instance.valueOf();
-      expect(test).to.equal(instance);
+      expect(function() {
+        SCRoutine.new($$(1));
+      }, "with not a function").to.throw("Thread.init failed");
     });
     it.skip(".run", function() {
     });
-    it.skip("#next", function() {
+    it("#next", function() {
+      var instance;
+      var $inval;
+
+      $inval = $$();
+
+      instance = this.createInstance([
+        function($inval) {
+          return $inval.yield();
+        },
+        function() {
+          return $$(1).yield();
+        },
+        function() {
+          return $.Function(function() {
+            return [
+              function() {
+                return $$(2).yield();
+              },
+              function() {
+                return $$(3).yield();
+              }
+            ];
+          }).value();
+        },
+        function() {
+          return $$(4).yield();
+        },
+        function() {
+          return $$([ 5, 6, 7 ]).do($$(function($_) {
+            return $_.yield();
+          }));
+        }
+      ]);
+
+      expect(instance.next($inval), 0).to.equal($inval);
+      expect(instance.next($inval), 1).to.be.a("SCInteger").that.equals(1);
+      expect(instance.next($inval), 2).to.be.a("SCInteger").that.equals(2);
+      expect(instance.next($inval), 3).to.be.a("SCInteger").that.equals(3);
+      expect(instance.next($inval), 4).to.be.a("SCInteger").that.equals(4);
+      expect(instance.next($inval), 5).to.be.a("SCInteger").that.equals(5);
+      expect(instance.next($inval), 6).to.be.a("SCInteger").that.equals(6);
+      expect(instance.next($inval), 7).to.be.a("SCInteger").that.equals(7);
+      expect(instance.next($inval), 8).to.be.a("SCNil");
     });
-    it.skip("#value", function() {
+    it("#value", function() {
+      var instance = this.createInstance();
+      expect(instance.value).to.equal(instance.next);
     });
-    it.skip("#resume", function() {
+    it("#resume", function() {
+      var instance = this.createInstance();
+      expect(instance.resume).to.equal(instance.next);
     });
-    it.skip("#run", function() {
+    it("#run", function() {
+      var instance = this.createInstance();
+      expect(instance.run).to.equal(instance.next);
     });
-    it.skip("#valueArray", function() {
+    it("#valueArray", function() {
+      var instance = this.createInstance();
+      expect(instance.valueArray).to.equal(instance.value);
     });
-    it.skip("#reset", function() {
+    it("#reset", function() {
+      var instance;
+
+      instance = this.createInstance([
+        function() {
+          return $$([ 1, 2, 3 ]).do($$(function($_) {
+            return $_.yield();
+          }));
+        }
+      ]);
+
+      expect(instance.state(), 0).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(instance.next() , 1).to.be.a("SCInteger").that.equals(1);
+      expect(instance.state(), 2).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.next() , 3).to.be.a("SCInteger").that.equals(2);
+      expect(instance.state(), 4).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.reset(), 5).to.equal(instance);
+      expect(instance.state(), 6).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(instance.next() , 7).to.be.a("SCInteger").that.equals(1);
+      expect(instance.state(), 8).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.next() , 9).to.be.a("SCInteger").that.equals(2);
+      expect(instance.state(),10).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.next() ,11).to.be.a("SCInteger").that.equals(3);
+      expect(instance.state(),12).to.be.a("SCInteger").that.equals(sc.C.STATE_DONE);
+      expect(instance.next() ,13).to.be.a("SCNil");
+      expect(instance.next() ,14).to.be.a("SCNil");
+      expect(instance.reset(),15).to.equal(instance);
+      expect(instance.state(),16).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(instance.next() ,17).to.be.a("SCInteger").that.equals(1);
     });
     it.skip("#stop", function() {
     });

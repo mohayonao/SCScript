@@ -24,7 +24,9 @@
 
     $process = $("Main").new();
     $process._$interpreter = $("Interpreter").new();
-    $process._$mainThread  = $("Thread").new();
+    $process._$mainThread  = $("Thread").new($.Function(function() {
+      return [];
+    }));
 
     main.$currentEnv = $("Environment").new();
 

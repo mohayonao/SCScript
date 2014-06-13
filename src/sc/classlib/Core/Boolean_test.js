@@ -13,9 +13,7 @@
       SCBoolean = $("Boolean");
       this.createInstance = function(value) {
         var instance = $.Boolean(!!value);
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "Boolean", testMethod);
-        return instance;
+        return $$(instance, "Boolean" + this.test.title);
       };
     });
     it("#__bool__", function() {
@@ -44,7 +42,7 @@
     it("#xor", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub($, "Boolean", function() {
         return $$({
           not: spy
@@ -102,7 +100,7 @@
       var $trueFunc, $falseFunc;
 
       $trueFunc = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
       $falseFunc = $$({
         value: function() {
@@ -128,7 +126,7 @@
       var $that;
 
       $that = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -145,7 +143,7 @@
       var $that;
 
       $that = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -165,7 +163,7 @@
         value: function() {
           return this;
         },
-        not: sc.test.func
+        not: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -214,7 +212,7 @@
         }
       });
       $falseFunc = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -238,7 +236,7 @@
       var $that;
 
       $that = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -255,7 +253,7 @@
       var $that;
 
       $that = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
 
       instance = this.createInstance();

@@ -11,13 +11,13 @@
     it("run", sinon.test(function() {
       var test, func;
 
-      func = this.spy(sc.test.func);
+      func = this.spy(sc.test.func());
       test = main.run(func);
       expect(func).to.be.calledWith($);
       expect(func).to.be.calledLastIn(test);
       $process = main.$process;
 
-      func = this.spy(sc.test.func);
+      func = this.spy(sc.test.func());
       test = main.run(func);
       expect(func).to.be.calledWith($);
       expect(func).to.be.calledLastIn(test);

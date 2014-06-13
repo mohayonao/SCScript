@@ -3,6 +3,7 @@
 
   require("./Magnitude");
 
+  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
@@ -13,9 +14,7 @@
       SCMagnitude = $("Magnitude");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "Magnitude", testMethod);
-        return instance;
+        return $$(instance, "Magnitude" + this.test.title);
       };
     });
     it("#==", function() {

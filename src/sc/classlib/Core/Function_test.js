@@ -19,10 +19,6 @@
           return [ func || function() {} ];
         }, def);
       };
-      $("Environment").new().push();
-    });
-    after(function() {
-      $("Environment").pop();
     });
     it.skip("<def", function() {
     });
@@ -67,7 +63,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "value", sc.test.func);
+      this.stub(instance, "value", sc.test.func());
 
       test = instance.choose();
       expect(instance.value).to.be.calledLastIn(test);
@@ -76,7 +72,7 @@
       var instance, test, spy;
       var $arg1, $arg2, $arg3;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $arg1 = $$();
       $arg2 = $$();
       $arg3 = $$();
@@ -90,7 +86,7 @@
     it("#value", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
 
       instance = this.createInstance(spy);
 
@@ -102,7 +98,7 @@
       var instance, test, spy;
       var $arg1, $arg2, $arg3;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $arg1 = $$();
       $arg2 = $$();
       $arg3 = $$();
@@ -118,11 +114,11 @@
       expect(spy).to.be.calledWith($arg1, $arg2, $arg3);
       expect(spy).to.be.calledLastIn(test);
     }));
-    it("#valueEnvir", sinon.test(function() {
+    it("#valueEnvir", sinon.test(sc.test(function() {
       var instance, test, spy;
       var $arg1;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $arg1 = $$();
 
       instance = this.createInstance(spy, "a=1; b=2; c=3");
@@ -132,12 +128,12 @@
 
       expect(spy.args[0]).that.eqls($$([ $arg1, 2, 300 ])._);
       expect(spy).to.be.calledLastIn(test);
-    }));
-    it("#valueArrayEnvir", sinon.test(function() {
+    })));
+    it("#valueArrayEnvir", sinon.test(sc.test(function() {
       var instance, test, spy;
       var $arg1, $arg2;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $arg1 = $$();
       $arg2 = $$(null);
 
@@ -148,12 +144,12 @@
 
       expect(spy.args[0]).that.eqls($$([ $arg1, null, 300 ])._);
       expect(spy).to.be.calledLastIn(test);
-    }));
+    })));
     it("#functionPerformList", sinon.test(function() {
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "value", sc.test.func);
+      this.stub(instance, "value", sc.test.func());
 
       test = instance.functionPerformList($$("\\value"), $$([ 1, 2, 3 ]));
       expect(instance.value.args[0]).to.eql($$([ 1, 2, 3 ])._);
@@ -176,7 +172,7 @@
     it("#asRoutine", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
         new: spy
       }));
@@ -191,7 +187,7 @@
       var instance, test, spy;
       var $n;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $n = $$(3);
       this.stub($("Array"), "fill", spy);
 
@@ -293,7 +289,7 @@
     it("#r", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
         new: spy
       }));
@@ -307,7 +303,7 @@
     it("#p", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Prout").returns($$({
         new: spy
       }));

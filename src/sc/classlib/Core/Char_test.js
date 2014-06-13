@@ -105,7 +105,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "ascii", sc.test.func);
+      this.stub(instance, "ascii", sc.test.func());
 
       test = instance.asUnicode();
       expect(instance.ascii).to.be.calledLastIn(test);

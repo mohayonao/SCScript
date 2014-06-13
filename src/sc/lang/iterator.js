@@ -56,9 +56,12 @@
     iter = {
       hasNext: true,
       next: function() {
-        if (!bytecode.resume().__bool__()) {
+        if (!bytecode.reset().resume().__bool__()) {
           nop_iter(iter);
           return null;
+        }
+        if (bytecode.stopIter()) {
+          nop_iter(iter);
         }
         return [ $nil, $nil ];
       },

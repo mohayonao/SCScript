@@ -137,7 +137,7 @@
       var $value;
 
       $value = $$({
-        at: this.spy(sc.test.func)
+        at: this.spy(sc.test.func())
       });
 
       instance = this.createInstance($value);
@@ -151,7 +151,7 @@
       var $value;
 
       $value = $$({
-        put: this.spy(sc.test.func)
+        put: this.spy(sc.test.func())
       });
 
       instance = this.createInstance($value);

@@ -78,7 +78,7 @@
       var $obj;
 
       $obj = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -109,7 +109,7 @@
       var $function;
 
       $function = $$({
-        value: sc.test.func
+        value: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -199,7 +199,7 @@
     it("#dependants", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("IdentitySet").returns($$({
         new: spy
       }));
@@ -264,7 +264,7 @@
       expect(test).to.be.a("SCNil");
 
       $clock = $$();
-      $clock.nextTimeOnGrid = this.spy(sc.test.func);
+      $clock.nextTimeOnGrid = this.spy(sc.test.func());
 
       test = instance.nextTimeOnGrid($clock);
       expect(test).to.be.a("SCFunction");
@@ -276,7 +276,7 @@
     it("#asQuant", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Quant").returns($$({
         "default": spy
       }));
@@ -441,7 +441,7 @@
     it("#asSpec", sinon.test(function() {
       var instance, test, spy, stub;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       stub = this.stub(sc.lang.klass, "get");
       stub.withArgs("ControlSpec").returns($$({
         new: spy

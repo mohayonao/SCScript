@@ -33,14 +33,15 @@
   };
 
   Bytecode.prototype.reset = function() {
-    this._state   = this._length ? sc.C.STATE_INIT : sc.C.STATE_DONE;
-    this._index   = 0;
-    this._iter    = null;
-    this._yield   = null;
-    this._yielded = false;
-    this._pushed  = false;
-    this._parent  = null;
-    this._child   = null;
+    this._state    = this._length ? sc.C.STATE_INIT : sc.C.STATE_DONE;
+    this._index    = 0;
+    this._iter     = null;
+    this._yield    = null;
+    this._yielded  = false;
+    this._pushed   = false;
+    this._parent   = null;
+    this._child    = null;
+    this._stopIter = false;
     return this;
   };
 
@@ -74,6 +75,7 @@
 
     while (this._index < length) {
       if (iter && this._index === 0) {
+        this.stopIter(false);
         args = iter.next();
         if (args === null) {
           this._state = sc.C.STATE_PENDING;
@@ -126,7 +128,8 @@
     this._index = 0;
     this._state = sc.C.STATE_DONE;
     if (this._iter) {
-      this._iter  = this._iter.clone();
+      this._iter = this._iter.clone();
+      this.stopIter(true);
     }
     if (this._parent) {
       if (this._parent._pushed) {
@@ -169,6 +172,16 @@
 
   Bytecode.prototype.state = function() {
     return this._state;
+  };
+
+  Bytecode.prototype.stopIter = function(value) {
+    if (typeof value === "boolean") {
+      this._stopIter = value;
+      if (this._parent) {
+        this._parent.stopIter(value);
+      }
+    }
+    return this._stopIter;
   };
 
   bytecode.create = function(initializer, def) {

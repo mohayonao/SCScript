@@ -95,7 +95,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "clear", sc.test.func);
+      this.stub(instance, "clear", sc.test.func());
 
       test = instance.makeEmpty();
       expect(instance.clear).to.be.called;
@@ -198,10 +198,10 @@
           source: [ 1, 2, 3 ],
           result: SCSet.newFrom($$([ 1, 2, 3 ]))
         },
-        // {
-        //   source: [ 1, [ 2, 3 ] ],
-        //   result: SCSet.newFrom($$([ 1, 2, 3 ]))
-        // },
+        {
+          source: [ 1, [ 2, 3 ] ],
+          result: SCSet.newFrom($$([ 1, 2, 3 ]))
+        },
       ]);
     });
     it("#sect", function() {
@@ -265,7 +265,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "sect", sc.test.func);
+      this.stub(instance, "sect", sc.test.func());
 
       test = instance ["&"] ($that);
       expect(instance.sect).to.be.calledWith($that);
@@ -278,7 +278,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "union", sc.test.func);
+      this.stub(instance, "union", sc.test.func());
 
       test = instance ["|"] ($that);
       expect(instance.union).to.be.calledWith($that);
@@ -291,7 +291,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "difference", sc.test.func);
+      this.stub(instance, "difference", sc.test.func());
 
       test = instance ["-"] ($that);
       expect(instance.difference).to.be.calledWith($that);
@@ -304,7 +304,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "symmetricDifference", sc.test.func);
+      this.stub(instance, "symmetricDifference", sc.test.func());
 
       test = instance ["--"] ($that);
       expect(instance.symmetricDifference).to.be.calledWith($that);

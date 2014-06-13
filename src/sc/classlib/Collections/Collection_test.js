@@ -17,9 +17,7 @@
       SCArray = $("Array");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source||[]).map($$), !!immutable);
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "Collection", testMethod);
-        return instance;
+        return $$(instance, "Collection" + this.test.title);
       };
 
       $int3   = $$(3);
@@ -106,7 +104,7 @@
       $index = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "at", sc.test.func);
+      this.stub(instance, "at", sc.test.func());
 
       test = instance ["@"] ($index);
       expect(instance.at).to.be.calledWith($index);
@@ -379,7 +377,7 @@
       $item = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "includes", sc.test.func);
+      this.stub(instance, "includes", sc.test.func());
 
       test = instance.matchItem($item);
       expect(instance.includes).to.be.calledWith($item);
@@ -392,7 +390,7 @@
       $function = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "collectAs", sc.test.func);
+      this.stub(instance, "collectAs", sc.test.func());
 
       test = instance.collect($function);
       expect(instance.collectAs).to.be.calledWith($function, SCArray);
@@ -405,7 +403,7 @@
       $function = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "selectAs", sc.test.func);
+      this.stub(instance, "selectAs", sc.test.func());
 
       test = instance.select($function);
       expect(instance.selectAs).to.be.calledWith($function, SCArray);
@@ -418,7 +416,7 @@
       $function = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "rejectAs", sc.test.func);
+      this.stub(instance, "rejectAs", sc.test.func());
 
       test = instance.reject($function);
       expect(instance.rejectAs).to.be.calledWith($function, SCArray);
@@ -530,7 +528,7 @@
       spy1   = this.spy($elem1, "odd");
       spy2   = this.spy($elem2, "odd");
       spy3   = this.spy($elem3, "odd");
-      $selector = $.Symbol("odd");
+      $selector = $$("\\odd");
       $arg1     = $$();
       $arg2     = $$();
 
@@ -553,7 +551,7 @@
       spy1   = this.spy($elem1, "odd");
       spy2   = this.spy($elem2, "odd");
       spy3   = this.spy($elem3, "odd");
-      $selector = $.Symbol("odd");
+      $selector = $$("\\odd");
       $arg1     = $$();
       $arg2     = $$();
 
@@ -576,7 +574,7 @@
       spy1   = this.spy($elem1, "odd");
       spy2   = this.spy($elem2, "odd");
       spy3   = this.spy($elem3, "odd");
-      $selector = $.Symbol("odd");
+      $selector = $$("\\odd");
       $arg1     = $$();
       $arg2     = $$();
 
@@ -601,7 +599,7 @@
       spy1   = this.spy($elem1, "isPositive");
       spy2   = this.spy($elem2, "isPositive");
       spy3   = this.spy($elem3, "isPositive");
-      $selector = $.Symbol("isPositive");
+      $selector = $$("\\isPositive");
       $arg1     = $$();
       $arg2     = $$();
 
@@ -626,7 +624,7 @@
       spy1   = this.spy($elem1, "isPositive");
       spy2   = this.spy($elem2, "isPositive");
       spy3   = this.spy($elem3, "isPositive");
-      $selector = $.Symbol("isPositive");
+      $selector = $$("\\isPositive");
       $arg1     = $$();
       $arg2     = $$();
 
@@ -1085,7 +1083,7 @@
       $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func);
+      $addAll = this.spy(sc.test.func());
       this.stub(SCArray, "new", $new);
 
       instance = this.createInstance([ 1, 2, 3 ]);
@@ -1102,7 +1100,7 @@
       $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func);
+      $addAll = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Bag").returns($$({
         new: $new
       }));
@@ -1121,7 +1119,7 @@
       $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func);
+      $addAll = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("List").returns($$({
         new: $new
       }));
@@ -1140,7 +1138,7 @@
       $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func);
+      $addAll = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Set").returns($$({
         new: $new
       }));
@@ -1159,7 +1157,7 @@
       $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func);
+      $addAll = this.spy(sc.test.func());
       $function = $$();
       this.stub(sc.lang.klass, "get").withArgs("SortedList").returns($$({
         new: $new

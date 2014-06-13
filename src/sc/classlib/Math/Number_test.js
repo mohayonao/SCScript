@@ -14,9 +14,7 @@
       SCNumber = $("Number");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "Number", testMethod);
-        return instance;
+        return $$(instance, "Number" + this.test.title);
       };
     });
     it("#isNumber", function() {
@@ -74,7 +72,7 @@
       var $elem, $aSelector, $aSeqColl, $adverb;
 
       $elem = $$({
-        perform: this.spy(sc.test.func)
+        perform: this.spy(sc.test.func())
       });
       $aSelector = $$();
       $aSeqColl = $$({

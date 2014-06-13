@@ -344,6 +344,16 @@
       expect(f.value(),27).to.be.a("SCNil");
       expect(state(f) ,28).to.equals(sc.C.STATE_DONE);
     });
+    it("function$while", sinon.test(function() {
+      var i = 0, spy;
+
+      spy = this.spy();
+      $$(function() {
+        return $$(i++ < 3);
+      }).while($$(spy)).value();
+
+      expect(spy).to.callCount(3);
+    }));
   });
 
 })();

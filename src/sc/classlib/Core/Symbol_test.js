@@ -67,7 +67,7 @@
       var $obj;
 
       $obj = $$({
-        ascii: sc.test.func
+        ascii: sc.test.func()
       });
 
       instance = this.createInstance();

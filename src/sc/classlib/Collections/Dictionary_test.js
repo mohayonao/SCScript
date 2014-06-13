@@ -29,11 +29,7 @@
     it("#$newFrom", function() {
       var instance;
 
-      instance = SCDictionary.newFrom($$([
-        $$(1), $$(2),
-        $$(3), $$(4),
-      ]));
-
+      instance = SCDictionary.newFrom($$([ 1, 2, 3, 4, ]));
       expect(instance).to.be.a("SCDictionary").that.eqls({ 1:2, 3: 4 });
     });
     it("#at", function() {
@@ -49,7 +45,7 @@
           result: null
         },
         {
-          source: [ $$(0), $$(1), $.Float(0.0), $.Float(1.0) ],
+          source: [ $.Integer(0), $.Integer(1), $.Float(0.0), $.Float(1.0) ],
           args  : [ $$(0) ],
           result: $.Float(1.0)
         },
@@ -111,19 +107,19 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $$(3), $$(null) ],
+          args  : [ 3, null ],
           result: this,
           after : { 1: 2 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $$(3), $$(5) ],
+          args  : [ 3, 5 ],
           result: this,
           after : { 1: 2, 3: 5 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ $$(5), $$(6) ],
+          args  : [ 5, 6 ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         },
@@ -143,7 +139,7 @@
       testCase(this, [
         {
           source: [ 1, 2 ],
-          args  : [ $$( [ 1, 2, 3, 4, 5, 6 ] ) ],
+          args  : [ [ 1, 2, 3, 4, 5, 6 ] ],
           result: this,
           after : { 1: 2, 3: 4, 5: 6 }
         }
@@ -158,7 +154,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ $$([ 2, 3, 5 ]) ],
+          args  : [ [ 2, 3, 5 ] ],
           result: [ 3, 4, 5, 6 ]
         },
       ]);
@@ -547,7 +543,7 @@
       var $event;
 
       $event = $$({
-        putAll: this.spy(sc.test.func)
+        putAll: this.spy(sc.test.func())
       });
 
       instance = this.createInstance();

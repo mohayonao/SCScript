@@ -14,9 +14,7 @@
       SCSimpleNumber = $("SimpleNumber");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "SimpleNumber", testMethod);
-        return instance;
+        return $$(instance, "SimpleNumber" + this.test.title);
       };
     });
     it("#__bool__", function() {
@@ -85,7 +83,7 @@
       var instance, test;
 
       instance = this.createInstance(-10);
-      this.stub(instance, "abs", sc.test.func);
+      this.stub(instance, "abs", sc.test.func());
 
       test = instance.magnitude();
       expect(instance.abs).to.be.calledLastIn(test);
@@ -815,7 +813,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "yield", sc.test.func);
+      this.stub(instance, "yield", sc.test.func());
 
       test = instance.wait();
       expect(instance.yield).to.be.calledLastIn(test);
@@ -838,8 +836,8 @@
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test, spy1, spy2;
 
-      spy1 = this.spy(sc.test.func);
-      spy2 = this.spy(sc.test.func);
+      spy1 = this.spy(sc.test.func());
+      spy2 = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get")
         .withArgs("Silent").returns($$({ ar: spy1 }))
         .withArgs("DC"    ).returns($$({ ar: spy2 }));

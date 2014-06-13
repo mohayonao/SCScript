@@ -16,34 +16,54 @@
     return null;
   };
 
-  var nop_iter = {
-    next: __stop__
+  var nop_iter = function(iter) {
+    iter.hasNext = false;
+    iter.next    = __stop__;
+    return iter;
   };
+  nop_iter.clone = function() {
+    return nop_iter;
+  };
+  nop_iter(nop_iter);
 
   var one_shot_iter = function(value) {
     var iter = {
+      hasNext: true,
       next: function() {
-        iter.next = __stop__;
+        nop_iter(iter);
         return [ value, $int_0 ];
+      },
+      clone: function() {
+        return one_shot_iter(value);
       }
     };
     return iter;
   };
 
   iterator.execute = function(iter, $function) {
-    $function._.setIterator(iter).resume();
+    if (iter.hasNext) {
+      $function._.setIterator(iter).resume();
+    }
   };
 
   iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
-    var bytecode = $function._, iter = {
+    var bytecode, iter;
+
+    bytecode = $function._;
+
+    iter = {
+      hasNext: true,
       next: function() {
-        if (bytecode.resume().__bool__()) {
-          return [ $nil, $nil ];
+        if (!bytecode.resume().__bool__()) {
+          nop_iter(iter);
+          return null;
         }
-        iter.next = __stop__;
-        return null;
+        return [ $nil, $nil ];
+      },
+      clone: function() {
+        return iterator.function$while($function);
       }
     };
 
@@ -52,13 +72,17 @@
 
   var sc_incremental_iter = function($start, $end, $step) {
     var $i = $start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i > $end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ $ret, $.Integer(j++) ];
+      },
+      clone: function() {
+        return sc_incremental_iter($start, $end, $step);
       }
     };
     return iter;
@@ -66,13 +90,17 @@
 
   var sc_decremental_iter = function($start, $end, $step) {
     var $i = $start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i < $end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ $ret, $.Integer(j++) ];
+      },
+      clone: function() {
+        return sc_decremental_iter($start, $end, $step);
       }
     };
     return iter;
@@ -131,13 +159,17 @@
 
   var js_incremental_iter = function(start, end, step, type) {
     var i = start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var ret = i;
         i += step;
         if (i > end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ type(ret), $.Integer(j++) ];
+      },
+      clone: function() {
+        return js_incremental_iter(start, end, step, type);
       }
     };
     return iter;
@@ -145,13 +177,17 @@
 
   var js_decremental_iter = function(start, end, step, type) {
     var i = start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var ret = i;
         i += step;
         if (i < end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ type(ret), $.Integer(j++) ];
+      },
+      clone: function() {
+        return js_decremental_iter(start, end, step, type);
       }
     };
     return iter;
@@ -246,12 +282,16 @@
 
   var list_iter = function(list) {
     var i = 0, iter = {
+      hasNext: true,
       next: function() {
         var $ret = list[i++];
         if (i >= list.length) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ $ret, $.Integer(i - 1) ];
+      },
+      clone: function() {
+        return list_iter(list);
       }
     };
     return iter;

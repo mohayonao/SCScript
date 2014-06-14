@@ -23,7 +23,7 @@
       instance = this.createInstance();
 
       test = instance.__tag;
-      expect(test).to.be.a("JSNumber").that.equals(sc.C.TAG_FLOAT);
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_FLOAT);
     });
     it("#__num__", function() {
       var instance, test;

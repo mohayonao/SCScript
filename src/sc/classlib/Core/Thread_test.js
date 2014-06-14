@@ -23,7 +23,7 @@
       instance = this.createInstance();
 
       test = instance.state();
-      expect(test).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(test).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
     });
     it.skip("<parent", function() {
     });
@@ -217,23 +217,23 @@
         }
       ]);
 
-      expect(instance.state(), 0).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(instance.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(instance.next() , 1).to.be.a("SCInteger").that.equals(1);
-      expect(instance.state(), 2).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
       expect(instance.next() , 3).to.be.a("SCInteger").that.equals(2);
-      expect(instance.state(), 4).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
       expect(instance.reset(), 5).to.equal(instance);
-      expect(instance.state(), 6).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(instance.state(), 6).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(instance.next() , 7).to.be.a("SCInteger").that.equals(1);
-      expect(instance.state(), 8).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.state(), 8).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
       expect(instance.next() , 9).to.be.a("SCInteger").that.equals(2);
-      expect(instance.state(),10).to.be.a("SCInteger").that.equals(sc.C.STATE_SUSPENDED);
+      expect(instance.state(),10).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
       expect(instance.next() ,11).to.be.a("SCInteger").that.equals(3);
-      expect(instance.state(),12).to.be.a("SCInteger").that.equals(sc.C.STATE_DONE);
+      expect(instance.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
       expect(instance.next() ,13).to.be.a("SCNil");
       expect(instance.next() ,14).to.be.a("SCNil");
       expect(instance.reset(),15).to.equal(instance);
-      expect(instance.state(),16).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(instance.state(),16).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(instance.next() ,17).to.be.a("SCInteger").that.equals(1);
     });
     it.skip("#stop", function() {

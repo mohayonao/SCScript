@@ -12,8 +12,8 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case sc.C.TAG_INT:
-      case sc.C.TAG_FLOAT:
+      case sc.TAG_INT:
+      case sc.TAG_FLOAT:
         return $.Boolean(func(this._, $aNumber._));
       }
 

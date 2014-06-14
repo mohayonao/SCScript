@@ -37,10 +37,12 @@
   };
 
   if (typeof global.sc !== "undefined") {
-    global.sc.C = C;
+    Object.keys(C).forEach(function(key) {
+      global.sc[key] = C[key];
+    });
   }
   if (typeof module !== "undefined") {
     module.exports = C;
   }
 
-})(this.self||global);
+})(this.self || global);

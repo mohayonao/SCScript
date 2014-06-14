@@ -108,8 +108,8 @@
 
     if (isSCObject(obj)) {
       switch (obj.__tag) {
-      case sc.C.TAG_FALSE: return "SCBoolean";
-      case sc.C.TAG_TRUE : return "SCBoolean";
+      case sc.TAG_FALSE: return "SCBoolean";
+      case sc.TAG_TRUE : return "SCBoolean";
       }
       return "SC" + obj.__className;
     }

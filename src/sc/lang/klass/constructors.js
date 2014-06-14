@@ -17,7 +17,7 @@
   }
   klass.define("Nil", {
     constructor: SCNil,
-    __tag: sc.C.TAG_NIL
+    __tag: sc.TAG_NIL
   });
 
   function SCSymbol() {
@@ -26,7 +26,7 @@
   }
   klass.define("Symbol", {
     constructor: SCSymbol,
-    __tag: sc.C.TAG_SYM
+    __tag: sc.TAG_SYM
   });
 
   function SCBoolean() {
@@ -42,7 +42,7 @@
   }
   klass.define("True : Boolean", {
     constructor: SCTrue,
-    __tag: sc.C.TAG_TRUE
+    __tag: sc.TAG_TRUE
   });
 
   function SCFalse() {
@@ -51,7 +51,7 @@
   }
   klass.define("False : Boolean", {
     constructor: SCFalse,
-    __tag: sc.C.TAG_FALSE
+    __tag: sc.TAG_FALSE
   });
 
   klass.define("Magnitude", {
@@ -66,7 +66,7 @@
   }
   klass.define("Char : Magnitude", {
     constructor: SCChar,
-    __tag: sc.C.TAG_CHAR
+    __tag: sc.TAG_CHAR
   });
 
   klass.define("Number : Magnitude", {
@@ -87,7 +87,7 @@
   }
   klass.define("Integer : SimpleNumber", {
     constructor: SCInteger,
-    __tag: sc.C.TAG_INT
+    __tag: sc.TAG_INT
   });
 
   function SCFloat() {
@@ -96,7 +96,7 @@
   }
   klass.define("Float : SimpleNumber", {
     constructor: SCFloat,
-    __tag: sc.C.TAG_FLOAT
+    __tag: sc.TAG_FLOAT
   });
 
   klass.define("Collection", {
@@ -130,7 +130,7 @@
   }
   klass.define("Array : ArrayedCollection", {
     constructor: SCArray,
-    __tag: sc.C.TAG_ARRAY
+    __tag: sc.TAG_ARRAY
   });
 
   function SCString() {
@@ -138,7 +138,7 @@
   }
   klass.define("String : RawArray", {
     constructor: SCString,
-    __tag: sc.C.TAG_STR
+    __tag: sc.TAG_STR
   });
 
   klass.define("Set : Collection", {
@@ -184,7 +184,7 @@
   }
   klass.define("Function : AbstractFunction", {
     constructor: SCFunction,
-    __tag: sc.C.TAG_FUNCTION
+    __tag: sc.TAG_FUNCTION
   });
 
   function SCRef() {

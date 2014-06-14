@@ -20,13 +20,13 @@
         return [];
       });
 
-      expect(state(f)  , 0).to.equal(sc.C.STATE_DONE);
+      expect(state(f)  , 0).to.equal(sc.STATE_DONE);
 
       expect(f.resume(), 1).to.be.a("SCNil");
-      expect(state(f)  , 2).to.equal(sc.C.STATE_DONE);
+      expect(state(f)  , 2).to.equal(sc.STATE_DONE);
 
       expect(f.resume(), 3).to.be.a("SCNil");
-      expect(state(f)  , 4).to.equal(sc.C.STATE_DONE);
+      expect(state(f)  , 4).to.equal(sc.STATE_DONE);
     });
     it("break", function() {
       var f;
@@ -42,13 +42,13 @@
         ];
       });
 
-      expect(state(f) , 0).to.equal(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equal(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCNil");
-      expect(state(f) , 2).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 2).to.equal(sc.STATE_DONE);
 
       expect(f.value(), 3).to.be.a("SCNil");
-      expect(state(f) , 4).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 4).to.equal(sc.STATE_DONE);
     });
     it("resume", function() {
       var f;
@@ -57,13 +57,13 @@
         return $$([ $a, $b ]);
       }, "a=0; b=1");
 
-      expect(state(f) , 0).to.equal(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equal(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCArray").to.eql([ 0, 1 ]);
-      expect(state(f) , 2).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 2).to.equal(sc.STATE_DONE);
 
       expect(f.value(), 3).to.be.a("SCArray").to.eql([ 0, 1 ]);
-      expect(state(f) , 4).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 4).to.equal(sc.STATE_DONE);
     });
     it("iterator", function() {
       var f;
@@ -74,13 +74,13 @@
         }));
       });
 
-      expect(state(f) , 0).to.equal(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equal(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCArray").that.eqls([ -1, -2, -3 ]);
-      expect(state(f) , 2).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 2).to.equal(sc.STATE_DONE);
 
       expect(f.value(), 3).to.be.a("SCArray").that.eqls([ -1, -2, -3 ]);
-      expect(state(f) , 4).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 4).to.equal(sc.STATE_DONE);
     });
     it("value", function() {
       var f, passed;
@@ -126,17 +126,17 @@
         ];
       });
 
-      expect(state(f) , 0).to.equal(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equal(sc.STATE_INIT);
 
       passed = [];
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(4);
       expect(passed   , 2).to.eql([ 1, 2, 3, 4 ]);
-      expect(state(f) , 3).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 3).to.equal(sc.STATE_DONE);
 
       passed = [];
       expect(f.value(), 4).to.be.a("SCInteger").that.equals(4);
       expect(passed   , 5).to.eql([ 1, 2, 3, 4 ]);
-      expect(state(f) , 6).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 6).to.equal(sc.STATE_DONE);
     });
     it("delay estimation", function() {
       var f;
@@ -161,21 +161,21 @@
         ];
       });
 
-      expect(state(f) , 0).to.equal(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equal(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 2).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 2).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 3).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) , 4).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 4).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 5).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) , 6).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 6).to.equal(sc.STATE_DONE);
 
       expect(f.value(), 7).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 8).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 8).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 9).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) ,10).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,10).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(),11).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) ,12).to.equal(sc.C.STATE_DONE);
+      expect(state(f) ,12).to.equal(sc.STATE_DONE);
     });
     it("yield", function() {
       var f;
@@ -194,21 +194,21 @@
         ];
       });
 
-      expect(state(f) , 0).to.equal(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equal(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 2).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 2).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 3).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) , 4).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 4).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 5).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) , 6).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 6).to.equal(sc.STATE_DONE);
 
       expect(f.value(), 7).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 8).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 8).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 9).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) ,10).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,10).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(),11).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) ,12).to.equal(sc.C.STATE_DONE);
+      expect(state(f) ,12).to.equal(sc.STATE_DONE);
     });
     it("yield nested", function() {
       var f;
@@ -236,25 +236,25 @@
         ];
       });
 
-      expect(state(f) , 0).to.equal(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equal(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 2).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 2).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 3).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) , 4).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 4).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 5).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) , 6).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 6).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(), 7).to.be.a("SCInteger").that.equals(4);
-      expect(state(f) , 8).to.equal(sc.C.STATE_DONE);
+      expect(state(f) , 8).to.equal(sc.STATE_DONE);
 
       expect(f.value(), 9).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) ,10).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,10).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(),11).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) ,12).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,12).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(),13).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) ,14).to.equal(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,14).to.equal(sc.STATE_SUSPENDED);
       expect(f.value(),15).to.be.a("SCInteger").that.equals(4);
-      expect(state(f) ,16).to.equal(sc.C.STATE_DONE);
+      expect(state(f) ,16).to.equal(sc.STATE_DONE);
     });
     it("yield with iterator 1", function() {
       var f;
@@ -265,21 +265,21 @@
         }));
       });
 
-      expect(state(f) , 0).to.equals(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equals(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 2).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 2).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(), 3).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) , 4).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 4).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(), 5).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) , 6).to.equals(sc.C.STATE_DONE);
+      expect(state(f) , 6).to.equals(sc.STATE_DONE);
 
       expect(f.value(), 7).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 8).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 8).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(), 9).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) ,10).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,10).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),11).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) ,12).to.equals(sc.C.STATE_DONE);
+      expect(state(f) ,12).to.equals(sc.STATE_DONE);
     });
     it("yield with iterator 2", function() {
       var f;
@@ -312,37 +312,37 @@
         ];
       });
 
-      expect(state(f) , 0).to.equals(sc.C.STATE_INIT);
+      expect(state(f) , 0).to.equals(sc.STATE_INIT);
 
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) , 2).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 2).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(), 3).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) , 4).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 4).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(), 5).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) , 6).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 6).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(), 7).to.be.a("SCInteger").that.equals(4);
-      expect(state(f) , 8).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) , 8).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(), 9).to.be.a("SCInteger").that.equals(5);
-      expect(state(f) ,10).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,10).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),11).to.be.a("SCInteger").that.equals(6);
-      expect(state(f) ,12).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,12).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),13).to.be.a("SCNil");
-      expect(state(f) ,14).to.equals(sc.C.STATE_DONE);
+      expect(state(f) ,14).to.equals(sc.STATE_DONE);
 
       expect(f.value(),15).to.be.a("SCInteger").that.equals(1);
-      expect(state(f) ,16).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,16).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),17).to.be.a("SCInteger").that.equals(2);
-      expect(state(f) ,18).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,18).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),19).to.be.a("SCInteger").that.equals(3);
-      expect(state(f) ,20).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,20).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),21).to.be.a("SCInteger").that.equals(4);
-      expect(state(f) ,22).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,22).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),23).to.be.a("SCInteger").that.equals(5);
-      expect(state(f) ,24).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,24).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),25).to.be.a("SCInteger").that.equals(6);
-      expect(state(f) ,26).to.equals(sc.C.STATE_SUSPENDED);
+      expect(state(f) ,26).to.equals(sc.STATE_SUSPENDED);
       expect(f.value(),27).to.be.a("SCNil");
-      expect(state(f) ,28).to.equals(sc.C.STATE_DONE);
+      expect(state(f) ,28).to.equals(sc.STATE_DONE);
     });
     it("function$while", sinon.test(function() {
       var i = 0, spy;

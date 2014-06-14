@@ -151,7 +151,7 @@ SCScript.install(function(sc) {
     spec.arglist_ = function($list) {
       this._arglist = Array.isArray($list._) ? $list._ : /* istanbul ignore next */ [];
       this._isNumeric = this._arglist.every(function($item) {
-        return $item.__tag === sc.C.TAG_SYM || $item.isNumber().__bool__();
+        return $item.__tag === sc.TAG_SYM || $item.isNumber().__bool__();
       });
       return this;
     };

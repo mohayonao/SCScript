@@ -18,11 +18,11 @@ SCScript.install(function(sc) {
     }, "func");
 
     spec._init = function($func) {
-      if ($func.__tag !== sc.C.TAG_FUNCTION) {
+      if ($func.__tag !== sc.TAG_FUNCTION) {
         throw new Error("Thread.init failed");
       }
       this._bytecode = $func._;
-      this._state    = sc.C.STATE_INIT;
+      this._state    = sc.STATE_INIT;
       this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
       return this;
     };
@@ -111,11 +111,11 @@ SCScript.install(function(sc) {
     var routine$resume = function($inval) {
       var result;
 
-      if (this._state === sc.C.STATE_DONE) {
+      if (this._state === sc.STATE_DONE) {
         return $nil;
       }
 
-      this._state = sc.C.STATE_RUNNING;
+      this._state = sc.STATE_RUNNING;
       result = this._bytecode.resume([ $inval || $nil ]);
       this._state = this._bytecode.state();
 
@@ -129,7 +129,7 @@ SCScript.install(function(sc) {
     spec.valueArray = routine$resume;
 
     spec.reset = function() {
-      this._state = sc.C.STATE_INIT;
+      this._state = sc.STATE_INIT;
       this._bytecode.reset();
       return this;
     };

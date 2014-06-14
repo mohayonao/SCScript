@@ -15,9 +15,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case sc.C.TAG_INT:
+      case sc.TAG_INT:
         return type1(func(this._, $aNumber._));
-      case sc.C.TAG_FLOAT:
+      case sc.TAG_FLOAT:
         return type2(func(this._, $aNumber._));
       }
 
@@ -102,9 +102,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case sc.C.TAG_INT:
+      case sc.TAG_INT:
         return $.Integer(mathlib.iwrap(this._, -$aNumber._, $aNumber._));
-      case sc.C.TAG_FLOAT:
+      case sc.TAG_FLOAT:
         return $.Float(mathlib.wrap2(this._, $aNumber._));
       }
 
@@ -117,9 +117,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case sc.C.TAG_INT:
+      case sc.TAG_INT:
         return $.Integer(Math.round(mathlib.rrand(this._, $aNumber._)));
-      case sc.C.TAG_FLOAT:
+      case sc.TAG_FLOAT:
         return $.Float(mathlib.rrand(this._, $aNumber._));
       }
 
@@ -130,13 +130,13 @@ SCScript.install(function(sc) {
 
     spec.clip = fn(function($lo, $hi) {
       // <-- _ClipInt -->
-      if ($lo.__tag === sc.C.TAG_SYM) {
+      if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
       }
-      if ($hi.__tag === sc.C.TAG_SYM) {
+      if ($hi.__tag === sc.TAG_SYM) {
         return $hi;
       }
-      if ($lo.__tag === sc.C.TAG_INT && $hi.__tag === sc.C.TAG_INT) {
+      if ($lo.__tag === sc.TAG_INT && $hi.__tag === sc.TAG_INT) {
         return $.Integer(
           mathlib.clip(this._, $lo.__int__(), $hi.__int__())
         );
@@ -149,13 +149,13 @@ SCScript.install(function(sc) {
 
     spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
-      if ($lo.__tag === sc.C.TAG_SYM) {
+      if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
       }
-      if ($hi.__tag === sc.C.TAG_SYM) {
+      if ($hi.__tag === sc.TAG_SYM) {
         return $hi;
       }
-      if ($lo.__tag === sc.C.TAG_INT && $hi.__tag === sc.C.TAG_INT) {
+      if ($lo.__tag === sc.TAG_INT && $hi.__tag === sc.TAG_INT) {
         return $.Integer(
           mathlib.iwrap(this._, $lo.__int__(), $hi.__int__())
         );
@@ -168,13 +168,13 @@ SCScript.install(function(sc) {
 
     spec.fold = fn(function($lo, $hi) {
       // <-- _FoldInt -->
-      if ($lo.__tag === sc.C.TAG_SYM) {
+      if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
       }
-      if ($hi.__tag === sc.C.TAG_SYM) {
+      if ($hi.__tag === sc.TAG_SYM) {
         return $hi;
       }
-      if ($lo.__tag === sc.C.TAG_INT && $hi.__tag === sc.C.TAG_INT) {
+      if ($lo.__tag === sc.TAG_INT && $hi.__tag === sc.TAG_INT) {
         return $.Integer(
           mathlib.ifold(this._, $lo.__int__(), $hi.__int__())
         );

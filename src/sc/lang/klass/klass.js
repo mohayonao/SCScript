@@ -247,7 +247,7 @@
 
   klass.define("Object", {
     constructor: SCObject,
-    __tag: sc.C.TAG_OBJ,
+    __tag: sc.TAG_OBJ,
     __super__: function(funcName, args) {
       if (isClassName(funcName)) {
         return metaClasses[funcName].__Spec.call(this);

@@ -456,7 +456,7 @@
       var fragments = [], syncBlockScope;
       var elements = node.body;
       var i, imax;
-      var functionBodies;
+      var functionBodies, calledSegmentedMethod;
 
       if (elements.length) {
         for (i = 0, imax = args.length; i < imax; ++i) {
@@ -487,6 +487,7 @@
                 fragments.push("\n");
               }
 
+              calledSegmentedMethod = this.state.calledSegmentedMethod;
               this.state.calledSegmentedMethod = false;
               stmt = this.generate(elements[i]);
 
@@ -500,6 +501,7 @@
               if (this.state.calledSegmentedMethod) {
                 break;
               }
+              this.state.calledSegmentedMethod = calledSegmentedMethod;
             }
 
             return fragments;
@@ -731,6 +733,7 @@
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
+    this.state.calledSegmentedMethod = true;
     return [ "this.push(", this.generate(node.expr), ")" ];
   };
 

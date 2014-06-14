@@ -11,7 +11,7 @@
   var random = sc.libs.random;
 
   main.$currentEnv    = null;
-  main.$currentThread = null;
+  main.$currentThread = {};
 
   main.run = function(func) {
     if (!initialize.done) {

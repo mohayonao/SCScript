@@ -559,7 +559,7 @@
         });
         $function = $$(spy);
 
-        iter = iterator.integer$do($$(100));
+        iter = iterator.integer$do($$(10));
         iterator.execute(iter, $function);
 
         expect(spy).to.callCount(3);

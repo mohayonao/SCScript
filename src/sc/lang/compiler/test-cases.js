@@ -8433,6 +8433,88 @@
           end  : { line: 1, column: 16 }
         }
       }
+    },
+    "{ { 1 }.value; }": {
+      compiled: [
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    return [",
+        "      function() {",
+        "        return this.push($.Function(function() {",
+        "          return [",
+        "            function() {",
+        "              return $.Integer(1);",
+        "            }",
+        "          ];",
+        "        }).$('value'));",
+        "      },",
+        "      function() {",
+        "        return this.shift();",
+        "      }",
+        "    ];",
+        "  });",
+        "});"
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.FunctionExpression,
+            body: [
+              {
+                type: Syntax.CallExpression,
+                callee: {
+                  type: Syntax.FunctionExpression,
+                  body: [
+                    {
+                      type: Syntax.Literal,
+                      value: "1",
+                      valueType: Token.IntegerLiteral,
+                      range: [ 4, 5 ],
+                      loc: {
+                        start: { line: 1, column: 4 },
+                        end  : { line: 1, column: 5 }
+                      }
+                    }
+                  ],
+                  range: [ 2, 7 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 7 }
+                  }
+                },
+                method: {
+                  type: Syntax.Identifier,
+                  name: "value",
+                  range: [ 8, 13 ],
+                  loc: {
+                    start: { line: 1, column: 8 },
+                    end  : { line: 1, column: 13 }
+                  }
+                },
+                args: {
+                  list: []
+                },
+                range: [ 2, 13 ],
+                loc: {
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 13 }
+                }
+              }
+            ],
+            range: [ 0, 16 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 16 }
+            }
+          }
+        ],
+        range: [ 0, 16 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 16 }
+        }
+      }
     }
   };
 

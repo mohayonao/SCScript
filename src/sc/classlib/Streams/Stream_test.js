@@ -17,23 +17,18 @@
   }
 
   describe("SCStream", function() {
-    var SCStream, SCFuncStream, SCOneShotStream;
+    var SCStream, SCOneShotStream;
     before(function() {
       SCStream        = $("Stream");
-      SCFuncStream    = $("FuncStream");
       SCOneShotStream = $("OneShotStream");
       SCRoutine       = $("Routine");
-      this.createInstance = function(value, resetFunc) {
+      this.createInstance = function(value) {
         var instance;
-        if (typeof value === "function") {
-          instance = SCFuncStream.new($$(value), $$(resetFunc));
+        value = $$(value || null);
+        if (value.isKindOf(SCStream).__bool__()) {
+          instance = value;
         } else {
-          value = $$(value || null);
-          if (value.isKindOf(SCStream).__bool__()) {
-            instance = value;
-          } else {
-            instance = SCOneShotStream.new(value);
-          }
+          instance = SCOneShotStream.new(value);
         }
         return $$(instance, "Stream" + this.test.title);
       };
@@ -57,13 +52,14 @@
       expect(instance.iter).to.be.nop;
     });
     it("#value", function() {
-      var instance;
+      /*
+        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }
+      */
+      var r = this.createInstance(arrayToRoutine([ 1, 2, 3, 4, 5 ]));
 
-      instance = this.createInstance(arrayToRoutine([ 1, 2, 3, 4, 5 ]));
-
-      expect(instance.value(), 1).to.be.a("SCInteger").that.equals(1);
-      expect(instance.value(), 2).to.be.a("SCInteger").that.equals(2);
-      expect(instance.value(), 3).to.be.a("SCInteger").that.equals(3);
+      expect(r.value(), 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.value(), 2).to.be.a("SCInteger").that.equals(2);
+      expect(r.value(), 3).to.be.a("SCInteger").that.equals(3);
     });
     it("#valueArray", sinon.test(function() {
       var instance, test;
@@ -96,11 +92,39 @@
         instance.put();
       }).to.throw("should have been implemented by subclass");
     });
-    it.skip("#putN", function() {
-    });
-    it.skip("#putAll", function() {
-    });
-    it("#do 1", function() {
+    it("#putN", sinon.test(function() {
+      var instance, test;
+      var $item;
+
+      $item = $$();
+
+      instance = this.createInstance();
+      this.stub(instance, "put");
+
+      test = instance.putN($$(3), $item);
+      expect(test).to.equal(instance);
+      expect(instance.put).to.callCount(3);
+      expect(instance.put.args[0]).to.eql([ $item ]);
+      expect(instance.put.args[1]).to.eql([ $item ]);
+      expect(instance.put.args[2]).to.eql([ $item ]);
+    }));
+    it("#putAll", sinon.test(function() {
+      var instance, test;
+      var $collection;
+
+      $collection = $$([ 1, 2, 3 ]);
+
+      instance = this.createInstance();
+      this.stub(instance, "put");
+
+      test = instance.putAll($collection);
+      expect(test).to.equal(instance);
+      expect(instance.put).to.callCount(3);
+      expect(instance.put.args[0]).to.eql($$([ 1 ])._);
+      expect(instance.put.args[1]).to.eql($$([ 2 ])._);
+      expect(instance.put.args[2]).to.eql($$([ 3 ])._);
+    }));
+    it("#do", function() {
       var instance, test;
       var $result = $$([]);
 
@@ -112,22 +136,23 @@
       expect(test).to.equal(instance);
       expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
     });
-    it("#do 2", sc.test(function() {
-      var instance, test, count = 1;
-      var $result = $$([]);
-
-      instance = this.createInstance(function() {
-        return count < 6 ? $$(count++) : $$(null);
-      });
-
-      test = instance.do($$(function($a) {
-        $result.add($a);
-      }));
-
-      expect(test).to.equal(instance);
-      expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
-    }));
     it.skip("#subSample", function() {
+      /*
+        r = r { [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ].do(_.yield) }.subSample(1, 3);
+      */
+      var r = this.createInstance(arrayToRoutine(
+        [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+      )).subSample($$(1), $$(3));
+
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals( 2);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals( 6);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(10);
+      expect(r.next() , 4).to.be.a("SCNil");
+      expect(r.reset(), 5).to.equal(r);
+      expect(r.next() , 6).to.be.a("SCInteger").that.equals( 2);
+      expect(r.next() , 7).to.be.a("SCInteger").that.equals( 6);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(10);
+      expect(r.next() , 9).to.be.a("SCNil");
     });
     it("#generate", function() {
       var instance, test;
@@ -142,153 +167,134 @@
       expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
     });
     it("#collect", sc.test(function() {
-      var instance;
-      var count = 0;
-
-      instance = this.createInstance(function() {
-        return count < 5 ? $$(count++) : $$(null);
-      }, function() {
-        count = 0;
-        return $$(null);
-      });
-
-      instance = instance.collect($$(function($a) {
+      /*
+        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }.collect(_.neg)
+      */
+      var r = this.createInstance(
+        arrayToRoutine([ 1, 2, 3, 4, 5 ])
+      ).collect($$(function($a) {
         return $a.neg();
       }));
 
-      expect(instance.next(), 1).to.be.a("SCInteger").that.equals( 0);
-      expect(instance.next(), 2).to.be.a("SCInteger").that.equals(-1);
-      expect(instance.next(), 3).to.be.a("SCInteger").that.equals(-2);
-      expect(instance.next(), 4).to.be.a("SCInteger").that.equals(-3);
-      expect(instance.next(), 5).to.be.a("SCInteger").that.equals(-4);
-      expect(instance.next(), 6).to.be.a("SCNil");
-
-      instance.reset();
-      expect(instance.next(), 7).to.be.a("SCInteger").that.equals( 0);
-      expect(instance.next(), 8).to.be.a("SCInteger").that.equals(-1);
-      expect(instance.next(), 9).to.be.a("SCInteger").that.equals(-2);
-      expect(instance.next(),10).to.be.a("SCInteger").that.equals(-3);
-      expect(instance.next(),11).to.be.a("SCInteger").that.equals(-4);
-      expect(instance.next(),12).to.be.a("SCNil");
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(-1);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(-2);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(-3);
+      expect(r.next() , 4).to.be.a("SCInteger").that.equals(-4);
+      expect(r.next() , 5).to.be.a("SCInteger").that.equals(-5);
+      expect(r.next() , 6).to.be.a("SCNil");
+      expect(r.reset(), 7).to.be.a("SCRoutine");
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(-1);
+      expect(r.next() , 9).to.be.a("SCInteger").that.equals(-2);
+      expect(r.next() ,10).to.be.a("SCInteger").that.equals(-3);
     }));
     it("#reject", sc.test(function() {
-      var instance;
-      var count = 0;
-
-      instance = this.createInstance(function() {
-        return $$(count++);
-      }, function() {
-        count = 0;
-        return $$(null);
-      });
-
-      instance = instance.reject($$(function($a) {
+      /*
+        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }.reject(_.neg)
+      */
+      var r = this.createInstance(
+        arrayToRoutine([ 1, 2, 3, 4, 5 ])
+      ).reject($$(function($a) {
         return $a.odd();
       }));
-
-      expect(instance.next(), 1).to.be.a("SCInteger").that.equals(0);
-      expect(instance.next(), 2).to.be.a("SCInteger").that.equals(2);
-      expect(instance.next(), 3).to.be.a("SCInteger").that.equals(4);
-
-      instance.reset();
-      expect(instance.next(), 4).to.be.a("SCInteger").that.equals(0);
-      expect(instance.next(), 5).to.be.a("SCInteger").that.equals(2);
-      expect(instance.next(), 6).to.be.a("SCInteger").that.equals(4);
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(4);
+      expect(r.next() , 3).to.be.a("SCNil");
+      expect(r.reset(), 4).to.be.a("SCRoutine");
+      expect(r.next() , 5).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 6).to.be.a("SCInteger").that.equals(4);
+      expect(r.next() , 7).to.be.a("SCNil");
     }));
     it("#select", sc.test(function() {
-      var instance;
-      var count = 0;
-
-      instance = this.createInstance(function() {
-        return $$(count++);
-      }, function() {
-        count = 0;
-        return $$(null);
-      });
-
-      instance = instance.select($$(function($a) {
+      /*
+        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }.select(_.neg)
+      */
+      var r = this.createInstance(
+        arrayToRoutine([ 1, 2, 3, 4, 5 ])
+      ).select($$(function($a) {
         return $a.odd();
       }));
-
-      expect(instance.next(), 1).to.be.a("SCInteger").that.equals(1);
-      expect(instance.next(), 2).to.be.a("SCInteger").that.equals(3);
-      expect(instance.next(), 3).to.be.a("SCInteger").that.equals(5);
-
-      instance.reset();
-      expect(instance.next(), 4).to.be.a("SCInteger").that.equals(1);
-      expect(instance.next(), 5).to.be.a("SCInteger").that.equals(3);
-      expect(instance.next(), 6).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 4).to.be.a("SCNil");
+      expect(r.reset(), 5).to.be.a("SCRoutine");
+      expect(r.next() , 6).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 7).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 9).to.be.a("SCNil");
     }));
     it("#dot", sc.test(function() {
-      var instance;
-      var values1 = [ 0, 1, 2, 3, 4 ];
-      var values2 = [ 10, 20, 30 ];
-      var $stream;
-
-      instance = this.createInstance(function() {
-        return values1.length ? $$(values1.shift()) : $$(null);
-      }, function() {
-        values1 = [ 0, 1, 2, 3, 4 ];
-        return $$(null);
-      });
-      $stream = $("FuncStream").new($$(function() {
-        return values2.length ? $$(values2.shift()) : $$(null);
-      }), $$(function() {
-        values2 = [ 10, 20, 30 ];
-        return $$(null);
-      }));
-
-      instance = instance.dot($$(function($a, $b) {
+      /*
+        r = r { [ 0, 1, 2, 3, 4 ].do(_.yield) }.dot({ |a, b|
+          a + b
+        }, r { [ 10, 20, 30 ].do(_.yield) })
+      */
+      var r = this.createInstance(
+        arrayToRoutine([ 0, 1, 2, 3, 4 ])
+      ).dot($$(function($a, $b) {
         return $a ["+"] ($b);
-      }), $stream);
+      }), arrayToRoutine([ 10, 20, 30 ]));
 
-      expect(instance.next(), 1).to.be.a("SCInteger").that.equals(10);
-      expect(instance.next(), 2).to.be.a("SCInteger").that.equals(21);
-      expect(instance.next(), 3).to.be.a("SCInteger").that.equals(32);
-      expect(instance.next(), 4).to.be.a("SCNil");
-
-      instance.reset();
-      expect(instance.next(), 5).to.be.a("SCInteger").that.equals(10);
-      expect(instance.next(), 6).to.be.a("SCInteger").that.equals(21);
-      expect(instance.next(), 7).to.be.a("SCInteger").that.equals(32);
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(10);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(21);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(32);
+      expect(r.next() , 4).to.be.a("SCNil");
+      expect(r.reset(), 5).to.be.a("SCRoutine");
+      expect(r.next() , 6).to.be.a("SCInteger").that.equals(10);
+      expect(r.next() , 7).to.be.a("SCInteger").that.equals(21);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(32);
     }));
-    it("#interlace", sc.test(function() {
-      var instance;
-      var values1 = [ 0, 5 ];
-      var values2 = [ 1, 2, 6 ];
-      var $stream;
-
-      instance = this.createInstance(function() {
-        return values1.length ? $$(values1.shift()) : $$(null);
-      }, function() {
-        values1 = [ 0, 5, 7 ];
-        return $$(null);
-      });
-      $stream = $("FuncStream").new($$(function() {
-        return values2.length ? $$(values2.shift()) : $$(null);
-      }), $$(function() {
-        values2 = [ 1, 2 ];
-        return $$(null);
-      }));
-
-      instance = instance.interlace($$(function($a, $b) {
+    it("#interlace case1", sc.test(function() {
+      /*
+        r = r { [ 0, 5, 7 ].do(_.yield) }.interlace({ |a, b|
+          a < b
+        }, r { [ 1, 2 ].do(_.yield) })
+      */
+      var r = this.createInstance(
+        arrayToRoutine([ 0, 5 ])
+      ).interlace($$(function($a, $b) {
         return $a ["<"] ($b);
-      }), $stream);
+      }), arrayToRoutine([ 1, 2, 6 ]));
 
-      expect(instance.next(), 1).to.be.a("SCInteger").that.equals(0);
-      expect(instance.next(), 2).to.be.a("SCInteger").that.equals(1);
-      expect(instance.next(), 3).to.be.a("SCInteger").that.equals(2);
-      expect(instance.next(), 4).to.be.a("SCInteger").that.equals(5);
-      expect(instance.next(), 5).to.be.a("SCInteger").that.equals(6);
-      expect(instance.next(), 6).to.be.a("SCNil");
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(0);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 4).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 5).to.be.a("SCInteger").that.equals(6);
+      expect(r.next() , 6).to.be.a("SCNil");
+      expect(r.reset(), 7).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(0);
+      expect(r.next() , 9).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() ,10).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() ,11).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() ,12).to.be.a("SCInteger").that.equals(6);
+      expect(r.next() ,13).to.be.a("SCNil");
+    }));
+    it("#interlace case2", sc.test(function() {
+      /*
+        r = r { [ 0, 5, 7 ].do(_.yield) }.interlace({ |a, b|
+          a < b
+        }, r { [ 1, 2 ].do(_.yield) })
+      */
+      var r = this.createInstance(
+        arrayToRoutine([ 0, 5, 7 ])
+      ).interlace($$(function($a, $b) {
+        return $a ["<"] ($b);
+      }), arrayToRoutine([ 1, 2 ]));
 
-      instance.reset();
-      expect(instance.next(), 7).to.be.a("SCInteger").that.equals(0);
-      expect(instance.next(), 8).to.be.a("SCInteger").that.equals(1);
-      expect(instance.next(), 9).to.be.a("SCInteger").that.equals(2);
-      expect(instance.next(),10).to.be.a("SCInteger").that.equals(5);
-      expect(instance.next(),11).to.be.a("SCInteger").that.equals(7);
-      expect(instance.next(),12).to.be.a("SCNil");
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(0);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 4).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 5).to.be.a("SCInteger").that.equals(7);
+      expect(r.next() , 6).to.be.a("SCNil");
+      expect(r.reset(), 7).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(0);
+      expect(r.next() , 9).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() ,10).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() ,11).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() ,12).to.be.a("SCInteger").that.equals(7);
+      expect(r.next() ,13).to.be.a("SCNil");
     }));
     it("#++", sinon.test(function() {
       var instance, test;
@@ -302,30 +308,46 @@
       test = instance ["++"] ($stream);
       expect(instance.appendStream).to.be.calledLastIn(test);
     }));
-    it.skip("#appendStream", function() {
+    it("#appendStream", function() {
+      /*
+        r = r { [ 1, 2, 3 ].do(_.yield) }.appendStream(r { [ 4, 5, 6 ].do(_.yield) })
+      */
+      var r = this.createInstance(arrayToRoutine([
+        1, 2, 3
+      ])).appendStream(arrayToRoutine([ 4, 5, 6 ]));
+
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() , 4).to.be.a("SCInteger").that.equals(4);
+      expect(r.next() , 5).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 6).to.be.a("SCInteger").that.equals(6);
+      expect(r.next() , 7).to.be.a("SCNil");
+      expect(r.reset(), 8).to.equal(r);
+      expect(r.next() , 9).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() ,10).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() ,11).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() ,12).to.be.a("SCInteger").that.equals(4);
+      expect(r.next() ,13).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() ,14).to.be.a("SCInteger").that.equals(6);
+      expect(r.next() ,15).to.be.a("SCNil");
     });
     it("#collate", sc.test(function() {
-      var instance;
-      var values1, values2;
-      var $stream;
+      var r = this.createInstance(
+        arrayToRoutine([ 1, 5 ])
+      ).collate(arrayToRoutine([ 0, 6 ]));
 
-      values1 = [ 1, 5 ];
-      values2 = [ 0, 6 ];
-
-      instance = this.createInstance(function() {
-        return values1.length ? $$(values1.shift()) : $$(null);
-      });
-      $stream = $("FuncStream").new($$(function() {
-        return values2.length ? $$(values2.shift()) : $$(null);
-      }));
-
-      instance = instance.collate($stream);
-
-      expect(instance.next(), 1).to.be.a("SCInteger").that.equals(0);
-      expect(instance.next(), 2).to.be.a("SCInteger").that.equals(1);
-      expect(instance.next(), 3).to.be.a("SCInteger").that.equals(5);
-      expect(instance.next(), 4).to.be.a("SCInteger").that.equals(6);
-      expect(instance.next(), 5).to.be.a("SCNil");
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(0);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 4).to.be.a("SCInteger").that.equals(6);
+      expect(r.next() , 5).to.be.a("SCNil");
+      expect(r.reset(), 6).to.be.a("SCInteger").that.equals(0);
+      expect(r.next() , 7).to.be.a("SCInteger").that.equals(0);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 9).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() ,10).to.be.a("SCInteger").that.equals(6);
+      expect(r.next() ,11).to.be.a("SCNil");
     }));
     it("#<>", sinon.test(function() {
       var instance, test;
@@ -475,18 +497,120 @@
       }));
 
       instance = this.createInstance();
+
       test = instance.composeNAryOp($argSelector, $anArgList);
       expect($new.args[0]).to.eql($$([ $argSelector, instance, [ 1, 2 ] ])._);
     }));
-    it.skip("#embedInStream", function() {
+    it("#embedInStream", function() {
+      var instance = this.createInstance(arrayToRoutine([ 2, 3, 4 ]));
+      var r = SCRoutine.new($.Function(function() {
+        return [
+          function() {
+            return $$(1).yield();
+          },
+          function() {
+            return instance.embedInStream();
+          },
+          function() {
+            return $$(5).yield();
+          }
+        ];
+      }));
+
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() , 4).to.be.a("SCInteger").that.equals(4);
+      expect(r.next() , 5).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() , 6).to.be.a("SCNil");
+      expect(r.reset(), 7).to.equal(r);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 9).to.be.a("SCInteger").that.equals(5);
+      expect(r.next() ,10).to.be.a("SCNil");
     });
-    it.skip("#asEventStreamPlayer", function() {
-    });
-    it.skip("#play", function() {
-    });
+    it("#asEventStreamPlayer", sinon.test(function() {
+      var instance, test;
+      var $protoEvent, $new;
+
+      $protoEvent = $$();
+
+      $new = this.spy(sc.test.func());
+      this.stub(sc.lang.klass, "get").withArgs("EventStreamPlayer").returns($$({
+        new: $new
+      }));
+
+      instance = this.createInstance();
+
+      test = instance.asEventStreamPlayer($protoEvent);
+      expect($new.args[0]).to.eql([ instance, $protoEvent ]);
+    }));
+    it("#play case1", sinon.test(function() {
+      var instance, test;
+      var $clock, $quant, $asQuant;
+
+      $clock = $$({ play: this.spy() });
+      $quant = $$({ asQuant: this.spy(function() {
+        return $asQuant;
+      }) });
+      $asQuant = $$();
+
+      instance = this.createInstance();
+
+      test = instance.play($clock, $quant);
+      expect(test).to.equal(instance);
+      expect($clock.play).to.be.calledWith(instance, $asQuant);
+    }));
+    it("#play case2", sinon.test(function() {
+      var instance, test;
+      var $clock, $quant, $asQuant, $tempoClock;
+
+      $clock = $$(null);
+      $quant = $$({ asQuant: this.spy(function() {
+        return $asQuant;
+      }) });
+      $asQuant = $$();
+      $tempoClock = $$({ play: this.spy() });
+      this.stub(sc.lang.klass, "get").withArgs("TempoClock").returns($$({
+        default: function() {
+          return $tempoClock;
+        }
+      }));
+
+      instance = this.createInstance();
+
+      test = instance.play($clock, $quant);
+      expect(test).to.equal(instance);
+      expect($tempoClock.play).to.be.calledWith(instance, $asQuant);
+    }));
     it.skip("#trace", function() {
     });
-    it.skip("#repeat", function() {
+    it("#repeat", function() {
+      /*
+        r = r { [ 1, 2, 3 ].do(_.yield) }.repeat(3)
+      */
+      var r = this.createInstance(arrayToRoutine([ 1, 2, 3 ])).repeat($$(3));
+
+      expect(r.next() , 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 2).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 3).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() , 4).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 5).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 6).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() , 7).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() , 8).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() , 9).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() ,10).to.be.a("SCNil");
+      expect(r.reset(),11).to.equal(r);
+      expect(r.next() ,12).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() ,13).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() ,14).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() ,15).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() ,16).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() ,17).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() ,18).to.be.a("SCInteger").that.equals(1);
+      expect(r.next() ,19).to.be.a("SCInteger").that.equals(2);
+      expect(r.next() ,20).to.be.a("SCInteger").that.equals(3);
+      expect(r.next() ,21).to.be.a("SCNil");
     });
   });
 

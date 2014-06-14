@@ -252,7 +252,6 @@
         throw new Error("error");
       });
 
-
       test = instance.protect($handler);
       expect(test).to.be.a("SCNil");
       expect(spy).to.be.called;
@@ -367,13 +366,5 @@
       expect(iterator.execute).to.be.calledWith(iter, $body);
       expect(test).to.equal(instance);
     }));
-    it("#state", function() {
-      var instance, test;
-
-      instance = this.createInstance();
-
-      test = instance.state();
-      expect(test).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
-    });
   });
 })();

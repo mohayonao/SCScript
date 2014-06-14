@@ -17,14 +17,6 @@
         }));
       };
     });
-    it("#__tag", function() {
-      var instance, test;
-
-      instance = this.createInstance();
-
-      test = instance.__tag;
-      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_THREAD);
-    });
     it("<state", function() {
       var instance, test;
 
@@ -33,7 +25,13 @@
       test = instance.state();
       expect(test).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
     });
-    it.skip("<parent", function() {
+    it("<parent", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.parent();
+      expect(test).to.be.a("SCNil");
     });
     it.skip("<primitiveError", function() {
     });
@@ -139,13 +137,13 @@
         }));
       };
     });
-    it("#__routine", function() {
+    it("#__tag", function() {
       var instance, test;
 
       instance = this.createInstance();
 
-      test = instance.__routine;
-      expect(test).to.be.a("JSBoolean").that.is.true;
+      test = instance.__tag;
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_ROUTINE);
     });
     it(".new", function() {
       var instance;
@@ -245,12 +243,13 @@
       expect(instance.next() , 9).to.be.a("SCInteger").that.equals(2);
       expect(instance.state(),10).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
       expect(instance.next() ,11).to.be.a("SCInteger").that.equals(3);
-      expect(instance.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
+      expect(instance.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
       expect(instance.next() ,13).to.be.a("SCNil");
-      expect(instance.next() ,14).to.be.a("SCNil");
-      expect(instance.reset(),15).to.equal(instance);
-      expect(instance.state(),16).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
-      expect(instance.next() ,17).to.be.a("SCInteger").that.equals(1);
+      expect(instance.state(),14).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
+      expect(instance.next() ,15).to.be.a("SCNil");
+      expect(instance.reset(),16).to.equal(instance);
+      expect(instance.state(),17).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+      expect(instance.next() ,18).to.be.a("SCInteger").that.equals(1);
     });
     it.skip("#stop", function() {
     });

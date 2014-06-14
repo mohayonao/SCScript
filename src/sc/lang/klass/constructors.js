@@ -33,7 +33,8 @@
     this.__super__("Object");
   }
   klass.define("Boolean", {
-    constructor: SCBoolean
+    constructor: SCBoolean,
+    __tag: sc.TAG_BOOL
   });
 
   function SCTrue() {
@@ -41,8 +42,7 @@
     this._ = true;
   }
   klass.define("True : Boolean", {
-    constructor: SCTrue,
-    __tag: sc.TAG_TRUE
+    constructor: SCTrue
   });
 
   function SCFalse() {
@@ -50,8 +50,7 @@
     this._ = false;
   }
   klass.define("False : Boolean", {
-    constructor: SCFalse,
-    __tag: sc.TAG_FALSE
+    constructor: SCFalse
   });
 
   klass.define("Magnitude", {
@@ -129,8 +128,7 @@
     this.__super__("ArrayedCollection");
   }
   klass.define("Array : ArrayedCollection", {
-    constructor: SCArray,
-    __tag: sc.TAG_ARRAY
+    constructor: SCArray
   });
 
   function SCString() {
@@ -184,7 +182,7 @@
   }
   klass.define("Function : AbstractFunction", {
     constructor: SCFunction,
-    __tag: sc.TAG_FUNCTION
+    __tag: sc.TAG_FUNC
   });
 
   function SCRef() {

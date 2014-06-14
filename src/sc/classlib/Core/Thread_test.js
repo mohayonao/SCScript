@@ -17,6 +17,14 @@
         }));
       };
     });
+    it("#__tag", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.__tag;
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_THREAD);
+    });
     it("<state", function() {
       var instance, test;
 
@@ -130,6 +138,14 @@
           return func_array || [];
         }));
       };
+    });
+    it("#__routine", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+
+      test = instance.__routine;
+      expect(test).to.be.a("JSBoolean").that.is.true;
     });
     it(".new", function() {
       var instance;

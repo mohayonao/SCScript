@@ -340,7 +340,7 @@
         break;
       case "nil":
         type = Token.NilLiteral;
-        value = "null";
+        value = "nil";
         break;
       case "true":
         type = Token.TrueLiteral;

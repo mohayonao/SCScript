@@ -140,7 +140,7 @@
         body: [
           {
             type: Syntax.Literal,
-            value: "null",
+            value: "nil",
             valueType: Token.NilLiteral,
             range: [ 0, 3 ],
             loc: {
@@ -3130,7 +3130,7 @@
             body: [
               {
                 type: Syntax.Literal,
-                value: "null",
+                value: "nil",
                 valueType: Token.NilLiteral,
                 range: [ 17, 20 ],
                 loc: {
@@ -3239,7 +3239,7 @@
             body: [
               {
                 type: Syntax.Literal,
-                value: "null",
+                value: "nil",
                 valueType: Token.NilLiteral,
                 range: [ 21, 24 ],
                 loc: {
@@ -3296,7 +3296,7 @@
             body: [
               {
                 type: Syntax.Literal,
-                value: "null",
+                value: "nil",
                 valueType: Token.NilLiteral,
                 range: [ 15, 18 ],
                 loc: {
@@ -3676,7 +3676,7 @@
             body: [
               {
                 type: Syntax.Literal,
-                value: "null",
+                value: "nil",
                 valueType: Token.NilLiteral,
                 range: [ 76, 79 ],
                 loc: {
@@ -3703,7 +3703,7 @@
                     elements: [
                       {
                         type: Syntax.Literal,
-                        value: "null",
+                        value: "nil",
                         valueType: Token.NilLiteral,
                         range: [ 7, 10 ],
                         loc: {
@@ -4067,7 +4067,7 @@
             },
             right: {
               type: Syntax.Literal,
-              value: "null",
+              value: "nil",
               valueType: Token.NilLiteral,
               range: [ 12, 15 ],
               loc: {

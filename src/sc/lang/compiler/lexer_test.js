@@ -510,7 +510,7 @@
       "nil": [
         {
           type: Token.NilLiteral,
-          value: "null",
+          value: "nil",
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },

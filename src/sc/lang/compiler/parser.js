@@ -1448,7 +1448,7 @@
       }
     }
 
-    return Node.createLiteral({ value: "null", valueType: Token.NilLiteral });
+    return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
   };
 
   SCParser.prototype.parseLabel = function() {

@@ -167,10 +167,10 @@ module.exports = function(grunt) {
       var code, re, m;
 
       code = grunt.file.read(file);
-      re = /[^a-zA-Z0-9_$]C\.([A-Z0-9_]+)/g;
+      re = /sc\.([A-Z0-9_]+)(?=\b)/g;
 
       while ((m = re.exec(code)) !== null) {
-        if (!C.hasOwnProperty(m[1])) {
+        if (m[1] !== "VERSION" && !C.hasOwnProperty(m[1])) {
           grunt.verbose.or.write("Typong " + file + "...");
           grunt.log.error();
           grunt.log.writeln("  C." + m[1]);
@@ -282,8 +282,11 @@ module.exports = function(grunt) {
     global.chai = chai;
     global.sinon = sinon;
     global.esprima = esprima;
-    global.sc = { VERSION: grunt.config.data.pkg.version };
-    global.sc.C = require("./src/const");
+
+    global.sc = {};
+    require("./src/const");
+    global.sc.VERSION = grunt.config.data.pkg.version;
+
     global.SCScript = {
       install: function(installer) {
         installer(global.sc);
@@ -410,7 +413,7 @@ module.exports = function(grunt) {
       src = grunt.file.read(filepath);
 
       Object.keys(C).forEach(function(key) {
-        src = src.replace(new RegExp("sc.C." + key + "(?![A-Z0-9_])", "g"), C[key]);
+        src = src.replace(new RegExp("sc." + key + "(?=\\b)", "g"), C[key]);
       });
 
       src = src.replace(/\s*['"]use strict['"];$/gm, "");

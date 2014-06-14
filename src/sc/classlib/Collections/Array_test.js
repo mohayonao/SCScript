@@ -22,7 +22,7 @@
       instance = this.createInstance();
 
       test = instance.__tag;
-      expect(test).to.be.a("JSNumber").that.equals(sc.C.TAG_ARRAY);
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_ARRAY);
     });
     it("#valueOf", function() {
       var instance, test;

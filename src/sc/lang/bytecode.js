@@ -33,7 +33,7 @@
   };
 
   Bytecode.prototype.reset = function() {
-    this._state    = this._length ? sc.C.STATE_INIT : sc.C.STATE_DONE;
+    this._state    = this._length ? sc.STATE_INIT : sc.STATE_DONE;
     this._index    = 0;
     this._iter     = null;
     this._yield    = null;
@@ -78,7 +78,7 @@
         this.stopIter(false);
         args = iter.next();
         if (args === null) {
-          this._state = sc.C.STATE_PENDING;
+          this._state = sc.STATE_PENDING;
           break;
         }
       }
@@ -87,7 +87,7 @@
       }
 
       this._yield = null;
-      this._state = sc.C.STATE_RUNNING;
+      this._state = sc.STATE_RUNNING;
       result = code[this._index].apply(this, args);
       if (this._yielded) {
         result = this._yield;
@@ -96,13 +96,13 @@
       this._index += 1;
       if (this._index >= length) {
         if (!iter) {
-          this._state = sc.C.STATE_PENDING;
+          this._state = sc.STATE_PENDING;
         } else {
           this._index = 0;
         }
       }
 
-      if (this._state !== sc.C.STATE_RUNNING) {
+      if (this._state !== sc.STATE_RUNNING) {
         break;
       }
     }
@@ -110,7 +110,7 @@
 
     bytecode.current = null;
 
-    if (this._state === sc.C.STATE_PENDING) {
+    if (this._state === sc.STATE_PENDING) {
       this.next(result);
     }
 
@@ -119,14 +119,14 @@
 
   Bytecode.prototype.next = function($value) {
     if (this._child) {
-      this._state = sc.C.STATE_SUSPENDED;
+      this._state = sc.STATE_SUSPENDED;
       return;
     }
     if (this._index < this._length) {
       return;
     }
     this._index = 0;
-    this._state = sc.C.STATE_DONE;
+    this._state = sc.STATE_DONE;
     if (this._iter) {
       this._iter = this._iter.clone();
       this.stopIter(true);
@@ -157,12 +157,12 @@
   };
 
   Bytecode.prototype.break = function() {
-    this._state = sc.C.STATE_LOOP_BREAK;
+    this._state = sc.STATE_LOOP_BREAK;
     this._index = Infinity;
   };
 
   Bytecode.prototype.yield = function($value) {
-    this._state = sc.C.STATE_SUSPENDED;
+    this._state = sc.STATE_SUSPENDED;
     this._yield   = $value;
     this._yielded = true;
     if (this._parent) {

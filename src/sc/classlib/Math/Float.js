@@ -15,9 +15,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case sc.C.TAG_INT:
+      case sc.TAG_INT:
         return type1(func(this._, $aNumber._));
-      case sc.C.TAG_FLOAT:
+      case sc.TAG_FLOAT:
         return type2(func(this._, $aNumber._));
       }
 
@@ -100,10 +100,10 @@ SCScript.install(function(sc) {
 
     spec.clip = fn(function($lo, $hi) {
       // <-- _ClipFloat -->
-      if ($lo.__tag === sc.C.TAG_SYM) {
+      if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
       }
-      if ($hi.__tag === sc.C.TAG_SYM) {
+      if ($hi.__tag === sc.TAG_SYM) {
         return $hi;
       }
 
@@ -114,10 +114,10 @@ SCScript.install(function(sc) {
 
     spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
-      if ($lo.__tag === sc.C.TAG_SYM) {
+      if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
       }
-      if ($hi.__tag === sc.C.TAG_SYM) {
+      if ($hi.__tag === sc.TAG_SYM) {
         return $hi;
       }
 
@@ -128,10 +128,10 @@ SCScript.install(function(sc) {
 
     spec.fold = fn(function($lo, $hi) {
       // <-- _FoldFloat -->
-      if ($lo.__tag === sc.C.TAG_SYM) {
+      if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
       }
-      if ($hi.__tag === sc.C.TAG_SYM) {
+      if ($hi.__tag === sc.TAG_SYM) {
         return $hi;
       }
 

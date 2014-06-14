@@ -365,7 +365,7 @@
       instance = this.createInstance();
 
       test = instance.state();
-      expect(test).to.be.a("SCInteger").that.equals(sc.C.STATE_INIT);
+      expect(test).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
     });
   });
 })();

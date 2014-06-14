@@ -7,6 +7,7 @@ var saved = global.sc;
 
 module.exports = global.sc = { VERSION: pkg.version };
 
+require("./src/const");
 require("./src/sc/sc");
 require("./src/sc/installer");
 

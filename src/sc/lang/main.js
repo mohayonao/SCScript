@@ -10,7 +10,8 @@
   var $ = sc.lang.$;
   var random = sc.libs.random;
 
-  main.$currentEnv = null;
+  main.$currentEnv    = null;
+  main.$currentThread = null;
 
   main.run = function(func) {
     if (!initialize.done) {
@@ -28,7 +29,8 @@
       return [];
     }));
 
-    main.$currentEnv = $("Environment").new();
+    main.$currentEnv    = $("Environment").new();
+    main.$currentThread = $process._$mainThread;
 
     // $interpreter._$s = SCServer.default();
 
@@ -60,7 +62,7 @@
   };
 
   $.ThisThread = function() {
-    return main.$process.mainThread();
+    return main.$currentThread;
   };
 
   sc.lang.main = main;

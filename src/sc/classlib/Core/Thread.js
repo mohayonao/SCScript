@@ -8,6 +8,7 @@ SCScript.install(function(sc) {
   var random = sc.libs.random;
 
   sc.lang.klass.define("Thread : Stream", function(spec, utils) {
+    spec.__tag = sc.TAG_THREAD;
 
     spec.constructor = function SCThread() {
       this.__super__("Stream");
@@ -18,7 +19,7 @@ SCScript.install(function(sc) {
     }, "func");
 
     spec._init = function($func) {
-      if ($func.__tag !== sc.TAG_FUNCTION) {
+      if ($func.__tag !== sc.TAG_FUNC) {
         throw new Error("Thread.init failed");
       }
       this._bytecode = $func._;
@@ -97,6 +98,8 @@ SCScript.install(function(sc) {
 
   sc.lang.klass.define("Routine : Thread", function(spec, utils) {
     var $nil = utils.$nil;
+
+    spec.__routine = true;
 
     spec.constructor = function SCRoutine() {
       this.__super__("Thread");

@@ -58,7 +58,7 @@
           body: [
             {
               type: Syntax.Literal,
-              value: "null",
+              value: "nil",
               valueType: Token.NilLiteral
             }
           ]

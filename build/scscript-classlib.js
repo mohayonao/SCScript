@@ -3831,19 +3831,23 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
   var random = sc.libs.random;
 
-  sc.lang.klass.define("Thread", function(spec, utils) {
+  sc.lang.klass.define("Thread : Stream", function(spec, utils) {
 
     spec.constructor = function SCThread() {
       this.__super__("Stream");
     };
 
-    spec.$new = function($func) {
+    spec.$new = fn(function($func) {
       return this.__super__("new")._init($func);
-    };
+    }, "func");
 
-    spec._init = function() {
-      this._state   = 0;
-      this._randgen = new random.RandGen((Math.random() * 4294967295) >>> 0);
+    spec._init = function($func) {
+      if ($func.__tag !== 12) {
+        throw new Error("Thread.init failed");
+      }
+      this._bytecode = $func._;
+      this._state    = 0;
+      this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
       return this;
     };
 
@@ -3851,92 +3855,25 @@ SCScript.install(function(sc) {
       return $.Integer(this._state);
     };
 
-    // spec.parent = function() {
-    //   return this._parent;
-    // };
-
-    // spec.primitiveError = function() {
-    //   return this._primitiveError;
-    // };
-
-    // spec.primitiveIndex = function() {
-    //   return this._primitiveIndex;
-    // };
-
-    // spec.beats = function() {
-    //   return this._beats;
-    // };
-
-    // spec.beats_ = fn(function($inBeats) {
-    //   this._beats   = $inBeats;
-    //   this._seconds = this._clock.beats2secs($inBeats);
-    //   return this;
-    // }, "inBeats");
-
-    // spec.seconds = function() {
-    //   return this._seconds;
-    // };
-
-    // spec.seconds_ = fn(function($inSeconds) {
-    //   this._seconds = $inSeconds;
-    //   this._beats   = this._clock.secs2beats($inSeconds);
-    //   return this;
-    // }, "inSeconds");
-
-    // spec.clock = function() {
-    //   return this._clock;
-    // };
-
-    // spec.clock_ = fn(function($inClock) {
-    //   this._clock = $inClock;
-    //   this._beats = this._clock.secs2beats(this._seconds);
-    //   return this;
-    // }, "inClock");
-
-    // spec.nextBeat = function() {
-    //   return this._nextBeat;
-    // };
-
-    // spec.endBeat = function() {
-    //   return this._endBeat;
-    // };
-
-    // spec.endBeat_ = function($value) {
-    //   this._endBeat = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.endValue = function() {
-    //   return this._endValue;
-    // };
-
-    // spec.endValue_ = function($value) {
-    //   this._endValue = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.exceptionHandler = function() {
-    //   return this._exceptionHandler;
-    // };
-
-    // spec.exceptionHandler_ = function($value) {
-    //   this._exceptionHandler = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.threadPlayer_ = function($value) {
-    //   this._threadPlayer = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.executingPath = function() {
-    //   return this._executingPath;
-    // };
-
-    // spec.oldExecutingPath = function() {
-    //   return this._oldExecutingPath;
-    // };
-
+    // TODO: implements parent
+    // TODO: implements primitiveError
+    // TODO: implements primitiveIndex
+    // TODO: implements beats
+    // TODO: implements beats_
+    // TODO: implements seconds
+    // TODO: implements seconds_
+    // TODO: implements clock
+    // TODO: implements clock_
+    // TODO: implements nextBeat
+    // TODO: implements endBeat
+    // TODO: implements endBeat_
+    // TODO: implements endValue
+    // TODO: implements endValue_
+    // TODO: implements exceptionHandler
+    // TODO: implements exceptionHandler_
+    // TODO: implements threadPlayer_
+    // TODO: implements executingPath
+    // TODO: implements oldExecutingPath
     // TODO: implements init
 
     spec.copy = utils.nop;
@@ -3945,13 +3882,7 @@ SCScript.install(function(sc) {
     //   return $.Boolean(this._state._ === 5);
     // };
 
-    // spec.threadPlayer = function() {
-    //   if (this._threadPlayer !== $nil) {
-    //     return this.findThreadPlayer();
-    //   }
-    //   return $nil;
-    // };
-
+    // TODO: implements threadPlayer
     // TODO: implements findThreadPlayer
 
     spec.randSeed_ = fn(function($seed) {
@@ -3988,19 +3919,45 @@ SCScript.install(function(sc) {
     // TODO: implements checkCanArchive
   });
 
-  sc.lang.klass.define("Routine", function(spec) {
+  sc.lang.klass.define("Routine : Thread", function(spec, utils) {
+    var $nil = utils.$nil;
 
     spec.constructor = function SCRoutine() {
       this.__super__("Thread");
     };
 
+    spec.$new = function($func) {
+      return this.__super__("new", [ $func ]);
+    };
+
     // TODO: implements $run
-    // TODO: implements next
-    // TODO: implements value
-    // TODO: implements resume
-    // TODO: implements run
-    // TODO: implements valueArray
-    // TODO: implements reset
+
+    var routine$resume = function($inval) {
+      var result;
+
+      if (this._state === 6) {
+        return $nil;
+      }
+
+      this._state = 3;
+      result = this._bytecode.resume([ $inval || $nil ]);
+      this._state = this._bytecode.state();
+
+      return result;
+    };
+
+    spec.next   = routine$resume;
+    spec.value  = routine$resume;
+    spec.resume = routine$resume;
+    spec.run    = routine$resume;
+    spec.valueArray = routine$resume;
+
+    spec.reset = function() {
+      this._state = 0;
+      this._bytecode.reset();
+      return this;
+    };
+
     // TODO: implements stop
     // TODO: implements p
     // TODO: implements storeArgs
@@ -4734,6 +4691,10 @@ SCScript.install(function(sc) {
       );
       return this;
     }, "body");
+
+    spec.state = function() {
+      return $.Integer(this._.state());
+    };
   });
 
 });

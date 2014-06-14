@@ -45,7 +45,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">120.70</p>
+      <p class="stat">120.87</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">42.23</p>
+      <p class="stat">41.77</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.39</p>
+      <p class="stat">2.34</p>
     </div>
   </div>
 </div>
@@ -109,7 +109,7 @@
   }
   klass.define(&quot;Nil&quot;, {
     constructor: SCNil,
-    __tag: sc.C.TAG_NIL
+    __tag: sc.TAG_NIL
   });
 
   function SCSymbol() {
@@ -118,7 +118,7 @@
   }
   klass.define(&quot;Symbol&quot;, {
     constructor: SCSymbol,
-    __tag: sc.C.TAG_SYM
+    __tag: sc.TAG_SYM
   });
 
   function SCBoolean() {
@@ -134,7 +134,7 @@
   }
   klass.define(&quot;True : Boolean&quot;, {
     constructor: SCTrue,
-    __tag: sc.C.TAG_TRUE
+    __tag: sc.TAG_TRUE
   });
 
   function SCFalse() {
@@ -143,7 +143,7 @@
   }
   klass.define(&quot;False : Boolean&quot;, {
     constructor: SCFalse,
-    __tag: sc.C.TAG_FALSE
+    __tag: sc.TAG_FALSE
   });
 
   klass.define(&quot;Magnitude&quot;, {
@@ -158,7 +158,7 @@
   }
   klass.define(&quot;Char : Magnitude&quot;, {
     constructor: SCChar,
-    __tag: sc.C.TAG_CHAR
+    __tag: sc.TAG_CHAR
   });
 
   klass.define(&quot;Number : Magnitude&quot;, {
@@ -179,7 +179,7 @@
   }
   klass.define(&quot;Integer : SimpleNumber&quot;, {
     constructor: SCInteger,
-    __tag: sc.C.TAG_INT
+    __tag: sc.TAG_INT
   });
 
   function SCFloat() {
@@ -188,7 +188,7 @@
   }
   klass.define(&quot;Float : SimpleNumber&quot;, {
     constructor: SCFloat,
-    __tag: sc.C.TAG_FLOAT
+    __tag: sc.TAG_FLOAT
   });
 
   klass.define(&quot;Collection&quot;, {
@@ -222,7 +222,7 @@
   }
   klass.define(&quot;Array : ArrayedCollection&quot;, {
     constructor: SCArray,
-    __tag: sc.C.TAG_ARRAY
+    __tag: sc.TAG_ARRAY
   });
 
   function SCString() {
@@ -230,7 +230,7 @@
   }
   klass.define(&quot;String : RawArray&quot;, {
     constructor: SCString,
-    __tag: sc.C.TAG_STR
+    __tag: sc.TAG_STR
   });
 
   klass.define(&quot;Set : Collection&quot;, {
@@ -276,7 +276,7 @@
   }
   klass.define(&quot;Function : AbstractFunction&quot;, {
     constructor: SCFunction,
-    __tag: sc.C.TAG_FUNCTION
+    __tag: sc.TAG_FUNCTION
   });
 
   function SCRef() {

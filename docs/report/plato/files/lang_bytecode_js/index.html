@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">106.45</p>
+      <p class="stat">110.53</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">144</p>
+      <p class="stat">197</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">58.79</p>
+      <p class="stat">72.18</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.19</p>
+      <p class="stat">1.65</p>
     </div>
   </div>
 </div>
@@ -106,11 +106,6 @@
     this._def   = def;
     this._code  = [];
     this._vals  = [];
-    this._state = sc.C.STATE_INIT;
-    this._iter  = null;
-    this._pushed = false;
-    this._parent = null;
-    this._child  = null;
     this.init(initializer);
   }
 
@@ -124,9 +119,21 @@
       this._argNames = [];
       this._argVals  = [];
     }
-    this._code  = code;
-    this._index = 0;
+    this._code   = code;
+    this._length = code.length;
+    return this.reset();
+  };
 
+  Bytecode.prototype.reset = function() {
+    this._state    = this._length ? sc.STATE_INIT : sc.STATE_DONE;
+    this._index    = 0;
+    this._iter     = null;
+    this._yield    = null;
+    this._yielded  = false;
+    this._pushed   = false;
+    this._parent   = null;
+    this._child    = null;
+    this._stopIter = false;
     return this;
   };
 
@@ -135,71 +142,95 @@
     return this;
   };
 
+  Bytecode.prototype.setParent = function(parent) {
+    this._parent = parent;
+    parent._child = this;
+  };
+
   Bytecode.prototype.resume = function(args) {
     var result;
-    var code, length, index, iter;
+    var code, length, iter;
 
     if (this._child) {
       return this._child.resume(args);
     }
 
-    if (bytecode.current &amp;&amp; !this._parent) {
-      this._parent = bytecode.current;
-      this._parent._child = this;
-      this._parent._state = sc.C.STATE_SUSPENDED;
+    if (bytecode.current) {
+      this.setParent(bytecode.current);
     }
 
     code   = this._code;
-    length = code.length;
-    index  = this._index;
+    length = this._length;
     iter   = this._iter;
 
     bytecode.current = this;
 
-    this._state = sc.C.STATE_RUNNING;
-    while (index &lt; length) {
-      if (iter) {
+    while (this._index &lt; length) {
+      if (iter &amp;&amp; this._index === 0) {
+        this.stopIter(false);
         args = iter.next();
         if (args === null) {
-          this._state = sc.C.STATE_DONE;
+          this._state = sc.STATE_PENDING;
           break;
         }
       }
+      if (iter &amp;&amp; !iter.hasNext) {
+        iter = null;
+      }
 
-      result = code[index].apply(this, args);
+      this._yield = null;
+      this._state = sc.STATE_RUNNING;
+      result = code[this._index].apply(this, args);
+      if (this._yielded) {
+        result = this._yield;
+      }
 
-      if (!iter) {
-        index += 1;
-        if (index === length) {
-          this._state = sc.C.STATE_DONE;
+      this._index += 1;
+      if (this._index &gt;= length) {
+        if (!iter) {
+          this._state = sc.STATE_PENDING;
+        } else {
+          this._index = 0;
         }
       }
 
-      if (this._state !== sc.C.STATE_RUNNING) {
+      if (this._state !== sc.STATE_RUNNING) {
         break;
       }
     }
-    result = result || /* istanbul ignore next */ $.Nil();
+    result = result || $.Nil();
 
     bytecode.current = null;
 
-    if (this._state === sc.C.STATE_DONE) {
-      this._index = 0;
-      this._state = sc.C.STATE_DONE;
-      this._iter  = null;
-      if (this._parent) {
-        if (this._parent._pushed) {
-          this._parent.put(result, true);
-        }
-        this._parent._child = null;
-        this._parent._state = sc.C.STATE_RUNNING;
-      }
-      this._parent = null;
-    } else {
-      this._index = index;
+    if (this._state === sc.STATE_PENDING) {
+      this.next(result);
     }
 
     return result;
+  };
+
+  Bytecode.prototype.next = function($value) {
+    if (this._child) {
+      this._state = sc.STATE_SUSPENDED;
+      return;
+    }
+    if (this._index &lt; this._length) {
+      return;
+    }
+    this._index = 0;
+    this._state = sc.STATE_DONE;
+    if (this._iter) {
+      this._iter = this._iter.clone();
+      this.stopIter(true);
+    }
+    if (this._parent) {
+      if (this._parent._pushed) {
+        this._parent.put($value);
+      }
+      this._parent._child = null;
+      this._parent.next($value);
+    }
+    this._parent = null;
   };
 
   Bytecode.prototype.push = function($value) {
@@ -218,17 +249,39 @@
   };
 
   Bytecode.prototype.break = function() {
-    this._state = sc.C.STATE_DONE;
+    this._state = sc.STATE_LOOP_BREAK;
+    this._index = Infinity;
+  };
+
+  Bytecode.prototype.yield = function($value) {
+    this._state = sc.STATE_SUSPENDED;
+    this._yield   = $value;
+    this._yielded = true;
+    if (this._parent) {
+      this._parent.yield($value);
+    }
+  };
+
+  Bytecode.prototype.state = function() {
+    return this._state;
+  };
+
+  Bytecode.prototype.stopIter = function(value) {
+    if (typeof value === &quot;boolean&quot;) {
+      this._stopIter = value;
+      if (this._parent) {
+        this._parent.stopIter(value);
+      }
+    }
+    return this._stopIter;
   };
 
   bytecode.create = function(initializer, def) {
     return new Bytecode(initializer, def);
   };
 
-  bytecode.yield = function() {
-    var that = bytecode.current;
-
-    that._state = sc.C.STATE_SUSPENDED;
+  bytecode.yield = function($value) {
+    bytecode.current.yield($value);
   };
 
   sc.lang.bytecode = bytecode;

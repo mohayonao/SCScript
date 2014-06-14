@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">132.20</p>
+      <p class="stat">126.32</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">187</p>
+      <p class="stat">144</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">13.61</p>
+      <p class="stat">23.67</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.64</p>
+      <p class="stat">0.98</p>
     </div>
   </div>
 </div>
@@ -99,19 +99,23 @@
   var fn = sc.lang.fn;
   var random = sc.libs.random;
 
-  sc.lang.klass.define(&quot;Thread&quot;, function(spec, utils) {
+  sc.lang.klass.define(&quot;Thread : Stream&quot;, function(spec, utils) {
 
     spec.constructor = function SCThread() {
       this.__super__(&quot;Stream&quot;);
     };
 
-    spec.$new = function($func) {
+    spec.$new = fn(function($func) {
       return this.__super__(&quot;new&quot;)._init($func);
-    };
+    }, &quot;func&quot;);
 
-    spec._init = function() {
-      this._state   = sc.C.STATE_INIT;
-      this._randgen = new random.RandGen((Math.random() * 4294967295) &gt;&gt;&gt; 0);
+    spec._init = function($func) {
+      if ($func.__tag !== sc.TAG_FUNCTION) {
+        throw new Error(&quot;Thread.init failed&quot;);
+      }
+      this._bytecode = $func._;
+      this._state    = sc.STATE_INIT;
+      this._randgen  = new random.RandGen((Math.random() * 4294967295) &gt;&gt;&gt; 0);
       return this;
     };
 
@@ -119,92 +123,25 @@
       return $.Integer(this._state);
     };
 
-    // spec.parent = function() {
-    //   return this._parent;
-    // };
-
-    // spec.primitiveError = function() {
-    //   return this._primitiveError;
-    // };
-
-    // spec.primitiveIndex = function() {
-    //   return this._primitiveIndex;
-    // };
-
-    // spec.beats = function() {
-    //   return this._beats;
-    // };
-
-    // spec.beats_ = fn(function($inBeats) {
-    //   this._beats   = $inBeats;
-    //   this._seconds = this._clock.beats2secs($inBeats);
-    //   return this;
-    // }, &quot;inBeats&quot;);
-
-    // spec.seconds = function() {
-    //   return this._seconds;
-    // };
-
-    // spec.seconds_ = fn(function($inSeconds) {
-    //   this._seconds = $inSeconds;
-    //   this._beats   = this._clock.secs2beats($inSeconds);
-    //   return this;
-    // }, &quot;inSeconds&quot;);
-
-    // spec.clock = function() {
-    //   return this._clock;
-    // };
-
-    // spec.clock_ = fn(function($inClock) {
-    //   this._clock = $inClock;
-    //   this._beats = this._clock.secs2beats(this._seconds);
-    //   return this;
-    // }, &quot;inClock&quot;);
-
-    // spec.nextBeat = function() {
-    //   return this._nextBeat;
-    // };
-
-    // spec.endBeat = function() {
-    //   return this._endBeat;
-    // };
-
-    // spec.endBeat_ = function($value) {
-    //   this._endBeat = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.endValue = function() {
-    //   return this._endValue;
-    // };
-
-    // spec.endValue_ = function($value) {
-    //   this._endValue = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.exceptionHandler = function() {
-    //   return this._exceptionHandler;
-    // };
-
-    // spec.exceptionHandler_ = function($value) {
-    //   this._exceptionHandler = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.threadPlayer_ = function($value) {
-    //   this._threadPlayer = $value || /* istanbul ignroe next */ $nil;
-    //   return this;
-    // };
-
-    // spec.executingPath = function() {
-    //   return this._executingPath;
-    // };
-
-    // spec.oldExecutingPath = function() {
-    //   return this._oldExecutingPath;
-    // };
-
+    // TODO: implements parent
+    // TODO: implements primitiveError
+    // TODO: implements primitiveIndex
+    // TODO: implements beats
+    // TODO: implements beats_
+    // TODO: implements seconds
+    // TODO: implements seconds_
+    // TODO: implements clock
+    // TODO: implements clock_
+    // TODO: implements nextBeat
+    // TODO: implements endBeat
+    // TODO: implements endBeat_
+    // TODO: implements endValue
+    // TODO: implements endValue_
+    // TODO: implements exceptionHandler
+    // TODO: implements exceptionHandler_
+    // TODO: implements threadPlayer_
+    // TODO: implements executingPath
+    // TODO: implements oldExecutingPath
     // TODO: implements init
 
     spec.copy = utils.nop;
@@ -213,13 +150,7 @@
     //   return $.Boolean(this._state._ === 5);
     // };
 
-    // spec.threadPlayer = function() {
-    //   if (this._threadPlayer !== $nil) {
-    //     return this.findThreadPlayer();
-    //   }
-    //   return $nil;
-    // };
-
+    // TODO: implements threadPlayer
     // TODO: implements findThreadPlayer
 
     spec.randSeed_ = fn(function($seed) {
@@ -256,19 +187,45 @@
     // TODO: implements checkCanArchive
   });
 
-  sc.lang.klass.define(&quot;Routine&quot;, function(spec) {
+  sc.lang.klass.define(&quot;Routine : Thread&quot;, function(spec, utils) {
+    var $nil = utils.$nil;
 
     spec.constructor = function SCRoutine() {
       this.__super__(&quot;Thread&quot;);
     };
 
+    spec.$new = function($func) {
+      return this.__super__(&quot;new&quot;, [ $func ]);
+    };
+
     // TODO: implements $run
-    // TODO: implements next
-    // TODO: implements value
-    // TODO: implements resume
-    // TODO: implements run
-    // TODO: implements valueArray
-    // TODO: implements reset
+
+    var routine$resume = function($inval) {
+      var result;
+
+      if (this._state === sc.STATE_DONE) {
+        return $nil;
+      }
+
+      this._state = sc.STATE_RUNNING;
+      result = this._bytecode.resume([ $inval || $nil ]);
+      this._state = this._bytecode.state();
+
+      return result;
+    };
+
+    spec.next   = routine$resume;
+    spec.value  = routine$resume;
+    spec.resume = routine$resume;
+    spec.run    = routine$resume;
+    spec.valueArray = routine$resume;
+
+    spec.reset = function() {
+      this._state = sc.STATE_INIT;
+      this._bytecode.reset();
+      return this;
+    };
+
     // TODO: implements stop
     // TODO: implements p
     // TODO: implements storeArgs

@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.47" };
+var sc = { VERSION: "0.0.50" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -601,11 +601,6 @@ var sc = { VERSION: "0.0.47" };
     this._def   = def;
     this._code  = [];
     this._vals  = [];
-    this._state = 0;
-    this._iter  = null;
-    this._pushed = false;
-    this._parent = null;
-    this._child  = null;
     this.init(initializer);
   }
 
@@ -619,9 +614,21 @@ var sc = { VERSION: "0.0.47" };
       this._argNames = [];
       this._argVals  = [];
     }
-    this._code  = code;
-    this._index = 0;
+    this._code   = code;
+    this._length = code.length;
+    return this.reset();
+  };
 
+  Bytecode.prototype.reset = function() {
+    this._state    = this._length ? 0 : 6;
+    this._index    = 0;
+    this._iter     = null;
+    this._yield    = null;
+    this._yielded  = false;
+    this._pushed   = false;
+    this._parent   = null;
+    this._child    = null;
+    this._stopIter = false;
     return this;
   };
 
@@ -630,43 +637,55 @@ var sc = { VERSION: "0.0.47" };
     return this;
   };
 
+  Bytecode.prototype.setParent = function(parent) {
+    this._parent = parent;
+    parent._child = this;
+  };
+
   Bytecode.prototype.resume = function(args) {
     var result;
-    var code, length, index, iter;
+    var code, length, iter;
 
     if (this._child) {
       return this._child.resume(args);
     }
 
-    if (bytecode.current && !this._parent) {
-      this._parent = bytecode.current;
-      this._parent._child = this;
-      this._parent._state = 5;
+    if (bytecode.current) {
+      this.setParent(bytecode.current);
     }
 
     code   = this._code;
-    length = code.length;
-    index  = this._index;
+    length = this._length;
     iter   = this._iter;
 
     bytecode.current = this;
 
-    this._state = 3;
-    while (index < length) {
-      if (iter) {
+    while (this._index < length) {
+      if (iter && this._index === 0) {
+        this.stopIter(false);
         args = iter.next();
         if (args === null) {
-          this._state = 6;
+          this._state = 20;
           break;
         }
       }
+      if (iter && !iter.hasNext) {
+        iter = null;
+      }
 
-      result = code[index].apply(this, args);
+      this._yield = null;
+      this._state = 3;
+      result = code[this._index].apply(this, args);
+      if (this._yielded) {
+        result = this._yield;
+      }
 
-      if (!iter) {
-        index += 1;
-        if (index === length) {
-          this._state = 6;
+      this._index += 1;
+      if (this._index >= length) {
+        if (!iter) {
+          this._state = 20;
+        } else {
+          this._index = 0;
         }
       }
 
@@ -674,27 +693,39 @@ var sc = { VERSION: "0.0.47" };
         break;
       }
     }
-    result = result || /* istanbul ignore next */ $.Nil();
+    result = result || $.Nil();
 
     bytecode.current = null;
 
-    if (this._state === 6) {
-      this._index = 0;
-      this._state = 6;
-      this._iter  = null;
-      if (this._parent) {
-        if (this._parent._pushed) {
-          this._parent.put(result, true);
-        }
-        this._parent._child = null;
-        this._parent._state = 3;
-      }
-      this._parent = null;
-    } else {
-      this._index = index;
+    if (this._state === 20) {
+      this.next(result);
     }
 
     return result;
+  };
+
+  Bytecode.prototype.next = function($value) {
+    if (this._child) {
+      this._state = 5;
+      return;
+    }
+    if (this._index < this._length) {
+      return;
+    }
+    this._index = 0;
+    this._state = 6;
+    if (this._iter) {
+      this._iter = this._iter.clone();
+      this.stopIter(true);
+    }
+    if (this._parent) {
+      if (this._parent._pushed) {
+        this._parent.put($value);
+      }
+      this._parent._child = null;
+      this._parent.next($value);
+    }
+    this._parent = null;
   };
 
   Bytecode.prototype.push = function($value) {
@@ -713,17 +744,39 @@ var sc = { VERSION: "0.0.47" };
   };
 
   Bytecode.prototype.break = function() {
-    this._state = 6;
+    this._state = 10;
+    this._index = Infinity;
+  };
+
+  Bytecode.prototype.yield = function($value) {
+    this._state = 5;
+    this._yield   = $value;
+    this._yielded = true;
+    if (this._parent) {
+      this._parent.yield($value);
+    }
+  };
+
+  Bytecode.prototype.state = function() {
+    return this._state;
+  };
+
+  Bytecode.prototype.stopIter = function(value) {
+    if (typeof value === "boolean") {
+      this._stopIter = value;
+      if (this._parent) {
+        this._parent.stopIter(value);
+      }
+    }
+    return this._stopIter;
   };
 
   bytecode.create = function(initializer, def) {
     return new Bytecode(initializer, def);
   };
 
-  bytecode.yield = function() {
-    var that = bytecode.current;
-
-    that._state = 5;
+  bytecode.yield = function($value) {
+    bytecode.current.yield($value);
   };
 
   sc.lang.bytecode = bytecode;
@@ -1433,7 +1486,9 @@ var sc = { VERSION: "0.0.47" };
 
     $process = $("Main").new();
     $process._$interpreter = $("Interpreter").new();
-    $process._$mainThread  = $("Thread").new();
+    $process._$mainThread  = $("Thread").new($.Function(function() {
+      return [];
+    }));
 
     main.$currentEnv = $("Environment").new();
 
@@ -1488,34 +1543,57 @@ var sc = { VERSION: "0.0.47" };
     return null;
   };
 
-  var nop_iter = {
-    next: __stop__
+  var nop_iter = function(iter) {
+    iter.hasNext = false;
+    iter.next    = __stop__;
+    return iter;
   };
+  nop_iter.clone = function() {
+    return nop_iter;
+  };
+  nop_iter(nop_iter);
 
   var one_shot_iter = function(value) {
     var iter = {
+      hasNext: true,
       next: function() {
-        iter.next = __stop__;
+        nop_iter(iter);
         return [ value, $int_0 ];
+      },
+      clone: function() {
+        return one_shot_iter(value);
       }
     };
     return iter;
   };
 
   iterator.execute = function(iter, $function) {
-    $function._.setIterator(iter).resume();
+    if (iter.hasNext) {
+      $function._.setIterator(iter).resume();
+    }
   };
 
   iterator.object$do = one_shot_iter;
 
   iterator.function$while = function($function) {
-    var bytecode = $function._, iter = {
+    var bytecode, iter;
+
+    bytecode = $function._;
+
+    iter = {
+      hasNext: true,
       next: function() {
-        if (bytecode.resume().__bool__()) {
-          return [ $nil, $nil ];
+        if (!bytecode.reset().resume().__bool__()) {
+          nop_iter(iter);
+          return null;
         }
-        iter.next = __stop__;
-        return null;
+        if (bytecode.stopIter()) {
+          nop_iter(iter);
+        }
+        return [ $nil, $nil ];
+      },
+      clone: function() {
+        return iterator.function$while($function);
       }
     };
 
@@ -1524,13 +1602,17 @@ var sc = { VERSION: "0.0.47" };
 
   var sc_incremental_iter = function($start, $end, $step) {
     var $i = $start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i > $end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ $ret, $.Integer(j++) ];
+      },
+      clone: function() {
+        return sc_incremental_iter($start, $end, $step);
       }
     };
     return iter;
@@ -1538,13 +1620,17 @@ var sc = { VERSION: "0.0.47" };
 
   var sc_decremental_iter = function($start, $end, $step) {
     var $i = $start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var $ret = $i;
         $i = $i ["+"] ($step);
         if ($i < $end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ $ret, $.Integer(j++) ];
+      },
+      clone: function() {
+        return sc_decremental_iter($start, $end, $step);
       }
     };
     return iter;
@@ -1603,13 +1689,17 @@ var sc = { VERSION: "0.0.47" };
 
   var js_incremental_iter = function(start, end, step, type) {
     var i = start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var ret = i;
         i += step;
         if (i > end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ type(ret), $.Integer(j++) ];
+      },
+      clone: function() {
+        return js_incremental_iter(start, end, step, type);
       }
     };
     return iter;
@@ -1617,13 +1707,17 @@ var sc = { VERSION: "0.0.47" };
 
   var js_decremental_iter = function(start, end, step, type) {
     var i = start, j = 0, iter = {
+      hasNext: true,
       next: function() {
         var ret = i;
         i += step;
         if (i < end) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ type(ret), $.Integer(j++) ];
+      },
+      clone: function() {
+        return js_decremental_iter(start, end, step, type);
       }
     };
     return iter;
@@ -1718,12 +1812,16 @@ var sc = { VERSION: "0.0.47" };
 
   var list_iter = function(list) {
     var i = 0, iter = {
+      hasNext: true,
       next: function() {
         var $ret = list[i++];
         if (i >= list.length) {
-          iter.next = __stop__;
+          nop_iter(iter);
         }
         return [ $ret, $.Integer(i - 1) ];
+      },
+      clone: function() {
+        return list_iter(list);
       }
     };
     return iter;

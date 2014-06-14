@@ -23,7 +23,7 @@
       instance = this.createInstance();
 
       test = instance.__tag;
-      expect(test).to.be.a("JSNumber").that.equals(sc.C.TAG_INT);
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_INT);
     });
     it("#valueOf", function() {
       var instance, test;
@@ -387,7 +387,7 @@
       var $scale, $stepsPerOctave;
 
       $scale = $$({
-        performDegreeToKey: this.spy(sc.test.func)
+        performDegreeToKey: this.spy(sc.test.func())
       });
       $stepsPerOctave = $$();
 
@@ -453,7 +453,7 @@
       $function = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "collectAs", sc.test.func);
+      this.stub(instance, "collectAs", sc.test.func());
 
       test = instance.collect($function);
       expect(instance.collectAs.args[0]).to.eql($$([ $function, $("Array") ])._);
@@ -520,7 +520,7 @@
       var instance, test, spy;
       var $hi, $step;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $hi = $$();
       $step = $$();
       this.stub(sc.lang.klass, "get").withArgs("Interval").returns($$({

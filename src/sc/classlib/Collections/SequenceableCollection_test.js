@@ -15,9 +15,7 @@
       SCArray = $("Array");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source||[]).map($$), !!immutable);
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "SequenceableCollection", testMethod);
-        return instance;
+        return $$(instance, "SequenceableCollection" + this.test.title);
       };
     });
     it("#valueOf", function() {
@@ -35,7 +33,7 @@
       $index = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "clipAt", sc.test.func);
+      this.stub(instance, "clipAt", sc.test.func());
 
       test = instance ["|@|"] ($index);
       expect(instance.clipAt).to.be.calledWith($index);
@@ -48,7 +46,7 @@
       $index = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "wrapAt", sc.test.func);
+      this.stub(instance, "wrapAt", sc.test.func());
 
       test = instance ["@@"] ($index);
       expect(instance.wrapAt).to.be.calledWith($index);
@@ -61,7 +59,7 @@
       $index = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "foldAt", sc.test.func);
+      this.stub(instance, "foldAt", sc.test.func());
 
       test = instance ["@|@"] ($index);
       expect(instance.foldAt).to.be.calledWith($index);
@@ -602,7 +600,7 @@
       $function = $$();
 
       instance = this.createInstance([ 10, 20, 30, 40 ]);
-      this.stub(instance, "pairsDo", sc.test.func);
+      this.stub(instance, "pairsDo", sc.test.func());
 
       test = instance.keysValuesDo($function);
       expect(instance.pairsDo).to.be.calledWith($function);
@@ -913,7 +911,7 @@
         var instance, test;
 
         instance = this.createInstance();
-        this.stub(instance, "performUnaryOp", sc.test.func);
+        this.stub(instance, "performUnaryOp", sc.test.func());
 
         test = instance[methodName]();
         expect(instance.performUnaryOp.args[0]).to.eql($$([
@@ -977,7 +975,7 @@
         var $aNumber = $$(), $adverb = $$();
 
         instance = this.createInstance();
-        this.stub(instance, "performBinaryOp", sc.test.func);
+        this.stub(instance, "performBinaryOp", sc.test.func());
 
         test = instance[methodName]($aNumber, $adverb);
         expect(instance.performBinaryOp).to.callCount(1);
@@ -1013,7 +1011,7 @@
 
       $aSelector  = $$();
       $theOperand = $$({
-        performBinaryOpOnSeqColl: this.spy(sc.test.func)
+        performBinaryOpOnSeqColl: this.spy(sc.test.func())
       });
       $adverb = $$();
 
@@ -1250,7 +1248,7 @@
       var instance, test, spy;
       var $arg1, $arg2;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $arg1 = $$();
       $arg2 = $$();
       this.stub(sc.lang.klass.utils, "getMethod")
@@ -1310,7 +1308,7 @@
         $arg3 = $$();
 
         instance = this.createInstance();
-        this.stub(instance, "multiChannelPerform", sc.test.func);
+        this.stub(instance, "multiChannelPerform", sc.test.func());
 
         test = instance[methodName]($arg1, $arg2, $arg3);
         expect(instance.multiChannelPerform.args[0]).to.eql($$([
@@ -1373,9 +1371,7 @@
       var instance, test;
 
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
-      test = instance.swap(
-        $$(1), $$(3)
-      );
+      test = instance.swap($$(1), $$(3));
       expect(test).to.equal(instance)
         .that.is.a("SCArray").and.eqls([ 1, 4, 3, 2, 5 ]);
     });
@@ -1406,9 +1402,7 @@
 
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
 
-      test = instance.wrapAt(
-        $$(7)
-      );
+      test = instance.wrapAt($$(7));
       expect(test).to.be.a("SCInteger").that.equals(3);
     });
     it("#wrapPut", function() {
@@ -1416,9 +1410,7 @@
 
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
 
-      test = instance.wrapPut(
-        $$(7), $$(0)
-      );
+      test = instance.wrapPut($$(7), $$(0));
       expect(test).to.equals(instance)
         .that.is.a("SCArray").and.eqls([ 1, 2, 0, 4, 5 ]);
     });

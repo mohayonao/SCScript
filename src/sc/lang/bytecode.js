@@ -14,11 +14,6 @@
     this._def   = def;
     this._code  = [];
     this._vals  = [];
-    this._state = sc.C.STATE_INIT;
-    this._iter  = null;
-    this._pushed = false;
-    this._parent = null;
-    this._child  = null;
     this.init(initializer);
   }
 
@@ -32,9 +27,21 @@
       this._argNames = [];
       this._argVals  = [];
     }
-    this._code  = code;
-    this._index = 0;
+    this._code   = code;
+    this._length = code.length;
+    return this.reset();
+  };
 
+  Bytecode.prototype.reset = function() {
+    this._state    = this._length ? sc.STATE_INIT : sc.STATE_DONE;
+    this._index    = 0;
+    this._iter     = null;
+    this._yield    = null;
+    this._yielded  = false;
+    this._pushed   = false;
+    this._parent   = null;
+    this._child    = null;
+    this._stopIter = false;
     return this;
   };
 
@@ -43,71 +50,95 @@
     return this;
   };
 
+  Bytecode.prototype.setParent = function(parent) {
+    this._parent = parent;
+    parent._child = this;
+  };
+
   Bytecode.prototype.resume = function(args) {
     var result;
-    var code, length, index, iter;
+    var code, length, iter;
 
     if (this._child) {
       return this._child.resume(args);
     }
 
-    if (bytecode.current && !this._parent) {
-      this._parent = bytecode.current;
-      this._parent._child = this;
-      this._parent._state = sc.C.STATE_SUSPENDED;
+    if (bytecode.current) {
+      this.setParent(bytecode.current);
     }
 
     code   = this._code;
-    length = code.length;
-    index  = this._index;
+    length = this._length;
     iter   = this._iter;
 
     bytecode.current = this;
 
-    this._state = sc.C.STATE_RUNNING;
-    while (index < length) {
-      if (iter) {
+    while (this._index < length) {
+      if (iter && this._index === 0) {
+        this.stopIter(false);
         args = iter.next();
         if (args === null) {
-          this._state = sc.C.STATE_DONE;
+          this._state = sc.STATE_PENDING;
           break;
         }
       }
+      if (iter && !iter.hasNext) {
+        iter = null;
+      }
 
-      result = code[index].apply(this, args);
+      this._yield = null;
+      this._state = sc.STATE_RUNNING;
+      result = code[this._index].apply(this, args);
+      if (this._yielded) {
+        result = this._yield;
+      }
 
-      if (!iter) {
-        index += 1;
-        if (index === length) {
-          this._state = sc.C.STATE_DONE;
+      this._index += 1;
+      if (this._index >= length) {
+        if (!iter) {
+          this._state = sc.STATE_PENDING;
+        } else {
+          this._index = 0;
         }
       }
 
-      if (this._state !== sc.C.STATE_RUNNING) {
+      if (this._state !== sc.STATE_RUNNING) {
         break;
       }
     }
-    result = result || /* istanbul ignore next */ $.Nil();
+    result = result || $.Nil();
 
     bytecode.current = null;
 
-    if (this._state === sc.C.STATE_DONE) {
-      this._index = 0;
-      this._state = sc.C.STATE_DONE;
-      this._iter  = null;
-      if (this._parent) {
-        if (this._parent._pushed) {
-          this._parent.put(result, true);
-        }
-        this._parent._child = null;
-        this._parent._state = sc.C.STATE_RUNNING;
-      }
-      this._parent = null;
-    } else {
-      this._index = index;
+    if (this._state === sc.STATE_PENDING) {
+      this.next(result);
     }
 
     return result;
+  };
+
+  Bytecode.prototype.next = function($value) {
+    if (this._child) {
+      this._state = sc.STATE_SUSPENDED;
+      return;
+    }
+    if (this._index < this._length) {
+      return;
+    }
+    this._index = 0;
+    this._state = sc.STATE_DONE;
+    if (this._iter) {
+      this._iter = this._iter.clone();
+      this.stopIter(true);
+    }
+    if (this._parent) {
+      if (this._parent._pushed) {
+        this._parent.put($value);
+      }
+      this._parent._child = null;
+      this._parent.next($value);
+    }
+    this._parent = null;
   };
 
   Bytecode.prototype.push = function($value) {
@@ -126,17 +157,39 @@
   };
 
   Bytecode.prototype.break = function() {
-    this._state = sc.C.STATE_DONE;
+    this._state = sc.STATE_LOOP_BREAK;
+    this._index = Infinity;
+  };
+
+  Bytecode.prototype.yield = function($value) {
+    this._state = sc.STATE_SUSPENDED;
+    this._yield   = $value;
+    this._yielded = true;
+    if (this._parent) {
+      this._parent.yield($value);
+    }
+  };
+
+  Bytecode.prototype.state = function() {
+    return this._state;
+  };
+
+  Bytecode.prototype.stopIter = function(value) {
+    if (typeof value === "boolean") {
+      this._stopIter = value;
+      if (this._parent) {
+        this._parent.stopIter(value);
+      }
+    }
+    return this._stopIter;
   };
 
   bytecode.create = function(initializer, def) {
     return new Bytecode(initializer, def);
   };
 
-  bytecode.yield = function() {
-    var that = bytecode.current;
-
-    that._state = sc.C.STATE_SUSPENDED;
+  bytecode.yield = function($value) {
+    bytecode.current.yield($value);
   };
 
   sc.lang.bytecode = bytecode;

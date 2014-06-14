@@ -1,8 +1,6 @@
 (function(sc) {
   "use strict";
 
-  sc.test = {};
-
   require("../lang/installer");
 
   require("../classlib/Collections/Array");
@@ -18,6 +16,8 @@
   require("../classlib/Core/Thread");
   require("../classlib/Math/Integer");
   require("../classlib/Math/Float");
+
+  var $ = sc.lang.$;
 
   sc.lang.klass.refine("Object", function(spec) {
 
@@ -36,51 +36,58 @@
 
   });
 
-  var encode = function(a, opts) {
+  sc.test = function(callback) {
+    return function() {
+      $("Environment").new().push();
+      callback.apply(this);
+      $("Environment").pop();
+    };
+  };
+
+  var toSCObject = function(obj, opts) {
     var $ = sc.lang.$;
 
-    if (Array.isArray(a)) {
-      return $.Array(a.map(encode));
+    if (isSCObject(obj)) {
+      return obj;
     }
-    if (a === null) {
+    if (Array.isArray(obj)) {
+      return $.Array(obj.map(toSCObject));
+    }
+    if (obj === null) {
       return $.Nil();
     }
-    if (typeof a === "undefined") {
+    if (typeof obj === "undefined") {
       return undefined;
     }
-    if (typeof a._ !== "undefined") {
-      return a;
-    }
-    if (typeof a === "number") {
-      if ((a|0) === a) {
-        return $.Integer(a);
+    if (typeof obj === "number") {
+      if ((obj|0) === obj) {
+        return $.Integer(obj);
       } else {
-        return $.Float(a);
+        return $.Float(obj);
       }
     }
-    if (typeof a === "boolean") {
-      return $.Boolean(a);
+    if (typeof obj === "boolean") {
+      return $.Boolean(obj);
     }
-    if (typeof a === "string") {
-      if (a.length === 2 && a.charAt(0) === "$") {
-        return $.Char(a.charAt(1));
+    if (typeof obj === "string") {
+      if (obj.length === 2 && obj.charAt(0) === "$") {
+        return $.Char(obj.charAt(1));
       }
-      if (a.charAt(0) === "\\") {
-        return $.Symbol(a.substr(1));
+      if (obj.charAt(0) === "\\") {
+        return $.Symbol(obj.substr(1));
       }
-      return $.String(a);
+      return $.String(obj);
     }
-
-    if (typeof a === "function") {
+    if (typeof obj === "function") {
       return $.Function(function() {
-        return [ a ];
+        return [ obj ];
       }, typeof opts === "string" ? opts : undefined);
     }
 
-    return a;
+    return obj;
   };
 
-  var s = function(obj) {
+  var toString = function(obj) {
     var str = JSON.stringify(obj) || (typeof obj);
     if (str.length > 2) {
       str = str.replace(/([{[,])/g, "$1 ").replace(/([\]}])/g, " $1");
@@ -101,14 +108,14 @@
 
     if (isSCObject(obj)) {
       switch (obj.__tag) {
-      case sc.C.TAG_FALSE: return "SCBoolean";
-      case sc.C.TAG_TRUE: return "SCBoolean";
+      case sc.TAG_FALSE: return "SCBoolean";
+      case sc.TAG_TRUE : return "SCBoolean";
       }
       return "SC" + obj.__className;
     }
 
     if (guess) {
-      return typeOf(encode(obj));
+      return typeOf(toSCObject(obj));
     }
 
     if (obj === null) {
@@ -154,7 +161,7 @@
       }
 
       desc = sc.test.desc(
-        "#{0}.#{1}(#{2})", s(source), methodName, s(args).slice(2, -2)
+        "#{0}.#{1}(#{2})", toString(source), methodName, toString(args).slice(2, -2)
       );
 
       if (isClassMethod) {
@@ -165,16 +172,16 @@
 
       if (error) {
         return expect(function() {
-          instance[methodName].apply(instance, args.map(encode));
+          instance[methodName].apply(instance, args.map(toSCObject));
         }).to.throw(error);
       }
 
-      test = instance[methodName].apply(instance, args.map(encode));
+      test = instance[methodName].apply(instance, args.map(toSCObject));
       if (result === context) {
         // expect to return this like `function() { return this; }`
         expect(test).with_message(desc).to.equal(instance);
       } else {
-        expected = encode(result);
+        expected = toSCObject(result);
         type     = typeOf(expected);
         if (result) {
           result   = result.valueOf();
@@ -257,8 +264,7 @@
   };
 
   var prev = null;
-
-  sc.test.setSingletonMethod = function(instance, className, methodName) {
+  var setSingletonMethod = function(instance, className, methodName) {
     var method;
 
     if (prev) {
@@ -273,13 +279,18 @@
     prev = {
       instance: instance, methodName: methodName
     };
-    return instance;
   };
 
   sc.test.object = function(source, opts) {
-    var instance;
+    var instance, matches;
 
-    if (typeof source === "undefined") {
+    if (isSCObject(source)) {
+      instance = source;
+      matches = /^([A-Z]\w*)#([a-z]\w*|[-+*\/%<=>!?&|@]+)/.exec(opts);
+      if (matches) {
+        setSingletonMethod(instance, matches[1], matches[2]);
+      }
+    } else if (typeof source === "undefined") {
       instance = sc.lang.klass.classes.Object.new();
     } else if (isDictionary(source)) {
       instance = sc.lang.klass.classes.Object.new();
@@ -289,39 +300,19 @@
         });
       });
     } else {
-      instance = encode(source, opts);
+      instance = toSCObject(source, opts);
     }
     instance.__testid = instance.__hash;
 
     return instance;
   };
 
-  Object.defineProperty(sc.test, "func", {
-    get: function() {
-      var seed, fn;
-
-      seed = Math.random();
-      fn = function() {
-        return seed;
-      };
-      fn.__seed = seed;
-
-      return fn;
-    }
-  });
-
-  sc.test.funcWith = function(func) {
+  sc.test.func = function() {
     var seed, fn;
 
     seed = Math.random();
     fn = function() {
-      var ret = func.apply(null, arguments);
-      if (ret) {
-        Object.defineProperty(ret, "__seed", {
-          value: seed
-        });
-      }
-      return ret;
+      return seed;
     };
     fn.__seed = seed;
 
@@ -330,9 +321,9 @@
 
   // for chai
   global.chai.use(function(chai, utils) {
-    var assertion_proto = chai.Assertion.prototype;
+    var assert$proto = chai.Assertion.prototype;
 
-    utils.overwriteChainableMethod(assertion_proto, "a", function(_super) {
+    utils.overwriteChainableMethod(assert$proto, "a", function(_super) {
       return function(type, msg) {
         var object, actual, article;
 
@@ -366,16 +357,11 @@
       };
     });
 
-    utils.addMethod(assertion_proto, "with_message", function() {
+    utils.addMethod(assert$proto, "with_message", function() {
       utils.flag(this, "message", sc.test.desc.apply(null, arguments));
     });
 
-    utils.addMethod(assertion_proto, "expect", function(val, message) {
-      message = message || utils.flag(this, "message");
-      return new chai.Assertion(val, message);
-    });
-
-    utils.addMethod(assertion_proto, "calledLastIn", function(seed) {
+    utils.addMethod(assert$proto, "calledLastIn", function(seed) {
       var expected = utils.flag(this, "object").__seed;
       this.assert(
         seed === expected || (seed && seed.__seed === expected),
@@ -385,7 +371,7 @@
       );
     });
 
-    utils.addProperty(assertion_proto, "nop", function() {
+    utils.addProperty(assert$proto, "nop", function() {
       this.assert(
         utils.flag(this, "object") === sc.lang.klass.utils.nop,
         "expected #{this} to be nop",
@@ -394,7 +380,7 @@
       );
     });
 
-    utils.addProperty(assertion_proto, "nan", function() {
+    utils.addProperty(assert$proto, "nan", function() {
       this.assert(
         isNaN(utils.flag(this, "object")),
         "expected #{this} to be NaN",

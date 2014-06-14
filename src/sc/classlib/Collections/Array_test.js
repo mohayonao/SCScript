@@ -22,7 +22,7 @@
       instance = this.createInstance();
 
       test = instance.__tag;
-      expect(test).to.be.a("JSNumber").that.equals(sc.C.TAG_ARRAY);
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_ARRAY);
     });
     it("#valueOf", function() {
       var instance, test;
@@ -813,7 +813,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "size", sc.test.func);
+      this.stub(instance, "size", sc.test.func());
 
       test = instance.numChannels();
       expect(instance.size).to.be.calledLastIn(test);
@@ -836,7 +836,7 @@
       var instance, test, spy;
       var $mul, $add;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $mul = $$();
       $add = $$();
       this.stub(sc.lang.klass, "get").withArgs("MulAdd").returns($$({

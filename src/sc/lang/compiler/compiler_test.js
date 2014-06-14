@@ -17,7 +17,7 @@
       source = Math.random();
       opts   = Math.random();
 
-      tokenize = this.spy(sc.test.func);
+      tokenize = this.spy(sc.test.func());
 
       this.stub(compiler, "lexer", function() {
         return { tokenize: tokenize };
@@ -35,7 +35,7 @@
       source = Math.random();
       opts   = Math.random();
 
-      this.stub(compiler.parser, "parse", sc.test.func);
+      this.stub(compiler.parser, "parse", sc.test.func());
 
       test = SCScript.parse(source, opts);
       expect(compiler.parser.parse).to.be.calledWith(source, opts);
@@ -52,7 +52,7 @@
       this.stub(SCScript, "parse", function() {
         return ast;
       });
-      this.stub(compiler.codegen, "compile", sc.test.func);
+      this.stub(compiler.codegen, "compile", sc.test.func());
 
       test = SCScript.compile(source, opts);
 
@@ -67,7 +67,7 @@
       source = {};
       opts   = Math.random();
 
-      this.stub(compiler.codegen, "compile", sc.test.func);
+      this.stub(compiler.codegen, "compile", sc.test.func());
 
       test = SCScript.compile(source, opts);
 

@@ -10,7 +10,7 @@
       sc.lang.klass = { get: function() {} };
     }
     it("shold apply sc.lang.klass.get", sinon.test(function() {
-      var stub = this.stub(sc.lang.klass, "get", sc.test.func);
+      var stub = this.stub(sc.lang.klass, "get", sc.test.func());
       var test = $("Class");
       expect(stub).to.be.calledLastIn(test);
     }));

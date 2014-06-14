@@ -16,7 +16,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function($item) {
-      if ($item.__tag !== sc.C.TAG_CHAR) {
+      if ($item.__tag !== sc.TAG_CHAR) {
         throw new TypeError("Wrong type.");
       }
       return $item;
@@ -72,7 +72,7 @@ SCScript.install(function(sc) {
     spec.compare = fn(function($aString, $ignoreCase) {
       var araw, braw, length, i, a, b, cmp, func;
 
-      if ($aString.__tag !== sc.C.TAG_STR) {
+      if ($aString.__tag !== sc.TAG_STR) {
         return $nil;
       }
 

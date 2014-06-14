@@ -22,7 +22,7 @@
 
       instance = this.createInstance();
       test = instance.__tag;
-      expect(test).to.be.a("JSNumber").that.equals(sc.C.TAG_CHAR);
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_CHAR);
     });
     it("#__str__", function() {
       var instance, test;
@@ -105,7 +105,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "ascii", sc.test.func);
+      this.stub(instance, "ascii", sc.test.func());
 
       test = instance.asUnicode();
       expect(instance.ascii).to.be.calledLastIn(test);

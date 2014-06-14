@@ -16,13 +16,7 @@
     before(function() {
       SCObject = $("Object");
       this.createInstance = function(instance) {
-        var testMethod;
-        if (!instance) {
-          instance = SCObject.new();
-        }
-        testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "Object", testMethod);
-        return instance;
+        return $$($$(instance), "Object" + this.test.title);
       };
     });
     it("#__tag", function() {
@@ -31,7 +25,7 @@
       instance = this.createInstance();
 
       test = instance.__tag;
-      expect(test).to.be.a("JSNumber").that.equals(sc.C.TAG_OBJ);
+      expect(test).to.be.a("JSNumber").that.equals(sc.TAG_OBJ);
     });
     it("#valueOf", function() {
       var instance, test;
@@ -282,7 +276,7 @@
       $arg2     = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "size", sc.test.func);
+      this.stub(instance, "size", sc.test.func());
 
       test = instance.perform($selector, $arg1, $arg2);
       expect(instance.size).to.be.calledWith($arg1, $arg2);
@@ -302,7 +296,7 @@
       $arglist  = $$([ $arg1, $arg2 ]);
 
       instance = this.createInstance();
-      this.stub(instance, "size", sc.test.func);
+      this.stub(instance, "size", sc.test.func());
 
       test = instance.performList($selector, $arglist);
       expect(instance.size).to.be.calledWith($arg1, $arg2);
@@ -332,7 +326,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      instance.shallowCopy = this.spy(sc.test.func);
+      instance.shallowCopy = this.spy(sc.test.func());
 
       test = instance.copy();
       expect(instance.shallowCopy).to.be.calledLastIn(test);
@@ -393,7 +387,7 @@
       $n = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "dup", sc.test.func);
+      this.stub(instance, "dup", sc.test.func());
 
       test = instance ["!"] ($n);
       expect(instance.dup).to.be.calledWith($n);
@@ -403,7 +397,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "value", sc.test.func);
+      this.stub(instance, "value", sc.test.func());
 
       test = instance.poll();
       expect(instance.value).to.be.calledLastIn(test);
@@ -431,7 +425,7 @@
       $obj = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "===", sc.test.func);
+      this.stub(instance, "===", sc.test.func());
 
       test = instance ["=="] ($obj);
       expect(instance["==="]).to.be.calledWith($obj);
@@ -441,7 +435,7 @@
       var instance, test, spy;
       var $obj;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $obj = $$();
 
       instance = this.createInstance();
@@ -511,7 +505,7 @@
       var instance, test, spy;
       var $obj;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $obj = $$();
       this.stub(sc.lang.klass, "get").withArgs("Association").returns($$({
         new: spy
@@ -539,7 +533,7 @@
 
       instance = this.createInstance();
       this.stub(instance, "reset");
-      this.stub(instance, "next", sc.test.func);
+      this.stub(instance, "next", sc.test.func());
 
       test = instance.first($inval);
       expect(instance.reset).to.be.calledBefore(instance.next);
@@ -549,7 +543,7 @@
     it("#iter", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("OneShotStream").returns($$({
         new: spy
       }));
@@ -587,7 +581,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "yield", sc.test.func);
+      this.stub(instance, "yield", sc.test.func());
 
       test = instance.embedInStream();
       expect(instance.yield).to.be.calledLastIn(test);
@@ -619,7 +613,7 @@
       var $event;
 
       $event = $$({
-        copy: sc.test.func
+        copy: sc.test.func()
       });
 
       instance = this.createInstance();
@@ -667,7 +661,7 @@
       var instance, test, spy;
       var $obj;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $obj = $$({ value: spy });
 
       instance = this.createInstance();
@@ -748,7 +742,7 @@
       $item = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "===", sc.test.func);
+      this.stub(instance, "===", sc.test.func());
 
       test = instance.matchItem($item);
       expect(instance["==="]).to.be.calledWith($item);
@@ -766,7 +760,7 @@
       var instance, test, spy;
       var $key;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $key = $$();
 
       instance = this.createInstance();
@@ -820,7 +814,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "class", sc.test.func);
+      this.stub(instance, "class", sc.test.func());
 
       test = instance.species();
       expect(instance.class).to.be.calledLastIn(test);
@@ -872,7 +866,7 @@
       var $aSimilarClass;
 
       $aSimilarClass = $$({
-        newFrom: this.spy(sc.test.func)
+        newFrom: this.spy(sc.test.func())
       });
 
       instance = this.createInstance();
@@ -888,7 +882,7 @@
     it("#reference", sinon.test(function() {
       var instance, test;
 
-      this.stub($, "Ref", sc.test.func);
+      this.stub($, "Ref", sc.test.func());
 
       instance = this.createInstance();
 
@@ -899,7 +893,7 @@
     it("#asRef", sinon.test(function() {
       var instance, test;
 
-      this.stub($, "Ref", sc.test.func);
+      this.stub($, "Ref", sc.test.func());
 
       instance = this.createInstance();
 
@@ -910,7 +904,7 @@
     it("#asArray", sinon.test(function() {
       var instance, test, spy;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
 
       instance = this.createInstance();
       this.stub(instance, "asCollection", function() {
@@ -926,7 +920,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(instance, "asArray", sc.test.func);
+      this.stub(instance, "asArray", sc.test.func());
 
       test = instance.asSequenceableCollection();
       expect(instance.asArray).to.be.calledLastIn(test);
@@ -944,7 +938,7 @@
       $function = $$();
       $index    = $$();
       $rank     = $$();
-      this.stub($function, "value", sc.test.func);
+      this.stub($function, "value", sc.test.func());
 
       instance = this.createInstance();
 
@@ -960,7 +954,7 @@
       $function = $$();
       $index    = $$();
       $rank     = $$();
-      this.stub($function, "value", sc.test.func);
+      this.stub($function, "value", sc.test.func());
 
       instance = this.createInstance();
 
@@ -1027,7 +1021,7 @@
       var instance, test, spy;
       var $elem, $arg1, $arg2;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("FunctionList").returns($$({
         new: spy
       }));
@@ -1186,7 +1180,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.bitAnd = this.spy(sc.test.func);
+      instance.bitAnd = this.spy(sc.test.func());
 
       test = instance ["&"] ($that);
       expect(instance.bitAnd).to.be.calledWith($that);
@@ -1199,7 +1193,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.bitOr = this.spy(sc.test.func);
+      instance.bitOr = this.spy(sc.test.func());
 
       test = instance ["|"] ($that);
       expect(instance.bitOr).to.be.calledWith($that);
@@ -1212,7 +1206,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.mod = this.spy(sc.test.func);
+      instance.mod = this.spy(sc.test.func());
 
       test = instance ["%"] ($that);
       expect(instance.mod).to.be.calledWith($that);
@@ -1225,7 +1219,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.pow = this.spy(sc.test.func);
+      instance.pow = this.spy(sc.test.func());
 
       test = instance ["**"] ($that);
       expect(instance.pow).to.be.calledWith($that);
@@ -1238,7 +1232,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.leftShift = this.spy(sc.test.func);
+      instance.leftShift = this.spy(sc.test.func());
 
       test = instance ["<<"] ($that);
       expect(instance.leftShift).to.be.calledWith($that);
@@ -1251,7 +1245,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.rightShift = this.spy(sc.test.func);
+      instance.rightShift = this.spy(sc.test.func());
 
       test = instance [">>"] ($that);
       expect(instance.rightShift).to.be.calledWith($that);
@@ -1264,7 +1258,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.unsignedRightShift = this.spy(sc.test.func);
+      instance.unsignedRightShift = this.spy(sc.test.func());
 
       test = instance ["+>>"] ($that);
       expect(instance.unsignedRightShift).to.be.calledWith($that);
@@ -1277,7 +1271,7 @@
       $that = $$();
 
       instance = this.createInstance();
-      instance.firstArg = this.spy(sc.test.func);
+      instance.firstArg = this.spy(sc.test.func());
 
       test = instance ["<!"] ($that);
       expect(instance.firstArg).to.be.calledWith($that);
@@ -1287,7 +1281,7 @@
       var instance, test;
 
       instance = this.createInstance();
-      instance.asInteger = this.spy(sc.test.func);
+      instance.asInteger = this.spy(sc.test.func());
 
       test = instance.asInt();
       expect(instance.asInteger).to.be.calledLastIn(test);
@@ -1361,7 +1355,7 @@
       $beats = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "next", sc.test.func);
+      this.stub(instance, "next", sc.test.func());
 
       test = instance.awake($beats);
       expect(instance.next).to.be.calledWith($beats);
@@ -1403,7 +1397,7 @@
       $adverb    = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "performBinaryOpOnSomething", sc.test.func);
+      this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
 
       test = instance.performBinaryOpOnSimpleNumber($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
@@ -1418,7 +1412,7 @@
       $adverb    = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "performBinaryOpOnSomething", sc.test.func);
+      this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
 
       test = instance.performBinaryOpOnSignal($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
@@ -1433,7 +1427,7 @@
       $adverb    = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "performBinaryOpOnSomething", sc.test.func);
+      this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
 
       test = instance.performBinaryOpOnComplex($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
@@ -1448,7 +1442,7 @@
       $adverb    = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "performBinaryOpOnSomething", sc.test.func);
+      this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
 
       test = instance.performBinaryOpOnSeqColl($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
@@ -1463,7 +1457,7 @@
       $adverb    = $$();
 
       instance = this.createInstance();
-      this.stub(instance, "performBinaryOpOnSomething", sc.test.func);
+      this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
 
       test = instance.performBinaryOpOnUGen($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
@@ -1510,7 +1504,7 @@
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test, spy, rate;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("K2A").returns($$({
         ar: spy
       }));
@@ -1602,7 +1596,7 @@
       $index = $$();
 
       instance = this.createInstance();
-      instance.at = this.spy(sc.test.func);
+      instance.at = this.spy(sc.test.func());
 
       test = instance["[]"]($index);
       expect(instance.at).to.be.calledWith($index);
@@ -1616,7 +1610,7 @@
       $value = $$();
 
       instance = this.createInstance();
-      instance.put = this.spy(sc.test.func);
+      instance.put = this.spy(sc.test.func());
 
       test = instance["[]_"]($index, $value);
       expect(instance.put).to.be.calledWith($index, $value);
@@ -1631,7 +1625,7 @@
       $last   = $$();
 
       instance = this.createInstance();
-      instance.copySeries = this.spy(sc.test.func);
+      instance.copySeries = this.spy(sc.test.func());
 
       test = instance["[..]"]($first, $second, $last);
       expect(instance.copySeries).to.be.calledWith($first, $second, $last);
@@ -1647,7 +1641,7 @@
       $value  = $$();
 
       instance = this.createInstance();
-      instance.putSeries = this.spy(sc.test.func);
+      instance.putSeries = this.spy(sc.test.func());
 
       test = instance["[..]_"]($first, $second, $last, $value);
       expect(instance.putSeries).to.be.calledWith($first, $second, $last, $value);

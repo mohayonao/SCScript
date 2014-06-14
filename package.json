@@ -1,9 +1,10 @@
 {
   "name": "scscript",
-  "version": "0.0.47",
+  "version": "0.0.50",
   "author": "Nao Yonamine <mohayonao@gmail.com>",
   "homepage": "http://mohayonao.github.io/SCScript/",
   "bugs": "https://github.com/mohayonao/SCScript/issues",
+  "description": "JavaScript port of SuperCollider",
   "repository": {
     "type": "git",
     "url": "git://github.com/mohayonao/SCScript.git"

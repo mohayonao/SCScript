@@ -14,10 +14,6 @@
       this.createInstance = function(list) {
         return SCEnvironment.newFrom($$(list || []));
       };
-      SCEnvironment.push(SCEnvironment.new());
-    });
-    after(function() {
-      SCEnvironment.pop().pop();
     });
     it("#valueOf", function() {
       var instance, test;
@@ -47,7 +43,7 @@
     });
     it.skip("#unlinkDoc", function() {
     });
-    it("push/pop", function() {
+    it("push/pop", sc.test(function() {
       var test;
 
       $.Environment("a", $$(1));
@@ -62,8 +58,10 @@
       SCEnvironment.new().pop();
       test = $.Environment("a");
       expect(test).to.be.a("SCInteger").that.equals(1);
-    });
-    it("make", function() {
+
+      SCEnvironment.new().pop();
+    }));
+    it("make", sc.test(function() {
       var test;
       var $function;
 
@@ -78,8 +76,8 @@
 
       test = $.Environment("a");
       expect(test).to.be.a("SCInteger").that.equals(1);
-    });
-    it("use", function() {
+    }));
+    it("use", sc.test(function() {
       var test;
       var $function;
 
@@ -94,6 +92,6 @@
 
       test = $.Environment("a");
       expect(test).to.be.a("SCInteger").that.equals(1);
-    });
+    }));
   });
 })();

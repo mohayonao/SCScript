@@ -61,11 +61,11 @@
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.false;
 
-      $anAssociation = SCAssociation.new();
+      $anAssociation = $$(SCAssociation.new());
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.false;
 
-      $anAssociation = SCAssociation.new($$(1), $$(3));
+      $anAssociation = $$(SCAssociation.new($$(1), $$(3)));
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
@@ -83,11 +83,11 @@
 
       instance = this.createInstance($$(1), $$(2));
 
-      $anAssociation = SCAssociation.new($$(2), $$(3));
+      $anAssociation = $$(SCAssociation.new($$(2), $$(3)));
       test = instance ["<"] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.true;
 
-      $anAssociation = SCAssociation.new($$(0), $$(3));
+      $anAssociation = $$(SCAssociation.new($$(0), $$(3)));
       test = instance ["<"] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.false;
     });

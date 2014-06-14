@@ -175,6 +175,10 @@ SCScript.install(function(sc) {
       );
       return this;
     }, "body");
+
+    spec.state = function() {
+      return $.Integer(this._.state());
+    };
   });
 
 });

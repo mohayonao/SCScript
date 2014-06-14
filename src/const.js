@@ -32,14 +32,17 @@
     STATE_SUSPENDED: 5,
     STATE_DONE     : 6,
 
-    LOOP_BREAK: 0xffff,
+    STATE_LOOP_BREAK: 10,
+    STATE_PENDING   : 20,
   };
 
   if (typeof global.sc !== "undefined") {
-    global.sc.C = C;
+    Object.keys(C).forEach(function(key) {
+      global.sc[key] = C[key];
+    });
   }
   if (typeof module !== "undefined") {
     module.exports = C;
   }
 
-})(this.self||global);
+})(this.self || global);

@@ -15,9 +15,7 @@
       SCArrayedCollection = $("ArrayedCollection");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source || []).map($$), !!immutable);
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "ArrayedCollection", testMethod);
-        return instance;
+        return $$(instance, "ArrayedCollection" + this.test.title);
       };
     });
     it("#__elem__", function() {
@@ -509,7 +507,7 @@
       var instance, test;
 
       instance = this.createInstance([ 1, 2, 3 ]);
-      this.stub(instance, "copy", sc.test.func);
+      this.stub(instance, "copy", sc.test.func());
 
       test = instance.getSlots();
       expect(instance.copy).to.be.calledLastIn(test);
@@ -518,7 +516,7 @@
       var instance, test, spy;
       var $array;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $array = $$();
 
       instance = this.createInstance([ 1, 2, 3 ]);
@@ -1241,9 +1239,7 @@
       SCRawArray = $("RawArray");
       this.createInstance = function(source) {
         var instance = $.String(source || "").copy();
-        var testMethod = this.test.title.substr(1);
-        sc.test.setSingletonMethod(instance, "RawArray", testMethod);
-        return instance;
+        return $$(instance, "RawArray" + this.test.title);
       };
     });
     it("#archiveAsCompileString", function() {

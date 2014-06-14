@@ -158,7 +158,7 @@
       var instance, test, spy;
       var $aSelector, $aNumber;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $aSelector = $$();
       $aNumber = $$({
         asString: function() {
@@ -178,7 +178,7 @@
       var instance, test, spy;
       var $aSelector, $aComplex;
 
-      spy = this.spy(sc.test.func);
+      spy = this.spy(sc.test.func());
       $aSelector = $$();
       $aComplex = $$({
         asString: function() {

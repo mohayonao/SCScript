@@ -272,10 +272,36 @@ SCScript.install(function(sc) {
       return this.yield();
     };
 
-    // TODO: implements cyc
+    spec.cyc = fn(function($n) {
+      var $this = this;
+      return $("Routine").new($.Function(function() {
+        return [ function() {
+          return $n.do($.Function(function() {
+            var $inval;
+            return [
+              function(_arg0) {
+                $inval = _arg0;
+                $inval = $this.embedInStream($inval);
+                return $inval;
+              },
+              function() {
+                return $this.reset();
+              }
+            ];
+          }));
+        } ];
+      }));
+    }, "n=inf");
+
     // TODO: implements fin
-    // TODO: implements repeat
-    // TODO: implements loop
+
+    spec.repeat = fn(function($repeats) {
+      return $("Pn").new(this, $repeats).asStream();
+    }, "repeats=inf");
+
+    spec.loop = function() {
+      return this.repeat($.Float(Infinity));
+    };
 
     spec.asStream = utils.nop;
 

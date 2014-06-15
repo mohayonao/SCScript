@@ -586,14 +586,53 @@
       test = instance.embedInStream();
       expect(instance.yield).to.be.calledLastIn(test);
     }));
-    it.skip("#cyc", function() {
+    it("#cyc", function() {
+      var r = this.createInstance($("Routine").new($$(function() {
+        return $$([ 1, 2 ]).do($$(function($_) {
+          return $_.yield();
+        }));
+      }))).cyc($$(3));
+
+      expect(r.next(), 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.next(), 2).to.be.a("SCInteger").that.equals(2);
+      expect(r.next(), 3).to.be.a("SCInteger").that.equals(1);
+      expect(r.next(), 4).to.be.a("SCInteger").that.equals(2);
+      expect(r.next(), 5).to.be.a("SCInteger").that.equals(1);
+      expect(r.next(), 6).to.be.a("SCInteger").that.equals(2);
+      expect(r.next(), 7).to.be.a("SCNil");
+      expect(r.next(), 8).to.be.a("SCNil");
     });
     it.skip("#fin", function() {
     });
-    it.skip("#repeat", function() {
-    });
-    it.skip("#loop", function() {
-    });
+    it("#repeat", sinon.test(function() {
+      var instance, test;
+      var $repeats, $new, $asStream;
+
+      $repeats = $$();
+      $new = this.spy(function() {
+        return { asStream: $asStream };
+      });
+      $asStream = sc.test.func();
+      this.stub(sc.lang.klass, "get").withArgs("Pn").returns({
+        new: $new
+      });
+
+      instance = this.createInstance();
+
+      test = instance.repeat($repeats);
+      expect($new.args[0]).to.eql($$([ instance, $repeats ])._);
+      expect($asStream).to.be.calledLastIn(test);
+    }));
+    it("#loop", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(instance, "repeat", sc.test.func());
+
+      test = instance.loop();
+      expect(instance.repeat.args[0]).to.eql($$([ Infinity ])._);
+      expect(instance.repeat).to.be.calledLastIn(test);
+    }));
     it("#asStream", function() {
       var instance = this.createInstance();
       expect(instance.asStream).to.be.nop;

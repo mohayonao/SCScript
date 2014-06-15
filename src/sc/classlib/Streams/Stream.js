@@ -105,24 +105,29 @@ SCScript.install(function(sc) {
 
     spec.subSample = fn(function($offset, $skipSize) {
       var $this = this;
-      var SCRoutine = $("Routine");
-
-      return SCRoutine.new($.Function(function() {
+      return $("Routine").new($.Function(function() {
         return [ function() {
-          $offset.do($.Function(function() {
-            return [ function() {
-              $this.next();
-            } ];
-          }));
-          $.Function(function() {
-            return [ function() {
-              $this.next().yield();
-              $skipSize.do($.Function(function() {
-                return [ function() {
+          var offset, i;
+
+          offset = $offset.__int__();
+          for (i = 0; i < offset; ++i) {
+            $this.next();
+          }
+
+          return $.Function(function() {
+            return [
+              function() {
+                return $this.next().yield();
+              },
+              function() {
+                var skipSize, i;
+
+                skipSize = $skipSize.__int__();
+                for (i = 0; i < skipSize; ++i) {
                   $this.next();
-                } ];
-              }));
-            } ];
+                }
+              }
+            ];
           }).loop();
         } ];
       }));

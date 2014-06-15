@@ -173,8 +173,23 @@
     });
     it.skip("#numVars", function() {
     });
-    it.skip("#loop", function() {
-    });
+    it("#loop", sinon.test(function() {
+      var instance, test, iter;
+
+      iter = {};
+
+      this.stub(iterator, "function$loop", function() {
+        return iter;
+      });
+      this.stub(iterator, "execute");
+
+      instance = this.createInstance();
+
+      test = instance.loop();
+      expect(iterator.function$loop).to.be.calledWith(undefined);
+      expect(iterator.execute).to.be.calledWith(iter, instance);
+      expect(test).to.equal(instance);
+    }));
     it.skip("#block", function() {
     });
     it("#asRoutine", sinon.test(function() {

@@ -6,6 +6,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var iterator = sc.lang.iterator;
   var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
@@ -78,7 +79,15 @@ SCScript.install(function(sc) {
     // TODO: implements numArgs
     // TODO: implements numVars
     // TODO: implements varArgs
-    // TODO: implements loop
+
+    spec.loop = function() {
+      iterator.execute(
+        iterator.function$loop(),
+        this
+      );
+      return this;
+    };
+
     // TODO: implements block
 
     spec.asRoutine = function() {
@@ -172,8 +181,8 @@ SCScript.install(function(sc) {
     // TODO: implements inEnvir
 
     spec.while = fn(function($body) {
-      sc.lang.iterator.execute(
-        sc.lang.iterator.function$while(this),
+      iterator.execute(
+        iterator.function$while(this),
         $body
       );
       return this;

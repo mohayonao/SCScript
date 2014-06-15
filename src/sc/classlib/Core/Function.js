@@ -6,6 +6,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
     var $nil = utils.$nil;
@@ -33,15 +34,15 @@ SCScript.install(function(sc) {
     };
 
     spec.update = function() {
-      return this._.resume(arguments);
+      return this._.reset().run(arguments);
     };
 
     spec.value = function() {
-      return this._.resume(arguments);
+      return this._.reset().run(arguments);
     };
 
     spec.valueArray = function($args) {
-      return this._.resume($args.asArray()._);
+      return this._.reset().run($args.asArray()._);
     };
 
     var envir = function(func, args) {
@@ -59,12 +60,12 @@ SCScript.install(function(sc) {
 
     spec.valueEnvir = function() {
       var args = envir(this._, arguments);
-      return this._.resume(args);
+      return this._.reset().run(args);
     };
 
     spec.valueArrayEnvir = function($args) {
       var args = envir(this._, $args.asArray()._);
-      return this._.resume(args);
+      return this._.reset().run(args);
     };
 
     spec.functionPerformList = fn(function($selector, $arglist) {
@@ -101,17 +102,19 @@ SCScript.install(function(sc) {
     // TODO: implements bench
 
     spec.protect = function($handler) {
-      var $result;
+      var result;
+      var current = bytecode.current;
 
       try {
-        $result = this.value();
+        result = this.value();
       } catch (e) {
-        $result = null;
-      } finally {
-        $handler.value();
+        result = null;
       }
+      bytecode.current = current;
 
-      return $result || $nil;
+      $handler.value();
+
+      return result || $nil;
     };
 
     // TODO: implements try
@@ -175,10 +178,6 @@ SCScript.install(function(sc) {
       );
       return this;
     }, "body");
-
-    spec.state = function() {
-      return $.Integer(this._.state());
-    };
   });
 
 });

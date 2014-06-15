@@ -3,11 +3,13 @@ SCScript.install(function(sc) {
 
   require("../Streams/Stream");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $    = sc.lang.$;
+  var fn   = sc.lang.fn;
+  var main = sc.lang.main;
   var random = sc.libs.random;
 
   sc.lang.klass.define("Thread : Stream", function(spec, utils) {
+    var $nil = utils.$nil;
 
     spec.constructor = function SCThread() {
       this.__super__("Stream");
@@ -18,11 +20,12 @@ SCScript.install(function(sc) {
     }, "func");
 
     spec._init = function($func) {
-      if ($func.__tag !== sc.TAG_FUNCTION) {
+      if ($func.__tag !== sc.TAG_FUNC) {
         throw new Error("Thread.init failed");
       }
       this._bytecode = $func._;
       this._state    = sc.STATE_INIT;
+      this._parent   = null;
       this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
       return this;
     };
@@ -31,7 +34,10 @@ SCScript.install(function(sc) {
       return $.Integer(this._state);
     };
 
-    // TODO: implements parent
+    spec.parent = function() {
+      return this._parent || $nil;
+    };
+
     // TODO: implements primitiveError
     // TODO: implements primitiveIndex
     // TODO: implements beats
@@ -98,6 +104,8 @@ SCScript.install(function(sc) {
   sc.lang.klass.define("Routine : Thread", function(spec, utils) {
     var $nil = utils.$nil;
 
+    spec.__tag = sc.TAG_ROUTINE;
+
     spec.constructor = function SCRoutine() {
       this.__super__("Thread");
     };
@@ -109,17 +117,21 @@ SCScript.install(function(sc) {
     // TODO: implements $run
 
     var routine$resume = function($inval) {
-      var result;
-
       if (this._state === sc.STATE_DONE) {
         return $nil;
       }
 
-      this._state = sc.STATE_RUNNING;
-      result = this._bytecode.resume([ $inval || $nil ]);
-      this._state = this._bytecode.state();
+      this._parent = main.$currentThread;
+      main.$currentThread = this;
 
-      return result;
+      this._state = sc.STATE_RUNNING;
+      this._bytecode.runAsRoutine([ $inval || $nil ]);
+      this._state = this._bytecode.state;
+
+      main.$currentThread = this._parent;
+      this._parent = null;
+
+      return this._bytecode.result || $nil;
     };
 
     spec.next   = routine$resume;

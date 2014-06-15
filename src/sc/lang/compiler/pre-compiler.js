@@ -14,6 +14,7 @@
     sleep: true,
     wait : true,
     yield: true,
+    embedInStream: true,
   };
 
   function PreCompiler() {

@@ -4,8 +4,8 @@
   require("./klass");
   require("../bytecode");
 
-  var $       = sc.lang.$;
-  var klass   = sc.lang.klass;
+  var $        = sc.lang.$;
+  var klass    = sc.lang.klass;
   var bytecode = sc.lang.bytecode;
 
   var $nil, $true, $false;

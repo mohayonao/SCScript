@@ -41,9 +41,7 @@
   };
 
   iterator.execute = function(iter, $function) {
-    if (iter.hasNext) {
-      $function._.setIterator(iter).resume();
-    }
+    $function._.setIterator(iter).run();
   };
 
   iterator.object$do = one_shot_iter;
@@ -56,12 +54,9 @@
     iter = {
       hasNext: true,
       next: function() {
-        if (!bytecode.reset().resume().__bool__()) {
+        if (!bytecode.runAsFunction().__bool__()) {
           nop_iter(iter);
           return null;
-        }
-        if (bytecode.stopIter()) {
-          nop_iter(iter);
         }
         return [ $nil, $nil ];
       },

@@ -7,7 +7,7 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
   var klass = sc.lang.klass;
 
-  klass.define("Stream", function(spec, utils) {
+  klass.define("Stream : AbstractFunction", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -322,13 +322,18 @@ SCScript.install(function(sc) {
 
       $reset = $false;
       return $("Routine").new($.Function(function() {
-        return [ function($inval) {
+        var $inval;
+        return [ function(_arg0) {
+          $inval = _arg0;
           if ($reset.__bool__()) {
             $this.reset();
             $stream.reset();
           }
           $reset = $true;
           $inval = $this.embedInStream($inval);
+          return $inval;
+        },
+        function() {
           return $stream.embedInStream($inval);
         } ];
       }));

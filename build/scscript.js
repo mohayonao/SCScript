@@ -1,7 +1,7 @@
 (function(global) {
 "use strict";
 
-var sc = { VERSION: "0.0.50" };
+var sc = { VERSION: "0.0.51" };
 
 // src/sc/sc.js
 (function(sc) {
@@ -596,11 +596,15 @@ var sc = { VERSION: "0.0.50" };
 
   var bytecode = { current: null };
 
+  function insideOfARoutine() {
+    return sc.lang.main.$currentThread.__tag === 9;
+  }
+
   function Bytecode(initializer, def) {
     this._initializer = initializer;
-    this._def   = def;
-    this._code  = [];
-    this._vals  = [];
+    this._def  = def;
+    this._code = [];
+    this._vals = [];
     this.init(initializer);
   }
 
@@ -620,16 +624,121 @@ var sc = { VERSION: "0.0.50" };
   };
 
   Bytecode.prototype.reset = function() {
-    this._state    = this._length ? 0 : 6;
-    this._index    = 0;
-    this._iter     = null;
-    this._yield    = null;
-    this._yielded  = false;
-    this._pushed   = false;
-    this._parent   = null;
-    this._child    = null;
-    this._stopIter = false;
+    this.state   = 0;
+    this.result  = null;
+    this._index  = 0;
+    this._iter   = null;
+    this._parent = null;
+    this._child  = null;
     return this;
+  };
+
+  Bytecode.prototype.run = function(args) {
+    if (insideOfARoutine()) {
+      return this.runAsRoutine(args);
+    } else if (this._iter) {
+      return this.runAsFunctionWithIter();
+    } else {
+      return this.runAsFunction(args);
+    }
+  };
+
+  Bytecode.prototype.runAsFunction = function(args) {
+    var result;
+    var i, code, length;
+
+    code   = this._code;
+    length = this._length;
+
+    this._parent = bytecode.current;
+
+    bytecode.current = this;
+    this.state = 3;
+
+    for (i = 0; i < length; ++i) {
+      result = code[i].apply(this, args);
+      if (this.state === -1) {
+        this._iter = null;
+        break;
+      }
+    }
+
+    bytecode.current = this._parent;
+    this._parent = null;
+
+    this.state = 0;
+
+    return result || $.Nil();
+  };
+
+  Bytecode.prototype.runAsFunctionWithIter = function() {
+    var items;
+
+    while (this._iter && (items = this._iter.next()) !== null) {
+      this.runAsFunction(items);
+    }
+
+    this._iter = null;
+  };
+
+  Bytecode.prototype.runAsRoutine = function(args) {
+    var result;
+    var code, length, iter;
+    var skip;
+
+    this.setParent(bytecode.current);
+
+    bytecode.current = this;
+
+    if (this._child) {
+      result = this._child.runAsRoutine(args);
+      if (this.state === 5) {
+        skip = true;
+      }
+    }
+
+    if (!skip) {
+      code   = this._code;
+      length = this._length;
+      iter   = this._iter;
+
+      this.state  = 3;
+      this.result = null;
+      while (this._index < length) {
+        if (iter && this._index === 0) {
+          args = iter.next();
+          if (args === null) {
+            this.state  = 5;
+            this._index = length;
+            break;
+          }
+        }
+        if (iter && !iter.hasNext) {
+          iter = null;
+        }
+
+        result = code[this._index].apply(this, args);
+
+        this._index += 1;
+        if (this._index >= length) {
+          if (iter) {
+            this._index = 0;
+          } else {
+            this.state = 5;
+          }
+        }
+
+        if (this.state !== 3) {
+          break;
+        }
+      }
+    }
+
+    bytecode.current = this._parent;
+
+    this.advance();
+
+    return this.result ? $.Nil() : result;
   };
 
   Bytecode.prototype.setIterator = function(iter) {
@@ -638,137 +747,55 @@ var sc = { VERSION: "0.0.50" };
   };
 
   Bytecode.prototype.setParent = function(parent) {
-    this._parent = parent;
-    parent._child = this;
+    if (parent && parent !== this) {
+      this._parent  = parent;
+      parent._child = this;
+    }
   };
 
-  Bytecode.prototype.resume = function(args) {
-    var result;
-    var code, length, iter;
-
-    if (this._child) {
-      return this._child.resume(args);
-    }
-
-    if (bytecode.current) {
-      this.setParent(bytecode.current);
-    }
-
-    code   = this._code;
-    length = this._length;
-    iter   = this._iter;
-
-    bytecode.current = this;
-
-    while (this._index < length) {
-      if (iter && this._index === 0) {
-        this.stopIter(false);
-        args = iter.next();
-        if (args === null) {
-          this._state = 20;
-          break;
-        }
-      }
-      if (iter && !iter.hasNext) {
-        iter = null;
-      }
-
-      this._yield = null;
-      this._state = 3;
-      result = code[this._index].apply(this, args);
-      if (this._yielded) {
-        result = this._yield;
-      }
-
-      this._index += 1;
-      if (this._index >= length) {
-        if (!iter) {
-          this._state = 20;
-        } else {
-          this._index = 0;
-        }
-      }
-
-      if (this._state !== 3) {
-        break;
-      }
-    }
-    result = result || $.Nil();
-
-    bytecode.current = null;
-
-    if (this._state === 20) {
-      this.next(result);
-    }
-
-    return result;
-  };
-
-  Bytecode.prototype.next = function($value) {
-    if (this._child) {
-      this._state = 5;
+  Bytecode.prototype.advance = function() {
+    if (this._child || this._index < this._length) {
+      this.state = 5;
       return;
     }
-    if (this._index < this._length) {
-      return;
-    }
-    this._index = 0;
-    this._state = 6;
-    if (this._iter) {
-      this._iter = this._iter.clone();
-      this.stopIter(true);
+    if (!this.result) {
+      this.state = 6;
     }
     if (this._parent) {
-      if (this._parent._pushed) {
-        this._parent.put($value);
-      }
       this._parent._child = null;
-      this._parent.next($value);
+      if (this.state === 6) {
+        this._parent.state = 3;
+      } else {
+        this._parent.state = 5;
+      }
+      this._parent = null;
     }
-    this._parent = null;
   };
 
   Bytecode.prototype.push = function($value) {
     this._vals.push($value);
-    this._pushed = true;
     return $value;
   };
 
   Bytecode.prototype.shift = function() {
-    this._pushed = false;
-    return this._vals.shift();
-  };
-
-  Bytecode.prototype.put = function($value) {
-    this._vals[this._vals.length - 1] = $value;
+    if (this._vals.length) {
+      return this._vals.shift();
+    } else {
+      return this._parent.shift();
+    }
   };
 
   Bytecode.prototype.break = function() {
-    this._state = 10;
-    this._index = Infinity;
+    this.state  = -1;
+    this._index = this._length;
   };
 
   Bytecode.prototype.yield = function($value) {
-    this._state = 5;
-    this._yield   = $value;
-    this._yielded = true;
+    this.state  = 5;
+    this.result = $value;
     if (this._parent) {
       this._parent.yield($value);
     }
-  };
-
-  Bytecode.prototype.state = function() {
-    return this._state;
-  };
-
-  Bytecode.prototype.stopIter = function(value) {
-    if (typeof value === "boolean") {
-      this._stopIter = value;
-      if (this._parent) {
-        this._parent.stopIter(value);
-      }
-    }
-    return this._stopIter;
   };
 
   bytecode.create = function(initializer, def) {
@@ -776,6 +803,10 @@ var sc = { VERSION: "0.0.50" };
   };
 
   bytecode.yield = function($value) {
+    if (!insideOfARoutine()) {
+      bytecode.current = null;
+      throw new Error("yield was called outside of a Routine.");
+    }
     bytecode.current.yield($value);
   };
 
@@ -1044,7 +1075,7 @@ var sc = { VERSION: "0.0.50" };
 
   klass.define("Object", {
     constructor: SCObject,
-    __tag: 1,
+    __tag: 0,
     __super__: function(funcName, args) {
       if (isClassName(funcName)) {
         return metaClasses[funcName].__Spec.call(this);
@@ -1122,8 +1153,8 @@ var sc = { VERSION: "0.0.50" };
 // src/sc/lang/klass/constructors.js
 (function(sc) {
 
-  var $       = sc.lang.$;
-  var klass   = sc.lang.klass;
+  var $        = sc.lang.$;
+  var klass    = sc.lang.klass;
   var bytecode = sc.lang.bytecode;
 
   var $nil, $true, $false;
@@ -1135,7 +1166,7 @@ var sc = { VERSION: "0.0.50" };
   }
   klass.define("Nil", {
     constructor: SCNil,
-    __tag: 773
+    __tag: 5
   });
 
   function SCSymbol() {
@@ -1144,14 +1175,15 @@ var sc = { VERSION: "0.0.50" };
   }
   klass.define("Symbol", {
     constructor: SCSymbol,
-    __tag: 1027
+    __tag: 3
   });
 
   function SCBoolean() {
     this.__super__("Object");
   }
   klass.define("Boolean", {
-    constructor: SCBoolean
+    constructor: SCBoolean,
+    __tag: 6
   });
 
   function SCTrue() {
@@ -1159,8 +1191,7 @@ var sc = { VERSION: "0.0.50" };
     this._ = true;
   }
   klass.define("True : Boolean", {
-    constructor: SCTrue,
-    __tag: 775
+    constructor: SCTrue
   });
 
   function SCFalse() {
@@ -1168,8 +1199,7 @@ var sc = { VERSION: "0.0.50" };
     this._ = false;
   }
   klass.define("False : Boolean", {
-    constructor: SCFalse,
-    __tag: 774
+    constructor: SCFalse
   });
 
   klass.define("Magnitude", {
@@ -1184,7 +1214,7 @@ var sc = { VERSION: "0.0.50" };
   }
   klass.define("Char : Magnitude", {
     constructor: SCChar,
-    __tag: 1028
+    __tag: 4
   });
 
   klass.define("Number : Magnitude", {
@@ -1205,7 +1235,7 @@ var sc = { VERSION: "0.0.50" };
   }
   klass.define("Integer : SimpleNumber", {
     constructor: SCInteger,
-    __tag: 770
+    __tag: 1
   });
 
   function SCFloat() {
@@ -1214,7 +1244,7 @@ var sc = { VERSION: "0.0.50" };
   }
   klass.define("Float : SimpleNumber", {
     constructor: SCFloat,
-    __tag: 777
+    __tag: 2
   });
 
   klass.define("Collection", {
@@ -1247,8 +1277,7 @@ var sc = { VERSION: "0.0.50" };
     this.__super__("ArrayedCollection");
   }
   klass.define("Array : ArrayedCollection", {
-    constructor: SCArray,
-    __tag: 11
+    constructor: SCArray
   });
 
   function SCString() {
@@ -1256,7 +1285,7 @@ var sc = { VERSION: "0.0.50" };
   }
   klass.define("String : RawArray", {
     constructor: SCString,
-    __tag: 1034
+    __tag: 7
   });
 
   klass.define("Set : Collection", {
@@ -1302,7 +1331,7 @@ var sc = { VERSION: "0.0.50" };
   }
   klass.define("Function : AbstractFunction", {
     constructor: SCFunction,
-    __tag: 12
+    __tag: 8
   });
 
   function SCRef() {
@@ -1472,7 +1501,8 @@ var sc = { VERSION: "0.0.50" };
   var $ = sc.lang.$;
   var random = sc.libs.random;
 
-  main.$currentEnv = null;
+  main.$currentEnv    = null;
+  main.$currentThread = {};
 
   main.run = function(func) {
     if (!initialize.done) {
@@ -1490,7 +1520,8 @@ var sc = { VERSION: "0.0.50" };
       return [];
     }));
 
-    main.$currentEnv = $("Environment").new();
+    main.$currentEnv    = $("Environment").new();
+    main.$currentThread = $process._$mainThread;
 
     // $interpreter._$s = SCServer.default();
 
@@ -1522,7 +1553,7 @@ var sc = { VERSION: "0.0.50" };
   };
 
   $.ThisThread = function() {
-    return main.$process.mainThread();
+    return main.$currentThread;
   };
 
   sc.lang.main = main;
@@ -1568,9 +1599,7 @@ var sc = { VERSION: "0.0.50" };
   };
 
   iterator.execute = function(iter, $function) {
-    if (iter.hasNext) {
-      $function._.setIterator(iter).resume();
-    }
+    $function._.setIterator(iter).run();
   };
 
   iterator.object$do = one_shot_iter;
@@ -1583,12 +1612,9 @@ var sc = { VERSION: "0.0.50" };
     iter = {
       hasNext: true,
       next: function() {
-        if (!bytecode.reset().resume().__bool__()) {
+        if (!bytecode.runAsFunction().__bool__()) {
           nop_iter(iter);
           return null;
-        }
-        if (bytecode.stopIter()) {
-          nop_iter(iter);
         }
         return [ $nil, $nil ];
       },
@@ -2150,6 +2176,7 @@ var sc = { VERSION: "0.0.50" };
     sleep: true,
     wait : true,
     yield: true,
+    embedInStream: true,
   };
 
   function PreCompiler() {
@@ -2821,7 +2848,7 @@ var sc = { VERSION: "0.0.50" };
       var fragments = [], syncBlockScope;
       var elements = node.body;
       var i, imax;
-      var functionBodies;
+      var functionBodies, calledSegmentedMethod;
 
       if (elements.length) {
         for (i = 0, imax = args.length; i < imax; ++i) {
@@ -2852,6 +2879,7 @@ var sc = { VERSION: "0.0.50" };
                 fragments.push("\n");
               }
 
+              calledSegmentedMethod = this.state.calledSegmentedMethod;
               this.state.calledSegmentedMethod = false;
               stmt = this.generate(elements[i]);
 
@@ -2865,6 +2893,7 @@ var sc = { VERSION: "0.0.50" };
               if (this.state.calledSegmentedMethod) {
                 break;
               }
+              this.state.calledSegmentedMethod = calledSegmentedMethod;
             }
 
             return fragments;
@@ -3096,6 +3125,7 @@ var sc = { VERSION: "0.0.50" };
   };
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
+    this.state.calledSegmentedMethod = true;
     return [ "this.push(", this.generate(node.expr), ")" ];
   };
 
@@ -3604,7 +3634,7 @@ var sc = { VERSION: "0.0.50" };
         break;
       case "nil":
         type = Token.NilLiteral;
-        value = "null";
+        value = "nil";
         break;
       case "true":
         type = Token.TrueLiteral;
@@ -5402,7 +5432,7 @@ var sc = { VERSION: "0.0.50" };
       }
     }
 
-    return Node.createLiteral({ value: "null", valueType: Token.NilLiteral });
+    return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
   };
 
   SCParser.prototype.parseLabel = function() {

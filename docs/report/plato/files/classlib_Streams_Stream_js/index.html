@@ -49,7 +49,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">563</p>
+      <p class="stat">568</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">44.77</p>
+      <p class="stat">44.46</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.70</p>
+      <p class="stat">4.73</p>
     </div>
   </div>
 </div>
@@ -99,7 +99,7 @@
   var fn = sc.lang.fn;
   var klass = sc.lang.klass;
 
-  klass.define(&quot;Stream&quot;, function(spec, utils) {
+  klass.define(&quot;Stream : AbstractFunction&quot;, function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -414,13 +414,18 @@
 
       $reset = $false;
       return $(&quot;Routine&quot;).new($.Function(function() {
-        return [ function($inval) {
+        var $inval;
+        return [ function(_arg0) {
+          $inval = _arg0;
           if ($reset.__bool__()) {
             $this.reset();
             $stream.reset();
           }
           $reset = $true;
           $inval = $this.embedInStream($inval);
+          return $inval;
+        },
+        function() {
           return $stream.embedInStream($inval);
         } ];
       }));

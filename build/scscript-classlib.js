@@ -1548,7 +1548,7 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
   var klass = sc.lang.klass;
 
-  klass.define("Stream", function(spec, utils) {
+  klass.define("Stream : AbstractFunction", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
@@ -1863,13 +1863,18 @@ SCScript.install(function(sc) {
 
       $reset = $false;
       return $("Routine").new($.Function(function() {
-        return [ function($inval) {
+        var $inval;
+        return [ function(_arg0) {
+          $inval = _arg0;
           if ($reset.__bool__()) {
             $this.reset();
             $stream.reset();
           }
           $reset = $true;
           $inval = $this.embedInStream($inval);
+          return $inval;
+        },
+        function() {
           return $stream.embedInStream($inval);
         } ];
       }));
@@ -2254,7 +2259,7 @@ SCScript.install(function(sc) {
     spec.arglist_ = function($list) {
       this._arglist = Array.isArray($list._) ? $list._ : /* istanbul ignore next */ [];
       this._isNumeric = this._arglist.every(function($item) {
-        return $item.__tag === 1027 || $item.isNumber().__bool__();
+        return $item.__tag === 3 || $item.isNumber().__bool__();
       });
       return this;
     };
@@ -2462,8 +2467,8 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case 770:
-      case 777:
+      case 1:
+      case 2:
         return $.Boolean(func(this._, $aNumber._));
       }
 
@@ -3239,9 +3244,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case 770:
+      case 1:
         return type1(func(this._, $aNumber._));
-      case 777:
+      case 2:
         return type2(func(this._, $aNumber._));
       }
 
@@ -3326,9 +3331,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case 770:
+      case 1:
         return $.Integer(mathlib.iwrap(this._, -$aNumber._, $aNumber._));
-      case 777:
+      case 2:
         return $.Float(mathlib.wrap2(this._, $aNumber._));
       }
 
@@ -3341,9 +3346,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case 770:
+      case 1:
         return $.Integer(Math.round(mathlib.rrand(this._, $aNumber._)));
-      case 777:
+      case 2:
         return $.Float(mathlib.rrand(this._, $aNumber._));
       }
 
@@ -3354,13 +3359,13 @@ SCScript.install(function(sc) {
 
     spec.clip = fn(function($lo, $hi) {
       // <-- _ClipInt -->
-      if ($lo.__tag === 1027) {
+      if ($lo.__tag === 3) {
         return $lo;
       }
-      if ($hi.__tag === 1027) {
+      if ($hi.__tag === 3) {
         return $hi;
       }
-      if ($lo.__tag === 770 && $hi.__tag === 770) {
+      if ($lo.__tag === 1 && $hi.__tag === 1) {
         return $.Integer(
           mathlib.clip(this._, $lo.__int__(), $hi.__int__())
         );
@@ -3373,13 +3378,13 @@ SCScript.install(function(sc) {
 
     spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
-      if ($lo.__tag === 1027) {
+      if ($lo.__tag === 3) {
         return $lo;
       }
-      if ($hi.__tag === 1027) {
+      if ($hi.__tag === 3) {
         return $hi;
       }
-      if ($lo.__tag === 770 && $hi.__tag === 770) {
+      if ($lo.__tag === 1 && $hi.__tag === 1) {
         return $.Integer(
           mathlib.iwrap(this._, $lo.__int__(), $hi.__int__())
         );
@@ -3392,13 +3397,13 @@ SCScript.install(function(sc) {
 
     spec.fold = fn(function($lo, $hi) {
       // <-- _FoldInt -->
-      if ($lo.__tag === 1027) {
+      if ($lo.__tag === 3) {
         return $lo;
       }
-      if ($hi.__tag === 1027) {
+      if ($hi.__tag === 3) {
         return $hi;
       }
-      if ($lo.__tag === 770 && $hi.__tag === 770) {
+      if ($lo.__tag === 1 && $hi.__tag === 1) {
         return $.Integer(
           mathlib.ifold(this._, $lo.__int__(), $hi.__int__())
         );
@@ -3620,9 +3625,9 @@ SCScript.install(function(sc) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
-      case 770:
+      case 1:
         return type1(func(this._, $aNumber._));
-      case 777:
+      case 2:
         return type2(func(this._, $aNumber._));
       }
 
@@ -3705,10 +3710,10 @@ SCScript.install(function(sc) {
 
     spec.clip = fn(function($lo, $hi) {
       // <-- _ClipFloat -->
-      if ($lo.__tag === 1027) {
+      if ($lo.__tag === 3) {
         return $lo;
       }
-      if ($hi.__tag === 1027) {
+      if ($hi.__tag === 3) {
         return $hi;
       }
 
@@ -3719,10 +3724,10 @@ SCScript.install(function(sc) {
 
     spec.wrap = fn(function($lo, $hi) {
       // <-- _WrapInt -->
-      if ($lo.__tag === 1027) {
+      if ($lo.__tag === 3) {
         return $lo;
       }
-      if ($hi.__tag === 1027) {
+      if ($hi.__tag === 3) {
         return $hi;
       }
 
@@ -3733,10 +3738,10 @@ SCScript.install(function(sc) {
 
     spec.fold = fn(function($lo, $hi) {
       // <-- _FoldFloat -->
-      if ($lo.__tag === 1027) {
+      if ($lo.__tag === 3) {
         return $lo;
       }
-      if ($hi.__tag === 1027) {
+      if ($hi.__tag === 3) {
         return $hi;
       }
 
@@ -3827,11 +3832,13 @@ SCScript.install(function(sc) {
 // src/sc/classlib/Core/Thread.js
 SCScript.install(function(sc) {
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $    = sc.lang.$;
+  var fn   = sc.lang.fn;
+  var main = sc.lang.main;
   var random = sc.libs.random;
 
   sc.lang.klass.define("Thread : Stream", function(spec, utils) {
+    var $nil = utils.$nil;
 
     spec.constructor = function SCThread() {
       this.__super__("Stream");
@@ -3842,11 +3849,12 @@ SCScript.install(function(sc) {
     }, "func");
 
     spec._init = function($func) {
-      if ($func.__tag !== 12) {
+      if ($func.__tag !== 8) {
         throw new Error("Thread.init failed");
       }
       this._bytecode = $func._;
       this._state    = 0;
+      this._parent   = null;
       this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
       return this;
     };
@@ -3855,7 +3863,10 @@ SCScript.install(function(sc) {
       return $.Integer(this._state);
     };
 
-    // TODO: implements parent
+    spec.parent = function() {
+      return this._parent || $nil;
+    };
+
     // TODO: implements primitiveError
     // TODO: implements primitiveIndex
     // TODO: implements beats
@@ -3922,6 +3933,8 @@ SCScript.install(function(sc) {
   sc.lang.klass.define("Routine : Thread", function(spec, utils) {
     var $nil = utils.$nil;
 
+    spec.__tag = 9;
+
     spec.constructor = function SCRoutine() {
       this.__super__("Thread");
     };
@@ -3933,17 +3946,21 @@ SCScript.install(function(sc) {
     // TODO: implements $run
 
     var routine$resume = function($inval) {
-      var result;
-
       if (this._state === 6) {
         return $nil;
       }
 
-      this._state = 3;
-      result = this._bytecode.resume([ $inval || $nil ]);
-      this._state = this._bytecode.state();
+      this._parent = main.$currentThread;
+      main.$currentThread = this;
 
-      return result;
+      this._state = 3;
+      this._bytecode.runAsRoutine([ $inval || $nil ]);
+      this._state = this._bytecode.state;
+
+      main.$currentThread = this._parent;
+      this._parent = null;
+
+      return this._bytecode.result || $nil;
     };
 
     spec.next   = routine$resume;
@@ -4522,6 +4539,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine("Function", function(spec, utils) {
     var $nil = utils.$nil;
@@ -4549,15 +4567,15 @@ SCScript.install(function(sc) {
     };
 
     spec.update = function() {
-      return this._.resume(arguments);
+      return this._.reset().run(arguments);
     };
 
     spec.value = function() {
-      return this._.resume(arguments);
+      return this._.reset().run(arguments);
     };
 
     spec.valueArray = function($args) {
-      return this._.resume($args.asArray()._);
+      return this._.reset().run($args.asArray()._);
     };
 
     var envir = function(func, args) {
@@ -4575,12 +4593,12 @@ SCScript.install(function(sc) {
 
     spec.valueEnvir = function() {
       var args = envir(this._, arguments);
-      return this._.resume(args);
+      return this._.reset().run(args);
     };
 
     spec.valueArrayEnvir = function($args) {
       var args = envir(this._, $args.asArray()._);
-      return this._.resume(args);
+      return this._.reset().run(args);
     };
 
     spec.functionPerformList = fn(function($selector, $arglist) {
@@ -4617,17 +4635,19 @@ SCScript.install(function(sc) {
     // TODO: implements bench
 
     spec.protect = function($handler) {
-      var $result;
+      var result;
+      var current = bytecode.current;
 
       try {
-        $result = this.value();
+        result = this.value();
       } catch (e) {
-        $result = null;
-      } finally {
-        $handler.value();
+        result = null;
       }
+      bytecode.current = current;
 
-      return $result || $nil;
+      $handler.value();
+
+      return result || $nil;
     };
 
     // TODO: implements try
@@ -4691,10 +4711,6 @@ SCScript.install(function(sc) {
       );
       return this;
     }, "body");
-
-    spec.state = function() {
-      return $.Integer(this._.state());
-    };
   });
 
 });
@@ -8693,7 +8709,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function($item) {
-      if ($item.__tag !== 1028) {
+      if ($item.__tag !== 4) {
         throw new TypeError("Wrong type.");
       }
       return $item;
@@ -8749,7 +8765,7 @@ SCScript.install(function(sc) {
     spec.compare = fn(function($aString, $ignoreCase) {
       var araw, braw, length, i, a, b, cmp, func;
 
-      if ($aString.__tag !== 1034) {
+      if ($aString.__tag !== 7) {
         return $nil;
       }
 

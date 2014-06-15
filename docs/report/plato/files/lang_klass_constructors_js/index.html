@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">120.87</p>
+      <p class="stat">121.11</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">315</p>
+      <p class="stat">313</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">41.77</p>
+      <p class="stat">41.92</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.34</p>
+      <p class="stat">2.31</p>
     </div>
   </div>
 </div>
@@ -96,8 +96,8 @@
   require(&quot;./klass&quot;);
   require(&quot;../bytecode&quot;);
 
-  var $       = sc.lang.$;
-  var klass   = sc.lang.klass;
+  var $        = sc.lang.$;
+  var klass    = sc.lang.klass;
   var bytecode = sc.lang.bytecode;
 
   var $nil, $true, $false;
@@ -125,7 +125,8 @@
     this.__super__(&quot;Object&quot;);
   }
   klass.define(&quot;Boolean&quot;, {
-    constructor: SCBoolean
+    constructor: SCBoolean,
+    __tag: sc.TAG_BOOL
   });
 
   function SCTrue() {
@@ -133,8 +134,7 @@
     this._ = true;
   }
   klass.define(&quot;True : Boolean&quot;, {
-    constructor: SCTrue,
-    __tag: sc.TAG_TRUE
+    constructor: SCTrue
   });
 
   function SCFalse() {
@@ -142,8 +142,7 @@
     this._ = false;
   }
   klass.define(&quot;False : Boolean&quot;, {
-    constructor: SCFalse,
-    __tag: sc.TAG_FALSE
+    constructor: SCFalse
   });
 
   klass.define(&quot;Magnitude&quot;, {
@@ -221,8 +220,7 @@
     this.__super__(&quot;ArrayedCollection&quot;);
   }
   klass.define(&quot;Array : ArrayedCollection&quot;, {
-    constructor: SCArray,
-    __tag: sc.TAG_ARRAY
+    constructor: SCArray
   });
 
   function SCString() {
@@ -276,7 +274,7 @@
   }
   klass.define(&quot;Function : AbstractFunction&quot;, {
     constructor: SCFunction,
-    __tag: sc.TAG_FUNCTION
+    __tag: sc.TAG_FUNC
   });
 
   function SCRef() {

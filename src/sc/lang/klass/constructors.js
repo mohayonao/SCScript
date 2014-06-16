@@ -300,7 +300,7 @@
 
   $.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = bytecode.create(value, def);
+    instance._ = bytecode.create(value, def).setOwner(instance);
     return instance;
   };
 

@@ -559,14 +559,21 @@
         expect(r.value(),12).to.be.a("SCNil");
         expect(r.state(),13).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
       });
-      it.skip("value.yield", function() {
+      it("value.yield", function() {
         /*
           a = r { [ 10, 20, 30 ].do(_.yield) };
           r = r { a.value.yield; };
         */
         var a = arrayToRoutine([ 10, 20, 30 ]);
-        var r = this.createInstance($$(function() {
-          return a.value().yield();
+        var r = this.createInstance($.Function(function() {
+          return [
+            function() {
+              return this.push(a.value());
+            },
+            function() {
+              return this.shift().yield();
+            }
+          ];
         }));
 
         expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);

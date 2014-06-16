@@ -7,8 +7,10 @@
   var $     = sc.lang.$;
   var klass = sc.lang.klass;
 
+  var $nil = $.Nil();
+
   var utils = {
-    $nil  : $.Nil(),
+    $nil  : $nil,
     $true : $.True(),
     $false: $.False(),
     $int_0: $.Integer(0),
@@ -27,6 +29,23 @@
     },
     getMethod: function(className, methodName) {
       return klass.get(className).__Spec.prototype[methodName];
+    },
+    setProperty: function(spec, type, name) {
+      var access_name;
+
+      access_name = "_$" + name;
+
+      if (type === "<>" || type === "<") {
+        spec[name] = function() {
+          return this[access_name] || $nil;
+        };
+      }
+      if (type === "<>" || type === ">") {
+        spec[name + "_"] = function($value) {
+          this[access_name] = $value || $nil;
+          return this;
+        };
+      }
     }
   };
 

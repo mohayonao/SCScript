@@ -1,4 +1,4 @@
-(function(sc) {
+SCScript.install(function(sc) {
   "use strict";
 
   require("../Core/AbstractFunction");
@@ -287,4 +287,4 @@
     }, "inval");
   });
 
-})(sc);
+});

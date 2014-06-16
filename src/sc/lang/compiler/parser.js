@@ -389,38 +389,51 @@
     return node;
   };
 
-  SCParser.prototype.parseSimpleAssignmentExpression = function() {
-    var node, left, right, token, methodName, marker;
 
-    node = left = this.parsePartialExpression();
+  SCParser.prototype.parseSimpleAssignmentExpression = function() {
+    var node;
+
+    node = this.parsePartialExpression();
 
     if (this.match("=")) {
       if (node.type === Syntax.CallExpression) {
-        marker = Marker.create(this.lexer, left);
-
-        token = this.lex();
-        right = this.parseAssignmentExpression();
-        methodName = left.method.name + "_";
-        left.method.name = methodName;
-        left.args.list   = node.args.list.concat(right);
-        if (left.stamp !== "[")  {
-          left.stamp = "=";
-        }
-        node = marker.update().apply(left, true);
+        node = this._parseSimpleAssignmentCallExpression(node);
       } else {
-        if (!isLeftHandSide(left)) {
-          this.throwError(left, Message.InvalidLHSInAssignment);
-        }
-
-        token = this.lex();
-        right = this.parseAssignmentExpression();
-        node  = Node.createAssignmentExpression(
-          token.value, left, right
-        );
+        node = this._parseSimpleAssignmentExpression(node);
       }
     }
 
     return node;
+  };
+
+  SCParser.prototype._parseSimpleAssignmentCallExpression = function(node) {
+    var right, token, methodName, marker;
+
+    marker = Marker.create(this.lexer, node);
+
+    token = this.lex();
+    right = this.parseAssignmentExpression();
+    methodName = node.method.name + "_";
+    node.method.name = methodName;
+    node.args.list   = node.args.list.concat(right);
+    if (node.stamp !== "[")  {
+      node.stamp = "=";
+    }
+
+    return marker.update().apply(node, true);
+  };
+
+  SCParser.prototype._parseSimpleAssignmentExpression = function(node) {
+    var right, token;
+
+    if (!isLeftHandSide(node)) {
+      this.throwError(node, Message.InvalidLHSInAssignment);
+    }
+
+    token = this.lex();
+    right = this.parseAssignmentExpression();
+
+    return Node.createAssignmentExpression(token.value, node, right);
   };
 
   SCParser.prototype.parseDestructuringAssignmentLeft = function() {
@@ -622,7 +635,7 @@
     var blocklist, stamp;
 
     marker = Marker.create(this.lexer);
-    expr   = this.parsePrimaryExpression(node);
+    expr   = this.parseEnvironmentExpression(node);
 
     blocklist = false;
 
@@ -659,21 +672,10 @@
 
   SCParser.prototype.parseLeftHandSideParenthesis = function(expr) {
     if (isClassName(expr)) {
-      return this.parseLeftHandSideClassNew(expr);
+      return this.parseLeftHandSideAbbreviatedMethodCall(expr, "new", "(");
     }
 
     return this.parseLeftHandSideMethodCall(expr);
-  };
-
-  SCParser.prototype.parseLeftHandSideClassNew = function(expr) {
-    var method, args;
-
-    method = Node.createIdentifier("new");
-    method = Marker.create(this.lexer).apply(method);
-
-    args   = this.parseCallArgument();
-
-    return Node.createCallExpression(expr, method, args, "(");
   };
 
   SCParser.prototype.parseLeftHandSideMethodCall = function(expr) {
@@ -700,6 +702,17 @@
 
     // max(0, 1) -> 0.max(1)
     return Node.createCallExpression(expr, method, args, "(");
+  };
+
+  SCParser.prototype.parseLeftHandSideAbbreviatedMethodCall = function(expr, methodName, stamp) {
+    var method, args;
+
+    method = Node.createIdentifier(methodName);
+    method = Marker.create(this.lexer).apply(method);
+
+    args   = this.parseCallArgument();
+
+    return Node.createCallExpression(expr, method, args, stamp);
   };
 
   SCParser.prototype.parseLeftHandSideClosedBrace = function(expr) {
@@ -800,7 +813,7 @@
 
     if (this.match("(")) {
       // expr.()
-      return this.parseLeftHandSideDotValue(expr);
+      return this.parseLeftHandSideAbbreviatedMethodCall(expr, "value", ".");
     } else if (this.match("[")) {
       // expr.[0]
       return this.parseLeftHandSideDotBracket(expr);
@@ -815,17 +828,6 @@
 
     // expr.method
     return Node.createCallExpression(expr, method, { list: [] });
-  };
-
-  SCParser.prototype.parseLeftHandSideDotValue = function(expr) {
-    var method, args;
-
-    method = Node.createIdentifier("value");
-    method = Marker.create(this.lexer).apply(method);
-
-    args   = this.parseCallArgument();
-
-    return Node.createCallExpression(expr, method, args, ".");
   };
 
   SCParser.prototype.parseLeftHandSideDotBracket = function(expr) {
@@ -1031,8 +1033,8 @@
     return marker.update().apply(expr);
   };
 
-  SCParser.prototype.parsePrimaryExpression = function(node) {
-    var expr, stamp;
+  SCParser.prototype.parseEnvironmentExpression = function(node) {
+    var expr;
     var marker;
 
     if (node) {
@@ -1049,30 +1051,41 @@
       }
       expr = Node.createEnvironmentExpresion(expr);
     } else {
-      stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
-      switch (stamp) {
-      case "(":
-        expr = this.parseParentheses();
-        break;
-      case "{":
-        expr = this.parseBraces();
-        break;
-      case "[":
-        expr = this.parseListInitialiser();
-        break;
-      case Token.Keyword:
-        expr = this.parsePrimaryKeywordExpression();
-        break;
-      case Token.Identifier:
-        expr = this.parsePrimaryIdentifier();
-        break;
-      case Token.StringLiteral:
-        expr = this.parsePrimaryStringExpression();
-        break;
-      default:
-        expr = this.parseArgumentableValue(stamp);
-        break;
-      }
+      expr = this.parsePrimaryExpression();
+    }
+
+    return marker.update().apply(expr);
+  };
+
+  SCParser.prototype.parsePrimaryExpression = function() {
+    var expr, stamp;
+    var marker;
+
+    marker = Marker.create(this.lexer);
+    stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
+
+    switch (stamp) {
+    case "(":
+      expr = this.parseParentheses();
+      break;
+    case "{":
+      expr = this.parseBraces();
+      break;
+    case "[":
+      expr = this.parseListInitialiser();
+      break;
+    case Token.Keyword:
+      expr = this.parsePrimaryKeywordExpression();
+      break;
+    case Token.Identifier:
+      expr = this.parsePrimaryIdentifier();
+      break;
+    case Token.StringLiteral:
+      expr = this.parsePrimaryStringExpression();
+      break;
+    default:
+      expr = this.parseArgumentableValue(stamp);
+      break;
     }
 
     return marker.update().apply(expr);

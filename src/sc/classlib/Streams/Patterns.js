@@ -7,14 +7,24 @@
   var fn    = sc.lang.fn;
   var klass = sc.lang.klass;
 
-  klass.define("Pattern : AbstractFunction", function(spec) {
+  klass.define("Pattern : AbstractFunction", function(spec, utils) {
+    var $false = utils.$false;
+
     spec.constructor = function SCPattern() {
       this.__super__("AbstractFunction");
     };
 
-    // TODO: implements ++
-    // TODO: implements <>
-    // TODO: implements play
+    spec["++"] = function($aPattern) {
+      return $("Pseq").new($.Array([ this, $aPattern ]));
+    };
+
+    spec["<>"] = function($aPattern) {
+      return $("Pchain").new(this, $aPattern);
+    };
+
+    spec.play = fn(function($clock, $protoEvent, $quant) {
+      return this.asEventStreamPlayer($protoEvent).play($clock, $false, $quant);
+    }, "clock; protoEvent; quant");
 
     spec.asStream = function() {
       var $this = this;
@@ -25,38 +35,134 @@
       }));
     };
 
-    // TODO: implements iter
-    // TODO: implements streamArg
-    // TODO: implements asEventStreamPlayer
-    // TODO: implements embedInStream
-    // TODO: implements do
-    // TODO: implements collect
-    // TODO: implements select
-    // TODO: implements reject
-    // TODO: implements composeUnaryOp
-    // TODO: implements composeBinaryOp
-    // TODO: implements reverseComposeBinaryOp
-    // TODO: implements composeNAryOp
-    // TODO: implements mtranspose
-    // TODO: implements ctranspose
-    // TODO: implements gtranspose
-    // TODO: implements detune
-    // TODO: implements scaleDur
-    // TODO: implements addDur
-    // TODO: implements stretch
-    // TODO: implements lag
-    // TODO: implements legato
-    // TODO: implements db
-    // TODO: implements clump
-    // TODO: implements flatten
-    // TODO: implements repeat
-    // TODO: implements keep
-    // TODO: implements drop
-    // TODO: implements stutter
-    // TODO: implements finDur
-    // TODO: implements fin
-    // TODO: implements trace
-    // TODO: implements differentiate
+    spec.iter = function() {
+      return this.asStream();
+    };
+
+    spec.streamArg = function() {
+      return this.asStream();
+    };
+
+    spec.asEventStreamPlayer = fn(function($protoEvent) {
+      return $("EventStreamPlayer").new(this.asStream(), $protoEvent);
+    }, "protoEvent");
+
+    spec.embedInStream = fn(function($inval) {
+      return this.asStream().embedInStream($inval);
+    }, "inval");
+
+    spec.do = function($function) {
+      return this.asStream().do($function);
+    };
+
+    spec.collect = function($function) {
+      return $("Pcollect").new($function, this);
+    };
+
+    spec.select = function($function) {
+      return $("Pselect").new($function, this);
+    };
+
+    spec.reject = function($function) {
+      return $("Preject").new($function, this);
+    };
+
+    spec.composeUnaryOp = function($operator) {
+      return $("Punop").new($operator, this);
+    };
+
+    spec.composeBinaryOp = function($operator, $pattern, $adverb) {
+      return $("Pbinop").new($operator, this, $pattern, $adverb);
+    };
+
+    spec.reverseComposeBinaryOp = function($operator, $pattern, $adverb) {
+      return $("Pbinop").new($operator, $pattern, this, $adverb);
+    };
+
+    spec.composeNAryOp = function($selector, $argList) {
+      return $("Pnaryop").new($selector, this, $argList);
+    };
+
+    spec.mtranspose = function($n) {
+      return $("Paddp").new($.Symbol("mtranspose"), $n, this);
+    };
+
+    spec.ctranspose = function($n) {
+      return $("Paddp").new($.Symbol("ctranspose"), $n, this);
+    };
+
+    spec.gtranspose = function($n) {
+      return $("Paddp").new($.Symbol("gtranspose"), $n, this);
+    };
+
+    spec.detune = function($n) {
+      return $("Paddp").new($.Symbol("detune"), $n, this);
+    };
+
+    spec.scaleDur = function($x) {
+      return $("Pmulp").new($.Symbol("dur"), $x, this);
+    };
+
+    spec.addDur = function($x) {
+      return $("Paddp").new($.Symbol("dur"), $x, this);
+    };
+
+    spec.stretch = function($x) {
+      return $("Pmulp").new($.Symbol("stretch"), $x, this);
+    };
+
+    spec.lag = function($t) {
+      return $("Plag").new($t, this);
+    };
+
+    spec.legato = function($x) {
+      return $("Pmulp").new($.Symbol("legato"), $x, this);
+    };
+
+    spec.db = function($db) {
+      return $("Paddp").new($.Symbol("db"), $db, this);
+    };
+
+    spec.clump = function($n) {
+      return $("Pclump").new($n, this);
+    };
+
+    spec.flatten = function($n) {
+      return $("Pflatten").new($n, this);
+    };
+
+    spec.repeat = function($n) {
+      return $("Pn").new(this, $n);
+    };
+
+    spec.keep = function($n) {
+      return $("Pfin").new($n, this);
+    };
+
+    spec.drop = function($n) {
+      return $("Pdrop").new($n, this);
+    };
+
+    spec.stutter = function($n) {
+      return $("Pstutter").new($n, this);
+    };
+
+    spec.finDur = function($dur, $tolerance ) {
+      return $("Pfindur").new($dur, this, $tolerance);
+    };
+
+    spec.fin = function($n) {
+      return $("Pfin").new($n, this);
+    };
+
+    spec.trace = function($key, $printStream, $prefix) {
+      return $("Ptrace").new(this, $key, $printStream, $prefix);
+    };
+
+    spec.differentiate = function() {
+      return $("Pdiff").new(this);
+    };
+
     // TODO: implements integrate
     // TODO: implements record
   });

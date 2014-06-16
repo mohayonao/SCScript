@@ -8515,6 +8515,172 @@
           end  : { line: 1, column: 16 }
         }
       }
+    },
+    "{ (..10).do(_.yield) }": {
+      compiled: [
+        "SCScript(function($) {",
+        "  return $.Function(function() {",
+        "    return [",
+        "      function() {",
+        "        return $.Integer(0).$('series', [ " +
+                   "null, $.Integer(10) ]).$('do', [ $.Function(function() {",
+        "          var $_0;",
+        "          return [",
+        "            function(_arg0) {",
+        "              $_0 = _arg0;",
+        "              return $_0.$('yield');",
+        "            }",
+        "          ];",
+        "        }) ]);",
+        "      }",
+        "    ];",
+        "  });",
+        "});"
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.FunctionExpression,
+            body: [
+              {
+                type: Syntax.CallExpression,
+                callee: {
+                  type: Syntax.CallExpression,
+                  callee: {
+                    type: Syntax.Literal,
+                    value: "0",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 3, 3 ],
+                    loc: {
+                      start: { line: 1, column: 3 },
+                      end  : { line: 1, column: 3 }
+                    }
+                  },
+                  method: {
+                    type: Syntax.Identifier,
+                    name: "series",
+                    range: [ 3, 3 ],
+                    loc: {
+                      start: { line: 1, column: 3 },
+                      end  : { line: 1, column: 3 }
+                    }
+                  },
+                  args: {
+                    list: [
+                      null,
+                      {
+                        type: Syntax.Literal,
+                        value: "10",
+                        valueType: Token.IntegerLiteral,
+                        range: [ 5, 7 ],
+                        loc: {
+                          start: { line: 1, column: 5 },
+                          end  : { line: 1, column: 7 }
+                        }
+                      }
+                    ]
+                  },
+                  range: [ 2, 8 ],
+                  loc: {
+                    start: { line: 1, column: 2 },
+                    end  : { line: 1, column: 8 }
+                  }
+                },
+                method: {
+                  type: Syntax.Identifier,
+                  name: "do",
+                  range: [ 9, 11 ],
+                  loc: {
+                    start: { line: 1, column: 9 },
+                    end  : { line: 1, column: 11 }
+                  }
+                },
+                args: {
+                  list: [
+                    {
+                      type: Syntax.FunctionExpression,
+                      args: {
+                        list: [
+                          {
+                            type: Syntax.VariableDeclarator,
+                            id: {
+                              type: Syntax.Identifier,
+                              name: "$_0",
+                              range: [ 12, 13 ],
+                              loc: {
+                                start: { line: 1, column: 12 },
+                                end  : { line: 1, column: 13 }
+                              }
+                            },
+                            range: [ 12, 13 ],
+                            loc: {
+                              start: { line: 1, column: 12 },
+                              end  : { line: 1, column: 13 }
+                            }
+                          }
+                        ]
+                      },
+                      body: [
+                        {
+                          type: Syntax.CallExpression,
+                          callee: {
+                            type: Syntax.Identifier,
+                            name: "$_0",
+                            range: [ 12, 13 ],
+                            loc: {
+                              start: { line: 1, column: 12 },
+                              end  : { line: 1, column: 13 }
+                            }
+                          },
+                          method: {
+                            type: Syntax.Identifier,
+                            name: "yield",
+                            range: [ 14, 19 ],
+                            loc: {
+                              start: { line: 1, column: 14 },
+                              end  : { line: 1, column: 19 }
+                            },
+                          },
+                          args: {
+                            list: []
+                          },
+                          range: [ 12, 19 ],
+                          loc: {
+                            start: { line: 1, column: 12 },
+                            end  : { line: 1, column: 19 }
+                          }
+                        }
+                      ],
+                      partial: true,
+                      range: [ 12, 19 ],
+                      loc: {
+                        start: { line: 1, column: 12 },
+                        end  : { line: 1, column: 19 }
+                      }
+                    }
+                  ]
+                },
+                range: [ 2, 20 ],
+                loc: {
+                  start: { line: 1, column: 2 },
+                  end  : { line: 1, column: 20 }
+                },
+              }
+            ],
+            range: [ 0, 22 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end  : { line: 1, column: 22 }
+            },
+          }
+        ],
+        range: [ 0, 22 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end  : { line: 1, column: 22 }
+        }
+      }
     }
   };
 

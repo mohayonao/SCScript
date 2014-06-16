@@ -3,8 +3,16 @@
 window.onload = function() {
   "use strict";
 
-  var editor;
+  var editor, now;
   var prev = "";
+
+  if (window.performance && typeof window.performance.now === "function") {
+    now = window.performance.now.bind(window.performance);
+  } else {
+    now = function() {
+      return Infinity;
+    };
+  }
 
   var update = function(source) {
     if (prev !== source) {
@@ -106,16 +114,25 @@ window.onload = function() {
 
   var evaluate = function() {
     var code, result;
+    var beginTime, elapsedTime;
 
-    code = SCScript.compile(getCode(editor));
+    code = getCode(editor);
 
-    result = eval.call(null, code);
+    beginTime = now();
+
+    result = eval.call(null, SCScript.compile(code));
+
+    elapsedTime = now() - beginTime;
 
     if (result) {
       result = result.valueOf();
     }
 
     console.log(result);
+
+    if (!isNaN(elapsedTime)) {
+      $("#timecop").text(elapsedTime.toFixed(3) + "ms");
+    }
   };
 
   var boot = function() {

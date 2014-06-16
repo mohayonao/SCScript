@@ -1,0 +1,18 @@
+{
+  "expr"    : true,
+  "loopfunc": true,
+  "globals": {
+    "sc"        : true,
+    "context"   : true,
+    "describe"  : true,
+    "it"        : true,
+    "chai"      : true,
+    "sinon"     : true,
+    "expect"    : true,
+    "before"    : true,
+    "beforeEach": true,
+    "afterEach" : true,
+    "after"     : true,
+    "esprima"   : true
+  }
+}

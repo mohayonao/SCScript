@@ -4,8 +4,9 @@ SCScript.install(function(sc) {
   require("./Stream");
 
   var fn = sc.lang.fn;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.define("UnaryOpStream : Stream", function(spec, utils) {
+  klass.define("UnaryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.constructor = function SCUnaryOpStream() {
@@ -38,7 +39,7 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("BinaryOpStream : Stream", function(spec, utils) {
+  klass.define("BinaryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.constructor = function SCBinaryOpStream() {
@@ -78,7 +79,7 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("BinaryOpXStream : Stream", function(spec, utils) {
+  klass.define("BinaryOpXStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.constructor = function SCBinaryOpXStream() {
@@ -134,7 +135,7 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("NAryOpStream : Stream", function(spec, utils) {
+  klass.define("NAryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.constructor = function SCNAryOpStream() {

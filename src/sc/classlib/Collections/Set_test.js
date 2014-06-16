@@ -25,20 +25,6 @@
       test = instance.valueOf();
       expect(test).to.eql([]);
     });
-    it("<>array", function() {
-      var instance, test;
-      var $value;
-
-      $value = $$();
-
-      instance = this.createInstance();
-
-      test = instance.array_($value);
-      expect(test).to.equal(instance);
-
-      test = instance.array();
-      expect(test).to.equal($value);
-    });
     it("<size", function() {
       var instance, test;
 

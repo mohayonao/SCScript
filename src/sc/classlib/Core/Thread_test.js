@@ -25,14 +25,6 @@
       test = instance.state();
       expect(test).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
     });
-    it("<parent", function() {
-      var instance, test;
-
-      instance = this.createInstance();
-
-      test = instance.parent();
-      expect(test).to.be.a("SCNil");
-    });
     it.skip("<primitiveError", function() {
     });
     it.skip("<primitiveIndex", function() {

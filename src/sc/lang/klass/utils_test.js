@@ -3,6 +3,8 @@
 
   require("./utils");
 
+  var $$ = sc.test.object;
+
   var utils = sc.lang.klass.utils;
 
   describe("sc.lang.klass.utils", function() {
@@ -55,6 +57,40 @@
     it("getMethod", function() {
       var test = utils.getMethod("Object", "class");
       expect(test).to.be.a("JSFunction");
+    });
+    it("setPropety <>", function() {
+      var test, obj = {};
+
+      utils.setProperty(obj, "<>", "value");
+
+      test = obj.value();
+      expect(test).to.be.a("SCNil");
+
+      test = obj.value_($$(100));
+      expect(test).to.be.equal(obj);
+
+      test = obj.value();
+      expect(test).to.be.a("SCInteger").that.equals(100);
+
+      test = obj.value_().value();
+      expect(test).to.be.a("SCNil");
+    });
+    it("setProperty <", function() {
+      var obj = { _$value: $$(100) };
+
+      utils.setProperty(obj, "<", "value");
+      expect(obj.value()).to.be.a("SCInteger").that.equals(100);
+      expect(obj.value_ ).to.be.undefined;
+    });
+    it("setProperty >", function() {
+      var obj = { _$value: $$(100) };
+
+      utils.setProperty(obj, ">", "value");
+
+      obj.value_($$(200));
+
+      expect(obj.value  ).to.be.undefined;
+      expect(obj._$value).to.be.a("SCInteger").that.equals(200);
     });
   });
 

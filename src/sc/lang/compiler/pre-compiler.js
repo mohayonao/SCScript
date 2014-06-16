@@ -111,16 +111,16 @@
   };
 
   function isFunctionExpression(node) {
-    return node.type === Syntax.FunctionExpression;
+    return node && node.type === Syntax.FunctionExpression;
   }
 
   function isSegmentedMethod(node) {
-    return node.type === Syntax.CallExpression &&
+    return node && node.type === Syntax.CallExpression &&
       (SegmentedMethod.hasOwnProperty(node.method.name) || isValueMethod(node));
   }
 
   function isValueMethod(node) {
-    return node.type === Syntax.CallExpression &&
+    return node && node.type === Syntax.CallExpression &&
       node.method.name.substr(0, 5) === "value";
   }
 

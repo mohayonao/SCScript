@@ -51,6 +51,20 @@
           expect(iter.hasNext, 3).to.be.false;
         }
       });
+      it("function$loop", function() {
+        var iter = iterator.function$loop();
+        for (var i = 0; i < 2; i++, iter = iter.clone()) {
+          expect(iter.hasNext, 1).to.be.true;
+          expect(iter.next() , 2).to.eql($$([ null, null ])._);
+          expect(iter.next() , 3).to.eql($$([ null, null ])._);
+          expect(iter.next() , 4).to.eql($$([ null, null ])._);
+          expect(iter.next() , 5).to.eql($$([ null, null ])._);
+          expect(iter.next() , 6).to.eql($$([ null, null ])._);
+          expect(iter.next() , 7).to.eql($$([ null, null ])._);
+          expect(iter.next() , 8).to.eql($$([ null, null ])._);
+          expect(iter.next() , 9).to.eql($$([ null, null ])._);
+        }
+      });
       it("number$do", function() {
         var iter = iterator.number$do($$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {

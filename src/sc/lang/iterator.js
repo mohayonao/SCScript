@@ -68,6 +68,19 @@
     return iter;
   };
 
+  iterator.function$loop = function() {
+    var iter = {
+      hasNext: true,
+      next: function() {
+        return [ $nil, $nil ];
+      },
+      clone: function() {
+        return iter;
+      }
+    };
+    return iter;
+  };
+
   var sc_incremental_iter = function($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,

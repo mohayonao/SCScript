@@ -559,6 +559,22 @@
         expect(r.value(),12).to.be.a("SCNil");
         expect(r.state(),13).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
       });
+      it.skip("value.yield", function() {
+        /*
+          a = r { [ 10, 20, 30 ].do(_.yield) };
+          r = r { a.value.yield; };
+        */
+        var a = arrayToRoutine([ 10, 20, 30 ]);
+        var r = this.createInstance($$(function() {
+          return a.value().yield();
+        }));
+
+        expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+        expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
+        expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(r.value(), 3).to.be.a("SCNil");
+        expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
+      });
       it("function$while", function() {
         /*
           i = 0;

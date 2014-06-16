@@ -149,10 +149,7 @@
       expect(r.next() , 3).to.be.a("SCInteger").that.equals(10);
       expect(r.next() , 4).to.be.a("SCNil");
       expect(r.reset(), 5).to.equal(r);
-      expect(r.next() , 6).to.be.a("SCInteger").that.equals( 2);
-      expect(r.next() , 7).to.be.a("SCInteger").that.equals( 6);
-      expect(r.next() , 8).to.be.a("SCInteger").that.equals(10);
-      expect(r.next() , 9).to.be.a("SCNil");
+      expect(r.next() , 6).to.be.a("SCNil");
     });
     it("#generate", function() {
       var instance, test;

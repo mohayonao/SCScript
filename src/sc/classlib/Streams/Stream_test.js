@@ -644,17 +644,6 @@
         return SCFuncStream.new($$(nextFunc), $$(resetFunc));
       };
     });
-    it("<>envir", function() {
-      var instance, test;
-
-      instance = this.createInstance();
-
-      test = instance.envir_($$(10));
-      expect(test).to.equal(instance);
-
-      test = instance.envir();
-      expect(test).to.be.a("SCInteger").that.equals(10);
-    });
     it("#next / #reset", function() {
       var instance, test;
       var count = 0;

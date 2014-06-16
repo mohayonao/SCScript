@@ -5,8 +5,9 @@ SCScript.install(function(sc) {
 
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.refine("AbstractFunction", function(spec, utils) {
+  klass.refine("AbstractFunction", function(spec, utils) {
     spec.composeUnaryOp = function($aSelector) {
       return $("UnaryOpFunction").new($aSelector, this);
     };
@@ -608,7 +609,7 @@ SCScript.install(function(sc) {
     spec.isValidUGenInput = utils.alwaysReturn$true;
   });
 
-  sc.lang.klass.define("UnaryOpFunction : AbstractFunction", function(spec) {
+  klass.define("UnaryOpFunction : AbstractFunction", function(spec) {
     spec.constructor = function SCUnaryOpFunction() {
       this.__super__("AbstractFunction");
     };
@@ -645,7 +646,7 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("BinaryOpFunction : AbstractFunction", function(spec) {
+  klass.define("BinaryOpFunction : AbstractFunction", function(spec) {
     spec.constructor = function SCBinaryOpFunction() {
       this.__super__("AbstractFunction");
     };
@@ -679,7 +680,7 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("NAryOpFunction : AbstractFunction", function(spec) {
+  klass.define("NAryOpFunction : AbstractFunction", function(spec) {
     spec.constructor = function SCNAryOpFunction() {
       this.__super__("AbstractFunction");
     };
@@ -721,28 +722,20 @@ SCScript.install(function(sc) {
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("FunctionList : AbstractFunction", function(spec, utils) {
+  klass.define("FunctionList : AbstractFunction", function(spec, utils) {
     var $int_0 = utils.$int_0;
 
     spec.constructor = function SCFunctionList() {
       this.__super__("AbstractFunction");
       this._flopped = false;
     };
+    utils.setProperty(spec, "<>", "array");
 
     spec.$new = function($functions) {
       return this._newCopyArgs({
         array: $functions
       });
     };
-
-    spec.array = function() {
-      return this._$array;
-    };
-
-    spec.array_ = fn(function($value) {
-      this._$array = $value;
-      return this;
-    }, "value");
 
     spec.flopped = function() {
       return $.Boolean(this._flopped);

@@ -4,48 +4,49 @@
   require("./klass");
 
   var $ = sc.lang.$;
+  var klass = sc.lang.klass;
 
   describe("sc.lang.klass", function() {
     var test;
     it("define", function() {
       expect(function() {
-        sc.lang.klass.define("lowercase");
+        klass.define("lowercase");
       }).to.throw("classname should be CamelCase");
       expect(function() {
-        sc.lang.klass.define("Object");
+        klass.define("Object");
       }).to.throw("already registered");
       expect(function() {
-        sc.lang.klass.define("NewClass : UndefinedClass");
+        klass.define("NewClass : UndefinedClass");
       }).to.throw("superclass 'UndefinedClass' is not registered");
       expect(function() {
-        sc.lang.klass.define("NewClass");
+        klass.define("NewClass");
       }).to.throw("class should have a constructor");
     });
     it("refine", function() {
       expect(function() {
-        sc.lang.klass.refine("UndefinedClass");
+        klass.refine("UndefinedClass");
       }).to.throw("class 'UndefinedClass' is not registered");
       expect(function() {
-        sc.lang.klass.refine("Object", {
+        klass.refine("Object", {
           $new: function() {}
         });
       }).to.throw("Object.new is already defined");
       expect(function() {
-        sc.lang.klass.refine("Object", {
+        klass.refine("Object", {
           valueOf: function() {}
         });
       }).to.throw("Object#valueOf is already defined");
     });
     it("get", function() {
       expect(function() {
-        sc.lang.klass.get("UndefinedClass");
-      }).to.throw("class 'UndefinedClass' is not registered");
+        klass.get("UndefinedClass");
+      }).to.throw("Class not defined: UndefinedClass");
     });
     it("exists", function() {
-      test = sc.lang.klass.exists("Object");
+      test = klass.exists("Object");
       expect(test).to.be.a("JSBoolean").that.is.true;
 
-      test = sc.lang.klass.exists("UndefinedClass");
+      test = klass.exists("UndefinedClass");
       expect(test).to.be.a("JSBoolean").that.is.false;
     });
   });
@@ -140,7 +141,7 @@
   describe("__super__", function() {
     var SCTestClass1, SCTestClass2;
     before(function() {
-      sc.lang.klass.define("TestClass1", {
+      klass.define("TestClass1", {
         constructor: function() {
           this.__super__("Object");
           this._testClass1 = true;
@@ -154,7 +155,7 @@
           return this;
         }
       });
-      sc.lang.klass.define("TestClass2 : TestClass1", {
+      klass.define("TestClass2 : TestClass1", {
         constructor: function() {
           this.__super__("TestClass1");
           this._testClass2 = true;

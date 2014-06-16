@@ -12,6 +12,8 @@ SCScript.install(function(sc) {
     var $int_0 = utils.$int_0;
     var SCArray = $("Array");
 
+    utils.setProperty(spec, "<>", "array");
+
     spec.$new = fn(function($n) {
       $n = $.Integer(Math.max($n.__int__(), 2) * 2);
       return this.__super__("new").initSet($n);
@@ -23,15 +25,6 @@ SCScript.install(function(sc) {
       }).map(function($elem) {
         return $elem.valueOf();
       });
-    };
-
-    spec.array = function() {
-      return this._$array;
-    };
-
-    spec.array_ = function($value) {
-      this._$array = $value || /* istanbul ignore next */ $nil;
-      return this;
     };
 
     spec.size = function() {

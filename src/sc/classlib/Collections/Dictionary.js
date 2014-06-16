@@ -594,37 +594,14 @@ SCScript.install(function(sc) {
   sc.lang.klass.refine("IdentityDictionary", function(spec, utils) {
     var $nil = utils.$nil;
 
+    utils.setProperty(spec, "<>", "proto");
+    utils.setProperty(spec, "<>", "parent");
+    utils.setProperty(spec, "<>", "know");
+
     spec.$new = fn(function($n, $proto, $parent, $know) {
       return this.__super__("new", [ $n ])
         .proto_($proto).parent_($parent).know_($know);
     }, "n=8; proto; parent; know=false");
-
-    spec.proto = function() {
-      return this._$proto;
-    };
-
-    spec.proto_ = function($value) {
-      this._$proto = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.parent = function() {
-      return this._$parent;
-    };
-
-    spec.parent_ = function($value) {
-      this._$parent = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.know = function() {
-      return this._$know;
-    };
-
-    spec.know_ = function($value) {
-      this._$know = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
 
     spec.putGet = fn(function($key, $value) {
       var $array, $index, $prev;

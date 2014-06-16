@@ -579,51 +579,6 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });
-    it("<>proto", function() {
-      var instance, test;
-      var $value;
-
-      $value = $$();
-
-      instance = this.createInstance();
-
-      test = instance.proto_($value);
-      expect(test).to.equal(instance);
-
-      test = instance.proto();
-      expect(test).to.equal($value);
-    });
-    it("<>parent", function() {
-      var instance, test;
-      var $value;
-
-      $value = $$();
-
-      instance = this.createInstance();
-
-      test = instance.parent_($value);
-      expect(test).to.equal(instance);
-
-      test = instance.parent();
-      expect(test).to.equal($value);
-    });
-    it("<>know", function() {
-      var instance, test;
-      var $value;
-
-      $value = $$();
-
-      instance = this.createInstance();
-
-      test = instance.know();
-      expect(test).to.be.a("SCBoolean").that.is.false;
-
-      test = instance.know_($value);
-      expect(test).to.equal(instance);
-
-      test = instance.know();
-      expect(test).to.equal($value);
-    });
     it("#at", function() {
       testCase(this, [
         {

@@ -483,20 +483,10 @@ SCScript.install(function(sc) {
   // EmbedOnce
 
   klass.define("FuncStream : Stream", function(spec, utils) {
-    var $nil = utils.$nil;
-
     spec.constructor = function SCFuncStream() {
       this.__super__("Stream");
     };
-
-    spec.envir = function() {
-      return this._$envir;
-    };
-
-    spec.envir_ = function($value) {
-      this._$envir = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
+    utils.setProperty(spec, "<>", "envir");
 
     spec.$new = function($nextFunc, $resetFunc) {
       return this._newCopyArgs({

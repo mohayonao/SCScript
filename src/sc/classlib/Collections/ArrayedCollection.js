@@ -6,11 +6,12 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var klass    = sc.lang.klass;
   var iterator = sc.lang.iterator;
   var rand     = sc.libs.random;
   var mathlib  = sc.libs.mathlib;
 
-  sc.lang.klass.refine("ArrayedCollection", function(spec, utils) {
+  klass.refine("ArrayedCollection", function(spec, utils) {
     var $nil   = utils.$nil;
     var $int_0 = utils.$int_0;
     var $int_1 = utils.$int_1;
@@ -785,7 +786,7 @@ SCScript.install(function(sc) {
     };
   });
 
-  sc.lang.klass.refine("RawArray", function(spec, utils) {
+  klass.refine("RawArray", function(spec, utils) {
     var SCArray = $("Array");
 
     spec.archiveAsCompileString = utils.alwaysReturn$true;
@@ -802,7 +803,7 @@ SCScript.install(function(sc) {
     };
   });
 
-  sc.lang.klass.define("Int8Array : RawArray", function(spec) {
+  klass.define("Int8Array : RawArray", function(spec) {
     var int8 = new Int8Array(1);
 
     spec.constructor = function SCInt8Array() {
@@ -821,7 +822,7 @@ SCScript.install(function(sc) {
     };
   });
 
-  sc.lang.klass.define("Int16Array : RawArray", function(spec) {
+  klass.define("Int16Array : RawArray", function(spec) {
     var int16 = new Int16Array(1);
 
     spec.constructor = function SCInt16Array() {
@@ -840,7 +841,7 @@ SCScript.install(function(sc) {
     };
   });
 
-  sc.lang.klass.define("Int32Array : RawArray", function(spec) {
+  klass.define("Int32Array : RawArray", function(spec) {
     var int32 = new Int32Array(1);
 
     spec.constructor = function SCInt32Array() {
@@ -859,7 +860,7 @@ SCScript.install(function(sc) {
     };
   });
 
-  sc.lang.klass.define("FloatArray : RawArray", function(spec) {
+  klass.define("FloatArray : RawArray", function(spec) {
     var float32 = new Float32Array(1);
 
     spec.constructor = function SCFloatArray() {
@@ -878,7 +879,7 @@ SCScript.install(function(sc) {
     };
   });
 
-  sc.lang.klass.define("DoubleArray : RawArray", function(spec) {
+  klass.define("DoubleArray : RawArray", function(spec) {
     var float64 = new Float64Array(1);
 
     spec.constructor = function SCDoubleArray() {

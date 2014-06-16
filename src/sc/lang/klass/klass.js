@@ -212,10 +212,7 @@
 
   klass.get = function(name) {
     if (!classes[name]) {
-      throw new Error(
-        "sc.lang.klass.get: " +
-          "class '" + name + "' is not registered."
-      );
+      throw new Error("Class not defined: " + name);
     }
     return classes[name];
   };

@@ -6,6 +6,8 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
 
   sc.lang.klass.refine("Ref", function(spec, utils) {
+    utils.setProperty(spec, "<>", "value");
+
     spec.$new = function($thing) {
       return this.__super__("new").value_($thing);
     };
@@ -13,15 +15,6 @@ SCScript.install(function(sc) {
     spec.valueOf = function() {
       return this._$value.valueOf();
     };
-
-    spec.value = function() {
-      return this._$value;
-    };
-
-    spec.value_ = fn(function($value) {
-      this._$value = $value;
-      return this;
-    }, "value");
 
     // $new
 

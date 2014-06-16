@@ -6,14 +6,14 @@ SCScript.install(function(sc) {
   var $    = sc.lang.$;
   var fn   = sc.lang.fn;
   var main = sc.lang.main;
+  var klass = sc.lang.klass;
   var random = sc.libs.random;
 
-  sc.lang.klass.define("Thread : Stream", function(spec, utils) {
-    var $nil = utils.$nil;
-
+  klass.define("Thread : Stream", function(spec, utils) {
     spec.constructor = function SCThread() {
       this.__super__("Stream");
     };
+    utils.setProperty(spec, "<", "parent");
 
     spec.$new = fn(function($func) {
       return this.__super__("new")._init($func);
@@ -32,10 +32,6 @@ SCScript.install(function(sc) {
 
     spec.state = function() {
       return $.Integer(this._state);
-    };
-
-    spec.parent = function() {
-      return this._parent || $nil;
     };
 
     // TODO: implements primitiveError
@@ -101,7 +97,7 @@ SCScript.install(function(sc) {
     // TODO: implements checkCanArchive
   });
 
-  sc.lang.klass.define("Routine : Thread", function(spec, utils) {
+  klass.define("Routine : Thread", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.__tag = sc.TAG_ROUTINE;

@@ -114,8 +114,6 @@
 
   Bytecode.prototype.runAsRoutine = function(args) {
     var result;
-    var code, length, iter;
-    var skip;
 
     this.setParent(bytecode.current);
 
@@ -123,46 +121,13 @@
 
     if (this._child) {
       result = this._child.runAsRoutine(args);
-      if (this.state === sc.STATE_SUSPENDED) {
-        skip = true;
+      if (this.state !== sc.STATE_SUSPENDED) {
+        result = null;
       }
     }
 
-    if (!skip) {
-      code   = this._code;
-      length = this._length;
-      iter   = this._iter;
-
-      this.state  = sc.STATE_RUNNING;
-      this.result = null;
-      while (this._index < length) {
-        if (iter && this._index === 0) {
-          args = iter.next();
-          if (args === null) {
-            this.state  = sc.STATE_SUSPENDED;
-            this._index = length;
-            break;
-          }
-        }
-        if (iter && !iter.hasNext) {
-          iter = null;
-        }
-
-        result = code[this._index].apply(this, args);
-
-        this._index += 1;
-        if (this._index >= length) {
-          if (iter) {
-            this._index = 0;
-          } else {
-            this.state = sc.STATE_SUSPENDED;
-          }
-        }
-
-        if (this.state !== sc.STATE_RUNNING) {
-          break;
-        }
-      }
+    if (!result) {
+      result = this._runAsRoutine(args);
     }
 
     bytecode.current = this._parent;
@@ -170,6 +135,48 @@
     this.advance();
 
     return this.result ? $.Nil() : result;
+  };
+
+  Bytecode.prototype._runAsRoutine = function(args) {
+    var result;
+    var code, length, iter;
+
+    code   = this._code;
+    length = this._length;
+    iter   = this._iter;
+
+    this.state  = sc.STATE_RUNNING;
+    this.result = null;
+    while (this._index < length) {
+      if (iter && this._index === 0) {
+        args = iter.next();
+        if (args === null) {
+          this.state  = sc.STATE_SUSPENDED;
+          this._index = length;
+          break;
+        }
+      }
+      if (iter && !iter.hasNext) {
+        iter = null;
+      }
+
+      result = code[this._index].apply(this, args);
+
+      this._index += 1;
+      if (this._index >= length) {
+        if (iter) {
+          this._index = 0;
+        } else {
+          this.state = sc.STATE_SUSPENDED;
+        }
+      }
+
+      if (this.state !== sc.STATE_RUNNING) {
+        break;
+      }
+    }
+
+    return result;
   };
 
   Bytecode.prototype.advance = function() {

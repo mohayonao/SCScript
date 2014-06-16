@@ -18,10 +18,11 @@
     this._def  = def;
     this._code = [];
     this._vals = [];
-    this.init(initializer);
+    this._$owner = null;
+    this._init(initializer);
   }
 
-  Bytecode.prototype.init = function() {
+  Bytecode.prototype._init = function() {
     var code = this._initializer();
     if (this._def && code.length) {
       code[0] = fn(code[0], this._def);
@@ -44,6 +45,23 @@
     this._parent = null;
     this._child  = null;
     return this;
+  };
+
+  Bytecode.prototype.setOwner = function($owner) {
+    this._$owner = $owner;
+    return this;
+  };
+
+  Bytecode.prototype.setIterator = function(iter) {
+    this._iter = iter;
+    return this;
+  };
+
+  Bytecode.prototype.setParent = function(parent) {
+    if (parent && parent !== this) {
+      this._parent  = parent;
+      parent._child = this;
+    }
   };
 
   Bytecode.prototype.run = function(args) {
@@ -154,18 +172,6 @@
     return this.result ? $.Nil() : result;
   };
 
-  Bytecode.prototype.setIterator = function(iter) {
-    this._iter = iter;
-    return this;
-  };
-
-  Bytecode.prototype.setParent = function(parent) {
-    if (parent && parent !== this) {
-      this._parent  = parent;
-      parent._child = this;
-    }
-  };
-
   Bytecode.prototype.advance = function() {
     if (this._child || this._index < this._length) {
       this.state = sc.STATE_SUSPENDED;
@@ -175,14 +181,21 @@
       this.state = sc.STATE_DONE;
     }
     if (this._parent) {
-      this._parent._child = null;
       if (this.state === sc.STATE_DONE) {
         this._parent.state = sc.STATE_RUNNING;
       } else {
         this._parent.state = sc.STATE_SUSPENDED;
       }
-      this._parent = null;
+      this._parent.purge();
     }
+  };
+
+  Bytecode.prototype.purge = function() {
+    if (this._child) {
+      this._child._parent = null;
+      this._child = null;
+    }
+    return this;
   };
 
   Bytecode.prototype.push = function($value) {
@@ -201,14 +214,16 @@
   Bytecode.prototype.break = function() {
     this.state  = sc.STATE_BREAK;
     this._index = this._length;
+    return this;
   };
 
   Bytecode.prototype.yield = function($value) {
     this.state  = sc.STATE_SUSPENDED;
     this.result = $value;
-    if (this._parent) {
+    if (this._parent && this._$owner.__tag === sc.TAG_FUNC) {
       this._parent.yield($value);
     }
+    return this;
   };
 
   bytecode.create = function(initializer, def) {
@@ -220,7 +235,7 @@
       bytecode.current = null;
       throw new Error("yield was called outside of a Routine.");
     }
-    bytecode.current.yield($value);
+    bytecode.current.yield($value).purge();
   };
 
   sc.lang.bytecode = bytecode;

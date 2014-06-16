@@ -136,7 +136,7 @@
       expect(test).to.equal(instance);
       expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
     });
-    it.skip("#subSample", function() {
+    it("#subSample", function() {
       /*
         r = r { [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ].do(_.yield) }.subSample(1, 3);
       */

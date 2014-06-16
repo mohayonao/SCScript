@@ -1,4 +1,4 @@
-(function(sc) {
+SCScript.install(function(sc) {
   "use strict";
 
   require("./Patterns");
@@ -65,4 +65,4 @@
     // TODO: implements storeArgs
   });
 
-})(sc);
+});

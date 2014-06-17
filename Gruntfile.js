@@ -90,17 +90,26 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask("check", function(filter) {
-    grunt.task.run("-typo:"   + toS(filter));
-    grunt.task.run("-jscs:"   + toS(filter));
-    grunt.task.run("-jshint:" + toS(filter));
-    grunt.task.run("-mocha:"  + toS(filter) + ":nyan:text");
+    grunt.task.run("-typo:"       + toS(filter));
+    grunt.task.run("-jscs:"       + toS(filter));
+    grunt.task.run("-jshint:"     + toS(filter));
+    grunt.task.run("-mocha:"      + toS(filter) + ":nyan:text");
+    grunt.task.run("-complexity:" + toS(filter));
   });
 
   grunt.registerTask("cover", function(filter) {
     grunt.task.run("-mocha:" + toS(filter) + ":nyan:lcov");
   });
 
-  grunt.registerTask("travis"  , [ "typo", "jscs", "jshint", "mocha::list:lcovonly" ]);
+  grunt.registerTask("complexity", function(f) {
+    grunt.task.run("-complexity" + toTaskArgs(arguments));
+  });
+
+  grunt.registerTask("complex", function(f) {
+    grunt.task.run("-complexity" + toTaskArgs(arguments));
+  });
+
+  grunt.registerTask("travis"  , [ "-typo", "-jscs", "-jshint", "-mocha::list:lcovonly" ]);
   grunt.registerTask("gh-pages", [ "build", "test::nyan:lcov", "plato" ]);
 
 };

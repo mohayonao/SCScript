@@ -45,7 +45,7 @@ module.exports = function(grunt) {
     tstFiles.sort(sorter.byFilePath).forEach(function(file) {
       if (/_test\.js$/.test(file)) {
         mocha.addFile(file);
-      } else if (!/^src\/sc\/test\//.test(file)) {
+      } else {
         matchFn[path.resolve(file)] = true;
       }
     });
@@ -64,7 +64,6 @@ module.exports = function(grunt) {
         installer(global.sc);
       }
     };
-    require("../test-utils");
 
     if (cover) {
       coverageVar = "$$cov_" + Date.now() + "$$";
@@ -77,6 +76,8 @@ module.exports = function(grunt) {
     if (!reporter) {
       reporter = "spec";
     }
+
+    require("../test-utils");
 
     done = this.async();
     mocha.reporter(reporter).run(function(failure) {

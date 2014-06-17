@@ -2,10 +2,16 @@ module.exports = function(grunt) {
   "use strict";
 
   grunt.registerTask("-jscs", function(filter) {
+    var src = grunt.file._expand("src").applyFilter(filter);
+
+    if (!src.length) {
+      return;
+    }
+
     grunt._loadNpmTasksIfNeeded("grunt-jscs-checker");
 
     grunt.config.data.jscs = {
-      src: grunt.file._expand("src").applyFilter(filter),
+      src: src,
       options: {
         config: ".jscsrc"
       }

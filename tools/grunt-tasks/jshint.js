@@ -4,8 +4,6 @@ module.exports = function(grunt) {
   grunt.registerTask("-jshint", function(filter) {
     var files, tests;
 
-    grunt._loadNpmTasksIfNeeded("grunt-contrib-jshint");
-
     if (filter) {
       files = [];
       tests = [];
@@ -20,6 +18,12 @@ module.exports = function(grunt) {
       files = grunt.file._expand("all", "!test");
       tests = grunt.file._expand("test");
     }
+
+    if (!files.length && !tests.length) {
+      return;
+    }
+
+    grunt._loadNpmTasksIfNeeded("grunt-contrib-jshint");
 
     grunt.config.data.jshint = {
       options: grunt.file.readJSON(".jshintrc")

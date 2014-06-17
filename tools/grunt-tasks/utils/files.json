@@ -1,0 +1,20 @@
+{
+  "all": [
+    "*.js", "src/**/*.js", "tools/**/*.js", "bin/**/*.js", "demo/**/*.js"
+  ],
+  "src": [
+    "src/sc/**/*.js"
+  ],
+  "classlib": [
+    "src/sc/classlib/**/*.js"
+  ],
+  "!classlib": [
+    "!src/sc/classlib/**/*.js"
+  ],
+  "test": [
+    "src/**/*_test.js"
+  ],
+  "!test": [
+    "!src/**/*_test.js", "!src/**/*test*.js"
+  ]
+}

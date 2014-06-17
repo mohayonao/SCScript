@@ -1,21 +1,21 @@
 (function(sc) {
   "use strict";
 
-  require("../lang/installer");
+  require("../src/sc/lang/installer");
 
-  require("../classlib/Collections/Array");
-  require("../classlib/Collections/Association");
-  require("../classlib/Collections/String");
-  require("../classlib/Collections/Event");
-  require("../classlib/Core/Boolean");
-  require("../classlib/Core/Char");
-  require("../classlib/Core/Function");
-  require("../classlib/Core/Kernel");
-  require("../classlib/Core/Nil");
-  require("../classlib/Core/Symbol");
-  require("../classlib/Core/Thread");
-  require("../classlib/Math/Integer");
-  require("../classlib/Math/Float");
+  require("../src/sc/classlib/Collections/Array");
+  require("../src/sc/classlib/Collections/Association");
+  require("../src/sc/classlib/Collections/String");
+  require("../src/sc/classlib/Collections/Event");
+  require("../src/sc/classlib/Core/Boolean");
+  require("../src/sc/classlib/Core/Char");
+  require("../src/sc/classlib/Core/Function");
+  require("../src/sc/classlib/Core/Kernel");
+  require("../src/sc/classlib/Core/Nil");
+  require("../src/sc/classlib/Core/Symbol");
+  require("../src/sc/classlib/Core/Thread");
+  require("../src/sc/classlib/Math/Integer");
+  require("../src/sc/classlib/Math/Float");
 
   var $ = sc.lang.$;
 

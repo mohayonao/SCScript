@@ -522,7 +522,7 @@ SCScript.install(function(sc) {
 
     spec.yield = function() {
       bytecode.yield(this);
-      return this;
+      return $nil;
     };
 
     // TODO: implements alwaysYield

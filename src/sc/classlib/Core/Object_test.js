@@ -1167,7 +1167,7 @@
       this.stub(bytecode, "yield");
 
       test = instance.yield();
-      expect(test).to.equal(instance);
+      expect(test).to.be.a("SCNil");
       expect(bytecode.yield).to.be.calledWith(instance);
     }));
     it.skip("#alwaysYield", function() {

@@ -1,8 +1,10 @@
 {
   "expr"    : true,
   "loopfunc": true,
+  "newcap"  : false,
   "globals": {
     "sc"        : true,
+    "SCScript"  : true,
     "context"   : true,
     "describe"  : true,
     "it"        : true,

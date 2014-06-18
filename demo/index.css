@@ -17,6 +17,10 @@
 100% { background-color: #ffffff; }
 }
 
+body {
+  height: 100%;
+}
+
 #menualt {
   z-index: 65536;
   position: absolute;

@@ -133,61 +133,61 @@
         var f = $.Function(function() {
           return [
             function() {
-              return this.push($.Function(function() {
+              return this.push(), $.Function(function() {
                 return [
                   function() {
                     return $$(10);
                   }
                 ];
-              }).value());
+              }).value();
             },
             function() {
-              return this.push($.Function(function() {
+              return this.push(), $.Function(function() {
                 return [
                   function() {
                     return $$(20);
                   }
                 ];
-              }).value());
+              }).value();
             },
             function() {
-              return this.push($.Function(function() {
+              return this.push(), $.Function(function() {
                 return [
                   function() {
                     assert(this.shift(), 10);
                     return assert(this.shift(), 20);
                   }
                 ];
-              }).value());
+              }).value();
             },
             function() {
               assert(this.shift(), 20);
-              return this.push($.Function(function() {
+              return this.push(), $.Function(function() {
                 return [
                   function() {
                     return $$(30);
                   }
                 ];
-              }).value());
+              }).value();
             },
             function() {
-              return this.push($.Function(function() {
+              return this.push(), $.Function(function() {
                 return [
                   function() {
                     return $$(40);
                   }
                 ];
-              }).value());
+              }).value();
             },
             function() {
-              return this.push($.Function(function() {
+              return this.push(), $.Function(function() {
                 return [
                   function() {
                     assert(this.shift(), 30);
                     return assert(this.shift(), 40);
                   }
                 ];
-              }).value());
+              }).value();
             },
             function() {
               return assert(this.shift(), 40);
@@ -280,7 +280,7 @@
           r = r { 10.yield }
         */
         var r = this.createInstance($$(function() {
-          return $$(10).yield().neg();
+          return $$(10).yield();
         }));
         expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
         expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -476,25 +476,25 @@
         */
         var r = this.createInstance([
           function() {
-            return this.push($.Function(function() {
+            return this.push(), $.Function(function() {
               return [
                 function() {
                   return $$(10);
                 }
               ];
-            }).value());
+            }).value();
           },
           function() {
-            return this.push($.Function(function() {
+            return this.push(), $.Function(function() {
               return [
                 function() {
                   return $$(20);
                 }
               ];
-            }).value());
+            }).value();
           },
           function() {
-            return this.push($.Function(function() {
+            return this.push(), $.Function(function() {
               return [
                 function() {
                   return this.shift().yield();
@@ -503,31 +503,32 @@
                   return this.shift().yield();
                 }
               ];
-            }).value());
+            }).value();
           },
           function() {
-            return this.shift().yield();
+            var $a = this.shift();
+            return $a.yield();
           },
           function() {
-            return this.push($.Function(function() {
+            return this.push(), $.Function(function() {
               return [
                 function() {
                   return $$(30);
                 }
               ];
-            }).value());
+            }).value();
           },
           function() {
-            return this.push($.Function(function() {
+            return this.push(), $.Function(function() {
               return [
                 function() {
                   return $$(40);
                 }
               ];
-            }).value());
+            }).value();
           },
           function() {
-            return this.push($.Function(function() {
+            return this.push(), $.Function(function() {
               return [
                 function() {
                   return this.shift().yield();
@@ -536,7 +537,7 @@
                   return this.shift().yield();
                 }
               ];
-            }).value());
+            }).value();
           },
           function() {
             return this.shift().yield();
@@ -568,7 +569,7 @@
         var r = this.createInstance($.Function(function() {
           return [
             function() {
-              return this.push(a.value());
+              return this.push(), a.value();
             },
             function() {
               return this.shift().yield();
@@ -581,6 +582,40 @@
         expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
         expect(r.value(), 3).to.be.a("SCNil");
         expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
+      });
+      it("routine value", function() {
+        /*
+          r = r { var a = { 10.yield; 20 }.value; a.yield }
+        */
+        var r = this.createInstance($.Function(function() {
+          var $a;
+          return [
+            function() {
+              return this.push(), $.Function(function() {
+                return [
+                  function() {
+                    return $$(10).yield();
+                  },
+                  function() {
+                    return $$(20);
+                  }
+                ];
+              }).value();
+            },
+            function() {
+              $a = this.shift();
+              return $a.yield();
+            }
+          ];
+        }));
+
+        expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+        expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
+        expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(r.value(), 3).to.be.a("SCInteger").that.equals(20);
+        expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(r.value(), 5).to.be.a("SCNil");
+        expect(r.state(), 6).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
       });
       it("function$while", function() {
         /*

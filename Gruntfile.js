@@ -85,6 +85,10 @@ module.exports = function(grunt) {
     grunt.task.run("-complexity:" + toTaskArgs(arguments));
   });
 
+  grunt.registerTask("impl", "Report classlib methods that are not implemented.", function() {
+    grunt.task.run("-impl:" + toTaskArgs(arguments));
+  });
+
   grunt.registerTask("lint", 'Alias for "typo", "jscs", "jshint" tasks.', function(filter) {
     grunt.task.run("-typo:"   + toTaskArgs(filter));
     grunt.task.run("-jscs:"   + toTaskArgs(filter));

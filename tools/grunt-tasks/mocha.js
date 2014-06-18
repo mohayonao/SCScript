@@ -59,11 +59,6 @@ module.exports = function(grunt) {
     global.sc = {};
     require("../../src/const");
     global.sc.VERSION = grunt.config.data.pkg.version;
-    global.SCScript = {
-      install: function(installer) {
-        installer(global.sc);
-      }
-    };
 
     if (cover) {
       coverageVar = "$$cov_" + Date.now() + "$$";

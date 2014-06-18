@@ -4,7 +4,6 @@
   require("./parser");
   require("./test-cases");
 
-  var SCScript = sc.SCScript;
   var Syntax  = sc.lang.compiler.Syntax;
   var Token   = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;

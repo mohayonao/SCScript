@@ -7,7 +7,6 @@
   require("./codegen");
 
   var compiler = sc.lang.compiler;
-  var SCScript = sc.SCScript;
 
   describe("sc.lang.compiler.compiler", function() {
     it("SCScript.tokenize", sinon.test(function() {

@@ -19,20 +19,20 @@
           run: sinon.spy()
         }
       };
-      sc.SCScript(func);
+      SCScript(func);
 
       expect(sc.lang.main.run).to.be.calledWith(func);
     });
     describe(".install", function() {
       it("should call given function with sc", function() {
         var installer = sinon.spy();
-        sc.SCScript.install(installer);
+        SCScript.install(installer);
         expect(installer).to.be.calledWith(sc);
       });
     });
     describe(".VERSION", function() {
       it("should be exists", function() {
-        expect(sc.SCScript.VERSION).to.be.a("string");
+        expect(SCScript.VERSION).to.be.a("string");
       });
     });
   });

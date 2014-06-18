@@ -4,15 +4,20 @@ module.exports = function(grunt) {
   var reqUtils = require("./utils/require");
 
   grunt.registerTask("-typo", function(filter) {
+    var src = grunt.file._expand("src").applyFilter(filter);
     var constVariables;
     var countOfChecked, hasTypo;
+
+    if (!src.length) {
+      return;
+    }
 
     reqUtils.clearCache();
 
     countOfChecked = 0;
     constVariables = require("../../src/const");
 
-    grunt.file._expand("src").applyFilter(filter).forEach(function(file) {
+    src.forEach(function(file) {
       var code, re, m;
 
       code = grunt.file.read(file);

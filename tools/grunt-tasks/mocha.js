@@ -8,8 +8,8 @@ module.exports = function(grunt) {
   var sinon = require("sinon");
   var istanbul = require("istanbul");
   var esprima = require("esprima");
-  var sorter = require("./utils/sorter");
-  var reqUtils = require("./utils/require");
+  var sorter = require("./assets/sorter");
+  var reqUtils = require("./assets/require");
 
   global.expect = chai.expect;
   global.chai = chai;
@@ -23,7 +23,7 @@ module.exports = function(grunt) {
   };
 
   var resolveFilter = function(filter) {
-    var relationalTest = grunt.file.readJSON("./tools/grunt-tasks/utils/relational-test.json");
+    var relationalTest = grunt.file.readJSON("./tools/grunt-tasks/assets/relational-test.json");
 
     filter = trimExtJS(filter);
     if (relationalTest[filter]) {

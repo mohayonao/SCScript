@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
   "use strict";
 
-  var reqUtils = require("./utils/require");
+  var reqUtils = require("./assets/require");
 
   grunt.registerTask("-typo", function(filter) {
     var src = grunt.file._expand("src").applyFilter(filter);

@@ -2,7 +2,7 @@ module.exports = function(grunt) {
   "use strict";
 
   var path = require("path");
-  var sorter = require("./utils/sorter");
+  var sorter = require("./assets/sorter");
 
   var q = function(str) {
     return "\"" + str + "\"";

@@ -11,7 +11,7 @@ module.exports = function(grunt) {
   };
 
   grunt.file._expand = function() {
-    var dict = grunt.file.readJSON("tools/grunt-tasks/utils/files.json");
+    var dict = grunt.file.readJSON("tools/grunt-tasks/assets/files.json");
     var list = grunt.file.expand(_.flatten(_.map(arguments, function(name) {
       return dict[name] || name;
     })));

@@ -1,5 +1,5 @@
 /* jshint browser: true, devel: true */
-/* global SCScript, CodeMirror, $ */
+/* global SCScript, CodeMirror, $, _ */
 window.onload = function() {
   "use strict";
 
@@ -40,7 +40,7 @@ window.onload = function() {
       }
     }
 
-    blink(cssName, ".codemirror-focused .codemirror-selected", callback);
+    blink(cssName, ".CodeMirror-focused .CodeMirror-selected", callback);
 
     return code;
   };
@@ -86,10 +86,11 @@ window.onload = function() {
   var getCssRule = (function() {
     var cache = {};
     return function(selector) {
+      selector = selector.toLowerCase();
       if (!cache[selector]) {
-        [].slice.call(document.styleSheets).forEach(function(sheet) {
-          [].slice.call(sheet.cssRules || sheet.rules).forEach(function(rule) {
-            if (rule.selectorText && rule.selectorText.indexOf(selector) !== -1) {
+        _.each(document.styleSheets, function(sheet) {
+          _.each(sheet.cssRules || sheet.rules, function(rule) {
+            if (String(rule.selectorText).toLowerCase().indexOf(selector) !== -1) {
               cache[selector] = rule;
             }
           });
@@ -149,11 +150,11 @@ window.onload = function() {
       var files, code;
       files = result.data.files;
       if (files) {
-        code = Object.keys(files).filter(function(key) {
+        code = _.chain(files).keys().filter(function(key) {
           return files[key].language === "SuperCollider";
         }).map(function(key) {
           return files[key].content;
-        }).join("\n");
+        }).value().join("\n");
       } else {
         code = "";
         console.warn("gist:" + gistid + " not found");

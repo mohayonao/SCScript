@@ -286,7 +286,8 @@ SCScript.install(function(sc) {
               },
               function() {
                 return $this.reset();
-              }
+              },
+              $.NOP
             ];
           }));
         } ];

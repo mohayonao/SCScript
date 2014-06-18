@@ -7,4 +7,6 @@
     return sc.lang.klass.get(name);
   };
 
+  sc.lang.$.NOP = null;
+
 })(sc);

@@ -32,6 +32,9 @@
       this._argNames = [];
       this._argVals  = [];
     }
+    if (code.length > 1) {
+      this._freeFunc = code.pop();
+    }
     this._code   = code;
     this._length = code.length;
     return this.reset();
@@ -44,6 +47,13 @@
     this._iter   = null;
     this._parent = null;
     this._child  = null;
+    return this;
+  };
+
+  Bytecode.prototype.free = function() {
+    if (this._freeFunc) {
+      this._freeFunc();
+    }
     return this;
   };
 
@@ -92,6 +102,9 @@
         this._iter = null;
         break;
       }
+    }
+    if (this._freeFunc) {
+      this._freeFunc();
     }
 
     bytecode.current = this._parent;
@@ -186,12 +199,14 @@
     }
     if (!this.result) {
       this.state = sc.STATE_DONE;
+      this.free();
     }
     if (this._parent) {
       if (this.state === sc.STATE_DONE) {
         this._parent.state = sc.STATE_RUNNING;
       } else {
         this._parent.state = sc.STATE_SUSPENDED;
+        this.free();
       }
       this._parent.purge();
     }

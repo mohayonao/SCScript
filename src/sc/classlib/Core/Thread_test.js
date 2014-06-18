@@ -172,7 +172,8 @@
               },
               function() {
                 return $$(3).yield();
-              }
+              },
+              $.NOP
             ];
           }).value();
         },
@@ -183,7 +184,8 @@
           return $$([ 5, 6, 7 ]).do($$(function($_) {
             return $_.yield();
           }));
-        }
+        },
+        $.NOP
       ]);
 
       expect(instance.next($inval), 0).to.equal($inval);

@@ -41,7 +41,7 @@
   };
 
   iterator.execute = function(iter, $function) {
-    $function._.setIterator(iter).run();
+    $function._bytecode.setIterator(iter).run();
   };
 
   iterator.object$do = one_shot_iter;
@@ -49,7 +49,7 @@
   iterator.function$while = function($function) {
     var bytecode, iter;
 
-    bytecode = $function._;
+    bytecode = $function._bytecode;
 
     iter = {
       hasNext: true,

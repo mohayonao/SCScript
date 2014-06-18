@@ -23,7 +23,7 @@ SCScript.install(function(sc) {
       if ($func.__tag !== sc.TAG_FUNC) {
         throw new Error("Thread.init failed");
       }
-      this._bytecode = $func._.setOwner(this);
+      this._bytecode = $func._bytecode.setOwner(this);
       this._state    = sc.STATE_INIT;
       this._parent   = null;
       this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);

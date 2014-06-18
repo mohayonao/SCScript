@@ -11,6 +11,9 @@
   var $nil, $true, $false;
   var $symbols, $chars, $integers, $floats;
 
+  /* istanbul ignore next */
+  var dummyFunction = (function() {}).bind(null);
+
   function SCNil() {
     this.__super__("Object");
     this._ = null;
@@ -177,8 +180,7 @@
 
   function SCFunction() {
     this.__super__("AbstractFunction");
-    /* istanbul ignore next */
-    this._ = function() {};
+    this._ = dummyFunction;
   }
   klass.define("Function : AbstractFunction", {
     constructor: SCFunction,
@@ -300,7 +302,7 @@
 
   $.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._ = bytecode.create(value, def).setOwner(instance);
+    instance._bytecode = bytecode.create(value, def).setOwner(instance);
     return instance;
   };
 

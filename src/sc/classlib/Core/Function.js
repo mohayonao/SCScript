@@ -30,20 +30,24 @@ SCScript.install(function(sc) {
 
     spec.shallowCopy = utils.nop;
 
+    var function$run = function(bytecode, args) {
+      return bytecode.reset().run(args);
+    };
+
     spec.choose = function() {
       return this.value();
     };
 
     spec.update = function() {
-      return this._.reset().run(arguments);
+      return function$run(this._bytecode, arguments);
     };
 
     spec.value = function() {
-      return this._.reset().run(arguments);
+      return function$run(this._bytecode, arguments);
     };
 
     spec.valueArray = function($args) {
-      return this._.reset().run($args.asArray()._);
+      return function$run(this._bytecode, $args.asArray()._);
     };
 
     var envir = function(func, args) {
@@ -60,13 +64,11 @@ SCScript.install(function(sc) {
     };
 
     spec.valueEnvir = function() {
-      var args = envir(this._, arguments);
-      return this._.reset().run(args);
+      return function$run(this._bytecode, envir(this._bytecode, arguments));
     };
 
     spec.valueArrayEnvir = function($args) {
-      var args = envir(this._, $args.asArray()._);
-      return this._.reset().run(args);
+      return function$run(this._bytecode, envir(this._bytecode, $args.asArray()._));
     };
 
     spec.functionPerformList = fn(function($selector, $arglist) {

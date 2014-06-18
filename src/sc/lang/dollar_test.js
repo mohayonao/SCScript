@@ -14,6 +14,9 @@
       var test = $("Class");
       expect(stub).to.be.calledLastIn(test);
     }));
+    it(".NOP should be a null", function() {
+      expect($.NOP).to.be.null;
+    });
   });
 
 })();

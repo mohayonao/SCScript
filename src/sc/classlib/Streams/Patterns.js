@@ -219,7 +219,8 @@ SCScript.install(function(sc) {
             counter += 1;
             $inval   = $outval.yield();
             return $inval;
-          }
+          },
+          $.NOP
         ];
       }));
 
@@ -279,7 +280,8 @@ SCScript.install(function(sc) {
             counter += 1;
             $inval   = $outval.yield();
             return $inval;
-          }
+          },
+          $.NOP
         ];
       }));
 

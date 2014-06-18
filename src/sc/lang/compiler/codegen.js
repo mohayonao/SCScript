@@ -457,6 +457,7 @@
       var elements = node.body;
       var i, imax;
       var functionBodies, calledSegmentedMethod;
+      var resetVars;
 
       if (elements.length) {
         for (i = 0, imax = args.length; i < imax; ++i) {
@@ -513,6 +514,15 @@
             } else {
               fragments.push(this.addIndent(this.withFunction(fargs, loop)));
             }
+          }
+
+          resetVars = Object.keys(this.state.syncBlockScope.vars);
+          if (resetVars.length) {
+            fragments.push(",", "\n", this.addIndent(this.withFunction([], function() {
+              return this.addIndent(resetVars.sort().map($id).join(" = ") + " = null;");
+            })));
+          } else {
+            fragments.push(",", "\n", this.addIndent("$.NOP"));
           }
 
           fragments.push("\n");
@@ -734,7 +744,7 @@
 
   CodeGen.prototype.ValueMethodEvaluator = function(node) {
     this.state.calledSegmentedMethod = true;
-    return [ "this.push(", this.generate(node.expr), ")" ];
+    return [ "this.push(), ", this.generate(node.expr) ];
   };
 
   CodeGen.prototype.ValueMethodResult = function() {

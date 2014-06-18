@@ -126,7 +126,8 @@ SCScript.install(function(sc) {
                 for (i = 0; i < skipSize; ++i) {
                   $this.next();
                 }
-              }
+              },
+              $.NOP
             ];
           }).loop();
         } ];
@@ -328,19 +329,22 @@ SCScript.install(function(sc) {
       $reset = $false;
       return $("Routine").new($.Function(function() {
         var $inval;
-        return [ function(_arg0) {
-          $inval = _arg0;
-          if ($reset.__bool__()) {
-            $this.reset();
-            $stream.reset();
-          }
-          $reset = $true;
-          $inval = $this.embedInStream($inval);
-          return $inval;
-        },
-        function() {
-          return $stream.embedInStream($inval);
-        } ];
+        return [
+          function(_arg0) {
+            $inval = _arg0;
+            if ($reset.__bool__()) {
+              $this.reset();
+              $stream.reset();
+            }
+            $reset = $true;
+            $inval = $this.embedInStream($inval);
+            return $inval;
+          },
+          function() {
+            return $stream.embedInStream($inval);
+          },
+          $.NOP
+        ];
       }));
     }, "stream");
 

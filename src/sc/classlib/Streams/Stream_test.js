@@ -510,7 +510,8 @@
           },
           function() {
             return $$(5).yield();
-          }
+          },
+          $.NOP
         ];
       }));
 

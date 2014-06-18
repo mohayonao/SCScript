@@ -32,6 +32,9 @@
       this._argNames = [];
       this._argVals  = [];
     }
+    if (code.length > 1) {
+      this._freeFunc = code.pop();
+    }
     this._code   = code;
     this._length = code.length;
     return this.reset();
@@ -44,6 +47,13 @@
     this._iter   = null;
     this._parent = null;
     this._child  = null;
+    return this;
+  };
+
+  Bytecode.prototype.free = function() {
+    if (this._freeFunc) {
+      this._freeFunc();
+    }
     return this;
   };
 
@@ -87,11 +97,14 @@
     this.state = sc.STATE_RUNNING;
 
     for (i = 0; i < length; ++i) {
-      result = code[i].apply(this, args);
+      result = this.update(code[i].apply(this, args));
       if (this.state === sc.STATE_BREAK) {
         this._iter = null;
         break;
       }
+    }
+    if (this._freeFunc) {
+      this._freeFunc();
     }
 
     bytecode.current = this._parent;
@@ -160,7 +173,7 @@
         iter = null;
       }
 
-      result = code[this._index].apply(this, args);
+      result = this.update(code[this._index].apply(this, args));
 
       this._index += 1;
       if (this._index >= length) {
@@ -186,12 +199,14 @@
     }
     if (!this.result) {
       this.state = sc.STATE_DONE;
+      this.free();
     }
     if (this._parent) {
       if (this.state === sc.STATE_DONE) {
         this._parent.state = sc.STATE_RUNNING;
       } else {
         this._parent.state = sc.STATE_SUSPENDED;
+        this.free();
       }
       this._parent.purge();
     }
@@ -205,17 +220,24 @@
     return this;
   };
 
-  Bytecode.prototype.push = function($value) {
-    this._vals.push($value);
-    return $value;
+  Bytecode.prototype.push = function() {
+    this._vals.push(null);
   };
 
   Bytecode.prototype.shift = function() {
     if (this._vals.length) {
       return this._vals.shift();
-    } else {
-      return this._parent.shift();
     }
+    return this._parent.shift();
+  };
+
+  Bytecode.prototype.update = function($value) {
+    if (this._vals.length) {
+      this._vals[this._vals.length - 1] = $value;
+    } else if (this._parent) {
+      this._parent.update($value);
+    }
+    return $value;
   };
 
   Bytecode.prototype.break = function() {

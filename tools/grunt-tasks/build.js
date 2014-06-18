@@ -1,6 +1,8 @@
+/* jshint node: true */
 module.exports = function(grunt) {
   "use strict";
 
+  var _ = require("underscore");
   var path = require("path");
   var sorter = require("./assets/sorter");
 
@@ -23,27 +25,17 @@ module.exports = function(grunt) {
   };
 
   var buildSCScript = function() {
-    var files, result;
-
-    files  = grunt.file._expand("src", "!classlib", "!test");
-    result = [
-      "(function(global) {\n",
-      '"use strict";\n\n',
-      "var sc = { VERSION: " + q(grunt.config.data.pkg.version) + " };\n\n",
-      build(files),
-      "\n\n})(this.self || global);"
-    ].join("");
-
-    grunt.file.write("build/scscript.js", result);
+    var tmpl = _.template(grunt.file.read(__dirname + "/assets/scscript.tmpl"));
+    grunt.file.write("build/scscript.js", tmpl({
+      version: q(grunt.config.data.pkg.version),
+      source : build(grunt.file._expand("src", "!classlib", "!test"))
+    }));
   };
 
   var buildClassLib = function() {
-    var files, result;
-
-    files  = grunt.file._expand("classlib", "!test");
-    result = build(files);
-
-    grunt.file.write("build/scscript-classlib.js", result);
+    grunt.file.write("build/scscript-classlib.js", [
+      build(grunt.file._expand("classlib", "!test"))
+    ].join(""));
   };
 
   var sortModules = function(files) {
@@ -67,7 +59,7 @@ module.exports = function(grunt) {
       }
     };
 
-    files.forEach(walker);
+    _.each(files, walker);
 
     return result;
   };
@@ -77,7 +69,7 @@ module.exports = function(grunt) {
 
     src = grunt.file.read(filepath);
 
-    Object.keys(constVariables).forEach(function(key) {
+    _.chain(constVariables).keys().each(function(key) {
       src = src.replace(new RegExp("sc." + key + "(?=\\b)", "g"), constVariables[key]);
     });
 

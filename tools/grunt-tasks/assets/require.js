@@ -1,7 +1,9 @@
 "use strict";
 
+var _ = require("underscore");
+
 var clearCache = function() {
-  Object.keys(require.cache).forEach(function(filepath) {
+  _.chain(require.cache).keys().each(function(filepath) {
     if (!/\/node_modules\//.test(filepath)) {
       delete require.cache[filepath];
     }

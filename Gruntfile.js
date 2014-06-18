@@ -12,9 +12,9 @@ module.exports = function(grunt) {
 
   grunt.file._expand = function() {
     var dict = grunt.file.readJSON("tools/grunt-tasks/assets/files.json");
-    var list = grunt.file.expand(_.flatten(_.map(arguments, function(name) {
+    var list = grunt.file.expand(_.chain(arguments).map(function(name) {
       return dict[name] || name;
-    })));
+    }).flatten().value());
 
     Object.defineProperty(list, "applyFilter", {
       value: function(filter) {
@@ -26,11 +26,11 @@ module.exports = function(grunt) {
   };
 
   var applyFilter = function(list, filter) {
-    return !filter ? list : _.flatten(_.map(filter.split("+"), function(filter) {
-      return _.filter(list, function(file) {
+    return !filter ? list : _.chain(filter.split("+")).map(function(filter) {
+      return _.chain(list).filter(function(file) {
         return file.indexOf(filter) !== -1;
-      });
-    }));
+      }).value();
+    }).flatten().value();
   };
 
   var toTaskArgs = function(args) {

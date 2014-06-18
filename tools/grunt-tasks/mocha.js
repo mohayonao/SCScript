@@ -1,9 +1,11 @@
+/* jshint node: true */
 module.exports = function(grunt) {
   "use strict";
 
   var path = require("path");
   var Mocha = require("mocha");
 
+  var _ = require("underscore");
   var chai = require("chai");
   var sinon = require("sinon");
   var istanbul = require("istanbul");
@@ -23,7 +25,7 @@ module.exports = function(grunt) {
   };
 
   var resolveFilter = function(filter) {
-    var relationalTest = grunt.file.readJSON("./tools/grunt-tasks/assets/relational-test.json");
+    var relationalTest = grunt.file.readJSON(__dirname + "/assets/relational-test.json");
 
     filter = trimExtJS(filter);
     if (relationalTest[filter]) {
@@ -76,21 +78,29 @@ module.exports = function(grunt) {
 
     done = this.async();
     mocha.reporter(reporter).run(function(failure) {
-      var collector;
 
       if (cover) {
-        collector = new istanbul.Collector();
-        collector.add(global[coverageVar]);
-
-        if (cover !== "text") {
-          istanbul.Report.create(cover, { dir: "docs/report" }).writeReport(collector, true);
-        }
-
-        istanbul.Report.create("text").writeReport(collector, true);
+        createCoverageReport(cover);
       }
 
       done(!failure);
     });
+
+    var createCoverageReport = function(cover) {
+      var collector, reports = [];
+
+      collector = new istanbul.Collector();
+      collector.add(global[coverageVar]);
+
+      if (cover !== "text") {
+        reports.push(istanbul.Report.create(cover, { dir: "docs/report" }));
+      }
+      reports.push(istanbul.Report.create("text"));
+
+      _.each(reports, function(report) {
+        report.writeReport(collector, true);
+      });
+    };
   });
 
 };

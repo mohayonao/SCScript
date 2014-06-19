@@ -18,7 +18,7 @@
       var cases = sc.test.compiler.cases;
 
       Object.keys(cases).forEach(function(source) {
-        var items, compiled, ast, mocha_it;
+        var items, compiled, ast, mocha$it;
 
         items = cases[source];
 
@@ -32,13 +32,13 @@
           return;
         }
 
-        mocha_it = it[items.it] || it;
+        mocha$it = it[items.it] || it;
         ast      = items.ast;
         if (!Array.isArray(compiled)) {
           compiled = [ compiled ];
         }
 
-        mocha_it(s(source), function() {
+        mocha$it(s(source), function() {
           var code, test;
 
           code = compiled.join("\n");

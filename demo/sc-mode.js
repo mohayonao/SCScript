@@ -1,19 +1,16 @@
 (function(global, mod) {
   "use strict";
-
   if (typeof exports === "object" && typeof module === "object") { // CommonJS
     mod(require("../../lib/codemirror"));
   } else if (typeof global.define === "function" && global.define.amd) { // AMD
-    global.define(["../../lib/codemirror"], mod);
+    global.define([ "../../lib/codemirror" ], mod);
   } else { // Plain browser env
     mod(global.CodeMirror);
   }
-
 })(this.self || global, function(CodeMirror) {
   "use strict";
 
   CodeMirror.defineMode("SCScript", function() {
-
     function tokenComment(stream) {
       var prev, ch, depth;
 

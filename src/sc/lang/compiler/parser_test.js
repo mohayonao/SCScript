@@ -41,7 +41,7 @@
       var cases = sc.test.compiler.cases;
       Object.keys(cases).forEach(function(source) {
         var items = cases[source];
-        var mocha_it, result, test;
+        var mocha$it, result, test;
 
         if (typeof items.ast === "undefined") {
           it.skip(s(source), function() {
@@ -49,18 +49,18 @@
           return;
         }
 
-        mocha_it = it[items.it] || it;
+        mocha$it = it[items.it] || it;
 
         if (items.ast) {
           if (items.ast instanceof Error) {
-            mocha_it(s(source), function() {
+            mocha$it(s(source), function() {
               result = items.ast.message;
               expect(function() {
                 SCScript.parse(source);
               }).to.throw(result);
             });
           } else {
-            mocha_it(s(source), function() {
+            mocha$it(s(source), function() {
               result = items.ast;
               test   = SCScript.parse(source, { range: true, loc: true });
               expect(test).to.eql(result);
@@ -185,11 +185,11 @@
       };
       Object.keys(cases).forEach(function(source) {
         var items = cases[source];
-        var mocha_it, result, test;
+        var mocha$it, result, test;
 
-        mocha_it = it[items.it] || it;
+        mocha$it = it[items.it] || it;
 
-        mocha_it(s(source), function() {
+        mocha$it(s(source), function() {
           result = items.ast;
           test   = SCScript.parse(source, {
             range: true, binaryPrecedence: items.binaryPrecedence

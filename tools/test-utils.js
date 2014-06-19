@@ -20,7 +20,6 @@
   var $ = sc.lang.$;
 
   sc.lang.klass.refine("Object", function(spec) {
-
     spec.toJSON = function() {
       var value;
 
@@ -33,7 +32,6 @@
 
       return JSON.stringify(value);
     };
-
   });
 
   sc.test = function(callback) {
@@ -388,5 +386,4 @@
       );
     });
   });
-
 })(sc);

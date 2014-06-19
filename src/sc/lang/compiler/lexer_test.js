@@ -716,7 +716,7 @@
 
     Object.keys(cases).forEach(function(source) {
       var items, opts, result, error;
-      var mocha_it;
+      var mocha$it;
 
       items = cases[source];
 
@@ -724,16 +724,16 @@
         opts   = { range: true, loc: true };
         result = items;
         error  = null;
-        mocha_it = it;
+        mocha$it = it;
       } else {
         opts   = items.opts || {};
         result = items.result;
         error  = items.error;
-        mocha_it = it[items.it] || it;
+        mocha$it = it[items.it] || it;
       }
 
       if (error) {
-        mocha_it(s(source) + " should throw error", function() {
+        mocha$it(s(source) + " should throw error", function() {
           var lexer;
           opts.tolerant = true;
 
@@ -743,7 +743,7 @@
           expect(lexer.errors).to.eql(error);
         });
       } else {
-        mocha_it(s(source), function() {
+        mocha$it(s(source), function() {
           var lexer = new Lexer(source, opts);
           var test  = lexer.tokenize(source, opts);
           expect(test).to.eql(result);

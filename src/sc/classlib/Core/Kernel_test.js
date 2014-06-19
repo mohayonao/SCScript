@@ -9,18 +9,18 @@
   var $ = sc.lang.$;
 
   describe("SCClass", function() {
-    var SCClass, SCMeta_Class;
+    var SCClass, SCMetaClass;
     before(function() {
       SCClass      = $("Class");
-      SCMeta_Class = $("Meta_Class");
+      SCMetaClass = $("Meta_Class");
     });
     it("#class", function() {
       var test;
 
       test = SCClass.class();
-      expect(test).to.equal(SCMeta_Class);
+      expect(test).to.equal(SCMetaClass);
 
-      test = SCMeta_Class.class();
+      test = SCMetaClass.class();
       expect(test).to.equal(SCClass);
     });
     it("#name", function() {

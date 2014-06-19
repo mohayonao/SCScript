@@ -176,7 +176,7 @@ window.onload = function() {
       "Ctrl-Enter": evaluate,
       "Ctrl-B": boot,
       "Ctrl-.": stop,
-      "Cmd-Enter" : evaluate,
+      "Cmd-Enter": evaluate,
       "Cmd-B": boot,
       "Cmd-.": stop,
     }
@@ -207,5 +207,4 @@ window.onload = function() {
   $("#menualt").on("click", function() {
     $("#sidemenu").animate({ width: "toggle", opacity: "toggle" }, 500, "swing");
   });
-
 };

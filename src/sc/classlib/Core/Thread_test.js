@@ -11,9 +11,9 @@
     var SCThread;
     before(function() {
       SCThread = $("Thread");
-      this.createInstance = function(func_array) {
+      this.createInstance = function(funcArray) {
         return SCThread.new($.Function(function() {
-          return func_array || [];
+          return funcArray || [];
         }));
       };
     });
@@ -123,9 +123,9 @@
     var SCRoutine;
     before(function() {
       SCRoutine = $("Routine");
-      this.createInstance = function(func_array) {
+      this.createInstance = function(funcArray) {
         return SCRoutine.new($.Function(function() {
-          return func_array || [];
+          return funcArray || [];
         }));
       };
     });

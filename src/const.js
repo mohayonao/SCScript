@@ -28,5 +28,4 @@
   if (typeof module !== "undefined") {
     module.exports = C;
   }
-
 })(this.self || global);

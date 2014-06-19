@@ -19,31 +19,31 @@
   var Node     = sc.lang.compiler.node;
 
   var binaryPrecedenceDefaults = {
-    "?"  : 1,
-    "??" : 1,
-    "!?" : 1,
-    "->" : 2,
-    "||" : 3,
-    "&&" : 4,
-    "|"  : 5,
-    "&"  : 6,
-    "==" : 7,
-    "!=" : 7,
+    "?": 1,
+    "??": 1,
+    "!?": 1,
+    "->": 2,
+    "||": 3,
+    "&&": 4,
+    "|": 5,
+    "&": 6,
+    "==": 7,
+    "!=": 7,
     "===": 7,
     "!==": 7,
-    "<"  : 8,
-    ">"  : 8,
-    "<=" : 8,
-    ">=" : 8,
-    "<<" : 9,
-    ">>" : 9,
+    "<": 8,
+    ">": 8,
+    "<=": 8,
+    ">=": 8,
+    "<<": 9,
+    ">>": 9,
     "+>>": 9,
-    "+"  : 10,
-    "-"  : 10,
-    "*"  : 11,
-    "/"  : 11,
-    "%"  : 11,
-    "!"  : 12,
+    "+": 10,
+    "-": 10,
+    "*": 11,
+    "/": 11,
+    "%": 11,
+    "!": 12
   };
 
   var Scope = sc.lang.compiler.scope({
@@ -388,7 +388,6 @@
 
     return node;
   };
-
 
   SCParser.prototype.parseSimpleAssignmentExpression = function() {
     var node;
@@ -1143,7 +1142,6 @@
     return expr;
   };
 
-
   SCParser.prototype.parsePrimaryKeywordExpression = function() {
     if (Keywords[this.lookahead.value] === "keyword") {
       this.throwUnexpected(this.lookahead);
@@ -1643,5 +1641,4 @@
   };
 
   sc.lang.compiler.parser = parser;
-
 })(sc);

@@ -110,5 +110,4 @@ SCScript.install(function(sc) {
     spec.asInteger = utils.alwaysReturn$int_0;
     spec.binaryValue = utils.alwaysReturn$int_0;
   });
-
 });

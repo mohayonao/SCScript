@@ -617,7 +617,7 @@ SCScript.install(function(sc) {
     spec.$new = function($selector, $a) {
       return this._newCopyArgs({
         selector: $selector,
-        a       : $a
+        a: $a
       });
     };
 
@@ -642,7 +642,6 @@ SCScript.install(function(sc) {
     spec.functionPerformList = function($selector, $arglist) {
       return this.performList($selector, $arglist);
     };
-
     // TODO: implements storeOn
   });
 
@@ -654,9 +653,9 @@ SCScript.install(function(sc) {
     spec.$new = function($selector, $a, $b, $adverb) {
       return this._newCopyArgs({
         selector: $selector,
-        a       : $a,
-        b       : $b,
-        adverb  : $adverb
+        a: $a,
+        b: $b,
+        adverb: $adverb
       });
     };
 
@@ -676,7 +675,6 @@ SCScript.install(function(sc) {
     spec.functionPerformList = function($selector, $arglist) {
       return this.performList($selector, $arglist);
     };
-
     // TODO: implements storeOn
   });
 
@@ -688,8 +686,8 @@ SCScript.install(function(sc) {
     spec.$new = function($selector, $a, $arglist) {
       return this._newCopyArgs({
         selector: $selector,
-        a       : $a,
-        arglist : $arglist
+        a: $a,
+        arglist: $arglist
       });
     };
 
@@ -718,7 +716,6 @@ SCScript.install(function(sc) {
     spec.functionPerformList = function($selector, _$arglist) {
       return this.performList($selector, _$arglist);
     };
-
     // TODO: implements storeOn
   });
 
@@ -816,7 +813,5 @@ SCScript.install(function(sc) {
     spec.storeArgs = function() {
       return $.Array([ this._$array ]);
     };
-
   });
-
 });

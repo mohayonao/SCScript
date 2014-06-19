@@ -670,5 +670,4 @@
     it.skip("#storeArgs", function() {
     });
   });
-
 })();

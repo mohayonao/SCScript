@@ -73,9 +73,7 @@ SCScript.install(function(sc) {
     spec.push = function() {
       return this.class().push(this);
     };
-
     // TODO: implements linkDoc
     // TODO: implements unlinkDoc
   });
-
 });

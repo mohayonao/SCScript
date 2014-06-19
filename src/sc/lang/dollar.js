@@ -8,5 +8,4 @@
   };
 
   sc.lang.$.NOP = null;
-
 })(sc);

@@ -1024,8 +1024,8 @@ SCScript.install(function(sc) {
 
     spec.degrad = function() {
       return this.performUnaryOp($.Symbol("degrad"));
-
     };
+
     spec.raddeg = function() {
       return this.performUnaryOp($.Symbol("raddeg"));
     };
@@ -1302,23 +1302,18 @@ SCScript.install(function(sc) {
           $i = $.Integer(i);
           $newList.add($theOperand.wrapAt($i).perform($aSelector, $this.wrapAt($i)));
         }
-
       } else if (adverb > 0) {
-
         $newList = $theOperand.collect($.Function(function() {
           return [ function($item) {
             return $item.perform($aSelector, $this, $.Integer(adverb - 1));
           } ];
         }));
-
       } else {
-
         $newList = $this.collect($.Function(function() {
           return [ function($item) {
             return $theOperand.perform($aSelector, $item, $.Integer(adverb + 1));
           } ];
         }));
-
       }
 
       return $newList;
@@ -1726,10 +1721,8 @@ SCScript.install(function(sc) {
 
       return $.String(items.join(joiner), true);
     }, "joiner");
-
     // TODO: implements nextTimeOnGrid
     // TODO: implements asQuant
     // TODO: implements schedBundleArrayOnClock
   });
-
 });

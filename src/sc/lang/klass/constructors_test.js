@@ -105,7 +105,6 @@
       var a;
       a = $.Event([ $.Integer(0), $.Integer(1) ]);
       expect(a).to.be.a("SCEvent").that.eql({ 0: 1 });
-
     });
     it("Function shouldd return an instance of SCFunction", function() {
       var a;
@@ -128,5 +127,4 @@
       expect(a._$value).to.be.a("SCInteger").that.equals(10);
     });
   });
-
 })();

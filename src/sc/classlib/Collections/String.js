@@ -209,7 +209,6 @@ SCScript.install(function(sc) {
         this.toString() + " " + $anObject.asString().toString()
       );
     };
-
     // TODO: implements catArgs
     // TODO: implements scatArgs
     // TODO: implements ccatArgs
@@ -281,5 +280,4 @@ SCScript.install(function(sc) {
     // TODO: implements parseYAML
     // TODO: implements parseYAMLFile
   });
-
 });

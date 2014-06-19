@@ -98,5 +98,4 @@
   };
 
   sc.lang.compiler.scope = Scope;
-
 })(sc);

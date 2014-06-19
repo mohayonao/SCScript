@@ -128,19 +128,19 @@ SCScript.install(function(sc) {
 
     spec.midicps = function() {
       return $.Float(
-        440 * Math.pow(2, (this._ - 69) * 1/12)
+        440 * Math.pow(2, (this._ - 69) * 1 / 12)
       );
     };
 
     spec.cpsmidi = function() {
       return $.Float(
-        Math.log(Math.abs(this._) * 1/440) * Math.LOG2E * 12 + 69
+        Math.log(Math.abs(this._) * 1 / 440) * Math.LOG2E * 12 + 69
       );
     };
 
     spec.midiratio = function() {
       return $.Float(
-        Math.pow(2, this._ * 1/12)
+        Math.pow(2, this._ * 1 / 12)
       );
     };
 
@@ -170,7 +170,7 @@ SCScript.install(function(sc) {
 
     spec.cpsoct = function() {
       return $.Float(
-        Math.log(Math.abs(this._) * 1/440) * Math.LOG2E + 4.75
+        Math.log(Math.abs(this._) * 1 / 440) * Math.LOG2E + 4.75
       );
     };
 
@@ -256,7 +256,7 @@ SCScript.install(function(sc) {
 
     spec.sum3rand = function() {
       return this.__newFrom__(
-        (rand.next() + rand.next() + rand.next() - 1.5) * 2/3 * this._
+        (rand.next() + rand.next() + rand.next() - 1.5) * 2 / 3 * this._
       );
     };
 
@@ -747,7 +747,6 @@ SCScript.install(function(sc) {
   });
 
   function clip_for_map($this, $inMin, $inMax, $outMin, $outMax, $clip) {
-
     switch ($clip.__sym__()) {
     case "minmax":
       if ($this <= $inMin) {
@@ -771,5 +770,4 @@ SCScript.install(function(sc) {
 
     return null;
   }
-
 });

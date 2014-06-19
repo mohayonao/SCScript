@@ -36,17 +36,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: 4
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: null
         },
         {
           source: [ $.Integer(0), $.Integer(1), $.Float(0.0), $.Float(1.0) ],
-          args  : [ $$(0) ],
+          args: [ $$(0) ],
           result: $.Float(1.0)
         },
       ]);
@@ -55,12 +55,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3, 0 ],
+          args: [ 3, 0 ],
           result: 4
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 2, 0 ],
+          args: [ 2, 0 ],
           result: 0
         }
       ]);
@@ -69,12 +69,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: 4
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: null
         }
       ]);
@@ -83,12 +83,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: 4
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: false
         }
       ]);
@@ -97,9 +97,9 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ SCAssociation.new($$(5), $$(6)) ],
+          args: [ SCAssociation.new($$(5), $$(6)) ],
           result: this,
-          after : { 1: 2, 3: 4, 5: 6 }
+          after: { 1: 2, 3: 4, 5: 6 }
         },
       ]);
     });
@@ -107,21 +107,21 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3, null ],
+          args: [ 3, null ],
           result: this,
-          after : { 1: 2 }
+          after: { 1: 2 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3, 5 ],
+          args: [ 3, 5 ],
           result: this,
-          after : { 1: 2, 3: 5 }
+          after: { 1: 2, 3: 5 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 5, 6 ],
+          args: [ 5, 6 ],
           result: this,
-          after : { 1: 2, 3: 4, 5: 6 }
+          after: { 1: 2, 3: 4, 5: 6 }
         },
       ]);
     });
@@ -129,9 +129,9 @@
       testCase(this, [
         {
           source: [ 1, 2 ],
-          args  : [ SCDictionary.newFrom($$( [ 1, 2, 3, 4, 5, 6 ] )) ],
+          args: [ SCDictionary.newFrom($$( [ 1, 2, 3, 4, 5, 6 ] )) ],
           result: this,
-          after : { 1: 2, 3: 4, 5: 6 }
+          after: { 1: 2, 3: 4, 5: 6 }
         }
       ]);
     });
@@ -139,9 +139,9 @@
       testCase(this, [
         {
           source: [ 1, 2 ],
-          args  : [ [ 1, 2, 3, 4, 5, 6 ] ],
+          args: [ [ 1, 2, 3, 4, 5, 6 ] ],
           result: this,
-          after : { 1: 2, 3: 4, 5: 6 }
+          after: { 1: 2, 3: 4, 5: 6 }
         }
       ]);
     });
@@ -149,12 +149,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [],
+          args: [],
           result: [ 1, 2, 3, 4 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ [ 2, 3, 5 ] ],
+          args: [ [ 2, 3, 5 ] ],
           result: [ 3, 4, 5, 6 ]
         },
       ]);
@@ -163,12 +163,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: SCAssociation.new($$(3), $$(4))
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: SCAssociation.new($$(null), $$(null))
         },
       ]);
@@ -177,12 +177,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 3, 0 ],
+          args: [ 3, 0 ],
           result: SCAssociation.new($$(3), $$(4))
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 5, 0 ],
+          args: [ 5, 0 ],
           result: 0
         },
       ]);
@@ -195,7 +195,7 @@
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ SCArray ],
+          args: [ SCArray ],
           result: [ 1, 3 ]
         },
       ]);
@@ -213,12 +213,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: false
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: true
         },
       ]);
@@ -227,12 +227,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: true
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: false
         },
       ]);
@@ -241,15 +241,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: 2,
-          after : { 3: 4 }
+          after: { 3: 4 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: null,
-          after : { 1: 2, 3: 4 }
+          after: { 1: 2, 3: 4 }
         },
       ]);
     });
@@ -257,15 +257,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 1, 0 ],
+          args: [ 1, 0 ],
           result: 2,
-          after : { 3: 4 }
+          after: { 3: 4 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 5, 0 ],
+          args: [ 5, 0 ],
           result: 0,
-          after : { 1: 2, 3: 4 }
+          after: { 1: 2, 3: 4 }
         },
       ]);
     });
@@ -306,11 +306,11 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ function($key, $value, $i) {
+          args: [ function($key, $value, $i) {
             return $$([ $key, $value, $i ]);
           } ],
           result: this,
-          after : { 1: [ 1, 2, 0 ], 3: [ 3, 4, 1 ] }
+          after: { 1: [ 1, 2, 0 ], 3: [ 3, 4, 1 ] }
         }
       ]);
     });
@@ -382,7 +382,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ function($elem, $key) {
+          args: [ function($elem, $key) {
             return $$([ $elem, $key ]);
           } ],
           result: { 1: [ 2, 1 ], 3: [ 4, 3 ] }
@@ -393,7 +393,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ function($elem, $key) {
+          args: [ function($elem, $key) {
             return $$($key.valueOf() === 1);
           } ],
           result: { 1: 2 }
@@ -404,7 +404,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ function($elem, $key) {
+          args: [ function($elem, $key) {
             return $$($key.valueOf() === 1);
           } ],
           result: { 3: 4 }
@@ -465,12 +465,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: null
         },
       ]);
@@ -518,7 +518,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ function($a, $b) {
+          args: [ function($a, $b) {
             return $b ["<="] ($a);
           } ],
           result: [ 5, 3, 1 ]
@@ -583,12 +583,12 @@
       testCase(this, [
         {
           source: [ $$(0), $$(1), $.Float(0.0), $.Float(1.0) ],
-          args  : [ $$(0) ],
+          args: [ $$(0) ],
           result: $$(1)
         },
         {
           source: [ $$(0), $$(1), $.Float(0.0), $.Float(1.0) ],
-          args  : [ $.Float(0.0) ],
+          args: [ $.Float(0.0) ],
           result: $.Float(1.0)
         },
       ]);
@@ -597,15 +597,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 1, 0 ],
+          args: [ 1, 0 ],
           result: 2,
-          after : { 1: 0, 3: 4 }
+          after: { 1: 0, 3: 4 }
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 5, 6 ],
+          args: [ 5, 6 ],
           result: null,
-          after : { 1: 2, 3: 4, 5: 6 }
+          after: { 1: 2, 3: 4, 5: 6 }
         },
       ]);
     });
@@ -613,12 +613,12 @@
       testCase(this, [
         {
           source: [ $$(0), $$(1) ],
-          args  : [ $$(1) ],
+          args: [ $$(1) ],
           result: $$(0)
         },
         {
           source: [ $$(0), $$(1) ],
-          args  : [ $.Float(1.0) ],
+          args: [ $.Float(1.0) ],
           result: null
         },
       ]);

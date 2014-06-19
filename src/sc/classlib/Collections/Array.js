@@ -702,10 +702,8 @@ SCScript.install(function(sc) {
     spec.madd = fn(function($mul, $add) {
       return $("MulAdd").new(this, $mul, $add);
     }, "mul=1.0; add=0.0");
-
     // TODO: implements asRawOSC
     // TODO: implements printOn
     // TODO: implements storeOn
   });
-
 });

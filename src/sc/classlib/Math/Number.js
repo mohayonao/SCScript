@@ -90,5 +90,4 @@ SCScript.install(function(sc) {
       return this;
     }, "second; last; function");
   });
-
 });

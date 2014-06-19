@@ -264,10 +264,7 @@ SCScript.install(function(sc) {
 
       return $.Integer(-1);
     };
-
     // TODO: implements fixCollisionsFrom
     // TODO: implements keyAt
-
   });
-
 });

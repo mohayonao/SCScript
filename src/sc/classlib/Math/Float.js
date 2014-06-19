@@ -216,5 +216,4 @@ SCScript.install(function(sc) {
       return $.Float(f64[0]);
     };
   });
-
 });

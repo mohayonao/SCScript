@@ -1067,5 +1067,4 @@ SCScript.install(function(sc) {
       );
     };
   });
-
 });

@@ -105,9 +105,17 @@
     newClass.__Spec = constructor;
     newClass.__superClass = MetaClass.__MetaSpec.__superClass;
     Object.defineProperties(constructor.prototype, {
-      __class: { value: newClass, writable: true },
-      __Spec : { value: constructor, writable: true },
-      __className: { value: className }
+      __class: {
+        value: newClass,
+        writable: true
+      },
+      __Spec: {
+        value: constructor,
+        writable: true
+      },
+      __className: {
+        value: className
+      }
     });
     classes[className] = newClass;
 
@@ -316,5 +324,4 @@
   });
 
   sc.lang.klass = klass;
-
 })(sc);

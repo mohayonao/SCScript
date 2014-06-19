@@ -89,7 +89,6 @@ SCScript.install(function(sc) {
     spec.next = utils.nop;
     spec.value = utils.nop;
     spec.valueArray = utils.nop;
-
     // TODO: implements $primitiveError
     // TODO: implements $primitiveErrorString
     // TODO: implements storeOn
@@ -141,12 +140,10 @@ SCScript.install(function(sc) {
       this._bytecode.reset();
       return this;
     };
-
     // TODO: implements stop
     // TODO: implements p
     // TODO: implements storeArgs
     // TODO: implements storeOn
     // TODO: implements awake
   });
-
 });

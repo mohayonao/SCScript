@@ -330,5 +330,4 @@
   };
 
   sc.lang.iterator = iterator;
-
 })(sc);

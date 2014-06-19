@@ -13,5 +13,4 @@
   };
 
   sc.libs.strlib = strlib;
-
 })(sc);

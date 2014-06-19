@@ -38,11 +38,11 @@
       var i, imax;
 
       this.stack.push({
-        vars    : {},
-        args    : {},
+        vars: {},
+        args: {},
         declared: declared,
-        indent  : this.parent.base,
-        stmt    : stmt
+        indent: this.parent.base,
+        stmt: stmt
       });
 
       for (i = 0, imax = args.length; i < imax; i++) {
@@ -218,7 +218,6 @@
 
     throw new Error(message);
   };
-
 
   CodeGen.prototype.AssignmentExpression = function(node) {
     if (Array.isArray(node.left)) {
@@ -804,9 +803,9 @@
     }
 
     return {
-      args  : args,
-      keys  : keys,
-      vals  : vals,
+      args: args,
+      keys: keys,
+      vals: vals,
       remain: remain,
       closed: node.closed
     };
@@ -822,5 +821,4 @@
   };
 
   compiler.codegen = codegen;
-
 })(sc);

@@ -10,9 +10,9 @@
   var Node     = sc.lang.compiler.node;
 
   var SegmentedMethod = {
-    idle : true,
+    idle: true,
     sleep: true,
-    wait : true,
+    wait: true,
     yield: true,
     embedInStream: true,
   };
@@ -99,7 +99,6 @@
         parent[key] = Node.createValueMethodResult(id++);
         result.push(expr);
       }
-
     }
 
     for (i = 0, imax = list.length; i < imax; ++i) {
@@ -129,5 +128,4 @@
   }
 
   sc.lang.compiler.precompile = precompile;
-
 })(sc);

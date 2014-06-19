@@ -656,7 +656,6 @@ SCScript.install(function(sc) {
 
       return $.Integer(-2);
     };
-
     // TODO: implements freezeAsParent
     // TODO: implements insertParent
     // TODO: implements storeItemsOn
@@ -665,5 +664,4 @@ SCScript.install(function(sc) {
     // TODO: implements asQuant
     // TODO: implements timingOffset
   });
-
 });

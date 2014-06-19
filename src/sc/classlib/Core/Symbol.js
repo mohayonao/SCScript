@@ -179,5 +179,4 @@ SCScript.install(function(sc) {
 
     spec.performBinaryOpOnSimpleNumber = utils.nop;
   });
-
 });

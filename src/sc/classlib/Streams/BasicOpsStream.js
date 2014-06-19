@@ -16,7 +16,7 @@ SCScript.install(function(sc) {
     spec.$new = function($operator, $a) {
       return this._newCopyArgs({
         operator: $operator,
-        a       : $a
+        a: $a
       });
     };
 
@@ -35,7 +35,6 @@ SCScript.install(function(sc) {
       this._$a.reset();
       return this;
     };
-
     // TODO: implements storeOn
   });
 
@@ -49,8 +48,8 @@ SCScript.install(function(sc) {
     spec.$new = function($operator, $a, $b) {
       return this._newCopyArgs({
         operator: $operator,
-        a       : $a,
-        b       : $b
+        a: $a,
+        b: $b
       });
     };
 
@@ -75,7 +74,6 @@ SCScript.install(function(sc) {
       this._$b.reset();
       return this;
     };
-
     // TODO: implements storeOn
   });
 
@@ -90,8 +88,8 @@ SCScript.install(function(sc) {
     spec.$new = function($operator, $a, $b) {
       return this._newCopyArgs({
         operator: $operator,
-        a       : $a,
-        b       : $b
+        a: $a,
+        b: $b
       });
     };
 
@@ -131,7 +129,6 @@ SCScript.install(function(sc) {
       this._$b.reset();
       return this;
     };
-
     // TODO: implements storeOn
   });
 
@@ -145,7 +142,7 @@ SCScript.install(function(sc) {
     spec.$new = function($operator, $a, $arglist) {
       return this._newCopyArgs({
         operator: $operator,
-        a       : $a
+        a: $a
       }).arglist_($arglist);
     };
 
@@ -195,8 +192,6 @@ SCScript.install(function(sc) {
       });
       return this;
     };
-
     // TODO: implements storeOn
   });
-
 });

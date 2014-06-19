@@ -93,5 +93,4 @@
       expect(obj._$value).to.be.a("SCInteger").that.equals(200);
     });
   });
-
 })();

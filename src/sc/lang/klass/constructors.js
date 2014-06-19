@@ -275,7 +275,6 @@
     return $chars[value];
   };
 
-
   $.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
@@ -311,5 +310,4 @@
     instance._$value = value;
     return instance;
   };
-
 })(sc);

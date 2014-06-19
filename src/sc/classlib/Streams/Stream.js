@@ -451,7 +451,6 @@ SCScript.install(function(sc) {
         } ];
       }).r();
     }, "repeats=inf");
-
   });
 
   klass.define("OneShotStream : Stream", function(spec, utils) {
@@ -480,7 +479,6 @@ SCScript.install(function(sc) {
       this._once = true;
       return this;
     };
-
     // TODO: implements storeArgs
   });
 
@@ -494,9 +492,9 @@ SCScript.install(function(sc) {
 
     spec.$new = function($nextFunc, $resetFunc) {
       return this._newCopyArgs({
-        nextFunc : $nextFunc,
+        nextFunc: $nextFunc,
         resetFunc: $resetFunc,
-        envir    : sc.lang.main.$currentEnv
+        envir: sc.lang.main.$currentEnv
       });
     };
 
@@ -517,9 +515,7 @@ SCScript.install(function(sc) {
         } ];
       }));
     };
-
     // TODO: implements storeArgs
-
   });
 
   // StreamClutch
@@ -529,14 +525,12 @@ SCScript.install(function(sc) {
     spec.constructor = function SCPauseStream() {
       this.__super__("Stream");
     };
-
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
     // TODO: implements nextBeat
     // TODO: implements streamHasEnded
     // TODO: implements streamHasEnded_
-
     // TODO: implements isPlaying
     // TODO: implements play
     // TODO: implements reset
@@ -560,8 +554,6 @@ SCScript.install(function(sc) {
     spec.constructor = function SCTask() {
       this.__super__("PauseStream");
     };
-
     // TODO: implements storeArgs
   });
-
 });

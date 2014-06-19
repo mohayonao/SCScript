@@ -18,5 +18,4 @@
       expect($.NOP).to.be.null;
     });
   });
-
 })();

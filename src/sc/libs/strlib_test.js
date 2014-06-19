@@ -11,5 +11,4 @@
       expect(strlib.article("banana")).to.equal("a");
     });
   });
-
 })();

@@ -737,5 +737,4 @@ SCScript.install(function(sc) {
       return this.$("putSeries", [ $first, $second, $last, $value ]);
     };
   });
-
 });

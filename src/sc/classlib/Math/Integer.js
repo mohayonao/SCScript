@@ -223,9 +223,7 @@ SCScript.install(function(sc) {
     };
 
     spec.generate = function($function) {
-
       $function.value(this);
-
       return this;
     };
 
@@ -378,5 +376,4 @@ SCScript.install(function(sc) {
       return $.Integer(~this._);
     };
   });
-
 });

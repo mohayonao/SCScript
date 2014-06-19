@@ -230,5 +230,4 @@
     it.skip("#storeOn", function() {
     });
   });
-
 })();

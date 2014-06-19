@@ -15,7 +15,7 @@
         range: [ 0, 0 ],
         loc: {
           start: { line: 0, column: 0 },
-          end  : { line: 0, column: 0 }
+          end: { line: 0, column: 0 }
         }
       }
     },
@@ -27,7 +27,7 @@
         range: [ 6, 6 ],
         loc: {
           start: { line: 2, column: 1 },
-          end  : { line: 2, column: 1 }
+          end: { line: 2, column: 1 }
         }
       }
     },
@@ -39,7 +39,7 @@
         range: [ 23, 23 ],
         loc: {
           start: { line: 2, column: 0 },
-          end  : { line: 2, column: 0 }
+          end: { line: 2, column: 0 }
         }
       }
     },
@@ -51,7 +51,7 @@
         range: [ 15, 15 ],
         loc: {
           start: { line: 3, column: 3 },
-          end  : { line: 3, column: 3 }
+          end: { line: 3, column: 3 }
         }
       }
     },
@@ -71,14 +71,14 @@
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           }
         ],
         range: [ 0, 5 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 5 }
+          end: { line: 1, column: 5 }
         }
       }
     },
@@ -100,7 +100,7 @@
               range: [ 1, 2 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -109,7 +109,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -118,18 +118,18 @@
             range: [ 0, 2 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 2 }
+              end: { line: 1, column: 2 }
             }
           }
         ],
         range: [ 0, 2 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 2 }
+          end: { line: 1, column: 2 }
         }
       }
     },
-    "nil": {
+    "nil ": {
       compiled: [
         "SCScript(function($) {",
         "  return $.Nil();",
@@ -145,14 +145,14 @@
             range: [ 0, 3 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 3 }
+              end: { line: 1, column: 3 }
             }
           }
         ],
         range: [ 0, 3 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 3 }
+          end: { line: 1, column: 3 }
         }
       }
     },
@@ -175,7 +175,7 @@
               range: [ 0, 4 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 4 }
+                end: { line: 1, column: 4 }
               }
             },
             right: {
@@ -185,20 +185,20 @@
               range: [ 8, 13 ],
               loc: {
                 start: { line: 1, column: 8 },
-                end  : { line: 1, column: 13 }
+                end: { line: 1, column: 13 }
               }
             },
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 13 }
+              end: { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end: { line: 1, column: 13 }
         }
       }
     },
@@ -221,20 +221,20 @@
               range: [ 1, 3 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             range: [ 0, 3 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 3 }
+              end: { line: 1, column: 3 }
             }
           }
         ],
         range: [ 0, 3 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 3 }
+          end: { line: 1, column: 3 }
         }
       }
     },
@@ -250,14 +250,14 @@
           {
             type: Syntax.BinaryExpression,
             operator: "-",
-            adverb  : {
+            adverb: {
               type: Syntax.Literal,
               value: "f",
               valueType: Token.SymbolLiteral,
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             left: {
@@ -266,7 +266,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -275,20 +275,20 @@
               range: [ 6, 7 ],
               loc: {
                 start: { line: 1, column: 6 },
-                end  : { line: 1, column: 7 }
+                end: { line: 1, column: 7 }
               }
             },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 },
+              end: { line: 1, column: 7 },
             }
           },
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 },
+          end: { line: 1, column: 7 },
         }
       }
     },
@@ -304,14 +304,14 @@
           {
             type: Syntax.BinaryExpression,
             operator: "/",
-            adverb  : {
+            adverb: {
               type: Syntax.Literal,
               value: "1",
               valueType: Token.IntegerLiteral,
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             left: {
@@ -320,7 +320,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -329,20 +329,20 @@
               range: [ 6, 7 ],
               loc: {
                 start: { line: 1, column: 6 },
-                end  : { line: 1, column: 7 }
+                end: { line: 1, column: 7 }
               }
             },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 },
+              end: { line: 1, column: 7 },
             }
           },
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 },
+          end: { line: 1, column: 7 },
         }
       }
     },
@@ -358,14 +358,14 @@
           {
             type: Syntax.BinaryExpression,
             operator: "max",
-            adverb  : {
+            adverb: {
               type: Syntax.Literal,
               value: "1",
               valueType: Token.IntegerLiteral,
               range: [ 7, 8 ],
               loc: {
                 start: { line: 1, column: 7 },
-                end  : { line: 1, column: 8 }
+                end: { line: 1, column: 8 }
               }
             },
             left: {
@@ -374,7 +374,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -383,20 +383,20 @@
               range: [ 9, 10 ],
               loc: {
                 start: { line: 1, column: 9 },
-                end  : { line: 1, column: 10 }
+                end: { line: 1, column: 10 }
               }
             },
             range: [ 0, 10 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 },
+              end: { line: 1, column: 10 },
             }
           },
         ],
         range: [ 0, 10 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 },
+          end: { line: 1, column: 10 },
         }
       }
     },
@@ -422,7 +422,7 @@
                 range: [ 2, 3 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 },
+                  end: { line: 1, column: 3 },
                 }
               },
               {
@@ -432,21 +432,21 @@
                 range: [ 5, 8 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 8 },
+                  end: { line: 1, column: 8 },
                 }
               },
             ],
             range: [ 0, 10 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 },
+              end: { line: 1, column: 10 },
             }
           }
         ],
         range: [ 0, 10 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 },
+          end: { line: 1, column: 10 },
         }
       }
     },
@@ -473,7 +473,7 @@
                 range: [ 3, 4 ],
                 loc: {
                   start: { line: 1, column: 3 },
-                  end  : { line: 1, column: 4 },
+                  end: { line: 1, column: 4 },
                 }
               },
               {
@@ -483,21 +483,21 @@
                 range: [ 6, 9 ],
                 loc: {
                   start: { line: 1, column: 6 },
-                  end  : { line: 1, column: 9 },
+                  end: { line: 1, column: 9 },
                 }
               },
             ],
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 11 },
+              end: { line: 1, column: 11 },
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 11 },
+          end: { line: 1, column: 11 },
         }
       }
     },
@@ -524,21 +524,21 @@
                 range: [ 3, 5 ],
                 loc: {
                   start: { line: 1, column: 3 },
-                  end  : { line: 1, column: 5 },
+                  end: { line: 1, column: 5 },
                 }
               },
             ],
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 },
+              end: { line: 1, column: 7 },
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 },
+          end: { line: 1, column: 7 },
         }
       }
     },
@@ -569,51 +569,51 @@
                 range: [ 2, 4 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 4 }
+                  end: { line: 1, column: 4 }
                 }
               },
               {
-                type : Syntax.Literal,
+                type: Syntax.Literal,
                 value: "1",
                 valueType: Token.IntegerLiteral,
                 range: [ 5, 6 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 6 }
+                  end: { line: 1, column: 6 }
                 }
               },
               {
-                type : Syntax.Literal,
+                type: Syntax.Literal,
                 value: "2",
                 valueType: Token.IntegerLiteral,
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               },
               {
-                type : Syntax.Literal,
+                type: Syntax.Literal,
                 value: "3",
                 valueType: Token.IntegerLiteral,
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end  : { line: 1, column: 12 }
+                  end: { line: 1, column: 12 }
                 }
               }
             ],
             range: [ 0, 14 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 14 }
+              end: { line: 1, column: 14 }
             }
           }
         ],
         range: [ 0, 14 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 14 }
+          end: { line: 1, column: 14 }
         }
       }
     },
@@ -636,7 +636,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -646,20 +646,20 @@
               range: [ 4, 7 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 7 }
+                end: { line: 1, column: 7 }
               }
             },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -686,7 +686,7 @@
                 range: [ 1, 2 ],
                 loc: {
                   start: { line: 1, column: 1 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               {
@@ -695,7 +695,7 @@
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               }
             ],
@@ -705,20 +705,20 @@
               range: [ 8, 9 ],
               loc: {
                 start: { line: 1, column: 8 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -746,7 +746,7 @@
                 range: [ 1, 2 ],
                 loc: {
                   start: { line: 1, column: 1 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               {
@@ -755,7 +755,7 @@
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               }
             ],
@@ -765,7 +765,7 @@
               range: [ 10, 11 ],
               loc: {
                 start: { line: 1, column: 10 },
-                end  : { line: 1, column: 11 }
+                end: { line: 1, column: 11 }
               }
             },
             right: {
@@ -774,20 +774,20 @@
               range: [ 14, 15 ],
               loc: {
                 start: { line: 1, column: 14 },
-                end  : { line: 1, column: 15 }
+                end: { line: 1, column: 15 }
               }
             },
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -820,7 +820,7 @@
                 range: [ 1, 2 ],
                 loc: {
                   start: { line: 1, column: 1 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               {
@@ -829,7 +829,7 @@
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               }
             ],
@@ -843,7 +843,7 @@
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
                 {
@@ -852,7 +852,7 @@
                   range: [ 12, 13 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end  : { line: 1, column: 13 }
+                    end: { line: 1, column: 13 }
                   }
                 }
               ],
@@ -866,7 +866,7 @@
                     range: [ 18, 19 ],
                     loc: {
                       start: { line: 1, column: 18 },
-                      end  : { line: 1, column: 19 }
+                      end: { line: 1, column: 19 }
                     }
                   },
                   {
@@ -876,33 +876,33 @@
                     range: [ 21, 22 ],
                     loc: {
                       start: { line: 1, column: 21 },
-                      end  : { line: 1, column: 22 }
+                      end: { line: 1, column: 22 }
                     }
                   }
                 ],
                 range: [ 16, 24 ],
                 loc: {
                   start: { line: 1, column: 16 },
-                  end  : { line: 1, column: 24 }
+                  end: { line: 1, column: 24 }
                 }
               },
               range: [ 8, 24 ],
               loc: {
                 start: { line: 1, column: 8 },
-                end  : { line: 1, column: 24 }
+                end: { line: 1, column: 24 }
               }
             },
             range: [ 0, 24 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 24 }
+              end: { line: 1, column: 24 }
             }
           }
         ],
         range: [ 0, 24 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 24 }
+          end: { line: 1, column: 24 }
         }
       }
     },
@@ -924,7 +924,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -933,7 +933,7 @@
               range: [ 2, 5 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             args: {
@@ -942,14 +942,14 @@
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           },
         ],
         range: [ 0, 5 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 5 }
+          end: { line: 1, column: 5 }
         }
       }
     },
@@ -973,7 +973,7 @@
                 range: [ 0, 1 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
+                  end: { line: 1, column: 1 }
                 }
               },
               method: {
@@ -982,7 +982,7 @@
                 range: [ 2, 3 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
+                  end: { line: 1, column: 3 }
                 }
               },
               args: {
@@ -991,7 +991,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             stamp: "=",
@@ -1001,7 +1001,7 @@
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             args: {
@@ -1013,7 +1013,7 @@
                   range: [ 8, 9 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 9 }
+                    end: { line: 1, column: 9 }
                   }
                 }
               ]
@@ -1021,14 +1021,14 @@
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -1050,7 +1050,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1059,7 +1059,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1071,7 +1071,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 }
               ]
@@ -1079,14 +1079,14 @@
             range: [ 0, 4 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 4 }
+              end: { line: 1, column: 4 }
             }
           }
         ],
         range: [ 0, 4 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 4 }
+          end: { line: 1, column: 4 }
         }
       },
     },
@@ -1108,7 +1108,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1117,7 +1117,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1131,7 +1131,7 @@
                   range: [ 4, 6 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
               ]
@@ -1139,14 +1139,14 @@
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           },
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -1168,7 +1168,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1177,7 +1177,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1189,7 +1189,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 null,
@@ -1199,14 +1199,14 @@
             range: [ 0, 6 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
+              end: { line: 1, column: 6 }
             }
           }
         ],
         range: [ 0, 6 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
+          end: { line: 1, column: 6 }
         }
       }
     },
@@ -1228,7 +1228,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1237,7 +1237,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1249,7 +1249,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 null,
@@ -1260,7 +1260,7 @@
                   range: [ 5, 7 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
               ]
@@ -1268,14 +1268,14 @@
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 8 }
+              end: { line: 1, column: 8 }
             }
           }
         ],
         range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 8 }
+          end: { line: 1, column: 8 }
         }
       }
     },
@@ -1297,7 +1297,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1306,7 +1306,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1318,7 +1318,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 {
@@ -1328,7 +1328,7 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 null,
@@ -1337,14 +1337,14 @@
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -1366,7 +1366,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1375,7 +1375,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1387,7 +1387,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 {
@@ -1397,7 +1397,7 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 {
@@ -1407,7 +1407,7 @@
                   range: [ 8, 10 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
               ]
@@ -1415,14 +1415,14 @@
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 11 }
+              end: { line: 1, column: 11 }
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 11 }
+          end: { line: 1, column: 11 }
         }
       }
     },
@@ -1444,7 +1444,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1453,7 +1453,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1466,14 +1466,14 @@
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           },
         ],
         range: [ 0, 5 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 5 }
+          end: { line: 1, column: 5 }
         }
       }
     },
@@ -1495,7 +1495,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1504,7 +1504,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1516,7 +1516,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 {
@@ -1526,7 +1526,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 },
               ]
@@ -1534,14 +1534,14 @@
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 8 }
+              end: { line: 1, column: 8 }
             }
           }
         ],
         range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 8 }
+          end: { line: 1, column: 8 }
         }
       }
     },
@@ -1565,7 +1565,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1574,7 +1574,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1588,7 +1588,7 @@
                   range: [ 4, 6 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 {
@@ -1598,7 +1598,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end  : { line: 1, column: 11 }
+                    end: { line: 1, column: 11 }
                   }
                 },
               ]
@@ -1606,14 +1606,14 @@
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 11 }
+              end: { line: 1, column: 11 }
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 11 }
+          end: { line: 1, column: 11 }
         }
       }
     },
@@ -1637,7 +1637,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1646,7 +1646,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1658,7 +1658,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 null,
@@ -1670,7 +1670,7 @@
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
               ]
@@ -1678,14 +1678,14 @@
             range: [ 0, 10 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 }
+              end: { line: 1, column: 10 }
             }
           }
         ],
         range: [ 0, 10 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 }
+          end: { line: 1, column: 10 }
         }
       }
     },
@@ -1709,7 +1709,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1718,7 +1718,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1730,7 +1730,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 null,
@@ -1741,7 +1741,7 @@
                   range: [ 5, 7 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
                 {
@@ -1751,7 +1751,7 @@
                   range: [ 11, 12 ],
                   loc: {
                     start: { line: 1, column: 11 },
-                    end  : { line: 1, column: 12 }
+                    end: { line: 1, column: 12 }
                   }
                 },
               ]
@@ -1759,14 +1759,14 @@
             range: [ 0, 12 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 12 }
+              end: { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 12 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 12 }
+          end: { line: 1, column: 12 }
         }
       }
     },
@@ -1790,7 +1790,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1799,7 +1799,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1811,7 +1811,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 {
@@ -1821,7 +1821,7 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 null,
@@ -1832,7 +1832,7 @@
                   range: [ 12, 13 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end  : { line: 1, column: 13 }
+                    end: { line: 1, column: 13 }
                   }
                 },
               ]
@@ -1840,14 +1840,14 @@
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 13 }
+              end: { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end: { line: 1, column: 13 }
         }
       }
     },
@@ -1871,7 +1871,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1880,7 +1880,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1892,7 +1892,7 @@
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 {
@@ -1902,7 +1902,7 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 {
@@ -1912,7 +1912,7 @@
                   range: [ 8, 10 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
                 {
@@ -1922,7 +1922,7 @@
                   range: [ 14, 15 ],
                   loc: {
                     start: { line: 1, column: 14 },
-                    end  : { line: 1, column: 15 }
+                    end: { line: 1, column: 15 }
                   }
                 },
               ]
@@ -1930,14 +1930,14 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -1961,7 +1961,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -1970,7 +1970,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -1985,7 +1985,7 @@
                   range: [ 8, 9 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 9 }
+                    end: { line: 1, column: 9 }
                   }
                 },
               ]
@@ -1993,14 +1993,14 @@
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -2026,7 +2026,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -2035,7 +2035,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -2048,7 +2048,7 @@
                     range: [ 2, 3 ],
                     loc: {
                       start: { line: 1, column: 2 },
-                      end  : { line: 1, column: 3 }
+                      end: { line: 1, column: 3 }
                     }
                   },
                   {
@@ -2058,7 +2058,7 @@
                     range: [ 4, 5 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end  : { line: 1, column: 5 }
+                      end: { line: 1, column: 5 }
                     }
                   },
                 ],
@@ -2070,7 +2070,7 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 7 }
+                      end: { line: 1, column: 7 }
                     }
                   },
                   {
@@ -2080,7 +2080,7 @@
                     range: [ 8, 9 ],
                     loc: {
                       start: { line: 1, column: 8 },
-                      end  : { line: 1, column: 9 }
+                      end: { line: 1, column: 9 }
                     }
                   },
                 ],
@@ -2092,7 +2092,7 @@
                     range: [ 11, 12 ],
                     loc: {
                       start: { line: 1, column: 11 },
-                      end  : { line: 1, column: 12 }
+                      end: { line: 1, column: 12 }
                     }
                   },
                   {
@@ -2102,7 +2102,7 @@
                     range: [ 13, 14 ],
                     loc: {
                       start: { line: 1, column: 13 },
-                      end  : { line: 1, column: 14 }
+                      end: { line: 1, column: 14 }
                     }
                   },
                 ]
@@ -2111,14 +2111,14 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -2145,7 +2145,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -2154,7 +2154,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -2169,7 +2169,7 @@
                       range: [ 2, 3 ],
                       loc: {
                         start: { line: 1, column: 2 },
-                        end  : { line: 1, column: 3 }
+                        end: { line: 1, column: 3 }
                       }
                     },
                     method: {
@@ -2178,7 +2178,7 @@
                       range: [ 3, 3 ],
                       loc: {
                         start: { line: 1, column: 3 },
-                        end  : { line: 1, column: 3 }
+                        end: { line: 1, column: 3 }
                       }
                     },
                     args: {
@@ -2193,7 +2193,7 @@
                               range: [ 4, 5 ],
                               loc: {
                                 start: { line: 1, column: 4 },
-                                end  : { line: 1, column: 5 }
+                                end: { line: 1, column: 5 }
                               }
                             },
                             right: {
@@ -2203,13 +2203,13 @@
                               range: [ 6, 7 ],
                               loc: {
                                 start: { line: 1, column: 6 },
-                                end  : { line: 1, column: 7 }
+                                end: { line: 1, column: 7 }
                               }
                             },
                             range: [ 4, 7 ],
                             loc: {
                               start: { line: 1, column: 4 },
-                              end  : { line: 1, column: 7 }
+                              end: { line: 1, column: 7 }
                             }
                           },
                           {
@@ -2219,7 +2219,7 @@
                             range: [ 8, 9 ],
                             loc: {
                               start: { line: 1, column: 8 },
-                              end  : { line: 1, column: 9 }
+                              end: { line: 1, column: 9 }
                             }
                           }
                         ],
@@ -2230,7 +2230,7 @@
                           range: [ 11, 12 ],
                           loc: {
                             start: { line: 1, column: 11 },
-                            end  : { line: 1, column: 12 }
+                            end: { line: 1, column: 12 }
                           }
                         }
                       ]
@@ -2238,7 +2238,7 @@
                     range: [ 2, 12 ],
                     loc: {
                       start: { line: 1, column: 2 },
-                      end  : { line: 1, column: 12 }
+                      end: { line: 1, column: 12 }
                     }
                   },
                   {
@@ -2248,7 +2248,7 @@
                     range: [ 13, 14 ],
                     loc: {
                       start: { line: 1, column: 13 },
-                      end  : { line: 1, column: 14 }
+                      end: { line: 1, column: 14 }
                     }
                   }
                 ]
@@ -2257,14 +2257,14 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -2286,7 +2286,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -2295,7 +2295,7 @@
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -2308,7 +2308,7 @@
                   range: [ 3, 5 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
               ]
@@ -2316,14 +2316,14 @@
             range: [ 0, 6 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
+              end: { line: 1, column: 6 }
             }
           }
         ],
         range: [ 0, 6 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
+          end: { line: 1, column: 6 }
         }
       }
     },
@@ -2345,7 +2345,7 @@
               range: [ 1, 2 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -2354,7 +2354,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -2367,7 +2367,7 @@
                   range: [ 4, 6 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
               ]
@@ -2375,14 +2375,14 @@
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -2404,7 +2404,7 @@
               range: [ 1, 2 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -2413,7 +2413,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -2425,7 +2425,7 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
                 {
@@ -2435,7 +2435,7 @@
                   range: [ 7, 9 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 9 }
+                    end: { line: 1, column: 9 }
                   }
                 },
               ]
@@ -2443,14 +2443,14 @@
             range: [ 0, 10 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 }
+              end: { line: 1, column: 10 }
             }
           }
         ],
         range: [ 0, 10 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 }
+          end: { line: 1, column: 10 }
         }
       }
     },
@@ -2475,7 +2475,7 @@
                 range: [ 1, 2 ],
                 loc: {
                   start: { line: 1, column: 1 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               {
@@ -2485,7 +2485,7 @@
                 range: [ 3, 4 ],
                 loc: {
                   start: { line: 1, column: 3 },
-                  end  : { line: 1, column: 4 }
+                  end: { line: 1, column: 4 }
                 }
               },
             ],
@@ -2495,7 +2495,7 @@
               range: [ 4, 4 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 4 }
+                end: { line: 1, column: 4 }
               }
             },
             args: {
@@ -2508,7 +2508,7 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 7 }
+                      end: { line: 1, column: 7 }
                     }
                   },
                   {
@@ -2518,7 +2518,7 @@
                     range: [ 8, 9 ],
                     loc: {
                       start: { line: 1, column: 8 },
-                      end  : { line: 1, column: 9 }
+                      end: { line: 1, column: 9 }
                     }
                   },
                 ],
@@ -2530,7 +2530,7 @@
                     range: [ 11, 12 ],
                     loc: {
                       start: { line: 1, column: 11 },
-                      end  : { line: 1, column: 12 }
+                      end: { line: 1, column: 12 }
                     }
                   },
                   {
@@ -2540,7 +2540,7 @@
                     range: [ 13, 14 ],
                     loc: {
                       start: { line: 1, column: 13 },
-                      end  : { line: 1, column: 14 }
+                      end: { line: 1, column: 14 }
                     }
                   },
                 ],
@@ -2549,14 +2549,14 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -2578,7 +2578,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -2587,7 +2587,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -2599,14 +2599,14 @@
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           }
         ],
         range: [ 0, 5 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 5 }
+          end: { line: 1, column: 5 }
         }
       }
     },
@@ -2628,7 +2628,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -2637,7 +2637,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -2650,7 +2650,7 @@
                   range: [ 4, 6 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
               ]
@@ -2658,14 +2658,14 @@
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -2687,7 +2687,7 @@
               range: [ 2, 3 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             method: {
@@ -2696,7 +2696,7 @@
               range: [ 3, 3 ],
               loc: {
                 start: { line: 1, column: 3 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -2708,14 +2708,14 @@
             range: [ 0, 6 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
+              end: { line: 1, column: 6 }
             }
           }
         ],
         range: [ 0, 6 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
+          end: { line: 1, column: 6 }
         }
       }
     },
@@ -2737,7 +2737,7 @@
               range: [ 2, 3 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             method: {
@@ -2746,7 +2746,7 @@
               range: [ 3, 3 ],
               loc: {
                 start: { line: 1, column: 3 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -2759,7 +2759,7 @@
                   range: [ 5, 7 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
               ]
@@ -2767,14 +2767,14 @@
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 8 }
+              end: { line: 1, column: 8 }
             }
           }
         ],
         range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 8 }
+          end: { line: 1, column: 8 }
         }
       }
     },
@@ -2796,7 +2796,7 @@
               range: [ 2, 3 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             method: {
@@ -2805,7 +2805,7 @@
               range: [ 3, 3 ],
               loc: {
                 start: { line: 1, column: 3 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -2817,7 +2817,7 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 null,
@@ -2826,14 +2826,14 @@
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -2855,7 +2855,7 @@
               range: [ 2, 3 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             method: {
@@ -2864,7 +2864,7 @@
               range: [ 3, 3 ],
               loc: {
                 start: { line: 1, column: 3 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -2876,7 +2876,7 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 {
@@ -2886,7 +2886,7 @@
                   range: [ 8, 10 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
               ]
@@ -2894,14 +2894,14 @@
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 11 }
+              end: { line: 1, column: 11 }
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 11 }
+          end: { line: 1, column: 11 }
         }
       }
     },
@@ -2924,7 +2924,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -2934,20 +2934,20 @@
               range: [ 6, 9 ],
               loc: {
                 start: { line: 1, column: 6 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -2970,7 +2970,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -2980,20 +2980,20 @@
               range: [ 6, 9 ],
               loc: {
                 start: { line: 1, column: 6 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -3016,7 +3016,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -3026,20 +3026,20 @@
               range: [ 5, 8 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end  : { line: 1, column: 8 }
+                end: { line: 1, column: 8 }
               }
             },
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 8 }
+              end: { line: 1, column: 8 }
             }
           }
         ],
         range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 8 }
+          end: { line: 1, column: 8 }
         }
       }
     },
@@ -3075,13 +3075,13 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 7 }
+                      end: { line: 1, column: 7 }
                     }
                   },
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
                 {
@@ -3092,13 +3092,13 @@
                     range: [ 9, 10 ],
                     loc: {
                       start: { line: 1, column: 9 },
-                      end  : { line: 1, column: 10 }
+                      end: { line: 1, column: 10 }
                     }
                   },
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
                 {
@@ -3109,7 +3109,7 @@
                     range: [ 12, 13 ],
                     loc: {
                       start: { line: 1, column: 12 },
-                      end  : { line: 1, column: 13 }
+                      end: { line: 1, column: 13 }
                     }
                   },
                   init: {
@@ -3119,13 +3119,13 @@
                     range: [ 14, 15 ],
                     loc: {
                       start: { line: 1, column: 14 },
-                      end  : { line: 1, column: 15 }
+                      end: { line: 1, column: 15 }
                     }
                   },
                   range: [ 12, 15 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end  : { line: 1, column: 15 }
+                    end: { line: 1, column: 15 }
                   }
                 }
               ]
@@ -3138,21 +3138,21 @@
                 range: [ 17, 20 ],
                 loc: {
                   start: { line: 1, column: 17 },
-                  end  : { line: 1, column: 20 }
+                  end: { line: 1, column: 20 }
                 }
               }
             ],
             range: [ 0, 22 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 22 }
+              end: { line: 1, column: 22 }
             }
           }
         ],
         range: [ 0, 22 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 22 }
+          end: { line: 1, column: 22 }
         }
       }
     },
@@ -3188,13 +3188,13 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 7 }
+                      end: { line: 1, column: 7 }
                     }
                   },
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
                 {
@@ -3205,13 +3205,13 @@
                     range: [ 9, 10 ],
                     loc: {
                       start: { line: 1, column: 9 },
-                      end  : { line: 1, column: 10 }
+                      end: { line: 1, column: 10 }
                     }
                   },
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
                 {
@@ -3222,13 +3222,13 @@
                     range: [ 12, 13 ],
                     loc: {
                       start: { line: 1, column: 12 },
-                      end  : { line: 1, column: 13 }
+                      end: { line: 1, column: 13 }
                     }
                   },
                   range: [ 12, 13 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end  : { line: 1, column: 13 }
+                    end: { line: 1, column: 13 }
                   }
                 }
               ],
@@ -3238,7 +3238,7 @@
                 range: [ 18, 19 ],
                 loc: {
                   start: { line: 1, column: 18 },
-                  end  : { line: 1, column: 19 }
+                  end: { line: 1, column: 19 }
                 }
               }
             },
@@ -3250,21 +3250,21 @@
                 range: [ 21, 24 ],
                 loc: {
                   start: { line: 1, column: 21 },
-                  end  : { line: 1, column: 24 }
+                  end: { line: 1, column: 24 }
                 }
               }
             ],
             range: [ 0, 26 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 26 }
+              end: { line: 1, column: 26 }
             }
           }
         ],
         range: [ 0, 26 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 26 }
+          end: { line: 1, column: 26 }
         }
       }
     },
@@ -3298,7 +3298,7 @@
                 range: [ 9, 13 ],
                 loc: {
                   start: { line: 1, column: 9 },
-                  end  : { line: 1, column: 13 }
+                  end: { line: 1, column: 13 }
                 }
               }
             },
@@ -3310,21 +3310,21 @@
                 range: [ 15, 18 ],
                 loc: {
                   start: { line: 1, column: 15 },
-                  end  : { line: 1, column: 18 }
+                  end: { line: 1, column: 18 }
                 }
               }
             ],
             range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 20 }
+              end: { line: 1, column: 20 }
             }
           }
         ],
         range: [ 0, 20 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 20 }
+          end: { line: 1, column: 20 }
         }
       }
     },
@@ -3360,7 +3360,7 @@
                     range: [ 3, 4 ],
                     loc: {
                       start: { line: 1, column: 3 },
-                      end  : { line: 1, column: 4 }
+                      end: { line: 1, column: 4 }
                     }
                   },
                   init: {
@@ -3370,13 +3370,13 @@
                     range: [ 7, 8 ],
                     loc: {
                       start: { line: 1, column: 7 },
-                      end  : { line: 1, column: 8 }
+                      end: { line: 1, column: 8 }
                     }
                   },
                   range: [ 3, 8 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 }
               ]
@@ -3388,21 +3388,21 @@
                 range: [ 10, 11 ],
                 loc: {
                   start: { line: 1, column: 10 },
-                  end  : { line: 1, column: 11 }
+                  end: { line: 1, column: 11 }
                 }
               }
             ],
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 13 }
+              end: { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end: { line: 1, column: 13 }
         }
       }
     },
@@ -3433,7 +3433,7 @@
                 range: [ 2, 3 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 3 }
+                  end: { line: 1, column: 3 }
                 }
               },
               {
@@ -3442,7 +3442,7 @@
                 range: [ 5, 6 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 6 }
+                  end: { line: 1, column: 6 }
                 }
               },
               {
@@ -3451,21 +3451,21 @@
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               }
             ],
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 11 }
+              end: { line: 1, column: 11 }
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 11 }
+          end: { line: 1, column: 11 }
         }
       }
     },
@@ -3502,7 +3502,7 @@
                     range: [ 2, 3 ],
                     loc: {
                       start: { line: 1, column: 2 },
-                      end  : { line: 1, column: 3 }
+                      end: { line: 1, column: 3 }
                     }
                   },
                   init: {
@@ -3512,13 +3512,13 @@
                     range: [ 4, 5 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end  : { line: 1, column: 5 }
+                      end: { line: 1, column: 5 }
                     }
                   },
                   range: [ 2, 5 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 }
               ]
@@ -3536,7 +3536,7 @@
                       range: [ 11, 12 ],
                       loc: {
                         start: { line: 1, column: 11 },
-                        end  : { line: 1, column: 12 }
+                        end: { line: 1, column: 12 }
                       }
                     },
                     init: {
@@ -3548,7 +3548,7 @@
                         range: [ 15, 16 ],
                         loc: {
                           start: { line: 1, column: 15 },
-                          end  : { line: 1, column: 16 }
+                          end: { line: 1, column: 16 }
                         }
                       },
                       right: {
@@ -3557,26 +3557,26 @@
                         range: [ 19, 20 ],
                         loc: {
                           start: { line: 1, column: 19 },
-                          end  : { line: 1, column: 20 }
+                          end: { line: 1, column: 20 }
                         }
                       },
                       range: [ 15, 20 ],
                       loc: {
                         start: { line: 1, column: 15 },
-                        end  : { line: 1, column: 20 }
+                        end: { line: 1, column: 20 }
                       }
                     },
                     range: [ 11, 20 ],
                     loc: {
                       start: { line: 1, column: 11 },
-                      end  : { line: 1, column: 20 }
+                      end: { line: 1, column: 20 }
                     }
                   }
                 ],
                 range: [ 7, 20 ],
                 loc: {
                   start: { line: 1, column: 7 },
-                  end  : { line: 1, column: 20 }
+                  end: { line: 1, column: 20 }
                 }
               },
               {
@@ -3588,7 +3588,7 @@
                   range: [ 22, 23 ],
                   loc: {
                     start: { line: 1, column: 22 },
-                    end  : { line: 1, column: 23 }
+                    end: { line: 1, column: 23 }
                   }
                 },
                 right: {
@@ -3597,27 +3597,27 @@
                   range: [ 26, 27 ],
                   loc: {
                     start: { line: 1, column: 26 },
-                    end  : { line: 1, column: 27 }
+                    end: { line: 1, column: 27 }
                   }
                 },
                 range: [ 22, 27 ],
                 loc: {
                   start: { line: 1, column: 22 },
-                  end  : { line: 1, column: 27 }
+                  end: { line: 1, column: 27 }
                 }
               }
             ],
             range: [ 0, 30 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 30 }
+              end: { line: 1, column: 30 }
             }
           }
         ],
         range: [ 0, 30 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 30 }
+          end: { line: 1, column: 30 }
         }
       }
     },
@@ -3642,7 +3642,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -3652,20 +3652,20 @@
               range: [ 4, 7 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 7 }
+                end: { line: 1, column: 7 }
               }
             },
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -3700,7 +3700,7 @@
                 range: [ 76, 79 ],
                 loc: {
                   start: { line: 1, column: 76 },
-                  end  : { line: 1, column: 79 }
+                  end: { line: 1, column: 79 }
                 }
               }
             ],
@@ -3714,7 +3714,7 @@
                     range: [ 2, 3 ],
                     loc: {
                       start: { line: 1, column: 2 },
-                      end  : { line: 1, column: 3 }
+                      end: { line: 1, column: 3 }
                     }
                   },
                   init: {
@@ -3727,7 +3727,7 @@
                         range: [ 7, 10 ],
                         loc: {
                           start: { line: 1, column: 7 },
-                          end  : { line: 1, column: 10 }
+                          end: { line: 1, column: 10 }
                         }
                       },
                       {
@@ -3737,7 +3737,7 @@
                         range: [ 12, 16 ],
                         loc: {
                           start: { line: 1, column: 12 },
-                          end  : { line: 1, column: 16 }
+                          end: { line: 1, column: 16 }
                         }
                       },
                       {
@@ -3747,7 +3747,7 @@
                         range: [ 18, 23 ],
                         loc: {
                           start: { line: 1, column: 18 },
-                          end  : { line: 1, column: 23 }
+                          end: { line: 1, column: 23 }
                         }
                       }
                     ],
@@ -3755,13 +3755,13 @@
                     range: [ 4, 25 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end  : { line: 1, column: 25 }
+                      end: { line: 1, column: 25 }
                     }
                   },
                   range: [ 2, 25 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 25 }
+                    end: { line: 1, column: 25 }
                   }
                 },
                 {
@@ -3772,7 +3772,7 @@
                     range: [ 27, 28 ],
                     loc: {
                       start: { line: 1, column: 27 },
-                      end  : { line: 1, column: 28 }
+                      end: { line: 1, column: 28 }
                     }
                   },
                   init: {
@@ -3785,7 +3785,7 @@
                         range: [ 33, 36 ],
                         loc: {
                           start: { line: 1, column: 33 },
-                          end  : { line: 1, column: 36 }
+                          end: { line: 1, column: 36 }
                         }
                       },
                       {
@@ -3795,7 +3795,7 @@
                         range: [ 38, 42 ],
                         loc: {
                           start: { line: 1, column: 38 },
-                          end  : { line: 1, column: 42 }
+                          end: { line: 1, column: 42 }
                         }
                       }
                     ],
@@ -3803,13 +3803,13 @@
                     range: [ 30, 44 ],
                     loc: {
                       start: { line: 1, column: 30 },
-                      end  : { line: 1, column: 44 }
+                      end: { line: 1, column: 44 }
                     }
                   },
                   range: [ 27, 44 ],
                   loc: {
                     start: { line: 1, column: 27 },
-                    end  : { line: 1, column: 44 }
+                    end: { line: 1, column: 44 }
                   }
                 },
                 {
@@ -3820,7 +3820,7 @@
                     range: [ 46, 47 ],
                     loc: {
                       start: { line: 1, column: 46 },
-                      end  : { line: 1, column: 47 }
+                      end: { line: 1, column: 47 }
                     }
                   },
                   init: {
@@ -3833,7 +3833,7 @@
                         range: [ 51, 52 ],
                         loc: {
                           start: { line: 1, column: 51 },
-                          end  : { line: 1, column: 52 }
+                          end: { line: 1, column: 52 }
                         }
                       },
                       {
@@ -3843,7 +3843,7 @@
                         range: [ 54, 57 ],
                         loc: {
                           start: { line: 1, column: 54 },
-                          end  : { line: 1, column: 57 }
+                          end: { line: 1, column: 57 }
                         }
                       },
                       {
@@ -3853,7 +3853,7 @@
                         range: [ 59, 62 ],
                         loc: {
                           start: { line: 1, column: 59 },
-                          end  : { line: 1, column: 62 }
+                          end: { line: 1, column: 62 }
                         }
                       },
                       {
@@ -3863,7 +3863,7 @@
                         range: [ 64, 66 ],
                         loc: {
                           start: { line: 1, column: 64 },
-                          end  : { line: 1, column: 66 }
+                          end: { line: 1, column: 66 }
                         }
                       },
                       {
@@ -3873,7 +3873,7 @@
                         range: [ 68, 72 ],
                         loc: {
                           start: { line: 1, column: 68 },
-                          end  : { line: 1, column: 72 }
+                          end: { line: 1, column: 72 }
                         }
                       }
                     ],
@@ -3881,13 +3881,13 @@
                     range: [ 48, 74 ],
                     loc: {
                       start: { line: 1, column: 48 },
-                      end  : { line: 1, column: 74 }
+                      end: { line: 1, column: 74 }
                     }
                   },
                   range: [ 46, 74 ],
                   loc: {
                     start: { line: 1, column: 46 },
-                    end  : { line: 1, column: 74 }
+                    end: { line: 1, column: 74 }
                   }
                 }
               ]
@@ -3895,14 +3895,14 @@
             range: [ 0, 81 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 81 }
+              end: { line: 1, column: 81 }
             }
           }
         ],
         range: [ 0, 81 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 81 }
+          end: { line: 1, column: 81 }
         }
       }
     },
@@ -3928,7 +3928,7 @@
                   range: [ 4, 9 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 9 }
+                    end: { line: 1, column: 9 }
                   }
                 },
                 init: {
@@ -3938,13 +3938,13 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end  : { line: 1, column: 11 }
+                    end: { line: 1, column: 11 }
                   }
                 },
                 range: [ 4, 11 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 11 }
+                  end: { line: 1, column: 11 }
                 }
               },
               {
@@ -3955,7 +3955,7 @@
                   range: [ 13, 18 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end  : { line: 1, column: 18 }
+                    end: { line: 1, column: 18 }
                   }
                 },
                 init: {
@@ -3965,13 +3965,13 @@
                   range: [ 19, 20 ],
                   loc: {
                     start: { line: 1, column: 19 },
-                    end  : { line: 1, column: 20 }
+                    end: { line: 1, column: 20 }
                   }
                 },
                 range: [ 13, 20 ],
                 loc: {
                   start: { line: 1, column: 13 },
-                  end  : { line: 1, column: 20 }
+                  end: { line: 1, column: 20 }
                 }
               },
               {
@@ -3982,7 +3982,7 @@
                   range: [ 22, 27 ],
                   loc: {
                     start: { line: 1, column: 22 },
-                    end  : { line: 1, column: 27 }
+                    end: { line: 1, column: 27 }
                   }
                 },
                 init: {
@@ -3992,27 +3992,27 @@
                   range: [ 28, 29 ],
                   loc: {
                     start: { line: 1, column: 28 },
-                    end  : { line: 1, column: 29 }
+                    end: { line: 1, column: 29 }
                   }
                 },
                 range: [ 22, 29 ],
                 loc: {
                   start: { line: 1, column: 22 },
-                  end  : { line: 1, column: 29 }
+                  end: { line: 1, column: 29 }
                 }
               }
             ],
             range: [ 0, 29 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 29 }
+              end: { line: 1, column: 29 }
             }
           }
         ],
         range: [ 0, 30 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 30 }
+          end: { line: 1, column: 30 }
         }
       }
     },
@@ -4039,13 +4039,13 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               },
               {
@@ -4056,20 +4056,20 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 },
                 range: [ 7, 8 ],
                 loc: {
                   start: { line: 1, column: 7 },
-                  end  : { line: 1, column: 8 }
+                  end: { line: 1, column: 8 }
                 }
               },
             ],
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 8 }
+              end: { line: 1, column: 8 }
             }
           },
           {
@@ -4081,7 +4081,7 @@
               range: [ 10, 11 ],
               loc: {
                 start: { line: 1, column: 10 },
-                end  : { line: 1, column: 11 }
+                end: { line: 1, column: 11 }
               }
             },
             right: {
@@ -4091,20 +4091,20 @@
               range: [ 12, 15 ],
               loc: {
                 start: { line: 1, column: 12 },
-                end  : { line: 1, column: 15 }
+                end: { line: 1, column: 15 }
               }
             },
             range: [ 10, 15 ],
             loc: {
               start: { line: 1, column: 10 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           },
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 16 }
+          end: { line: 1, column: 16 }
         }
       },
     },
@@ -4133,20 +4133,20 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               },
             ],
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           },
           {
@@ -4159,7 +4159,7 @@
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               },
             ],
@@ -4169,20 +4169,20 @@
               range: [ 12, 14 ],
               loc: {
                 start: { line: 1, column: 12 },
-                end  : { line: 1, column: 14 }
+                end: { line: 1, column: 14 }
               }
             },
             range: [ 7, 14 ],
             loc: {
               start: { line: 1, column: 7 },
-              end  : { line: 1, column: 14 }
+              end: { line: 1, column: 14 }
             }
           },
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -4223,13 +4223,13 @@
                     range: [ 3, 4 ],
                     loc: {
                       start: { line: 1, column: 3 },
-                      end  : { line: 1, column: 4 }
+                      end: { line: 1, column: 4 }
                     }
                   },
                   range: [ 3, 4 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end  : { line: 1, column: 4 }
+                    end: { line: 1, column: 4 }
                   }
                 },
                 {
@@ -4240,13 +4240,13 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 7 }
+                      end: { line: 1, column: 7 }
                     }
                   },
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 }
               ]
@@ -4264,20 +4264,20 @@
                       range: [ 13, 14 ],
                       loc: {
                         start: { line: 1, column: 13 },
-                        end  : { line: 1, column: 14 }
+                        end: { line: 1, column: 14 }
                       }
                     },
                     range: [ 13, 14 ],
                     loc: {
                       start: { line: 1, column: 13 },
-                      end  : { line: 1, column: 14 }
+                      end: { line: 1, column: 14 }
                     }
                   }
                 ],
                 range: [ 9, 14 ],
                 loc: {
                   start: { line: 1, column: 9 },
-                  end  : { line: 1, column: 14 }
+                  end: { line: 1, column: 14 }
                 }
               },
               {
@@ -4289,7 +4289,7 @@
                   range: [ 16, 17 ],
                   loc: {
                     start: { line: 1, column: 16 },
-                    end  : { line: 1, column: 17 }
+                    end: { line: 1, column: 17 }
                   }
                 },
                 right: {
@@ -4301,7 +4301,7 @@
                     range: [ 20, 21 ],
                     loc: {
                       start: { line: 1, column: 20 },
-                      end  : { line: 1, column: 21 }
+                      end: { line: 1, column: 21 }
                     }
                   },
                   right: {
@@ -4310,19 +4310,19 @@
                     range: [ 24, 25 ],
                     loc: {
                       start: { line: 1, column: 24 },
-                      end  : { line: 1, column: 25 }
+                      end: { line: 1, column: 25 }
                     }
                   },
                   range: [ 20, 25 ],
                   loc: {
                     start: { line: 1, column: 20 },
-                    end  : { line: 1, column: 25 }
+                    end: { line: 1, column: 25 }
                   }
                 },
                 range: [ 16, 25 ],
                 loc: {
                   start: { line: 1, column: 16 },
-                  end  : { line: 1, column: 25 }
+                  end: { line: 1, column: 25 }
                 }
               },
               {
@@ -4333,7 +4333,7 @@
                   range: [ 27, 28 ],
                   loc: {
                     start: { line: 1, column: 27 },
-                    end  : { line: 1, column: 28 }
+                    end: { line: 1, column: 28 }
                   }
                 },
                 method: {
@@ -4342,7 +4342,7 @@
                   range: [ 29, 33 ],
                   loc: {
                     start: { line: 1, column: 29 },
-                    end  : { line: 1, column: 33 }
+                    end: { line: 1, column: 33 }
                   }
                 },
                 args: {
@@ -4351,7 +4351,7 @@
                 range: [ 27, 33 ],
                 loc: {
                   start: { line: 1, column: 27 },
-                  end  : { line: 1, column: 33 }
+                  end: { line: 1, column: 33 }
                 }
               },
               {
@@ -4360,21 +4360,21 @@
                 range: [ 35, 36 ],
                 loc: {
                   start: { line: 1, column: 35 },
-                  end  : { line: 1, column: 36 }
+                  end: { line: 1, column: 36 }
                 }
               }
             ],
             range: [ 0, 38 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 38 }
+              end: { line: 1, column: 38 }
             }
           }
         ],
         range: [ 0, 38 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 38 }
+          end: { line: 1, column: 38 }
         }
       }
     },
@@ -4417,7 +4417,7 @@
                   range: [ 6, 10 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
                 method: {
@@ -4426,7 +4426,7 @@
                   range: [ 2, 4 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 4 }
+                    end: { line: 1, column: 4 }
                   }
                 },
                 args: {
@@ -4443,7 +4443,7 @@
                             range: [ 14, 15 ],
                             loc: {
                               start: { line: 1, column: 14 },
-                              end  : { line: 1, column: 15 }
+                              end: { line: 1, column: 15 }
                             }
                           },
                           method: {
@@ -4452,7 +4452,7 @@
                             range: [ 16, 20 ],
                             loc: {
                               start: { line: 1, column: 16 },
-                              end  : { line: 1, column: 20 }
+                              end: { line: 1, column: 20 }
                             }
                           },
                           args: {
@@ -4461,7 +4461,7 @@
                           range: [ 14, 20 ],
                           loc: {
                             start: { line: 1, column: 14 },
-                            end  : { line: 1, column: 20 }
+                            end: { line: 1, column: 20 }
                           }
                         }
                       ],
@@ -4469,7 +4469,7 @@
                       range: [ 12, 22 ],
                       loc: {
                         start: { line: 1, column: 12 },
-                        end  : { line: 1, column: 22 }
+                        end: { line: 1, column: 22 }
                       }
                     }
                   ]
@@ -4477,7 +4477,7 @@
                 range: [ 2, 22 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 22 }
+                  end: { line: 1, column: 22 }
                 }
               },
               {
@@ -4487,21 +4487,21 @@
                 range: [ 24, 25 ],
                 loc: {
                   start: { line: 1, column: 24 },
-                  end  : { line: 1, column: 25 }
+                  end: { line: 1, column: 25 }
                 }
               }
             ],
             range: [ 0, 27 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 27 }
+              end: { line: 1, column: 27 }
             }
           }
         ],
         range: [ 0, 27 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 27 }
+          end: { line: 1, column: 27 }
         }
       }
     },
@@ -4537,7 +4537,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 },
                 method: {
@@ -4546,7 +4546,7 @@
                   range: [ 2, 6 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 args: {
@@ -4555,7 +4555,7 @@
                 range: [ 2, 9 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               },
               {
@@ -4565,21 +4565,21 @@
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end  : { line: 1, column: 12 }
+                  end: { line: 1, column: 12 }
                 }
               }
             ],
             range: [ 0, 14 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 14 }
+              end: { line: 1, column: 14 }
             }
           }
         ],
         range: [ 0, 14 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 14 }
+          end: { line: 1, column: 14 }
         }
       }
     },
@@ -4606,7 +4606,7 @@
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -4615,7 +4615,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -4627,7 +4627,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 },
                 {
@@ -4637,7 +4637,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end  : { line: 1, column: 11 }
+                    end: { line: 1, column: 11 }
                   }
                 }
               ],
@@ -4647,7 +4647,7 @@
                 range: [ 14, 15 ],
                 loc: {
                   start: { line: 1, column: 14 },
-                  end  : { line: 1, column: 15 }
+                  end: { line: 1, column: 15 }
                 }
               },
               keywords: {
@@ -4658,7 +4658,7 @@
                   range: [ 20, 21 ],
                   loc: {
                     start: { line: 1, column: 20 },
-                    end  : { line: 1, column: 21 }
+                    end: { line: 1, column: 21 }
                   }
                 },
                 b: {
@@ -4668,7 +4668,7 @@
                   range: [ 26, 27 ],
                   loc: {
                     start: { line: 1, column: 26 },
-                    end  : { line: 1, column: 27 }
+                    end: { line: 1, column: 27 }
                   }
                 }
               }
@@ -4676,14 +4676,14 @@
             range: [ 0, 28 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 28 }
+              end: { line: 1, column: 28 }
             }
           }
         ],
         range: [ 0, 28 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 28 }
+          end: { line: 1, column: 28 }
         }
       }
     },
@@ -4709,7 +4709,7 @@
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -4718,7 +4718,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -4730,7 +4730,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 }
               ],
@@ -4740,21 +4740,21 @@
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end  : { line: 1, column: 12 }
+                  end: { line: 1, column: 12 }
                 }
               }
             },
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 13 }
+              end: { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end: { line: 1, column: 13 }
         }
       }
     },
@@ -4777,7 +4777,7 @@
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -4786,7 +4786,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -4798,7 +4798,7 @@
                   range: [ 7, 8 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 }
               ],
@@ -4810,7 +4810,7 @@
                   range: [ 13, 14 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end  : { line: 1, column: 14 }
+                    end: { line: 1, column: 14 }
                   }
                 }
               }
@@ -4818,14 +4818,14 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -4850,7 +4850,7 @@
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -4859,7 +4859,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -4870,7 +4870,7 @@
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               },
               keywords: {
@@ -4881,7 +4881,7 @@
                   range: [ 14, 15 ],
                   loc: {
                     start: { line: 1, column: 14 },
-                    end  : { line: 1, column: 15 }
+                    end: { line: 1, column: 15 }
                   }
                 }
               }
@@ -4889,14 +4889,14 @@
             range: [ 0, 16 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 16 }
+              end: { line: 1, column: 16 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 16 }
+          end: { line: 1, column: 16 }
         }
       }
     },
@@ -4921,7 +4921,7 @@
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -4930,7 +4930,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -4941,21 +4941,21 @@
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               }
             },
             range: [ 0, 10 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 }
+              end: { line: 1, column: 10 }
             }
           }
         ],
         range: [ 0, 10 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 }
+          end: { line: 1, column: 10 }
         }
       }
     },
@@ -4978,7 +4978,7 @@
               range: [ 4, 5 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -4987,7 +4987,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -5000,7 +5000,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end  : { line: 1, column: 11 }
+                    end: { line: 1, column: 11 }
                   }
                 }
               }
@@ -5008,14 +5008,14 @@
             range: [ 0, 12 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 12 }
+              end: { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 12 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 12 }
+          end: { line: 1, column: 12 }
         }
       }
     },
@@ -5037,7 +5037,7 @@
               range: [ 5, 6 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end  : { line: 1, column: 6 }
+                end: { line: 1, column: 6 }
               }
             },
             method: {
@@ -5046,7 +5046,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -5059,7 +5059,7 @@
                   range: [ 11, 12 ],
                   loc: {
                     start: { line: 1, column: 11 },
-                    end  : { line: 1, column: 12 }
+                    end: { line: 1, column: 12 }
                   }
                 }
               }
@@ -5067,14 +5067,14 @@
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 13 }
+              end: { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end: { line: 1, column: 13 }
         }
       }
     },
@@ -5096,7 +5096,7 @@
               range: [ 5, 6 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end  : { line: 1, column: 6 }
+                end: { line: 1, column: 6 }
               }
             },
             method: {
@@ -5105,7 +5105,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -5114,14 +5114,14 @@
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -5148,7 +5148,7 @@
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               },
               {
@@ -5158,7 +5158,7 @@
                 range: [ 7, 8 ],
                 loc: {
                   start: { line: 1, column: 7 },
-                  end  : { line: 1, column: 8 }
+                  end: { line: 1, column: 8 }
                 }
               }
             ],
@@ -5168,7 +5168,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -5181,7 +5181,7 @@
                     range: [ 10, 11 ],
                     loc: {
                       start: { line: 1, column: 10 },
-                      end  : { line: 1, column: 11 }
+                      end: { line: 1, column: 11 }
                     }
                   },
                   {
@@ -5191,7 +5191,7 @@
                     range: [ 13, 14 ],
                     loc: {
                       start: { line: 1, column: 13 },
-                      end  : { line: 1, column: 14 }
+                      end: { line: 1, column: 14 }
                     }
                   }
                 ],
@@ -5203,7 +5203,7 @@
                     range: [ 16, 17 ],
                     loc: {
                       start: { line: 1, column: 16 },
-                      end  : { line: 1, column: 17 }
+                      end: { line: 1, column: 17 }
                     }
                   },
                   {
@@ -5213,7 +5213,7 @@
                     range: [ 19, 20 ],
                     loc: {
                       start: { line: 1, column: 19 },
-                      end  : { line: 1, column: 20 }
+                      end: { line: 1, column: 20 }
                     }
                   }
                 ]
@@ -5227,7 +5227,7 @@
                     range: [ 25, 26 ],
                     loc: {
                       start: { line: 1, column: 25 },
-                      end  : { line: 1, column: 26 }
+                      end: { line: 1, column: 26 }
                     }
                   },
                   {
@@ -5237,7 +5237,7 @@
                     range: [ 28, 29 ],
                     loc: {
                       start: { line: 1, column: 28 },
-                      end  : { line: 1, column: 29 }
+                      end: { line: 1, column: 29 }
                     }
                   }
                 ],
@@ -5249,7 +5249,7 @@
                     range: [ 34, 35 ],
                     loc: {
                       start: { line: 1, column: 34 },
-                      end  : { line: 1, column: 35 }
+                      end: { line: 1, column: 35 }
                     }
                   },
                   {
@@ -5259,7 +5259,7 @@
                     range: [ 37, 38 ],
                     loc: {
                       start: { line: 1, column: 37 },
-                      end  : { line: 1, column: 38 }
+                      end: { line: 1, column: 38 }
                     }
                   }
                 ]
@@ -5268,14 +5268,14 @@
             range: [ 0, 39 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 39 }
+              end: { line: 1, column: 39 }
             }
           }
         ],
         range: [ 0, 39 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 39 }
+          end: { line: 1, column: 39 }
         }
       }
     },
@@ -5301,7 +5301,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: [
@@ -5312,7 +5312,7 @@
                 range: [ 5, 6 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 6 }
+                  end: { line: 1, column: 6 }
                 }
               },
               {
@@ -5322,7 +5322,7 @@
                 range: [ 8, 9 ],
                 loc: {
                   start: { line: 1, column: 8 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               },
               {
@@ -5332,21 +5332,21 @@
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end  : { line: 1, column: 12 }
+                  end: { line: 1, column: 12 }
                 }
               }
             ],
             range: [ 0, 13 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 13 }
+              end: { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end: { line: 1, column: 13 }
         }
       }
     },
@@ -5373,7 +5373,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -5391,7 +5391,7 @@
                         range: [ 9, 10 ],
                         loc: {
                           start: { line: 1, column: 9 },
-                          end  : { line: 1, column: 10 }
+                          end: { line: 1, column: 10 }
                         }
                       },
                       init: {
@@ -5401,20 +5401,20 @@
                         range: [ 13, 14 ],
                         loc: {
                           start: { line: 1, column: 13 },
-                          end  : { line: 1, column: 14 }
+                          end: { line: 1, column: 14 }
                         }
                       },
                       range: [ 9, 14 ],
                       loc: {
                         start: { line: 1, column: 9 },
-                        end  : { line: 1, column: 14 }
+                        end: { line: 1, column: 14 }
                       }
                     }
                   ],
                   range: [ 5, 14 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 14 }
+                    end: { line: 1, column: 14 }
                   }
                 },
                 {
@@ -5423,27 +5423,27 @@
                   range: [ 16, 17 ],
                   loc: {
                     start: { line: 1, column: 16 },
-                    end  : { line: 1, column: 17 }
+                    end: { line: 1, column: 17 }
                   }
                 }
               ],
               range: [ 4, 18 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 18 }
+                end: { line: 1, column: 18 }
               }
             },
             range: [ 0, 18 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 18 }
+              end: { line: 1, column: 18 }
             }
           }
         ],
         range: [ 0, 18 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 18 }
+          end: { line: 1, column: 18 }
         }
       }
     },
@@ -5466,7 +5466,7 @@
                 range: [ 0, 1 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
+                  end: { line: 1, column: 1 }
                 }
               },
               method: {
@@ -5475,7 +5475,7 @@
                 range: [ 2, 9 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               },
               args: {
@@ -5484,7 +5484,7 @@
               range: [ 0, 9 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             method: {
@@ -5493,7 +5493,7 @@
               range: [ 10, 13 ],
               loc: {
                 start: { line: 1, column: 10 },
-                end  : { line: 1, column: 13 }
+                end: { line: 1, column: 13 }
               }
             },
             args: {
@@ -5505,7 +5505,7 @@
                   range: [ 14, 17 ],
                   loc: {
                     start: { line: 1, column: 14 },
-                    end  : { line: 1, column: 17 }
+                    end: { line: 1, column: 17 }
                   }
                 }
               ]
@@ -5513,14 +5513,14 @@
             range: [ 0, 18 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 18 }
+              end: { line: 1, column: 18 }
             }
           }
         ],
         range: [ 0, 18 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 18 }
+          end: { line: 1, column: 18 }
         }
       }
     },
@@ -5542,7 +5542,7 @@
               range: [ 0, 5 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -5551,7 +5551,7 @@
               range: [ 5, 5 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             args: {
@@ -5563,7 +5563,7 @@
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
                 {
@@ -5573,7 +5573,7 @@
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 }
               ]
@@ -5581,14 +5581,14 @@
             range: [ 0, 11 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 11 }
+              end: { line: 1, column: 11 }
             }
           }
         ],
         range: [ 0, 11 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 11 }
+          end: { line: 1, column: 11 }
         }
       }
     },
@@ -5609,7 +5609,7 @@
               range: [ 0, 5 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -5618,7 +5618,7 @@
               range: [ 6, 9 ],
               loc: {
                 start: { line: 1, column: 6 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             args: {
@@ -5630,7 +5630,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end  : { line: 1, column: 11 }
+                    end: { line: 1, column: 11 }
                   }
                 },
                 {
@@ -5640,7 +5640,7 @@
                   range: [ 13, 14 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end  : { line: 1, column: 14 }
+                    end: { line: 1, column: 14 }
                   }
                 }
               ]
@@ -5648,14 +5648,14 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -5676,7 +5676,7 @@
               range: [ 0, 5 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 5 }
+                end: { line: 1, column: 5 }
               }
             },
             method: {
@@ -5685,7 +5685,7 @@
               range: [ 6, 9 ],
               loc: {
                 start: { line: 1, column: 6 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             args: {
@@ -5694,14 +5694,14 @@
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -5734,7 +5734,7 @@
               range: [ 0, 7 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 7 }
+                end: { line: 1, column: 7 }
               }
             },
             method: {
@@ -5743,7 +5743,7 @@
               range: [ 9, 9 ],
               loc: {
                 start: { line: 1, column: 9 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             args: {
@@ -5760,13 +5760,13 @@
                           range: [ 11, 12 ],
                           loc: {
                             start: { line: 1, column: 11 },
-                            end  : { line: 1, column: 12 }
+                            end: { line: 1, column: 12 }
                           }
                         },
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end  : { line: 1, column: 12 }
+                          end: { line: 1, column: 12 }
                         }
                       }
                     ]
@@ -5780,7 +5780,7 @@
                         range: [ 14, 15 ],
                         loc: {
                           start: { line: 1, column: 14 },
-                          end  : { line: 1, column: 15 }
+                          end: { line: 1, column: 15 }
                         }
                       },
                       method: {
@@ -5789,7 +5789,7 @@
                         range: [ 16, 22 ],
                         loc: {
                           start: { line: 1, column: 16 },
-                          end  : { line: 1, column: 22 }
+                          end: { line: 1, column: 22 }
                         }
                       },
                       args: {
@@ -5798,7 +5798,7 @@
                       range: [ 14, 22 ],
                       loc: {
                         start: { line: 1, column: 14 },
-                        end  : { line: 1, column: 22 }
+                        end: { line: 1, column: 22 }
                       }
                     }
                   ],
@@ -5806,7 +5806,7 @@
                   range: [ 9, 23 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 23 }
+                    end: { line: 1, column: 23 }
                   }
                 }
               ]
@@ -5814,14 +5814,14 @@
             range: [ 0, 23 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 23 }
+              end: { line: 1, column: 23 }
             }
           }
         ],
         range: [ 0, 23 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 23 }
+          end: { line: 1, column: 23 }
         }
       }
     },
@@ -5848,7 +5848,7 @@
                 range: [ 2, 4 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 4 }
+                  end: { line: 1, column: 4 }
                 }
               },
               method: {
@@ -5857,7 +5857,7 @@
                 range: [ 0, 1 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
+                  end: { line: 1, column: 1 }
                 }
               },
               args: {
@@ -5866,7 +5866,7 @@
               range: [ 0, 4 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 4 }
+                end: { line: 1, column: 4 }
               }
             },
             method: {
@@ -5875,7 +5875,7 @@
               range: [ 5, 10 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end  : { line: 1, column: 10 }
+                end: { line: 1, column: 10 }
               }
             },
             args: {
@@ -5884,14 +5884,14 @@
             range: [ 0, 10 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 10 }
+              end: { line: 1, column: 10 }
             }
           }
         ],
         range: [ 0, 10 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 10 }
+          end: { line: 1, column: 10 }
         }
       }
     },
@@ -5917,7 +5917,7 @@
               range: [ 0, 3 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             method: {
@@ -5926,7 +5926,7 @@
               range: [ 3, 3 ],
               loc: {
                 start: { line: 1, column: 3 },
-                end  : { line: 1, column: 3 }
+                end: { line: 1, column: 3 }
               }
             },
             args: {
@@ -5941,7 +5941,7 @@
                       range: [ 4, 5 ],
                       loc: {
                         start: { line: 1, column: 4 },
-                        end  : { line: 1, column: 5 }
+                        end: { line: 1, column: 5 }
                       }
                     },
                     {
@@ -5951,7 +5951,7 @@
                       range: [ 7, 8 ],
                       loc: {
                         start: { line: 1, column: 7 },
-                        end  : { line: 1, column: 8 }
+                        end: { line: 1, column: 8 }
                       }
                     },
                     {
@@ -5961,14 +5961,14 @@
                       range: [ 10, 11 ],
                       loc: {
                         start: { line: 1, column: 10 },
-                        end  : { line: 1, column: 11 }
+                        end: { line: 1, column: 11 }
                       }
                     }
                   ],
                   range: [ 3, 12 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end  : { line: 1, column: 12 }
+                    end: { line: 1, column: 12 }
                   }
                 }
               ]
@@ -5976,14 +5976,14 @@
             range: [ 0, 12 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 12 }
+              end: { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 12 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 12 }
+          end: { line: 1, column: 12 }
         }
       }
     },
@@ -6010,7 +6010,7 @@
                 range: [ 0, 5 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               },
               method: {
@@ -6019,7 +6019,7 @@
                 range: [ 6, 6 ],
                 loc: {
                   start: { line: 1, column: 6 },
-                  end  : { line: 1, column: 6 }
+                  end: { line: 1, column: 6 }
                 }
               },
               args: {
@@ -6034,7 +6034,7 @@
                         range: [ 8, 9 ],
                         loc: {
                           start: { line: 1, column: 8 },
-                          end  : { line: 1, column: 9 }
+                          end: { line: 1, column: 9 }
                         }
                       },
                       {
@@ -6044,14 +6044,14 @@
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end  : { line: 1, column: 12 }
+                          end: { line: 1, column: 12 }
                         }
                       },
                     ],
                     range: [ 6, 14 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 14 }
+                      end: { line: 1, column: 14 }
                     }
                   }
                 ]
@@ -6059,7 +6059,7 @@
               range: [ 0, 14 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 14 }
+                end: { line: 1, column: 14 }
               }
             },
             method: {
@@ -6068,7 +6068,7 @@
               range: [ 15, 17 ],
               loc: {
                 start: { line: 1, column: 15 },
-                end  : { line: 1, column: 17 }
+                end: { line: 1, column: 17 }
               }
             },
             args: {
@@ -6080,7 +6080,7 @@
                   range: [ 18, 19 ],
                   loc: {
                     start: { line: 1, column: 18 },
-                    end  : { line: 1, column: 19 }
+                    end: { line: 1, column: 19 }
                   }
                 }
               ]
@@ -6088,14 +6088,14 @@
             range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 20 }
+              end: { line: 1, column: 20 }
             }
           }
         ],
         range: [ 0, 20 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 20 }
+          end: { line: 1, column: 20 }
         }
       }
     },
@@ -6123,7 +6123,7 @@
                 range: [ 0, 5 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               },
               method: {
@@ -6132,7 +6132,7 @@
                 range: [ 6, 6 ],
                 loc: {
                   start: { line: 1, column: 6 },
-                  end  : { line: 1, column: 6 }
+                  end: { line: 1, column: 6 }
                 }
               },
               args: {
@@ -6147,7 +6147,7 @@
                         range: [ 8, 9 ],
                         loc: {
                           start: { line: 1, column: 8 },
-                          end  : { line: 1, column: 9 }
+                          end: { line: 1, column: 9 }
                         }
                       },
                       {
@@ -6157,14 +6157,14 @@
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end  : { line: 1, column: 12 }
+                          end: { line: 1, column: 12 }
                         }
                       },
                     ],
                     range: [ 6, 14 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 14 }
+                      end: { line: 1, column: 14 }
                     }
                   }
                 ]
@@ -6172,7 +6172,7 @@
               range: [ 0, 14 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 14 }
+                end: { line: 1, column: 14 }
               }
             },
             method: {
@@ -6181,7 +6181,7 @@
               range: [ 14, 14 ],
               loc: {
                 start: { line: 1, column: 14 },
-                end  : { line: 1, column: 14 }
+                end: { line: 1, column: 14 }
               }
             },
             args: {
@@ -6193,7 +6193,7 @@
                   range: [ 15, 16 ],
                   loc: {
                     start: { line: 1, column: 15 },
-                    end  : { line: 1, column: 16 }
+                    end: { line: 1, column: 16 }
                   }
                 }
               ]
@@ -6201,14 +6201,14 @@
             range: [ 0, 17 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 17 }
+              end: { line: 1, column: 17 }
             }
           }
         ],
         range: [ 0, 17 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 17 }
+          end: { line: 1, column: 17 }
         }
       }
     },
@@ -6230,7 +6230,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -6239,7 +6239,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -6251,7 +6251,7 @@
                   range: [ 3, 4 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end  : { line: 1, column: 4 }
+                    end: { line: 1, column: 4 }
                   }
                 },
                 {
@@ -6261,7 +6261,7 @@
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 }
               ]
@@ -6269,14 +6269,14 @@
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 8 }
+              end: { line: 1, column: 8 }
             }
           }
         ],
         range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 8 }
+          end: { line: 1, column: 8 }
         }
       }
     },
@@ -6301,7 +6301,7 @@
                 range: [ 0, 1 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
+                  end: { line: 1, column: 1 }
                 }
               },
               method: {
@@ -6310,7 +6310,7 @@
                 range: [ 2, 2 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               args: {
@@ -6319,7 +6319,7 @@
               range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -6328,7 +6328,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -6340,7 +6340,7 @@
                   range: [ 3, 4 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end  : { line: 1, column: 4 }
+                    end: { line: 1, column: 4 }
                   }
                 }
               ]
@@ -6348,14 +6348,14 @@
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           }
         ],
         range: [ 0, 5 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 5 }
+          end: { line: 1, column: 5 }
         }
       }
     },
@@ -6380,7 +6380,7 @@
                 range: [ 0, 1 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
+                  end: { line: 1, column: 1 }
                 }
               },
               method: {
@@ -6389,7 +6389,7 @@
                 range: [ 2, 2 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               args: {
@@ -6398,7 +6398,7 @@
               range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -6407,7 +6407,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -6420,7 +6420,7 @@
                     range: [ 3, 4 ],
                     loc: {
                       start: { line: 1, column: 3 },
-                      end  : { line: 1, column: 4 }
+                      end: { line: 1, column: 4 }
                     }
                   },
                   {
@@ -6430,7 +6430,7 @@
                     range: [ 5, 6 ],
                     loc: {
                       start: { line: 1, column: 5 },
-                      end  : { line: 1, column: 6 }
+                      end: { line: 1, column: 6 }
                     }
                   }
                 ]
@@ -6439,14 +6439,14 @@
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -6471,7 +6471,7 @@
                 range: [ 0, 1 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 1 }
+                  end: { line: 1, column: 1 }
                 }
               },
               method: {
@@ -6480,7 +6480,7 @@
                 range: [ 2, 2 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               args: {
@@ -6489,7 +6489,7 @@
               range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             method: {
@@ -6498,7 +6498,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -6512,7 +6512,7 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 }
               ]
@@ -6520,14 +6520,14 @@
             range: [ 0, 7 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 7 }
+              end: { line: 1, column: 7 }
             }
           }
         ],
         range: [ 0, 7 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 7 }
+          end: { line: 1, column: 7 }
         }
       }
     },
@@ -6550,7 +6550,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -6559,7 +6559,7 @@
               range: [ 2, 7 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 7 }
+                end: { line: 1, column: 7 }
               }
             },
             args: {
@@ -6570,21 +6570,21 @@
                 range: [ 9, 11 ],
                 loc: {
                   start: { line: 1, column: 9 },
-                  end  : { line: 1, column: 11 }
+                  end: { line: 1, column: 11 }
                 }
               }
             },
             range: [ 0, 12 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 12 }
+              end: { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 12 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 12 }
+          end: { line: 1, column: 12 }
         }
       }
     },
@@ -6623,7 +6623,7 @@
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               },
               right: {
@@ -6633,13 +6633,13 @@
                 range: [ 6, 7 ],
                 loc: {
                   start: { line: 1, column: 6 },
-                  end  : { line: 1, column: 7 }
+                  end: { line: 1, column: 7 }
                 }
               },
               range: [ 4, 7 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 7 }
+                end: { line: 1, column: 7 }
               }
             },
             method: {
@@ -6648,7 +6648,7 @@
               range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -6663,7 +6663,7 @@
                       range: [ 10, 14 ],
                       loc: {
                         start: { line: 1, column: 10 },
-                        end  : { line: 1, column: 14 }
+                        end: { line: 1, column: 14 }
                       }
                     }
                   ],
@@ -6671,7 +6671,7 @@
                   range: [ 9, 15 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 15 }
+                    end: { line: 1, column: 15 }
                   }
                 },
                 {
@@ -6684,7 +6684,7 @@
                       range: [ 17, 21 ],
                       loc: {
                         start: { line: 1, column: 17 },
-                        end  : { line: 1, column: 21 }
+                        end: { line: 1, column: 21 }
                       }
                     }
                   ],
@@ -6692,7 +6692,7 @@
                   range: [ 16, 22 ],
                   loc: {
                     start: { line: 1, column: 16 },
-                    end  : { line: 1, column: 22 }
+                    end: { line: 1, column: 22 }
                   }
                 }
               ]
@@ -6700,14 +6700,14 @@
             range: [ 0, 22 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 22 }
+              end: { line: 1, column: 22 }
             }
           }
         ],
         range: [ 0, 22 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 22 }
+          end: { line: 1, column: 22 }
         }
       }
     },
@@ -6739,7 +6739,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -6748,7 +6748,7 @@
               range: [ 2, 4 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 4 }
+                end: { line: 1, column: 4 }
               }
             },
             args: {
@@ -6765,13 +6765,13 @@
                           range: [ 8, 9 ],
                           loc: {
                             start: { line: 1, column: 8 },
-                            end  : { line: 1, column: 9 }
+                            end: { line: 1, column: 9 }
                           }
                         },
                         range: [ 8, 9 ],
                         loc: {
                           start: { line: 1, column: 8 },
-                          end  : { line: 1, column: 9 }
+                          end: { line: 1, column: 9 }
                         }
                       }
                     ]
@@ -6785,7 +6785,7 @@
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end  : { line: 1, column: 12 }
+                          end: { line: 1, column: 12 }
                         }
                       },
                       method: {
@@ -6794,7 +6794,7 @@
                         range: [ 13, 17 ],
                         loc: {
                           start: { line: 1, column: 13 },
-                          end  : { line: 1, column: 17 }
+                          end: { line: 1, column: 17 }
                         }
                       },
                       args: {
@@ -6803,7 +6803,7 @@
                       range: [ 11, 17 ],
                       loc: {
                         start: { line: 1, column: 11 },
-                        end  : { line: 1, column: 17 }
+                        end: { line: 1, column: 17 }
                       }
                     }
                   ],
@@ -6811,7 +6811,7 @@
                   range: [ 6, 19 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 19 }
+                    end: { line: 1, column: 19 }
                   }
                 }
               ]
@@ -6819,14 +6819,14 @@
             range: [ 0, 19 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 19 }
+              end: { line: 1, column: 19 }
             }
           }
         ],
         range: [ 0, 19 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 19 }
+          end: { line: 1, column: 19 }
         }
       }
     },
@@ -6858,7 +6858,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -6867,7 +6867,7 @@
               range: [ 2, 4 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 4 }
+                end: { line: 1, column: 4 }
               }
             },
             args: {
@@ -6884,13 +6884,13 @@
                           range: [ 8, 9 ],
                           loc: {
                             start: { line: 1, column: 8 },
-                            end  : { line: 1, column: 9 }
+                            end: { line: 1, column: 9 }
                           }
                         },
                         range: [ 8, 9 ],
                         loc: {
                           start: { line: 1, column: 8 },
-                          end  : { line: 1, column: 9 }
+                          end: { line: 1, column: 9 }
                         }
                       }
                     ]
@@ -6904,7 +6904,7 @@
                         range: [ 11, 12 ],
                         loc: {
                           start: { line: 1, column: 11 },
-                          end  : { line: 1, column: 12 }
+                          end: { line: 1, column: 12 }
                         }
                       },
                       method: {
@@ -6913,7 +6913,7 @@
                         range: [ 13, 17 ],
                         loc: {
                           start: { line: 1, column: 13 },
-                          end  : { line: 1, column: 17 }
+                          end: { line: 1, column: 17 }
                         }
                       },
                       args: {
@@ -6922,7 +6922,7 @@
                       range: [ 11, 17 ],
                       loc: {
                         start: { line: 1, column: 11 },
-                        end  : { line: 1, column: 17 }
+                        end: { line: 1, column: 17 }
                       }
                     }
                   ],
@@ -6931,7 +6931,7 @@
                   range: [ 6, 19 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 19 }
+                    end: { line: 1, column: 19 }
                   }
                 }
               ]
@@ -6939,14 +6939,14 @@
             range: [ 0, 19 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 19 }
+              end: { line: 1, column: 19 }
             }
           }
         ],
         range: [ 0, 19 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 19 }
+          end: { line: 1, column: 19 }
         }
       }
     },
@@ -6981,7 +6981,7 @@
                     range: [ 7, 10 ],
                     loc: {
                       start: { line: 1, column: 7 },
-                      end  : { line: 1, column: 10 }
+                      end: { line: 1, column: 10 }
                     }
                   },
                   method: {
@@ -6990,7 +6990,7 @@
                     range: [ 11, 17 ],
                     loc: {
                       start: { line: 1, column: 11 },
-                      end  : { line: 1, column: 17 }
+                      end: { line: 1, column: 17 }
                     }
                   },
                   args: {
@@ -6999,7 +6999,7 @@
                   range: [ 7, 17 ],
                   loc: {
                     start: { line: 1, column: 7 },
-                    end  : { line: 1, column: 17 }
+                    end: { line: 1, column: 17 }
                   }
                 },
                 {
@@ -7011,7 +7011,7 @@
                     range: [ 19, 20 ],
                     loc: {
                       start: { line: 1, column: 19 },
-                      end  : { line: 1, column: 20 }
+                      end: { line: 1, column: 20 }
                     }
                   },
                   method: {
@@ -7020,7 +7020,7 @@
                     range: [ 21, 25 ],
                     loc: {
                       start: { line: 1, column: 21 },
-                      end  : { line: 1, column: 25 }
+                      end: { line: 1, column: 25 }
                     }
                   },
                   args: {
@@ -7029,7 +7029,7 @@
                   range: [ 19, 25 ],
                   loc: {
                     start: { line: 1, column: 19 },
-                    end  : { line: 1, column: 25 }
+                    end: { line: 1, column: 25 }
                   }
                 }
               ],
@@ -7037,7 +7037,7 @@
               range: [ 5, 27 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end  : { line: 1, column: 27 }
+                end: { line: 1, column: 27 }
               }
             },
             method: {
@@ -7046,7 +7046,7 @@
               range: [ 0, 4 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 4 }
+                end: { line: 1, column: 4 }
               }
             },
             args: {
@@ -7055,14 +7055,14 @@
             range: [ 0, 27 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 27 }
+              end: { line: 1, column: 27 }
             }
           }
         ],
         range: [ 0, 27 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 27 }
+          end: { line: 1, column: 27 }
         }
       }
     },
@@ -7083,20 +7083,20 @@
               range: [ 1, 2 ],
               loc: {
                 start: { line: 1, column: 1 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             range: [ 0, 2 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 2 }
+              end: { line: 1, column: 2 }
             }
           },
         ],
         range: [ 0, 2 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 2 }
+          end: { line: 1, column: 2 }
         }
       }
     },
@@ -7120,13 +7120,13 @@
                 range: [ 1, 2 ],
                 loc: {
                   start: { line: 1, column: 1 },
-                  end  : { line: 1, column: 2 }
+                  end: { line: 1, column: 2 }
                 }
               },
               range: [ 0, 2 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             right: {
@@ -7136,20 +7136,20 @@
               range: [ 5, 6 ],
               loc: {
                 start: { line: 1, column: 5 },
-                end  : { line: 1, column: 6 }
+                end: { line: 1, column: 6 }
               }
             },
             range: [ 0, 6 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 6 }
+              end: { line: 1, column: 6 }
             }
           }
         ],
         range: [ 0, 6 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 6 }
+          end: { line: 1, column: 6 }
         }
       }
     },
@@ -7168,14 +7168,14 @@
             range: [ 0, 2 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 2 }
+              end: { line: 1, column: 2 }
             }
           }
         ],
         range: [ 0, 2 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 2 }
+          end: { line: 1, column: 2 }
         }
       }
     },
@@ -7201,7 +7201,7 @@
                 range: [ 2, 9 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 9 }
+                  end: { line: 1, column: 9 }
                 }
               },
               {
@@ -7211,21 +7211,21 @@
                 range: [ 12, 14 ],
                 loc: {
                   start: { line: 1, column: 12 },
-                  end  : { line: 1, column: 14 }
+                  end: { line: 1, column: 14 }
                 }
               }
             ],
             range: [ 0, 16 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 16 }
+              end: { line: 1, column: 16 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 16 }
+          end: { line: 1, column: 16 }
         }
       }
     },
@@ -7255,7 +7255,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -7268,7 +7268,7 @@
                   range: [ 6, 8 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 },
                 {
@@ -7278,7 +7278,7 @@
                   range: [ 9, 10 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
                 {
@@ -7288,7 +7288,7 @@
                   range: [ 12, 14 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end  : { line: 1, column: 14 }
+                    end: { line: 1, column: 14 }
                   }
                 },
                 {
@@ -7298,7 +7298,7 @@
                   range: [ 15, 16 ],
                   loc: {
                     start: { line: 1, column: 15 },
-                    end  : { line: 1, column: 16 }
+                    end: { line: 1, column: 16 }
                   }
                 },
                 {
@@ -7308,7 +7308,7 @@
                   range: [ 18, 19 ],
                   loc: {
                     start: { line: 1, column: 18 },
-                    end  : { line: 1, column: 19 }
+                    end: { line: 1, column: 19 }
                   }
                 },
                 {
@@ -7318,27 +7318,27 @@
                   range: [ 21, 22 ],
                   loc: {
                     start: { line: 1, column: 21 },
-                    end  : { line: 1, column: 22 }
+                    end: { line: 1, column: 22 }
                   }
                 }
               ],
               range: [ 4, 24 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 24 }
+                end: { line: 1, column: 24 }
               }
             },
             range: [ 0, 24 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 24 }
+              end: { line: 1, column: 24 }
             }
           }
         ],
         range: [ 0, 24 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 24 }
+          end: { line: 1, column: 24 }
         }
       }
     },
@@ -7368,7 +7368,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -7380,7 +7380,7 @@
                   range: [ 6, 7 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
                 {
@@ -7390,7 +7390,7 @@
                   range: [ 10, 11 ],
                   loc: {
                     start: { line: 1, column: 10 },
-                    end  : { line: 1, column: 11 }
+                    end: { line: 1, column: 11 }
                   }
                 },
                 {
@@ -7399,7 +7399,7 @@
                   range: [ 13, 14 ],
                   loc: {
                     start: { line: 1, column: 13 },
-                    end  : { line: 1, column: 14 }
+                    end: { line: 1, column: 14 }
                   }
                 },
                 {
@@ -7409,7 +7409,7 @@
                   range: [ 17, 18 ],
                   loc: {
                     start: { line: 1, column: 17 },
-                    end  : { line: 1, column: 18 }
+                    end: { line: 1, column: 18 }
                   }
                 },
                 {
@@ -7418,7 +7418,7 @@
                   range: [ 20, 21 ],
                   loc: {
                     start: { line: 1, column: 20 },
-                    end  : { line: 1, column: 21 }
+                    end: { line: 1, column: 21 }
                   }
                 },
                 {
@@ -7428,27 +7428,27 @@
                   range: [ 24, 25 ],
                   loc: {
                     start: { line: 1, column: 24 },
-                    end  : { line: 1, column: 25 }
+                    end: { line: 1, column: 25 }
                   }
                 }
               ],
               range: [ 4, 27 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 27 }
+                end: { line: 1, column: 27 }
               }
             },
             range: [ 0, 27 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 27 }
+              end: { line: 1, column: 27 }
             }
           }
         ],
         range: [ 0, 27 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 27 }
+          end: { line: 1, column: 27 }
         }
       }
     },
@@ -7476,7 +7476,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -7492,7 +7492,7 @@
                     range: [ 5, 6 ],
                     loc: {
                       start: { line: 1, column: 5 },
-                      end  : { line: 1, column: 6 }
+                      end: { line: 1, column: 6 }
                     }
                   },
                   right: {
@@ -7502,13 +7502,13 @@
                     range: [ 9, 10 ],
                     loc: {
                       start: { line: 1, column: 9 },
-                      end  : { line: 1, column: 10 }
+                      end: { line: 1, column: 10 }
                     }
                   },
                   range: [ 5, 10 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 10 }
+                    end: { line: 1, column: 10 }
                   }
                 },
                 {
@@ -7518,7 +7518,7 @@
                   range: [ 12, 13 ],
                   loc: {
                     start: { line: 1, column: 12 },
-                    end  : { line: 1, column: 13 }
+                    end: { line: 1, column: 13 }
                   }
                 },
                 {
@@ -7528,7 +7528,7 @@
                   range: [ 15, 16 ],
                   loc: {
                     start: { line: 1, column: 15 },
-                    end  : { line: 1, column: 16 }
+                    end: { line: 1, column: 16 }
                   }
                 },
                 {
@@ -7538,27 +7538,27 @@
                   range: [ 18, 19 ],
                   loc: {
                     start: { line: 1, column: 18 },
-                    end  : { line: 1, column: 19 }
+                    end: { line: 1, column: 19 }
                   }
                 }
               ],
               range: [ 4, 20 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 20 }
+                end: { line: 1, column: 20 }
               }
             },
             range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 20 }
+              end: { line: 1, column: 20 }
             }
           }
         ],
         range: [ 0, 20 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 20 }
+          end: { line: 1, column: 20 }
         }
       }
     },
@@ -7592,7 +7592,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             right: {
@@ -7607,13 +7607,13 @@
                       range: [ 4, 5 ],
                       loc: {
                         start: { line: 1, column: 4 },
-                        end  : { line: 1, column: 5 }
+                        end: { line: 1, column: 5 }
                       }
                     },
                     range: [ 4, 5 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end  : { line: 1, column: 5 }
+                      end: { line: 1, column: 5 }
                     }
                   },
                   {
@@ -7624,13 +7624,13 @@
                       range: [ 8, 9 ],
                       loc: {
                         start: { line: 1, column: 8 },
-                        end  : { line: 1, column: 9 }
+                        end: { line: 1, column: 9 }
                       }
                     },
                     range: [ 8, 9 ],
                     loc: {
                       start: { line: 1, column: 8 },
-                      end  : { line: 1, column: 9 }
+                      end: { line: 1, column: 9 }
                     }
                   }
                 ]
@@ -7645,7 +7645,7 @@
                     range: [ 4, 5 ],
                     loc: {
                       start: { line: 1, column: 4 },
-                      end  : { line: 1, column: 5 }
+                      end: { line: 1, column: 5 }
                     }
                   },
                   right: {
@@ -7654,13 +7654,13 @@
                     range: [ 8, 9 ],
                     loc: {
                       start: { line: 1, column: 8 },
-                      end  : { line: 1, column: 9 }
+                      end: { line: 1, column: 9 }
                     }
                   },
                   range: [ 4, 9 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 9 }
+                    end: { line: 1, column: 9 }
                   }
                 }
               ],
@@ -7668,20 +7668,20 @@
               range: [ 4, 9 ],
               loc: {
                 start: { line: 1, column: 4 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -7720,13 +7720,13 @@
                     range: [ 2, 3 ],
                     loc: {
                       start: { line: 1, column: 2 },
-                      end  : { line: 1, column: 3 }
+                      end: { line: 1, column: 3 }
                     }
                   },
                   range: [ 2, 3 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 3 }
+                    end: { line: 1, column: 3 }
                   }
                 },
                 {
@@ -7737,13 +7737,13 @@
                     range: [ 5, 6 ],
                     loc: {
                       start: { line: 1, column: 5 },
-                      end  : { line: 1, column: 6 }
+                      end: { line: 1, column: 6 }
                     }
                   },
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 }
               ]
@@ -7758,7 +7758,7 @@
                     range: [ 2, 3 ],
                     loc: {
                       start: { line: 1, column: 2 },
-                      end  : { line: 1, column: 3 }
+                      end: { line: 1, column: 3 }
                     }
                   },
                   {
@@ -7767,14 +7767,14 @@
                     range: [ 5, 6 ],
                     loc: {
                       start: { line: 1, column: 5 },
-                      end  : { line: 1, column: 6 }
+                      end: { line: 1, column: 6 }
                     }
                   }
                 ],
                 range: [ 0, 8 ],
                 loc: {
                   start: { line: 1, column: 0 },
-                  end  : { line: 1, column: 8 }
+                  end: { line: 1, column: 8 }
                 }
               }
             ],
@@ -7782,14 +7782,14 @@
             range: [ 0, 8 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 8 }
+              end: { line: 1, column: 8 }
             }
           }
         ],
         range: [ 0, 8 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 8 }
+          end: { line: 1, column: 8 }
         }
       }
     },
@@ -7816,20 +7816,20 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               }
             ],
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           },
           {
@@ -7844,27 +7844,27 @@
                   range: [ 11, 12 ],
                   loc: {
                     start: { line: 1, column: 11 },
-                    end  : { line: 1, column: 12 }
+                    end: { line: 1, column: 12 }
                   }
                 },
                 range: [ 11, 12 ],
                 loc: {
                   start: { line: 1, column: 11 },
-                  end  : { line: 1, column: 12 }
+                  end: { line: 1, column: 12 }
                 }
               }
             ],
             range: [ 7, 12 ],
             loc: {
               start: { line: 1, column: 7 },
-              end  : { line: 1, column: 12 }
+              end: { line: 1, column: 12 }
             }
           }
         ],
         range: [ 0, 13 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 13 }
+          end: { line: 1, column: 13 }
         }
       }
     },
@@ -7891,20 +7891,20 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
                 range: [ 4, 5 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 5 }
+                  end: { line: 1, column: 5 }
                 }
               }
             ],
             range: [ 0, 5 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 5 }
+              end: { line: 1, column: 5 }
             }
           },
           {
@@ -7916,7 +7916,7 @@
               range: [ 7, 8 ],
               loc: {
                 start: { line: 1, column: 7 },
-                end  : { line: 1, column: 8 }
+                end: { line: 1, column: 8 }
               }
             },
             right: {
@@ -7926,20 +7926,20 @@
               range: [ 11, 13 ],
               loc: {
                 start: { line: 1, column: 11 },
-                end  : { line: 1, column: 13 }
+                end: { line: 1, column: 13 }
               }
             },
             range: [ 7, 13 ],
             loc: {
               start: { line: 1, column: 7 },
-              end  : { line: 1, column: 13 }
+              end: { line: 1, column: 13 }
             }
           }
         ],
         range: [ 0, 14 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 14 }
+          end: { line: 1, column: 14 }
         }
       }
     },
@@ -7966,20 +7966,20 @@
                   range: [ 5, 6 ],
                   loc: {
                     start: { line: 1, column: 5 },
-                    end  : { line: 1, column: 6 }
+                    end: { line: 1, column: 6 }
                   }
                 },
                 range: [ 5, 6 ],
                 loc: {
                   start: { line: 1, column: 5 },
-                  end  : { line: 1, column: 6 }
+                  end: { line: 1, column: 6 }
                 }
               }
             ],
             range: [ 1, 6 ],
             loc: {
               start: { line: 1, column: 1 },
-              end  : { line: 1, column: 6 }
+              end: { line: 1, column: 6 }
             }
           },
           {
@@ -7991,7 +7991,7 @@
               range: [ 8, 9 ],
               loc: {
                 start: { line: 1, column: 8 },
-                end  : { line: 1, column: 9 }
+                end: { line: 1, column: 9 }
               }
             },
             right: {
@@ -8001,20 +8001,20 @@
               range: [ 12, 14 ],
               loc: {
                 start: { line: 1, column: 12 },
-                end  : { line: 1, column: 14 }
+                end: { line: 1, column: 14 }
               }
             },
             range: [ 8, 14 ],
             loc: {
               start: { line: 1, column: 8 },
-              end  : { line: 1, column: 14 }
+              end: { line: 1, column: 14 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 16 }
+          end: { line: 1, column: 16 }
         }
       }
     },
@@ -8052,7 +8052,7 @@
                   range: [ 4, 5 ],
                   loc: {
                     start: { line: 1, column: 4 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
                 init: {
@@ -8070,20 +8070,20 @@
                             range: [ 14, 15 ],
                             loc: {
                               start: { line: 1, column: 14 },
-                              end  : { line: 1, column: 15 }
+                              end: { line: 1, column: 15 }
                             }
                           },
                           range: [ 14, 15 ],
                           loc: {
                             start: { line: 1, column: 14 },
-                            end  : { line: 1, column: 15 }
+                            end: { line: 1, column: 15 }
                           }
                         }
                       ],
                       range: [ 10, 15 ],
                       loc: {
                         start: { line: 1, column: 10 },
-                        end  : { line: 1, column: 15 }
+                        end: { line: 1, column: 15 }
                       }
                     },
                     {
@@ -8092,27 +8092,27 @@
                       range: [ 17, 18 ],
                       loc: {
                         start: { line: 1, column: 17 },
-                        end  : { line: 1, column: 18 }
+                        end: { line: 1, column: 18 }
                       }
                     }
                   ],
                   range: [ 8, 20 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 20 }
+                    end: { line: 1, column: 20 }
                   }
                 },
                 range: [ 4, 20 ],
                 loc: {
                   start: { line: 1, column: 4 },
-                  end  : { line: 1, column: 20 }
+                  end: { line: 1, column: 20 }
                 }
               }
             ],
             range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 20 }
+              end: { line: 1, column: 20 }
             }
           },
           {
@@ -8121,18 +8121,18 @@
             range: [ 22, 23 ],
             loc: {
               start: { line: 1, column: 22 },
-              end  : { line: 1, column: 23 }
+              end: { line: 1, column: 23 }
             }
           }
         ],
         range: [ 0, 23 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 23 }
+          end: { line: 1, column: 23 }
         }
       }
     },
-    "this": {
+    "this ": {
       compiled: [
         "SCScript(function($) {",
         "  return $.This();",
@@ -8147,14 +8147,14 @@
             range: [ 0, 4 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 4 }
+              end: { line: 1, column: 4 }
             }
           }
         ],
         range: [ 0, 4 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 4 }
+          end: { line: 1, column: 4 }
         }
       }
     },
@@ -8175,7 +8175,7 @@
               range: [ 0, 11 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 11 }
+                end: { line: 1, column: 11 }
               }
             },
             method: {
@@ -8184,7 +8184,7 @@
               range: [ 12, 20 ],
               loc: {
                 start: { line: 1, column: 12 },
-                end  : { line: 1, column: 20 }
+                end: { line: 1, column: 20 }
               }
             },
             args: {
@@ -8193,14 +8193,14 @@
             range: [ 0, 20 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 20 }
+              end: { line: 1, column: 20 }
             }
           }
         ],
         range: [ 0, 21 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 21 }
+          end: { line: 1, column: 21 }
         }
       }
     },
@@ -8222,7 +8222,7 @@
               range: [ 0, 1 ],
               loc: {
                 start: { line: 1, column: 0 },
-                end  : { line: 1, column: 1 }
+                end: { line: 1, column: 1 }
               }
             },
             method: {
@@ -8231,7 +8231,7 @@
               range: [ 2, 2 ],
               loc: {
                 start: { line: 1, column: 2 },
-                end  : { line: 1, column: 2 }
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -8242,7 +8242,7 @@
                   range: [ 3, 8 ],
                   loc: {
                     start: { line: 1, column: 3 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 }
               ]
@@ -8250,14 +8250,14 @@
             range: [ 0, 9 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 9 }
+              end: { line: 1, column: 9 }
             }
           }
         ],
         range: [ 0, 9 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 9 }
+          end: { line: 1, column: 9 }
         }
       }
     },
@@ -8297,14 +8297,14 @@
             range: [ 0, 15 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 15 }
+              end: { line: 1, column: 15 }
             }
           }
         ],
         range: [ 0, 15 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 15 }
+          end: { line: 1, column: 15 }
         }
       }
     },
@@ -8384,14 +8384,14 @@
             range: [ 0, 33 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 33 }
+              end: { line: 1, column: 33 }
             }
           }
         ],
         range: [ 0, 33 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 33 }
+          end: { line: 1, column: 33 }
         }
       }
     },
@@ -8428,7 +8428,7 @@
                     range: [ 6, 7 ],
                     loc: {
                       start: { line: 1, column: 6 },
-                      end  : { line: 1, column: 7 }
+                      end: { line: 1, column: 7 }
                     }
                   },
                   method: {
@@ -8437,7 +8437,7 @@
                     range: [ 8, 13 ],
                     loc: {
                       start: { line: 1, column: 8 },
-                      end  : { line: 1, column: 13 }
+                      end: { line: 1, column: 13 }
                     }
                   },
                   args: {
@@ -8446,7 +8446,7 @@
                   range: [ 6, 13 ],
                   loc: {
                     start: { line: 1, column: 6 },
-                    end  : { line: 1, column: 13 }
+                    end: { line: 1, column: 13 }
                   }
                 },
                 method: {
@@ -8455,7 +8455,7 @@
                   range: [ 2, 5 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 5 }
+                    end: { line: 1, column: 5 }
                   }
                 },
                 args: {
@@ -8464,21 +8464,21 @@
                 range: [ 2, 14 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 14 }
+                  end: { line: 1, column: 14 }
                 }
               }
             ],
             range: [ 0, 16 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 16 }
+              end: { line: 1, column: 16 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 16 }
+          end: { line: 1, column: 16 }
         }
       }
     },
@@ -8523,14 +8523,14 @@
                       range: [ 4, 5 ],
                       loc: {
                         start: { line: 1, column: 4 },
-                        end  : { line: 1, column: 5 }
+                        end: { line: 1, column: 5 }
                       }
                     }
                   ],
                   range: [ 2, 7 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 7 }
+                    end: { line: 1, column: 7 }
                   }
                 },
                 method: {
@@ -8539,7 +8539,7 @@
                   range: [ 8, 13 ],
                   loc: {
                     start: { line: 1, column: 8 },
-                    end  : { line: 1, column: 13 }
+                    end: { line: 1, column: 13 }
                   }
                 },
                 args: {
@@ -8548,21 +8548,21 @@
                 range: [ 2, 13 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 13 }
+                  end: { line: 1, column: 13 }
                 }
               }
             ],
             range: [ 0, 16 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 16 }
+              end: { line: 1, column: 16 }
             }
           }
         ],
         range: [ 0, 16 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 16 }
+          end: { line: 1, column: 16 }
         }
       }
     },
@@ -8608,7 +8608,7 @@
                     range: [ 3, 3 ],
                     loc: {
                       start: { line: 1, column: 3 },
-                      end  : { line: 1, column: 3 }
+                      end: { line: 1, column: 3 }
                     }
                   },
                   method: {
@@ -8617,7 +8617,7 @@
                     range: [ 3, 3 ],
                     loc: {
                       start: { line: 1, column: 3 },
-                      end  : { line: 1, column: 3 }
+                      end: { line: 1, column: 3 }
                     }
                   },
                   args: {
@@ -8630,7 +8630,7 @@
                         range: [ 5, 7 ],
                         loc: {
                           start: { line: 1, column: 5 },
-                          end  : { line: 1, column: 7 }
+                          end: { line: 1, column: 7 }
                         }
                       }
                     ]
@@ -8638,7 +8638,7 @@
                   range: [ 2, 8 ],
                   loc: {
                     start: { line: 1, column: 2 },
-                    end  : { line: 1, column: 8 }
+                    end: { line: 1, column: 8 }
                   }
                 },
                 method: {
@@ -8647,7 +8647,7 @@
                   range: [ 9, 11 ],
                   loc: {
                     start: { line: 1, column: 9 },
-                    end  : { line: 1, column: 11 }
+                    end: { line: 1, column: 11 }
                   }
                 },
                 args: {
@@ -8664,13 +8664,13 @@
                               range: [ 12, 13 ],
                               loc: {
                                 start: { line: 1, column: 12 },
-                                end  : { line: 1, column: 13 }
+                                end: { line: 1, column: 13 }
                               }
                             },
                             range: [ 12, 13 ],
                             loc: {
                               start: { line: 1, column: 12 },
-                              end  : { line: 1, column: 13 }
+                              end: { line: 1, column: 13 }
                             }
                           }
                         ]
@@ -8684,7 +8684,7 @@
                             range: [ 12, 13 ],
                             loc: {
                               start: { line: 1, column: 12 },
-                              end  : { line: 1, column: 13 }
+                              end: { line: 1, column: 13 }
                             }
                           },
                           method: {
@@ -8693,7 +8693,7 @@
                             range: [ 14, 19 ],
                             loc: {
                               start: { line: 1, column: 14 },
-                              end  : { line: 1, column: 19 }
+                              end: { line: 1, column: 19 }
                             },
                           },
                           args: {
@@ -8702,7 +8702,7 @@
                           range: [ 12, 19 ],
                           loc: {
                             start: { line: 1, column: 12 },
-                            end  : { line: 1, column: 19 }
+                            end: { line: 1, column: 19 }
                           }
                         }
                       ],
@@ -8710,7 +8710,7 @@
                       range: [ 12, 19 ],
                       loc: {
                         start: { line: 1, column: 12 },
-                        end  : { line: 1, column: 19 }
+                        end: { line: 1, column: 19 }
                       }
                     }
                   ]
@@ -8718,21 +8718,21 @@
                 range: [ 2, 20 ],
                 loc: {
                   start: { line: 1, column: 2 },
-                  end  : { line: 1, column: 20 }
+                  end: { line: 1, column: 20 }
                 },
               }
             ],
             range: [ 0, 22 ],
             loc: {
               start: { line: 1, column: 0 },
-              end  : { line: 1, column: 22 }
+              end: { line: 1, column: 22 }
             },
           }
         ],
         range: [ 0, 22 ],
         loc: {
           start: { line: 1, column: 0 },
-          end  : { line: 1, column: 22 }
+          end: { line: 1, column: 22 }
         }
       }
     }
@@ -8741,5 +8741,4 @@
   sc.test.compiler = {
     cases: cases
   };
-
 })();

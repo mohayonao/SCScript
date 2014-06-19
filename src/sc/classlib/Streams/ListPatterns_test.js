@@ -59,5 +59,4 @@
     it.skip("#storeArgs", function() {
     });
   });
-
 })();

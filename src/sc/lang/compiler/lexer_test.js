@@ -76,7 +76,7 @@
         lexer.throwError({
           range: [ 0, 0 ],
           lineNumber: 1,
-          lintStart : 0
+          lintStart: 0
         }, "ERROR");
       }).to.throw("ERROR");
     });
@@ -91,124 +91,124 @@
           error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "ILLEGAL"),
         ]
       },
-      "a": [
+      "a ": [
         {
           type: Token.Identifier,
           value: "a",
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
       ],
-      "_": [
+      "_ ": [
         {
           type: Token.Identifier,
           value: "_",
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
       ],
-      "this": [
+      "this ": [
         {
           type: Token.Keyword,
           value: "this",
           range: [ 0, 4 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 4 }
+            end: { line: 1, column: 4 }
           }
         },
       ],
-      "thisThread": [
+      "thisThread ": [
         {
           type: Token.Keyword,
           value: "thisThread",
           range: [ 0, 10 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 10 }
+            end: { line: 1, column: 10 }
           }
         },
       ],
-      "thisProcess": [
+      "thisProcess ": [
         {
           type: Token.Keyword,
           value: "thisProcess",
           range: [ 0, 11 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 11 }
+            end: { line: 1, column: 11 }
           }
         },
       ],
-      "thisFunction": [
+      "thisFunction ": [
         {
           type: Token.Keyword,
           value: "thisFunction",
           range: [ 0, 12 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 12 }
+            end: { line: 1, column: 12 }
           }
         },
       ],
-      "thisFunctionDef": [
+      "thisFunctionDef ": [
         {
           type: Token.Keyword,
           value: "thisFunctionDef",
           range: [ 0, 15 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 15 }
+            end: { line: 1, column: 15 }
           }
         },
       ],
-      "var": [
+      "var ": [
         {
           type: Token.Keyword,
           value: "var",
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
-      "arg": [
+      "arg ": [
         {
           type: Token.Keyword,
           value: "arg",
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
-      "const": [
+      "const ": [
         {
           type: Token.Keyword,
           value: "const",
           range: [ 0, 5 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 5 }
+            end: { line: 1, column: 5 }
           }
         },
       ],
-      "10": [
+      "10 ": [
         {
           type: Token.IntegerLiteral,
           value: "10",
           range: [ 0, 2 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 2 }
+            end: { line: 1, column: 2 }
           }
         },
       ],
@@ -219,7 +219,7 @@
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
@@ -230,7 +230,7 @@
           range: [ 0, 5 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 5 }
+            end: { line: 1, column: 5 }
           }
         },
       ],
@@ -241,7 +241,7 @@
           range: [ 0, 4 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 4 }
+            end: { line: 1, column: 4 }
           }
         },
       ],
@@ -252,7 +252,7 @@
           range: [ 0, 10 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 10 }
+            end: { line: 1, column: 10 }
           }
         },
       ],
@@ -263,7 +263,7 @@
           range: [ 0, 23 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 23 }
+            end: { line: 1, column: 23 }
           }
         },
       ],
@@ -274,7 +274,7 @@
           range: [ 0, 6 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 6 }
+            end: { line: 1, column: 6 }
           }
         },
       ],
@@ -285,7 +285,7 @@
           range: [ 0, 7 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 7 }
+            end: { line: 1, column: 7 }
           }
         },
       ],
@@ -296,7 +296,7 @@
           range: [ 0, 8 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 8 }
+            end: { line: 1, column: 8 }
           }
         },
       ],
@@ -307,7 +307,7 @@
           range: [ 0, 8 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 8 }
+            end: { line: 1, column: 8 }
           }
         },
       ],
@@ -318,17 +318,17 @@
           range: [ 0, 7 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 7 }
+            end: { line: 1, column: 7 }
           }
         },
       ],
       "2r1a": {
-        error : [
+        error: [
           error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "a")
         ]
       },
       "2r1.Z": {
-        error : [
+        error: [
           error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "Z")
         ]
       },
@@ -339,7 +339,7 @@
           range: [ 0, 4 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 4 }
+            end: { line: 1, column: 4 }
           }
         },
       ],
@@ -350,7 +350,7 @@
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         }
       ],
@@ -361,7 +361,7 @@
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         }
       ],
@@ -372,7 +372,7 @@
           range: [ 0, 4 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 4 }
+            end: { line: 1, column: 4 }
           }
         }
       ],
@@ -383,18 +383,18 @@
           range: [ 0, 4 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 4 }
+            end: { line: 1, column: 4 }
           }
         }
       ],
-      "pi": [
+      "pi ": [
         {
           type: Token.FloatLiteral,
           value: "3.141592653589793",
           range: [ 0, 2 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 2 }
+            end: { line: 1, column: 2 }
           }
         },
       ],
@@ -405,18 +405,18 @@
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
-      "inf": [
+      "inf ": [
         {
           type: Token.FloatLiteral,
           value: "Infinity",
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
@@ -427,7 +427,7 @@
           range: [ 0, 4 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 4 }
+            end: { line: 1, column: 4 }
           }
         },
       ],
@@ -438,7 +438,7 @@
           range: [ 0, 2 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 2 }
+            end: { line: 1, column: 2 }
           }
         },
       ],
@@ -449,7 +449,7 @@
           range: [ 0, 7 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 7 }
+            end: { line: 1, column: 7 }
           }
         },
       ],
@@ -460,7 +460,7 @@
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
       ],
@@ -471,7 +471,7 @@
           range: [ 0, 5 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 5 }
+            end: { line: 1, column: 5 }
           }
         },
       ],
@@ -482,12 +482,12 @@
           range: [ 0, 8 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 8 }
+            end: { line: 1, column: 8 }
           }
         },
       ],
       "'symbol": {
-        error : [
+        error: [
           error({ line: 1, column: 8, index: 7 }, Message.UnexpectedToken, "ILLEGAL")
         ]
       },
@@ -498,45 +498,45 @@
           range: [ 0, 9 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 2, column: 2 }
+            end: { line: 2, column: 2 }
           }
         },
       ],
       '"string': {
-        error : [
+        error: [
           error({ line: 1, column: 8, index: 7 }, Message.UnexpectedToken, "ILLEGAL")
         ]
       },
-      "nil": [
+      "nil ": [
         {
           type: Token.NilLiteral,
           value: "nil",
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
-      "true": [
+      "true ": [
         {
           type: Token.TrueLiteral,
           value: "true",
           range: [ 0, 4 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 4 }
+            end: { line: 1, column: 4 }
           }
         },
       ],
-      "false": [
+      "false ": [
         {
           type: Token.FalseLiteral,
           value: "false",
           range: [ 0, 5 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 5 }
+            end: { line: 1, column: 5 }
           }
         },
       ],
@@ -547,7 +547,7 @@
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
         {
@@ -556,7 +556,7 @@
           range: [ 1, 2 ],
           loc: {
             start: { line: 1, column: 1 },
-            end  : { line: 1, column: 2 }
+            end: { line: 1, column: 2 }
           }
         },
       ],
@@ -567,7 +567,7 @@
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
         {
@@ -576,7 +576,7 @@
           range: [ 1, 2 ],
           loc: {
             start: { line: 1, column: 1 },
-            end  : { line: 1, column: 2 }
+            end: { line: 1, column: 2 }
           }
         },
         {
@@ -585,7 +585,7 @@
           range: [ 2, 3 ],
           loc: {
             start: { line: 1, column: 2 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
@@ -596,7 +596,7 @@
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
         {
@@ -605,7 +605,7 @@
           range: [ 1, 2 ],
           loc: {
             start: { line: 1, column: 1 },
-            end  : { line: 1, column: 2 }
+            end: { line: 1, column: 2 }
           }
         },
       ],
@@ -616,7 +616,7 @@
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
         {
@@ -625,7 +625,7 @@
           range: [ 1, 2 ],
           loc: {
             start: { line: 1, column: 1 },
-            end  : { line: 1, column: 2 }
+            end: { line: 1, column: 2 }
           }
         },
         {
@@ -634,7 +634,7 @@
           range: [ 2, 3 ],
           loc: {
             start: { line: 1, column: 2 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
       ],
@@ -645,12 +645,12 @@
           range: [ 0, 6 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 6 }
+            end: { line: 1, column: 6 }
           }
         },
       ],
       "^": {
-        error : [
+        error: [
           error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "^")
         ]
       },
@@ -661,7 +661,7 @@
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
         {
@@ -670,7 +670,7 @@
           range: [ 2, 3 ],
           loc: {
             start: { line: 1, column: 2 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
         {
@@ -679,7 +679,7 @@
           range: [ 4, 5 ],
           loc: {
             start: { line: 1, column: 4 },
-            end  : { line: 1, column: 5 }
+            end: { line: 1, column: 5 }
           }
         },
       ],
@@ -690,7 +690,7 @@
           range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end  : { line: 1, column: 1 }
+            end: { line: 1, column: 1 }
           }
         },
         {
@@ -699,7 +699,7 @@
           range: [ 2, 3 ],
           loc: {
             start: { line: 1, column: 2 },
-            end  : { line: 1, column: 3 }
+            end: { line: 1, column: 3 }
           }
         },
         {
@@ -708,7 +708,7 @@
           range: [ 4, 5 ],
           loc: {
             start: { line: 1, column: 4 },
-            end  : { line: 1, column: 5 }
+            end: { line: 1, column: 5 }
           }
         },
       ],
@@ -751,5 +751,4 @@
       }
     });
   });
-
 })();

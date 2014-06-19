@@ -49,5 +49,4 @@ SCScript.install(function(sc) {
       return this.at($.Symbol(methodName));
     };
   });
-
 });

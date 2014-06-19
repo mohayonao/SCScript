@@ -37,12 +37,9 @@ SCScript.install(function(sc) {
     spec["<"] = function($anAssociation) {
       return this._$key.$("<", [ $anAssociation.$("key") ]);
     };
-
     // TODO: implements printOn
     // TODO: implements storeOn
     // TODO: implements embedInStream
     // TODO: implements transformEvent
-
   });
-
 });

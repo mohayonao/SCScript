@@ -10,16 +10,16 @@
   var $nil = $.Nil();
 
   var utils = {
-    $nil  : $nil,
-    $true : $.True(),
+    $nil: $nil,
+    $true: $.True(),
     $false: $.False(),
     $int_0: $.Integer(0),
     $int_1: $.Integer(1),
     nop: function() {
       return this;
     },
-    alwaysReturn$nil  : $.Nil,
-    alwaysReturn$true : $.True,
+    alwaysReturn$nil: $.Nil,
+    alwaysReturn$true: $.True,
     alwaysReturn$false: $.False,
     alwaysReturn$int_0: function() {
       return utils.$int_0;
@@ -50,5 +50,4 @@
   };
 
   klass.utils = utils;
-
 })(sc);

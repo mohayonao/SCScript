@@ -375,5 +375,4 @@
   };
 
   sc.libs.mathlib = mathlib;
-
 })(sc);

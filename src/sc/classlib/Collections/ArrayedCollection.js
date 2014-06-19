@@ -897,5 +897,4 @@ SCScript.install(function(sc) {
       return $.Float(float64[0]);
     };
   });
-
 });

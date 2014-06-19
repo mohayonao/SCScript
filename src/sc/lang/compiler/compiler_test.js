@@ -73,7 +73,5 @@
       expect(compiler.codegen.compile).to.be.calledWith(source, opts);
       expect(compiler.codegen.compile).to.be.calledLastIn(test);
     }));
-
   });
-
 })();

@@ -185,10 +185,9 @@
     if (spec.hasOwnProperty("constructor")) {
       constructor = spec.constructor;
     } else {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "class should have a constructor."
-      );
+      constructor = function() {
+        this.__super__(superClassName);
+      };
     }
 
     if (className !== "Object") {

@@ -8,9 +8,6 @@ SCScript.install(function(sc) {
   var klass = sc.lang.klass;
 
   klass.define("ListPattern : Pattern", function(spec, utils) {
-    spec.constructor = function SCListPattern() {
-      this.__super__("Pattern");
-    };
     utils.setProperty(spec, "<>", "list");
     utils.setProperty(spec, "<>", "repeats");
 
@@ -28,9 +25,6 @@ SCScript.install(function(sc) {
   });
 
   klass.define("Pseq : ListPattern", function(spec, utils) {
-    spec.constructor = function SCPseq() {
-      this.__super__("ListPattern");
-    };
     utils.setProperty(spec, "<>", "offset");
 
     spec.$new = fn(function($list, $repeats, $offset) {

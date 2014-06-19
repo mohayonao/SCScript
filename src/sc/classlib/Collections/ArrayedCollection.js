@@ -806,10 +806,6 @@ SCScript.install(function(sc) {
   klass.define("Int8Array : RawArray", function(spec) {
     var int8 = new Int8Array(1);
 
-    spec.constructor = function SCInt8Array() {
-      this.__super__("RawArray");
-    };
-
     spec.valueOf = function() {
       return new Int8Array(this._.map(function($elem) {
         return $elem.__int__();
@@ -824,10 +820,6 @@ SCScript.install(function(sc) {
 
   klass.define("Int16Array : RawArray", function(spec) {
     var int16 = new Int16Array(1);
-
-    spec.constructor = function SCInt16Array() {
-      this.__super__("RawArray");
-    };
 
     spec.valueOf = function() {
       return new Int16Array(this._.map(function($elem) {
@@ -844,10 +836,6 @@ SCScript.install(function(sc) {
   klass.define("Int32Array : RawArray", function(spec) {
     var int32 = new Int32Array(1);
 
-    spec.constructor = function SCInt32Array() {
-      this.__super__("RawArray");
-    };
-
     spec.valueOf = function() {
       return new Int32Array(this._.map(function($elem) {
         return $elem.__int__();
@@ -863,10 +851,6 @@ SCScript.install(function(sc) {
   klass.define("FloatArray : RawArray", function(spec) {
     var float32 = new Float32Array(1);
 
-    spec.constructor = function SCFloatArray() {
-      this.__super__("RawArray");
-    };
-
     spec.valueOf = function() {
       return new Float32Array(this._.map(function($elem) {
         return $elem.__num__();
@@ -881,10 +865,6 @@ SCScript.install(function(sc) {
 
   klass.define("DoubleArray : RawArray", function(spec) {
     var float64 = new Float64Array(1);
-
-    spec.constructor = function SCDoubleArray() {
-      this.__super__("RawArray");
-    };
 
     spec.valueOf = function() {
       return new Float64Array(this._.map(function($elem) {

@@ -8,6 +8,10 @@
 
   describe("sc.lang.klass", function() {
     describe("define", function() {
+      it("create class", function() {
+        var test = klass.define("TestClass");
+        expect(test).to.be.a("JSFunction");
+      });
       it("throw error if name of the class is not CamelCase", function() {
         expect(function() {
           klass.define("lowercase");
@@ -22,11 +26,6 @@
         expect(function() {
           klass.define("NewClass : UndefinedClass");
         }).to.throw("superclass 'UndefinedClass' is not defined");
-      });
-      it("throw error if the class doesn't have a constructor", function() {
-        expect(function() {
-          klass.define("NewClass");
-        }).to.throw("class should have a constructor");
       });
     });
     describe("refine", function() {

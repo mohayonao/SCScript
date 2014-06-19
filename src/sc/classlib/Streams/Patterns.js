@@ -10,10 +10,6 @@ SCScript.install(function(sc) {
   klass.define("Pattern : AbstractFunction", function(spec, utils) {
     var $false = utils.$false;
 
-    spec.constructor = function SCPattern() {
-      this.__super__("AbstractFunction");
-    };
-
     spec["++"] = function($aPattern) {
       return $("Pseq").new($.Array([ this, $aPattern ]));
     };
@@ -169,9 +165,6 @@ SCScript.install(function(sc) {
   klass.define("Pseries : Pattern", function(spec, utils) {
     var $nil = utils.$nil;
 
-    spec.constructor = function SCPseries() {
-      this.__super__("Pattern");
-    };
     utils.setProperty(spec, "<>", "start");
     utils.setProperty(spec, "<>", "step");
     utils.setProperty(spec, "<>", "length");
@@ -230,9 +223,6 @@ SCScript.install(function(sc) {
   klass.define("Pgeom : Pattern", function(spec, utils) {
     var $nil = utils.$nil;
 
-    spec.constructor = function SCPgeom() {
-      this.__super__("Pattern");
-    };
     utils.setProperty(spec, "<>", "start");
     utils.setProperty(spec, "<>", "grow");
     utils.setProperty(spec, "<>", "length");

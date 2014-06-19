@@ -14,10 +14,6 @@ SCScript.install(function(sc) {
     var $int0  = utils.$int0;
     var SCArray = $("Array");
 
-    spec.constructor = function SCStream() {
-      this.__super__("AbstractFunction");
-    };
-
     spec.parent = function() {
       return $nil;
     };
@@ -485,9 +481,6 @@ SCScript.install(function(sc) {
   // EmbedOnce
 
   klass.define("FuncStream : Stream", function(spec, utils) {
-    spec.constructor = function SCFuncStream() {
-      this.__super__("Stream");
-    };
     utils.setProperty(spec, "<>", "envir");
 
     spec.$new = function($nextFunc, $resetFunc) {
@@ -521,10 +514,7 @@ SCScript.install(function(sc) {
   // StreamClutch
   // CleanupStream
 
-  klass.define("PauseStream : Stream", function(spec) {
-    spec.constructor = function SCPauseStream() {
-      this.__super__("Stream");
-    };
+  klass.define("PauseStream : Stream", function() {
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
@@ -550,10 +540,7 @@ SCScript.install(function(sc) {
     // TODO: implements threadPlayer
   });
 
-  klass.define("Task : PauseStream", function(spec) {
-    spec.constructor = function SCTask() {
-      this.__super__("PauseStream");
-    };
+  klass.define("Task : PauseStream", function() {
     // TODO: implements storeArgs
   });
 });

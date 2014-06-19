@@ -81,11 +81,7 @@ SCScript.install(function(sc) {
     };
   });
 
-  klass.define("Main : Process", function(spec) {
-    spec.constructor = function SCMain() {
-      this.__super__("Process");
-    };
-  });
+  klass.define("Main : Process");
 
   klass.define("Interpreter", function(spec, utils) {
     var $nil = utils.$nil;

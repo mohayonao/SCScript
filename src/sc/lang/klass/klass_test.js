@@ -7,48 +7,61 @@
   var klass = sc.lang.klass;
 
   describe("sc.lang.klass", function() {
-    it("define", function() {
-      expect(function() {
-        klass.define("lowercase");
-      }).to.throw("classname should be CamelCase");
-      expect(function() {
-        klass.define("Object");
-      }).to.throw("already registered");
-      expect(function() {
-        klass.define("NewClass : UndefinedClass");
-      }).to.throw("superclass 'UndefinedClass' is not registered");
-      expect(function() {
-        klass.define("NewClass");
-      }).to.throw("class should have a constructor");
+    describe("define", function() {
+      it("throw error if name of the class is not CamelCase", function() {
+        expect(function() {
+          klass.define("lowercase");
+        }).to.throw("classname should be CamelCase");
+      });
+      it("throw error if the class have been defined already", function() {
+        expect(function() {
+          klass.define("Object");
+        }).to.throw("already registered");
+      });
+      it("throw error if SuperClass is not exists", function() {
+        expect(function() {
+          klass.define("NewClass : UndefinedClass");
+        }).to.throw("superclass 'UndefinedClass' is not registered");
+      });
+      it("throw error if the class doesn't have a constructor", function() {
+        expect(function() {
+          klass.define("NewClass");
+        }).to.throw("class should have a constructor");
+      });
     });
-    it("refine", function() {
-      expect(function() {
-        klass.refine("UndefinedClass");
-      }).to.throw("class 'UndefinedClass' is not registered");
-      expect(function() {
-        klass.refine("Object", {
-          $new: function() {}
-        });
-      }).to.throw("Object.new is already defined");
-      expect(function() {
-        klass.refine("Object", {
-          valueOf: function() {}
-        });
-      }).to.throw("Object#valueOf is already defined");
+    describe("refine", function() {
+      it("throw error if the class is not defined", function() {
+        expect(function() {
+          klass.refine("UndefinedClass");
+        }).to.throw("class 'UndefinedClass' is not registered");
+      });
+      it("throw error if try to redefine the class method defined already", function() {
+        expect(function() {
+          klass.refine("Object", {
+            $new: function() {}
+          });
+        }).to.throw("Object.new is already defined");
+      });
+      it("throw error if try to redefine the instance method defined already", function() {
+        expect(function() {
+          klass.refine("Object", {
+            valueOf: function() {}
+          });
+        }).to.throw("Object#valueOf is already defined");
+      });
     });
-    it("get", function() {
-      expect(function() {
-        klass.get("UndefinedClass");
-      }).to.throw("Class not defined: UndefinedClass");
+    describe("get", function() {
+      it("throw error if try to get an undefined class", function() {
+        expect(function() {
+          klass.get("UndefinedClass");
+        }).to.throw("Class not defined: UndefinedClass");
+      });
     });
-    it("exists", function() {
-      var test;
-
-      test = klass.exists("Object");
-      expect(test).to.be.a("JSBoolean").that.is.true;
-
-      test = klass.exists("UndefinedClass");
-      expect(test).to.be.a("JSBoolean").that.is.false;
+    describe("exists", function() {
+      it("test whether or not the given class exists", function() {
+        expect(klass.exists("Object")        , 0).to.be.a("JSBoolean").that.is.true;
+        expect(klass.exists("UndefinedClass"), 1).to.be.a("JSBoolean").that.is.false;
+      });
     });
   });
 

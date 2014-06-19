@@ -31,7 +31,7 @@
         range: [ 0, 3 ],
         loc: {
           start: { line: 1, column: 2 },
-          end  : { line: 4, column: 5 },
+          end: { line: 4, column: 5 },
         }
       });
     });
@@ -48,7 +48,7 @@
         range: [ 0, 0 ],
         loc: {
           start: { line: 1, column: 2 },
-          end  : { line: 1, column: 2 },
+          end: { line: 1, column: 2 },
         }
       });
     });
@@ -61,7 +61,7 @@
         range: [ 100, 103 ],
         loc: {
           start: { line: 101, column: 102 },
-          end  : { line: 104, column: 105 },
+          end: { line: 104, column: 105 },
         }
       };
 
@@ -74,7 +74,7 @@
         range: [ 100, 0 ],
         loc: {
           start: { line: 101, column: 102 },
-          end  : { line: 1, column: 2 },
+          end: { line: 1, column: 2 },
         }
       });
     });
@@ -89,7 +89,7 @@
         range: [ 100, 103 ],
         loc: {
           start: { line: 101, column: 102 },
-          end  : { line: 104, column: 105 },
+          end: { line: 104, column: 105 },
         }
       }).apply(node);
 
@@ -97,7 +97,7 @@
         range: [ 0, 103 ],
         loc: {
           start: { line: 1, column: 2 },
-          end  : { line: 104, column: 105 },
+          end: { line: 104, column: 105 },
         }
       });
     });
@@ -111,7 +111,7 @@
         range: [ 100, 103 ],
         loc: {
           start: { line: 101, column: 102 },
-          end  : { line: 104, column: 105 },
+          end: { line: 104, column: 105 },
         }
       };
       node = marker.update().apply(node);
@@ -120,7 +120,7 @@
         range: [ 100, 103 ],
         loc: {
           start: { line: 101, column: 102 },
-          end  : { line: 104, column: 105 },
+          end: { line: 104, column: 105 },
         }
       });
     });
@@ -134,7 +134,7 @@
         range: [ 100, 103 ],
         loc: {
           start: { line: 101, column: 102 },
-          end  : { line: 104, column: 105 },
+          end: { line: 104, column: 105 },
         }
       };
       node = marker.update().apply(node, true);
@@ -143,7 +143,7 @@
         range: [ 0, 3 ],
         loc: {
           start: { line: 1, column: 2 },
-          end  : { line: 4, column: 5 },
+          end: { line: 4, column: 5 },
         }
       });
     });
@@ -170,5 +170,4 @@
       expect(node).to.eql({});
     });
   });
-
 })();

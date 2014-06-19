@@ -4,12 +4,12 @@
   require("./sc");
 
   describe("SCScript", function() {
-    var sc_lang;
+    var sc$lang;
     before(function() {
-      sc_lang = sc.lang;
+      sc$lang = sc.lang;
     });
     after(function() {
-      sc.lang = sc_lang;
+      sc.lang = sc$lang;
     });
     it("should call given function with sc.lang.$", function() {
       var func = function() {};

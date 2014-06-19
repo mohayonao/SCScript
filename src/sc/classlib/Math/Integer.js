@@ -28,8 +28,8 @@ SCScript.install(function(sc) {
   };
 
   sc.lang.klass.refine("Integer", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $int_1 = utils.$int_1;
+    var $nil  = utils.$nil;
+    var $int1 = utils.$int1;
     var SCArray = $("Array");
 
     spec.__newFrom__ = $.Integer;
@@ -194,7 +194,7 @@ SCScript.install(function(sc) {
     };
 
     spec.xrand = fn(function($exclude) {
-      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int_1)) ["%"] (this);
+      return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int1)) ["%"] (this);
     }, "exclude=0");
 
     spec.xrand2 = fn(function($exclude) {
@@ -223,9 +223,7 @@ SCScript.install(function(sc) {
     };
 
     spec.generate = function($function) {
-
       $function.value(this);
-
       return this;
     };
 
@@ -378,5 +376,4 @@ SCScript.install(function(sc) {
       return $.Integer(~this._);
     };
   });
-
 });

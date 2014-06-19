@@ -88,7 +88,7 @@
         instance = this.createInstance(ch);
         if (typeof table[fromCharCode(i)] !== "undefined") {
           test = instance.digit();
-          expect(test).with_message("'#{0}'.digit", ch)
+          expect(test).withMessage("'#{0}'.digit", ch)
             .to.be.a("SCInteger").that.equals(table[ch]);
         } else {
           expect(function() {
@@ -132,7 +132,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isAlpha();
-        expect(test).with_message("'#{0}'.isAlpha", ch)
+        expect(test).withMessage("'#{0}'.isAlpha", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -144,7 +144,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isAlphaNum();
-        expect(test).with_message("'#{0}'.isAlphaNum", ch)
+        expect(test).withMessage("'#{0}'.isAlphaNum", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -157,7 +157,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isPrint();
-        expect(test).with_message("'#{0}'.isPrint", ch)
+        expect(test).withMessage("'#{0}'.isPrint", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -169,7 +169,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isPunct();
-        expect(test).with_message("'#{0}'.isPunct", ch)
+        expect(test).withMessage("'#{0}'.isPunct", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -182,7 +182,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isControl();
-        expect(test).with_message("'#{0}'.isControl", ch)
+        expect(test).withMessage("'#{0}'.isControl", ch)
           .to.be.a("SCBoolean").that.equals(falseCase.indexOf(ch) === -1);
       }
     });
@@ -194,7 +194,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isSpace();
-        expect(test).with_message("'#{0}'.isSpace", ch)
+        expect(test).withMessage("'#{0}'.isSpace", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -206,7 +206,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isVowl();
-        expect(test).with_message("'#{0}'.isVowl", ch)
+        expect(test).withMessage("'#{0}'.isVowl", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -218,7 +218,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isDecDigit();
-        expect(test).with_message("'#{0}'.isDecDigit", ch)
+        expect(test).withMessage("'#{0}'.isDecDigit", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -230,7 +230,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isUpper();
-        expect(test).with_message("'#{0}'.isUpper", ch)
+        expect(test).withMessage("'#{0}'.isUpper", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -242,7 +242,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isLower();
-        expect(test).with_message("'#{0}'.isLower", ch)
+        expect(test).withMessage("'#{0}'.isLower", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -255,7 +255,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isFileSafe();
-        expect(test).with_message("'#{0}'.isFileSafe", ch)
+        expect(test).withMessage("'#{0}'.isFileSafe", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
@@ -267,7 +267,7 @@
         ch = fromCharCode(i);
         instance = this.createInstance(ch);
         test = instance.isPathSeparator();
-        expect(test).with_message("'#{0}'.isPathSeparator", ch)
+        expect(test).withMessage("'#{0}'.isPathSeparator", ch)
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });

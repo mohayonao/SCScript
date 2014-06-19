@@ -609,15 +609,15 @@ SCScript.install(function(sc) {
     spec.isValidUGenInput = utils.alwaysReturn$true;
   });
 
-  klass.define("UnaryOpFunction : AbstractFunction", function(spec) {
+  klass.define("UnaryOpFunction : AbstractFunction", function(spec, utils) {
     spec.constructor = function SCUnaryOpFunction() {
       this.__super__("AbstractFunction");
     };
 
     spec.$new = function($selector, $a) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         selector: $selector,
-        a       : $a
+        a: $a
       });
     };
 
@@ -642,21 +642,20 @@ SCScript.install(function(sc) {
     spec.functionPerformList = function($selector, $arglist) {
       return this.performList($selector, $arglist);
     };
-
     // TODO: implements storeOn
   });
 
-  klass.define("BinaryOpFunction : AbstractFunction", function(spec) {
+  klass.define("BinaryOpFunction : AbstractFunction", function(spec, utils) {
     spec.constructor = function SCBinaryOpFunction() {
       this.__super__("AbstractFunction");
     };
 
     spec.$new = function($selector, $a, $b, $adverb) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         selector: $selector,
-        a       : $a,
-        b       : $b,
-        adverb  : $adverb
+        a: $a,
+        b: $b,
+        adverb: $adverb
       });
     };
 
@@ -676,20 +675,19 @@ SCScript.install(function(sc) {
     spec.functionPerformList = function($selector, $arglist) {
       return this.performList($selector, $arglist);
     };
-
     // TODO: implements storeOn
   });
 
-  klass.define("NAryOpFunction : AbstractFunction", function(spec) {
+  klass.define("NAryOpFunction : AbstractFunction", function(spec, utils) {
     spec.constructor = function SCNAryOpFunction() {
       this.__super__("AbstractFunction");
     };
 
     spec.$new = function($selector, $a, $arglist) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         selector: $selector,
-        a       : $a,
-        arglist : $arglist
+        a: $a,
+        arglist: $arglist
       });
     };
 
@@ -718,12 +716,11 @@ SCScript.install(function(sc) {
     spec.functionPerformList = function($selector, _$arglist) {
       return this.performList($selector, _$arglist);
     };
-
     // TODO: implements storeOn
   });
 
   klass.define("FunctionList : AbstractFunction", function(spec, utils) {
-    var $int_0 = utils.$int_0;
+    var $int0 = utils.$int0;
 
     spec.constructor = function SCFunctionList() {
       this.__super__("AbstractFunction");
@@ -732,7 +729,7 @@ SCScript.install(function(sc) {
     utils.setProperty(spec, "<>", "array");
 
     spec.$new = function($functions) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         array: $functions
       });
     };
@@ -755,7 +752,7 @@ SCScript.install(function(sc) {
       this._$array.remove($function);
 
       if (this._$array.size() < 2) {
-        return this._$array.at($int_0);
+        return this._$array.at($int0);
       }
 
       return this;
@@ -816,7 +813,5 @@ SCScript.install(function(sc) {
     spec.storeArgs = function() {
       return $.Array([ this._$array ]);
     };
-
   });
-
 });

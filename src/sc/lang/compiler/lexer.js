@@ -67,7 +67,6 @@
     return tokens;
   };
 
-
   Lexer.prototype.collectToken = function() {
     var loc, token, t;
 
@@ -75,7 +74,7 @@
 
     loc = {
       start: {
-        line  : this.lineNumber,
+        line: this.lineNumber,
         column: this.index - this.lineStart
       }
     };
@@ -83,12 +82,12 @@
     token = this.advance();
 
     loc.end = {
-      line  : this.lineNumber,
+      line: this.lineNumber,
       column: this.index - this.lineStart
     };
 
     t = {
-      type : token.type,
+      type: token.type,
       value: token.value
     };
 
@@ -291,10 +290,10 @@
 
   Lexer.prototype.makeToken = function(type, value, start) {
     return {
-      type : type,
+      type: type,
       value: value,
       lineNumber: this.lineNumber,
-      lineStart : this.lineStart,
+      lineStart: this.lineStart,
       range: [ start, this.index ]
     };
   };
@@ -413,7 +412,7 @@
     }
 
     return {
-      type : type,
+      type: type,
       value: value
     };
   };
@@ -693,5 +692,4 @@
   };
 
   sc.lang.compiler.lexer = Lexer;
-
 })(sc);

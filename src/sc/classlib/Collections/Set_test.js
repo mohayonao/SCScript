@@ -91,12 +91,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: true
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: false
         }
       ]);
@@ -105,12 +105,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 2
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: null
         }
       ]);
@@ -120,15 +120,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: this,
-          after : [ 1, 2, 3 ]
+          after: [ 1, 2, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: this,
-          after : [ 1, 2, 3, 4 ]
+          after: [ 1, 2, 3, 4 ]
         },
       ]);
       instance = this.createInstance();
@@ -140,15 +140,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: this,
-          after : [ 1, 3 ]
+          after: [ 1, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: this,
-          after : [ 1, 2, 3 ]
+          after: [ 1, 2, 3 ]
         },
       ]);
     });
@@ -169,12 +169,12 @@
         {
           source: [ 1, 2, 3 ],
           result: 1,
-          after : [ 2, 3 ]
+          after: [ 2, 3 ]
         },
         {
           source: [],
           result: null,
-          after : []
+          after: []
         }
       ]);
     });

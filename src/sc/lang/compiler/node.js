@@ -43,7 +43,7 @@
         type: Syntax.CallExpression,
         callee: callee,
         method: method,
-        args  : args,
+        args: args,
       };
 
       if (stamp) {
@@ -153,7 +153,7 @@
     createValueMethodEvaluator: function(id, expr) {
       return {
         type: Syntax.ValueMethodEvaluator,
-        id  : id,
+        id: id,
         expr: expr,
         segmented: true
       };
@@ -167,5 +167,4 @@
   };
 
   sc.lang.compiler.node = Node;
-
 })(sc);

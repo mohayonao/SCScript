@@ -12,7 +12,7 @@
   var $symbols, $chars, $integers, $floats;
 
   /* istanbul ignore next */
-  var dummyFunction = (function() {}).bind(null);
+  var dummyFunction = function() {}.bind(null);
 
   function SCNil() {
     this.__super__("Object");
@@ -275,7 +275,6 @@
     return $chars[value];
   };
 
-
   $.Array = function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
@@ -311,5 +310,4 @@
     instance._$value = value;
     return instance;
   };
-
 })(sc);

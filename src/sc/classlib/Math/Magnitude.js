@@ -51,5 +51,4 @@ SCScript.install(function(sc) {
       return this <= $lo ? $lo : this >= $hi ? $hi : this;
     }, "lo; hi");
   });
-
 });

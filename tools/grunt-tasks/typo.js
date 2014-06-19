@@ -44,5 +44,4 @@ module.exports = function(grunt) {
 
     return !hasTypo;
   });
-
 };

@@ -159,5 +159,4 @@ SCScript.install(function(sc) {
 
     spec.shallowCopy = utils.nop;
   });
-
 });

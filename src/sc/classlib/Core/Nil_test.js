@@ -286,7 +286,7 @@
 
       spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Quant").returns($$({
-        "default": spy
+        default: spy
       }));
 
       instance = this.createInstance();

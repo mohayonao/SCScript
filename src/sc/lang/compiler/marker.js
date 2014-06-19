@@ -61,11 +61,11 @@
       if (this.lexer.opts.loc) {
         node.loc = {
           start: {
-            line  : startLocItems[1],
+            line: startLocItems[1],
             column: startLocItems[2]
           },
           end: {
-            line  : endLocItems[1],
+            line: endLocItems[1],
             column: endLocItems[2]
           }
         };
@@ -85,5 +85,4 @@
   };
 
   sc.lang.compiler.marker = Marker;
-
 })(sc);

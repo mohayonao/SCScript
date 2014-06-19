@@ -25,14 +25,14 @@
 
         if (opts.closeTo) {
           if (isFinite(actual)) {
-            expect(actual).with_message(desc).to.be.closeTo(expected, opts.closeTo);
+            expect(actual).withMessage(desc).to.be.closeTo(expected, opts.closeTo);
           } else if (isNaN(actual)) {
-            expect(actual).with_message(desc).to.be.nan;
+            expect(actual).withMessage(desc).to.be.nan;
           } else {
-            expect(actual).with_message(desc).to.equal(expected);
+            expect(actual).withMessage(desc).to.equal(expected);
           }
         } else {
-          expect(actual).with_message(desc).to.equal(expected);
+          expect(actual).withMessage(desc).to.equal(expected);
         }
       });
     }
@@ -637,7 +637,7 @@
         [ +9.1, -0.2, +0.2, +0.1 ],
       ], { closeTo: 1e-6 });
     });
-    it("clip_idx", function() {
+    it("clipIndex", function() {
       testCase(this, [
         [ -4, 4, 0 ],
         [ -3, 4, 0 ],
@@ -650,7 +650,7 @@
         [  4, 4, 3 ],
       ]);
     });
-    it("wrap_idx", function() {
+    it("wrapIndex", function() {
       testCase(this, [
         [ -4, 4, 0 ],
         [ -3, 4, 1 ],
@@ -663,7 +663,7 @@
         [  4, 4, 0 ],
       ]);
     });
-    it("fold_idx", function() {
+    it("foldIndex", function() {
       testCase(this, [
         [ -4, 4, 2 ],
         [ -3, 4, 3 ],

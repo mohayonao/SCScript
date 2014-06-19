@@ -51,11 +51,9 @@ SCScript.install(function(sc) {
     spec.put = function($key, $val) {
       return this._$value.put($key, $val);
     };
-
     // TODO: implements seq
     // TODO: implements asControlInput
     // TODO: implements asBufWithValues
     // TODO: implements multichannelExpandRef
   });
-
 });

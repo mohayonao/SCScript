@@ -20,7 +20,6 @@
   var $ = sc.lang.$;
 
   sc.lang.klass.refine("Object", function(spec) {
-
     spec.toJSON = function() {
       var value;
 
@@ -33,7 +32,6 @@
 
       return JSON.stringify(value);
     };
-
   });
 
   sc.test = function(callback) {
@@ -178,7 +176,7 @@
       test = instance[methodName].apply(instance, args.map(toSCObject));
       if (result === context) {
         // expect to return this like `function() { return this; }`
-        expect(test).with_message(desc).to.equal(instance);
+        expect(test).withMessage(desc).to.equal(instance);
       } else {
         expected = toSCObject(result);
         type     = typeOf(expected);
@@ -197,31 +195,31 @@
         case "SCNil":
         case "SCBoolean":
         case "SCString":
-          expect(test).with_message(desc)
+          expect(test).withMessage(desc)
             .to.a(type).that.equals(result);
           break;
         case "SCFloat":
           if (isFinite(result) && opts.closeTo) {
-            expect(test).with_message(desc)
+            expect(test).withMessage(desc)
               .to.a("SCFloat").that.is.closeTo(result, opts.closeTo);
           } else if (isNaN(result)) {
-            expect(test).with_message(desc)
+            expect(test).withMessage(desc)
               .to.a("SCFloat").that.is.nan; // jshint ignore: line
           } else { // Infinity
-            expect(test).with_message(desc)
+            expect(test).withMessage(desc)
               .to.a("SCFloat").that.equals(result);
           }
           break;
         case "SCArray":
-          expect(test).with_message(desc)
+          expect(test).withMessage(desc)
             .to.a("SCArray").that.eqls(result);
           break;
         case "SCFunction":
-          expect(test).with_message(desc)
+          expect(test).withMessage(desc)
             .to.equal(result);
           break;
         default:
-          expect(test.valueOf()).with_message(desc).to.eql(result);
+          expect(test.valueOf()).withMessage(desc).to.eql(result);
         }
       }
 
@@ -229,9 +227,9 @@
       raw = instance.valueOf();
       if (Array.isArray(raw)) {
         if (items.after) {
-          expect(raw).with_message(desc + ": after").to.eql(items.after);
+          expect(raw).withMessage(desc + ": after").to.eql(items.after);
         } else {
-          expect(raw).with_message(desc + ": after").to.eql(
+          expect(raw).withMessage(desc + ": after").to.eql(
             source.valueOf().slice().map(function(x) {
               return x && x.valueOf();
             })
@@ -239,7 +237,7 @@
         }
       } else if (isDictionary(raw)) {
         if (items.after) {
-          expect(raw).with_message(desc + ": after").to.eql(items.after);
+          expect(raw).withMessage(desc + ": after").to.eql(items.after);
         }
       }
     });
@@ -356,7 +354,7 @@
       };
     });
 
-    utils.addMethod(assert$proto, "with_message", function() {
+    utils.addMethod(assert$proto, "withMessage", function() {
       utils.flag(this, "message", sc.test.desc.apply(null, arguments));
     });
 
@@ -388,5 +386,4 @@
       );
     });
   });
-
 })(sc);

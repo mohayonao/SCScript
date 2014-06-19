@@ -268,5 +268,4 @@
   };
 
   sc.lang.bytecode = bytecode;
-
 })(sc);

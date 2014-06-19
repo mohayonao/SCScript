@@ -66,5 +66,4 @@
   };
 
   sc.lang.main = main;
-
 })(sc);

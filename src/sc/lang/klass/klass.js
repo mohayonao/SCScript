@@ -5,7 +5,6 @@
   require("../dollar");
   require("../../libs/strlib");
 
-  var slice  = [].slice;
   var $      = sc.lang.$;
   var strlib = sc.libs.strlib;
 
@@ -30,11 +29,11 @@
     F.prototype = superMetaClass.__Spec.prototype;
     constructor.prototype = new F();
 
-    function Meta_F() {}
-    Meta_F.prototype = superMetaClass.__MetaSpec.prototype;
+    function MetaF() {}
+    MetaF.prototype = superMetaClass.__MetaSpec.prototype;
 
     function MetaSpec() {}
-    MetaSpec.prototype = new Meta_F();
+    MetaSpec.prototype = new MetaF();
     MetaSpec.__superClass = superMetaClass.__MetaSpec;
 
     constructor.metaClass = createClassInstance(MetaSpec);
@@ -105,9 +104,17 @@
     newClass.__Spec = constructor;
     newClass.__superClass = MetaClass.__MetaSpec.__superClass;
     Object.defineProperties(constructor.prototype, {
-      __class: { value: newClass, writable: true },
-      __Spec : { value: constructor, writable: true },
-      __className: { value: className }
+      __class: {
+        value: newClass,
+        writable: true
+      },
+      __Spec: {
+        value: constructor,
+        writable: true
+      },
+      __className: {
+        value: className
+      }
     });
     classes[className] = newClass;
 
@@ -283,17 +290,7 @@
       if (this.__Spec === SCClass) {
         return $.Nil();
       }
-      return new this.__Spec(slice.call(arguments));
-    };
-    spec.$_newCopyArgs = function(dict) {
-      var instance;
-
-      instance = new this.__Spec(slice.call(arguments));
-      Object.keys(dict).forEach(function(key) {
-        instance["_$" + key] = dict[key] || $.Nil();
-      });
-
-      return instance;
+      return new this.__Spec();
     };
     spec.$initClass = function() {
     };
@@ -316,5 +313,4 @@
   });
 
   sc.lang.klass = klass;
-
 })(sc);

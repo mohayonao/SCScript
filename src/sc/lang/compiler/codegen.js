@@ -14,7 +14,7 @@
   var precompile = compiler.precompile;
 
   var Scope = compiler.scope({
-    add_delegate: function(stmt, id, indent, peek, opts) {
+    added: function(stmt, id, indent, peek, opts) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
       } else {
@@ -38,11 +38,11 @@
       var i, imax;
 
       this.stack.push({
-        vars    : {},
-        args    : {},
+        vars: {},
+        args: {},
         declared: declared,
-        indent  : this.parent.base,
-        stmt    : stmt
+        indent: this.parent.base,
+        stmt: stmt
       });
 
       for (i = 0, imax = args.length; i < imax; i++) {
@@ -51,16 +51,18 @@
 
       stream.push(stmt.head, stmt.vars, stmt.tail);
     },
-    begin_ref: function(scope) {
-      var refId   = (this._refId | 0);
-      var refName = "_ref" + refId;
-      this.add("var", refName, { scope: scope, init: false });
-      this._refId = refId + 1;
-      return refName;
-    },
-    end_ref: function() {
-      var refId = (this._refId | 0) - 1;
-      this._refId = Math.max(0, refId);
+    useTemporaryVariable: function(func) {
+      var result;
+      var tempVarId = (this._tempVarId | 0);
+      var tempName  = "_ref" + tempVarId;
+
+      this.add("var", tempName, { init: false });
+
+      this._tempVarId = tempVarId + 1;
+      result = func.call(this.parent, tempName);
+      this._tempVarId = Math.max(0, tempVarId);
+
+      return result;
     }
   });
 
@@ -177,11 +179,11 @@
     return result;
   };
 
-  CodeGen.prototype.insertKeyValueElement = function(keyValues, with_comma) {
+  CodeGen.prototype.insertKeyValueElement = function(keyValues, withComma) {
     var result = [];
 
     if (keyValues) {
-      if (with_comma) {
+      if (withComma) {
         result.push(", ");
       }
       result.push(
@@ -219,7 +221,6 @@
     throw new Error(message);
   };
 
-
   CodeGen.prototype.AssignmentExpression = function(node) {
     if (Array.isArray(node.left)) {
       return this._DestructuringAssignment(node);
@@ -244,45 +245,39 @@
   };
 
   CodeGen.prototype._DestructuringAssignment = function(node) {
-    var elements = node.left;
-    var operator = node.operator;
-    var assignments;
-    var result;
-    var ref;
+    return this.scope.useTemporaryVariable(function(tempVar) {
+      var elements = node.left;
+      var operator = node.operator;
+      var assignments;
 
-    ref = this.scope.begin_ref();
+      assignments = this.withIndent(function() {
+        var result, lastUsedIndex;
 
-    assignments = this.withIndent(function() {
-      var result, lastUsedIndex;
+        lastUsedIndex = elements.length;
 
-      lastUsedIndex = elements.length;
+        result = [
+          this.stitchWith(elements, ",\n", function(item, i) {
+            return this.addIndent(this._Assign(
+              item, operator, tempVar + ".$('at', [ $.Integer(" + i + ") ])"
+            ));
+          })
+        ];
 
-      result = [
-        this.stitchWith(elements, ",\n", function(item, i) {
-          return this.addIndent(this._Assign(
-            item, operator, ref + ".$('at', [ $.Integer(" + i + ") ])"
-          ));
-        })
+        if (node.remain) {
+          result.push(",\n", this.addIndent(this._Assign(
+            node.remain, operator, tempVar + ".$('copyToEnd', [ $.Integer(" + lastUsedIndex + ") ])"
+          )));
+        }
+
+        return result;
+      });
+
+      return [
+        "(" + tempVar + " = ", this.generate(node.right), ",\n",
+        assignments , ",\n",
+        this.addIndent(tempVar + ")")
       ];
-
-      if (node.remain) {
-        result.push(",\n", this.addIndent(this._Assign(
-          node.remain, operator, ref + ".$('copyToEnd', [ $.Integer(" + lastUsedIndex + ") ])"
-        )));
-      }
-
-      return result;
     });
-
-    result = [
-      "(" + ref + " = ", this.generate(node.right), ",\n",
-      assignments , ",\n",
-      this.addIndent(ref + ")")
-    ];
-
-    this.scope.end_ref();
-
-    return result;
   };
 
   CodeGen.prototype._Assign = function(left, operator, right) {
@@ -359,19 +354,18 @@
     var list;
     var hasActualArgument;
     var result;
-    var ref;
 
     list = node.args.list;
     hasActualArgument = !!list.length;
 
     if (node.stamp === "=") {
-      ref = this.scope.begin_ref();
-      result = [
-        "(" + ref + " = ", this.generate(list[0]), ", ",
-        this.generate(node.callee), ".$('" + node.method.name + "', [ " + ref + " ]), ",
-        ref + ")"
-      ];
-      this.scope.end_ref();
+      result = this.scope.useTemporaryVariable(function(tempVar) {
+        return [
+          "(" + tempVar + " = ", this.generate(list[0]), ", ",
+          this.generate(node.callee), ".$('" + node.method.name + "', [ " + tempVar + " ]), ",
+          tempVar + ")"
+        ];
+      });
     } else {
       if (list.length || node.args.keywords) {
         args = [
@@ -394,24 +388,17 @@
   };
 
   CodeGen.prototype._ExpandCall = function(node) {
-    var result;
-    var ref;
-
-    ref = this.scope.begin_ref();
-
-    result = [
-      "(" + ref + " = ",
-      this.generate(node.callee),
-      ", " + ref + ".$('" + node.method.name + "', ",
-      this.insertArrayElement(node.args.list), ".concat(",
-      this.generate(node.args.expand), ".$('asArray')._",
-      this.insertKeyValueElement(node.args.keywords, true),
-      ")))"
-    ];
-
-    this.scope.end_ref();
-
-    return result;
+    return this.scope.useTemporaryVariable(function(tempVar) {
+      return [
+        "(" + tempVar + " = ",
+        this.generate(node.callee),
+        ", " + tempVar + ".$('" + node.method.name + "', ",
+        this.insertArrayElement(node.args.list), ".concat(",
+        this.generate(node.args.expand), ".$('asArray')._",
+        this.insertKeyValueElement(node.args.keywords, true),
+        ")))"
+      ];
+    });
   };
 
   CodeGen.prototype.EnvironmentExpresion = function(node, opts) {
@@ -545,7 +532,7 @@
     return body;
   };
 
-  var format_argument = function(node) {
+  var toArgumentValueString = function(node) {
     switch (node.valueType) {
     case Token.NilLiteral   : return "nil";
     case Token.TrueLiteral  : return "true";
@@ -577,10 +564,10 @@
       if (vals[i]) {
         if (vals[i].type === Syntax.ListExpression) {
           result.push("=[ ", this.stitchWith(vals[i].elements, ", ", function(item) {
-            return format_argument(item);
+            return toArgumentValueString(item);
           }), " ]");
         } else {
-          result.push("=", format_argument(vals[i]));
+          result.push("=", toArgumentValueString(vals[i]));
         }
       }
 
@@ -623,17 +610,17 @@
   };
 
   CodeGen.prototype._InterpreterVariable = function(node, opts) {
-    var name, ref;
+    var name;
 
     if (opts) {
       // setter
-      ref = this.scope.begin_ref();
-      name = [
-        "(" + ref + " = ", this.generate(opts.right),
-        ", $.This().$('" + node.name + "_', [ " + ref + " ]), " + ref + ")"
-      ];
+      name = this.scope.useTemporaryVariable(function(tempVar) {
+        return [
+          "(" + tempVar + " = ", this.generate(opts.right),
+          ", $.This().$('" + node.name + "_', [ " + tempVar + " ]), " + tempVar + ")"
+        ];
+      });
       opts.used = true;
-      this.scope.end_ref();
     } else {
       // getter
       name = "$.This().$('" + node.name + "')";
@@ -804,9 +791,9 @@
     }
 
     return {
-      args  : args,
-      keys  : keys,
-      vals  : vals,
+      args: args,
+      keys: keys,
+      vals: vals,
       remain: remain,
       closed: node.closed
     };
@@ -822,5 +809,4 @@
   };
 
   compiler.codegen = codegen;
-
 })(sc);

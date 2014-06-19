@@ -10,8 +10,8 @@ SCScript.install(function(sc) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
-    var $int_0 = utils.$int_0;
-    var $int_1 = utils.$int_1;
+    var $int0  = utils.$int0;
+    var $int1  = utils.$int1;
     var SCArray = $("Array");
 
     spec.$newFrom = fn(function($aCollection) {
@@ -110,7 +110,7 @@ SCScript.install(function(sc) {
       $n = $dimensions.$("first");
       $obj = $this.new($n);
       $argIndex = $args.size();
-      $args = $args ["++"] ($int_0);
+      $args = $args ["++"] ($int0);
 
       if ($dimensions.size().__int__() <= 1) {
         $n.do($.Function(function() {
@@ -119,7 +119,7 @@ SCScript.install(function(sc) {
           } ];
         }));
       } else {
-        $dimensions = $dimensions.$("drop", [ $int_1 ]);
+        $dimensions = $dimensions.$("drop", [ $int1 ]);
         $n.do($.Function(function() {
           return [ function($i) {
             $obj = $obj.add(fillND($this, $dimensions, $function, $args.put($argIndex, $i)));
@@ -604,7 +604,7 @@ SCScript.install(function(sc) {
     spec.sum = fn(function($function) {
       var $sum;
 
-      $sum = $int_0;
+      $sum = $int0;
       if ($function === $nil) {
         this.do($.Function(function() {
           return [ function($elem) {
@@ -629,7 +629,7 @@ SCScript.install(function(sc) {
     spec.product = fn(function($function) {
       var $product;
 
-      $product = $int_1;
+      $product = $int1;
       if ($function === $nil) {
         this.do($.Function(function() {
           return [ function($elem) {
@@ -650,11 +650,11 @@ SCScript.install(function(sc) {
     spec.sumabs = function() {
       var $sum;
 
-      $sum = $int_0;
+      $sum = $int0;
       this.do($.Function(function() {
         return [ function($elem) {
           if ($elem.isSequenceableCollection().__bool__()) {
-            $elem = $elem.at($int_0);
+            $elem = $elem.at($int0);
           }
           $sum = $sum ["+"] ($elem.abs());
         } ];
@@ -1067,5 +1067,4 @@ SCScript.install(function(sc) {
       );
     };
   });
-
 });

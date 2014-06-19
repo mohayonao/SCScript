@@ -162,7 +162,6 @@ SCScript.install(function(sc) {
     spec.differentiate = function() {
       return $("Pdiff").new(this);
     };
-
     // TODO: implements integrate
     // TODO: implements record
   });
@@ -178,9 +177,9 @@ SCScript.install(function(sc) {
     utils.setProperty(spec, "<>", "length");
 
     spec.$new = fn(function($start, $step, $length) {
-      return this._newCopyArgs({
-        start : $start,
-        step  : $step,
+      return utils.newCopyArgs(this, {
+        start: $start,
+        step: $step,
         length: $length
       });
     }, "start=0; step=1; length=inf");
@@ -239,9 +238,9 @@ SCScript.install(function(sc) {
     utils.setProperty(spec, "<>", "length");
 
     spec.$new = fn(function($start, $grow, $length) {
-      return this._newCopyArgs({
-        start : $start,
-        grow  : $grow,
+      return utils.newCopyArgs(this, {
+        start: $start,
+        grow: $grow,
         length: $length
       });
     }, "start=0; grow=1; length=inf");
@@ -288,5 +287,4 @@ SCScript.install(function(sc) {
       return $inval;
     }, "inval");
   });
-
 });

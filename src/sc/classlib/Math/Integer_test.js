@@ -432,14 +432,14 @@
       testCase(this, [
         {
           source: 5,
-          args  : [ function($i) {
+          args: [ function($i) {
             return $i.__inc__();
           } ],
           result: [ 1, 2, 3, 4, 5 ]
         },
         {
           source: 5,
-          args  : [ function($i) {
+          args: [ function($i) {
             return $i.__dec__();
           }, $("Array") ],
           result: [ -1, 0, 1, 2, 3 ]
@@ -553,7 +553,7 @@
       testCase(this, [
         {
           source: 123,
-          args  : [],
+          args: [],
           result: [ 0, 1, 1, 1, 1, 0, 1, 1 ]
         },
       ]);
@@ -562,22 +562,22 @@
       testCase(this, [
         {
           source: 123,
-          args  : [],
+          args: [],
           result: [ 1, 2, 3 ]
         },
         {
           source: 123,
-          args  : [ 16 ],
+          args: [ 16 ],
           result: [ 7, 11 ]
         },
         {
           source: 123,
-          args  : [ 3, 3 ],
+          args: [ 3, 3 ],
           result: [ 1, 2, 0 ]
         },
         {
           source: 123,
-          args  : [ 2.5 ],
+          args: [ 2.5 ],
           result: [ 0, 2, 2, 1.5, 1.5, 0.5 ]
         },
       ]);
@@ -624,7 +624,7 @@
       testCase(this, [
         {
           source: 5,
-          args  : [ 2, 4 ],
+          args: [ 2, 4 ],
           result: [ 2, 8, 32, 128, 512 ]
         }
       ]);

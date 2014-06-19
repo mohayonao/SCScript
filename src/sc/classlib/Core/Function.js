@@ -190,5 +190,4 @@ SCScript.install(function(sc) {
       return this;
     }, "body");
   });
-
 });

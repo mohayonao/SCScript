@@ -12,9 +12,9 @@ SCScript.install(function(sc) {
   var mathlib  = sc.libs.mathlib;
 
   klass.refine("ArrayedCollection", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $int_0 = utils.$int_0;
-    var $int_1 = utils.$int_1;
+    var $nil  = utils.$nil;
+    var $int0 = utils.$int0;
+    var $int1 = utils.$int1;
 
     spec.valueOf = function() {
       return this._.map(function(elem) {
@@ -85,12 +85,12 @@ SCScript.install(function(sc) {
 
       if (Array.isArray($index._)) {
         return $.Array($index._.map(function($index) {
-          i = mathlib.clip_idx($index.__int__(), this._.length);
+          i = mathlib.clipIndex($index.__int__(), this._.length);
           return this._[i];
         }, this));
       }
 
-      i = mathlib.clip_idx($index.__int__(), this._.length);
+      i = mathlib.clipIndex($index.__int__(), this._.length);
 
       return this._[i];
     }, "index");
@@ -100,12 +100,12 @@ SCScript.install(function(sc) {
 
       if (Array.isArray($index._)) {
         return $.Array($index._.map(function($index) {
-          var i = mathlib.wrap_idx($index.__int__(), this._.length);
+          var i = mathlib.wrapIndex($index.__int__(), this._.length);
           return this._[i];
         }, this));
       }
 
-      i = mathlib.wrap_idx($index.__int__(), this._.length);
+      i = mathlib.wrapIndex($index.__int__(), this._.length);
 
       return this._[i];
     }, "index");
@@ -115,12 +115,12 @@ SCScript.install(function(sc) {
 
       if (Array.isArray($index._)) {
         return $.Array($index._.map(function($index) {
-          var i = mathlib.fold_idx($index.__int__(), this._.length);
+          var i = mathlib.foldIndex($index.__int__(), this._.length);
           return this._[i];
         }, this));
       }
 
-      i = mathlib.fold_idx($index.__int__(), this._.length);
+      i = mathlib.foldIndex($index.__int__(), this._.length);
 
       return this._[i];
     }, "index");
@@ -154,10 +154,10 @@ SCScript.install(function(sc) {
 
       if (Array.isArray($index._)) {
         $index._.forEach(function($index) {
-          this._[mathlib.clip_idx($index.__int__(), this._.length)] = this.__elem__($item);
+          this._[mathlib.clipIndex($index.__int__(), this._.length)] = this.__elem__($item);
         }, this);
       } else {
-        this._[mathlib.clip_idx($index.__int__(), this._.length)] = this.__elem__($item);
+        this._[mathlib.clipIndex($index.__int__(), this._.length)] = this.__elem__($item);
       }
 
       return this;
@@ -168,10 +168,10 @@ SCScript.install(function(sc) {
 
       if (Array.isArray($index._)) {
         $index._.forEach(function($index) {
-          this._[mathlib.wrap_idx($index.__int__(), this._.length)] = this.__elem__($item);
+          this._[mathlib.wrapIndex($index.__int__(), this._.length)] = this.__elem__($item);
         }, this);
       } else {
-        this._[mathlib.wrap_idx($index.__int__(), this._.length)] = this.__elem__($item);
+        this._[mathlib.wrapIndex($index.__int__(), this._.length)] = this.__elem__($item);
       }
 
       return this;
@@ -182,10 +182,10 @@ SCScript.install(function(sc) {
 
       if (Array.isArray($index._)) {
         $index._.forEach(function($index) {
-          this._[mathlib.fold_idx($index.__int__(), this._.length)] = this.__elem__($item);
+          this._[mathlib.foldIndex($index.__int__(), this._.length)] = this.__elem__($item);
         }, this);
       } else {
-        this._[mathlib.fold_idx($index.__int__(), this._.length)] = this.__elem__($item);
+        this._[mathlib.foldIndex($index.__int__(), this._.length)] = this.__elem__($item);
       }
 
       return this;
@@ -607,7 +607,7 @@ SCScript.install(function(sc) {
         }
       }
 
-      return $int_0;
+      return $int0;
     };
 
     spec.normalizeSum = function() {
@@ -636,11 +636,11 @@ SCScript.install(function(sc) {
     }, "length");
 
     spec.rank = function() {
-      return $int_1 ["+"] (this.first().rank());
+      return $int1 ["+"] (this.first().rank());
     };
 
     spec.shape = function() {
-      return $.Array([ this.size() ]) ["++"] (this.at($int_0).$("shape"));
+      return $.Array([ this.size() ]) ["++"] (this.at($int0).$("shape"));
     };
 
     spec.reshape = function() {
@@ -665,7 +665,7 @@ SCScript.install(function(sc) {
     spec.reshapeLike = fn(function($another, $indexing) {
       var $index, $flat;
 
-      $index = $int_0;
+      $index = $int0;
       $flat  = this.flat();
 
       return $another.deepCollect($.Integer(0x7FFFFFFF), $.Function(function() {
@@ -686,9 +686,9 @@ SCScript.install(function(sc) {
           return this;
         }
         if ($levels.__int__() <= 1) {
-          return this.at($int_0);
+          return this.at($int0);
         }
-        return this.at($int_0).unbubble($depth, $levels.__dec__());
+        return this.at($int0).unbubble($depth, $levels.__dec__());
       }
 
       return this.collect($.Function(function() {
@@ -715,21 +715,21 @@ SCScript.install(function(sc) {
 
     spec.slice = fn(function($$cuts) {
       var $firstCut, $list;
-      var cuts_size, cuts;
+      var lenOfCuts, cuts;
 
-      cuts_size = $$cuts.size().__int__();
-      if (cuts_size === 0) {
+      lenOfCuts = $$cuts.size().__int__();
+      if (lenOfCuts === 0) {
         return this.copy();
       }
 
-      $firstCut = $$cuts.at($int_0);
+      $firstCut = $$cuts.at($int0);
       if ($firstCut === $nil) {
         $list = this.copy();
       } else {
         $list = this.at($firstCut.asArray());
       }
 
-      if (cuts_size === 1) {
+      if (lenOfCuts === 1) {
         return $list.unbubble();
       }
 
@@ -897,5 +897,4 @@ SCScript.install(function(sc) {
       return $.Float(float64[0]);
     };
   });
-
 });

@@ -24,7 +24,6 @@ SCScript.install(function(sc) {
     spec.copy = function() {
       return this.__super__("copy").list_(this._$list.copy());
     };
-
     // TODO: implements storeArgs
   });
 
@@ -61,8 +60,6 @@ SCScript.install(function(sc) {
 
       return $inval;
     }, "inval");
-
     // TODO: implements storeArgs
   });
-
 });

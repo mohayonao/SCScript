@@ -89,13 +89,6 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
-    it("#_newCopyArgs", function() {
-      var instance = SCObject._newCopyArgs({
-        a: $.Integer(100), b: undefined
-      });
-      expect(instance._$a).to.be.a("SCInteger").that.equals(100);
-      expect(instance._$b).to.be.a("SCNil");
-    });
     describe("#$", function() {
       it("call with no-arguments", sinon.test(function() {
         var instance = SCObject.new();
@@ -201,5 +194,4 @@
       }).to.throw("not found");
     });
   });
-
 })();

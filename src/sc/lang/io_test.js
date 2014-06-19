@@ -29,5 +29,4 @@
       expect(SCScript.stderr).to.be.calledWith("abc");
     }));
   });
-
 })();

@@ -63,7 +63,6 @@ SCScript.install(function(sc) {
     };
   });
 
-
   klass.define("Process", function(spec, utils) {
     var $nil = utils.$nil;
 
@@ -87,7 +86,6 @@ SCScript.install(function(sc) {
       this.__super__("Process");
     };
   });
-
 
   klass.define("Interpreter", function(spec, utils) {
     var $nil = utils.$nil;
@@ -125,5 +123,4 @@ SCScript.install(function(sc) {
       return this;
     };
   });
-
 });

@@ -54,7 +54,7 @@
     switch (type) {
     case "var":
       if (!vars[id]) {
-        this.add_delegate(stmt, id, indent, peek, opts);
+        this.added(stmt, id, indent, peek, opts);
         vars[id] = true;
         delete declared[id];
       }
@@ -66,7 +66,7 @@
     }
   };
 
-  Scope.add_delegate = function() {
+  Scope.added = function() {
   };
 
   Scope.end = function() {
@@ -98,5 +98,4 @@
   };
 
   sc.lang.compiler.scope = Scope;
-
 })(sc);

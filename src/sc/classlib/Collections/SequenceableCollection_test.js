@@ -114,7 +114,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 40, 50, 60 ] ],
+          args: [ [ 40, 50, 60 ] ],
           result: [ 10, 20, 30, 40, 50, 60 ]
         }
       ]);
@@ -147,27 +147,27 @@
       testCase(this, [
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 20, 30 ] ],
+          args: [ [ 10, 20, 30 ] ],
           result: true
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 20, $.Float(30.0) ] ],
+          args: [ [ 10, 20, $.Float(30.0) ] ],
           result: true
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 10, 30 ] ],
+          args: [ [ 10, 10, 30 ] ],
           result: false
         },
         {
           source: [ 10, 20, 30, 40 ],
-          args  : [ [ 10, 20, 30 ] ],
+          args: [ [ 10, 20, 30 ] ],
           result: false
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ $$("102030") ],
+          args: [ $$("102030") ],
           result: false
         },
       ]);
@@ -178,7 +178,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1, 3 ],
+          args: [ 1, 3 ],
           result: [ 20, 30, 40 ],
         },
       ]);
@@ -187,12 +187,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [ 10, 20, 30 ],
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ -3 ],
+          args: [ -3 ],
           result: [ 30, 40, 50 ],
         }
       ]);
@@ -201,12 +201,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [ 40, 50 ],
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ -3 ],
+          args: [ -3 ],
           result: [ 10, 20 ],
         }
       ]);
@@ -215,7 +215,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: [ 20, 30, 40, 50 ]
         }
       ]);
@@ -224,7 +224,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: [ 10, 20 ]
         }
       ]);
@@ -233,12 +233,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 1
         },
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -249,12 +249,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: [ 1, 6 ]
         },
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -263,12 +263,12 @@
       testCase(this, [
         {
           source: [ 0, 1, 1, 2, 3, 5, 8, 13 ],
-          args  : [ [ 1, 2 ] ],
+          args: [ [ 1, 2 ] ],
           result: 2
         },
         {
           source: [ 0, 1, 1, 2, 3, 5, 8, 13 ],
-          args  : [ [ 1, 2 ], 3 ],
+          args: [ [ 1, 2 ], 3 ],
           result: null
         },
       ]);
@@ -277,17 +277,17 @@
       testCase(this, [
         {
           source: [ 10, 20, 10, 20, 10, 20 ],
-          args  : [ [ 20, 10 ] ],
+          args: [ [ 20, 10 ] ],
           result: [ 1, 3 ]
         },
         {
           source: [ 10, 20, 10, 20, 10, 20 ],
-          args  : [ [ 20, 10 ], 2 ],
+          args: [ [ 20, 10 ], 2 ],
           result: [ 3 ]
         },
         {
           source: [ 10, 20, 10, 20, 10, 20 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -296,12 +296,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 25 ],
+          args: [ 25 ],
           result: 2
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 2
         },
       ]);
@@ -310,22 +310,22 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 60 ],
+          args: [ 60 ],
           result: 4
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: 0
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 22 ],
+          args: [ 22 ],
           result: 1
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 28 ],
+          args: [ 28 ],
           result: 2
         }
       ]);
@@ -334,22 +334,22 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 60 ],
+          args: [ 60 ],
           result: 4
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: 0
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 25 ],
+          args: [ 25 ],
           result: $$(1.5)
         },
       ]);
@@ -358,17 +358,17 @@
       testCase(this, [
         {
           source: [ 10 ],
-          args  : [],
+          args: [],
           result: true
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [],
+          args: [],
           result: true
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: false
         },
       ]);
@@ -377,7 +377,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 8 ],
+          args: [ 8 ],
           result: [ 10, 20, 20, 30, 30, 40, 40, 50 ]
         }
       ]);
@@ -386,7 +386,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 8 ],
+          args: [ 8 ],
           result: [
             10,
             15.714285714285714,
@@ -404,13 +404,13 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 20,
-          after : [ 10, 30, 40, 50 ]
+          after: [ 10, 30, 40, 50 ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -419,7 +419,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: [ 10, 30, 40, 50 ]
         },
       ]);
@@ -428,13 +428,13 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 20,
-          after : [ 10, 50, 30, 40 ]
+          after: [ 10, 50, 30, 40 ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -523,15 +523,15 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : []
+          after: []
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : [ 0, 20, 30 ]
+          after: [ 0, 20, 30 ]
         },
       ]);
     });
@@ -539,15 +539,15 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : []
+          after: []
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : [ 10, 20, 0 ]
+          after: [ 10, 20, 0 ]
         },
       ]);
     });
@@ -555,12 +555,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: 20
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 10, 0 ],
+          args: [ 10, 0 ],
           result: 0
         },
       ]);
@@ -569,12 +569,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 10, 100, 0 ],
+          args: [ 10, 100, 0 ],
           result: [ 10, 20, 30, 40, 50, 0, 0, 0, 0, 0, 100 ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 3, 100, 0 ],
+          args: [ 3, 100, 0 ],
           result: [ 10, 20, 30, 100, 50 ]
         },
       ]);
@@ -631,7 +631,7 @@
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ function($a) {
+          args: [ function($a) {
             return $$($a.valueOf() === 20);
           } ],
           result: [ [ 10, 20 ], [ 30, 40, 50 ] ]
@@ -646,7 +646,7 @@
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ function($a) {
+          args: [ function($a) {
             return $$($a.valueOf() === 20);
           } ],
           result: [ [ 10 ], [ 30, 40, 50 ] ]
@@ -661,7 +661,7 @@
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ [ 10, 20 ], [ 30, 40 ], [ 50 ] ]
         },
       ]);
@@ -670,12 +670,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ [ 2, 1 ] ],
+          args: [ [ 2, 1 ] ],
           result: [ [ 10, 20 ], [ 30 ], [ 40, 50 ] ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ [ 2, 1, 3 ] ],
+          args: [ [ 2, 1, 3 ] ],
           result: [ [ 10, 20 ], [ 30 ], [ 40, 50 ] ]
         },
       ]);
@@ -701,7 +701,7 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this
         },
         {
@@ -710,7 +710,7 @@
         },
         {
           source: [ [ 10, 20 ], [ 30, [ 40, 50 ] ] ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ 10, 20, 30, 40, 50 ]
         }
       ]);
@@ -739,7 +739,7 @@
         },
         {
           source: [ [ 10, 20 ], [ 30, [ 40, 50 ] ] ],
-          args  : [ function($item) {
+          args: [ function($item) {
             return $$($item._[0].valueOf() === 30);
           } ],
           result: [ [ 10, 20 ], 30, [ 40, 50 ] ]
@@ -770,7 +770,7 @@
         },
         {
           source: [ [ 10, 20, 30 ], [ 40, 50, 60 ], 70 ],
-          args  : [ function($a, $b, $c) {
+          args: [ function($a, $b, $c) {
             return $a ["+"] ($b) ["*"] ($c);
           } ],
           result: [ 3500, 4900, 6300 ]
@@ -1026,17 +1026,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ] ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ] ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30 ] ],
+          args: [ "\\+", [ 10, 20, 30 ] ],
           result: [ 11, 22, 33, 14, 25 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ] ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ] ],
           result: [ 11, 22, 33, 41, 52 ]
         },
       ]);
@@ -1045,12 +1045,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], 0 ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], 0 ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], -1 ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], -1 ],
           result: [
             [ 11, 21, 31, 41, 51 ],
             [ 12, 22, 32, 42, 52 ],
@@ -1061,7 +1061,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], 1 ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], 1 ],
           result: [
             [ 11, 12, 13, 14, 15 ],
             [ 21, 22, 23, 24, 25 ],
@@ -1076,7 +1076,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\t" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\t" ],
           result: [
             [ 11, 12, 13, 14, 15 ],
             [ 21, 22, 23, 24, 25 ],
@@ -1091,7 +1091,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\x" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\x" ],
           result: [
             11, 12, 13, 14, 15,
             21, 22, 23, 24, 25,
@@ -1106,17 +1106,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30 ], "\\s" ],
+          args: [ "\\+", [ 10, 20, 30 ], "\\s" ],
           result: [ 11, 22, 33 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
           result: [ 11, 22, 33 ]
         },
       ]);
@@ -1125,17 +1125,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30 ], "\\f" ],
+          args: [ "\\+", [ 10, 20, 30 ], "\\f" ],
           result: [ 11, 22, 33, 24, 15 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
           result: [ 11, 22, 33, 42, 51 ]
         },
       ]);
@@ -1325,7 +1325,7 @@
         {
           source: [ 1, 5, 2, 4, 3 ],
           result: this,
-          after : [ 1, 2, 3, 4, 5 ]
+          after: [ 1, 2, 3, 4, 5 ]
         },
         {
           source: [ 1, 5, 2, 4, 3 ],
@@ -1333,7 +1333,7 @@
             return $b ["<="] ($a);
           } ],
           result: this,
-          after : [ 5, 4, 3, 2, 1 ]
+          after: [ 5, 4, 3, 2, 1 ]
         }
       ]);
     });
@@ -1341,9 +1341,9 @@
       testCase(this, [
         {
           source: [ [ 9, 1 ], [ 2, 8 ], [ 5, 5 ], [ 7, 3 ], [ 4, 6 ] ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: this,
-          after : [ [ 9, 1 ], [ 7, 3 ], [ 5, 5 ], [ 4, 6 ], [ 2, 8 ] ]
+          after: [ [ 9, 1 ], [ 7, 3 ], [ 5, 5 ], [ 4, 6 ], [ 2, 8 ] ]
         }
       ]);
     });
@@ -1351,11 +1351,11 @@
       testCase(this, [
         {
           source: [ -5, 3, -2, 0, 1, 6, 4 ],
-          args  : [ function($a) {
+          args: [ function($a) {
             return $a.abs();
           } ],
           result: this,
-          after : [ 0, 1, -2, 3, 4, -5, 6 ]
+          after: [ 0, 1, -2, 3, 4, -5, 6 ]
         }
       ]);
     });
@@ -1418,12 +1418,12 @@
       testCase(this, [
         {
           source: [ 3 ],
-          args  : [ "\\*" ],
+          args: [ "\\*" ],
           result: 3
         },
         {
           source: [ 3, 4, 5, 6 ],
-          args  : [ "\\*" ],
+          args: [ "\\*" ],
           result: 360
         },
       ]);
@@ -1436,7 +1436,7 @@
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: "1020304",
         },
       ]);

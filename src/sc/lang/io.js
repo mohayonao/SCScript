@@ -24,5 +24,4 @@
   };
 
   sc.lang.io = io;
-
 })(sc);

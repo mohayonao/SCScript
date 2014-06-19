@@ -11,8 +11,8 @@ SCScript.install(function(sc) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
-    var $int_0 = utils.$int_0;
-    var $int_1 = utils.$int_1;
+    var $int0  = utils.$int0;
+    var $int1  = utils.$int1;
 
     spec["|@|"] = function($index) {
       return this.clipAt($index);
@@ -145,7 +145,7 @@ SCScript.install(function(sc) {
 
       n = $n.__int__();
       if (n >= 0) {
-        return this.copyRange($int_0, $.Integer(n - 1));
+        return this.copyRange($int0, $.Integer(n - 1));
       }
       size = this.size().__int__();
 
@@ -161,7 +161,7 @@ SCScript.install(function(sc) {
         return this.copyRange($n, $.Integer(size - 1));
       }
 
-      return this.copyRange($int_0, $.Integer(size + n - 1));
+      return this.copyRange($int0, $.Integer(size + n - 1));
     }, "n");
 
     spec.copyToEnd = fn(function($start) {
@@ -169,7 +169,7 @@ SCScript.install(function(sc) {
     }, "start");
 
     spec.copyFromStart = fn(function($end) {
-      return this.copyRange($int_0, $end);
+      return this.copyRange($int0, $end);
     }, "end");
 
     spec.indexOf = fn(function($item) {
@@ -202,10 +202,10 @@ SCScript.install(function(sc) {
     }, "item");
 
     spec.find = fn(function($sublist, $offset) {
-      var $subSize_1, $first, $index;
+      var $subSize1, $first, $index;
       var size, offset, i, imax;
 
-      $subSize_1 = $sublist.size().__dec__();
+      $subSize1 = $sublist.size().__dec__();
       $first = $sublist.first();
 
       size   = this.size().__int__();
@@ -213,7 +213,7 @@ SCScript.install(function(sc) {
       for (i = 0, imax = size - offset; i < imax; ++i) {
         $index = $.Integer(i + offset);
         if (this.at($index) ["=="] ($first).__bool__()) {
-          if (this.copyRange($index, $index ["+"] ($subSize_1)) ["=="] ($sublist).__bool__()) {
+          if (this.copyRange($index, $index ["+"] ($subSize1)) ["=="] ($sublist).__bool__()) {
             return $index;
           }
         }
@@ -226,7 +226,7 @@ SCScript.install(function(sc) {
       var $this = this, $indices, $i;
 
       $indices = $nil;
-      $i = $int_0;
+      $i = $int0;
 
       while (($i = $this.find($arr, $offset)) !== $nil) {
         $indices = $indices.add($i);
@@ -251,7 +251,7 @@ SCScript.install(function(sc) {
       if ($j === $nil) {
         return this.size().__dec__();
       }
-      if ($j === $int_0) {
+      if ($j === $int0) {
         return $j;
       }
 
@@ -275,7 +275,7 @@ SCScript.install(function(sc) {
       if ($i === $nil) {
         return this.size().__dec__();
       }
-      if ($i === $int_0) {
+      if ($i === $int0) {
         return $i;
       }
 
@@ -283,7 +283,7 @@ SCScript.install(function(sc) {
       $b = this.at($i);
       $div = $b.$("-", [ $a ]);
 
-      // if ($div ["=="] ($int_0).__bool__()) {
+      // if ($div ["=="] ($int0).__bool__()) {
       //   return $i;
       // }
 
@@ -317,7 +317,7 @@ SCScript.install(function(sc) {
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int_1)
+        ($newSize.__dec__()).max($int1)
       );
 
       return this.species().fill($newSize, $.Function(function() {
@@ -333,7 +333,7 @@ SCScript.install(function(sc) {
       $factor = (
         this.size().__dec__()
       ) ["/"] (
-        ($newSize.__dec__()).max($int_1)
+        ($newSize.__dec__()).max($int1)
       );
 
       return this.species().fill($newSize, $.Function(function() {
@@ -398,7 +398,7 @@ SCScript.install(function(sc) {
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.at($int_0);
+        return this.at($int0);
       }
 
       return $nil;
@@ -432,7 +432,7 @@ SCScript.install(function(sc) {
       var size = this.size().__int__();
 
       if (size > 0) {
-        return this.put($int_0, $obj);
+        return this.put($int0, $obj);
       }
 
       return this;
@@ -474,7 +474,7 @@ SCScript.install(function(sc) {
     spec.pairsDo = function($function) {
       var $this = this, $int2 = $.Integer(2);
 
-      $int_0.forBy(this.size() ["-"] ($int2), $int2, $.Function(function() {
+      $int0.forBy(this.size() ["-"] ($int2), $int2, $.Function(function() {
         return [ function($i) {
           return $function.value($this.at($i), $this.at($i.__inc__()), $i);
         } ];
@@ -567,7 +567,7 @@ SCScript.install(function(sc) {
       var $this = this, $list, $subSize, $sublist, i = 0;
 
       $list = $.Array();
-      $subSize = $groupSizeList.at($int_0);
+      $subSize = $groupSizeList.at($int0);
       $sublist = this.species().new($subSize);
       this.do($.Function(function() {
         return [ function($item) {
@@ -662,14 +662,14 @@ SCScript.install(function(sc) {
       var $this = this, $list, $size, $maxsize;
 
       $size = this.size();
-      $maxsize = $int_0;
+      $maxsize = $int0;
       this.do($.Function(function() {
         return [ function($sublist) {
           var $sz;
           if ($sublist.isSequenceableCollection().__bool__()) {
             $sz = $sublist.size();
           } else {
-            $sz = $int_1;
+            $sz = $int1;
           }
           if ($sz > $maxsize) {
             $maxsize = $sz;
@@ -712,7 +712,7 @@ SCScript.install(function(sc) {
           if ($sublist.isSequenceableCollection().__bool__()) {
             return $sublist.size();
           }
-          return $int_1;
+          return $int1;
         } ];
       }));
 
@@ -1024,8 +1024,8 @@ SCScript.install(function(sc) {
 
     spec.degrad = function() {
       return this.performUnaryOp($.Symbol("degrad"));
-
     };
+
     spec.raddeg = function() {
       return this.performUnaryOp($.Symbol("raddeg"));
     };
@@ -1234,34 +1234,34 @@ SCScript.install(function(sc) {
       var adverb;
 
       if ($adverb === $nil || !$adverb) {
-        return _performBinaryOpOnSeqColl_adverb_nil(
+        return _performBinaryOpOnSeqColl$adverb$nil(
           this, $aSelector, $theOperand
         );
       }
       if ($adverb.isInteger().__bool__()) {
-        return _performBinaryOpOnSeqColl_adverb_int(
+        return _performBinaryOpOnSeqColl$adverb$int(
           this, $aSelector, $theOperand, $adverb.valueOf()
         );
       }
 
       adverb = $adverb.__sym__();
       if (adverb === "t") {
-        return _performBinaryOpOnSeqColl_adverb_t(
+        return _performBinaryOpOnSeqColl$adverb$t(
           this, $aSelector, $theOperand
         );
       }
       if (adverb === "x") {
-        return _performBinaryOpOnSeqColl_adverb_x(
+        return _performBinaryOpOnSeqColl$adverb$x(
           this, $aSelector, $theOperand
         );
       }
       if (adverb === "s") {
-        return _performBinaryOpOnSeqColl_adverb_s(
+        return _performBinaryOpOnSeqColl$adverb$s(
           this, $aSelector, $theOperand
         );
       }
       if (adverb === "f") {
-        return _performBinaryOpOnSeqColl_adverb_f(
+        return _performBinaryOpOnSeqColl$adverb$f(
           this, $aSelector, $theOperand
         );
       }
@@ -1271,7 +1271,7 @@ SCScript.install(function(sc) {
       );
     };
 
-    function _performBinaryOpOnSeqColl_adverb_nil($this, $aSelector, $theOperand) {
+    function _performBinaryOpOnSeqColl$adverb$nil($this, $aSelector, $theOperand) {
       var $size, $newList, $i;
       var size, i;
 
@@ -1289,7 +1289,7 @@ SCScript.install(function(sc) {
       return $newList;
     }
 
-    function _performBinaryOpOnSeqColl_adverb_int($this, $aSelector, $theOperand, adverb) {
+    function _performBinaryOpOnSeqColl$adverb$int($this, $aSelector, $theOperand, adverb) {
       var $size, $newList, $i;
       var size, i;
 
@@ -1302,29 +1302,24 @@ SCScript.install(function(sc) {
           $i = $.Integer(i);
           $newList.add($theOperand.wrapAt($i).perform($aSelector, $this.wrapAt($i)));
         }
-
       } else if (adverb > 0) {
-
         $newList = $theOperand.collect($.Function(function() {
           return [ function($item) {
             return $item.perform($aSelector, $this, $.Integer(adverb - 1));
           } ];
         }));
-
       } else {
-
         $newList = $this.collect($.Function(function() {
           return [ function($item) {
             return $theOperand.perform($aSelector, $item, $.Integer(adverb + 1));
           } ];
         }));
-
       }
 
       return $newList;
     }
 
-    function _performBinaryOpOnSeqColl_adverb_t($this, $aSelector, $theOperand) {
+    function _performBinaryOpOnSeqColl$adverb$t($this, $aSelector, $theOperand) {
       var $size, $newList, $i;
       var size, i;
 
@@ -1340,7 +1335,7 @@ SCScript.install(function(sc) {
       return $newList;
     }
 
-    function _performBinaryOpOnSeqColl_adverb_x($this, $aSelector, $theOperand) {
+    function _performBinaryOpOnSeqColl$adverb$x($this, $aSelector, $theOperand) {
       var $size, $newList;
 
       $size = $theOperand.size() ["*"] ($this.size());
@@ -1358,7 +1353,7 @@ SCScript.install(function(sc) {
       return $newList;
     }
 
-    function _performBinaryOpOnSeqColl_adverb_s($this, $aSelector, $theOperand) {
+    function _performBinaryOpOnSeqColl$adverb$s($this, $aSelector, $theOperand) {
       var $size, $newList, $i;
       var size, i;
 
@@ -1374,7 +1369,7 @@ SCScript.install(function(sc) {
       return $newList;
     }
 
-    function _performBinaryOpOnSeqColl_adverb_f($this, $aSelector, $theOperand) {
+    function _performBinaryOpOnSeqColl$adverb$f($this, $aSelector, $theOperand) {
       var $size, $newList, $i;
       var size, i;
 
@@ -1693,7 +1688,7 @@ SCScript.install(function(sc) {
       var $result;
 
       if (this.size().__int__() === 1) {
-        return this.at($int_0);
+        return this.at($int0);
       }
 
       once = true;
@@ -1726,10 +1721,8 @@ SCScript.install(function(sc) {
 
       return $.String(items.join(joiner), true);
     }, "joiner");
-
     // TODO: implements nextTimeOnGrid
     // TODO: implements asQuant
     // TODO: implements schedBundleArrayOnClock
   });
-
 });

@@ -86,5 +86,4 @@
 
     return compiler.codegen.compile(ast, opts);
   };
-
 })(sc);

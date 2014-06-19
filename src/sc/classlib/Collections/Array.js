@@ -488,7 +488,7 @@ SCScript.install(function(sc) {
       if (raw.length < size) {
         a = new Array(size);
         for (i = 0; i < size; ++i) {
-          a[i] = raw[mathlib.fold_idx(i, raw.length)];
+          a[i] = raw[mathlib.foldIndex(i, raw.length)];
         }
       } else {
         a = raw.slice(0, size);
@@ -702,10 +702,8 @@ SCScript.install(function(sc) {
     spec.madd = fn(function($mul, $add) {
       return $("MulAdd").new(this, $mul, $add);
     }, "mul=1.0; add=0.0");
-
     // TODO: implements asRawOSC
     // TODO: implements printOn
     // TODO: implements storeOn
   });
-
 });

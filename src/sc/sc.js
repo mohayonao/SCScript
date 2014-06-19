@@ -25,5 +25,4 @@
   SCScript.VERSION = sc.VERSION;
 
   global.SCScript = sc.SCScript = SCScript;
-
 })(sc);

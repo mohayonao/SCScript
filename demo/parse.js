@@ -2,13 +2,13 @@
 /* global $, SCScript */
 $(function() {
   "use strict";
-  
+
   var $source  = $("#source");
   var $results = $("#results");
   var $message = $("#message");
   var prev = [ "", "CODE" ];
   var hash;
-  
+
   var update = function(source, mode) {
     if (prev[0] !== source || prev[1] !== mode) {
       try {
@@ -31,21 +31,20 @@ $(function() {
       prev = [ source, mode ];
     }
   };
-  
+
   $("#selector a").each(function(i, elem) {
     $(elem).on("click", function() {
       update(prev[0], $(elem).text());
     });
   });
-  
+
   $source.on("keyup", function() {
     update($source.val(), prev[1]);
   });
-  
+
   if (window.location.hash) {
     hash = decodeURIComponent(window.location.hash.substr(1));
     $source.val(hash);
     update(hash, prev[1]);
   }
-
 });

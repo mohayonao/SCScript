@@ -1032,12 +1032,12 @@
       testCase(this, [
         {
           source: $$(10),
-          args  : [ 0, 100 ],
+          args: [ 0, 100 ],
           result: 10
         },
         {
           source: $$(10),
-          args  : [ 1, 100 ],
+          args: [ 1, 100 ],
           result: 100
         },
       ]);
@@ -1046,12 +1046,12 @@
       testCase(this, [
         {
           source: $$(10),
-          args  : [ 5, 30, 20 ],
+          args: [ 5, 30, 20 ],
           result: [ 10, 20, 20, 20, 20, 30 ]
         },
         {
           source: $$(10),
-          args  : [ 0, 30, 20 ],
+          args: [ 0, 30, 20 ],
           result: 30
         },
       ]);
@@ -1125,7 +1125,7 @@
       testCase(this, [
         {
           source: $$(3),
-          args  : [
+          args: [
             0, "\\zero",
             1, "\\one",
             2, "\\two",
@@ -1137,7 +1137,7 @@
         },
         {
           source: $$(9),
-          args  : [
+          args: [
             0, "\\zero",
             1, "\\one",
             2, "\\two",
@@ -1149,7 +1149,7 @@
         },
         {
           source: $$(9),
-          args  : [
+          args: [
             0, "\\zero",
             1, "\\one",
             2, "\\two",
@@ -1340,7 +1340,7 @@
       testCase(this, [
         {
           source: $$([ 1, 2, 3 ]),
-          args  : [ $.Float(1.25), 5 ],
+          args: [ $.Float(1.25), 5 ],
           result: [ 1, 3.75, 1.25 ]
         },
       ]);
@@ -1375,7 +1375,7 @@
       testCase(this, [
         {
           source: $$([ 1, 2 ]),
-          args  : [ [ 10, 20, 30 ] ],
+          args: [ [ 10, 20, 30 ] ],
           result: [
             [ 1, 10 ],
             [ 1, 20 ],

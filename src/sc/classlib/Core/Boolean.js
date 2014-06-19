@@ -79,8 +79,8 @@ SCScript.install(function(sc) {
       return $that.value().$("not");
     }, "that");
 
-    spec.asInteger = utils.alwaysReturn$int_1;
-    spec.binaryValue = utils.alwaysReturn$int_1;
+    spec.asInteger = utils.alwaysReturn$int1;
+    spec.binaryValue = utils.alwaysReturn$int1;
   });
 
   sc.lang.klass.refine("False", function(spec, utils) {
@@ -107,8 +107,7 @@ SCScript.install(function(sc) {
     }, "that");
 
     spec.nand = utils.alwaysReturn$true;
-    spec.asInteger = utils.alwaysReturn$int_0;
-    spec.binaryValue = utils.alwaysReturn$int_0;
+    spec.asInteger = utils.alwaysReturn$int0;
+    spec.binaryValue = utils.alwaysReturn$int0;
   });
-
 });

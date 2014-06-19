@@ -51,20 +51,20 @@
       testCase(this, [
         {
           source: [ 0, 1, 2, 3, 4 ],
-          args  : [ 1, 2 ],
+          args: [ 1, 2 ],
           result: this,
-          after : [ 0, 2, 1, 3, 4 ]
+          after: [ 0, 2, 1, 3, 4 ]
         },
         {
           source: [ 0, 1, 2, 3, 4 ],
-          args  : [ 1, 10 ],
-          error : "out of index"
+          args: [ 1, 10 ],
+          error: "out of index"
         },
         {
           source: [ 0, 1, 2, 3, 4 ],
           immutable: true,
-          args  : [ 1, 2 ],
-          error : "immutable"
+          args: [ 1, 2 ],
+          error: "immutable"
         },
       ]);
     });
@@ -72,42 +72,42 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -2 ],
+          args: [ -2 ],
           result: null
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -1 ],
+          args: [ -1 ],
           result: null
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 3
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: 5
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: null
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 6 ],
+          args: [ 6 ],
           result: null
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 0, 2, 4, 6 ] ],
+          args: [ [ 0, 2, 4, 6 ] ],
           result: [ 1, 3, 5, null ]
         },
       ]);
@@ -116,42 +116,42 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -2 ],
+          args: [ -2 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -1 ],
+          args: [ -1 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 3
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: 5
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: 5
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 6 ],
+          args: [ 6 ],
           result: 5
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 0, 2, 4, 6 ] ],
+          args: [ [ 0, 2, 4, 6 ] ],
           result: [ 1, 3, 5, 5 ]
         },
       ]);
@@ -160,42 +160,42 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -2 ],
+          args: [ -2 ],
           result: 4
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -1 ],
+          args: [ -1 ],
           result: 5
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 3
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: 5
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 6 ],
+          args: [ 6 ],
           result: 2
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 0, 2, 4, 6 ] ],
+          args: [ [ 0, 2, 4, 6 ] ],
           result: [ 1, 3, 5, 2 ]
         },
       ]);
@@ -204,42 +204,42 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -2 ],
+          args: [ -2 ],
           result: 3
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -1 ],
+          args: [ -1 ],
           result: 2
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 3
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: 5
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: 4
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 6 ],
+          args: [ 6 ],
           result: 3
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 0, 2, 4, 6 ] ],
+          args: [ [ 0, 2, 4, 6 ] ],
           result: [ 1, 3, 5, 3 ]
         },
       ]);
@@ -248,31 +248,31 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 1, 100 ],
+          args: [ 1, 100 ],
           result: this,
-          after : [ 1, 100, 3, 4, 5 ]
+          after: [ 1, 100, 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 1, 2 ], [ 10, 100 ] ],
+          args: [ [ 1, 2 ], [ 10, 100 ] ],
           result: this,
-          after : [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
+          after: [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 100, 100 ],
-          error : "out of index"
+          args: [ 100, 100 ],
+          error: "out of index"
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 100 ] ],
-          error : "out of index"
+          args: [ [ 100 ] ],
+          error: "out of index"
         },
         {
-          source   : [ 1, 2, 3, 4, 5 ],
+          source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 1, 100 ],
-          error : "immutable"
+          args: [ 1, 100 ],
+          error: "immutable"
         },
       ]);
     });
@@ -280,21 +280,21 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10, 100 ],
+          args: [ 10, 100 ],
           result: this,
-          after : [ 1, 2, 3, 4, 100 ]
+          after: [ 1, 2, 3, 4, 100 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 1, 2 ], [ 10, 100 ] ],
+          args: [ [ 1, 2 ], [ 10, 100 ] ],
           result: this,
-          after : [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
+          after: [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
         },
         {
-          source   : [ 1, 2, 3, 4, 5 ],
+          source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 1, 100 ],
-          error : "immutable"
+          args: [ 1, 100 ],
+          error: "immutable"
         },
       ]);
     });
@@ -302,21 +302,21 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10, 100 ],
+          args: [ 10, 100 ],
           result: this,
-          after : [ 100, 2, 3, 4, 5 ]
+          after: [ 100, 2, 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 1, 2 ], [ 10, 100 ] ],
+          args: [ [ 1, 2 ], [ 10, 100 ] ],
           result: this,
-          after : [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
+          after: [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
         },
         {
-          source   : [ 1, 2, 3, 4, 5 ],
+          source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 1, 100 ],
-          error : "immutable"
+          args: [ 1, 100 ],
+          error: "immutable"
         },
       ]);
     });
@@ -324,21 +324,21 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10, 100 ],
+          args: [ 10, 100 ],
           result: this,
-          after : [ 1, 2, 100, 4, 5 ]
+          after: [ 1, 2, 100, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 1, 2 ], [ 10, 100 ] ],
+          args: [ [ 1, 2 ], [ 10, 100 ] ],
           result: this,
-          after : [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
+          after: [ 1, [ 10, 100 ], [ 10, 100 ], 4, 5 ]
         },
         {
-          source   : [ 1, 2, 3, 4, 5 ],
+          source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 1, 100 ],
-          error : "immutable"
+          args: [ 1, 100 ],
+          error: "immutable"
         },
       ]);
     });
@@ -346,20 +346,20 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 3,
-          after : [ 1, 2, 4, 5 ]
+          after: [ 1, 2, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 100 ],
-          error : "out of index"
+          args: [ 100 ],
+          error: "out of index"
         },
         {
-          source   : [ 1, 2, 3, 4, 5 ],
+          source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 1 ],
-          error : "immutable"
+          args: [ 1 ],
+          error: "immutable"
         },
       ]);
     });
@@ -367,20 +367,20 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 3,
-          after : [ 1, 2, 5, 4 ]
+          after: [ 1, 2, 5, 4 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 100 ],
-          error : "out of index"
+          args: [ 100 ],
+          error: "out of index"
         },
         {
-          source   : [ 1, 2, 3, 4, 5 ],
+          source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 1 ],
-          error : "immutable"
+          args: [ 1 ],
+          error: "immutable"
         },
       ]);
     });
@@ -388,12 +388,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 1
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 6 ],
+          args: [ 6 ],
           result: null
         },
       ]);
@@ -402,12 +402,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 2
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10 ],
+          args: [ 10 ],
           result: null
         },
       ]);
@@ -416,19 +416,19 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ function($item) {
+          args: [ function($item) {
             return $item.odd();
           } ],
           result: this,
-          after : [ 4, 2 ]
+          after: [ 4, 2 ]
         },
         {
-          source   : [ 1, 2, 3, 4, 5 ],
+          source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ function($item) {
+          args: [ function($item) {
             return $item.odd();
           } ],
-          error : "immutable"
+          error: "immutable"
         },
       ]);
     });
@@ -436,19 +436,19 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 3, 0 ],
+          args: [ 3, 0 ],
           result: [ 1, 2, 0, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ [ 2, 3, 4 ], 0 ],
+          args: [ [ 2, 3, 4 ], 0 ],
           result: [ 1, 0, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 3, 0 ],
-          error : "immutable"
+          args: [ 3, 0 ],
+          error: "immutable"
         },
       ]);
     });
@@ -464,7 +464,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 3
         },
       ]);
@@ -473,15 +473,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2, 10 ],
+          args: [ 2, 10 ],
           result: this,
-          after : [ 1, 2, 10, 4, 5 ]
+          after: [ 1, 2, 10, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 2, 10 ],
-          error : "immutable"
+          args: [ 2, 10 ],
+          error: "immutable"
         },
       ]);
     });
@@ -489,7 +489,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 100 ],
+          args: [ 100 ],
           result: 100
         }
       ]);
@@ -498,7 +498,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 100 ],
+          args: [ 100 ],
           result: null
         }
       ]);
@@ -530,11 +530,11 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2, function($item, $index) {
+          args: [ 2, function($item, $index) {
             return $item.div($index);
           } ],
           result: this,
-          after : [ 1, 2, (3/2)|0, 4, 5 ]
+          after: [ 1, 2, (3 / 2)|0, 4, 5 ]
         }
       ]);
     });
@@ -542,21 +542,21 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: this,
-          after : [ 1, 2, 4, 4, 5 ]
+          after: [ 1, 2, 4, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2, 7 ],
+          args: [ 2, 7 ],
           result: this,
-          after : [ 1, 2, 10, 4, 5 ]
+          after: [ 1, 2, 10, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 2 ],
-          error : "immutable"
+          args: [ 2 ],
+          error: "immutable"
         },
       ]);
     });
@@ -564,21 +564,21 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: this,
-          after : [ 1, 2, 2, 4, 5 ]
+          after: [ 1, 2, 2, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2, 3 ],
+          args: [ 2, 3 ],
           result: this,
-          after : [ 1, 2, 0, 4, 5 ]
+          after: [ 1, 2, 0, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 2 ],
-          error : "immutable"
+          args: [ 2 ],
+          error: "immutable"
         },
       ]);
     });
@@ -598,27 +598,27 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, 4 ],
+          args: [ 2, 4 ],
           result: [ 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, null ],
+          args: [ 2, null ],
           result: [ 3, 4, 5, 6, 7, 8, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 0, 4 ],
+          args: [ 0, 4 ],
           result: [ 1, 2, 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, null ],
+          args: [ null, null ],
           result: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 4, 2 ],
+          args: [ 4, 2 ],
           result: []
         },
       ]);
@@ -627,52 +627,52 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, 4, 7 ],
+          args: [ 2, 4, 7 ],
           result: [ 3, 5, 7 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, 4, null ],
+          args: [ 2, 4, null ],
           result: [ 3, 5, 7, 9 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, null, 7 ],
+          args: [ 2, null, 7 ],
           result: [ 3, 4, 5, 6, 7, 8 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, null, null ],
+          args: [ 2, null, null ],
           result: [ 3, 4, 5, 6, 7, 8, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, 4, 7 ],
+          args: [ null, 4, 7 ],
           result: [ 1, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, 4, null ],
+          args: [ null, 4, null ],
           result: [ 1, 5, 9 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, null, 7 ],
+          args: [ null, null, 7 ],
           result: [ 1, 2, 3, 4, 5, 6, 7, 8 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, null, null ],
+          args: [ null, null, null ],
           result: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 7, 4, 2 ],
+          args: [ 7, 4, 2 ],
           result: [ 8, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 0, 0, 0 ],
+          args: [ 0, 0, 0 ],
           result: []
         },
       ]);
@@ -681,69 +681,69 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, 4, 7, 0 ],
+          args: [ 2, 4, 7, 0 ],
           result: this,
-          after : [ 1, 2, 0, 4, 0, 6, 0, 8, 9, 10 ]
+          after: [ 1, 2, 0, 4, 0, 6, 0, 8, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, 4, null, 0 ],
+          args: [ 2, 4, null, 0 ],
           result: this,
-          after : [ 1, 2, 0, 4, 0, 6, 0, 8, 0, 10 ]
+          after: [ 1, 2, 0, 4, 0, 6, 0, 8, 0, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, null, 7, 0 ],
+          args: [ 2, null, 7, 0 ],
           result: this,
-          after : [ 1, 2, 0, 0, 0, 0, 0, 0, 9, 10 ]
+          after: [ 1, 2, 0, 0, 0, 0, 0, 0, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 2, null, null, 0 ],
+          args: [ 2, null, null, 0 ],
           result: this,
-          after : [ 1, 2, 0, 0, 0, 0, 0, 0, 0, 0 ]
+          after: [ 1, 2, 0, 0, 0, 0, 0, 0, 0, 0 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, 4, 7, 0 ],
+          args: [ null, 4, 7, 0 ],
           result: this,
-          after : [ 0, 2, 3, 4, 0, 6, 7, 8, 9, 10 ],
+          after: [ 0, 2, 3, 4, 0, 6, 7, 8, 9, 10 ],
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, 4, null, 0 ],
+          args: [ null, 4, null, 0 ],
           result: this,
-          after : [ 0, 2, 3, 4, 0, 6, 7, 8, 0, 10 ],
+          after: [ 0, 2, 3, 4, 0, 6, 7, 8, 0, 10 ],
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, null, 7, 0 ],
+          args: [ null, null, 7, 0 ],
           result: this,
-          after : [ 0, 0, 0, 0, 0, 0, 0, 0, 9, 10 ]
+          after: [ 0, 0, 0, 0, 0, 0, 0, 0, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ null, null, null, 0 ],
+          args: [ null, null, null, 0 ],
           result: this,
-          after : [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+          after: [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 7, 4, 2, 0 ],
+          args: [ 7, 4, 2, 0 ],
           result: this,
-          after : [ 1, 2, 3, 4, 0, 6, 7, 0, 9, 10 ]
+          after: [ 1, 2, 3, 4, 0, 6, 7, 0, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-          args  : [ 0, 0, 0 ],
+          args: [ 0, 0, 0 ],
           result: this,
-          after : [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+          after: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
           immutable: true,
-          args  : [ 2, 4, 7, 0 ],
-          error : "immutable"
+          args: [ 2, 4, 7, 0 ],
+          error: "immutable"
         },
       ]);
     });
@@ -751,15 +751,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: this,
-          after : [ 1, 2, 3, 4 ]
+          after: [ 1, 2, 3, 4 ]
         },
         {
           source: [ 1, 2, 3 ],
           immutable: true,
-          args  : [ 4 ],
-          error : "immutable"
+          args: [ 4 ],
+          error: "immutable"
         },
       ]);
     });
@@ -767,21 +767,21 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: this,
-          after : [ 1, 2, 3, 4 ]
+          after: [ 1, 2, 3, 4 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ [ 4, 5 ] ],
+          args: [ [ 4, 5 ] ],
           result: this,
-          after : [ 1, 2, 3, 4, 5 ]
+          after: [ 1, 2, 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3 ],
           immutable: true,
-          args  : [ 4 ],
-          error : "immutable"
+          args: [ 4 ],
+          error: "immutable"
         },
       ]);
     });
@@ -789,15 +789,15 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ [ 1, 2, 3 ], 0 ],
+          args: [ [ 1, 2, 3 ], 0 ],
           result: this,
-          after : [ 10, 0, 0, 0, 50 ],
+          after: [ 10, 0, 0, 0, 50 ],
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
           immutable: true,
-          args  : [ [ 1, 2, 3 ], 0 ],
-          error : "immutable"
+          args: [ [ 1, 2, 3 ], 0 ],
+          error: "immutable"
         },
       ]);
     });
@@ -805,17 +805,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 5, 0 ],
+          args: [ 5, 0 ],
           result: [ 1, 2, 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 3, 0 ],
+          args: [ 3, 0 ],
           result: [ 1, 2, 3 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 8, 0 ],
+          args: [ 8, 0 ],
           result: [ 1, 2, 3, 4, 5, 0, 0, 0 ]
         },
       ]);
@@ -824,27 +824,27 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -1, 0 ],
+          args: [ -1, 0 ],
           result: this,
-          after : [ 0, 1, 2, 3, 4, 5 ]
+          after: [ 0, 1, 2, 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2, 0 ],
+          args: [ 2, 0 ],
           result: this,
-          after : [ 1, 2, 0, 3, 4, 5 ]
+          after: [ 1, 2, 0, 3, 4, 5 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10, 0 ],
+          args: [ 10, 0 ],
           result: this,
-          after : [ 1, 2, 3, 4, 5, 0 ]
+          after: [ 1, 2, 3, 4, 5, 0 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ -1, 0 ],
-          error : "immutable"
+          args: [ -1, 0 ],
+          error: "immutable"
         },
       ]);
     });
@@ -852,15 +852,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 1, 4 ],
+          args: [ 1, 4 ],
           result: this,
-          after : [ 1, 3, 4, 5, 2 ]
+          after: [ 1, 3, 4, 5, 2 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 1, 4 ],
-          error : "immutable"
+          args: [ 1, 4 ],
+          error: "immutable"
         },
       ]);
     });
@@ -868,7 +868,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: [ 0, 1, 2, 3 ]
         },
       ]);
@@ -877,12 +877,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: [ 0, 1, 2, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ null ],
+          args: [ null ],
           result: this
         },
       ]);
@@ -892,17 +892,17 @@
         {
           source: [ 1, 2, 3, 4 ],
           result: 4,
-          after : [ 1, 2, 3 ]
+          after: [ 1, 2, 3 ]
         },
         {
           source: [],
           result: null,
-          after : []
+          after: []
         },
         {
           source: [ 1, 2, 3, 4 ],
           immutable: true,
-          error : "immutable"
+          error: "immutable"
         },
         {
           source: [],
@@ -915,17 +915,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: [ 1, 2, 3, 4 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ [ 4, 5, 6 ] ],
+          args: [ [ 4, 5, 6 ] ],
           result: [ 1, 2, 3, 4, 5, 6 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ null ],
+          args: [ null ],
           result: [ 1, 2, 3 ]
         },
       ]);
@@ -940,15 +940,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10, 20 ],
+          args: [ 10, 20 ],
           result: this,
-          after : [ 10, 30, 50, 70, 90 ]
+          after: [ 10, 30, 50, 70, 90 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 10, 20 ],
-          error : "immutable"
+          args: [ 10, 20 ],
+          error: "immutable"
         },
       ]);
     });
@@ -956,15 +956,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : [ 0, 0, 0, 0, 0 ]
+          after: [ 0, 0, 0, 0, 0 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
           immutable: true,
-          args  : [ 0 ],
-          error : "immutable"
+          args: [ 0 ],
+          error: "immutable"
         },
       ]);
     });
@@ -1038,7 +1038,7 @@
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ -20, 10 ],
+          args: [ -20, 10 ],
           result: [ -20, -5, 10 ]
         },
       ]);
@@ -1053,12 +1053,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10 ],
+          args: [ 10 ],
           result: [ 1, 2, 3, 4, 5, 5, 5, 5, 5, 5 ]
         },
         {
           source: [],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: [ null, null, null, null, null ]
         },
       ]);
@@ -1091,12 +1091,12 @@
       testCase(this, [
         {
           source: [ 4, 7, 6, 8 ],
-          args  : [ 2, 2 ],
+          args: [ 2, 2 ],
           result: [ [ 4, 7 ], [ 6, 8 ] ]
         },
         {
           source: [ 4, 7, 6, 8 ],
-          args  : [ 2, 3 ],
+          args: [ 2, 3 ],
           result: [ [ 4, 7, 6 ], [ 8, 4, 7 ] ]
         },
       ]);
@@ -1105,17 +1105,17 @@
       testCase(this, [
         {
           source: [ 4, 7, 6, 8 ],
-          args  : [ [ 0 ] ],
+          args: [ [ 0 ] ],
           result: [ 4 ]
         },
         {
           source: [ 4, 7, 6, 8 ],
-          args  : [ [ [ 0, 0, 0 ], 0 ] ],
+          args: [ [ [ 0, 0, 0 ], 0 ] ],
           result: [ [ 4, 7, 6 ], 8 ]
         },
         {
           source: [ 4, 7, 6, 8 ],
-          args  : [ [ 0, [ 0, [ 0, [ 0, [ 0 ] ] ] ] ] ],
+          args: [ [ 0, [ 0, [ 0, [ 0, [ 0 ] ] ] ] ] ],
           result: [ 4, [ 7, [ 6, [ 8, [ 4 ] ] ] ] ]
         },
       ]);
@@ -1136,12 +1136,12 @@
         },
         {
           source: [ [ 1 ] ],
-          args  : [ -1, 2 ],
+          args: [ -1, 2 ],
           result: 1
         },
         {
           source: [ [ 1, [ 2, [ 3 ] ] ] ],
-          args  : [ 3, 0 ],
+          args: [ 3, 0 ],
           result: [ [ 1, [ 2, 3 ] ] ]
         },
       ]);
@@ -1154,13 +1154,13 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 0, 2 ],
+          args: [ 0, 2 ],
           result: [ [ [ 1, 2, 3, 4, 5 ] ] ],
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2, 2 ],
-          result : [ [ [ 1 ] ], [ [ 2 ] ], [ [ 3 ] ], [ [ 4 ] ], [ [ 5 ] ] ],
+          args: [ 2, 2 ],
+          result: [ [ [ 1 ] ], [ [ 2 ] ], [ [ 3 ] ], [ [ 4 ] ], [ [ 5 ] ] ],
         },
       ]);
     });
@@ -1172,17 +1172,17 @@
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ null ],
+          args: [ null ],
           result: [ 1, 2, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ [ 1, 2 ] ],
+          args: [ [ 1, 2 ] ],
           result: [ 2, 3 ]
         },
         {
           source: [ 1, 2, [ 3, 4, 5 ] ],
-          args  : [ [ 1, 2 ], [ 1, 2 ] ],
+          args: [ [ 1, 2 ], [ 1, 2 ] ],
           result: [ 2, [ 4, 5 ] ]
         },
       ]);
@@ -1191,7 +1191,7 @@
       testCase(this, [
         {
           source: null,
-          args  : [ 3, 4 ],
+          args: [ 3, 4 ],
           result: [ [ 0, 1, 2, 3 ], [ 4, 5, 6, 7 ], [ 8, 9, 10, 11 ] ]
         }
       ]);
@@ -1208,17 +1208,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: true
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ $.Float(2.0) ],
+          args: [ $.Float(2.0) ],
           result: false
         },
         {
           source: [ 1, [ 2, 3, 4, 5 ] ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: false
         },
       ]);
@@ -1366,5 +1366,4 @@
       expect(test).to.eql(expected);
     });
   });
-
 })();

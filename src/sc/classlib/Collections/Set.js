@@ -8,8 +8,8 @@ SCScript.install(function(sc) {
   var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Set", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $int_0 = utils.$int_0;
+    var $nil  = utils.$nil;
+    var $int0 = utils.$int0;
     var SCArray = $("Array");
 
     utils.setProperty(spec, "<>", "array");
@@ -116,7 +116,7 @@ SCScript.install(function(sc) {
       var $index, $val;
       var $array, $size;
 
-      $index = $int_0;
+      $index = $int0;
       $array = this._$array;
       $size  = $array.size();
 
@@ -264,10 +264,7 @@ SCScript.install(function(sc) {
 
       return $.Integer(-1);
     };
-
     // TODO: implements fixCollisionsFrom
     // TODO: implements keyAt
-
   });
-
 });

@@ -11,7 +11,7 @@ SCScript.install(function(sc) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
-    var $int_0 = utils.$int_0;
+    var $int0  = utils.$int0;
     var SCArray = $("Array");
 
     spec.constructor = function SCStream() {
@@ -86,7 +86,7 @@ SCScript.install(function(sc) {
       var $this = this;
       var $item, $i;
 
-      $i = $int_0;
+      $i = $int0;
       $.Function(function() {
         return [ function() {
           $item = $this.next($inval);
@@ -138,7 +138,7 @@ SCScript.install(function(sc) {
       var $this = this;
       var $item, $i;
 
-      $i = $int_0;
+      $i = $int0;
       $.Function(function() {
         return [ function() {
           $item = $this.next($item);
@@ -451,7 +451,6 @@ SCScript.install(function(sc) {
         } ];
       }).r();
     }, "repeats=inf");
-
   });
 
   klass.define("OneShotStream : Stream", function(spec, utils) {
@@ -463,7 +462,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$new = function($value) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         value: $value
       });
     };
@@ -480,7 +479,6 @@ SCScript.install(function(sc) {
       this._once = true;
       return this;
     };
-
     // TODO: implements storeArgs
   });
 
@@ -493,10 +491,10 @@ SCScript.install(function(sc) {
     utils.setProperty(spec, "<>", "envir");
 
     spec.$new = function($nextFunc, $resetFunc) {
-      return this._newCopyArgs({
-        nextFunc : $nextFunc,
+      return utils.newCopyArgs(this, {
+        nextFunc: $nextFunc,
         resetFunc: $resetFunc,
-        envir    : sc.lang.main.$currentEnv
+        envir: sc.lang.main.$currentEnv
       });
     };
 
@@ -517,9 +515,7 @@ SCScript.install(function(sc) {
         } ];
       }));
     };
-
     // TODO: implements storeArgs
-
   });
 
   // StreamClutch
@@ -529,14 +525,12 @@ SCScript.install(function(sc) {
     spec.constructor = function SCPauseStream() {
       this.__super__("Stream");
     };
-
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
     // TODO: implements nextBeat
     // TODO: implements streamHasEnded
     // TODO: implements streamHasEnded_
-
     // TODO: implements isPlaying
     // TODO: implements play
     // TODO: implements reset
@@ -560,8 +554,6 @@ SCScript.install(function(sc) {
     spec.constructor = function SCTask() {
       this.__super__("PauseStream");
     };
-
     // TODO: implements storeArgs
   });
-
 });

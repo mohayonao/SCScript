@@ -16,12 +16,12 @@
       it("throw error if the class have been defined already", function() {
         expect(function() {
           klass.define("Object");
-        }).to.throw("already registered");
+        }).to.throw("already defined");
       });
       it("throw error if SuperClass is not exists", function() {
         expect(function() {
           klass.define("NewClass : UndefinedClass");
-        }).to.throw("superclass 'UndefinedClass' is not registered");
+        }).to.throw("superclass 'UndefinedClass' is not defined");
       });
       it("throw error if the class doesn't have a constructor", function() {
         expect(function() {
@@ -33,16 +33,9 @@
       it("throw error if the class is not defined", function() {
         expect(function() {
           klass.refine("UndefinedClass");
-        }).to.throw("class 'UndefinedClass' is not registered");
+        }).to.throw("class 'UndefinedClass' is not defined");
       });
-      it("throw error if try to redefine the class method defined already", function() {
-        expect(function() {
-          klass.refine("Object", {
-            $new: function() {}
-          });
-        }).to.throw("Object.new is already defined");
-      });
-      it("throw error if try to redefine the instance method defined already", function() {
+      it("throw error if try to redefine the method defined already", function() {
         expect(function() {
           klass.refine("Object", {
             valueOf: function() {}

@@ -12,5 +12,9 @@
     return "a";
   };
 
+  strlib.methodIdentifier = function(className, methodName, isClassMethod) {
+    return className + (isClassMethod ? "." : "#") + methodName;
+  };
+
   sc.libs.strlib = strlib;
 })(sc);

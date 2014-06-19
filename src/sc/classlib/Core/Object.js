@@ -14,7 +14,7 @@ SCScript.install(function(sc) {
     var SCArray = $("Array");
 
     spec.__num__ = function() {
-      throw new Error("Wrong Type");
+      throw new Error(this.__className + " cannot be converted to a Number.");
     };
 
     spec.__int__ = function() {
@@ -22,11 +22,11 @@ SCScript.install(function(sc) {
     };
 
     spec.__bool__ = function() {
-      throw new Error("Wrong Type");
+      throw new Error(this.__className + " cannot be converted to a Boolean.");
     };
 
     spec.__sym__ = function() {
-      throw new Error("Wrong Type");
+      throw new Error(this.__className + " cannot be converted to a Symbol.");
     };
 
     spec.__str__ = function() {

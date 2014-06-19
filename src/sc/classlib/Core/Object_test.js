@@ -42,7 +42,7 @@
 
       expect(function() {
         instance.__num__();
-      }).to.throw(Error, "Wrong Type");
+      }).to.throw(Error, "cannot be converted to a Number");
     });
     it("#__int__", function() {
       var instance, test;
@@ -62,7 +62,7 @@
 
       expect(function() {
         instance.__bool__();
-      }).to.throw(Error, "Wrong Type");
+      }).to.throw(Error, "cannot be converted to a Boolean");
     });
     it("#__sym__", function() {
       var instance;
@@ -71,7 +71,7 @@
 
       expect(function() {
         instance.__sym__();
-      }).to.throw(Error, "Wrong Type");
+      }).to.throw(Error, "cannot be converted to a Symbol");
     });
     it("#__str__", function() {
       var instance, test;

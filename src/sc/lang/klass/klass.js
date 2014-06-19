@@ -40,19 +40,20 @@
     constructor.__superClass = superMetaClass.__Spec;
   };
 
-  var def = function(className, constructor, spec, opts) {
+  var def = function(className, constructor, spec) {
     var classMethods, instanceMethods, setMethod;
 
     classMethods    = constructor.metaClass.__MetaSpec.prototype;
     instanceMethods = constructor.prototype;
 
     setMethod = function(methods, methodName, func) {
-      var bond;
-      if (methods.hasOwnProperty(methodName) && !opts.force) {
-        bond = methods === classMethods ? "." : "#";
+      var isClassMethod, methodIdentifier;
+      if (methods.hasOwnProperty(methodName)) {
+        isClassMethod    = (methods === classMethods);
+        methodIdentifier = strlib.methodIdentifier(className, methodName, isClassMethod);
         throw new Error(
           "sc.lang.klass.refine: " +
-            className + bond + methodName + " is already defined."
+            methodIdentifier + " is already defined."
         );
       }
       Object.defineProperty(methods, methodName, {
@@ -82,7 +83,7 @@
     if (metaClasses.hasOwnProperty(className)) {
       throw new Error(
         "sc.lang.klass.define: " +
-          "class '" + className + "' is already registered."
+          "class '" + className + "' is already defined."
       );
     }
 
@@ -90,7 +91,7 @@
       if (!metaClasses.hasOwnProperty(superClassName)) {
         throw new Error(
           "sc.lang.klass.define: " +
-            "superclass '" + superClassName + "' is not registered."
+            "superclass '" + superClassName + "' is not defined."
         );
       }
     }
@@ -207,7 +208,7 @@
     if (!metaClasses.hasOwnProperty(className)) {
       throw new Error(
         "sc.lang.klass.refine: " +
-          "class '" + className + "' is not registered."
+          "class '" + className + "' is not defined."
       );
     }
 
@@ -256,7 +257,6 @@
       if (isClassName(funcName)) {
         return metaClasses[funcName].__Spec.call(this);
       }
-
       return __super__(this, this.__Spec.__superClass, funcName, args);
     },
     valueOf: function() {

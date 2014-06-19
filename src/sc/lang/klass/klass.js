@@ -259,12 +259,15 @@
 
       return __super__(this, this.__Spec.__superClass, funcName, args);
     },
+    valueOf: function() {
+      return this._;
+    },
     toString: function() {
       var name = this.__class._name;
       return String(strlib.article(name) + " " + name);
     },
-    valueOf: function() {
-      return this._;
+    toJSON: function() {
+      return JSON.stringify({ class: this.__className, hash: this.__hash });
     }
   });
 

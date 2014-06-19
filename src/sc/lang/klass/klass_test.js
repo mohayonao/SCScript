@@ -7,7 +7,6 @@
   var klass = sc.lang.klass;
 
   describe("sc.lang.klass", function() {
-    var test;
     it("define", function() {
       expect(function() {
         klass.define("lowercase");
@@ -43,6 +42,8 @@
       }).to.throw("Class not defined: UndefinedClass");
     });
     it("exists", function() {
+      var test;
+
       test = klass.exists("Object");
       expect(test).to.be.a("JSBoolean").that.is.true;
 
@@ -52,7 +53,7 @@
   });
 
   describe("SCObject", function() {
-    var SCObject, SCNil, instance, $nil, test;
+    var SCObject, SCNil, instance, $nil;
     before(function() {
       SCObject = $("Object");
       SCNil = $("Nil");
@@ -62,6 +63,8 @@
       instance = SCObject.new();
     });
     it("#class", function() {
+      var test;
+
       test = $nil.class();
       expect(test).to.equal(SCNil);
 
@@ -69,6 +72,8 @@
       expect(test).to.equal(SCObject);
     });
     it("#valueOf", function() {
+      var test;
+
       test = $nil.valueOf();
       expect(test).to.be.a("JSNull");
 
@@ -76,18 +81,22 @@
       expect(test).to.equal(instance);
     });
     it("#toString", function() {
+      var test;
+
       test = $nil.toString();
       expect(test).to.be.a("JSString").that.equals("nil");
 
       test = instance.toString();
       expect(test).to.be.a("JSString").that.equals("an Object");
     });
-    it("#valueOf", function() {
-      test = $nil.valueOf();
-      expect(test).to.be.a("JSNull");
+    it("#toJSON", function() {
+      var test, json;
 
-      test = instance.valueOf();
-      expect(test).to.equal(instance);
+      test = $nil.toJSON();
+      expect(test).to.be.a("JSString");
+
+      json = JSON.parse(test);
+      expect(json.class).to.equal("Nil");
     });
     describe("#$", function() {
       it("call with no-arguments", sinon.test(function() {

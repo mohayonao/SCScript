@@ -19,21 +19,6 @@
 
   var $ = sc.lang.$;
 
-  sc.lang.klass.refine("Object", function(spec) {
-    spec.toJSON = function() {
-      var value;
-
-      value = this.valueOf();
-      if (value === this) {
-        value = typeOf(this) + "(" + (this.__testid || 0) + ")";
-      } else {
-        value = typeOf(this) + "(" + value + ")";
-      }
-
-      return JSON.stringify(value);
-    };
-  });
-
   sc.test = function(callback) {
     return function() {
       $("Environment").new().push();

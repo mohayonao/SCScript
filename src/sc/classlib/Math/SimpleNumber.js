@@ -28,9 +28,9 @@ SCScript.install(function(sc) {
   }
 
   sc.lang.klass.refine("SimpleNumber", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $int_0 = utils.$int_0;
-    var $int_1 = utils.$int_1;
+    var $nil  = utils.$nil;
+    var $int0 = utils.$int0;
+    var $int1 = utils.$int1;
     var SCArray = $("Array");
 
     spec.__newFrom__ = $.Float;
@@ -62,7 +62,7 @@ SCScript.install(function(sc) {
       return $.Boolean(!isNaN(this._));
     };
 
-    spec.numChannels = utils.alwaysReturn$int_1;
+    spec.numChannels = utils.alwaysReturn$int1;
 
     spec.magnitude = function() {
       return this.abs();
@@ -267,8 +267,8 @@ SCScript.install(function(sc) {
     };
 
     spec.softclip = function() {
-      var a = this._, abs_a = Math.abs(a);
-      return $.Float(abs_a <= 0.5 ? a : (abs_a - 0.25) / a);
+      var a = this._, abs = Math.abs(a);
+      return $.Float(abs <= 0.5 ? a : (abs - 0.25) / a);
     };
 
     spec.coin = function() {
@@ -300,7 +300,7 @@ SCScript.install(function(sc) {
     };
 
     spec.binaryValue = function() {
-      return this._ > 0 ? $int_1 : $int_0;
+      return this._ > 0 ? $int1 : $int0;
     };
 
     spec.rectWindow = function() {
@@ -375,7 +375,7 @@ SCScript.install(function(sc) {
 
     spec.bitTest = function($bit) {
       return $.Boolean(
-        this.bitAnd($int_1.leftShift($bit)).valueOf() !== 0
+        this.bitAnd($int1.leftShift($bit)).valueOf() !== 0
       );
     };
 
@@ -497,7 +497,7 @@ SCScript.install(function(sc) {
     spec.linlin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // (this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
@@ -511,7 +511,7 @@ SCScript.install(function(sc) {
     spec.linexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // Math.pow(outMax/outMin, (this-inMin)/(inMax-inMin)) * outMin;
@@ -526,7 +526,7 @@ SCScript.install(function(sc) {
     spec.explin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // (((Math.log(this/inMin)) / (Math.log(inMax/inMin))) * (outMax-outMin)) + outMin;
@@ -540,7 +540,7 @@ SCScript.install(function(sc) {
     spec.expexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // Math.pow(outMax/outMin, Math.log(this/inMin) / Math.log(inMax/inMin)) * outMin;
@@ -555,7 +555,7 @@ SCScript.install(function(sc) {
     spec.lincurve = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b, $scaled;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         if (Math.abs($curve.valueOf()) < 0.001) {
@@ -576,7 +576,7 @@ SCScript.install(function(sc) {
     spec.curvelin = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         if (Math.abs($curve.valueOf()) < 0.001) {
@@ -597,7 +597,7 @@ SCScript.install(function(sc) {
     spec.bilin = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         if (this >= $inCenter) {
@@ -613,7 +613,7 @@ SCScript.install(function(sc) {
     spec.biexp = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         if (this >= $inCenter) {
@@ -746,7 +746,7 @@ SCScript.install(function(sc) {
     spec.shallowCopy = utils.nop;
   });
 
-  function clip_for_map($this, $inMin, $inMax, $outMin, $outMax, $clip) {
+  function getClippedValue($this, $inMin, $inMax, $outMin, $outMax, $clip) {
     switch ($clip.__sym__()) {
     case "minmax":
       if ($this <= $inMin) {

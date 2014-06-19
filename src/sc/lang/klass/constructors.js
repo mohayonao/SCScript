@@ -12,7 +12,7 @@
   var $symbols, $chars, $integers, $floats;
 
   /* istanbul ignore next */
-  var dummyFunction = (function() {}).bind(null);
+  var dummyFunction = function() {}.bind(null);
 
   function SCNil() {
     this.__super__("Object");

@@ -488,7 +488,7 @@ SCScript.install(function(sc) {
       if (raw.length < size) {
         a = new Array(size);
         for (i = 0; i < size; ++i) {
-          a[i] = raw[mathlib.fold_idx(i, raw.length)];
+          a[i] = raw[mathlib.foldIndex(i, raw.length)];
         }
       } else {
         a = raw.slice(0, size);

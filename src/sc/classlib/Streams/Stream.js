@@ -11,7 +11,7 @@ SCScript.install(function(sc) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
-    var $int_0 = utils.$int_0;
+    var $int0  = utils.$int0;
     var SCArray = $("Array");
 
     spec.constructor = function SCStream() {
@@ -86,7 +86,7 @@ SCScript.install(function(sc) {
       var $this = this;
       var $item, $i;
 
-      $i = $int_0;
+      $i = $int0;
       $.Function(function() {
         return [ function() {
           $item = $this.next($inval);
@@ -138,7 +138,7 @@ SCScript.install(function(sc) {
       var $this = this;
       var $item, $i;
 
-      $i = $int_0;
+      $i = $int0;
       $.Function(function() {
         return [ function() {
           $item = $this.next($item);
@@ -462,7 +462,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$new = function($value) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         value: $value
       });
     };
@@ -491,7 +491,7 @@ SCScript.install(function(sc) {
     utils.setProperty(spec, "<>", "envir");
 
     spec.$new = function($nextFunc, $resetFunc) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         nextFunc: $nextFunc,
         resetFunc: $resetFunc,
         envir: sc.lang.main.$currentEnv

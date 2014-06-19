@@ -12,7 +12,7 @@ SCScript.install(function(sc) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
-    var $int_1 = utils.$int_1;
+    var $int1  = utils.$int1;
     var SCSet  = $("Set");
     var SCArray = $("Array");
     var SCAssociation = $("Association");
@@ -478,10 +478,10 @@ SCScript.install(function(sc) {
       }
 
       $array = this._$array;
-      $size  = $array.size() [">>"] ($int_1);
+      $size  = $array.size() [">>"] ($int1);
 
       do {
-        $index = $size.rand() ["<<"] ($int_1);
+        $index = $size.rand() ["<<"] ($int1);
       } while ($array.at($index) === $nil);
 
       return $array.at($index.__inc__());

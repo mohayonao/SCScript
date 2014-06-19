@@ -10,7 +10,7 @@ SCScript.install(function(sc) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
-    var $int_1 = utils.$int_1;
+    var $int1  = utils.$int1;
     var SCArray = $("Array");
 
     spec.__num__ = function() {
@@ -71,9 +71,9 @@ SCScript.install(function(sc) {
     // TODO: implements gcSanity
     // TODO: implements canCallOS
 
-    spec.size = utils.alwaysReturn$int_0;
-    spec.indexedSize = utils.alwaysReturn$int_0;
-    spec.flatSize = utils.alwaysReturn$int_1;
+    spec.size = utils.alwaysReturn$int0;
+    spec.indexedSize = utils.alwaysReturn$int0;
+    spec.flatSize = utils.alwaysReturn$int1;
 
     spec.do = function($function) {
       sc.lang.iterator.execute(
@@ -421,7 +421,7 @@ SCScript.install(function(sc) {
       return this.asArray();
     };
 
-    spec.rank = utils.alwaysReturn$int_0;
+    spec.rank = utils.alwaysReturn$int0;
 
     spec.deepCollect = fn(function($depth, $function, $index, $rank) {
       return $function.value(this, $index, $rank);
@@ -592,7 +592,7 @@ SCScript.install(function(sc) {
     spec.blendAt = fn(function($index, $method) {
       var $iMin;
 
-      $iMin = $index.$("roundUp", [ $int_1 ]).asInteger().__dec__();
+      $iMin = $index.$("roundUp", [ $int1 ]).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
         $index.$("absdif", [ $iMin ])
@@ -604,7 +604,7 @@ SCScript.install(function(sc) {
 
       $iMin = $index.$("floor").asInteger();
       $ratio = $index.$("absdif", [ $iMin ]);
-      this.perform($method, $iMin, $val.$("*", [ $int_1 ["-"] ($ratio) ]));
+      this.perform($method, $iMin, $val.$("*", [ $int1 ["-"] ($ratio) ]));
       this.perform($method, $iMin.__inc__(), $val.$("*", [ $ratio ]));
 
       return this;
@@ -619,7 +619,7 @@ SCScript.install(function(sc) {
     }, "that; precision=1.0");
 
     spec.isUGen = utils.alwaysReturn$false;
-    spec.numChannels = utils.alwaysReturn$int_1;
+    spec.numChannels = utils.alwaysReturn$int1;
 
     spec.pair = fn(function($that) {
       return $.Array([ this, $that ]);

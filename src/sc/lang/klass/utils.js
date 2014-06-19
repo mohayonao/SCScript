@@ -13,36 +13,46 @@
     $nil: $nil,
     $true: $.True(),
     $false: $.False(),
-    $int_0: $.Integer(0),
-    $int_1: $.Integer(1),
+    $int0: $.Integer(0),
+    $int1: $.Integer(1),
     nop: function() {
       return this;
     },
     alwaysReturn$nil: $.Nil,
     alwaysReturn$true: $.True,
     alwaysReturn$false: $.False,
-    alwaysReturn$int_0: function() {
-      return utils.$int_0;
+    alwaysReturn$int0: function() {
+      return utils.$int0;
     },
-    alwaysReturn$int_1: function() {
-      return utils.$int_1;
+    alwaysReturn$int1: function() {
+      return utils.$int1;
+    },
+    newCopyArgs: function(that, dict) {
+      var instance;
+
+      instance = new that.__Spec();
+      Object.keys(dict).forEach(function(key) {
+        instance["_$" + key] = dict[key] || $.Nil();
+      });
+
+      return instance;
     },
     getMethod: function(className, methodName) {
       return klass.get(className).__Spec.prototype[methodName];
     },
     setProperty: function(spec, type, name) {
-      var access_name;
+      var attrName;
 
-      access_name = "_$" + name;
+      attrName = "_$" + name;
 
       if (type === "<>" || type === "<") {
         spec[name] = function() {
-          return this[access_name] || $nil;
+          return this[attrName] || $nil;
         };
       }
       if (type === "<>" || type === ">") {
         spec[name + "_"] = function($value) {
-          this[access_name] = $value || $nil;
+          this[attrName] = $value || $nil;
           return this;
         };
       }

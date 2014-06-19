@@ -14,7 +14,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$new = function($operator, $a) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         operator: $operator,
         a: $a
       });
@@ -46,7 +46,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$new = function($operator, $a, $b) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         operator: $operator,
         a: $a,
         b: $b
@@ -86,7 +86,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$new = function($operator, $a, $b) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         operator: $operator,
         a: $a,
         b: $b
@@ -140,7 +140,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$new = function($operator, $a, $arglist) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         operator: $operator,
         a: $a
       }).arglist_($arglist);

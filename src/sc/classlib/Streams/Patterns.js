@@ -177,7 +177,7 @@ SCScript.install(function(sc) {
     utils.setProperty(spec, "<>", "length");
 
     spec.$new = fn(function($start, $step, $length) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         start: $start,
         step: $step,
         length: $length
@@ -238,7 +238,7 @@ SCScript.install(function(sc) {
     utils.setProperty(spec, "<>", "length");
 
     spec.$new = fn(function($start, $grow, $length) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         start: $start,
         grow: $grow,
         length: $length

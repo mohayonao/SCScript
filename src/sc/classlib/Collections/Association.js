@@ -17,7 +17,7 @@ SCScript.install(function(sc) {
     };
 
     spec.$new = function($key, $value) {
-      return this._newCopyArgs({
+      return utils.newCopyArgs(this, {
         key: $key,
         value: $value
       });

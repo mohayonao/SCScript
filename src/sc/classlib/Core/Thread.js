@@ -10,9 +10,6 @@ SCScript.install(function(sc) {
   var random = sc.libs.random;
 
   klass.define("Thread : Stream", function(spec, utils) {
-    spec.constructor = function SCThread() {
-      this.__super__("Stream");
-    };
     utils.setProperty(spec, "<", "parent");
 
     spec.$new = fn(function($func) {
@@ -103,6 +100,7 @@ SCScript.install(function(sc) {
 
     spec.constructor = function SCRoutine() {
       this.__super__("Thread");
+      this._$doneValue = null;
     };
 
     spec.$new = function($func) {
@@ -113,7 +111,7 @@ SCScript.install(function(sc) {
 
     var routine$resume = function($inval) {
       if (this._state === sc.STATE_DONE) {
-        return $nil;
+        return this._$doneValue || $nil;
       }
 
       this._parent = main.$currentThread;
@@ -122,6 +120,10 @@ SCScript.install(function(sc) {
       this._state = sc.STATE_RUNNING;
       this._bytecode.runAsRoutine([ $inval || $nil ]);
       this._state = this._bytecode.state;
+
+      if (this._state === sc.STATE_DONE) {
+        this._$doneValue = this._bytecode.result;
+      }
 
       main.$currentThread = this._parent;
       this._parent = null;

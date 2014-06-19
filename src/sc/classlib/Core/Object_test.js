@@ -1170,10 +1170,52 @@
       expect(test).to.be.a("SCNil");
       expect(bytecode.yield).to.be.calledWith(instance);
     }));
-    it.skip("#alwaysYield", function() {
-    });
-    it.skip("#yieldAndReset", function() {
-    });
+    it("#alwaysYield", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "alwaysYield");
+
+      test = instance.alwaysYield();
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.alwaysYield).to.be.calledWith(instance);
+    }));
+    it("#yieldAndReset true", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "yieldAndReset");
+      this.stub(bytecode, "yield");
+
+      test = instance.yieldAndReset($$(true));
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.yieldAndReset).to.be.calledWith(instance);
+      expect(bytecode.yield).to.be.not.called;
+    }));
+    it("#yieldAndReset null", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "yieldAndReset");
+      this.stub(bytecode, "yield");
+
+      test = instance.yieldAndReset();
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.yieldAndReset).to.be.calledWith(instance);
+      expect(bytecode.yield).to.be.not.called;
+    }));
+    it("#yieldAndReset false", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "yieldAndReset");
+      this.stub(bytecode, "yield");
+
+      test = instance.yieldAndReset($$(false));
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.yieldAndReset).to.be.not.called;
+      expect(bytecode.yield).to.be.calledWith(instance);
+    }));
     it.skip("#idle", function() {
     });
     it.skip("#dependants", function() {

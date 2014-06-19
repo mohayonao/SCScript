@@ -526,8 +526,20 @@ SCScript.install(function(sc) {
       return $nil;
     };
 
-    // TODO: implements alwaysYield
-    // TODO: implements yieldAndReset
+    spec.alwaysYield = function() {
+      bytecode.alwaysYield(this);
+      return $nil;
+    };
+
+    spec.yieldAndReset = function($reset) {
+      if (!$reset || $reset === $true) {
+        bytecode.yieldAndReset(this);
+      } else {
+        bytecode.yield(this);
+      }
+      return $nil;
+    };
+
     // TODO: implements idle
     // TODO: implements $initClass
     // TODO: implements dependants

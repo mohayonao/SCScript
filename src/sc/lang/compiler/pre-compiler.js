@@ -14,6 +14,8 @@
     sleep: true,
     wait: true,
     yield: true,
+    alwaysYield: true,
+    yieldAndReset: true,
     embedInStream: true,
   };
 

@@ -263,10 +263,29 @@
       testCase(this, [
         [ null, [ "\\respondsTo" ], true  ],
         [ null, [ "\\undefined"  ], false ],
+        [ null, [ [ "\\respondsTo", "\\size" ] ], true  ],
+        [ null, [ [ "\\undefined" , "\\size" ] ], false ],
       ]);
     });
-    it.skip("#performMsg", function() {
-    });
+    it("#performMsg", sinon.test(function() {
+      var instance, test;
+      var $selector, $arg1, $arg2;
+
+      $selector = $$("\\size");
+      $arg1     = $$();
+      $arg2     = $$();
+
+      instance = this.createInstance();
+      this.stub(instance, "size", sc.test.func());
+
+      test = instance.performMsg($$([ $selector, $arg1, $arg2 ]));
+      expect(instance.size).to.be.calledWith($arg1, $arg2);
+      expect(instance.size).to.be.calledLastIn(test);
+
+      expect(function() {
+        instance.performMsg($$( [ "\\not-understood" ]));
+      }).to.throw("not understood");
+    }));
     it("#perform", sinon.test(function() {
       var instance, test;
       var $selector, $arg1, $arg2;
@@ -314,9 +333,33 @@
     });
     it.skip("#superPerformList", function() {
     });
-    it.skip("#tryPerform", function() {
-    });
-    it.skip("#multiChannelPerform", function() {
+    it("#tryPerform", sinon.test(function() {
+      var instance, test;
+      var $selector, $arg1, $arg2;
+
+      $selector = $$("\\size");
+      $arg1     = $$();
+      $arg2     = $$();
+
+      instance = this.createInstance();
+      this.stub(instance, "size", sc.test.func());
+
+      test = instance.tryPerform($selector, $arg1, $arg2);
+      expect(instance.size).to.be.calledWith($arg1, $arg2);
+      expect(instance.size).to.be.calledLastIn(test);
+
+      test = instance.tryPerform($$("\\not-understood"));
+      expect(test).to.be.a("SCNil");
+    }));
+    it("#multiChannelPerform", function() {
+      var instance, test;
+
+      instance = this.createInstance([ 10, 20, 30 ]);
+
+      test = instance.multiChannelPerform(
+        $$("\\clip"), $$(15), $$([ 20, 25, 20 ])
+      );
+      expect(test).to.be.a("SCArray").that.eqls([ 15, 20, 20 ]);
     });
     it.skip("#performWithEnvir", function() {
     });
@@ -471,7 +514,15 @@
         expect(test).to.be.a("SCBoolean").that.equals(items[1]);
       }, this);
     });
-    it.skip("#equals", function() {
+    it("#equals", function() {
+      testCase(this, [
+        [ 10, [ 10 ], true ],
+        [ null, [ [], [ "\\size" ] ], true ],
+        [ null, [ [], [ "\\size", "\\undefined" ] ], false ],
+        [ null, [ [], [ "\\size", "\\at" ] ], false ],
+        [ [], [ null, [ "\\size", "\\at" ] ], false ],
+        [ 10, [ $.Float(10.0) ], true ],
+      ]);
     });
     it.skip("#compareObject", function() {
     });
@@ -602,7 +653,26 @@
       expect(r.next(), 7).to.be.a("SCNil");
       expect(r.next(), 8).to.be.a("SCNil");
     });
-    it.skip("#fin", function() {
+    it("#fin [ 1, 2, 3 ]", function() {
+      var r = this.createInstance($("Routine").new($$(function() {
+        return $$([ 1, 2, 3 ]).do($$(function($_) {
+          return $_.yield();
+        }));
+      }))).fin();
+
+      expect(r.next(), 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.next(), 2).to.be.a("SCNil");
+      expect(r.next(), 3).to.be.a("SCNil");
+    });
+    it("#fin [ nil ]", function() {
+      var r = this.createInstance($("Routine").new($$(function() {
+        return $$([ null ]).do($$(function($_) {
+          return $_.yield();
+        }));
+      }))).fin();
+
+      expect(r.next(), 1).to.be.a("SCNil");
+      expect(r.next(), 2).to.be.a("SCNil");
     });
     it("#repeat", sinon.test(function() {
       var instance, test;
@@ -637,7 +707,25 @@
       var instance = this.createInstance();
       expect(instance.asStream).to.be.nop;
     });
-    it.skip("#streamArg", function() {
+    it("#streamArg true", function() {
+      var r = this.createInstance(
+        $("Pseq").new($$([ 10, 20, 30 ]))
+      ).streamArg($$(true));
+
+      expect(r.next(), 1).to.be.a("SCInteger").that.equals(10);
+      expect(r.next(), 2).to.be.a("SCInteger").that.equals(20);
+      expect(r.next(), 3).to.be.a("SCInteger").that.equals(30);
+      expect(r.next(), 4).to.be.a("SCNil");
+    });
+    it("#streamArg false", function() {
+      var r = this.createInstance(
+        $("Pseq").new($$([ 10, 20, 30 ])).asStream()
+      ).streamArg($$(false));
+
+      expect(r.next(), 1).to.be.a("SCInteger").that.equals(10);
+      expect(r.next(), 2).to.be.a("SCInteger").that.equals(20);
+      expect(r.next(), 3).to.be.a("SCInteger").that.equals(30);
+      expect(r.next(), 4).to.be.a("SCNil");
     });
     it("#eventAt", function() {
       var instance, test;

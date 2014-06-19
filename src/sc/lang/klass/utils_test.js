@@ -63,10 +63,6 @@
       expect(instance._$a).to.be.a("SCInteger").that.equals(100);
       expect(instance._$b).to.be.a("SCNil");
     });
-    it("getMethod", function() {
-      var test = utils.getMethod("Object", "class");
-      expect(test).to.be.a("JSFunction");
-    });
     it("setPropety <>", function() {
       var test, obj = {};
 

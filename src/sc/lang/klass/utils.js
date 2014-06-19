@@ -37,9 +37,6 @@
 
       return instance;
     },
-    getMethod: function(className, methodName) {
-      return klass.get(className).__Spec.prototype[methodName];
-    },
     setProperty: function(spec, type, name) {
       var attrName;
 

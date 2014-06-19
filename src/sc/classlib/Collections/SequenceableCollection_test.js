@@ -1244,26 +1244,19 @@
         },
       ]);
     });
-    it("#multiChannelPerform", sinon.test(function() {
-      var instance, test, spy;
-      var $arg1, $arg2;
-
-      spy = this.spy(sc.test.func());
-      $arg1 = $$();
-      $arg2 = $$();
-      this.stub(sc.lang.klass.utils, "getMethod")
-        .withArgs("Object", "multiChannelPerform").returns(spy);
+    it("#multiChannelPerform", function() {
+      var instance, test;
 
       instance = this.createInstance();
-      test = instance.multiChannelPerform($arg1, $arg2);
+      test = instance.multiChannelPerform();
       expect(test).to.be.a("SCArray").to.eql([]);
-      expect(sc.lang.klass.utils.getMethod).to.be.not.called;
 
-      instance = this.createInstance([ 1, 2, 3 ]);
-      test = instance.multiChannelPerform($arg1, $arg2);
-      expect(spy).to.be.calledWith($arg1, $arg2);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      instance = this.createInstance([ 10, 20, 30 ]);
+      test = instance.multiChannelPerform(
+        $$("\\clip"), $$(15), $$([ 20, 25, 20 ])
+      );
+      expect(test).to.be.a("SCArray").to.eqls([ 15, 20, 20 ]);
+    });
     it("#multichannelExpandRef", function() {
       var instance = this.createInstance();
       expect(instance.multichannelExpandRef).to.be.nop;

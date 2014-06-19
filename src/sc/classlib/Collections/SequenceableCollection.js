@@ -1432,13 +1432,9 @@ SCScript.install(function(sc) {
     };
 
     spec.multiChannelPerform = function() {
-      var method;
-
-      if (this.size() > 0) {
-        method = utils.getMethod("Object", "multiChannelPerform");
-        return method.apply(this, arguments);
+      if (this.size().__int__() > 0) {
+        return this.__super__("multiChannelPerform", arguments);
       }
-
       return this.class().new();
     };
 

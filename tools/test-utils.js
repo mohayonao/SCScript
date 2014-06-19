@@ -16,6 +16,7 @@
   require("../src/sc/classlib/Core/Thread");
   require("../src/sc/classlib/Math/Integer");
   require("../src/sc/classlib/Math/Float");
+  require("../src/sc/classlib/Streams/ListPatterns");
 
   var $ = sc.lang.$;
 

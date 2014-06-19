@@ -78,7 +78,6 @@ module.exports = function(grunt) {
 
     done = this.async();
     mocha.reporter(reporter).run(function(failure) {
-
       if (cover) {
         createCoverageReport(cover);
       }
@@ -102,5 +101,4 @@ module.exports = function(grunt) {
       });
     };
   });
-
 };

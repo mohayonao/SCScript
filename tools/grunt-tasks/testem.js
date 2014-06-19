@@ -16,5 +16,4 @@ module.exports = function(grunt) {
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
   });
-
 };

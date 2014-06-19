@@ -51,57 +51,79 @@ module.exports = function(grunt) {
     grunt.loadTasks("tools/grunt-tasks");
   }
 
-  grunt.registerTask("default", "Start web server and run task whenever files changed.", [ "-connect", "-watch" ]);
-
-  grunt.registerTask("typo", "Run the typo checker.", function() {
-    grunt.task.run("-typo:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("jscs", "Run the code style checker.", function() {
-    grunt.task.run("-jscs:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("jshint", "Run the lint checker to detect errors and potential problems.", function() {
-    grunt.task.run("-jshint:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("test", "Run node unit tests.", function() {
-    grunt.task.run("-mocha:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("mocha", "Run node unit tests.", function() {
-    grunt.task.run("-mocha:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("cover", "Run node unit tests and create code coverage.", function(filter) {
-    grunt.task.run("-mocha:" + toTaskArgs(filter) + ":nyan:lcov");
-  });
-
-  grunt.registerTask("complexity", "Report code complexity.", function() {
-    grunt.task.run("-complexity:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("complex", "Report code complexity.", function() {
-    grunt.task.run("-complexity:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("impl", "Report classlib methods that are not implemented.", function() {
-    grunt.task.run("-impl:" + toTaskArgs(arguments));
-  });
-
-  grunt.registerTask("lint", 'Alias for "typo", "jscs", "jshint" tasks.', function(filter) {
-    grunt.task.run("-typo:"   + toTaskArgs(filter));
-    grunt.task.run("-jscs:"   + toTaskArgs(filter));
-    grunt.task.run("-jshint:" + toTaskArgs(filter));
-  });
-
-  grunt.registerTask("check", 'Alias for "lint", "test", "complex" tasks.', function(filter) {
-    grunt.task.run("lint:"        + toTaskArgs(filter));
-    grunt.task.run("-mocha:"      + toTaskArgs(filter) + ":nyan:text");
-    grunt.task.run("-complexity:" + toTaskArgs(filter));
-  });
-
-  grunt.registerTask("travis"  , "Run tasks for Travis CI.", [ "-typo", "-jscs", "-jshint", "-mocha::list:lcovonly" ]);
-  grunt.registerTask("gh-pages", "Generate contents for gh-pages.", [ "build", "test::nyan:lcov", "plato" ]);
-
+  grunt.registerTask(
+    "default", "Start web server and run task whenever files changed.", [
+      "-connect", "-watch"
+    ]
+  );
+  grunt.registerTask(
+    "typo", "Run the typo checker.", function() {
+      grunt.task.run("-typo:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "jscs", "Run the code style checker.", function() {
+      grunt.task.run("-jscs:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "jshint", "Run the lint checker to detect errors and potential problems.",
+    function() {
+      grunt.task.run("-jshint:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "test", "Run node unit tests.", function() {
+      grunt.task.run("-mocha:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "mocha", "Run node unit tests.", function() {
+      grunt.task.run("-mocha:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "cover", "Run node unit tests and create code coverage.", function(filter) {
+      grunt.task.run("-mocha:" + toTaskArgs(filter) + ":nyan:lcov");
+    }
+  );
+  grunt.registerTask(
+    "complexity", "Report code complexity.", function() {
+      grunt.task.run("-complexity:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "complex", "Report code complexity.", function() {
+      grunt.task.run("-complexity:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "impl", "Report classlib methods that are not implemented.", function() {
+      grunt.task.run("-impl:" + toTaskArgs(arguments));
+    }
+  );
+  grunt.registerTask(
+    "lint", 'Alias for "typo", "jscs", "jshint" tasks.', function(filter) {
+      grunt.task.run("-typo:"   + toTaskArgs(filter));
+      grunt.task.run("-jscs:"   + toTaskArgs(filter));
+      grunt.task.run("-jshint:" + toTaskArgs(filter));
+    }
+  );
+  grunt.registerTask(
+    "check", 'Alias for "lint", "test", "complex" tasks.', function(filter) {
+      grunt.task.run("lint:"        + toTaskArgs(filter));
+      grunt.task.run("-mocha:"      + toTaskArgs(filter) + ":nyan:text");
+      grunt.task.run("-complexity:" + toTaskArgs(filter));
+    }
+  );
+  grunt.registerTask(
+    "travis"  , "Run tasks for Travis CI.", [
+      "-typo", "-jscs", "-jshint", "-mocha::list:lcovonly"
+    ]
+  );
+  grunt.registerTask(
+    "gh-pages", "Generate contents for gh-pages.", [
+      "build", "test::nyan:lcov", "plato"
+    ]
+  );
 };

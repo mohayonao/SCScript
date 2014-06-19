@@ -32,7 +32,6 @@ module.exports = function(grunt) {
         if (re) {
           reporter.addMethod(re[1], NOT_IMPLEMENTED);
         }
-
       });
     });
 
@@ -112,5 +111,4 @@ module.exports = function(grunt) {
     };
     return Reporter;
   })();
-
 };

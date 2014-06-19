@@ -28,7 +28,7 @@ module.exports = function(grunt) {
     var tmpl = _.template(grunt.file.read(__dirname + "/assets/scscript.tmpl"));
     grunt.file.write("build/scscript.js", tmpl({
       version: q(grunt.config.data.pkg.version),
-      source : build(grunt.file._expand("src", "!classlib", "!test"))
+      source: build(grunt.file._expand("src", "!classlib", "!test"))
     }));
   };
 
@@ -95,5 +95,4 @@ module.exports = function(grunt) {
 
     grunt.file.write("docs/report/test/index.html", html);
   };
-
 };

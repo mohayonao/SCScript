@@ -8,10 +8,10 @@ module.exports = function(grunt) {
       options: {
         jshint: grunt.file.readJSON(".jshintrc"),
         complexity: {
-          logicalor : true,
+          logicalor: true,
           switchcase: true,
-          forin     : true,
-          trycatch  : true
+          forin: true,
+          trycatch: true
         }
       },
       dist: {
@@ -23,5 +23,4 @@ module.exports = function(grunt) {
 
     grunt.task.run("plato");
   });
-
 };

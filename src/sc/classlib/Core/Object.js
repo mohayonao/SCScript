@@ -36,9 +36,7 @@ SCScript.install(function(sc) {
     // TODO: implements $new
     // TODO: implements $newCopyArgs
 
-    spec.$newFrom = function() {
-      return this._doesNotUnderstand("newFrom");
-    };
+    spec.$newFrom = utils.doesNotUnderstand("newFrom");
 
     // TODO: implements dump
 
@@ -470,11 +468,6 @@ SCScript.install(function(sc) {
     // TODO: implements primitiveFailed
     // TODO: implements reportError
     // TODO: implements subclassResponsibility
-    spec._subclassResponsibility = function(methodName) {
-      throw new Error("RECEIVER " + String(this) + ": " +
-                      "'" + methodName + "' should have been implemented by subclass");
-    };
-
     // TODO: implements doesNotUnderstand
     // TODO: implements shouldNotImplement
     // TODO: implements outOfContextReturn

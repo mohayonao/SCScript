@@ -270,22 +270,12 @@
       ]);
     });
     it("#remove", function() {
-      var instance;
-
-      instance = this.createInstance();
-
-      expect(function() {
-        instance.remove();
-      }).to.throw("shouldNotImplement");
+      var instance = this.createInstance();
+      expect(instance.remove.__errorType).to.equal("shouldNotImplement");
     });
     it("#removeFail", function() {
-      var instance;
-
-      instance = this.createInstance();
-
-      expect(function() {
-        instance.removeFail();
-      }).to.throw("shouldNotImplement");
+      var instance = this.createInstance();
+      expect(instance.removeFail.__errorType).to.equal("shouldNotImplement");
     });
     it("#keysValuesDo", sinon.test(function() {
       var instance, test;

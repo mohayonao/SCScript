@@ -55,6 +55,41 @@
       test = utils.alwaysReturn$int1();
       expect(test).to.be.a("SCInteger").that.equals(1);
     });
+    it("subclassResponsibility", function() {
+      var instance = $("Object").new();
+      instance.method = utils.subclassResponsibility("method");
+      expect(function() {
+        instance.method();
+      }).to.throw("'method' should have been implemented by this subclass");
+    });
+    it("doesNotUnderstand", function() {
+      var instance = $("Object").new();
+      instance.method = utils.doesNotUnderstand("method");
+      expect(function() {
+        instance.method();
+      }).to.throw("'method' not understood");
+    });
+    it("shouldNotImplement", function() {
+      var instance = $("Object").new();
+      instance.method = utils.shouldNotImplement("method");
+      expect(function() {
+        instance.method();
+      }).to.throw("'method' not valid for this subclass");
+    });
+    it("notYetImplemented", function() {
+      var instance = $("Object").new();
+      instance.method = utils.notYetImplemented("method");
+      expect(function() {
+        instance.method();
+      }).to.throw("'method' is not yet implemented");
+    });
+    it("notSupported", function() {
+      var instance = $("Object").new();
+      instance.method = utils.notSupported("method");
+      expect(function() {
+        instance.method();
+      }).to.throw("'method' is not supported");
+    });
     it("newCopyArgs", function() {
       var instance = utils.newCopyArgs($("Object"), {
         a: $.Integer(100), b: undefined

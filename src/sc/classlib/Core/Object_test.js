@@ -913,12 +913,6 @@
     });
     it.skip("#reportError", function() {
     });
-    it("#_subclassResponsibility", function() {
-      var instance = this.createInstance();
-      expect(function() {
-        instance._subclassResponsibility("method");
-      }).to.throw("should have been implemented by subclass");
-    });
     it.skip("#shouldNotImplement", function() {
     });
     it.skip("#outOfContextReturn", function() {

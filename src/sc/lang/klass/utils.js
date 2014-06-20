@@ -6,6 +6,8 @@
 
   var $     = sc.lang.$;
   var klass = sc.lang.klass;
+  var strlib = sc.libs.strlib;
+  var q = strlib.quote;
 
   var $nil = $.Nil();
 
@@ -26,6 +28,51 @@
     },
     alwaysReturn$int1: function() {
       return utils.$int1;
+    },
+    subclassResponsibility: function(methodName) {
+      var func = function() {
+        var errMsg = "RECEIVER " + this.__className + ": " +
+          q(methodName) + " should have been implemented by this subclass";
+        throw new Error(errMsg);
+      };
+      func.__errorType = "subclassResponsibility";
+      return func;
+    },
+    doesNotUnderstand: function(methodName) {
+      var func = function() {
+        var errMsg = "RECEIVER " + this.__className + ": " +
+          q(methodName) + " not understood";
+        throw new Error(errMsg);
+      };
+      func.__errorType = "doesNotUnderstand";
+      return func;
+    },
+    shouldNotImplement: function(methodName) {
+      var func = function() {
+        var errMsg = "RECEIVER " + this.__className + ": " +
+          q(methodName) + " not valid for this subclass";
+        throw new Error(errMsg);
+      };
+      func.__errorType = "shouldNotImplement";
+      return func;
+    },
+    notYetImplemented: function(methodName) {
+      var func = function() {
+        var errMsg = "RECEIVER " + this.__className + ": " +
+          q(methodName) + " is not yet implemented";
+        throw new Error(errMsg);
+      };
+      func.__errorType = "notYetImplemented";
+      return func;
+    },
+    notSupported: function(methodName) {
+      var func = function() {
+        var errMsg = "RECEIVER " + this.__className + ": " +
+          q(methodName) + " is not supported";
+        throw new Error(errMsg);
+      };
+      func.__errorType = "notSupported";
+      return func;
     },
     newCopyArgs: function(that, dict) {
       var instance;

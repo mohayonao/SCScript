@@ -151,9 +151,7 @@
     });
     it("#do", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.do();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance.do.__errorType).to.equal("subclassResponsibility");
     });
     it.skip("#iter", function() {
     });
@@ -223,9 +221,7 @@
     });
     it("#add", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.add();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance.add.__errorType).to.equal("subclassResponsibility");
     });
     it("#addAll", function() {
       testCase(this, [
@@ -239,9 +235,7 @@
     });
     it("#remove", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.remove();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance.remove.__errorType).to.equal("subclassResponsibility");
     });
     it("#removeAll", function() {
       testCase(this, [

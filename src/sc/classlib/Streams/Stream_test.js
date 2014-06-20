@@ -43,9 +43,7 @@
     });
     it("#next", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.next();
-      }).to.throw("should have been implemented by subclass");
+      expect(instance.next.__errorType).to.equal("subclassResponsibility");
     });
     it("#iter", function() {
       var instance = this.createInstance();
@@ -88,9 +86,7 @@
     });
     it("#put", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.put();
-      }).to.throw("should have been implemented by subclass");
+      expect(instance.put.__errorType).to.equal("subclassResponsibility");
     });
     it("#putN", sinon.test(function() {
       var instance, test;

@@ -18,10 +18,7 @@ SCScript.install(function(sc) {
       return $nil;
     };
 
-    spec.next = function() {
-      return this._subclassResponsibility("next");
-    };
-
+    spec.next = utils.subclassResponsibility("next");
     spec.iter = utils.nop;
 
     spec.value = fn(function($inval) {
@@ -54,9 +51,7 @@ SCScript.install(function(sc) {
       return $array;
     }, "inval");
 
-    spec.put = function() {
-      return this._subclassResponsibility("put");
-    };
+    spec.put = utils.subclassResponsibility("put");
 
     spec.putN = fn(function($n, $item) {
       var $this = this;

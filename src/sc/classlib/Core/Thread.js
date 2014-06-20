@@ -9,7 +9,7 @@ SCScript.install(function(sc) {
   var klass = sc.lang.klass;
   var random = sc.libs.random;
 
-  klass.define("Thread : Stream", function(spec, utils) {
+  klass.refine("Thread", function(spec, utils) {
     utils.setProperty(spec, "<", "parent");
 
     spec.$new = fn(function($func) {
@@ -93,7 +93,7 @@ SCScript.install(function(sc) {
     // TODO: implements checkCanArchive
   });
 
-  klass.define("Routine : Thread", function(spec, utils) {
+  klass.refine("Routine", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.__tag = sc.TAG_ROUTINE;

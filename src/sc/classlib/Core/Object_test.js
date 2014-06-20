@@ -12,9 +12,10 @@
   var bytecode = sc.lang.bytecode;
 
   describe("SCObject", function() {
-    var SCObject;
+    var SCObject, SCRoutine;
     before(function() {
       SCObject = $("Object");
+      SCRoutine = $("Routine");
       this.createInstance = function(instance) {
         return $$($$(instance), "Object" + this.test.title);
       };
@@ -638,7 +639,7 @@
       expect(instance.yield).to.be.calledLastIn(test);
     }));
     it("#cyc", function() {
-      var r = this.createInstance($("Routine").new($$(function() {
+      var r = this.createInstance(SCRoutine.new($$(function() {
         return $$([ 1, 2 ]).do($$(function($_) {
           return $_.yield();
         }));
@@ -654,7 +655,7 @@
       expect(r.next(), 8).to.be.a("SCNil");
     });
     it("#fin [ 1, 2, 3 ]", function() {
-      var r = this.createInstance($("Routine").new($$(function() {
+      var r = this.createInstance(SCRoutine.new($$(function() {
         return $$([ 1, 2, 3 ]).do($$(function($_) {
           return $_.yield();
         }));
@@ -665,7 +666,7 @@
       expect(r.next(), 3).to.be.a("SCNil");
     });
     it("#fin [ nil ]", function() {
-      var r = this.createInstance($("Routine").new($$(function() {
+      var r = this.createInstance(SCRoutine.new($$(function() {
         return $$([ null ]).do($$(function($_) {
           return $_.yield();
         }));

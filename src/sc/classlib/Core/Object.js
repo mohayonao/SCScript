@@ -12,6 +12,7 @@ SCScript.install(function(sc) {
     var $false = utils.$false;
     var $int1  = utils.$int1;
     var SCArray = $("Array");
+    var SCRoutine = $("Routine");
 
     spec.__num__ = function() {
       throw new Error(this.__className + " cannot be converted to a Number.");
@@ -321,7 +322,7 @@ SCScript.install(function(sc) {
 
     spec.cyc = fn(function($n) {
       var $this = this;
-      return $("Routine").new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         var $inval;
         return [
           function(_arg0) {
@@ -348,7 +349,7 @@ SCScript.install(function(sc) {
 
     spec.fin = fn(function($n) {
       var $this = this;
-      return $("Routine").new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         var $inval;
         return [
           function(_arg0) {
@@ -394,7 +395,7 @@ SCScript.install(function(sc) {
     spec.streamArg = fn(function($embed) {
       var $this = this;
       if ($embed === $true) {
-        return $("Routine").new($.Function(function() {
+        return SCRoutine.new($.Function(function() {
           var $inval;
           return [
             function(_arg) {
@@ -407,7 +408,7 @@ SCScript.install(function(sc) {
           ];
         }));
       } else {
-        return $("Routine").new($.Function(function() {
+        return SCRoutine.new($.Function(function() {
           return [ function() {
             return $.Function(function() {
               return [ function() {

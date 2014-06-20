@@ -7,12 +7,13 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
   var klass = sc.lang.klass;
 
-  klass.define("Stream : AbstractFunction", function(spec, utils) {
+  klass.refine("Stream", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int0  = utils.$int0;
     var SCArray = $("Array");
+    var SCRoutine = $("Routine");
 
     spec.parent = function() {
       return $nil;
@@ -96,7 +97,7 @@ SCScript.install(function(sc) {
 
     spec.subSample = fn(function($offset, $skipSize) {
       var $this = this;
-      return $("Routine").new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         return [ function() {
           var offset, i;
 
@@ -318,7 +319,7 @@ SCScript.install(function(sc) {
       var $reset;
 
       $reset = $false;
-      return $("Routine").new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         var $inval;
         return [
           function(_arg0) {

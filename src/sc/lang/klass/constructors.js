@@ -75,6 +75,10 @@
     __tag: sc.TAG_FUNC
   });
 
+  klass.define("Stream : AbstractFunction");
+  klass.define("Thread : Stream");
+  klass.define("Routine : Thread");
+
   var SCRef = klass.define("Ref : AbstractFunction");
 
   // $

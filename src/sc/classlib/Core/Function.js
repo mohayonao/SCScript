@@ -12,6 +12,7 @@ SCScript.install(function(sc) {
   sc.lang.klass.refine("Function", function(spec, utils) {
     var $nil = utils.$nil;
     var SCArray = $("Array");
+    var SCRoutine = $("Routine");
 
     // TODO: implements def
 
@@ -93,7 +94,7 @@ SCScript.install(function(sc) {
     // TODO: implements block
 
     spec.asRoutine = function() {
-      return $("Routine").new(this);
+      return SCRoutine.new(this);
     };
 
     spec.dup = fn(function($n) {
@@ -153,7 +154,7 @@ SCScript.install(function(sc) {
     };
 
     spec.r = function() {
-      return $("Routine").new(this);
+      return SCRoutine.new(this);
     };
 
     spec.p = function() {

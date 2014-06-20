@@ -6,6 +6,9 @@
   var strlib = sc.libs.strlib;
 
   describe("sc.libs.strlib", function() {
+    it("quote", function() {
+      expect(strlib.quote("quoted")).to.equal("'quoted'");
+    });
     it("article", function() {
       expect(strlib.article("apple")).to.equal("an");
       expect(strlib.article("banana")).to.equal("a");

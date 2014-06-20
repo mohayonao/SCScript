@@ -5,6 +5,10 @@
 
   var strlib = {};
 
+  strlib.quote = function(str) {
+    return "'" + String(str) + "'";
+  };
+
   strlib.article = function(name) {
     if (/^[AEIOU]/i.test(name)) {
       return "an";

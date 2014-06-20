@@ -4,6 +4,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var q  = sc.libs.strlib.quote;
   var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
@@ -127,7 +128,7 @@ SCScript.install(function(sc) {
         return method.apply($this, msg.slice(1));
       }
 
-      throw new Error("Message '" + selector + "' not understood.");
+      throw new Error("Message " + q(selector) + " not understood.");
     };
 
     spec.performMsg = function($msg) {
@@ -779,7 +780,7 @@ SCScript.install(function(sc) {
         return $true;
       }
 
-      throw new Error("binary operator '" + aSelector + "' failed.");
+      throw new Error("binary operator " + q(aSelector) + " failed.");
     };
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $thig, $adverb) {

@@ -5,6 +5,7 @@ SCScript.install(function(sc) {
 
   var $  = sc.lang.$;
   var io = sc.lang.io;
+  var q  = sc.libs.strlib.quote;
 
   sc.lang.klass.refine("Event", function(spec, utils) {
     var $nil = utils.$nil;
@@ -36,7 +37,7 @@ SCScript.install(function(sc) {
         methodName = methodName.substr(0, methodName.length - 1);
         if (this[methodName]) {
           io.warn(
-            "WARNING: '" + methodName + "' exists a method name, " +
+            "WARNING: " + q(methodName) + " exists a method name, " +
               "so you can't use it as pseudo-method"
           );
         }

@@ -6,6 +6,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var q  = sc.libs.strlib.quote;
 
   sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
     var $nil   = utils.$nil;
@@ -1267,7 +1268,7 @@ SCScript.install(function(sc) {
       }
 
       throw new Error(
-        "unrecognized adverb: '" + adverb + "' for operator '" + String($aSelector) + "'"
+        "unrecognized adverb: " + q(adverb) + " for operator " + q($aSelector)
       );
     };
 

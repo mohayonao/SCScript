@@ -7,6 +7,7 @@
 
   var $      = sc.lang.$;
   var strlib = sc.libs.strlib;
+  var q      = strlib.quote;
 
   var klass       = {};
   var metaClasses = {};
@@ -76,14 +77,14 @@
     if (!isClassName(className)) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
-          "classname should be CamelCase, but got '" + className + "'"
+          "classname should be CamelCase, but got " + q(className)
       );
     }
 
     if (metaClasses.hasOwnProperty(className)) {
       throw new Error(
         "sc.lang.klass.define: " +
-          "class '" + className + "' is already defined."
+          "class " + q(className) + " is already defined."
       );
     }
 
@@ -91,7 +92,7 @@
       if (!metaClasses.hasOwnProperty(superClassName)) {
         throw new Error(
           "sc.lang.klass.define: " +
-            "superclass '" + superClassName + "' is not defined."
+            "superclass " + q(superClassName) + " is not defined."
         );
       }
     }
@@ -164,7 +165,7 @@
     if (func) {
       result = func.apply(that, args || []);
     } else {
-      throw new Error("supermethod '" + funcName + "' not found");
+      throw new Error("supermethod " + q(funcName) + " not found");
     }
 
     delete that.__superClassP;
@@ -208,7 +209,7 @@
     if (!metaClasses.hasOwnProperty(className)) {
       throw new Error(
         "sc.lang.klass.refine: " +
-          "class '" + className + "' is not defined."
+          "class " + q(className) + " is not defined."
       );
     }
 
@@ -309,7 +310,7 @@
 
     spec._doesNotUnderstand = function(methodName) {
       throw new Error("RECEIVER " + this.__str__() + ": " +
-                      "Message '" + methodName + "' not understood.");
+                      "Message " + q(methodName) + " not understood.");
     };
   });
 

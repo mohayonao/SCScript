@@ -5,8 +5,9 @@ SCScript.install(function(sc) {
 
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var klass = sc.lang.klass;
 
-  sc.lang.klass.refine("Symbol", function(spec, utils) {
+  klass.refine("Symbol", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.__sym__ = function() {
@@ -40,31 +41,94 @@ SCScript.install(function(sc) {
     // TODO: implements asCompileString
 
     spec.asClass = function() {
-      if (sc.lang.klass.exists(this._)) {
-        return sc.lang.klass.get(this._);
+      if (klass.exists(this._)) {
+        return klass.get(this._);
       }
       return $nil;
     };
 
-    // TODO: implements asSetter
-    // TODO: implements asGetter
-    // TODO: implements asSpec
-    // TODO: implements asWarp
-    // TODO: implements asTuning
-    // TODO: implements asScale
-    // TODO: implements isSetter
-    // TODO: implements isClassName
-    // TODO: implements isMetaClassName
-    // TODO: implements isPrefix
-    // TODO: implements isPrimitiveName
-    // TODO: implements isPrimitive
-    // TODO: implements isMap
-    // TODO: implements isRest
-    // TODO: implements envirGet
-    // TODO: implements envirPut
-    // TODO: implements blend
-    // TODO: implements ++
-    // TODO: implements asBinOpString
+    spec.asSetter = function() {
+      var matches = /^([a-z]\w{0,255}?)_?$/.exec(this._);
+      if (matches) {
+        return $.Symbol(matches[1] + "_");
+      }
+      throw new Error("Cannot convert class names or primitive names to setters.");
+    };
+
+    spec.asGetter = function() {
+      return $.Symbol(this._.replace(/_$/, ""));
+    };
+
+    spec.asSpec = function() {
+      return $("Spec").specs().at(this);
+    };
+
+    spec.asWarp = function($spec) {
+      return $("Warp").warps().at(this).new($spec);
+    };
+
+    spec.asTuning = function() {
+      return $("Tuning").at(this);
+    };
+
+    spec.asScale = function() {
+      return $("Scale").at(this);
+    };
+
+    spec.isSetter = function() {
+      return $.Boolean(/^[a-z]\w*_$/.test(this._));
+    };
+
+    spec.isClassName = function() {
+      return $.Boolean(/^[A-Z]\w*$/.test(this._));
+    };
+
+    spec.isMetaClassName = function() {
+      return $.Boolean(/^Meta_[A-Z]\w*$/.test(this._));
+    };
+
+    spec.isPrefix = fn(function($other) {
+      if ($other.__tag === sc.TAG_SYM) {
+        return $.Boolean(this._.indexOf($other._) === 0);
+      }
+      return this;
+    }, "other");
+
+    spec.isPrimitiveName = function() {
+      return $.Boolean(this._.charAt(0) === "_");
+    };
+
+    spec.isPrimitive = utils.alwaysReturn$false;
+
+    spec.isMap = function() {
+      return $.Boolean(/^[ac]\d/.test(this._));
+    };
+
+    spec.isRest = function() {
+      return $.Boolean(!/^[ac]\d/.test(this._));
+    };
+
+    spec.envirGet = function() {
+      return $.Environment(this._);
+    };
+
+    spec.envirPut = function($aValue) {
+      $aValue = $aValue || /* istanbul ignore next */ $nil;
+      return $.Environment(this._, $aValue);
+    };
+
+    spec.blend = utils.nop;
+
+    spec["++"] = fn(function($aString) {
+      return $.String(this._ + $aString.__str__(), true);
+    }, "aString");
+
+    spec.asBinOpString = function() {
+      if (/^[a-z]\w*$/.exec(this._)) {
+        return $.String(this._ + ":", true);
+      }
+      return this;
+    };
 
     spec.applyTo = fn(function($firstArg, $$args) {
       return $firstArg.perform.apply($firstArg, [ this ].concat($$args._));
@@ -143,10 +207,21 @@ SCScript.install(function(sc) {
     spec.rrand = utils.nop;
     spec.exprand = utils.nop;
 
-    // TODO: Implements <
-    // TODO: Implements >
-    // TODO: Implements <=
-    // TODO: Implements >=
+    spec["<"] = function($aNumber) {
+      return $.Boolean($aNumber.__tag === sc.TAG_SYM && this._ < $aNumber._);
+    };
+
+    spec[">"] = function($aNumber) {
+      return $.Boolean($aNumber.__tag === sc.TAG_SYM && this._ > $aNumber._);
+    };
+
+    spec["<="] = function($aNumber) {
+      return $.Boolean($aNumber.__tag === sc.TAG_SYM && this._ <= $aNumber._);
+    };
+
+    spec[">="] = function($aNumber) {
+      return $.Boolean($aNumber.__tag === sc.TAG_SYM && this._ >= $aNumber._);
+    };
 
     spec.degreeToKey = utils.nop;
     spec.degrad = utils.nop;
@@ -155,7 +230,16 @@ SCScript.install(function(sc) {
     spec.doComplexOp = utils.nop;
     spec.doSignalOp = utils.nop;
 
-    // TODO: Implements doListOp
+    spec.doListOp = fn(function($aSelector, $aList) {
+      var $this = this;
+      $aList.do($.Function(function() {
+        return [ function($item) {
+          return $item.perform($aSelector, $this);
+        } ];
+      }));
+      return this;
+    }, "aSelector; aList");
+
     // TODO: Implements primitiveIndex
     // TODO: Implements specialIndex
     // TODO: Implements printOn

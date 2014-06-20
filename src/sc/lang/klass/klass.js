@@ -101,7 +101,7 @@
     var newClass;
 
     newClass = new MetaClass.__MetaSpec();
-    newClass._name = className;
+    newClass.__className = className;
     newClass.__Spec = constructor;
     newClass.__superClass = MetaClass.__MetaSpec.__superClass;
     Object.defineProperties(constructor.prototype, {
@@ -114,7 +114,8 @@
         writable: true
       },
       __className: {
-        value: className
+        value: className,
+        writable: true
       }
     });
     classes[className] = newClass;
@@ -129,8 +130,8 @@
     newClass  = registerClass(metaClass, className, constructor);
 
     metaClass.__Spec = constructor;
-    metaClass._isMetaClass = true;
-    metaClass._name = "Meta_" + className;
+    metaClass.__isMetaClass = true;
+    metaClass.__className  = "Meta_" + className;
     classes["Meta_" + className] = metaClass;
 
     if (newClass.initClass) {
@@ -243,8 +244,7 @@
 
   function SCClass() {
     SCObject.call(this);
-    this._name = "Class";
-    this._isMetaClass = false;
+    this.__isMetaClass = false;
   }
 
   SCObject.metaClass = createClassInstance(function() {});
@@ -262,8 +262,7 @@
       return this._;
     },
     toString: function() {
-      var name = this.__class._name;
-      return String(strlib.article(name) + " " + name);
+      return String(strlib.article(this.__className) + " " + this.__className);
     },
     toJSON: function() {
       return JSON.stringify({ class: this.__className, hash: this.__hash });
@@ -276,7 +275,7 @@
       return __super__(this, this.__superClass, funcName, args);
     },
     toString: function() {
-      return String(this._name);
+      return String(this.__className);
     }
   });
 

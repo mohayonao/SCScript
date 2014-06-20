@@ -8,14 +8,14 @@ SCScript.install(function(sc) {
 
   klass.refine("Class", function(spec) {
     spec.class = function() {
-      if (this._isMetaClass) {
+      if (this.__isMetaClass) {
         return $("Class");
       }
-      return $("Meta_" + this._name);
+      return $("Meta_" + this.__className);
     };
 
     spec.name = function() {
-      return $.String(this._name);
+      return $.String(this.__className);
     };
 
     // TODO: implements superclass

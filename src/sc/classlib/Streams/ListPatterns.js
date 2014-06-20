@@ -15,7 +15,7 @@ SCScript.install(function(sc) {
       if ($list.size().__int__() > 0) {
         return this.__super__("new").list_($list).repeats_($repeats);
       }
-      throw new Error("ListPattern (" + this._name + ") requires a non-empty collection.");
+      throw new Error("ListPattern (" + this.__className + ") requires a non-empty collection.");
     }, "list; repeats=1");
 
     spec.copy = function() {

@@ -4,6 +4,7 @@
   require("./Boolean");
 
   var $$ = sc.test.object;
+  var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
 
@@ -39,21 +40,14 @@
         SCBoolean.new();
       }).to.throw("should use literal");
     });
-    it("#xor", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
-      this.stub($, "Boolean", function() {
-        return $$({
-          not: spy
-        });
-      });
-
-      instance = this.createInstance();
-
-      test = instance.xor();
-      expect(spy).to.be.calledLastIn(test);
-    }));
+    it("#xor", function() {
+      testCase(this, [
+        [ true , [ true  ], false ],
+        [ true , [ false ], true  ],
+        [ false, [ true  ], true  ],
+        [ false, [ false ], false ],
+      ]);
+    });
     it("#asBoolean", function() {
       var instance = this.createInstance();
       expect(instance.asBoolean).to.be.nop;

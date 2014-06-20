@@ -302,6 +302,22 @@
     return fn;
   };
 
+  var SCPseq    = $("Pseq");
+  var SCRoutine = $("Routine");
+
+  sc.test.routine = function(source, opts) {
+    if (Array.isArray(source)) {
+      if (source.length) {
+        return SCPseq.new(toSCObject(source), toSCObject(opts || 1)).asStream();
+      }
+      return SCRoutine.new(toSCObject(function() {
+        return toSCObject(source).do(toSCObject(function($_) {
+          return $_.yield();
+        }));
+      }));
+    }
+  };
+
   // for chai
   global.chai.use(function(chai, utils) {
     var assert$proto = chai.Assertion.prototype;

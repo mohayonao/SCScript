@@ -8,14 +8,6 @@
 
   var $ = sc.lang.$;
 
-  function arrayToRoutine(array) {
-    return $("Routine").new($$(function() {
-      return $$(array).do($$(function($_) {
-        return $_.yield();
-      }));
-    }));
-  }
-
   var SHOULD_BE_IGNORED = function() {
     return $$("\\should be ignored");
   };
@@ -749,11 +741,11 @@
       });
       it("value.yield", function() {
         /*
-          a = r { [ 10, 20, 30 ].do(_.yield) };
+          a = Pseq.new([ 10, 20, 30 ]).asStream;
           r = r { a.value.yield; };
         */
         var spy = sinon.spy();
-        var a = arrayToRoutine([ 10, 20, 30 ]);
+        var a = sc.test.routine([ 10, 20, 30 ]);
         var r = this.createInstance($.Function(function() {
           return [
             function() {
@@ -842,11 +834,11 @@
       });
       it("use iterator in a Function", function() {
         /*
-          r = r { [ 1, 2, 3 ].do(_.yield) };
-          f =   { r.value };
+          r = Pseq.new([ 1, 2, 3 ]).asStream;
+          f = { r.value };
         */
         var r, f;
-        r = arrayToRoutine([ 1, 2, 3 ]);
+        r = sc.test.routine([ 1, 2, 3 ]);
         f = $$(function() {
           return r.value();
         });
@@ -858,15 +850,15 @@
       });
       it("use iterators at the same time", function() {
         /*
-          a = r { [   1,   2,   3 ].do(_.yield) };
-          b = r { [  10,  20,  30 ].do(_.yield) };
-          c = r { [ 100, 200, 300 ].do(_.yield) };
-          f =   { [ a.value, b.value, c.value ] };
+          a = Pseq.new([   1,   2,   3 ]).asStream;
+          b = Pseq.new([  10,  20,  30 ]).asStream;
+          c = Pseq.new([ 100, 200, 300 ]).asStream;
+          f = { [ a.value, b.value, c.value ] };
         */
         var a, b, c, f;
-        a = arrayToRoutine([   1,   2,   3 ]);
-        b = arrayToRoutine([  10,  20,  30 ]);
-        c = arrayToRoutine([ 100, 200, 300 ]);
+        a = sc.test.routine([   1,   2,   3 ]);
+        b = sc.test.routine([  10,  20,  30 ]);
+        c = sc.test.routine([ 100, 200, 300 ]);
         f = $$(function() {
           return $$([ a.value(), b.value(), c.value() ]);
         });

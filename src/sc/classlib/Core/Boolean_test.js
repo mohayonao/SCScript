@@ -8,10 +8,12 @@
 
   var $ = sc.lang.$;
 
+  var SCBoolean = $("Boolean");
+  var SCFalse = $("False");
+  var SCTrue = $("True");
+
   describe("SCBoolean", function() {
-    var SCBoolean;
     before(function() {
-      SCBoolean = $("Boolean");
       this.createInstance = function(value) {
         var instance = $.Boolean(!!value);
         return $$(instance, "Boolean" + this.test.title);
@@ -77,9 +79,7 @@
   });
 
   describe("SCTrue", function() {
-    var SCTrue;
     before(function() {
-      SCTrue = $("True");
       this.createInstance = function() {
         return $.True();
       };
@@ -184,9 +184,7 @@
   });
 
   describe("SCFalse", function() {
-    var SCFalse;
     before(function() {
-      SCFalse = $("False");
       this.createInstance = function() {
         return $.False();
       };

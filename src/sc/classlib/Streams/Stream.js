@@ -7,13 +7,14 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
   var klass = sc.lang.klass;
 
+  var SCArray = $("Array");
+  var SCRoutine = $("Routine");
+
   klass.refine("Stream", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int0  = utils.$int0;
-    var SCArray = $("Array");
-    var SCRoutine = $("Routine");
 
     spec.parent = function() {
       return $nil;

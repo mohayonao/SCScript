@@ -6,13 +6,14 @@ SCScript.install(function(sc) {
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
 
+  var SCArray = $("Array");
+
   sc.lang.klass.refine("Collection", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int0  = utils.$int0;
     var $int1  = utils.$int1;
-    var SCArray = $("Array");
 
     spec.$newFrom = fn(function($aCollection) {
       var $newCollection;

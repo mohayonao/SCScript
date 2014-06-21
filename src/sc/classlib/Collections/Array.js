@@ -9,9 +9,10 @@ SCScript.install(function(sc) {
   var rand  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
+  var SCArray = $("Array");
+
   sc.lang.klass.refine("Array", function(spec, utils) {
     var $nil    = utils.$nil;
-    var SCArray = $("Array");
 
     spec.$with = function() {
       return $.Array(slice.call(arguments));

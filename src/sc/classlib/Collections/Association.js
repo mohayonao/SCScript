@@ -3,7 +3,7 @@ SCScript.install(function(sc) {
 
   require("../Math/Magnitude");
 
-  sc.lang.klass.define("Association : Magnitude", function(spec, utils) {
+  sc.lang.klass.refine("Association", function(spec, utils) {
     var $false = utils.$false;
 
     utils.setProperty(spec, "<>", "key");

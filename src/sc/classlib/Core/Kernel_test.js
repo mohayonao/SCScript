@@ -8,12 +8,13 @@
 
   var $ = sc.lang.$;
 
+  var SCClass = $("Class");
+  var SCMetaClass = $("Meta_Class");
+  var SCProcess = $("Process");
+  var SCMain = $("Main");
+  var SCInterpreter = $("Interpreter");
+
   describe("SCClass", function() {
-    var SCClass, SCMetaClass;
-    before(function() {
-      SCClass      = $("Class");
-      SCMetaClass = $("Meta_Class");
-    });
     it("#class", function() {
       var test;
 
@@ -35,9 +36,7 @@
   });
 
   describe("SCProcess", function() {
-    var SCProcess;
     before(function() {
-      SCProcess = $("Process");
       this.createInstance = function() {
         return SCProcess.new();
       };
@@ -61,10 +60,6 @@
   });
 
   describe("SCMain", function() {
-    var SCMain;
-    before(function() {
-      SCMain = $("Main");
-    });
     it(".new", function() {
       expect(function() {
         SCMain.new();
@@ -73,9 +68,7 @@
   });
 
   describe("SCInterpreter", function() {
-    var SCInterpreter;
     before(function() {
-      SCInterpreter = $("Interpreter");
       this.createInstance = function() {
         return SCInterpreter.new();
       };

@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCRef = $("Ref");
+
   describe("SCRef", function() {
-    var SCRef;
     before(function() {
-      SCRef = $("Ref");
       this.createInstance = function(value) {
         return SCRef.new(value || $$(null));
       };

@@ -8,10 +8,10 @@
 
   var $ = sc.lang.$;
 
+  var SCArray = $("Array");
+
   describe("SCArray", function() {
-    var SCArray;
     before(function() {
-      SCArray = $("Array");
       this.createInstance = function(source) {
         return $.Array((source || []).map($$));
       };

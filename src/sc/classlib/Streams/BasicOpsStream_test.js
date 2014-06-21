@@ -6,7 +6,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-  var SCRoutine;
 
   function arrayToFuncStream() {
     var args = arguments, i = 0, j = 0;
@@ -21,10 +20,7 @@
   }
 
   describe("SCUnaryOpStream", function() {
-    var SCUnaryOpStream;
     before(function() {
-      SCUnaryOpStream = $("UnaryOpStream");
-      SCRoutine       = $("Routine");
       this.createInstance = function(op, $stream) {
         return $stream.composeUnaryOp($.Symbol(op));
       };
@@ -50,10 +46,7 @@
   });
 
   describe("SCBinaryOpStream", function() {
-    var SCBinaryOpStream;
     before(function() {
-      SCBinaryOpStream = $("BinaryOpStream");
-      SCRoutine        = $("Routine");
       this.createInstance = function(op, $stream, $argStream) {
         return $stream.composeBinaryOp($.Symbol(op), $argStream);
       };
@@ -97,10 +90,7 @@
   });
 
   describe("SCBinaryOpXStream", function() {
-    var SCBinaryOpXStream;
     before(function() {
-      SCBinaryOpXStream = $("BinaryOpXStream");
-      SCRoutine         = $("Routine");
       this.createInstance = function(op, $stream, $argStream) {
         return $stream.composeBinaryOp($.Symbol(op), $argStream, $$("\\x"));
       };
@@ -165,10 +155,7 @@
   });
 
   describe("SCNAryOpStream", function() {
-    var SCNAryOpStream;
     before(function() {
-      SCNAryOpStream = $("NAryOpStream");
-      SCRoutine      = $("Routine");
       this.createInstance = function(op, $stream, $argList) {
         return $stream.composeNAryOp($.Symbol(op), $argList);
       };

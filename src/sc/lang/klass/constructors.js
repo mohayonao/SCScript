@@ -40,6 +40,7 @@
     __tag: sc.TAG_FLOAT
   });
 
+  klass.define("Association : Magnitude");
   klass.define("Collection");
   klass.define("SequenceableCollection : Collection");
 

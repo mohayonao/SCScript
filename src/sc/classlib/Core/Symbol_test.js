@@ -9,10 +9,10 @@
   var $     = sc.lang.$;
   var klass = sc.lang.klass;
 
+  var SCSymbol = $("Symbol");
+
   describe("SCSymbol", function() {
-    var SCSymbol;
     before(function() {
-      SCSymbol = $("Symbol");
       this.createInstance = function(value) {
         return $.Symbol(value || "sym");
       };

@@ -7,10 +7,11 @@
 
   var $ = sc.lang.$;
 
+  var SCThread = $("Thread");
+  var SCRoutine = $("Routine");
+
   describe("SCThread", function() {
-    var SCThread;
     before(function() {
-      SCThread = $("Thread");
       this.createInstance = function(funcArray) {
         return SCThread.new($.Function(function() {
           return funcArray || [];
@@ -120,9 +121,7 @@
   });
 
   describe("SCRoutine", function() {
-    var SCRoutine;
     before(function() {
-      SCRoutine = $("Routine");
       this.createInstance = function(funcArray) {
         return SCRoutine.new($.Function(function() {
           return funcArray || [];

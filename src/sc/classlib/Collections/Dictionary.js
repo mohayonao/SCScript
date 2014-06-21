@@ -8,14 +8,15 @@ SCScript.install(function(sc) {
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
 
+  var SCSet = $("Set");
+  var SCArray = $("Array");
+  var SCAssociation = $("Association");
+
   sc.lang.klass.refine("Dictionary", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int1  = utils.$int1;
-    var SCSet  = $("Set");
-    var SCArray = $("Array");
-    var SCAssociation = $("Association");
 
     spec.$new = fn(function($n) {
       return this.__super__("new", [ $n ]);

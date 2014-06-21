@@ -9,10 +9,10 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCSet = $("Set");
+
   describe("SCSet", function() {
-    var SCSet;
     before(function() {
-      SCSet = $("Set");
       this.createInstance = function(source) {
         source = $$(source || []);
         return SCSet.newFrom(source);

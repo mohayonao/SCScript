@@ -7,13 +7,15 @@ SCScript.install(function(sc) {
   var q  = sc.libs.strlib.quote;
   var bytecode = sc.lang.bytecode;
 
+  var SCArray = $("Array");
+  var SCRoutine = $("Routine");
+  var SCAssociation = $("Association");
+
   sc.lang.klass.refine("Object", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int1  = utils.$int1;
-    var SCArray = $("Array");
-    var SCRoutine = $("Routine");
 
     spec.__num__ = function() {
       throw new Error(this.__className + " cannot be converted to a Number.");
@@ -296,7 +298,7 @@ SCScript.install(function(sc) {
     };
 
     spec["->"] = function($obj) {
-      return $("Association").new(this, $obj);
+      return SCAssociation.new(this, $obj);
     };
 
     spec.next = utils.nop;

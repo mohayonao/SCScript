@@ -8,10 +8,10 @@
 
   var $ = sc.lang.$;
 
+  var SCString = $("String");
+
   describe("SCString", function() {
-    var SCString;
     before(function() {
-      SCString = $("String");
       this.createInstance = function(str) {
         return $.String(str || "str");
       };

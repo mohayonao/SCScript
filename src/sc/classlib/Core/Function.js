@@ -9,10 +9,11 @@ SCScript.install(function(sc) {
   var iterator = sc.lang.iterator;
   var bytecode = sc.lang.bytecode;
 
+  var SCArray = $("Array");
+  var SCRoutine = $("Routine");
+
   sc.lang.klass.refine("Function", function(spec, utils) {
     var $nil = utils.$nil;
-    var SCArray = $("Array");
-    var SCRoutine = $("Routine");
 
     // TODO: implements def
 

@@ -9,10 +9,10 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCFloat = $("Float");
+
   describe("SCFloat", function() {
-    var SCFloat;
     before(function() {
-      SCFloat = $("Float");
       this.createInstance = function(value) {
         return $.Float(typeof value === "undefined" ? 0 : value);
       };

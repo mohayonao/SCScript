@@ -9,10 +9,10 @@
   var $ = sc.lang.$;
   var fromCharCode = String.fromCharCode;
 
+  var SCChar = $("Char");
+
   describe("SCChar", function() {
-    var SCChar;
     before(function() {
-      SCChar = $("Char");
       this.createInstance = function(value) {
         return $.Char(typeof value === "undefined" ? "a" : value);
       };

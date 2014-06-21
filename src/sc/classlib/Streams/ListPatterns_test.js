@@ -7,10 +7,11 @@
 
   var $ = sc.lang.$;
 
+  var SCListPattern = $("ListPattern");
+  var SCPseq = $("Pseq");
+
   describe("SCListPattern", function() {
-    var SCListPattern;
     before(function() {
-      SCListPattern = $("ListPattern");
       this.createInstance = function(list, repeats) {
         return SCListPattern.new($$(list || [ 1, 2, 3 ]), $$(repeats || 1));
       };
@@ -39,9 +40,7 @@
   });
 
   describe("SCPseq", function() {
-    var SCPseq;
     before(function() {
-      SCPseq = $("Pseq");
       this.createInstance = function(list, repeats, offset) {
         return SCPseq.new($$(list || [ 1, 2, 3 ]), $$(repeats || 1), $$(offset || 0));
       };

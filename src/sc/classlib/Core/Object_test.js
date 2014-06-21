@@ -11,11 +11,11 @@
   var iterator = sc.lang.iterator;
   var bytecode = sc.lang.bytecode;
 
+  var SCObject = $("Object");
+  var SCRoutine = $("Routine");
+
   describe("SCObject", function() {
-    var SCObject, SCRoutine;
     before(function() {
-      SCObject = $("Object");
-      SCRoutine = $("Routine");
       this.createInstance = function(instance) {
         return $$($$(instance), "Object" + this.test.title);
       };
@@ -553,22 +553,16 @@
       test = instance.identityHash();
       expect(test).to.be.a("SCInteger");
     });
-    it("#->", sinon.test(function() {
-      var instance, test, spy;
+    it("#->", function() {
+      var instance, test;
       var $obj;
 
-      spy = this.spy(sc.test.func());
       $obj = $$();
-      this.stub(sc.lang.klass, "get").withArgs("Association").returns($$({
-        new: spy
-      }));
-
       instance = this.createInstance();
 
       test = instance ["->"] ($obj);
-      expect(spy).to.be.calledWith(instance, $obj);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      expect(test).to.be.a("SCAssociation");
+    });
     it("#next", function() {
       var instance = this.createInstance();
       expect(instance.next).to.be.nop;

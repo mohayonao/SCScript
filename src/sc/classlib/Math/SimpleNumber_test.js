@@ -10,9 +10,7 @@
   var klass = sc.lang.klass;
 
   describe("SCSimpleNumber", function() {
-    var SCSimpleNumber;
     before(function() {
-      SCSimpleNumber = $("SimpleNumber");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
         return $$(instance, "SimpleNumber" + this.test.title);

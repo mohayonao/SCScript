@@ -8,13 +8,14 @@
 
   var $ = sc.lang.$;
 
+  var SCDictionary = $("Dictionary");
+  var SCIdentityDictionary = $("IdentityDictionary");
+  var SCSet = $("Set");
+  var SCArray = $("Array");
+  var SCAssociation = $("Association");
+
   describe("SCDictionary", function() {
-    var SCDictionary, SCAssociation, SCArray, SCSet;
     before(function() {
-      SCDictionary  = $("Dictionary");
-      SCAssociation = $("Association");
-      SCArray = $("Array");
-      SCSet   = $("Set");
       this.createInstance = function(list) {
         return SCDictionary.newFrom($$(list || []));
       };
@@ -555,9 +556,7 @@
   });
 
   describe("SCIdentityDictionary", function() {
-    var SCIdentityDictionary;
     before(function() {
-      SCIdentityDictionary = $("IdentityDictionary");
       this.createInstance = function(list) {
         return SCIdentityDictionary.newFrom($$(list || []));
       };

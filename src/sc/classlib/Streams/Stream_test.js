@@ -7,12 +7,15 @@
 
   var $ = sc.lang.$;
 
+  var SCStream = $("Stream");
+  var SCOneShotStream = $("OneShotStream");
+  var SCFuncStream = $("FuncStream");
+  var SCPauseStream = $("PauseStream");
+  var SCTask = $("Task");
+  var SCRoutine = $("Routine");
+
   describe("SCStream", function() {
-    var SCStream, SCOneShotStream, SCRoutine;
     before(function() {
-      SCStream        = $("Stream");
-      SCOneShotStream = $("OneShotStream");
-      SCRoutine       = $("Routine");
       this.createInstance = function(value) {
         var instance;
         value = $$(value || null);
@@ -600,9 +603,7 @@
   });
 
   describe("SCOneShotStream", function() {
-    var SCOneShotStream;
     before(function() {
-      SCOneShotStream = $("OneShotStream");
       this.createInstance = function(value) {
         return SCOneShotStream.new($$(value));
       };
@@ -625,9 +626,7 @@
   });
 
   describe("SCFuncStream", function() {
-    var SCFuncStream;
     before(function() {
-      SCFuncStream = $("FuncStream");
       this.createInstance = function(nextFunc, resetFunc) {
         return SCFuncStream.new($$(nextFunc), $$(resetFunc));
       };
@@ -663,9 +662,7 @@
   });
 
   describe("SCPauseStream", function() {
-    var SCPauseStream;
     before(function() {
-      SCPauseStream = $("PauseStream");
       this.createInstance = function() {
         return SCPauseStream.new();
       };
@@ -724,9 +721,7 @@
   });
 
   describe("SCTask", function() {
-    var SCTask;
     before(function() {
-      SCTask = $("Task");
       this.createInstance = function() {
         return SCTask.new();
       };

@@ -9,10 +9,10 @@
   var $ = sc.lang.$;
   var klass = sc.lang.klass;
 
+  var SCFunctionList = $("FunctionList");
+
   describe("SCAbstractFunction", function() {
-    var SCAbstractFunction;
     before(function() {
-      SCAbstractFunction = $("AbstractFunction");
       this.createInstance = function(func) {
         var instance = $.Function(function() {
           return [ func || function() {} ];
@@ -677,9 +677,7 @@
   });
 
   describe("SCUnaryOpFunction", function() {
-    var SCUnaryOpFunction;
     before(function() {
-      SCUnaryOpFunction = $("UnaryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -744,9 +742,7 @@
   });
 
   describe("SCBinaryOpFunction", function() {
-    var SCBinaryOpFunction;
     before(function() {
-      SCBinaryOpFunction = $("BinaryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -795,9 +791,7 @@
   });
 
   describe("SCNAryOpFunction", function() {
-    var SCNAryOpFunction;
     before(function() {
-      SCNAryOpFunction = $("NAryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -846,10 +840,8 @@
   });
 
   describe("SCFunctionList", function() {
-    var SCFunctionList;
     var $int10, $int20, $int5;
     before(function() {
-      SCFunctionList = $("FunctionList");
       this.createInstance = function() {
         var instance = SCFunctionList.new($$([
           function($a, $b) {

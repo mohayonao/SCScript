@@ -8,6 +8,9 @@ SCScript.install(function(sc) {
   var rand = sc.libs.random;
   var q    = sc.libs.strlib.quote;
 
+  var SCArray = $("Array");
+  var SCRoutine = $("Routine");
+
   function prOpSimpleNumber(selector, func) {
     return function($aNumber, $adverb) {
       var tag = $aNumber.__tag;
@@ -32,8 +35,6 @@ SCScript.install(function(sc) {
     var $nil  = utils.$nil;
     var $int0 = utils.$int0;
     var $int1 = utils.$int1;
-    var SCArray = $("Array");
-    var SCRoutine = $("Routine");
 
     spec.__newFrom__ = $.Float;
 

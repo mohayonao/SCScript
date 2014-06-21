@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCNil = $("Nil");
+
   describe("SCNil", function() {
-    var SCNil;
     before(function() {
-      SCNil = $("Nil");
       this.createInstance = function() {
         return $.Nil();
       };

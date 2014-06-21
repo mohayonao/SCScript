@@ -9,9 +9,7 @@
   var iterator = sc.lang.iterator;
 
   describe("SCNumber", function() {
-    var SCNumber;
     before(function() {
-      SCNumber = $("Number");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
         return $$(instance, "Number" + this.test.title);

@@ -7,10 +7,11 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
   var iterator = sc.lang.iterator;
 
+  var SCArray = $("Array");
+
   sc.lang.klass.refine("Set", function(spec, utils) {
     var $nil  = utils.$nil;
     var $int0 = utils.$int0;
-    var SCArray = $("Array");
 
     utils.setProperty(spec, "<>", "array");
 

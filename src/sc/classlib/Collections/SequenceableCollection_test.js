@@ -8,11 +8,11 @@
 
   var $ = sc.lang.$;
 
+  var SCSequenceableCollection = $("SequenceableCollection");
+  var SCArray = $("Array");
+
   describe("SCSequenceableCollection", function() {
-    var SCSequenceableCollection, SCArray;
     before(function() {
-      SCSequenceableCollection = $("SequenceableCollection");
-      SCArray = $("Array");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source||[]).map($$), !!immutable);
         return $$(instance, "SequenceableCollection" + this.test.title);

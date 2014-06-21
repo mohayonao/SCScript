@@ -20,11 +20,15 @@
 
   var $ = sc.lang.$;
 
+  var SCEnvironment = $("Environment");
+  var SCPseq = $("Pseq");
+  var SCRoutine = $("Routine");
+
   sc.test = function(callback) {
     return function() {
-      $("Environment").new().push();
+      SCEnvironment.new().push();
       callback.apply(this);
-      $("Environment").pop();
+      SCEnvironment.pop();
     };
   };
 
@@ -301,9 +305,6 @@
 
     return fn;
   };
-
-  var SCPseq    = $("Pseq");
-  var SCRoutine = $("Routine");
 
   sc.test.routine = function(source, opts) {
     if (Array.isArray(source)) {

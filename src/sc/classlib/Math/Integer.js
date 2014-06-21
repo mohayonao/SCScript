@@ -8,6 +8,8 @@ SCScript.install(function(sc) {
   var iterator = sc.lang.iterator;
   var mathlib  = sc.libs.mathlib;
 
+  var SCArray = $("Array");
+
   var bop = function(selector, type1, type2) {
     var func = mathlib[selector];
 
@@ -30,7 +32,6 @@ SCScript.install(function(sc) {
   sc.lang.klass.refine("Integer", function(spec, utils) {
     var $nil  = utils.$nil;
     var $int1 = utils.$int1;
-    var SCArray = $("Array");
 
     spec.__newFrom__ = $.Integer;
 

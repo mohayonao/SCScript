@@ -9,11 +9,11 @@
   var $ = sc.lang.$;
   var klass = sc.lang.klass;
 
+  var SCPattern = $("Pattern");
+  var SCPseq = $("Pseq");
+
   describe("SCPattern", function() {
-    var SCPattern, SCPseq;
     before(function() {
-      SCPattern = $("Pattern");
-      SCPseq    = $("Pseq");
       this.createInstance = function(list) {
         var instance;
         if (Array.isArray(list)) {

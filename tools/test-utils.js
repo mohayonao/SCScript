@@ -356,6 +356,23 @@
       };
     });
 
+    utils.overwriteMethod(assert$proto, "closeTo", function(_super) {
+      return function(expected, delta, msg) {
+        var actual, i, imax;
+        actual = utils.flag(this, "object");
+        if (Array.isArray(actual) && Array.isArray(expected)) {
+          msg = msg || "";
+          for (i = 0, imax = Math.max(actual.length, expected.length); i < imax; ++i) {
+            _super.apply(
+              new chai.Assertion(actual[i]), [ expected[i], delta, msg + "[" + i + "]" ]
+            );
+          }
+          return this;
+        }
+        return _super.apply(this, arguments);
+      };
+    });
+
     utils.addMethod(assert$proto, "withMessage", function() {
       utils.flag(this, "message", sc.test.desc.apply(null, arguments));
     });

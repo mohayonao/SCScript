@@ -10,9 +10,10 @@
   var iterator = sc.lang.iterator;
 
   describe("SCArrayedCollection", function() {
-    var SCArrayedCollection;
+    var SCArrayedCollection, SCArray;
     before(function() {
       SCArrayedCollection = $("ArrayedCollection");
+      SCArray = $("Array");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source || []).map($$), !!immutable);
         return $$(instance, "ArrayedCollection" + this.test.title);
@@ -29,7 +30,9 @@
       test = instance.__elem__($obj);
       expect(test).to.equal($obj);
     });
-    it.skip(".newClear", function() {
+    it(".newClear", function() {
+      var test = SCArray.newClear($$(4));
+      expect(test).to.be.a("SCArray").that.eqls([ null, null, null, null ]);
     });
     it.skip("#indexedSize", function() {
     });
@@ -1301,6 +1304,12 @@
       expected = new Int8Array([ 0, -1, 0 ]);
       expect(test).to.eql(expected);
     });
+    it(".newClear", function() {
+      var test = SCInt8Array.newClear($$(4));
+      expect(test).to.be.a("SCInt8Array").that.eqls(
+        new Int8Array([ 0, 0, 0, 0 ])
+      );
+    });
   });
 
   describe("SCInt16Array", function() {
@@ -1316,6 +1325,12 @@
 
       expected = new Int16Array([ 0, -1, 0 ]);
       expect(test).to.eql(expected);
+    });
+    it(".newClear", function() {
+      var test = SCInt16Array.newClear($$(4));
+      expect(test).to.be.a("SCInt16Array").that.eqls(
+        new Int16Array([ 0, 0, 0, 0 ])
+      );
     });
   });
 
@@ -1333,6 +1348,12 @@
       expected = new Int32Array([ 0, -1, 0 ]);
       expect(test).to.eql(expected);
     });
+    it(".newClear", function() {
+      var test = SCInt32Array.newClear($$(4));
+      expect(test).to.be.a("SCInt32Array").that.eqls(
+        new Int32Array([ 0, 0, 0, 0 ])
+      );
+    });
   });
 
   describe("SCFloatArray", function() {
@@ -1349,6 +1370,12 @@
       expected = new Float32Array([ 0, 0.5, -0.5 ]);
       expect(test).to.eql(expected);
     });
+    it(".newClear", function() {
+      var test = SCFloatArray.newClear($$(4));
+      expect(test).to.be.a("SCFloatArray").that.eqls(
+        new Float32Array([ 0, 0, 0, 0 ])
+      );
+    });
   });
 
   describe("SCDoubleArray", function() {
@@ -1364,6 +1391,12 @@
 
       expected = new Float64Array([ 0, 0.5, -0.5 ]);
       expect(test).to.eql(expected);
+    });
+    it(".newClear", function() {
+      var test = SCDoubleArray.newClear($$(4));
+      expect(test).to.be.a("SCDoubleArray").that.eqls(
+        new Float64Array([ 0, 0, 0, 0 ])
+      );
     });
   });
 })();

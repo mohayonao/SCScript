@@ -23,7 +23,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function(item) {
-      return item;
+      return item || $nil;
     };
 
     spec._ThrowIfImmutable = function() {
@@ -32,7 +32,22 @@ SCScript.install(function(sc) {
       }
     };
 
-    // TODO: implements $newClear
+    spec.$newClear = fn(function($indexedSize) {
+      var $obj;
+      var array, indexedSize, i;
+
+      $obj = this.new();
+
+      indexedSize = $indexedSize.__int__();
+      array = new Array(indexedSize);
+      for (i = 0; i < indexedSize; ++i) {
+        array[i] = $obj.__elem__();
+      }
+      $obj._ = array;
+
+      return $obj;
+    }, "indexedSize=0");
+
     // TODO: implements indexedSize
 
     spec.size = function() {
@@ -813,7 +828,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function(item) {
-      int8[0] = item.__int__();
+      int8[0] = item ? item.__int__() : 0;
       return $.Integer(int8[0]);
     };
   });
@@ -828,7 +843,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function(item) {
-      int16[0] = item.__int__();
+      int16[0] = item ? item.__int__() : 0;
       return $.Integer(int16[0]);
     };
   });
@@ -843,7 +858,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function(item) {
-      int32[0] = item.__int__();
+      int32[0] = item ? item.__int__() : 0;
       return $.Integer(int32[0]);
     };
   });
@@ -858,7 +873,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function(item) {
-      float32[0] = item.__num__();
+      float32[0] = item ? item.__num__() : 0;
       return $.Float(float32[0]);
     };
   });
@@ -873,7 +888,7 @@ SCScript.install(function(sc) {
     };
 
     spec.__elem__ = function(item) {
-      float64[0] = item.__num__();
+      float64[0] = item ? item.__num__() : 0;
       return $.Float(float64[0]);
     };
   });

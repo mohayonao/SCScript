@@ -55,6 +55,10 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSString").that.equals("str");
     });
+    it(".newClear", function() {
+      var test = SCString.newClear($$(4));
+      expect(test).to.be.a("SCString").that.equals("    ");
+    });
     it.skip("<>unixCmdActions", function() {
     });
     it.skip(".initClass", function() {

@@ -4,6 +4,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var q  = sc.libs.strlib.quote;
   var bytecode = sc.lang.bytecode;
 
   sc.lang.klass.refine("Object", function(spec, utils) {
@@ -12,9 +13,10 @@ SCScript.install(function(sc) {
     var $false = utils.$false;
     var $int1  = utils.$int1;
     var SCArray = $("Array");
+    var SCRoutine = $("Routine");
 
     spec.__num__ = function() {
-      throw new Error("Wrong Type");
+      throw new Error(this.__className + " cannot be converted to a Number.");
     };
 
     spec.__int__ = function() {
@@ -22,11 +24,11 @@ SCScript.install(function(sc) {
     };
 
     spec.__bool__ = function() {
-      throw new Error("Wrong Type");
+      throw new Error(this.__className + " cannot be converted to a Boolean.");
     };
 
     spec.__sym__ = function() {
-      throw new Error("Wrong Type");
+      throw new Error(this.__className + " cannot be converted to a Symbol.");
     };
 
     spec.__str__ = function() {
@@ -36,9 +38,7 @@ SCScript.install(function(sc) {
     // TODO: implements $new
     // TODO: implements $newCopyArgs
 
-    spec.$newFrom = function() {
-      return this._doesNotUnderstand("newFrom");
-    };
+    spec.$newFrom = utils.doesNotUnderstand("newFrom");
 
     // TODO: implements dump
 
@@ -102,44 +102,80 @@ SCScript.install(function(sc) {
       return $.Boolean(this.__class === $aClass);
     };
 
-    spec.respondsTo = fn(function($aSymbol) {
-      return $.Boolean(typeof this[$aSymbol.__sym__()] === "function");
-    }, "aSymbol");
+    var respondsTo = function($this, $aSymbol) {
+      return typeof $this[
+        $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ ""
+      ] === "function";
+    };
 
-    // TODO: implements performMsg
+    spec.respondsTo = function($aSymbol) {
+      var $this = this;
+      if ($aSymbol && $aSymbol.isSequenceableCollection().__bool__()) {
+        return $.Boolean($aSymbol.asArray()._.every(function($aSymbol) {
+          return $.Boolean(respondsTo($this, $aSymbol)).__bool__();
+        }));
+      }
+      return $.Boolean(respondsTo(this, $aSymbol));
+    };
 
-    spec.perform = function($selector) {
+    var performMsg = function($this, msg) {
       var selector, method;
 
-      selector = $selector.__sym__();
-      method = this[selector];
+      selector = msg[0] ? msg[0].__sym__() : /* istanbul ignore next */ "";
+      method = $this[selector];
 
       if (method) {
-        return method.apply(this, slice.call(arguments, 1));
+        return method.apply($this, msg.slice(1));
       }
 
-      throw new Error("Message '" + selector + "' not understood.");
+      throw new Error("Message " + q(selector) + " not understood.");
+    };
+
+    spec.performMsg = function($msg) {
+      return performMsg(this, $msg ? $msg.asArray()._ : /* istanbul ignore next */ []);
+    };
+
+    spec.perform = function() {
+      return performMsg(this, slice.call(arguments));
     };
 
     spec.performList = function($selector, $arglist) {
-      var selector, method;
-
-      selector = $selector.__sym__();
-      method = this[selector];
-
-      if (method) {
-        return method.apply(this, $arglist.asArray()._);
-      }
-
-      throw new Error("Message '" + selector + "' not understood.");
+      return performMsg(this, [ $selector ].concat(
+        $arglist ? $arglist.asArray()._ : /* istanbul ignore next */ []
+      ));
     };
 
     spec.functionPerformList = utils.nop;
 
     // TODO: implements superPerform
     // TODO: implements superPerformList
-    // TODO: implements tryPerform
-    // TODO: implements multiChannelPerform
+
+    spec.tryPerform = function($selector) {
+      if (respondsTo(this, $selector)) {
+        return performMsg(this, slice.call(arguments));
+      }
+      return $nil;
+    };
+
+    spec.multiChannelPerform = function($selector) {
+      var list, items, length, i, args, $obj, iter;
+      items = [ this ].concat(slice.call(arguments, 1));
+      length = Math.max.apply(null, items.map(function($_) {
+        return $_.size().__int__();
+      }));
+      iter = function($_) {
+        return $_.wrapAt ? $_.wrapAt($.Integer(i)) : $_;
+      };
+      list = new Array(length);
+      for (i = 0; i < length; ++i) {
+        args = items.map(iter);
+        $obj = args[0];
+        args[0] = $selector;
+        list[i] = performMsg($obj, args);
+      }
+      return $.Array(list);
+    };
+
     // TODO: implements performWithEnvir
     // TODO: implements performKeyValuePairs
 
@@ -183,7 +219,7 @@ SCScript.install(function(sc) {
 
     spec.dup = fn(function($n) {
       var $this = this;
-      var $array, i, imax;
+      var array, i, n;
 
       if ($n.isSequenceableCollection().__bool__()) {
         return SCArray.fillND($n, $.Function(function() {
@@ -193,12 +229,13 @@ SCScript.install(function(sc) {
         }));
       }
 
-      $array = SCArray.new($n);
-      for (i = 0, imax = $n.__int__(); i < imax; ++i) {
-        $array.add(this.copy());
+      n = $n.__int__();
+      array = new Array(n);
+      for (i = 0; i < n; ++i) {
+        array[i] = this.copy();
       }
 
-      return $array;
+      return $.Array(array);
     }, "n=2");
 
     spec["!"] = function($n) {
@@ -230,7 +267,19 @@ SCScript.install(function(sc) {
       return $.Boolean(this !== $obj);
     };
 
-    // TODO: implements equals
+    spec.equals = fn(function($that, $properties) {
+      var $this = this;
+      if (this === $that) {
+        return $true;
+      }
+      if (this.respondsTo($properties).__bool__() && $that.respondsTo($properties).__bool__()) {
+        return $.Boolean($properties.asArray()._.every(function($_) {
+          return performMsg($this, [ $_ ]) ["=="] (performMsg($that, [ $_ ])).__bool__();
+        }));
+      }
+      return this ["=="] ($that);
+    }, "that; properties");
+
     // TODO: implements compareObject
     // TODO: implements instVarHash
 
@@ -274,27 +323,65 @@ SCScript.install(function(sc) {
 
     spec.cyc = fn(function($n) {
       var $this = this;
-      return $("Routine").new($.Function(function() {
-        return [ function() {
-          return $n.do($.Function(function() {
-            var $inval;
-            return [
-              function(_arg0) {
-                $inval = _arg0;
-                $inval = $this.embedInStream($inval);
-                return $inval;
-              },
-              function() {
-                return $this.reset();
-              },
-              $.NOP
-            ];
-          }));
-        } ];
+      return SCRoutine.new($.Function(function() {
+        var $inval;
+        return [
+          function(_arg0) {
+            $inval = _arg0;
+            return $n.do($.Function(function() {
+              return [
+                function() {
+                  $inval = $this.embedInStream($inval);
+                  return $inval;
+                },
+                function() {
+                  return $this.reset();
+                },
+                $.NOP
+              ];
+            }));
+          },
+          function() {
+            $inval = null;
+          }
+        ];
       }));
     }, "n=inf");
 
-    // TODO: implements fin
+    spec.fin = fn(function($n) {
+      var $this = this;
+      return SCRoutine.new($.Function(function() {
+        var $inval;
+        return [
+          function(_arg0) {
+            var $item;
+            $inval = _arg0;
+            return $n.do($.Function(function() {
+              return [
+                function() {
+                  $item = $this.next($inval);
+                  return $item;
+                },
+                function() {
+                  if ($item === $nil) {
+                    $nil.alwaysYield();
+                  }
+                  return $nil;
+                },
+                function() {
+                  $inval = $item.yield();
+                  return $inval;
+                },
+                $.NOP
+              ];
+            }));
+          },
+          function() {
+            $inval = null;
+          }
+        ];
+      }));
+    }, "n=1");
 
     spec.repeat = fn(function($repeats) {
       return $("Pn").new(this, $repeats).asStream();
@@ -306,7 +393,33 @@ SCScript.install(function(sc) {
 
     spec.asStream = utils.nop;
 
-    // TODO: implements streamArg
+    spec.streamArg = fn(function($embed) {
+      var $this = this;
+      if ($embed === $true) {
+        return SCRoutine.new($.Function(function() {
+          var $inval;
+          return [
+            function(_arg) {
+              $inval = _arg;
+              return $this.embedInStream($inval);
+            },
+            function() {
+              $inval = null;
+            }
+          ];
+        }));
+      } else {
+        return SCRoutine.new($.Function(function() {
+          return [ function() {
+            return $.Function(function() {
+              return [ function() {
+                return $this.yield();
+              } ];
+            }).loop();
+          } ];
+        }));
+      }
+    }, "embed=false");
 
     spec.eventAt = utils.alwaysReturn$nil;
 
@@ -357,11 +470,6 @@ SCScript.install(function(sc) {
     // TODO: implements primitiveFailed
     // TODO: implements reportError
     // TODO: implements subclassResponsibility
-    spec._subclassResponsibility = function(methodName) {
-      throw new Error("RECEIVER " + String(this) + ": " +
-                      "'" + methodName + "' should have been implemented by subclass");
-    };
-
     // TODO: implements doesNotUnderstand
     // TODO: implements shouldNotImplement
     // TODO: implements outOfContextReturn
@@ -522,12 +630,24 @@ SCScript.install(function(sc) {
     };
 
     spec.yield = function() {
-      bytecode.yield(this);
+      bytecode.yield(this.value());
       return $nil;
     };
 
-    // TODO: implements alwaysYield
-    // TODO: implements yieldAndReset
+    spec.alwaysYield = function() {
+      bytecode.alwaysYield(this.value());
+      return $nil;
+    };
+
+    spec.yieldAndReset = function($reset) {
+      if (!$reset || $reset === $true) {
+        bytecode.yieldAndReset(this.value());
+      } else {
+        bytecode.yield(this.value());
+      }
+      return $nil;
+    };
+
     // TODO: implements idle
     // TODO: implements $initClass
     // TODO: implements dependants
@@ -660,7 +780,7 @@ SCScript.install(function(sc) {
         return $true;
       }
 
-      throw new Error("binary operator '" + aSelector + "' failed.");
+      throw new Error("binary operator " + q(aSelector) + " failed.");
     };
 
     spec.performBinaryOpOnSimpleNumber = function($aSelector, $thig, $adverb) {

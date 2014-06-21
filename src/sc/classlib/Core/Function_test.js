@@ -192,20 +192,14 @@
     }));
     it.skip("#block", function() {
     });
-    it("#asRoutine", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
-        new: spy
-      }));
+    it("#asRoutine", function() {
+      var instance, test;
 
       instance = this.createInstance();
 
       test = instance.asRoutine();
-      expect(spy).to.be.calledWith(instance);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      expect(test).to.be.a("SCRoutine");
+    });
     it("#dup", sinon.test(function() {
       var instance, test, spy;
       var $n;
@@ -308,20 +302,14 @@
         },
       ]);
     });
-    it("#r", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
-        new: spy
-      }));
+    it("#r", function() {
+      var instance, test;
 
       instance = this.createInstance();
 
       test = instance.r();
-      expect(spy).to.be.calledWith(instance);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      expect(test).to.be.a("SCRoutine");
+    });
     it("#p", sinon.test(function() {
       var instance, test, spy;
 

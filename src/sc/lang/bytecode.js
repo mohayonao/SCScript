@@ -134,7 +134,7 @@
 
     if (this._child) {
       result = this._child.runAsRoutine(args);
-      if (this.state !== sc.STATE_SUSPENDED) {
+      if (this.state === sc.STATE_RUNNING) {
         result = null;
       }
     }
@@ -193,6 +193,10 @@
   };
 
   Bytecode.prototype.advance = function() {
+    if (this.state === sc.STATE_INIT) {
+      this.free();
+      return;
+    }
     if (this._child || this._index < this._length) {
       this.state = sc.STATE_SUSPENDED;
       return;
@@ -255,16 +259,56 @@
     return this;
   };
 
+  Bytecode.prototype.yieldAndReset = function($value) {
+    this.state   = sc.STATE_INIT;
+    this.result  = $value;
+    if (this._parent && this._$owner.__tag === sc.TAG_FUNC) {
+      this._parent.yieldAndReset($value);
+    }
+    this._index  = 0;
+    this._iter   = null;
+    this._parent = null;
+    this._child  = null;
+    return this;
+  };
+
+  Bytecode.prototype.alwaysYield = function($value) {
+    this.state   = sc.STATE_DONE;
+    this.result  = $value;
+    if (this._parent && this._$owner.__tag === sc.TAG_FUNC) {
+      this._parent.alwaysYield($value);
+    }
+    this._index  = this._length;
+    this._iter   = null;
+    this._parent = null;
+    this._child  = null;
+    return this.free();
+  };
+
+  var throwIfOutsideOfRoutine = function() {
+    if (!insideOfARoutine()) {
+      bytecode.current = null;
+      throw new Error("yield was called outside of a Routine.");
+    }
+  };
+
   bytecode.create = function(initializer, def) {
     return new Bytecode(initializer, def);
   };
 
   bytecode.yield = function($value) {
-    if (!insideOfARoutine()) {
-      bytecode.current = null;
-      throw new Error("yield was called outside of a Routine.");
-    }
-    bytecode.current.yield($value).purge();
+    throwIfOutsideOfRoutine();
+    return bytecode.current.yield($value).purge();
+  };
+
+  bytecode.alwaysYield = function($value) {
+    throwIfOutsideOfRoutine();
+    return bytecode.current.alwaysYield($value);
+  };
+
+  bytecode.yieldAndReset = function($value) {
+    throwIfOutsideOfRoutine();
+    return bytecode.current.yieldAndReset($value);
   };
 
   sc.lang.bytecode = bytecode;

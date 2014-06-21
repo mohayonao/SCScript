@@ -7,6 +7,7 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
+  var klass = sc.lang.klass;
 
   describe("SCSimpleNumber", function() {
     var SCSimpleNumber;
@@ -650,11 +651,21 @@
         [ Math.PI, [], $.Float(180) ]
       ]);
     });
-    it.skip("#performBinaryOpOnSimpleNumber", function() {
+    it("#performBinaryOpOnSimpleNumber", function() {
+      var instance = this.createInstance();
+      var $aSelecor = $$("\\+");
+      expect(function() {
+        instance.performBinaryOpOnSimpleNumber($aSelecor);
+      }).to.throw("failed");
     });
-    it.skip("#performBinaryOpOnComplex", function() {
+    it("#performBinaryOpOnComplex", function() {
     });
-    it.skip("#performBinaryOpOnSignal", function() {
+    it("#performBinaryOpOnSignal", function() {
+      var instance = this.createInstance();
+      var $aSelecor = $$("\\+");
+      expect(function() {
+        instance.performBinaryOpOnSignal($aSelecor);
+      }).to.throw("failed");
     });
     it("#nextPowerOfTwo", function() {
       testCase(this, [
@@ -893,24 +904,150 @@
         [ 13, [ null, 10 ], [ 13, 12, 11, 10 ] ],
       ]);
     });
-    it.skip("#seriesIter", function() {
+    it("#seriesIter (:0..10)", function() {
+      var iter, test;
+
+      iter = this.createInstance(0).seriesIter(null, $$(10));
+      expect(iter).to.be.a("SCRoutine");
+
+      test = iter.all();
+      expect(test).to.be.a("SCArray").to.eql([
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+      ]);
     });
-    it.skip("#degreeToKey", function() {
+    it("#seriesIter (:0..-10)", function() {
+      var iter, test;
+
+      iter = this.createInstance(0).seriesIter(null, $$(-10));
+      expect(iter).to.be.a("SCRoutine");
+
+      test = iter.all();
+      expect(test).to.be.a("SCArray").to.eql([
+        0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10
+      ]);
     });
-    it.skip("#keyToDegree", function() {
+    it("#seriesIter (:0..)", function() {
+      var iter, test;
+
+      iter = this.createInstance(0).seriesIter(null, null);
+      expect(iter).to.be.a("SCRoutine");
+
+      test = iter.nextN($$(15));
+      expect(test).to.be.a("SCArray").to.eql([
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+      ]);
     });
-    it.skip("#nearestInList", function() {
+    it("#seriesIter (:0, 3..10)", function() {
+      var iter, test;
+
+      iter = this.createInstance(0).seriesIter($$(3), $$(10));
+      expect(iter).to.be.a("SCRoutine");
+
+      test = iter.all();
+      expect(test).to.be.a("SCArray").to.eql([
+        0, 3, 6, 9
+      ]);
     });
-    it.skip("#nearestInScale", function() {
+    it("#seriesIter (:0, -3..-10)", function() {
+      var iter, test;
+
+      iter = this.createInstance(0).seriesIter($$(-3), $$(-10));
+      expect(iter).to.be.a("SCRoutine");
+
+      test = iter.all();
+      expect(test).to.be.a("SCArray").to.eql([
+        0, -3, -6, -9
+      ]);
     });
-    it.skip("#partition", function() {
+    it("#seriesIter (:0, 3..)", function() {
+      var iter, test;
+
+      iter = this.createInstance(0).seriesIter($$(3), null);
+      expect(iter).to.be.a("SCRoutine");
+
+      test = iter.nextN($$(15));
+      expect(test).to.be.a("SCArray").to.eql([
+        0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42
+      ]);
     });
-    it.skip("#nextTimeOnGrid", function() {
+    it("#seriesIter (:0, -3..)", function() {
+      var iter, test;
+
+      iter = this.createInstance(0).seriesIter($$(-3), null);
+      expect(iter).to.be.a("SCRoutine");
+
+      test = iter.nextN($$(15));
+      expect(test).to.be.a("SCArray").to.eql([
+        0, -3, -6, -9, -12, -15, -18, -21, -24, -27, -30, -33, -36, -39, -42
+      ]);
     });
-    it.skip("#playAndDelta", function() {
+    it("#degreeToKey", function() {
+      testCase(this, [
+        [ 4, [ [ 0, 1, 2, 3, 5, 8 ] ], 5 ],
+        [ 8, [ [ 0, 1, 2, 3, 5, 8 ] ], 14 ],
+      ]);
     });
-    it.skip("#asQuant", function() {
+    it("#keyToDegree", function() {
+      testCase(this, [
+        [ 4, [ [ 0, 1, 2, 3, 5, 8 ] ], 3.5 ],
+        [ 8, [ [ 0, 1, 2, 3, 5, 8 ] ], 5 ],
+      ]);
     });
+    it("#nearestInList", function() {
+      testCase(this, [
+        [  9.5, [ [ 8, 13, 21 ] ], 8 ],
+        [ 11.5, [ [ 8, 13, 21 ] ], 13 ],
+        [ 13.5, [ [ 8, 13, 21 ] ], 13 ],
+      ]);
+    });
+    it("#nearestInScale", function() {
+      testCase(this, [
+        [  9.5, [ [ 8, 13, 21 ] ], $.Float(8.0) ],
+        [ 11.5, [ [ 8, 13, 21 ] ], $.Float(13.0) ],
+        [ 13.5, [ [ 8, 13, 21 ] ], $.Float(20.0) ],
+      ]);
+    });
+    it("#partition", function() {
+      sc.libs.random.setSeed(0);
+      var instance, test;
+
+      instance = this.createInstance(5.0);
+
+      test = instance.partition($$(10), $$(8));
+      expect(test).to.be.a("SCArray").that.eqls([
+        0 - 50, 8, 19, 14, 17, 8, 21, 8, 14, -54
+      ]);
+    });
+    it("#nextTimeOnGrid", sinon.test(function() {
+      var instance, test;
+      var $clock;
+
+      $clock = sc.test.object({
+        nextTimeOnGrid: this.spy(sc.test.func())
+      });
+      instance = this.createInstance();
+
+      test = instance.nextTimeOnGrid($clock);
+      expect($clock.nextTimeOnGrid).to.be.calledWith(instance, $$(0));
+      expect($clock.nextTimeOnGrid).to.be.calledLastIn(test);
+    }));
+    it("#playAndDelta", function() {
+      var instance = this.createInstance();
+      expect(instance.playAndDelta).to.be.nop;
+    });
+    it("#asQuant", sinon.test(function() {
+      var instance, test;
+      var $new;
+
+      this.stub(klass, "get").withArgs("Quant").returns({
+        new: ($new = this.spy(sc.test.func()))
+      });
+      instance = this.createInstance();
+
+      test = instance.asQuant();
+      expect($new).to.be.calledWith(instance);
+      expect($new).to.be.calledLastIn(test);
+    }));
     it.skip("#asTimeString", function() {
     });
     it.skip("#asFraction", function() {

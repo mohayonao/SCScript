@@ -284,13 +284,8 @@ SCScript.install(function(sc) {
       return $val;
     }, "key; function");
 
-    spec.remove = function() {
-      throw new Error("shouldNotImplement");
-    };
-
-    spec.removeFail = function() {
-      throw new Error("shouldNotImplement");
-    };
+    spec.remove = utils.shouldNotImplement("remove");
+    spec.removeFail = utils.shouldNotImplement("removeFail");
 
     spec.keysValuesDo = fn(function($function) {
       this.keysValuesArrayDo(this._$array, $function);

@@ -8,163 +8,60 @@
   var klass    = sc.lang.klass;
   var bytecode = sc.lang.bytecode;
 
-  var $nil, $true, $false;
-  var $symbols, $chars, $integers, $floats;
-
-  /* istanbul ignore next */
-  var dummyFunction = function() {}.bind(null);
-
-  function SCNil() {
-    this.__super__("Object");
-    this._ = null;
-  }
-  klass.define("Nil", {
-    constructor: SCNil,
+  var SCNil = klass.define("Nil", {
     __tag: sc.TAG_NIL
   });
 
-  function SCSymbol() {
-    this.__super__("Object");
-    this._ = "";
-  }
-  klass.define("Symbol", {
-    constructor: SCSymbol,
+  var SCSymbol = klass.define("Symbol", {
     __tag: sc.TAG_SYM
   });
 
-  function SCBoolean() {
-    this.__super__("Object");
-  }
   klass.define("Boolean", {
-    constructor: SCBoolean,
     __tag: sc.TAG_BOOL
   });
 
-  function SCTrue() {
-    this.__super__("Boolean");
-    this._ = true;
-  }
-  klass.define("True : Boolean", {
-    constructor: SCTrue
-  });
+  var SCTrue  = klass.define("True  : Boolean");
+  var SCFalse = klass.define("False : Boolean");
 
-  function SCFalse() {
-    this.__super__("Boolean");
-    this._ = false;
-  }
-  klass.define("False : Boolean", {
-    constructor: SCFalse
-  });
+  klass.define("Magnitude");
 
-  klass.define("Magnitude", {
-    constructor: function SCMagnitude() {
-      this.__super__("Object");
-    }
-  });
-
-  function SCChar() {
-    this.__super__("Magnitude");
-    this._ = "\0";
-  }
-  klass.define("Char : Magnitude", {
-    constructor: SCChar,
+  var SCChar = klass.define("Char : Magnitude", {
     __tag: sc.TAG_CHAR
   });
 
-  klass.define("Number : Magnitude", {
-    constructor: function SCNumber() {
-      this.__super__("Magnitude");
-    }
-  });
+  klass.define("Number : Magnitude");
+  klass.define("SimpleNumber : Number");
 
-  klass.define("SimpleNumber : Number", {
-    constructor: function SCSimpleNumber() {
-      this.__super__("Number");
-    }
-  });
-
-  function SCInteger() {
-    this.__super__("SimpleNumber");
-    this._ = 0;
-  }
-  klass.define("Integer : SimpleNumber", {
-    constructor: SCInteger,
+  var SCInteger = klass.define("Integer : SimpleNumber", {
     __tag: sc.TAG_INT
   });
 
-  function SCFloat() {
-    this.__super__("SimpleNumber");
-    this._ = 0.0;
-  }
-  klass.define("Float : SimpleNumber", {
-    constructor: SCFloat,
+  var SCFloat = klass.define("Float : SimpleNumber", {
     __tag: sc.TAG_FLOAT
   });
 
-  klass.define("Collection", {
-    constructor: function SCCollection() {
-      this.__super__("Object");
-    }
-  });
-
-  klass.define("SequenceableCollection : Collection", {
-    constructor: function SCSequenceableCollection() {
-      this.__super__("Collection");
-    }
-  });
+  klass.define("Collection");
+  klass.define("SequenceableCollection : Collection");
 
   klass.define("ArrayedCollection : SequenceableCollection", {
     constructor: function SCArrayedCollection() {
       this.__super__("SequenceableCollection");
-      this.__immutable = false;
       this._ = [];
     }
   });
 
-  klass.define("RawArray : ArrayedCollection", {
-    constructor: function SCRawArray() {
-      this.__super__("ArrayedCollection");
-    }
-  });
+  klass.define("RawArray : ArrayedCollection");
 
-  function SCArray() {
-    this.__super__("ArrayedCollection");
-  }
-  klass.define("Array : ArrayedCollection", {
-    constructor: SCArray
-  });
+  var SCArray = klass.define("Array : ArrayedCollection");
 
-  function SCString() {
-    this.__super__("RawArray");
-  }
-  klass.define("String : RawArray", {
-    constructor: SCString,
+  var SCString = klass.define("String : RawArray", {
     __tag: sc.TAG_STR
   });
 
-  klass.define("Set : Collection", {
-    constructor: function SCSet() {
-      this.__super__("Collection");
-    }
-  });
-
-  klass.define("Dictionary : Set", {
-    constructor: function SCDictionary() {
-      this.__super__("Set");
-    }
-  });
-
-  klass.define("IdentityDictionary : Dictionary", {
-    constructor: function SCIdentityDictionary() {
-      this.__super__("Dictionary");
-    }
-  });
-
-  klass.define("Environment : IdentityDictionary", {
-    constructor: function SCEnvironment() {
-      this.__super__("IdentityDictionary");
-    }
-  });
+  klass.define("Set : Collection");
+  klass.define("Dictionary : Set");
+  klass.define("IdentityDictionary : Dictionary");
+  klass.define("Environment : IdentityDictionary");
 
   klass.define("Event : Environment", {
     constructor: function SCEvent() {
@@ -172,36 +69,38 @@
     }
   });
 
-  klass.define("AbstractFunction", {
-    constructor: function SCAbstractFunction() {
-      this.__super__("Object");
-    }
-  });
+  klass.define("AbstractFunction");
 
-  function SCFunction() {
-    this.__super__("AbstractFunction");
-    this._ = dummyFunction;
-  }
-  klass.define("Function : AbstractFunction", {
-    constructor: SCFunction,
+  var SCFunction = klass.define("Function : AbstractFunction", {
     __tag: sc.TAG_FUNC
   });
 
-  function SCRef() {
-    this.__super__("Object");
-  }
-  klass.define("Ref : AbstractFunction", {
-    constructor: SCRef
-  });
+  klass.define("Stream : AbstractFunction");
+  klass.define("Thread : Stream");
+  klass.define("Routine : Thread");
+
+  var SCRef = klass.define("Ref : AbstractFunction");
 
   // $
-  $nil      = new SCNil();
-  $true     = new SCTrue();
-  $false    = new SCFalse();
-  $integers = {};
-  $floats   = {};
-  $symbols  = {};
-  $chars    = {};
+  var $nil = (function() {
+    var instance = new SCNil();
+    instance._ = null;
+    return instance;
+  })();
+  var $true = (function() {
+    var instance = new SCTrue();
+    instance._ = true;
+    return instance;
+  })();
+  var $false = (function() {
+    var instance = new SCFalse();
+    instance._ = false;
+    return instance;
+  })();
+  var $integers = {};
+  var $floats   = {};
+  var $symbols  = {};
+  var $chars    = {};
 
   $.Nil = function() {
     return $nil;
@@ -253,6 +152,7 @@
 
   $.Symbol = function(value) {
     var instance;
+    value = String(value);
     if (!$symbols.hasOwnProperty(value)) {
       instance = new SCSymbol();
       instance._ = value;

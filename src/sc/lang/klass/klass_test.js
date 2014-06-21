@@ -7,52 +7,58 @@
   var klass = sc.lang.klass;
 
   describe("sc.lang.klass", function() {
-    var test;
-    it("define", function() {
-      expect(function() {
-        klass.define("lowercase");
-      }).to.throw("classname should be CamelCase");
-      expect(function() {
-        klass.define("Object");
-      }).to.throw("already registered");
-      expect(function() {
-        klass.define("NewClass : UndefinedClass");
-      }).to.throw("superclass 'UndefinedClass' is not registered");
-      expect(function() {
-        klass.define("NewClass");
-      }).to.throw("class should have a constructor");
+    describe("define", function() {
+      it("create class", function() {
+        var test = klass.define("TestClass");
+        expect(test).to.be.a("JSFunction");
+      });
+      it("throw error if name of the class is not CamelCase", function() {
+        expect(function() {
+          klass.define("lowercase");
+        }).to.throw("classname should be CamelCase");
+      });
+      it("throw error if the class have been defined already", function() {
+        expect(function() {
+          klass.define("Object");
+        }).to.throw("already defined");
+      });
+      it("throw error if SuperClass is not exists", function() {
+        expect(function() {
+          klass.define("NewClass : UndefinedClass");
+        }).to.throw("superclass 'UndefinedClass' is not defined");
+      });
     });
-    it("refine", function() {
-      expect(function() {
-        klass.refine("UndefinedClass");
-      }).to.throw("class 'UndefinedClass' is not registered");
-      expect(function() {
-        klass.refine("Object", {
-          $new: function() {}
-        });
-      }).to.throw("Object.new is already defined");
-      expect(function() {
-        klass.refine("Object", {
-          valueOf: function() {}
-        });
-      }).to.throw("Object#valueOf is already defined");
+    describe("refine", function() {
+      it("throw error if the class is not defined", function() {
+        expect(function() {
+          klass.refine("UndefinedClass");
+        }).to.throw("class 'UndefinedClass' is not defined");
+      });
+      it("throw error if try to redefine the method defined already", function() {
+        expect(function() {
+          klass.refine("Object", {
+            valueOf: function() {}
+          });
+        }).to.throw("Object#valueOf is already defined");
+      });
     });
-    it("get", function() {
-      expect(function() {
-        klass.get("UndefinedClass");
-      }).to.throw("Class not defined: UndefinedClass");
+    describe("get", function() {
+      it("throw error if try to get an undefined class", function() {
+        expect(function() {
+          klass.get("UndefinedClass");
+        }).to.throw("Class not defined: UndefinedClass");
+      });
     });
-    it("exists", function() {
-      test = klass.exists("Object");
-      expect(test).to.be.a("JSBoolean").that.is.true;
-
-      test = klass.exists("UndefinedClass");
-      expect(test).to.be.a("JSBoolean").that.is.false;
+    describe("exists", function() {
+      it("test whether or not the given class exists", function() {
+        expect(klass.exists("Object")        , 0).to.be.a("JSBoolean").that.is.true;
+        expect(klass.exists("UndefinedClass"), 1).to.be.a("JSBoolean").that.is.false;
+      });
     });
   });
 
   describe("SCObject", function() {
-    var SCObject, SCNil, instance, $nil, test;
+    var SCObject, SCNil, instance, $nil;
     before(function() {
       SCObject = $("Object");
       SCNil = $("Nil");
@@ -62,6 +68,8 @@
       instance = SCObject.new();
     });
     it("#class", function() {
+      var test;
+
       test = $nil.class();
       expect(test).to.equal(SCNil);
 
@@ -69,6 +77,8 @@
       expect(test).to.equal(SCObject);
     });
     it("#valueOf", function() {
+      var test;
+
       test = $nil.valueOf();
       expect(test).to.be.a("JSNull");
 
@@ -76,18 +86,22 @@
       expect(test).to.equal(instance);
     });
     it("#toString", function() {
+      var test;
+
       test = $nil.toString();
       expect(test).to.be.a("JSString").that.equals("nil");
 
       test = instance.toString();
       expect(test).to.be.a("JSString").that.equals("an Object");
     });
-    it("#valueOf", function() {
-      test = $nil.valueOf();
-      expect(test).to.be.a("JSNull");
+    it("#toJSON", function() {
+      var test, json;
 
-      test = instance.valueOf();
-      expect(test).to.equal(instance);
+      test = $nil.toJSON();
+      expect(test).to.be.a("JSString");
+
+      json = JSON.parse(test);
+      expect(json.class).to.equal("Nil");
     });
     describe("#$", function() {
       it("call with no-arguments", sinon.test(function() {

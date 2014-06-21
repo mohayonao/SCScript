@@ -10,12 +10,16 @@ SCScript.install(function(sc) {
   sc.lang.klass.refine("String", function(spec, utils) {
     var $nil   = utils.$nil;
     var $false = utils.$false;
+    var $space = $.Char(" ");
 
     spec.__str__ = function() {
       return this.valueOf();
     };
 
     spec.__elem__ = function($item) {
+      if (!$item) {
+        return $space;
+      }
       if ($item.__tag !== sc.TAG_CHAR) {
         throw new TypeError("Wrong type.");
       }

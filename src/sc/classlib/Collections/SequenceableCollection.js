@@ -6,6 +6,7 @@ SCScript.install(function(sc) {
   var slice = [].slice;
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
+  var q  = sc.libs.strlib.quote;
 
   sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
     var $nil   = utils.$nil;
@@ -63,9 +64,52 @@ SCScript.install(function(sc) {
       return $obj;
     }, "size; a=0.0; b=1.0");
 
-    // TODO: implements $rand
-    // TODO: implements $rand2
-    // TODO: implements $linrand
+    spec.$rand = fn(function($size, $minVal, $maxVal) {
+      var $obj, i, imax;
+
+      $obj = this.new($size);
+      for (i = 0, imax = $size.__int__(); i < imax; ++i) {
+        $obj.add($minVal.rrand($maxVal));
+      }
+
+      return $obj;
+    }, "size; minVal=0.0; maxVal=1.0");
+
+    spec.$exprand = fn(function($size, $minVal, $maxVal) {
+      var $obj, i, imax;
+
+      $obj = this.new($size);
+      for (i = 0, imax = $size.__int__(); i < imax; ++i) {
+        $obj.add($minVal.exprand($maxVal));
+      }
+
+      return $obj;
+    }, "size; minVal=0.0; maxVal=1.0");
+
+    spec.$rand2 = fn(function($size, $val) {
+      var $obj, i, imax;
+
+      $obj = this.new($size);
+      for (i = 0, imax = $size.__int__(); i < imax; ++i) {
+        $obj.add($val.rand2());
+      }
+
+      return $obj;
+    }, "size; val=1.0");
+
+    spec.$linrand = fn(function($size, $minVal, $maxVal) {
+      var $obj, i, imax;
+      var $range;
+
+      $range = $maxVal ["-"] ($minVal);
+
+      $obj = this.new($size);
+      for (i = 0, imax = $size.__int__(); i < imax; ++i) {
+        $obj.add($minVal ["+"] ($range.linrand()));
+      }
+
+      return $obj;
+    }, "size; minVal; maxVal");
 
     spec.$interpolation = fn(function($size, $start, $end) {
       var $obj, $step, i, imax;
@@ -731,23 +775,229 @@ SCScript.install(function(sc) {
       }));
     }, "func");
 
-    // TODO: implements flopTogether
-    // TODO: implements flopDeep
-    // TODO: implements wrapAtDepth
-    // TODO: implements unlace
-    // TODO: implements integrate
-    // TODO: implements differentiate
-    // TODO: implements convertDigits
-    // TODO: implements hammingDistance
-    // TODO: implements degreeToKey
-    // TODO: implements keyToDegree
-    // TODO: implements nearestInScale
-    // TODO: implements nearestInList
-    // TODO: implements transposeKey
-    // TODO: implements mode
-    // TODO: implements performDegreeToKey
-    // TODO: implements performNearestInList
-    // TODO: implements performNearestInScale
+    spec.flopTogether = function() {
+      var $standIn, $minus1, $looper;
+      var array, maxSize = 0;
+
+      array = [ this ].concat(slice.call(arguments));
+      array.forEach(function($sublist) {
+        $sublist.do($.Function(function() {
+          return [ function($each) {
+            var size = $each.size();
+            if (maxSize < size) {
+              maxSize = size;
+            }
+          } ];
+        }));
+      });
+
+      $standIn = $int0.dup($.Integer(maxSize));
+      $minus1  = $.Integer(-1);
+      $looper  = $.Function(function() {
+        return [ function($each) {
+          return $each.drop($minus1);
+        } ];
+      });
+
+      return $.Array(array.map(function($sublist) {
+        return $sublist.add($standIn);
+      })).collect($.Function(function() {
+        return [ function($sublist) {
+          return $sublist.flop().collect($looper);
+        } ];
+      }));
+    };
+
+    spec.flopDeep = fn(function($rank) {
+      var $this = this;
+      var $size, $maxsize;
+
+      if ($rank === $nil) {
+        $rank = this.maxDepth().__dec__();
+      }
+      if ($rank.__int__() <= 1) {
+        return this.flop();
+      }
+
+      $size = this.size();
+      $maxsize = this.maxSizeAtDepth($rank);
+
+      return this.species().fill($maxsize, $.Function(function() {
+        return [ function($i) {
+          return $this.wrapAtDepth($rank, $i);
+        } ];
+      }));
+    }, "rank");
+
+    spec.wrapAtDepth = fn(function($rank, $index) {
+      if ($rank === $int0) {
+        return this.wrapAt($index);
+      }
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          if ($item.isSequenceableCollection().__bool__()) {
+            return $item.wrapAtDepth($rank.__dec__(), $index);
+          } else {
+            return $item;
+          }
+        } ];
+      }));
+    }, "rank; index");
+
+    spec.unlace = fn(function($numlists, $clumpSize, $clip) {
+      var $this = this;
+      var $size, $list, $self, $sublist;
+
+      $size = (this.size() ["+"] ($numlists.__dec__())).div($numlists);
+      $list = this.species().fill($numlists, $.Function(function() {
+        return [ function() {
+          return $this.species().new($size);
+        } ];
+      }));
+      if ($clip.__bool__()) {
+        $self = this.keep(this.size().trunc($clumpSize ["*"] ($numlists)));
+      } else {
+        $self = this;
+      }
+      $self.do($.Function(function() {
+        return [ function($item, $i) {
+          $sublist = $list.at($i.div($clumpSize) ["%"] ($numlists));
+          return $sublist.add($item);
+        } ];
+      }));
+      return $list;
+    }, "numlists; clumpSize=1; clip=false");
+
+    spec.integrate = function() {
+      var $list, $sum;
+
+      $sum = $int0;
+
+      $list = this.class().new(this.size());
+      this.do($.Function(function() {
+        return [ function($item) {
+          $sum = $sum ["+"] ($item);
+          return $list.add( $sum );
+        } ];
+      }));
+
+      return $list;
+    };
+
+    spec.differentiate = function() {
+      var $list, $prev;
+
+      $prev = $int0;
+
+      $list = this.class().new(this.size());
+      this.do($.Function(function() {
+        return [ function($item) {
+          $list.add($item ["-"] ($prev));
+          $prev = $item;
+          return $item;
+        } ];
+      }));
+
+      return $list;
+    };
+
+    spec.convertDigits = fn(function($base) {
+      var $lastIndex;
+
+      $lastIndex = this.lastIndex();
+      return this.sum($.Function(function() {
+        return [ function($x, $i) {
+          if ($x.__int__() >= $base.__int__()) {
+            throw new Error("digit too large for base");
+          }
+          return $base ["**"] ($lastIndex ["-"] ($i)) ["*"] ($x);
+        } ];
+      })).asInteger();
+    }, "base=10");
+
+    spec.hammingDistance = fn(function($that) {
+      var count;
+
+      count = Math.max(0, $that.size().__int__() - this.size().__int__());
+      this.do($.Function(function() {
+        return [ function($elem, $i) {
+          if ($elem ["!="] ($that.at($i)).__bool__()) {
+            count += 1;
+          }
+        } ];
+      }));
+
+      return $.Integer(count);
+    }, "that");
+
+    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
+      return this.collect($.Function(function() {
+        return [ function($scaleDegree) {
+          return $scaleDegree.degreeToKey($scale, $stepsPerOctave);
+        } ];
+      }));
+    }, "scale; stepsPerOctave=12");
+
+    spec.keyToDegree = fn(function($scale, $stepsPerOctave) {
+      return this.collect($.Function(function() {
+        return [ function($val) {
+          return $val.keyToDegree($scale, $stepsPerOctave);
+        } ];
+      }));
+    }, "scale; stepsPerOctave=12");
+
+    spec.nearestInScale = fn(function($scale, $stepsPerOctave) {
+      var $root, $key;
+      $root = this.trunc($stepsPerOctave);
+      $key = this ["%"] ($stepsPerOctave);
+      return $key.nearestInList($scale) ["+"] ($root);
+    }, "scale; stepsPerOctave=12");
+
+    spec.nearestInList = fn(function($list) {
+      return this.collect($.Function(function() {
+        return [ function($item) {
+          return $list.at($list.indexIn($item));
+        } ];
+      }));
+    }, "list");
+
+    spec.transposeKey = fn(function($amount, $octave) {
+      return ((this ["+"] ($amount)) ["%"] ($octave)).sort();
+    }, "amount; octave=12");
+
+    spec.mode = fn(function($degree, $octave) {
+      return (this.rotate($degree.neg()) ["-"] (this.wrapAt($degree))) ["%"] ($octave);
+    }, "degree; octave=12");
+
+    spec.performDegreeToKey = fn(function($scaleDegree, $stepsPerOctave, $accidental) {
+      var $baseKey;
+      $baseKey = (
+        $stepsPerOctave ["*"] ($scaleDegree.div(this.size()))
+      ) ["+"] (this.wrapAt($scaleDegree));
+      if ($accidental.__num__() === 0) {
+        return $baseKey;
+      }
+      return $baseKey ["+"] ($accidental ["*"] ($stepsPerOctave ["/"] ($.Float(12.0))));
+    }, "scaleDegree; stepsPerOctave=12; accidental=0");
+
+    spec.performKeyToDegree = fn(function($degree, $stepsPerOctave) {
+      var $n, $key;
+      $n = $degree.div($stepsPerOctave) ["*"] (this.size());
+      $key = $degree ["%"] ($stepsPerOctave);
+      return this.indexInBetween($key) ["+"] ($n);
+    }, "degree; stepsPerOctave=12");
+
+    spec.performNearestInList = fn(function($degree) {
+      return this.at(this.indexIn($degree));
+    }, "degree");
+
+    spec.performNearestInScale = fn(function($degree, $stepsPerOctave) {
+      var $root, $key;
+      $root = $degree.trunc($stepsPerOctave);
+      $key  = $degree ["%"] ($stepsPerOctave);
+      return $key.nearestInList(this) ["+"] ($root);
+    }, "degree; stepsPerOctave=12");
+
     // TODO: implements convertRhythm
     // TODO: implements sumRhythmDivisions
     // TODO: implements convertOneRhythm
@@ -1267,7 +1517,7 @@ SCScript.install(function(sc) {
       }
 
       throw new Error(
-        "unrecognized adverb: '" + adverb + "' for operator '" + String($aSelector) + "'"
+        "unrecognized adverb: " + q(adverb) + " for operator " + q($aSelector)
       );
     };
 
@@ -1432,13 +1682,9 @@ SCScript.install(function(sc) {
     };
 
     spec.multiChannelPerform = function() {
-      var method;
-
-      if (this.size() > 0) {
-        method = utils.getMethod("Object", "multiChannelPerform");
-        return method.apply(this, arguments);
+      if (this.size().__int__() > 0) {
+        return this.__super__("multiChannelPerform", arguments);
       }
-
       return this.class().new();
     };
 

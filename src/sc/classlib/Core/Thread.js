@@ -9,10 +9,7 @@ SCScript.install(function(sc) {
   var klass = sc.lang.klass;
   var random = sc.libs.random;
 
-  klass.define("Thread : Stream", function(spec, utils) {
-    spec.constructor = function SCThread() {
-      this.__super__("Stream");
-    };
+  klass.refine("Thread", function(spec, utils) {
     utils.setProperty(spec, "<", "parent");
 
     spec.$new = fn(function($func) {
@@ -96,13 +93,14 @@ SCScript.install(function(sc) {
     // TODO: implements checkCanArchive
   });
 
-  klass.define("Routine : Thread", function(spec, utils) {
+  klass.refine("Routine", function(spec, utils) {
     var $nil = utils.$nil;
 
     spec.__tag = sc.TAG_ROUTINE;
 
     spec.constructor = function SCRoutine() {
       this.__super__("Thread");
+      this._$doneValue = null;
     };
 
     spec.$new = function($func) {
@@ -113,7 +111,7 @@ SCScript.install(function(sc) {
 
     var routine$resume = function($inval) {
       if (this._state === sc.STATE_DONE) {
-        return $nil;
+        return this._$doneValue || $nil;
       }
 
       this._parent = main.$currentThread;
@@ -122,6 +120,10 @@ SCScript.install(function(sc) {
       this._state = sc.STATE_RUNNING;
       this._bytecode.runAsRoutine([ $inval || $nil ]);
       this._state = this._bytecode.state;
+
+      if (this._state === sc.STATE_DONE) {
+        this._$doneValue = this._bytecode.result;
+      }
 
       main.$currentThread = this._parent;
       this._parent = null;

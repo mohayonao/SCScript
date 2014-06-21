@@ -6,7 +6,8 @@
   var $$ = sc.test.object;
   var testCase = sc.test.testCase;
 
-  var $ = sc.lang.$;
+  var $     = sc.lang.$;
+  var klass = sc.lang.klass;
 
   describe("SCSymbol", function() {
     var SCSymbol;
@@ -100,43 +101,175 @@
       test = instance.asClass();
       expect(test).to.be.a("SCNil").that.is.null;
     });
-    it.skip("#asSetter", function() {
+    it("#asSetter", function() {
+      testCase(this, [
+        [ "a" , [], "\\a_" ],
+        [ "a_", [], "\\a_" ],
+        {
+          source: "Symbol",
+          error: "Cannot convert"
+        },
+        {
+          source: "_",
+          error: "Cannot convert"
+        }
+      ]);
     });
-    it.skip("#asGetter", function() {
+    it("#asGetter", function() {
+      testCase(this, [
+        [ "a" , [], "\\a" ],
+        [ "a_", [], "\\a" ],
+      ]);
     });
-    it.skip("#asSpec", function() {
+    it("#asSpec", sinon.test(function() {
+      var instance, test;
+      var $at;
+
+      $at = this.spy(sc.test.func());
+      this.stub(klass, "get").withArgs("Spec").returns(sc.test.object({
+        specs: function() {
+          return sc.test.object({ at: $at });
+        }
+      }));
+      instance = this.createInstance();
+
+      test = instance.asSpec();
+      expect($at).to.be.calledWith(instance);
+      expect($at).to.be.calledLastIn(test);
+    }));
+    it("#asWarp", sinon.test(function() {
+      var instance, test;
+      var $spec, $at, $new;
+
+      $spec = $$();
+      this.stub(klass, "get").withArgs("Warp").returns(sc.test.object({
+        warps: function() {
+          return sc.test.object({
+            at: $at
+          });
+        }
+      }));
+      $at = this.spy(function() {
+        return sc.test.object({
+          new: $new
+        });
+      });
+      $new = this.spy(sc.test.func());
+      instance = this.createInstance();
+
+      test = instance.asWarp($spec);
+      expect($at).to.be.calledWith(instance);
+      expect($new).to.be.calledWith($spec);
+      expect($new).to.be.calledLastIn(test);
+    }));
+    it("#asTuning", sinon.test(function() {
+      var instance, test;
+      var $at;
+
+      this.stub(klass, "get").withArgs("Tuning").returns(sc.test.object({
+        at: ($at = this.spy(sc.test.func()))
+      }));
+      instance = this.createInstance();
+
+      test = instance.asTuning();
+      expect($at).to.be.calledWith(instance);
+      expect($at).to.be.calledLastIn(test);
+    }));
+    it("#asScale", sinon.test(function() {
+      var instance, test;
+      var $at;
+
+      this.stub(klass, "get").withArgs("Scale").returns(sc.test.object({
+        at: ($at = this.spy(sc.test.func()))
+      }));
+      instance = this.createInstance();
+
+      test = instance.asScale();
+      expect($at).to.be.calledWith(instance);
+      expect($at).to.be.calledLastIn(test);
+    }));
+    it("#isSetter", function() {
+      testCase(this, [
+        [ "a_", [], true  ],
+        [ "a" , [], false ],
+        [ "A_", [], false ],
+        [ "1_", [], false ],
+      ]);
     });
-    it.skip("#asWarp", function() {
+    it("#isClassName", function() {
+      testCase(this, [
+        [ "Symbol" , [], true ],
+        [ "Symbol_", [], true ],
+        [ "lowercase", [], false ],
+      ]);
     });
-    it.skip("#asTuning", function() {
+    it("#isMetaClassName", function() {
+      testCase(this, [
+        [ "Meta_Symbol", [], true  ],
+        [ "Symbol"     , [], false ],
+      ]);
     });
-    it.skip("#asScale", function() {
+    it("#isPrefix", function() {
+      testCase(this, [
+        [ "isPrefix", [ "\\is"  ], true  ],
+        [ "isPrefix", [ "\\isa" ], false ],
+        [ "isPrefix", [ 0 ], "\\isPrefix" ]
+      ]);
     });
-    it.skip("#isSetter", function() {
+    it("#isPrimitiveName", function() {
+      testCase(this, [
+        [ "_Primitive", [], true  ],
+        [ "Primitive_", [], false ],
+      ]);
     });
-    it.skip("#isClassName", function() {
+    it("#isPrimitive", function() {
+      testCase(this, [
+        [ "_SymbolIsClassName", [], false ]
+      ]);
     });
-    it.skip("#isMetaClassName", function() {
+    it("#isMap", function() {
+      testCase(this, [
+        [ "a0", [], true ]
+      ]);
     });
-    it.skip("#isPrefix", function() {
+    it("#isRest", function() {
+      testCase(this, [
+        [ "a0", [], false ]
+      ]);
     });
-    it.skip("#isPrimitiveName", function() {
+    it("#envirGet", sc.test(function() {
+      var instance, test;
+
+      $.Environment("key", $$(1234));
+      instance = this.createInstance("key");
+
+      test = instance.envirGet();
+      expect(test).to.be.a("SCInteger").that.equals(1234);
+    }));
+    it("#envirPut", sc.test(function() {
+      var instance, test;
+
+      instance = this.createInstance("key");
+      test = instance.envirPut($$(5678));
+      expect(test).to.be.a("SCInteger").that.equals(5678);
+
+      test = $.Environment("key");
+      expect(test).to.be.a("SCInteger").that.equals(5678);
+    }));
+    it("#blend", function() {
+      var instance = this.createInstance();
+      expect(instance.blend).to.be.nop;
     });
-    it.skip("#isPrimitive", function() {
+    it("#++", function() {
+      testCase(this, [
+        [ "abc", [ "def" ], "abcdef" ]
+      ]);
     });
-    it.skip("#isMap", function() {
-    });
-    it.skip("#isRest", function() {
-    });
-    it.skip("#envirGet", function() {
-    });
-    it.skip("#envirPut", function() {
-    });
-    it.skip("#blend", function() {
-    });
-    it.skip("#++", function() {
-    });
-    it.skip("#asBinOpString", function() {
+    it("#asBinOpString", function() {
+      testCase(this, [
+        [ "max", [], "max:" ],
+        [ "123", [], "\\123" ],
+      ]);
     });
     it("#applyTo", function() {
       var instance, test;
@@ -440,13 +573,33 @@
       var instance = this.createInstance();
       expect(instance.exprand).to.be.nop;
     });
-    it.skip("#<", function() {
+    it("#<", function() {
+      testCase(this, [
+        [ "b", [ "\\a" ], false ],
+        [ "b", [ "\\b" ], false ],
+        [ "b", [ "\\c" ], true  ],
+      ]);
     });
-    it.skip("#>", function() {
+    it("#>", function() {
+      testCase(this, [
+        [ "b", [ "\\a" ], true  ],
+        [ "b", [ "\\b" ], false ],
+        [ "b", [ "\\c" ], false ],
+      ]);
     });
-    it.skip("#<=", function() {
+    it("#<=", function() {
+      testCase(this, [
+        [ "b", [ "\\a" ], false ],
+        [ "b", [ "\\b" ], true  ],
+        [ "b", [ "\\c" ], true  ],
+      ]);
     });
-    it.skip("#>=", function() {
+    it("#>=", function() {
+      testCase(this, [
+        [ "b", [ "\\a" ], true  ],
+        [ "b", [ "\\b" ], true  ],
+        [ "b", [ "\\c" ], false ],
+      ]);
     });
     it("#degreeToKey", function() {
       var instance = this.createInstance();
@@ -472,8 +625,18 @@
       var instance = this.createInstance();
       expect(instance.doSignalOp).to.be.nop;
     });
-    it.skip("#doListOp", function() {
-    });
+    it("#doListOp", sinon.test(function() {
+      var instance, test;
+      var $aSelector, $item1, $item2;
+
+      $aSelector = $$();
+      $item1 = $$({ perform: this.spy() });
+      $item2 = $$({ perform: this.spy() });
+      instance = this.createInstance();
+
+      test = instance.doListOp($aSelector, $$([ $item1, $item2 ]));
+      expect(test).to.equal(instance);
+    }));
     it.skip("#primitiveIndex", function() {
     });
     it.skip("#specialIndex", function() {

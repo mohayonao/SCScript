@@ -16,23 +16,9 @@
   require("../src/sc/classlib/Core/Thread");
   require("../src/sc/classlib/Math/Integer");
   require("../src/sc/classlib/Math/Float");
+  require("../src/sc/classlib/Streams/ListPatterns");
 
   var $ = sc.lang.$;
-
-  sc.lang.klass.refine("Object", function(spec) {
-    spec.toJSON = function() {
-      var value;
-
-      value = this.valueOf();
-      if (value === this) {
-        value = typeOf(this) + "(" + (this.__testid || 0) + ")";
-      } else {
-        value = typeOf(this) + "(" + value + ")";
-      }
-
-      return JSON.stringify(value);
-    };
-  });
 
   sc.test = function(callback) {
     return function() {
@@ -316,6 +302,22 @@
     return fn;
   };
 
+  var SCPseq    = $("Pseq");
+  var SCRoutine = $("Routine");
+
+  sc.test.routine = function(source, opts) {
+    if (Array.isArray(source)) {
+      if (source.length) {
+        return SCPseq.new(toSCObject(source), toSCObject(opts || 1)).asStream();
+      }
+      return SCRoutine.new(toSCObject(function() {
+        return toSCObject(source).do(toSCObject(function($_) {
+          return $_.yield();
+        }));
+      }));
+    }
+  };
+
   // for chai
   global.chai.use(function(chai, utils) {
     var assert$proto = chai.Assertion.prototype;
@@ -351,6 +353,23 @@
     }, function() {
       return function() {
         return this;
+      };
+    });
+
+    utils.overwriteMethod(assert$proto, "closeTo", function(_super) {
+      return function(expected, delta, msg) {
+        var actual, i, imax;
+        actual = utils.flag(this, "object");
+        if (Array.isArray(actual) && Array.isArray(expected)) {
+          msg = msg || "";
+          for (i = 0, imax = Math.max(actual.length, expected.length); i < imax; ++i) {
+            _super.apply(
+              new chai.Assertion(actual[i]), [ expected[i], delta, msg + "[" + i + "]" ]
+            );
+          }
+          return this;
+        }
+        return _super.apply(this, arguments);
       };
     });
 

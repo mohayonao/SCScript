@@ -165,9 +165,7 @@ SCScript.install(function(sc) {
       return SCArray;
     };
 
-    spec.do = function() {
-      return this._subclassResponsibility("do");
-    };
+    spec.do = utils.subclassResponsibility("do");
 
     // TODO: implements iter
 
@@ -202,9 +200,7 @@ SCScript.install(function(sc) {
     spec.asCollection = utils.nop;
     spec.isCollection = utils.alwaysReturn$true;
 
-    spec.add = function() {
-      return this._subclassResponsibility("add");
-    };
+    spec.add = utils.subclassResponsibility("add");
 
     spec.addAll = fn(function($aCollection) {
       var $this = this;
@@ -218,9 +214,7 @@ SCScript.install(function(sc) {
       return this;
     }, "aCollection");
 
-    spec.remove = function() {
-      return this._subclassResponsibility("remove");
-    };
+    spec.remove = utils.subclassResponsibility("remove");
 
     spec.removeAll = fn(function($list) {
       var $this = this;

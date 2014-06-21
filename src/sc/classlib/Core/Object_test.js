@@ -12,9 +12,10 @@
   var bytecode = sc.lang.bytecode;
 
   describe("SCObject", function() {
-    var SCObject;
+    var SCObject, SCRoutine;
     before(function() {
       SCObject = $("Object");
+      SCRoutine = $("Routine");
       this.createInstance = function(instance) {
         return $$($$(instance), "Object" + this.test.title);
       };
@@ -42,7 +43,7 @@
 
       expect(function() {
         instance.__num__();
-      }).to.throw(Error, "Wrong Type");
+      }).to.throw(Error, "cannot be converted to a Number");
     });
     it("#__int__", function() {
       var instance, test;
@@ -62,7 +63,7 @@
 
       expect(function() {
         instance.__bool__();
-      }).to.throw(Error, "Wrong Type");
+      }).to.throw(Error, "cannot be converted to a Boolean");
     });
     it("#__sym__", function() {
       var instance;
@@ -71,7 +72,7 @@
 
       expect(function() {
         instance.__sym__();
-      }).to.throw(Error, "Wrong Type");
+      }).to.throw(Error, "cannot be converted to a Symbol");
     });
     it("#__str__", function() {
       var instance, test;
@@ -263,10 +264,29 @@
       testCase(this, [
         [ null, [ "\\respondsTo" ], true  ],
         [ null, [ "\\undefined"  ], false ],
+        [ null, [ [ "\\respondsTo", "\\size" ] ], true  ],
+        [ null, [ [ "\\undefined" , "\\size" ] ], false ],
       ]);
     });
-    it.skip("#performMsg", function() {
-    });
+    it("#performMsg", sinon.test(function() {
+      var instance, test;
+      var $selector, $arg1, $arg2;
+
+      $selector = $$("\\size");
+      $arg1     = $$();
+      $arg2     = $$();
+
+      instance = this.createInstance();
+      this.stub(instance, "size", sc.test.func());
+
+      test = instance.performMsg($$([ $selector, $arg1, $arg2 ]));
+      expect(instance.size).to.be.calledWith($arg1, $arg2);
+      expect(instance.size).to.be.calledLastIn(test);
+
+      expect(function() {
+        instance.performMsg($$( [ "\\not-understood" ]));
+      }).to.throw("not understood");
+    }));
     it("#perform", sinon.test(function() {
       var instance, test;
       var $selector, $arg1, $arg2;
@@ -314,9 +334,33 @@
     });
     it.skip("#superPerformList", function() {
     });
-    it.skip("#tryPerform", function() {
-    });
-    it.skip("#multiChannelPerform", function() {
+    it("#tryPerform", sinon.test(function() {
+      var instance, test;
+      var $selector, $arg1, $arg2;
+
+      $selector = $$("\\size");
+      $arg1     = $$();
+      $arg2     = $$();
+
+      instance = this.createInstance();
+      this.stub(instance, "size", sc.test.func());
+
+      test = instance.tryPerform($selector, $arg1, $arg2);
+      expect(instance.size).to.be.calledWith($arg1, $arg2);
+      expect(instance.size).to.be.calledLastIn(test);
+
+      test = instance.tryPerform($$("\\not-understood"));
+      expect(test).to.be.a("SCNil");
+    }));
+    it("#multiChannelPerform", function() {
+      var instance, test;
+
+      instance = this.createInstance([ 10, 20, 30 ]);
+
+      test = instance.multiChannelPerform(
+        $$("\\clip"), $$(15), $$([ 20, 25, 20 ])
+      );
+      expect(test).to.be.a("SCArray").that.eqls([ 15, 20, 20 ]);
     });
     it.skip("#performWithEnvir", function() {
     });
@@ -471,7 +515,15 @@
         expect(test).to.be.a("SCBoolean").that.equals(items[1]);
       }, this);
     });
-    it.skip("#equals", function() {
+    it("#equals", function() {
+      testCase(this, [
+        [ 10, [ 10 ], true ],
+        [ null, [ [], [ "\\size" ] ], true ],
+        [ null, [ [], [ "\\size", "\\undefined" ] ], false ],
+        [ null, [ [], [ "\\size", "\\at" ] ], false ],
+        [ [], [ null, [ "\\size", "\\at" ] ], false ],
+        [ 10, [ $.Float(10.0) ], true ],
+      ]);
     });
     it.skip("#compareObject", function() {
     });
@@ -587,7 +639,7 @@
       expect(instance.yield).to.be.calledLastIn(test);
     }));
     it("#cyc", function() {
-      var r = this.createInstance($("Routine").new($$(function() {
+      var r = this.createInstance(SCRoutine.new($$(function() {
         return $$([ 1, 2 ]).do($$(function($_) {
           return $_.yield();
         }));
@@ -602,7 +654,26 @@
       expect(r.next(), 7).to.be.a("SCNil");
       expect(r.next(), 8).to.be.a("SCNil");
     });
-    it.skip("#fin", function() {
+    it("#fin [ 1, 2, 3 ]", function() {
+      var r = this.createInstance(SCRoutine.new($$(function() {
+        return $$([ 1, 2, 3 ]).do($$(function($_) {
+          return $_.yield();
+        }));
+      }))).fin();
+
+      expect(r.next(), 1).to.be.a("SCInteger").that.equals(1);
+      expect(r.next(), 2).to.be.a("SCNil");
+      expect(r.next(), 3).to.be.a("SCNil");
+    });
+    it("#fin [ nil ]", function() {
+      var r = this.createInstance(SCRoutine.new($$(function() {
+        return $$([ null ]).do($$(function($_) {
+          return $_.yield();
+        }));
+      }))).fin();
+
+      expect(r.next(), 1).to.be.a("SCNil");
+      expect(r.next(), 2).to.be.a("SCNil");
     });
     it("#repeat", sinon.test(function() {
       var instance, test;
@@ -637,7 +708,25 @@
       var instance = this.createInstance();
       expect(instance.asStream).to.be.nop;
     });
-    it.skip("#streamArg", function() {
+    it("#streamArg true", function() {
+      var r = this.createInstance(
+        $("Pseq").new($$([ 10, 20, 30 ]))
+      ).streamArg($$(true));
+
+      expect(r.next(), 1).to.be.a("SCInteger").that.equals(10);
+      expect(r.next(), 2).to.be.a("SCInteger").that.equals(20);
+      expect(r.next(), 3).to.be.a("SCInteger").that.equals(30);
+      expect(r.next(), 4).to.be.a("SCNil");
+    });
+    it("#streamArg false", function() {
+      var r = this.createInstance(
+        $("Pseq").new($$([ 10, 20, 30 ])).asStream()
+      ).streamArg($$(false));
+
+      expect(r.next(), 1).to.be.a("SCInteger").that.equals(10);
+      expect(r.next(), 2).to.be.a("SCInteger").that.equals(20);
+      expect(r.next(), 3).to.be.a("SCInteger").that.equals(30);
+      expect(r.next(), 4).to.be.a("SCNil");
     });
     it("#eventAt", function() {
       var instance, test;
@@ -824,12 +913,6 @@
     it.skip("#primitiveFailed", function() {
     });
     it.skip("#reportError", function() {
-    });
-    it("#_subclassResponsibility", function() {
-      var instance = this.createInstance();
-      expect(function() {
-        instance._subclassResponsibility("method");
-      }).to.throw("should have been implemented by subclass");
     });
     it.skip("#shouldNotImplement", function() {
     });
@@ -1170,10 +1253,52 @@
       expect(test).to.be.a("SCNil");
       expect(bytecode.yield).to.be.calledWith(instance);
     }));
-    it.skip("#alwaysYield", function() {
-    });
-    it.skip("#yieldAndReset", function() {
-    });
+    it("#alwaysYield", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "alwaysYield");
+
+      test = instance.alwaysYield();
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.alwaysYield).to.be.calledWith(instance);
+    }));
+    it("#yieldAndReset true", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "yieldAndReset");
+      this.stub(bytecode, "yield");
+
+      test = instance.yieldAndReset($$(true));
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.yieldAndReset).to.be.calledWith(instance);
+      expect(bytecode.yield).to.be.not.called;
+    }));
+    it("#yieldAndReset null", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "yieldAndReset");
+      this.stub(bytecode, "yield");
+
+      test = instance.yieldAndReset();
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.yieldAndReset).to.be.calledWith(instance);
+      expect(bytecode.yield).to.be.not.called;
+    }));
+    it("#yieldAndReset false", sinon.test(function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      this.stub(bytecode, "yieldAndReset");
+      this.stub(bytecode, "yield");
+
+      test = instance.yieldAndReset($$(false));
+      expect(test).to.be.a("SCNil");
+      expect(bytecode.yieldAndReset).to.be.not.called;
+      expect(bytecode.yield).to.be.calledWith(instance);
+    }));
     it.skip("#idle", function() {
     });
     it.skip("#dependants", function() {

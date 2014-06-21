@@ -24,10 +24,6 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSArray").to.eql([ "freq", 440 ]);
     });
-    it(".newClear", function() {
-      var test = SCArray.newClear($$(4));
-      expect(test).to.be.a("SCArray").that.eqls([ null, null, null, null ]);
-    });
     it(".with", function() {
       var test = SCArray.with($$(0), $$(1), $$(2));
       expect(test).to.be.a("SCArray").that.eqls([ 0, 1, 2 ]);

@@ -7,6 +7,7 @@
 
   var $      = sc.lang.$;
   var strlib = sc.libs.strlib;
+  var q      = strlib.quote;
 
   var klass       = {};
   var metaClasses = {};
@@ -40,19 +41,20 @@
     constructor.__superClass = superMetaClass.__Spec;
   };
 
-  var def = function(className, constructor, spec, opts) {
+  var def = function(className, constructor, spec) {
     var classMethods, instanceMethods, setMethod;
 
     classMethods    = constructor.metaClass.__MetaSpec.prototype;
     instanceMethods = constructor.prototype;
 
     setMethod = function(methods, methodName, func) {
-      var bond;
-      if (methods.hasOwnProperty(methodName) && !opts.force) {
-        bond = methods === classMethods ? "." : "#";
+      var isClassMethod, methodIdentifier;
+      if (methods.hasOwnProperty(methodName)) {
+        isClassMethod    = (methods === classMethods);
+        methodIdentifier = strlib.methodIdentifier(className, methodName, isClassMethod);
         throw new Error(
           "sc.lang.klass.refine: " +
-            className + bond + methodName + " is already defined."
+            methodIdentifier + " is already defined."
         );
       }
       Object.defineProperty(methods, methodName, {
@@ -75,14 +77,14 @@
     if (!isClassName(className)) { // faster test than !/^[A-Z]/.test(className)
       throw new Error(
         "sc.lang.klass.define: " +
-          "classname should be CamelCase, but got '" + className + "'"
+          "classname should be CamelCase, but got " + q(className)
       );
     }
 
     if (metaClasses.hasOwnProperty(className)) {
       throw new Error(
         "sc.lang.klass.define: " +
-          "class '" + className + "' is already registered."
+          "class " + q(className) + " is already defined."
       );
     }
 
@@ -90,7 +92,7 @@
       if (!metaClasses.hasOwnProperty(superClassName)) {
         throw new Error(
           "sc.lang.klass.define: " +
-            "superclass '" + superClassName + "' is not registered."
+            "superclass " + q(superClassName) + " is not defined."
         );
       }
     }
@@ -100,7 +102,7 @@
     var newClass;
 
     newClass = new MetaClass.__MetaSpec();
-    newClass._name = className;
+    newClass.__className = className;
     newClass.__Spec = constructor;
     newClass.__superClass = MetaClass.__MetaSpec.__superClass;
     Object.defineProperties(constructor.prototype, {
@@ -113,7 +115,8 @@
         writable: true
       },
       __className: {
-        value: className
+        value: className,
+        writable: true
       }
     });
     classes[className] = newClass;
@@ -128,8 +131,8 @@
     newClass  = registerClass(metaClass, className, constructor);
 
     metaClass.__Spec = constructor;
-    metaClass._isMetaClass = true;
-    metaClass._name = "Meta_" + className;
+    metaClass.__isMetaClass = true;
+    metaClass.__className  = "Meta_" + className;
     classes["Meta_" + className] = metaClass;
 
     if (newClass.initClass) {
@@ -162,7 +165,7 @@
     if (func) {
       result = func.apply(that, args || []);
     } else {
-      throw new Error("supermethod '" + funcName + "' not found");
+      throw new Error("supermethod " + q(funcName) + " not found");
     }
 
     delete that.__superClassP;
@@ -184,10 +187,9 @@
     if (spec.hasOwnProperty("constructor")) {
       constructor = spec.constructor;
     } else {
-      throw new Error(
-        "sc.lang.klass.define: " +
-          "class should have a constructor."
-      );
+      constructor = function() {
+        this.__super__(superClassName);
+      };
     }
 
     if (className !== "Object") {
@@ -207,7 +209,7 @@
     if (!metaClasses.hasOwnProperty(className)) {
       throw new Error(
         "sc.lang.klass.refine: " +
-          "class '" + className + "' is not registered."
+          "class " + q(className) + " is not defined."
       );
     }
 
@@ -243,8 +245,7 @@
 
   function SCClass() {
     SCObject.call(this);
-    this._name = "Class";
-    this._isMetaClass = false;
+    this.__isMetaClass = false;
   }
 
   SCObject.metaClass = createClassInstance(function() {});
@@ -256,15 +257,16 @@
       if (isClassName(funcName)) {
         return metaClasses[funcName].__Spec.call(this);
       }
-
       return __super__(this, this.__Spec.__superClass, funcName, args);
-    },
-    toString: function() {
-      var name = this.__class._name;
-      return String(strlib.article(name) + " " + name);
     },
     valueOf: function() {
       return this._;
+    },
+    toString: function() {
+      return String(strlib.article(this.__className) + " " + this.__className);
+    },
+    toJSON: function() {
+      return JSON.stringify({ class: this.__className, hash: this.__hash });
     }
   });
 
@@ -274,7 +276,7 @@
       return __super__(this, this.__superClass, funcName, args);
     },
     toString: function() {
-      return String(this._name);
+      return String(this.__className);
     }
   });
 
@@ -308,7 +310,7 @@
 
     spec._doesNotUnderstand = function(methodName) {
       throw new Error("RECEIVER " + this.__str__() + ": " +
-                      "Message '" + methodName + "' not understood.");
+                      "Message " + q(methodName) + " not understood.");
     };
   });
 

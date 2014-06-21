@@ -9,10 +9,6 @@ SCScript.install(function(sc) {
   klass.define("UnaryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
 
-    spec.constructor = function SCUnaryOpStream() {
-      this.__super__("Stream");
-    };
-
     spec.$new = function($operator, $a) {
       return utils.newCopyArgs(this, {
         operator: $operator,
@@ -40,10 +36,6 @@ SCScript.install(function(sc) {
 
   klass.define("BinaryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
-
-    spec.constructor = function SCBinaryOpStream() {
-      this.__super__("Stream");
-    };
 
     spec.$new = function($operator, $a, $b) {
       return utils.newCopyArgs(this, {
@@ -134,10 +126,6 @@ SCScript.install(function(sc) {
 
   klass.define("NAryOpStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
-
-    spec.constructor = function SCNAryOpStream() {
-      this.__super__("Stream");
-    };
 
     spec.$new = function($operator, $a, $arglist) {
       return utils.newCopyArgs(this, {

@@ -6,6 +6,7 @@ SCScript.install(function(sc) {
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
   var rand = sc.libs.random;
+  var q    = sc.libs.strlib.quote;
 
   function prOpSimpleNumber(selector, func) {
     return function($aNumber, $adverb) {
@@ -32,6 +33,7 @@ SCScript.install(function(sc) {
     var $int0 = utils.$int0;
     var $int1 = utils.$int1;
     var SCArray = $("Array");
+    var SCRoutine = $("Routine");
 
     spec.__newFrom__ = $.Float;
 
@@ -453,9 +455,15 @@ SCScript.install(function(sc) {
       return $.Float(this._ * 180 / Math.PI);
     };
 
-    // TODO: implements performBinaryOpOnSimpleNumber
+    spec.performBinaryOpOnSimpleNumber = function($aSelector) {
+      throw new Error("binary operator " + q($aSelector.__sym__()) + " failed");
+    };
+
     // TODO: implements performBinaryOpOnComplex
-    // TODO: implements performBinaryOpOnSignal
+
+    spec.performBinaryOpOnSignal = function($aSelector) {
+      throw new Error("binary operator " + q($aSelector.__sym__()) + " failed");
+    };
 
     spec.nextPowerOfTwo = function() {
       return $.Float(
@@ -729,15 +737,78 @@ SCScript.install(function(sc) {
       return SCArray.series($.Integer(size), this, $step);
     }, "second; last");
 
-    // TODO: implements seriesIter
-    // TODO: implements degreeToKey
-    // TODO: implements keyToDegree
-    // TODO: implements nearestInList
-    // TODO: implements nearestInScale
-    // TODO: implements partition
-    // TODO: implements nextTimeOnGrid
-    // TODO: implements playAndDelta
-    // TODO: implements asQuant
+    spec.seriesIter = fn(function($second, $last) {
+      var first, second, last, step;
+      var $newFrom = this.__newFrom__;
+
+      first = this.__num__();
+      if ($second === $nil) {
+        last = ($last !== $nil) ? $last.__num__() : Infinity;
+        step = first < last ? 1 : -1;
+      } else {
+        second = $second.__num__();
+        last = ($last !== $nil) ? $last.__num__() : (
+          $second < first ? -Infinity : Infinity
+        );
+        step = second - first;
+      }
+      return SCRoutine.new($.Function(function() {
+        var val, $cond;
+        $cond = $.Function(function() {
+          return [ step < 0 ? function() {
+            return $.Boolean(val >= last);
+          } : function() {
+            return $.Boolean(val <= last);
+          } ];
+        });
+        return [ function() {
+          val = first;
+          return $cond.while($.Function(function() {
+            return [ function() {
+              $newFrom(val).yield();
+              val += step;
+              return $nil;
+            } ];
+          }));
+        } ];
+      }));
+    }, "second; last");
+
+    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
+      var $scaleDegree, $accidental;
+      $scaleDegree = this.round($int1).asInteger();
+      $accidental  = (this ["-"] ($scaleDegree)) ["*"] ($.Float(10.0));
+      return $scale.performDegreeToKey($scaleDegree, $stepsPerOctave, $accidental);
+    }, "scale; stepsPerOctave=12");
+
+    spec.keyToDegree = fn(function($scale, $stepsPerOctave) {
+      return $scale.performKeyToDegree(this, $stepsPerOctave);
+    }, "scale; stepsPerOctave=12");
+
+    spec.nearestInList = fn(function($list) {
+      return $list.performNearestInList(this);
+    }, "list");
+
+    spec.nearestInScale = fn(function($scale, $stepsPerOctave) {
+      return $scale.performNearestInScale(this, $stepsPerOctave);
+    }, "scale; stepsPerOctave=12");
+
+    spec.partition = fn(function($parts, $min) {
+      var $n = this ["-"] ($min.__dec__() ["*"] ($parts));
+      return $int1.series(null, $n.__dec__()).scramble().keep($parts.__dec__())
+        .sort().add($n).differentiate() ["+"] ($min.__dec__());
+    }, "parts=2; min=1");
+
+    spec.nextTimeOnGrid = fn(function($clock) {
+      return $clock.nextTimeOnGrid(this, $int0);
+    }, "clock");
+
+    spec.playAndDelta = utils.nop;
+
+    spec.asQuant = function() {
+      return $("Quant").new(this);
+    };
+
     // TODO: implements asTimeString
     // TODO: implements asFraction
     // TODO: implements asBufWithValues

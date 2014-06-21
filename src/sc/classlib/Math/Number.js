@@ -10,33 +10,13 @@ SCScript.install(function(sc) {
   sc.lang.klass.refine("Number", function(spec, utils) {
     spec.isNumber = utils.alwaysReturn$true;
 
-    spec["+"] = function() {
-      return this._subclassResponsibility("+");
-    };
-
-    spec["-"] = function() {
-      return this._subclassResponsibility("-");
-    };
-
-    spec["*"] = function() {
-      return this._subclassResponsibility("*");
-    };
-
-    spec["/"] = function() {
-      return this._subclassResponsibility("/");
-    };
-
-    spec.mod = function() {
-      return this._subclassResponsibility("mod");
-    };
-
-    spec.div = function() {
-      return this._subclassResponsibility("div");
-    };
-
-    spec.pow = function() {
-      return this._subclassResponsibility("pow");
-    };
+    spec["+"] = utils.subclassResponsibility("+");
+    spec["-"] = utils.subclassResponsibility("-");
+    spec["*"] = utils.subclassResponsibility("*");
+    spec["/"] = utils.subclassResponsibility("/");
+    spec.mod = utils.subclassResponsibility("mod");
+    spec.div = utils.subclassResponsibility("div");
+    spec.pow = utils.subclassResponsibility("pow");
 
     spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
       var $this = this;

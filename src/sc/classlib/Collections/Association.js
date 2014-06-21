@@ -6,9 +6,6 @@ SCScript.install(function(sc) {
   sc.lang.klass.define("Association : Magnitude", function(spec, utils) {
     var $false = utils.$false;
 
-    spec.constructor = function SCAssociation() {
-      this.__super__("Magnitude");
-    };
     utils.setProperty(spec, "<>", "key");
     utils.setProperty(spec, "<>", "value");
 

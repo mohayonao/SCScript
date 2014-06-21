@@ -13,18 +13,6 @@ SCScript.install(function(sc) {
     var $nil    = utils.$nil;
     var SCArray = $("Array");
 
-    spec.$newClear = fn(function($indexedSize) {
-      var array, indexedSize, i;
-
-      indexedSize = $indexedSize.__int__();
-      array = new Array(indexedSize);
-      for (i = 0; i < indexedSize; ++i) {
-        array[i] = $nil;
-      }
-
-      return $.Array(array);
-    }, "indexedSize=0");
-
     spec.$with = function() {
       return $.Array(slice.call(arguments));
     };

@@ -8,14 +8,6 @@
 
   var $ = sc.lang.$;
 
-  function arrayToRoutine(array) {
-    return $("Routine").new($$(function() {
-      return $$(array).do($$(function($_) {
-        return $_.yield();
-      }));
-    }));
-  }
-
   var SHOULD_BE_IGNORED = function() {
     return $$("\\should be ignored");
   };
@@ -52,6 +44,18 @@
         });
         expect(f.value(), 0).to.be.a("SCInteger").that.equals(10);
         expect(f.value(), 1).to.be.a("SCInteger").that.equals(10);
+        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+      });
+      it("yield", function() {
+        /*
+          f = { 10.yield }
+        */
+        var f = $$(function() {
+          return $$(10).yield();
+        });
+        expect(function() {
+          f.value();
+        }).to.throw("yield was called outside of a Routine");
         expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
       });
       it("args", function() {
@@ -213,18 +217,6 @@
         expect(spy      , 2).to.callCount(1);
         expect(f.value(), 3).to.be.a("SCInteger").that.equals(40);
         expect(spy      , 4).to.callCount(2);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
-      });
-      it("yield", function() {
-        /*
-          f = { 10.yield }
-        */
-        var f = $$(function() {
-          return $$(10).yield();
-        });
-        expect(function() {
-          f.value();
-        }).to.throw("yield was called outside of a Routine");
         expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
       });
       it("function$while", function() {
@@ -505,6 +497,136 @@
         expect(r.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
         expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
       });
+      it("yieldAndReset", function() {
+        /*
+          r = r {
+          	10.yield;
+          	{
+          		20.yield;
+          		30.yieldAndReset;
+              40.yield;
+          	}.value;
+          	50.yield;
+          };
+        */
+        var spy1 = sinon.spy();
+        var spy2 = sinon.spy();
+        var r = this.createInstance([
+          function() {
+            return $$(10).yield();
+          },
+          function() {
+            return this.push(), $.Function(function() {
+              return [
+                function() {
+                  return $$(20).yield();
+                },
+                function() {
+                  return $$(30).yieldAndReset();
+                },
+                function() {
+                  return $$(40).yield();
+                },
+                spy1
+              ];
+            }).value();
+          },
+          function() {
+            this.shift();
+            return $$(50).yield();
+          },
+          spy2
+        ]);
+        expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+        expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
+        expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(r.value(), 3).to.be.a("SCInteger").that.equals(20);
+        expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(spy1     , 5).to.callCount(0);
+        expect(spy2     , 6).to.callCount(0);
+        expect(r.value(), 7).to.be.a("SCInteger").that.equals(30);
+        expect(spy1     , 8).to.callCount(1);
+        expect(spy2     , 9).to.callCount(1);
+        expect(r.state(),10).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+        expect(r.value(),11).to.be.a("SCInteger").that.equals(10);
+        expect(r.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(r.value(),13).to.be.a("SCInteger").that.equals(20);
+        expect(r.state(),14).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(spy1     ,15).to.callCount(1);
+        expect(spy2     ,16).to.callCount(1);
+        expect(r.value(),17).to.be.a("SCInteger").that.equals(30);
+        expect(spy1     ,18).to.callCount(2);
+        expect(spy2     ,19).to.callCount(2);
+        expect(r.state(),20).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+      });
+      it("alwaysYield", function() {
+        /*
+          r = r {
+            10.yield;
+            {
+              20.yield;
+              30.alwaysYield;
+              40.yield;
+            }.value;
+            50.yield;
+          };
+        */
+        var spy1 = sinon.spy();
+        var spy2 = sinon.spy();
+        var r = this.createInstance([
+          function() {
+            return $$(10).yield();
+          },
+          function() {
+            return this.push(), $.Function(function() {
+              return [
+                function() {
+                  return $$(20).yield();
+                },
+                function() {
+                  return $$(30).alwaysYield();
+                },
+                function() {
+                  return $$(40).yield();
+                },
+                spy1
+              ];
+            }).value();
+          },
+          function() {
+            this.shift();
+            return $$(50).yield();
+          },
+          spy2
+        ]);
+        expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+        expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
+        expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(r.value(), 3).to.be.a("SCInteger").that.equals(20);
+        expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(spy1     , 5).to.callCount(0);
+        expect(spy2     , 6).to.callCount(0);
+        expect(r.value(), 7).to.be.a("SCInteger").that.equals(30);
+        expect(spy1     , 8).to.callCount(1);
+        expect(spy2     , 9).to.callCount(1);
+        expect(r.state(),10).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
+        expect(r.value(),11).to.be.a("SCInteger").that.equals(30);
+        expect(r.reset(),12).to.equals(r);
+        expect(r.state(),13).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
+        expect(r.value(),14).to.be.a("SCInteger").that.equals(10);
+        expect(r.state(),15).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(r.value(),16).to.be.a("SCInteger").that.equals(20);
+        expect(r.state(),17).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
+        expect(spy1     ,18).to.callCount(1);
+        expect(spy2     ,19).to.callCount(1);
+        expect(r.value(),20).to.be.a("SCInteger").that.equals(30);
+        expect(spy1     ,21).to.callCount(2);
+        expect(spy2     ,22).to.callCount(2);
+        expect(r.state(),23).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
+        expect(r.value(),24).to.be.a("SCInteger").that.equals(30);
+        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+      });
       it("value", function() {
         /*
           r = r {
@@ -619,11 +741,11 @@
       });
       it("value.yield", function() {
         /*
-          a = r { [ 10, 20, 30 ].do(_.yield) };
+          a = Pseq.new([ 10, 20, 30 ]).asStream;
           r = r { a.value.yield; };
         */
         var spy = sinon.spy();
-        var a = arrayToRoutine([ 10, 20, 30 ]);
+        var a = sc.test.routine([ 10, 20, 30 ]);
         var r = this.createInstance($.Function(function() {
           return [
             function() {
@@ -712,11 +834,11 @@
       });
       it("use iterator in a Function", function() {
         /*
-          r = r { [ 1, 2, 3 ].do(_.yield) };
-          f =   { r.value };
+          r = Pseq.new([ 1, 2, 3 ]).asStream;
+          f = { r.value };
         */
         var r, f;
-        r = arrayToRoutine([ 1, 2, 3 ]);
+        r = sc.test.routine([ 1, 2, 3 ]);
         f = $$(function() {
           return r.value();
         });
@@ -728,15 +850,15 @@
       });
       it("use iterators at the same time", function() {
         /*
-          a = r { [   1,   2,   3 ].do(_.yield) };
-          b = r { [  10,  20,  30 ].do(_.yield) };
-          c = r { [ 100, 200, 300 ].do(_.yield) };
-          f =   { [ a.value, b.value, c.value ] };
+          a = Pseq.new([   1,   2,   3 ]).asStream;
+          b = Pseq.new([  10,  20,  30 ]).asStream;
+          c = Pseq.new([ 100, 200, 300 ]).asStream;
+          f = { [ a.value, b.value, c.value ] };
         */
         var a, b, c, f;
-        a = arrayToRoutine([   1,   2,   3 ]);
-        b = arrayToRoutine([  10,  20,  30 ]);
-        c = arrayToRoutine([ 100, 200, 300 ]);
+        a = sc.test.routine([   1,   2,   3 ]);
+        b = sc.test.routine([  10,  20,  30 ]);
+        c = sc.test.routine([ 100, 200, 300 ]);
         f = $$(function() {
           return $$([ a.value(), b.value(), c.value() ]);
         });

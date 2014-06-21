@@ -7,6 +7,7 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
+  var klass = sc.lang.klass;
 
   describe("SCAbstractFunction", function() {
     var SCAbstractFunction;
@@ -26,7 +27,7 @@
 
       spy = this.spy(sc.test.func());
       $aSelector = $$();
-      this.stub(sc.lang.klass, "get").withArgs("UnaryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("UnaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -44,7 +45,7 @@
       $aSelector = $$();
       $something = $$();
       $adverb    = $$();
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("BinaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -62,7 +63,7 @@
       $aSelector = $$();
       $something = $$();
       $adverb    = $$();
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("BinaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -79,7 +80,7 @@
       spy = this.spy(sc.test.func());
       $aSelector = $$();
       $anArgList = $$();
-      this.stub(sc.lang.klass, "get").withArgs("NAryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("NAryOpFunction").returns($$({
         new: spy
       }));
 
@@ -639,7 +640,7 @@
           return $.Symbol(rate);
         }
       });
-      this.stub(sc.lang.klass, "get").withArgs("K2A").returns($$({
+      this.stub(klass, "get").withArgs("K2A").returns($$({
         ar: spy
       }));
 

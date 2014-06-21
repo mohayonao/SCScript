@@ -7,25 +7,19 @@ SCScript.install(function(sc) {
   var fn = sc.lang.fn;
   var klass = sc.lang.klass;
 
-  klass.define("Stream : AbstractFunction", function(spec, utils) {
+  klass.refine("Stream", function(spec, utils) {
     var $nil   = utils.$nil;
     var $true  = utils.$true;
     var $false = utils.$false;
     var $int0  = utils.$int0;
     var SCArray = $("Array");
-
-    spec.constructor = function SCStream() {
-      this.__super__("AbstractFunction");
-    };
+    var SCRoutine = $("Routine");
 
     spec.parent = function() {
       return $nil;
     };
 
-    spec.next = function() {
-      return this._subclassResponsibility("next");
-    };
-
+    spec.next = utils.subclassResponsibility("next");
     spec.iter = utils.nop;
 
     spec.value = fn(function($inval) {
@@ -58,9 +52,7 @@ SCScript.install(function(sc) {
       return $array;
     }, "inval");
 
-    spec.put = function() {
-      return this._subclassResponsibility("put");
-    };
+    spec.put = utils.subclassResponsibility("put");
 
     spec.putN = fn(function($n, $item) {
       var $this = this;
@@ -105,7 +97,7 @@ SCScript.install(function(sc) {
 
     spec.subSample = fn(function($offset, $skipSize) {
       var $this = this;
-      return $("Routine").new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         return [ function() {
           var offset, i;
 
@@ -327,7 +319,7 @@ SCScript.install(function(sc) {
       var $reset;
 
       $reset = $false;
-      return $("Routine").new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         var $inval;
         return [
           function(_arg0) {
@@ -485,9 +477,6 @@ SCScript.install(function(sc) {
   // EmbedOnce
 
   klass.define("FuncStream : Stream", function(spec, utils) {
-    spec.constructor = function SCFuncStream() {
-      this.__super__("Stream");
-    };
     utils.setProperty(spec, "<>", "envir");
 
     spec.$new = function($nextFunc, $resetFunc) {
@@ -521,10 +510,7 @@ SCScript.install(function(sc) {
   // StreamClutch
   // CleanupStream
 
-  klass.define("PauseStream : Stream", function(spec) {
-    spec.constructor = function SCPauseStream() {
-      this.__super__("Stream");
-    };
+  klass.define("PauseStream : Stream", function() {
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
@@ -550,10 +536,7 @@ SCScript.install(function(sc) {
     // TODO: implements threadPlayer
   });
 
-  klass.define("Task : PauseStream", function(spec) {
-    spec.constructor = function SCTask() {
-      this.__super__("PauseStream");
-    };
+  klass.define("Task : PauseStream", function() {
     // TODO: implements storeArgs
   });
 });

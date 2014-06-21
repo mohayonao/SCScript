@@ -72,9 +72,9 @@ SCScript.install(function(sc) {
   klass.define("BinaryOpXStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
 
-    spec.constructor = function SCBinaryOpXStream() {
+    spec.constructor = function() {
       this.__super__("Stream");
-      this._$vala     = $nil;
+      this._$vala = $nil;
     };
 
     spec.$new = function($operator, $a, $b) {

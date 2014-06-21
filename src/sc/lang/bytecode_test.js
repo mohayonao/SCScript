@@ -8,6 +8,8 @@
 
   var $ = sc.lang.$;
 
+  var SCRoutine = $("Routine");
+
   var SHOULD_BE_IGNORED = function() {
     return $$("\\should be ignored");
   };
@@ -247,9 +249,7 @@
     });
 
     describe("as Routine", function() {
-      var SCRoutine;
       before(function() {
-        SCRoutine = $("Routine");
         this.createInstance = function(value) {
           var $func;
           if (Array.isArray(value)) {

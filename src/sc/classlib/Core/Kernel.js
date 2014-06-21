@@ -66,7 +66,7 @@ SCScript.install(function(sc) {
   klass.define("Process", function(spec, utils) {
     var $nil = utils.$nil;
 
-    spec.constructor = function SCProcess() {
+    spec.constructor = function() {
       this.__super__("Object");
       this._$interpreter = $nil;
       this._$mainThread  = $nil;
@@ -86,7 +86,7 @@ SCScript.install(function(sc) {
   klass.define("Interpreter", function(spec, utils) {
     var $nil = utils.$nil;
 
-    spec.constructor = function SCInterpreter() {
+    spec.constructor = function() {
       this.__super__("Object");
       this._$ = {};
     };

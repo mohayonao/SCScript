@@ -610,10 +610,6 @@ SCScript.install(function(sc) {
   });
 
   klass.define("UnaryOpFunction : AbstractFunction", function(spec, utils) {
-    spec.constructor = function SCUnaryOpFunction() {
-      this.__super__("AbstractFunction");
-    };
-
     spec.$new = function($selector, $a) {
       return utils.newCopyArgs(this, {
         selector: $selector,
@@ -646,10 +642,6 @@ SCScript.install(function(sc) {
   });
 
   klass.define("BinaryOpFunction : AbstractFunction", function(spec, utils) {
-    spec.constructor = function SCBinaryOpFunction() {
-      this.__super__("AbstractFunction");
-    };
-
     spec.$new = function($selector, $a, $b, $adverb) {
       return utils.newCopyArgs(this, {
         selector: $selector,
@@ -679,10 +671,6 @@ SCScript.install(function(sc) {
   });
 
   klass.define("NAryOpFunction : AbstractFunction", function(spec, utils) {
-    spec.constructor = function SCNAryOpFunction() {
-      this.__super__("AbstractFunction");
-    };
-
     spec.$new = function($selector, $a, $arglist) {
       return utils.newCopyArgs(this, {
         selector: $selector,
@@ -722,7 +710,7 @@ SCScript.install(function(sc) {
   klass.define("FunctionList : AbstractFunction", function(spec, utils) {
     var $int0 = utils.$int0;
 
-    spec.constructor = function SCFunctionList() {
+    spec.constructor = function() {
       this.__super__("AbstractFunction");
       this._flopped = false;
     };

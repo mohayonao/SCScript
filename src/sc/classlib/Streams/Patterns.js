@@ -7,6 +7,8 @@ SCScript.install(function(sc) {
   var fn    = sc.lang.fn;
   var klass = sc.lang.klass;
 
+  var SCRoutine = $("Routine");
+
   klass.define("Pattern : AbstractFunction", function(spec, utils) {
     var $false = utils.$false;
 
@@ -24,7 +26,7 @@ SCScript.install(function(sc) {
 
     spec.asStream = function() {
       var $this = this;
-      return $("Routine").new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         return [ function($inval) {
           return $this.embedInStream($inval);
         } ];

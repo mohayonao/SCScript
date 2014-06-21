@@ -449,7 +449,7 @@ SCScript.install(function(sc) {
   klass.define("OneShotStream : Stream", function(spec, utils) {
     var $nil = utils.$nil;
 
-    spec.constructor = function OneShotStream() {
+    spec.constructor = function() {
       this.__super__("Stream");
       this._once = true;
     };

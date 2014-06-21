@@ -98,11 +98,6 @@ SCScript.install(function(sc) {
 
     spec.__tag = sc.TAG_ROUTINE;
 
-    spec.constructor = function SCRoutine() {
-      this.__super__("Thread");
-      this._$doneValue = null;
-    };
-
     spec.$new = function($func) {
       return this.__super__("new", [ $func ]);
     };

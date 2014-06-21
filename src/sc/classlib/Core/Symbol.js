@@ -232,10 +232,8 @@ SCScript.install(function(sc) {
 
     spec.doListOp = fn(function($aSelector, $aList) {
       var $this = this;
-      $aList.do($.Function(function() {
-        return [ function($item) {
-          return $item.perform($aSelector, $this);
-        } ];
+      $aList.do($.Func(function($item) {
+        return $item.perform($aSelector, $this);
       }));
       return this;
     }, "aSelector; aList");

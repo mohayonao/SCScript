@@ -755,21 +755,17 @@ SCScript.install(function(sc) {
       }
       return SCRoutine.new($.Function(function() {
         var val, $cond;
-        $cond = $.Function(function() {
-          return [ step < 0 ? function() {
-            return $.Boolean(val >= last);
-          } : function() {
-            return $.Boolean(val <= last);
-          } ];
+        $cond = $.Func(step < 0 ? function() {
+          return $.Boolean(val >= last);
+        } : function() {
+          return $.Boolean(val <= last);
         });
         return [ function() {
           val = first;
-          return $cond.while($.Function(function() {
-            return [ function() {
-              $newFrom(val).yield();
-              val += step;
-              return $nil;
-            } ];
+          return $cond.while($.Func(function() {
+            $newFrom(val).yield();
+            val += step;
+            return $nil;
           }));
         } ];
       }));

@@ -14,9 +14,7 @@
   describe("SCAbstractFunction", function() {
     before(function() {
       this.createInstance = function(func) {
-        var instance = $.Function(function() {
-          return [ func || function() {} ];
-        });
+        var instance = $.Func(func);
         return $$(instance, "AbstractFunction" + this.test.title);
       };
     });

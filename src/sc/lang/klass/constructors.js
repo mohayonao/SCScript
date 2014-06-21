@@ -206,6 +206,12 @@
     return instance;
   };
 
+  $.Func = function(func) {
+    return $.Function(function() {
+      return [ func ];
+    });
+  };
+
   $.Ref = function(value) {
     var instance = new SCRef();
     instance._$value = value;

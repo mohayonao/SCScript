@@ -95,10 +95,8 @@ SCScript.install(function(sc) {
       if ($clock === $nil) {
         return $clock;
       }
-      return $.Function(function() {
-        return [ function() {
-          return $clock.$("nextTimeOnGrid");
-        } ];
+      return $.Func(function() {
+        return $clock.$("nextTimeOnGrid");
       });
     }, "clock");
 

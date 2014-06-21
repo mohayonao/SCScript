@@ -187,12 +187,11 @@ SCScript.install(function(sc) {
           $result.add($item);
         }
       });
-      $that.do($.Function(function() {
-        return [ function($item) {
-          if (!$this.includes($item).__bool__()) {
-            $result.add($item);
-          }
-        } ];
+      $that.do($.Func(function($item) {
+        if (!$this.includes($item).__bool__()) {
+          $result.add($item);
+        }
+        return $nil;
       }));
 
       return $result;

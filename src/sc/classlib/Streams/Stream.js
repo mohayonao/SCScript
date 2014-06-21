@@ -33,10 +33,8 @@ SCScript.install(function(sc) {
 
     spec.nextN = fn(function($n, $inval) {
       var $this = this;
-      return SCArray.fill($n, $.Function(function() {
-        return [ function() {
-          return $this.next($inval);
-        } ];
+      return SCArray.fill($n, $.Func(function() {
+        return $this.next($inval);
       }));
     }, "n; inval");
 
@@ -44,10 +42,9 @@ SCScript.install(function(sc) {
       var $array;
 
       $array = $nil;
-      this.do($.Function(function() {
-        return [ function($item) {
-          $array = $array.add($item);
-        } ];
+      this.do($.Func(function($item) {
+        $array = $array.add($item);
+        return $array;
       }), $inval);
 
       return $array;
@@ -57,20 +54,16 @@ SCScript.install(function(sc) {
 
     spec.putN = fn(function($n, $item) {
       var $this = this;
-      $n.do($.Function(function() {
-        return [ function() {
-          $this.put($item);
-        } ];
+      $n.do($.Func(function() {
+        return $this.put($item);
       }));
       return this;
     }, "n; item");
 
     spec.putAll = fn(function($aCollection) {
       var $this = this;
-      $aCollection.do($.Function(function() {
-        return [ function($item) {
-          $this.put($item);
-        } ];
+      $aCollection.do($.Func(function($item) {
+        return $this.put($item);
       }));
       return this;
     }, "aCollection");
@@ -80,17 +73,13 @@ SCScript.install(function(sc) {
       var $item, $i;
 
       $i = $int0;
-      $.Function(function() {
-        return [ function() {
-          $item = $this.next($inval);
-          return $item.notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $function.value($item, $i);
-          $i = $i.__inc__();
-          return $i;
-        } ];
+      $.Func(function() {
+        $item = $this.next($inval);
+        return $item.notNil();
+      }).while($.Func(function() {
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
       }));
 
       return this;
@@ -98,32 +87,30 @@ SCScript.install(function(sc) {
 
     spec.subSample = fn(function($offset, $skipSize) {
       var $this = this;
-      return SCRoutine.new($.Function(function() {
-        return [ function() {
-          var offset, i;
+      return SCRoutine.new($.Func(function() {
+        var offset, i;
 
-          offset = $offset.__int__();
-          for (i = 0; i < offset; ++i) {
-            $this.next();
-          }
+        offset = $offset.__int__();
+        for (i = 0; i < offset; ++i) {
+          $this.next();
+        }
 
-          return $.Function(function() {
-            return [
-              function() {
-                return $this.next().yield();
-              },
-              function() {
-                var skipSize, i;
+        return $.Function(function() {
+          return [
+            function() {
+              return $this.next().yield();
+            },
+            function() {
+              var skipSize, i;
 
-                skipSize = $skipSize.__int__();
-                for (i = 0; i < skipSize; ++i) {
-                  $this.next();
-                }
-              },
-              $.NOP
-            ];
-          }).loop();
-        } ];
+              skipSize = $skipSize.__int__();
+              for (i = 0; i < skipSize; ++i) {
+                $this.next();
+              }
+            },
+            $.NOP
+          ];
+        }).loop();
       }));
     }, "offset=0; skipSize=0");
 
@@ -132,17 +119,13 @@ SCScript.install(function(sc) {
       var $item, $i;
 
       $i = $int0;
-      $.Function(function() {
-        return [ function() {
-          $item = $this.next($item);
-          return $item.notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $function.value($item, $i);
-          $i = $i.__inc__();
-          return $i;
-        } ];
+      $.Func(function() {
+        $item = $this.next($item);
+        return $item.notNil();
+      }).while($.Func(function() {
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
       }));
 
       return this;
@@ -152,21 +135,17 @@ SCScript.install(function(sc) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $.Function(function() {
-        return [ function($inval) {
-          var $nextval;
+      $nextFunc = $.Func(function($inval) {
+        var $nextval;
 
-          $nextval = $this.next($inval);
-          if ($nextval !== $nil) {
-            return $argCollectFunc.value($nextval, $inval);
-          }
-          return $nil;
-        } ];
+        $nextval = $this.next($inval);
+        if ($nextval !== $nil) {
+          return $argCollectFunc.value($nextval, $inval);
+        }
+        return $nil;
       });
-      $resetFunc = $.Function(function() {
-        return [ function() {
-          return $this.reset();
-        } ];
+      $resetFunc = $.Func(function() {
+        return $this.reset();
       });
 
       return $("FuncStream").new($nextFunc, $resetFunc);
@@ -176,33 +155,23 @@ SCScript.install(function(sc) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $.Function(function() {
-        return [ function($inval) {
-          var $nextval;
+      $nextFunc = $.Func(function($inval) {
+        var $nextval;
 
-          $nextval = $this.next($inval);
-          $.Function(function() {
-            return [ function() {
-              return $nextval.notNil().and($.Function(function() {
-                return [ function() {
-                  return $function.value($nextval, $inval);
-                } ];
-              }));
-            } ];
-          }).while($.Function(function() {
-            return [ function() {
-              $nextval = $this.next($inval);
-              return $nextval;
-            } ];
+        $nextval = $this.next($inval);
+        $.Func(function() {
+          return $nextval.notNil().and($.Func(function() {
+            return $function.value($nextval, $inval);
           }));
-
+        }).while($.Func(function() {
+          $nextval = $this.next($inval);
           return $nextval;
-        } ];
+        }));
+
+        return $nextval;
       });
-      $resetFunc = $.Function(function() {
-        return [ function() {
-          return $this.reset();
-        } ];
+      $resetFunc = $.Func(function() {
+        return $this.reset();
       });
 
       return $("FuncStream").new($nextFunc, $resetFunc);
@@ -212,33 +181,23 @@ SCScript.install(function(sc) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $.Function(function() {
-        return [ function($inval) {
-          var $nextval;
+      $nextFunc = $.Func(function($inval) {
+        var $nextval;
 
-          $nextval = $this.next($inval);
-          $.Function(function() {
-            return [ function() {
-              return $nextval.notNil().and($.Function(function() {
-                return [ function() {
-                  return $function.value($nextval, $inval).not();
-                } ];
-              }));
-            } ];
-          }).while($.Function(function() {
-            return [ function() {
-              $nextval = $this.next($inval);
-              return $nextval;
-            } ];
+        $nextval = $this.next($inval);
+        $.Func(function() {
+          return $nextval.notNil().and($.Func(function() {
+            return $function.value($nextval, $inval).not();
           }));
-
+        }).while($.Func(function() {
+          $nextval = $this.next($inval);
           return $nextval;
-        } ];
+        }));
+
+        return $nextval;
       });
-      $resetFunc = $.Function(function() {
-        return [ function() {
-          return $this.reset();
-        } ];
+      $resetFunc = $.Func(function() {
+        return $this.reset();
       });
 
       return $("FuncStream").new($nextFunc, $resetFunc);
@@ -247,24 +206,20 @@ SCScript.install(function(sc) {
     spec.dot = fn(function($function, $stream) {
       var $this = this;
 
-      return $("FuncStream").new($.Function(function() {
-        return [ function($inval) {
-          var $x, $y;
+      return $("FuncStream").new($.Func(function($inval) {
+        var $x, $y;
 
-          $x = $this.next($inval);
-          $y = $stream.next($inval);
+        $x = $this.next($inval);
+        $y = $stream.next($inval);
 
-          if ($x !== $nil && $y !== $nil) {
-            return $function.value($x, $y, $inval);
-          }
+        if ($x !== $nil && $y !== $nil) {
+          return $function.value($x, $y, $inval);
+        }
 
-          return $nil;
-        } ];
-      }), $.Function(function() {
-        return [ function() {
-          $this.reset();
-          return $stream.reset();
-        } ];
+        return $nil;
+      }), $.Func(function() {
+        $this.reset();
+        return $stream.reset();
       }));
     }, "function; stream");
 
@@ -275,39 +230,32 @@ SCScript.install(function(sc) {
       $nextx = this.next();
       $nexty = $stream.next();
 
-      return $("FuncStream").new($.Function(function() {
-        return [ function($inval) {
-          var $val;
+      return $("FuncStream").new($.Func(function($inval) {
+        var $val;
 
-          if ($nextx === $nil) {
-            if ($nexty === $nil) {
-              return $nil;
-            } else {
-              $val = $nexty;
-              $nexty = $stream.next($inval);
-              return $val;
-            }
-          } else {
-            if ($nexty === $nil ||
-              $function.value($nextx, $nexty, $inval).__bool__()) {
-              $val   = $nextx;
-              $nextx = $this.next($inval);
-              return $val;
-            } else {
-              $val   = $nexty;
-              $nexty = $stream.next($inval);
-              return $val;
-            }
+        if ($nextx === $nil) {
+          if ($nexty === $nil) {
+            return $nil;
           }
-        } ];
-      }), $.Function(function() {
-        return [ function() {
-          $this.reset();
-          $stream.reset();
-          $nextx = $this.next();
-          $nexty = $stream.next();
-          return $nexty;
-        } ];
+          $val = $nexty;
+          $nexty = $stream.next($inval);
+          return $val;
+        }
+        if ($nexty === $nil ||
+          $function.value($nextx, $nexty, $inval).__bool__()) {
+          $val   = $nextx;
+          $nextx = $this.next($inval);
+          return $val;
+        }
+        $val   = $nexty;
+        $nexty = $stream.next($inval);
+        return $val;
+      }), $.Func(function() {
+        $this.reset();
+        $stream.reset();
+        $nextx = $this.next();
+        $nexty = $stream.next();
+        return $nexty;
       }));
     }, "function; stream");
 
@@ -342,10 +290,8 @@ SCScript.install(function(sc) {
     }, "stream");
 
     spec.collate = fn(function($stream) {
-      return this.interlace($.Function(function() {
-        return [ function($x, $y) {
-          return $x.$("<", [ $y ]);
-        } ];
+      return this.interlace($.Func(function($x, $y) {
+        return $x.$("<", [ $y ]);
       }), $stream);
     }, "stream");
 
@@ -389,10 +335,8 @@ SCScript.install(function(sc) {
 
     spec.composeNAryOp = fn(function($argSelector, $anArgList) {
       return $("NAryOpStream").new(
-        $argSelector, this, $anArgList.collect($.Function(function() {
-          return [ function($_) {
-            return $_.asStream();
-          } ];
+        $argSelector, this, $anArgList.collect($.Func(function($_) {
+          return $_.asStream();
         }))
       );
     }, "argStream; anArgList");
@@ -401,16 +345,12 @@ SCScript.install(function(sc) {
       var $this = this;
       var $outval;
 
-      $.Function(function() {
-        return [ function() {
-          $outval = $this.value($inval);
-          return $outval.notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $inval = $outval.yield();
-          return $inval;
-        } ];
+      $.Func(function() {
+        $outval = $this.value($inval);
+        return $outval.notNil();
+      }).while($.Func(function() {
+        $inval = $outval.yield();
+        return $inval;
       }));
 
       return $inval;
@@ -433,15 +373,11 @@ SCScript.install(function(sc) {
     spec.repeat = fn(function($repeats) {
       var $this = this;
 
-      return $.Function(function() {
-        return [ function($inval) {
-          return $repeats.value($inval).do($.Function(function() {
-            return [ function() {
-              $inval = $this.reset().embedInStream($inval);
-              return $inval;
-            } ];
-          }));
-        } ];
+      return $.Func(function($inval) {
+        return $repeats.value($inval).do($.Func(function() {
+          $inval = $this.reset().embedInStream($inval);
+          return $inval;
+        }));
       }).r();
     }, "repeats=inf");
   });
@@ -490,19 +426,15 @@ SCScript.install(function(sc) {
 
     spec.next = fn(function($inval) {
       var $this = this;
-      return this._$envir.use($.Function(function() {
-        return [ function() {
-          return $this._$nextFunc.value($inval).processRest($inval);
-        } ];
+      return this._$envir.use($.Func(function() {
+        return $this._$nextFunc.value($inval).processRest($inval);
       }));
     }, "inval");
 
     spec.reset = function() {
       var $this = this;
-      return this._$envir.use($.Function(function() {
-        return [ function() {
-          return $this._$resetFunc.value();
-        } ];
+      return this._$envir.use($.Func(function() {
+        return $this._$resetFunc.value();
       }));
     };
     // TODO: implements storeArgs

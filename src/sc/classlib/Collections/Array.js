@@ -651,26 +651,20 @@ SCScript.install(function(sc) {
     // TODO: implements source
 
     spec.asUGenInput = function($for) {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asUGenInput($for);
-        } ];
+      return this.collect($.Func(function($_) {
+        return $_.asUGenInput($for);
       }));
     };
 
     spec.asAudioRateInput = function($for) {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asAudioRateInput($for);
-        } ];
+      return this.collect($.Func(function($_) {
+        return $_.asAudioRateInput($for);
       }));
     };
 
     spec.asControlInput = function() {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asControlInput();
-        } ];
+      return this.collect($.Func(function($_) {
+        return $_.asControlInput();
       }));
     };
 

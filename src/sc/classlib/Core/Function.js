@@ -168,15 +168,11 @@ SCScript.install(function(sc) {
     spec.flop = function() {
       var $this = this;
 
-      return $.Function(function() {
-        return [ function() {
-          var $$args = $.Array(slice.call(arguments));
-          return $$args.flop().collect($.Function(function() {
-            return [ function($_) {
-              return $this.valueArray($_);
-            } ];
-          }));
-        } ];
+      return $.Func(function() {
+        var $$args = $.Array(slice.call(arguments));
+        return $$args.flop().collect($.Func(function($_) {
+          return $this.valueArray($_);
+        }));
       });
     };
 

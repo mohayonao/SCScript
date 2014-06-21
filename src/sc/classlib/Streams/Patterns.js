@@ -26,10 +26,8 @@ SCScript.install(function(sc) {
 
     spec.asStream = function() {
       var $this = this;
-      return SCRoutine.new($.Function(function() {
-        return [ function($inval) {
-          return $this.embedInStream($inval);
-        } ];
+      return SCRoutine.new($.Func(function($inval) {
+        return $this.embedInStream($inval);
       }));
     };
 
@@ -191,10 +189,8 @@ SCScript.install(function(sc) {
       $cur     = this._$start;
       $stepStr = this._$step.asStream();
 
-      $.Function(function() {
-        return [ function() {
-          return $.Boolean(counter < length);
-        } ];
+      $.Func(function() {
+        return $.Boolean(counter < length);
       }).while($.Function(function() {
         var $stepVal;
         return [
@@ -249,10 +245,8 @@ SCScript.install(function(sc) {
       $cur     = this._$start;
       $growStr = this._$grow.asStream();
 
-      $.Function(function() {
-        return [ function() {
-          return $.Boolean(counter < length);
-        } ];
+      $.Func(function() {
+        return $.Boolean(counter < length);
       }).while($.Function(function() {
         var $growVal;
         return [

@@ -682,19 +682,15 @@ SCScript.install(function(sc) {
     spec.value = function() {
       var args = arguments;
       return this._$a.value.apply(this._$a, args)
-        .performList(this._$selector, this._$arglist.collect($.Function(function() {
-          return [ function($_) {
-            return $_.value.apply($_, args);
-          } ];
+        .performList(this._$selector, this._$arglist.collect($.Func(function($_) {
+          return $_.value.apply($_, args);
         })));
     };
 
     spec.valueArray = function($args) {
       return this._$a.valueArray($args)
-        .performList(this._$selector, this._$arglist.collect($.Function(function() {
-          return [ function($_) {
-            return $_.valueArray($args);
-          } ];
+        .performList(this._$selector, this._$arglist.collect($.Func(function($_) {
+          return $_.valueArray($args);
         })));
     };
 
@@ -754,10 +750,8 @@ SCScript.install(function(sc) {
     spec.value = function() {
       var $res, args = arguments;
 
-      $res = this._$array.collect($.Function(function() {
-        return [ function($_) {
-          return $_.value.apply($_, args);
-        } ];
+      $res = this._$array.collect($.Func(function($_) {
+        return $_.value.apply($_, args);
       }));
 
       return this._flopped ? $res.flop() : $res;
@@ -766,10 +760,8 @@ SCScript.install(function(sc) {
     spec.valueArray = function($args) {
       var $res;
 
-      $res = this._$array.collect($.Function(function() {
-        return [ function($_) {
-          return $_.valueArray($args);
-        } ];
+      $res = this._$array.collect($.Func(function($_) {
+        return $_.valueArray($args);
       }));
 
       return this._flopped ? $res.flop() : $res;
@@ -785,10 +777,8 @@ SCScript.install(function(sc) {
 
     spec.flop = function() {
       if (!this._flopped) {
-        this._$array = this._$array.collect($.Function(function() {
-          return [ function($_) {
-            return $_.$("flop");
-          } ];
+        this._$array = this._$array.collect($.Func(function($_) {
+          return $_.$("flop");
         }));
       }
       this._flopped = true;

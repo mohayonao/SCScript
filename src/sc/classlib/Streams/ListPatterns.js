@@ -38,18 +38,13 @@ SCScript.install(function(sc) {
       $offset  = this._$offset;
       $repeats = this._$repeats;
 
-      $repeats.value($inval).do($.Function(function() {
-        var $offsetValue;
-        return [ function() {
-          $offsetValue = $offset.value($inval);
-          return $list.size().do($.Function(function() { // TODO: reverseDo?
-            var $item;
-            return [ function($_, $i) {
-              $item  = $list.wrapAt($i.$("+", [ $offsetValue ]));
-              $inval = $item.embedInStream($inval);
-            } ];
-          }));
-        } ];
+      $repeats.value($inval).do($.Func(function() {
+        var $offsetValue = $offset.value($inval);
+        return $list.size().do($.Func(function($_, $i) { // TODO: reverseDo?
+          var $item  = $list.wrapAt($i.$("+", [ $offsetValue ]));
+          $inval = $item.embedInStream($inval);
+          return $inval;
+        }));
       }));
 
       return $inval;

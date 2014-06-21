@@ -224,10 +224,8 @@ SCScript.install(function(sc) {
       var array, i, n;
 
       if ($n.isSequenceableCollection().__bool__()) {
-        return SCArray.fillND($n, $.Function(function() {
-          return [ function() {
-            return $this.copy();
-          } ];
+        return SCArray.fillND($n, $.Func(function() {
+          return $this.copy();
         }));
       }
 
@@ -411,14 +409,10 @@ SCScript.install(function(sc) {
           ];
         }));
       } else {
-        return SCRoutine.new($.Function(function() {
-          return [ function() {
-            return $.Function(function() {
-              return [ function() {
-                return $this.yield();
-              } ];
-            }).loop();
-          } ];
+        return SCRoutine.new($.Func(function() {
+          return $.Func(function() {
+            return $this.yield();
+          }).loop();
         }));
       }
     }, "embed=false");
@@ -601,14 +595,10 @@ SCScript.install(function(sc) {
     spec.while = fn(function($body) {
       var $this = this;
 
-      $.Function(function() {
-        return [ function() {
-          return $this.value();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          return $body.value();
-        } ];
+      $.Func(function() {
+        return $this.value();
+      }).while($.Func(function() {
+        return $body.value();
       }));
 
       return this;
@@ -751,14 +741,11 @@ SCScript.install(function(sc) {
       var $list;
 
       $list = $.Array();
-      this.asArray().do($.Function(function() {
-        return [ function($a) {
-          $that.asArray().do($.Function(function() {
-            return [ function($b) {
-              $list = $list.add($a.asArray() ["++"] ($b));
-            } ];
-          }));
-        } ];
+      this.asArray().do($.Func(function($a) {
+        return $that.asArray().do($.Func(function($b) {
+          $list = $list.add($a.asArray() ["++"] ($b));
+          return $list;
+        }));
       }));
 
       return $list;

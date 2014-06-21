@@ -151,60 +151,36 @@
         var f = $.Function(function() {
           return [
             function() {
-              return this.push(), $.Function(function() {
-                return [
-                  function() {
-                    return $$(10);
-                  }
-                ];
+              return this.push(), $.Func(function() {
+                return $$(10);
               }).value();
             },
             function() {
-              return this.push(), $.Function(function() {
-                return [
-                  function() {
-                    return $$(20);
-                  }
-                ];
+              return this.push(), $.Func(function() {
+                return $$(20);
               }).value();
             },
             function() {
-              return this.push(), $.Function(function() {
-                return [
-                  function() {
-                    assert(this.shift(), 10);
-                    return assert(this.shift(), 20);
-                  }
-                ];
+              return this.push(), $.Func(function() {
+                assert(this.shift(), 10);
+                return assert(this.shift(), 20);
               }).value();
             },
             function() {
               assert(this.shift(), 20);
-              return this.push(), $.Function(function() {
-                return [
-                  function() {
-                    return $$(30);
-                  }
-                ];
+              return this.push(), $.Func(function() {
+                return $$(30);
               }).value();
             },
             function() {
-              return this.push(), $.Function(function() {
-                return [
-                  function() {
-                    return $$(40);
-                  }
-                ];
+              return this.push(), $.Func(function() {
+                return $$(40);
               }).value();
             },
             function() {
-              return this.push(), $.Function(function() {
-                return [
-                  function() {
-                    assert(this.shift(), 30);
-                    return assert(this.shift(), 40);
-                  }
-                ];
+              return this.push(), $.Func(function() {
+                assert(this.shift(), 30);
+                return assert(this.shift(), 40);
               }).value();
             },
             function() {
@@ -645,21 +621,13 @@
         var spy3 = sinon.spy();
         var r = this.createInstance([
           function() {
-            return this.push(), $.Function(function() {
-              return [
-                function() {
-                  return $$(10);
-                }
-              ];
+            return this.push(), $.Func(function() {
+              return $$(10);
             }).value();
           },
           function() {
-            return this.push(), $.Function(function() {
-              return [
-                function() {
-                  return $$(20);
-                }
-              ];
+            return this.push(), $.Func(function() {
+              return $$(20);
             }).value();
           },
           function() {
@@ -680,21 +648,13 @@
             return $a.yield();
           },
           function() {
-            return this.push(), $.Function(function() {
-              return [
-                function() {
-                  return $$(30);
-                }
-              ];
+            return this.push(), $.Func(function() {
+              return $$(30);
             }).value();
           },
           function() {
-            return this.push(), $.Function(function() {
-              return [
-                function() {
-                  return $$(40);
-                }
-              ];
+            return this.push(), $.Func(function() {
+              return $$(40);
             }).value();
           },
           function() {

@@ -139,9 +139,7 @@
     it(".new", function() {
       var instance;
 
-      instance = SCRoutine.new($.Function(function() {
-        return [];
-      }));
+      instance = SCRoutine.new($.Func());
       expect(instance).to.be.a("SCRoutine");
 
       expect(function() {

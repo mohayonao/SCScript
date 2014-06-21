@@ -286,15 +286,12 @@ SCScript.install(function(sc) {
       $array   = this;
       $find    = $find.asArray();
       $replace = $replace.asArray();
-      $.Function(function() {
-        return [ function() {
-          return ($index = $array.find($find)).notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $out = $out ["++"] ($array.keep($index)) ["++"] ($replace);
-          $array = $array.drop($index ["+"] ($find.size()));
-        } ];
+      $.Func(function() {
+        return ($index = $array.find($find)).notNil();
+      }).while($.Func(function() {
+        $out = $out ["++"] ($array.keep($index)) ["++"] ($replace);
+        $array = $array.drop($index ["+"] ($find.size()));
+        return $array;
       }));
 
       return $out ["++"] ($array);
@@ -452,10 +449,8 @@ SCScript.install(function(sc) {
       this._ThrowIfImmutable();
 
       if ($aCollection.isCollection().__bool__()) {
-        $aCollection.do($.Function(function() {
-          return [ function($item) {
-            $this._.push($this.__elem__($item));
-          } ];
+        $aCollection.do($.Func(function($item) {
+          return $this._.push($this.__elem__($item));
         }));
       } else {
         this.add($aCollection);
@@ -634,10 +629,8 @@ SCScript.install(function(sc) {
 
       $minItem = this.minItem();
       $maxItem = this.maxItem();
-      return this.collect($.Function(function() {
-        return [ function($el) {
-          return $el.$("linlin", [ $minItem, $maxItem, $min, $max ]);
-        } ];
+      return this.collect($.Func(function($el) {
+        return $el.$("linlin", [ $minItem, $maxItem, $min, $max ]);
       }));
     }, "min=0.0; max=1.0");
 
@@ -683,12 +676,10 @@ SCScript.install(function(sc) {
       $index = $int0;
       $flat  = this.flat();
 
-      return $another.deepCollect($.Integer(0x7FFFFFFF), $.Function(function() {
-        return [ function() {
-          var $item = $flat.perform($indexing, $index);
-          $index = $index.__inc__();
-          return $item;
-        } ];
+      return $another.deepCollect($.Integer(0x7FFFFFFF), $.Func(function() {
+        var $item = $flat.perform($indexing, $index);
+        $index = $index.__inc__();
+        return $item;
       }));
     }, "another; indexing=\\wrapAt");
 
@@ -706,10 +697,8 @@ SCScript.install(function(sc) {
         return this.at($int0).unbubble($depth, $levels.__dec__());
       }
 
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.unbubble($depth.__dec__());
-        } ];
+      return this.collect($.Func(function($item) {
+        return $item.unbubble($depth.__dec__());
       }));
     }, "depth=0; levels=1");
 
@@ -721,10 +710,8 @@ SCScript.install(function(sc) {
         return $.Array([ this.bubble($depth, $levels.__dec__()) ]);
       }
 
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.bubble($depth.__dec__(), $levels);
-        } ];
+      return this.collect($.Func(function($item) {
+        return $item.bubble($depth.__dec__(), $levels);
       }));
     }, "depth=0; levels=1");
 
@@ -749,10 +736,8 @@ SCScript.install(function(sc) {
       }
 
       cuts = $$cuts._.slice(1);
-      return $list.collect($.Function(function() {
-        return [ function($item) {
-          return $item.$("slice", cuts);
-        } ];
+      return $list.collect($.Func(function($item) {
+        return $item.$("slice", cuts);
       })).unbubble();
     }, "*cuts");
 

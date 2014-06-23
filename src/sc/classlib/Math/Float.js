@@ -50,52 +50,48 @@ SCScript.install(function(sc) {
     builder.addMethod("isFloat", sc.TRUE);
     builder.addMethod("asFloat");
 
-    [
-      [ "+"  , $.Float, $.Float ],
-      [ "-"  , $.Float, $.Float ],
-      [ "*"  , $.Float, $.Float ],
-      [ "/"  , $.Float, $.Float ],
-      [ "mod"     , $.Float  , $.Float   ],
-      [ "div"     , $.Integer, $.Integer ],
-      [ "pow"     , $.Float  , $.Float   ],
-      [ "min"     , $.Float  , $.Float   ],
-      [ "max"     , $.Float  , $.Float   ],
-      [ "bitAnd"  , $.Float  , $.Float   ],
-      [ "bitOr"   , $.Float  , $.Float   ],
-      [ "bitXor"  , $.Float  , $.Float   ],
-      [ "lcm"     , $.Float  , $.Float   ],
-      [ "gcd"     , $.Float  , $.Float   ],
-      [ "round"   , $.Float  , $.Float   ],
-      [ "roundUp" , $.Float  , $.Float   ],
-      [ "trunc"   , $.Float  , $.Float   ],
-      [ "atan2"   , $.Float  , $.Float   ],
-      [ "hypot"   , $.Float  , $.Float   ],
-      [ "hypotApx", $.Float  , $.Float   ],
-      [ "leftShift"         , $.Float, $.Float ],
-      [ "rightShift"        , $.Float, $.Float ],
-      [ "unsignedRightShift", $.Float, $.Float ],
-      [ "ring1"   , $.Float, $.Float ],
-      [ "ring2"   , $.Float, $.Float ],
-      [ "ring3"   , $.Float, $.Float ],
-      [ "ring4"   , $.Float, $.Float ],
-      [ "difsqr"  , $.Float, $.Float ],
-      [ "sumsqr"  , $.Float, $.Float ],
-      [ "sqrsum"  , $.Float, $.Float ],
-      [ "sqrdif"  , $.Float, $.Float ],
-      [ "absdif"  , $.Float, $.Float ],
-      [ "thresh"  , $.Float, $.Float ],
-      [ "amclip"  , $.Float, $.Float ],
-      [ "scaleneg", $.Float, $.Float ],
-      [ "clip2"   , $.Float, $.Float ],
-      [ "fold2"   , $.Float, $.Float ],
-      [ "wrap2"   , $.Float, $.Float ],
-      [ "excess"  , $.Float, $.Float ],
-      [ "firstArg", $.Float, $.Float ],
-      [ "rrand"   , $.Float, $.Float ],
-      [ "exprand" , $.Float, $.Float ],
-    ].forEach(function(items) {
-      builder.addMethod(items[0], bop.apply(null, items));
-    });
+    builder.addMethod("+", bop("+", $.Float, $.Float));
+    builder.addMethod("-", bop("-", $.Float, $.Float));
+    builder.addMethod("*", bop("*", $.Float, $.Float));
+    builder.addMethod("/", bop("/", $.Float, $.Float));
+    builder.addMethod("mod", bop("mod", $.Float, $.Float));
+    builder.addMethod("div", bop("div", $.Integer, $.Integer));
+    builder.addMethod("pow", bop("pow", $.Float, $.Float));
+    builder.addMethod("min", bop("min", $.Float, $.Float));
+    builder.addMethod("max", bop("max", $.Float, $.Float));
+    builder.addMethod("bitAnd", bop("bitAnd", $.Float, $.Float));
+    builder.addMethod("bitOr", bop("bitOr", $.Float, $.Float));
+    builder.addMethod("bitXor", bop("bitXor", $.Float, $.Float));
+    builder.addMethod("lcm", bop("lcm", $.Float, $.Float));
+    builder.addMethod("gcd", bop("gcd", $.Float, $.Float));
+    builder.addMethod("round", bop("round", $.Float, $.Float));
+    builder.addMethod("roundUp", bop("roundUp", $.Float, $.Float));
+    builder.addMethod("trunc", bop("trunc", $.Float, $.Float));
+    builder.addMethod("atan2", bop("atan2", $.Float, $.Float));
+    builder.addMethod("hypot", bop("hypot", $.Float, $.Float));
+    builder.addMethod("hypotApx", bop("hypotApx", $.Float, $.Float));
+    builder.addMethod("leftShift", bop("leftShift", $.Float, $.Float));
+    builder.addMethod("rightShift", bop("rightShift", $.Float, $.Float));
+    builder.addMethod("unsignedRightShift", bop("unsignedRightShift", $.Float, $.Float));
+    builder.addMethod("ring1", bop("ring1", $.Float, $.Float));
+    builder.addMethod("ring2", bop("ring2", $.Float, $.Float));
+    builder.addMethod("ring3", bop("ring3", $.Float, $.Float));
+    builder.addMethod("ring4", bop("ring4", $.Float, $.Float));
+    builder.addMethod("difsqr", bop("difsqr", $.Float, $.Float));
+    builder.addMethod("sumsqr", bop("sumsqr", $.Float, $.Float));
+    builder.addMethod("sqrsum", bop("sqrsum", $.Float, $.Float));
+    builder.addMethod("sqrdif", bop("sqrdif", $.Float, $.Float));
+    builder.addMethod("absdif", bop("absdif", $.Float, $.Float));
+    builder.addMethod("thresh", bop("thresh", $.Float, $.Float));
+    builder.addMethod("amclip", bop("amclip", $.Float, $.Float));
+    builder.addMethod("scaleneg", bop("scaleneg", $.Float, $.Float));
+    builder.addMethod("clip2", bop("clip2", $.Float, $.Float));
+    builder.addMethod("fold2", bop("fold2", $.Float, $.Float));
+    builder.addMethod("wrap2", bop("wrap2", $.Float, $.Float));
+    builder.addMethod("excess", bop("excess", $.Float, $.Float));
+    builder.addMethod("firstArg", bop("firstArg", $.Float, $.Float));
+    builder.addMethod("rrand", bop("rrand", $.Float, $.Float));
+    builder.addMethod("exprand", bop("exprand", $.Float, $.Float));
 
     builder.addMethod("clip", {
       args: "lo; hi"

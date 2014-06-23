@@ -3,7 +3,6 @@ SCScript.install(function(sc) {
 
   require("./SequenceableCollection");
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
   var rand     = sc.libs.random;
@@ -13,7 +12,7 @@ SCScript.install(function(sc) {
   var $int0 = $.int0;
   var $int1 = $.int1;
 
-  sc.lang.klass.refine("ArrayedCollection", function(builder) {
+  sc.lang.klass.refine("ArrayedCollection", function(builder, _) {
     builder.addMethod("valueOf", function() {
       return this._.map(function(elem) {
         return elem.valueOf();
@@ -716,7 +715,7 @@ SCScript.install(function(sc) {
       var $result;
       var shape, size, i, imax;
 
-      shape = slice.call(arguments);
+      shape = _.toArray(arguments);
 
       size = 1;
       for (i = 0, imax = shape.length; i < imax; ++i) {

@@ -1,7 +1,6 @@
 SCScript.install(function(sc) {
   "use strict";
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var $nil   = $.nil;
   var $true  = $.true;
@@ -16,7 +15,7 @@ SCScript.install(function(sc) {
   var SCRoutine = $("Routine");
   var SCAssociation = $("Association");
 
-  sc.lang.klass.refine("Object", function(builder) {
+  sc.lang.klass.refine("Object", function(builder, _) {
     builder.addMethod("valueOf", function() {
       return this._;
     });
@@ -158,7 +157,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("perform", function() {
-      return performMsg(this, slice.call(arguments));
+      return performMsg(this, _.toArray(arguments));
     });
 
     builder.addMethod("performList", function($selector, $arglist) {
@@ -174,14 +173,14 @@ SCScript.install(function(sc) {
 
     builder.addMethod("tryPerform", function($selector) {
       if (respondsTo(this, $selector)) {
-        return performMsg(this, slice.call(arguments));
+        return performMsg(this, _.toArray(arguments));
       }
       return $nil;
     });
 
     builder.addMethod("multiChannelPerform", function($selector) {
       var list, items, length, i, args, $obj, iter;
-      items = [ this ].concat(slice.call(arguments, 1));
+      items = [ this ].concat(_.toArray(arguments).slice(1));
       length = Math.max.apply(null, items.map(function($_) {
         return $_.size().__int__();
       }));
@@ -673,7 +672,7 @@ SCScript.install(function(sc) {
     builder.addMethod("switch", function() {
       var args, i, imax;
 
-      args = slice.call(arguments);
+      args = _.toArray(arguments);
       for (i = 0, imax = args.length >> 1; i < imax; i++) {
         if (this ["=="] (args[i * 2]).__bool__()) {
           return args[i * 2 + 1].value();

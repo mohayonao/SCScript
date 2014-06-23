@@ -3,7 +3,6 @@ SCScript.install(function(sc) {
 
   require("./ArrayedCollection");
 
-  var slice = [].slice;
   var $     = sc.lang.$;
   var rand  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
@@ -11,9 +10,9 @@ SCScript.install(function(sc) {
   var SCArray = $("Array");
   var $nil = $.nil;
 
-  sc.lang.klass.refine("Array", function(builder) {
+  sc.lang.klass.refine("Array", function(builder, _) {
     builder.addClassMethod("with", function() {
-      return $.Array(slice.call(arguments));
+      return $.Array(_.toArray(arguments));
     });
 
     builder.addMethod("reverse", function() {

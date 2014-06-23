@@ -3,7 +3,6 @@ SCScript.install(function(sc) {
 
   require("./AbstractFunction");
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var $nil = $.nil;
   var iterator = sc.lang.iterator;
@@ -12,7 +11,7 @@ SCScript.install(function(sc) {
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
 
-  sc.lang.klass.refine("Function", function(builder) {
+  sc.lang.klass.refine("Function", function(builder, _) {
     // TODO: implements def
     builder.addClassMethod("new", function() {
       throw new Error("Function.new is illegal, should use literal.");
@@ -139,7 +138,7 @@ SCScript.install(function(sc) {
     builder.addMethod("case", function() {
       var args, i, imax;
 
-      args = slice.call(arguments);
+      args = _.toArray(arguments);
       args.unshift(this);
 
       for (i = 0, imax = args.length >> 1; i < imax; ++i) {
@@ -170,7 +169,7 @@ SCScript.install(function(sc) {
       var $this = this;
 
       return $.Func(function() {
-        var $$args = $.Array(slice.call(arguments));
+        var $$args = $.Array(_.toArray(arguments));
         return $$args.flop().collect($.Func(function($_) {
           return $this.valueArray($_);
         }));

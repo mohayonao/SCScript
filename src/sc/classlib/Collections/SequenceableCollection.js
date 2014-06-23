@@ -3,7 +3,6 @@ SCScript.install(function(sc) {
 
   require("./Collection");
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var $nil   = $.nil;
   var $true  = $.true;
@@ -12,7 +11,7 @@ SCScript.install(function(sc) {
   var $int1  = $.int1;
   var q = sc.libs.strlib.quote;
 
-  sc.lang.klass.refine("SequenceableCollection", function(builder) {
+  sc.lang.klass.refine("SequenceableCollection", function(builder, _) {
     builder.addMethod("|@|", function($index) {
       return this.clipAt($index);
     });
@@ -819,7 +818,7 @@ SCScript.install(function(sc) {
       var $standIn, $minus1, $looper;
       var array, maxSize = 0;
 
-      array = [ this ].concat(slice.call(arguments));
+      array = [ this ].concat(_.toArray(arguments));
       array.forEach(function($sublist) {
         $sublist.do($.Func(function($each) {
           var size = $each.size();
@@ -1715,169 +1714,169 @@ SCScript.install(function(sc) {
 
     builder.addMethod("clip", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("clip") ].concat(slice.call(arguments))
+        this, [ $.Symbol("clip") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("wrap", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("wrap") ].concat(slice.call(arguments))
+        this, [ $.Symbol("wrap") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("fold", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("fold") ].concat(slice.call(arguments))
+        this, [ $.Symbol("fold") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("linlin", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("linlin") ].concat(slice.call(arguments))
+        this, [ $.Symbol("linlin") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("linexp", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("linexp") ].concat(slice.call(arguments))
+        this, [ $.Symbol("linexp") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("explin", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("explin") ].concat(slice.call(arguments))
+        this, [ $.Symbol("explin") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("expexp", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("expexp") ].concat(slice.call(arguments))
+        this, [ $.Symbol("expexp") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("lincurve", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("lincurve") ].concat(slice.call(arguments))
+        this, [ $.Symbol("lincurve") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("curvelin", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("curvelin") ].concat(slice.call(arguments))
+        this, [ $.Symbol("curvelin") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("bilin", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("bilin") ].concat(slice.call(arguments))
+        this, [ $.Symbol("bilin") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("biexp", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("biexp") ].concat(slice.call(arguments))
+        this, [ $.Symbol("biexp") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("moddif", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("moddif") ].concat(slice.call(arguments))
+        this, [ $.Symbol("moddif") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("range", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("range") ].concat(slice.call(arguments))
+        this, [ $.Symbol("range") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("exprange", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("exprange") ].concat(slice.call(arguments))
+        this, [ $.Symbol("exprange") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("curverange", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("curverange") ].concat(slice.call(arguments))
+        this, [ $.Symbol("curverange") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("unipolar", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("unipolar") ].concat(slice.call(arguments))
+        this, [ $.Symbol("unipolar") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("bipolar", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("bipolar") ].concat(slice.call(arguments))
+        this, [ $.Symbol("bipolar") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("lag", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("lag") ].concat(slice.call(arguments))
+        this, [ $.Symbol("lag") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("lag2", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("lag2") ].concat(slice.call(arguments))
+        this, [ $.Symbol("lag2") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("lag3", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("lag3") ].concat(slice.call(arguments))
+        this, [ $.Symbol("lag3") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("lagud", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("lagud") ].concat(slice.call(arguments))
+        this, [ $.Symbol("lagud") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("lag2ud", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("lag2ud") ].concat(slice.call(arguments))
+        this, [ $.Symbol("lag2ud") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("lag3ud", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("lag3ud") ].concat(slice.call(arguments))
+        this, [ $.Symbol("lag3ud") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("varlag", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("varlag") ].concat(slice.call(arguments))
+        this, [ $.Symbol("varlag") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("slew", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("slew") ].concat(slice.call(arguments))
+        this, [ $.Symbol("slew") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("blend", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("blend") ].concat(slice.call(arguments))
+        this, [ $.Symbol("blend") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("checkBadValues", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("checkBadValues") ].concat(slice.call(arguments))
+        this, [ $.Symbol("checkBadValues") ].concat(_.toArray(arguments))
       );
     });
 
     builder.addMethod("prune", function() {
       return this.multiChannelPerform.apply(
-        this, [ $.Symbol("prune") ].concat(slice.call(arguments))
+        this, [ $.Symbol("prune") ].concat(_.toArray(arguments))
       );
     });
 

@@ -4,7 +4,6 @@ SCScript.install(function(sc) {
   require("./Association");
   require("./Set");
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var $nil   = $.nil;
   var $true  = $.true;
@@ -14,7 +13,7 @@ SCScript.install(function(sc) {
   var SCArray = $("Array");
   var SCAssociation = $("Association");
 
-  sc.lang.klass.refine("Dictionary", function(builder) {
+  sc.lang.klass.refine("Dictionary", function(builder, _) {
     builder.addClassMethod("new", {
       args: "n=8"
     }, function($n) {
@@ -130,7 +129,7 @@ SCScript.install(function(sc) {
         return $this.put($key, $value);
       });
 
-      slice.call(arguments).forEach(function($dict) {
+      _.toArray(arguments).forEach(function($dict) {
         $dict.keysValuesDo($loopfunc);
       }, this);
 

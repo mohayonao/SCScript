@@ -191,10 +191,10 @@ SCScript.install(function(sc) {
 
     builder.addMethod("associationAtFail", {
       args: "argKey; function"
-    }, function($argkey, $function) {
+    }, function($argKey, $function) {
       var $index, $key;
 
-      $index = this.scanFor($argkey);
+      $index = this.scanFor($argKey);
       $key   = this._$array.at($index);
 
       if ($key === $nil) {

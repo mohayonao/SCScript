@@ -143,7 +143,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("pyramid", {
-      args: "n=1"
+      args: "patternType=1"
     }, function($patternType) {
       var patternType;
       var obj1, obj2, i, j, k, n, numslots, x;
@@ -271,7 +271,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("pyramidg", {
-      args: "n=1"
+      args: "patternType=1"
     }, function($patternType) {
       var raw = this._;
       var patternType;
@@ -635,7 +635,7 @@ SCScript.install(function(sc) {
     // TODO: implements envirPairs
 
     builder.addMethod("shift", {
-      args: "n; fillter=0.0"
+      args: "n; filler=0.0"
     }, function($n, $filler) {
       var $fill, $remain;
 

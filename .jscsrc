@@ -37,5 +37,6 @@
   "disallowKeywordsOnNewLine": [ "else" ],
   "requireLineFeedAtFileEnd": true,
   "maximumLineLength": 100,
-  "requireDotNotation": true
+  "requireDotNotation": true,
+  "requireSpaceAfterLineComment": true
 }

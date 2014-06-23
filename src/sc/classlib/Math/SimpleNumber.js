@@ -23,7 +23,7 @@ SCScript.install(function(sc) {
         return $.Boolean(func(this._, $aNumber._));
       }
 
-      if ($aNumber.isSequenceableCollection().valueOf()) {
+      if ($aNumber.isSequenceableCollection().__bool__()) {
         return $aNumber.performBinaryOpOnSimpleNumber(
           $.Symbol(selector), this, $adverb
         );
@@ -378,7 +378,7 @@ SCScript.install(function(sc) {
 
     builder.addMethod("bitTest", function($bit) {
       return $.Boolean(
-        this.bitAnd($int1.leftShift($bit)).valueOf() !== 0
+        this.bitAnd($int1.leftShift($bit)).__num__() !== 0
       );
     });
 
@@ -588,7 +588,7 @@ SCScript.install(function(sc) {
       $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
-        if (Math.abs($curve.valueOf()) < 0.001) {
+        if (Math.abs($curve.__num__()) < 0.001) {
           $res = this.linlin($inMin, $inMax, $outMin, $outMax);
         } else {
           $grow = $curve.exp();
@@ -611,7 +611,7 @@ SCScript.install(function(sc) {
       $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
-        if (Math.abs($curve.valueOf()) < 0.001) {
+        if (Math.abs($curve.__num__()) < 0.001) {
           $res = this.linlin($inMin, $inMax, $outMin, $outMax);
         } else {
           $grow = $curve.exp();
@@ -762,7 +762,7 @@ SCScript.install(function(sc) {
       var last, step, size;
 
       if ($second === $nil) {
-        if (this.valueOf() < $last.valueOf()) {
+        if (this.__num__() < $last.__num__()) {
           $second = this.__inc__();
         } else {
           $second = this.__dec__();

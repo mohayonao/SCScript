@@ -1530,7 +1530,7 @@ SCScript.install(function(sc) {
       }
       if ($adverb.isInteger().__bool__()) {
         return _performBinaryOpOnSeqColl$adverb$int(
-          this, $aSelector, $theOperand, $adverb.valueOf()
+          this, $aSelector, $theOperand, $adverb.__int__()
         );
       }
 

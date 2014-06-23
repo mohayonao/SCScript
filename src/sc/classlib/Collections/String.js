@@ -113,37 +113,37 @@ SCScript.install(function(sc) {
 
     builder.addMethod("<", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() < 0
+        this.compare($aString, $false).__num__() < 0
       );
     });
 
     builder.addMethod(">", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() > 0
+        this.compare($aString, $false).__num__() > 0
       );
     });
 
     builder.addMethod("<=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() <= 0
+        this.compare($aString, $false).__num__() <= 0
       );
     });
 
     builder.addMethod(">=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() >= 0
+        this.compare($aString, $false).__num__() >= 0
       );
     });
 
     builder.addMethod("==", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() === 0
+        this.compare($aString, $false).__num__() === 0
       );
     });
 
     builder.addMethod("!=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() !== 0
+        this.compare($aString, $false).__num__() !== 0
       );
     });
 

@@ -116,14 +116,14 @@ SCScript.install(function(sc) {
 
     builder.addMethod("protect", function($handler) {
       var result;
-      var current = bytecode.current;
+      var current = bytecode.getCurrent();
 
       try {
         result = this.value();
       } catch (e) {
         result = null;
       }
-      bytecode.current = current;
+      bytecode.setCurrent(current);
 
       $handler.value();
 

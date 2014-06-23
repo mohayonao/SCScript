@@ -4,19 +4,23 @@ SCScript.install(function(sc) {
   require("./Object");
 
   var $ = sc.lang.$;
-  var klass = sc.lang.klass;
+  var $nil = $.nil;
 
-  klass.refine("Class", function(spec) {
-    spec.class = function() {
+  sc.lang.klass.refine("Class", function(builder) {
+    builder.addMethod("toString", function() {
+      return String(this.__className);
+    });
+
+    builder.addMethod("class", function() {
       if (this.__isMetaClass) {
         return $("Class");
       }
       return $("Meta_" + this.__className);
-    };
+    });
 
-    spec.name = function() {
+    builder.addMethod("name", function() {
       return $.String(this.__className);
-    };
+    });
 
     // TODO: implements superclass
     // TODO: implements asClass
@@ -48,7 +52,7 @@ SCScript.install(function(sc) {
     // TODO: implements allSubclasses
     // TODO: implements superclasses
 
-    spec["[]"] = function($anArray) {
+    builder.addMethod("[]", function($anArray) {
       var $newCollection;
       var array, i, imax;
 
@@ -60,36 +64,32 @@ SCScript.install(function(sc) {
       }
 
       return $newCollection;
-    };
+    });
   });
 
-  klass.define("Process", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function() {
-      this.__super__("Object");
+  sc.lang.klass.define("Process", function(builder) {
+    builder.addMethod("__init__", function() {
+      this.__super__("__init__");
       this._$interpreter = $nil;
       this._$mainThread  = $nil;
-    };
+    });
 
-    spec.interpreter = function() {
+    builder.addMethod("interpreter", function() {
       return this._$interpreter;
-    };
+    });
 
-    spec.mainThread = function() {
+    builder.addMethod("mainThread", function() {
       return this._$mainThread;
-    };
+    });
   });
 
-  klass.define("Main : Process");
+  sc.lang.klass.define("Main : Process");
 
-  klass.define("Interpreter", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function() {
-      this.__super__("Object");
+  sc.lang.klass.define("Interpreter", function(builder) {
+    builder.addMethod("__init__", function() {
+      this.__super__("__init__");
       this._$ = {};
-    };
+    });
 
     (function() {
       var i, ch;
@@ -109,14 +109,14 @@ SCScript.install(function(sc) {
 
       for (i = 97; i <= 122; i++) {
         ch = String.fromCharCode(i);
-        spec[ch] = getter(ch);
-        spec[ch + "_"] = setter(ch);
+        builder.addMethod(ch, getter(ch));
+        builder.addMethod(ch + "_", setter(ch));
       }
     })();
 
-    spec.clearAll = function() {
+    builder.addMethod("clearAll", function() {
       this._$ = {};
       return this;
-    };
+    });
   });
 });

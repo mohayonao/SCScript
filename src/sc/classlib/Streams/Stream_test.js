@@ -41,7 +41,7 @@
     });
     it("#iter", function() {
       var instance = this.createInstance();
-      expect(instance.iter).to.be.nop;
+      expect(instance.iter).to.doNothing;
     });
     it("#value", function() {
       /*

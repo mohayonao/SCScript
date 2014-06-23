@@ -4,51 +4,60 @@ SCScript.install(function(sc) {
   require("../Core/Object");
 
   var $ = sc.lang.$;
-  var fn = sc.lang.fn;
 
-  sc.lang.klass.refine("Magnitude", function(spec) {
-    spec["=="] = function($aMagnitude) {
+  sc.lang.klass.refine("Magnitude", function(builder) {
+    builder.addMethod("==", function($aMagnitude) {
       return $.Boolean(this.valueOf() === $aMagnitude.valueOf());
-    };
+    });
 
-    spec["!="] = function($aMagnitude) {
+    builder.addMethod("!=", function($aMagnitude) {
       return $.Boolean(this.valueOf() !== $aMagnitude.valueOf());
-    };
+    });
 
-    spec["<"] = function($aMagnitude) {
+    builder.addMethod("<", function($aMagnitude) {
       return $.Boolean(this < $aMagnitude);
-    };
+    });
 
-    spec[">"] = function($aMagnitude) {
+    builder.addMethod(">", function($aMagnitude) {
       return $.Boolean(this > $aMagnitude);
-    };
+    });
 
-    spec["<="] = function($aMagnitude) {
+    builder.addMethod("<=", function($aMagnitude) {
       return $.Boolean(this <= $aMagnitude);
-    };
+    });
 
-    spec[">="] = function($aMagnitude) {
+    builder.addMethod(">=", function($aMagnitude) {
       return $.Boolean(this >= $aMagnitude);
-    };
+    });
 
-    spec.exclusivelyBetween = fn(function($lo, $hi) {
+    builder.addMethod("exclusivelyBetween", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
       return $.Boolean($lo < this && this < $hi);
-    }, "lo; hi");
+    });
 
-    spec.inclusivelyBetween = fn(function($lo, $hi) {
+    builder.addMethod("inclusivelyBetween", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
       return $.Boolean($lo <= this && this <= $hi);
-    }, "lo; hi");
+    });
 
-    spec.min = fn(function($aMagnitude) {
+    builder.addMethod("min", {
+      args: "aMagnitude"
+    }, function($aMagnitude) {
       return this <= $aMagnitude ? this : $aMagnitude;
-    }, "aMagnitude");
+    });
 
-    spec.max = fn(function($aMagnitude) {
+    builder.addMethod("max", {
+      args: "aMagnitude"
+    }, function($aMagnitude) {
       return this >= $aMagnitude ? this : $aMagnitude;
-    }, "aMagnitude");
+    });
 
-    spec.clip = fn(function($lo, $hi) {
+    builder.addMethod("clip", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
       return this <= $lo ? $lo : this >= $hi ? $hi : this;
-    }, "lo; hi");
+    });
   });
 });

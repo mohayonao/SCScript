@@ -16,21 +16,23 @@ module.exports = function(grunt) {
 
     _.each(src, function(file) {
       _.each(grunt.file.read(file).split("\n"), function(line) {
-        var re;
+        var re, methodIdentifier;
 
         re = /klass\.(?:define|refine)\("(.+?)(?:\s*:[^"]+)?"/.exec(line);
         if (re) {
           reporter.setKlassName(re[1]);
         }
 
-        re = /\s*spec(?:\.(\w+)|\["(.+)"\])\s*=/.exec(line);
+        re = /\s*builder\.add(Class)?Method\(\"(.+?)\",/.exec(line);
         if (re) {
-          reporter.addMethod(re[1] || re[2], IMPLEMENTED);
+          methodIdentifier = (re[1] ? "." : "#") + re[2];
+          reporter.addMethod(methodIdentifier, IMPLEMENTED);
         }
 
-        re = /TODO:\s*implements\s*(.+)$/.exec(line);
+        re = /TODO:\s*implements\s*(\$)?(.+)$/.exec(line);
         if (re) {
-          reporter.addMethod(re[1], NOT_IMPLEMENTED);
+          methodIdentifier = (re[1] ? "." : "#") + re[2];
+          reporter.addMethod(methodIdentifier, NOT_IMPLEMENTED);
         }
       });
     });
@@ -55,11 +57,11 @@ module.exports = function(grunt) {
       this._db[klassName] = this._current;
     };
 
-    Reporter.prototype.addMethod = function(methodName, impl) {
+    Reporter.prototype.addMethod = function(methodIdentifier, impl) {
       if (!this._current) {
         return;
       }
-      this._addMethod(methodName, impl);
+      this._addMethod(methodIdentifier, impl);
     };
 
     Reporter.prototype.report = function() {
@@ -77,19 +79,19 @@ module.exports = function(grunt) {
     };
 
     var addMethodDelegate = {
-      min: function(methodName, impl) {
+      min: function(methodIdentifier, impl) {
         if (!impl) {
           this._current.countOfNotImpl += 1;
         }
         this._current.countOfMethods += 1;
       },
-      list: function(methodName, impl) {
+      list: function(methodIdentifier, impl) {
         if (!impl) {
-          addMethodDelegate.verbose.call(this, methodName, impl);
+          addMethodDelegate.verbose.call(this, methodIdentifier, impl);
         }
       },
-      verbose: function(methodName, impl) {
-        var line = this._current.name + f(methodName);
+      verbose: function(methodIdentifier, impl) {
+        var line = this._current.name + methodIdentifier;
 
         if (impl) {
           line = line.grey;
@@ -103,12 +105,6 @@ module.exports = function(grunt) {
       }
     };
 
-    var f = function(methodName) {
-      if (methodName.charAt(0) !== "$") {
-        return "#" + methodName;
-      }
-      return methodName;
-    };
     return Reporter;
   })();
 };

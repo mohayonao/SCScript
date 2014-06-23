@@ -15,6 +15,10 @@
   var SCInterpreter = $("Interpreter");
 
   describe("SCClass", function() {
+    it("#toString", function() {
+      var test = SCClass.toString();
+      expect(test).to.be.a("JSString").that.equals("Class");
+    });
     it("#class", function() {
       var test;
 

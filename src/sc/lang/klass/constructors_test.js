@@ -137,5 +137,20 @@
       a = $.Ref($.Integer(10));
       expect(a._$value).to.be.a("SCInteger").that.equals(10);
     });
+    it("$.nil", function() {
+      expect($.nil).to.be.a("SCNil");
+    });
+    it("$.true", function() {
+      expect($.true).to.be.a("SCBoolean").that.is.true;
+    });
+    it("$.false", function() {
+      expect($.false).to.be.a("SCBoolean").that.is.false;
+    });
+    it("$.int0", function() {
+      expect($.int0).to.be.a("SCInteger").that.equals(0);
+    });
+    it("$.int1", function() {
+      expect($.int1).to.be.a("SCInteger").that.equals(1);
+    });
   });
 })();

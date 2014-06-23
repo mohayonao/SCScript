@@ -78,7 +78,7 @@
     });
     it("#asRef", function() {
       var instance = this.createInstance();
-      expect(instance.asRef).to.be.nop;
+      expect(instance.asRef).to.doNothing;
     });
     it("#valueArray", function() {
       var instance, test;
@@ -126,7 +126,7 @@
     });
     it("#asUGenInput", function() {
       var instance = this.createInstance();
-      expect(instance.asUGenInput).to.be.nop;
+      expect(instance.asUGenInput).to.doNothing;
     });
     it.skip("#printOn", function() {
     });

@@ -99,7 +99,7 @@
     });
     it("#asAscii", function() {
       var instance = this.createInstance();
-      expect(instance.asAscii).to.be.nop;
+      expect(instance.asAscii).to.doNothing;
     });
     it("#asUnicode", sinon.test(function() {
       var instance, test;
@@ -308,7 +308,7 @@
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
   });
 })();

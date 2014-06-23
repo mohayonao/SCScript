@@ -3,23 +3,24 @@ SCScript.install(function(sc) {
 
   require("./Dictionary");
 
-  var fn   = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
   var main = sc.lang.main;
 
-  sc.lang.klass.refine("Environment", function(spec, utils) {
-    var $nil = utils.$nil;
-
+  sc.lang.klass.refine("Environment", function(builder) {
     var envStack = [];
 
-    spec.$make = function($function) {
+    builder.addClassMethod("make",function($function) {
       return this.new().make($function);
-    };
+    });
 
-    spec.$use = function($function) {
+    builder.addClassMethod("use", function($function) {
       return this.new().use($function);
-    };
+    });
 
-    spec.make = fn(function($function) {
+    builder.addMethod("make", {
+      args: "function"
+    }, function($function) {
       var $saveEnvir;
 
       $saveEnvir = main.$currentEnv;
@@ -30,9 +31,11 @@ SCScript.install(function(sc) {
       main.$currentEnv = $saveEnvir;
 
       return this;
-    }, "function");
+    });
 
-    spec.use = fn(function($function) {
+    builder.addMethod("use", {
+      args: "function"
+    }, function($function) {
       var $result, $saveEnvir;
 
       $saveEnvir = main.$currentEnv;
@@ -43,36 +46,42 @@ SCScript.install(function(sc) {
       main.$currentEnv = $saveEnvir;
 
       return $result || /* istanbul ignore next */ $nil;
-    }, "function");
+    });
 
-    spec.eventAt = fn(function($key) {
+    builder.addMethod("eventAt", {
+      args: "key"
+    }, function($key) {
       return this.at($key);
-    }, "key");
+    });
 
-    spec.composeEvents = fn(function($event) {
+    builder.addMethod("composeEvents", {
+      args: "event"
+    }, function($event) {
       return this.copy().putAll($event);
-    }, "event");
+    });
 
-    spec.$pop = function() {
+    builder.addClassMethod("pop", function() {
       if (envStack.length) {
         main.$currentEnv = envStack.pop();
       }
       return this;
-    };
+    });
 
-    spec.$push = fn(function($envir) {
+    builder.addClassMethod("push", {
+      args: "envir"
+    }, function($envir) {
       envStack.push(main.$currentEnv);
       main.$currentEnv = $envir;
       return this;
-    }, "envir");
+    });
 
-    spec.pop = function() {
+    builder.addMethod("pop", function() {
       return this.class().pop();
-    };
+    });
 
-    spec.push = function() {
+    builder.addMethod("push", function() {
       return this.class().push(this);
-    };
+    });
     // TODO: implements linkDoc
     // TODO: implements unlinkDoc
   });

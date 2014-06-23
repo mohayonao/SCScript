@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./klass");
+  require("./define");
   require("../bytecode");
 
   var $        = sc.lang.$;
@@ -78,7 +78,9 @@
 
   klass.define("Stream : AbstractFunction");
   klass.define("Thread : Stream");
-  klass.define("Routine : Thread");
+  klass.define("Routine : Thread", {
+    __tag: sc.TAG_ROUTINE
+  });
 
   var SCRef = klass.define("Ref : AbstractFunction");
 
@@ -217,4 +219,10 @@
     instance._$value = value;
     return instance;
   };
+
+  $.nil = $nil;
+  $.true = $true;
+  $.false = $false;
+  $.int0 = $.Integer(0);
+  $.int1 = $.Integer(1);
 })(sc);

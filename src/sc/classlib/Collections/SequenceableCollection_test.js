@@ -169,7 +169,7 @@
     });
     it("#asSequenceableCollection", function() {
       var instance = this.createInstance();
-      expect(instance.asSequenceableCollection).to.be.nop;
+      expect(instance.asSequenceableCollection).to.doNothing;
     });
     it("#choose", function() {
       testCase(this, [
@@ -1537,7 +1537,7 @@
     });
     it("#multichannelExpandRef", function() {
       var instance = this.createInstance();
-      expect(instance.multichannelExpandRef).to.be.nop;
+      expect(instance.multichannelExpandRef).to.doNothing;
     });
 
     [

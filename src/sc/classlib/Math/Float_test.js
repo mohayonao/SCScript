@@ -68,7 +68,7 @@
     });
     it("#asFloat", function() {
       var instance = this.createInstance(0);
-      expect(instance.asFloat).to.be.nop;
+      expect(instance.asFloat).to.doNothing;
     });
     it("#+", function() {
       testCase(this, [

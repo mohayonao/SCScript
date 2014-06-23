@@ -3,42 +3,44 @@ SCScript.install(function(sc) {
 
   require("../Core/AbstractFunction");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var klass = sc.lang.klass;
-
+  var $ = sc.lang.$;
+  var $nil   = $.nil;
+  var $true  = $.true;
+  var $false = $.false;
+  var $int0  = $.int0;
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
 
-  klass.refine("Stream", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $true  = utils.$true;
-    var $false = utils.$false;
-    var $int0  = utils.$int0;
-
-    spec.parent = function() {
+  sc.lang.klass.refine("Stream", function(builder) {
+    builder.addMethod("parent", function() {
       return $nil;
-    };
+    });
 
-    spec.next = utils.subclassResponsibility("next");
-    spec.iter = utils.nop;
+    builder.subclassResponsibility("next");
+    builder.addMethod("iter");
 
-    spec.value = fn(function($inval) {
+    builder.addMethod("value", {
+      args: "inval"
+    }, function($inval) {
       return this.next($inval);
-    }, "inval");
+    });
 
-    spec.valueArray = function() {
+    builder.addMethod("valueArray", function() {
       return this.next();
-    };
+    });
 
-    spec.nextN = fn(function($n, $inval) {
+    builder.addMethod("nextN", {
+      args: "n; inval"
+    }, function($n, $inval) {
       var $this = this;
       return SCArray.fill($n, $.Func(function() {
         return $this.next($inval);
       }));
-    }, "n; inval");
+    });
 
-    spec.all = fn(function($inval) {
+    builder.addMethod("all", {
+      args: "inval"
+    }, function($inval) {
       var $array;
 
       $array = $nil;
@@ -48,27 +50,33 @@ SCScript.install(function(sc) {
       }), $inval);
 
       return $array;
-    }, "inval");
+    });
 
-    spec.put = utils.subclassResponsibility("put");
+    builder.subclassResponsibility("put");
 
-    spec.putN = fn(function($n, $item) {
+    builder.addMethod("putN", {
+      args: "n; item"
+    }, function($n, $item) {
       var $this = this;
       $n.do($.Func(function() {
         return $this.put($item);
       }));
       return this;
-    }, "n; item");
+    });
 
-    spec.putAll = fn(function($aCollection) {
+    builder.addMethod("putAll", {
+      args: "aCollection"
+    }, function($aCollection) {
       var $this = this;
       $aCollection.do($.Func(function($item) {
         return $this.put($item);
       }));
       return this;
-    }, "aCollection");
+    });
 
-    spec.do = fn(function($function, $inval) {
+    builder.addMethod("do", {
+      args: "function; inval"
+    }, function($function, $inval) {
       var $this = this;
       var $item, $i;
 
@@ -83,9 +91,11 @@ SCScript.install(function(sc) {
       }));
 
       return this;
-    }, "function; inval");
+    });
 
-    spec.subSample = fn(function($offset, $skipSize) {
+    builder.addMethod("subSample", {
+      args: "offset=0; skipSize=0"
+    }, function($offset, $skipSize) {
       var $this = this;
       return SCRoutine.new($.Func(function() {
         var offset, i;
@@ -112,9 +122,11 @@ SCScript.install(function(sc) {
           ];
         }).loop();
       }));
-    }, "offset=0; skipSize=0");
+    });
 
-    spec.generate = fn(function($function) {
+    builder.addMethod("generate", {
+      args: "function"
+    }, function($function) {
       var $this = this;
       var $item, $i;
 
@@ -129,9 +141,11 @@ SCScript.install(function(sc) {
       }));
 
       return this;
-    }, "function");
+    });
 
-    spec.collect = fn(function($argCollectFunc) {
+    builder.addMethod("collect", {
+      args: "argCollectFunc"
+    }, function($argCollectFunc) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
@@ -149,9 +163,11 @@ SCScript.install(function(sc) {
       });
 
       return $("FuncStream").new($nextFunc, $resetFunc);
-    }, "argCollectFunc");
+    });
 
-    spec.reject = fn(function($function) {
+    builder.addMethod("reject", {
+      args: "function"
+    }, function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
@@ -175,9 +191,11 @@ SCScript.install(function(sc) {
       });
 
       return $("FuncStream").new($nextFunc, $resetFunc);
-    }, "function");
+    });
 
-    spec.select = fn(function($function) {
+    builder.addMethod("select", {
+      args: "function"
+    }, function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
@@ -201,9 +219,11 @@ SCScript.install(function(sc) {
       });
 
       return $("FuncStream").new($nextFunc, $resetFunc);
-    }, "function");
+    });
 
-    spec.dot = fn(function($function, $stream) {
+    builder.addMethod("dot", {
+      args: "function; stream"
+    }, function($function, $stream) {
       var $this = this;
 
       return $("FuncStream").new($.Func(function($inval) {
@@ -221,9 +241,11 @@ SCScript.install(function(sc) {
         $this.reset();
         return $stream.reset();
       }));
-    }, "function; stream");
+    });
 
-    spec.interlace = fn(function($function, $stream) {
+    builder.addMethod("interlace", {
+      args:  "function; stream"
+    }, function($function, $stream) {
       var $this = this;
       var $nextx, $nexty;
 
@@ -257,13 +279,15 @@ SCScript.install(function(sc) {
         $nexty = $stream.next();
         return $nexty;
       }));
-    }, "function; stream");
+    });
 
-    spec["++"] = function($stream) {
+    builder.addMethod("++", function($stream) {
       return this.appendStream($stream);
-    };
+    });
 
-    spec.appendStream = fn(function($stream) {
+    builder.addMethod("appendStream", {
+      args: "stream"
+    }, function($stream) {
       var $this = this;
       var $reset;
 
@@ -287,23 +311,29 @@ SCScript.install(function(sc) {
           $.NOP
         ];
       }));
-    }, "stream");
+    });
 
-    spec.collate = fn(function($stream) {
+    builder.addMethod("collate", {
+      args: "stream"
+    }, function($stream) {
       return this.interlace($.Func(function($x, $y) {
         return $x.$("<", [ $y ]);
       }), $stream);
-    }, "stream");
+    });
 
-    spec["<>"] = function($obj) {
+    builder.addMethod("<>", function($obj) {
       return $("Pchain").new(this, $obj).asStream();
-    };
+    });
 
-    spec.composeUnaryOp = fn(function($argSelector) {
+    builder.addMethod("composeUnaryOp", {
+      args: "argSelector"
+    }, function($argSelector) {
       return $("UnaryOpStream").new($argSelector, this);
-    }, "argSelector");
+    });
 
-    spec.composeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+    builder.addMethod("composeBinaryOp", {
+      args: "argSelector; argStream; adverb"
+    }, function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
         return $("BinaryOpStream").new(
           $argSelector, this, $argStream.asStream()
@@ -316,9 +346,11 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    }, "argSelector; argStream; adverb");
+    });
 
-    spec.reverseComposeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+    builder.addMethod("reverseComposeBinaryOp", {
+      args: "argSelector; argStream; adverb"
+    }, function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
         return $("BinaryOpStream").new(
           $argSelector, $argStream.asStream(), this
@@ -331,17 +363,21 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    }, "argSelector; argStream; adverb");
+    });
 
-    spec.composeNAryOp = fn(function($argSelector, $anArgList) {
+    builder.addMethod("composeNAryOp", {
+      args: "argStream; anArgList"
+    }, function($argSelector, $anArgList) {
       return $("NAryOpStream").new(
         $argSelector, this, $anArgList.collect($.Func(function($_) {
           return $_.asStream();
         }))
       );
-    }, "argStream; anArgList");
+    });
 
-    spec.embedInStream = fn(function($inval) {
+    builder.addMethod("embedInStream", {
+      args: "inval"
+    }, function($inval) {
       var $this = this;
       var $outval;
 
@@ -354,23 +390,29 @@ SCScript.install(function(sc) {
       }));
 
       return $inval;
-    }, "inval");
+    });
 
-    spec.asEventStreamPlayer = fn(function($protoEvent) {
+    builder.addMethod("asEventStreamPlayer", {
+      args: "protoEvent"
+    }, function($protoEvent) {
       return $("EventStreamPlayer").new(this, $protoEvent);
-    }, "protoEvent");
+    });
 
-    spec.play = fn(function($clock, $quant) {
+    builder.addMethod("play", {
+      args: "clock; quant"
+    }, function($clock, $quant) {
       if ($clock === $nil) {
         $clock = $("TempoClock").default();
       }
       $clock.play(this, $quant.asQuant());
       return this;
-    }, "clock; quant");
+    });
 
     // TODO: implements trace
 
-    spec.repeat = fn(function($repeats) {
+    builder.addMethod("repeat", {
+      args: "repeats=inf"
+    }, function($repeats) {
       var $this = this;
 
       return $.Func(function($inval) {
@@ -379,71 +421,71 @@ SCScript.install(function(sc) {
           return $inval;
         }));
       }).r();
-    }, "repeats=inf");
+    });
   });
 
-  klass.define("OneShotStream : Stream", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function() {
-      this.__super__("Stream");
+  sc.lang.klass.define("OneShotStream : Stream", function(builder, _) {
+    builder.addMethod("__init__", function() {
+      this.__super__("__init__");
       this._once = true;
-    };
+    });
 
-    spec.$new = function($value) {
-      return utils.newCopyArgs(this, {
+    builder.addClassMethod("new", function($value) {
+      return _.newCopyArgs(this, {
         value: $value
       });
-    };
+    });
 
-    spec.next = function() {
+    builder.addMethod("next", function() {
       if (this._once) {
         this._once = false;
         return this._$value;
       }
       return $nil;
-    };
+    });
 
-    spec.reset = function() {
+    builder.addMethod("reset", function() {
       this._once = true;
       return this;
-    };
+    });
     // TODO: implements storeArgs
   });
 
   // EmbedOnce
 
-  klass.define("FuncStream : Stream", function(spec, utils) {
-    utils.setProperty(spec, "<>", "envir");
+  sc.lang.klass.define("FuncStream : Stream", function(builder, _) {
+    builder.addProperty("<>", "envir");
 
-    spec.$new = function($nextFunc, $resetFunc) {
-      return utils.newCopyArgs(this, {
+    builder.addClassMethod("new", function($nextFunc, $resetFunc) {
+      return _.newCopyArgs(this, {
         nextFunc: $nextFunc,
         resetFunc: $resetFunc,
         envir: sc.lang.main.$currentEnv
       });
-    };
+    });
 
-    spec.next = fn(function($inval) {
+    builder.addMethod("next", {
+      args: "inval"
+    }, function($inval) {
       var $this = this;
       return this._$envir.use($.Func(function() {
         return $this._$nextFunc.value($inval).processRest($inval);
       }));
-    }, "inval");
+    });
 
-    spec.reset = function() {
+    builder.addMethod("reset", function() {
       var $this = this;
       return this._$envir.use($.Func(function() {
         return $this._$resetFunc.value();
       }));
-    };
+    });
     // TODO: implements storeArgs
   });
 
   // StreamClutch
   // CleanupStream
 
-  klass.define("PauseStream : Stream", function() {
+  sc.lang.klass.define("PauseStream : Stream", function() {
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
@@ -469,7 +511,7 @@ SCScript.install(function(sc) {
     // TODO: implements threadPlayer
   });
 
-  klass.define("Task : PauseStream", function() {
+  sc.lang.klass.define("Task : PauseStream", function() {
     // TODO: implements storeArgs
   });
 });

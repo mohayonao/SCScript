@@ -599,7 +599,7 @@
     });
     it("#asArray", function() {
       var instance = this.createInstance();
-      expect(instance.asArray).to.be.nop;
+      expect(instance.asArray).to.doNothing;
     });
     it("#copyRange", function() {
       testCase(this, [

@@ -48,7 +48,7 @@
     });
     it("#asSymbol", function() {
       var instance = this.createInstance();
-      expect(instance.asSymbol).to.be.nop;
+      expect(instance.asSymbol).to.doNothing;
     });
     it("#asInteger", function() {
       testCase(this, [
@@ -258,7 +258,7 @@
     }));
     it("#blend", function() {
       var instance = this.createInstance();
-      expect(instance.blend).to.be.nop;
+      expect(instance.blend).to.doNothing;
     });
     it("#++", function() {
       testCase(this, [
@@ -285,293 +285,293 @@
     });
     it("#performBinaryOpOnSomething", function() {
       var instance = this.createInstance();
-      expect(instance.performBinaryOpOnSomething).to.be.nop;
+      expect(instance.performBinaryOpOnSomething).to.doNothing;
     });
     it("#neg", function() {
       var instance = this.createInstance();
-      expect(instance.neg).to.be.nop;
+      expect(instance.neg).to.doNothing;
     });
     it("#bitNot", function() {
       var instance = this.createInstance();
-      expect(instance.bitNot).to.be.nop;
+      expect(instance.bitNot).to.doNothing;
     });
     it("#abs", function() {
       var instance = this.createInstance();
-      expect(instance.abs).to.be.nop;
+      expect(instance.abs).to.doNothing;
     });
     it("#ceil", function() {
       var instance = this.createInstance();
-      expect(instance.ceil).to.be.nop;
+      expect(instance.ceil).to.doNothing;
     });
     it("#floor", function() {
       var instance = this.createInstance();
-      expect(instance.floor).to.be.nop;
+      expect(instance.floor).to.doNothing;
     });
     it("#frac", function() {
       var instance = this.createInstance();
-      expect(instance.frac).to.be.nop;
+      expect(instance.frac).to.doNothing;
     });
     it("#sign", function() {
       var instance = this.createInstance();
-      expect(instance.sign).to.be.nop;
+      expect(instance.sign).to.doNothing;
     });
     it("#sqrt", function() {
       var instance = this.createInstance();
-      expect(instance.sqrt).to.be.nop;
+      expect(instance.sqrt).to.doNothing;
     });
     it("#exp", function() {
       var instance = this.createInstance();
-      expect(instance.exp).to.be.nop;
+      expect(instance.exp).to.doNothing;
     });
     it("#midicps", function() {
       var instance = this.createInstance();
-      expect(instance.midicps).to.be.nop;
+      expect(instance.midicps).to.doNothing;
     });
     it("#cpsmidi", function() {
       var instance = this.createInstance();
-      expect(instance.cpsmidi).to.be.nop;
+      expect(instance.cpsmidi).to.doNothing;
     });
     it("#midiratio", function() {
       var instance = this.createInstance();
-      expect(instance.midiratio).to.be.nop;
+      expect(instance.midiratio).to.doNothing;
     });
     it("#ratiomidi", function() {
       var instance = this.createInstance();
-      expect(instance.ratiomidi).to.be.nop;
+      expect(instance.ratiomidi).to.doNothing;
     });
     it("#ratiomidi", function() {
       var instance = this.createInstance();
-      expect(instance.ratiomidi).to.be.nop;
+      expect(instance.ratiomidi).to.doNothing;
     });
     it("#ampdb", function() {
       var instance = this.createInstance();
-      expect(instance.ampdb).to.be.nop;
+      expect(instance.ampdb).to.doNothing;
     });
     it("#dbamp", function() {
       var instance = this.createInstance();
-      expect(instance.dbamp).to.be.nop;
+      expect(instance.dbamp).to.doNothing;
     });
     it("#octcps", function() {
       var instance = this.createInstance();
-      expect(instance.octcps).to.be.nop;
+      expect(instance.octcps).to.doNothing;
     });
     it("#cpsoct", function() {
       var instance = this.createInstance();
-      expect(instance.cpsoct).to.be.nop;
+      expect(instance.cpsoct).to.doNothing;
     });
     it("#log", function() {
       var instance = this.createInstance();
-      expect(instance.log).to.be.nop;
+      expect(instance.log).to.doNothing;
     });
     it("#log2", function() {
       var instance = this.createInstance();
-      expect(instance.log2).to.be.nop;
+      expect(instance.log2).to.doNothing;
     });
     it("#log10", function() {
       var instance = this.createInstance();
-      expect(instance.log10).to.be.nop;
+      expect(instance.log10).to.doNothing;
     });
     it("#sin", function() {
       var instance = this.createInstance();
-      expect(instance.sin).to.be.nop;
+      expect(instance.sin).to.doNothing;
     });
     it("#cos", function() {
       var instance = this.createInstance();
-      expect(instance.cos).to.be.nop;
+      expect(instance.cos).to.doNothing;
     });
     it("#tan", function() {
       var instance = this.createInstance();
-      expect(instance.tan).to.be.nop;
+      expect(instance.tan).to.doNothing;
     });
     it("#asin", function() {
       var instance = this.createInstance();
-      expect(instance.asin).to.be.nop;
+      expect(instance.asin).to.doNothing;
     });
     it("#acos", function() {
       var instance = this.createInstance();
-      expect(instance.acos).to.be.nop;
+      expect(instance.acos).to.doNothing;
     });
     it("#atan", function() {
       var instance = this.createInstance();
-      expect(instance.atan).to.be.nop;
+      expect(instance.atan).to.doNothing;
     });
     it("#sinh", function() {
       var instance = this.createInstance();
-      expect(instance.sinh).to.be.nop;
+      expect(instance.sinh).to.doNothing;
     });
     it("#cosh", function() {
       var instance = this.createInstance();
-      expect(instance.cosh).to.be.nop;
+      expect(instance.cosh).to.doNothing;
     });
     it("#tanh", function() {
       var instance = this.createInstance();
-      expect(instance.tanh).to.be.nop;
+      expect(instance.tanh).to.doNothing;
     });
     it("#rand", function() {
       var instance = this.createInstance();
-      expect(instance.rand).to.be.nop;
+      expect(instance.rand).to.doNothing;
     });
     it("#rand2", function() {
       var instance = this.createInstance();
-      expect(instance.rand2).to.be.nop;
+      expect(instance.rand2).to.doNothing;
     });
     it("#linrand", function() {
       var instance = this.createInstance();
-      expect(instance.linrand).to.be.nop;
+      expect(instance.linrand).to.doNothing;
     });
     it("#bilinrand", function() {
       var instance = this.createInstance();
-      expect(instance.bilinrand).to.be.nop;
+      expect(instance.bilinrand).to.doNothing;
     });
     it("#sum3rand", function() {
       var instance = this.createInstance();
-      expect(instance.sum3rand).to.be.nop;
+      expect(instance.sum3rand).to.doNothing;
     });
     it("#distort", function() {
       var instance = this.createInstance();
-      expect(instance.distort).to.be.nop;
+      expect(instance.distort).to.doNothing;
     });
     it("#softclip", function() {
       var instance = this.createInstance();
-      expect(instance.softclip).to.be.nop;
+      expect(instance.softclip).to.doNothing;
     });
     it("#coin", function() {
       var instance = this.createInstance();
-      expect(instance.coin).to.be.nop;
+      expect(instance.coin).to.doNothing;
     });
     it("#even", function() {
       var instance = this.createInstance();
-      expect(instance.even).to.be.nop;
+      expect(instance.even).to.doNothing;
     });
     it("#odd", function() {
       var instance = this.createInstance();
-      expect(instance.odd).to.be.nop;
+      expect(instance.odd).to.doNothing;
     });
     it("#rectWindow", function() {
       var instance = this.createInstance();
-      expect(instance.rectWindow).to.be.nop;
+      expect(instance.rectWindow).to.doNothing;
     });
     it("#hanWindow", function() {
       var instance = this.createInstance();
-      expect(instance.hanWindow).to.be.nop;
+      expect(instance.hanWindow).to.doNothing;
     });
     it("#welWindow", function() {
       var instance = this.createInstance();
-      expect(instance.welWindow).to.be.nop;
+      expect(instance.welWindow).to.doNothing;
     });
     it("#triWindow", function() {
       var instance = this.createInstance();
-      expect(instance.triWindow).to.be.nop;
+      expect(instance.triWindow).to.doNothing;
     });
     it("#scurve", function() {
       var instance = this.createInstance();
-      expect(instance.scurve).to.be.nop;
+      expect(instance.scurve).to.doNothing;
     });
     it("#ramp", function() {
       var instance = this.createInstance();
-      expect(instance.ramp).to.be.nop;
+      expect(instance.ramp).to.doNothing;
     });
     it("#+", function() {
       var instance = this.createInstance();
-      expect(instance["+"]).to.be.nop;
+      expect(instance["+"]).to.doNothing;
     });
     it("#-", function() {
       var instance = this.createInstance();
-      expect(instance["-"]).to.be.nop;
+      expect(instance["-"]).to.doNothing;
     });
     it("#*", function() {
       var instance = this.createInstance();
-      expect(instance["*"]).to.be.nop;
+      expect(instance["*"]).to.doNothing;
     });
     it("#/", function() {
       var instance = this.createInstance();
-      expect(instance["/"]).to.be.nop;
+      expect(instance["/"]).to.doNothing;
     });
     it("#mod", function() {
       var instance = this.createInstance();
-      expect(instance.mod).to.be.nop;
+      expect(instance.mod).to.doNothing;
     });
     it("#min", function() {
       var instance = this.createInstance();
-      expect(instance.min).to.be.nop;
+      expect(instance.min).to.doNothing;
     });
     it("#max", function() {
       var instance = this.createInstance();
-      expect(instance.max).to.be.nop;
+      expect(instance.max).to.doNothing;
     });
     it("#bitAnd", function() {
       var instance = this.createInstance();
-      expect(instance.bitAnd).to.be.nop;
+      expect(instance.bitAnd).to.doNothing;
     });
     it("#bitOr", function() {
       var instance = this.createInstance();
-      expect(instance.bitOr).to.be.nop;
+      expect(instance.bitOr).to.doNothing;
     });
     it("#bitXor", function() {
       var instance = this.createInstance();
-      expect(instance.bitXor).to.be.nop;
+      expect(instance.bitXor).to.doNothing;
     });
     it("#bitHammingDistance", function() {
       var instance = this.createInstance();
-      expect(instance.bitHammingDistance).to.be.nop;
+      expect(instance.bitHammingDistance).to.doNothing;
     });
     it.skip("#hammingDistance", function() {
     });
     it("#lcm", function() {
       var instance = this.createInstance();
-      expect(instance.lcm).to.be.nop;
+      expect(instance.lcm).to.doNothing;
     });
     it("#gcd", function() {
       var instance = this.createInstance();
-      expect(instance.gcd).to.be.nop;
+      expect(instance.gcd).to.doNothing;
     });
     it("#round", function() {
       var instance = this.createInstance();
-      expect(instance.round).to.be.nop;
+      expect(instance.round).to.doNothing;
     });
     it("#roundUp", function() {
       var instance = this.createInstance();
-      expect(instance.roundUp).to.be.nop;
+      expect(instance.roundUp).to.doNothing;
     });
     it("#trunc", function() {
       var instance = this.createInstance();
-      expect(instance.trunc).to.be.nop;
+      expect(instance.trunc).to.doNothing;
     });
     it("#atan2", function() {
       var instance = this.createInstance();
-      expect(instance.atan2).to.be.nop;
+      expect(instance.atan2).to.doNothing;
     });
     it("#hypot", function() {
       var instance = this.createInstance();
-      expect(instance.hypot).to.be.nop;
+      expect(instance.hypot).to.doNothing;
     });
     it("#hypotApx", function() {
       var instance = this.createInstance();
-      expect(instance.hypotApx).to.be.nop;
+      expect(instance.hypotApx).to.doNothing;
     });
     it("#pow", function() {
       var instance = this.createInstance();
-      expect(instance.pow).to.be.nop;
+      expect(instance.pow).to.doNothing;
     });
     it("#leftShift", function() {
       var instance = this.createInstance();
-      expect(instance.leftShift).to.be.nop;
+      expect(instance.leftShift).to.doNothing;
     });
     it("#rightShift", function() {
       var instance = this.createInstance();
-      expect(instance.rightShift).to.be.nop;
+      expect(instance.rightShift).to.doNothing;
     });
     it("#unsignedRightShift", function() {
       var instance = this.createInstance();
-      expect(instance.unsignedRightShift).to.be.nop;
+      expect(instance.unsignedRightShift).to.doNothing;
     });
     it("#rrand", function() {
       var instance = this.createInstance();
-      expect(instance.rrand).to.be.nop;
+      expect(instance.rrand).to.doNothing;
     });
     it("#exprand", function() {
       var instance = this.createInstance();
-      expect(instance.exprand).to.be.nop;
+      expect(instance.exprand).to.doNothing;
     });
     it("#<", function() {
       testCase(this, [
@@ -603,27 +603,27 @@
     });
     it("#degreeToKey", function() {
       var instance = this.createInstance();
-      expect(instance.degreeToKey).to.be.nop;
+      expect(instance.degreeToKey).to.doNothing;
     });
     it("#degrad", function() {
       var instance = this.createInstance();
-      expect(instance.degrad).to.be.nop;
+      expect(instance.degrad).to.doNothing;
     });
     it("#raddeg", function() {
       var instance = this.createInstance();
-      expect(instance.raddeg).to.be.nop;
+      expect(instance.raddeg).to.doNothing;
     });
     it("#doNumberOp", function() {
       var instance = this.createInstance();
-      expect(instance.doNumberOp).to.be.nop;
+      expect(instance.doNumberOp).to.doNothing;
     });
     it("#doComplexOp", function() {
       var instance = this.createInstance();
-      expect(instance.doComplexOp).to.be.nop;
+      expect(instance.doComplexOp).to.doNothing;
     });
     it("#doSignalOp", function() {
       var instance = this.createInstance();
-      expect(instance.doSignalOp).to.be.nop;
+      expect(instance.doSignalOp).to.doNothing;
     });
     it("#doListOp", sinon.test(function() {
       var instance, test;
@@ -677,11 +677,11 @@
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
     it("#performBinaryOpOnSimpleNumber", function() {
       var instance = this.createInstance();
-      expect(instance.performBinaryOpOnSimpleNumber).to.be.nop;
+      expect(instance.performBinaryOpOnSimpleNumber).to.doNothing;
     });
   });
 })();

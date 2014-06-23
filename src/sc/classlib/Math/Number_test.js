@@ -76,7 +76,7 @@
     });
     it("#rho", function() {
       var instance = this.createInstance();
-      expect(instance.rho).to.be.nop;
+      expect(instance.rho).to.doNothing;
     });
     it("#theta", function() {
       var instance, test;
@@ -88,7 +88,7 @@
     });
     it("#real", function() {
       var instance = this.createInstance();
-      expect(instance.real).to.be.nop;
+      expect(instance.real).to.doNothing;
     });
     it("#imag", function() {
       var instance, test;

@@ -54,7 +54,7 @@
     });
     it("#copy", function() {
       var instance = this.createInstance();
-      expect(instance.copy).to.be.nop;
+      expect(instance.copy).to.doNothing;
     });
     it.skip("#clock_", function() {
     });
@@ -98,15 +98,15 @@
     });
     it("#next", function() {
       var instance = this.createInstance();
-      expect(instance.next).to.be.nop;
+      expect(instance.next).to.doNothing;
     });
     it("#value", function() {
       var instance = this.createInstance();
-      expect(instance.value).to.be.nop;
+      expect(instance.value).to.doNothing;
     });
     it("#valueArray", function() {
       var instance = this.createInstance();
-      expect(instance.valueArray).to.be.nop;
+      expect(instance.valueArray).to.doNothing;
     });
     it.skip("#$primitiveError", function() {
     });

@@ -64,7 +64,7 @@
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
     it("#choose", sinon.test(function() {
       var instance, test;

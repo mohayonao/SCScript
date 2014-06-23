@@ -222,7 +222,7 @@
     });
     it("#asString", function() {
       var instance = this.createInstance();
-      expect(instance.asString).to.be.nop;
+      expect(instance.asString).to.doNothing;
     });
     it("#asCompileString", function() {
       var instance, test;

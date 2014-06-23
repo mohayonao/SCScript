@@ -208,7 +208,7 @@
     });
     it("#asCollection", function() {
       var instance = this.createInstance();
-      expect(instance.asCollection).to.be.nop;
+      expect(instance.asCollection).to.doNothing;
     });
     it("#isCollection", function() {
       var instance, test;

@@ -3,19 +3,18 @@ SCScript.install(function(sc) {
 
   require("../Core/Object");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-
+  var $ = sc.lang.$;
+  var $nil   = $.nil;
+  var $true  = $.true;
+  var $false = $.false;
+  var $int0  = $.int0;
+  var $int1  = $.int1;
   var SCArray = $("Array");
 
-  sc.lang.klass.refine("Collection", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $true  = utils.$true;
-    var $false = utils.$false;
-    var $int0  = utils.$int0;
-    var $int1  = utils.$int1;
-
-    spec.$newFrom = fn(function($aCollection) {
+  sc.lang.klass.refine("Collection", function(builder) {
+    builder.addClassMethod("newFrom", {
+      args: "aCollection"
+    }, function($aCollection) {
       var $newCollection;
 
       $newCollection = this.new($aCollection.size());
@@ -24,18 +23,22 @@ SCScript.install(function(sc) {
       }));
 
       return $newCollection;
-    }, "aCollection");
+    });
 
-    spec.$with = fn(function($$args) {
+    builder.addClassMethod("with", {
+      args: "*args"
+    }, function($$args) {
       var $newColl;
 
       $newColl = this.new($$args.size());
       $newColl.addAll($$args);
 
       return $newColl;
-    }, "*args");
+    });
 
-    spec.$fill = fn(function($size, $function) {
+    builder.addClassMethod("fill", {
+      args: "size; function"
+    }, function($size, $function) {
       var $obj;
       var size, i;
 
@@ -51,9 +54,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; function");
+    });
 
-    spec.$fill2D = fn(function($rows, $cols, $function) {
+    builder.addClassMethod("fill2D", {
+      args: "rows; cols; function"
+    }, function($rows, $cols, $function) {
       var $this = this, $obj, $obj2, $row, $col;
       var rows, cols, i, j;
 
@@ -73,9 +78,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "rows; cols; function");
+    });
 
-    spec.$fill3D = fn(function($planes, $rows, $cols, $function) {
+    builder.addClassMethod("fill3D", {
+      args: "planes; rows; cols; function"
+    }, function($planes, $rows, $cols, $function) {
       var $this = this, $obj, $obj2, $obj3, $plane, $row, $col;
       var planes, rows, cols, i, j, k;
 
@@ -101,7 +108,7 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "planes; rows; cols; function");
+    });
 
     var fillND = function($this, $dimensions, $function, $args) {
       var $n, $obj, $argIndex;
@@ -126,15 +133,17 @@ SCScript.install(function(sc) {
       return $obj;
     };
 
-    spec.$fillND = fn(function($dimensions, $function) {
+    builder.addClassMethod("fillND", {
+      args: "dimensions; function"
+    }, function($dimensions, $function) {
       return fillND(this, $dimensions, $function, $.Array([]));
-    }, "dimensions; function");
+    });
 
-    spec["@"] = function($index) {
+    builder.addMethod("@", function($index) {
       return this.at($index);
-    };
+    });
 
-    spec["=="] = function($aCollection) {
+    builder.addMethod("==", function($aCollection) {
       var $res = null;
 
       if ($aCollection.class() !== this.class()) {
@@ -152,19 +161,19 @@ SCScript.install(function(sc) {
       }));
 
       return $res || $true;
-    };
+    });
 
     // TODO: implements hash
 
-    spec.species = function() {
+    builder.addMethod("species", function() {
       return SCArray;
-    };
+    });
 
-    spec.do = utils.subclassResponsibility("do");
+    builder.subclassResponsibility("do");
 
     // TODO: implements iter
 
-    spec.size = function() {
+    builder.addMethod("size", function() {
       var tally = 0;
 
       this.do($.Func(function() {
@@ -173,28 +182,30 @@ SCScript.install(function(sc) {
       }));
 
       return $.Integer(tally);
-    };
+    });
 
-    spec.flatSize = function() {
+    builder.addMethod("flatSize", function() {
       return this.sum($.Func(function($_) {
         return $_.$("flatSize");
       }));
-    };
+    });
 
-    spec.isEmpty = function() {
+    builder.addMethod("isEmpty", function() {
       return $.Boolean(this.size().__int__() === 0);
-    };
+    });
 
-    spec.notEmpty = function() {
+    builder.addMethod("notEmpty", function() {
       return $.Boolean(this.size().__int__() !== 0);
-    };
+    });
 
-    spec.asCollection = utils.nop;
-    spec.isCollection = utils.alwaysReturn$true;
+    builder.addMethod("asCollection");
+    builder.addMethod("isCollection", sc.TRUE);
 
-    spec.add = utils.subclassResponsibility("add");
+    builder.subclassResponsibility("add");
 
-    spec.addAll = fn(function($aCollection) {
+    builder.addMethod("addAll", {
+      args: "aCollection"
+    }, function($aCollection) {
       var $this = this;
 
       $aCollection.asCollection().do($.Func(function($item) {
@@ -202,11 +213,13 @@ SCScript.install(function(sc) {
       }));
 
       return this;
-    }, "aCollection");
+    });
 
-    spec.remove = utils.subclassResponsibility("remove");
+    builder.subclassResponsibility("remove");
 
-    spec.removeAll = fn(function($list) {
+    builder.addMethod("removeAll", {
+      args: "list"
+    }, function($list) {
       var $this = this;
 
       $list.do($.Func(function($item) {
@@ -214,16 +227,18 @@ SCScript.install(function(sc) {
       }));
 
       return this;
-    }, "list");
+    });
 
-    spec.removeEvery = fn(function($list) {
+    builder.addMethod("removeEvery", {
+      args: "list"
+    }, function($list) {
       this.removeAllSuchThat($.Func(function($_) {
         return $list.$("includes", [ $_ ]);
       }));
       return this;
-    }, "list");
+    });
 
-    spec.removeAllSuchThat = function($function) {
+    builder.addMethod("removeAllSuchThat", function($function) {
       var $this = this, $removedItems, $copy;
 
       $removedItems = this.class().new();
@@ -237,17 +252,21 @@ SCScript.install(function(sc) {
       }));
 
       return $removedItems;
-    };
+    });
 
-    spec.atAll = fn(function($keys) {
+    builder.addMethod("atAll", {
+      args: "keys"
+    }, function($keys) {
       var $this = this;
 
       return $keys.$("collect", [ $.Func(function($index) {
         return $this.at($index);
       }) ]);
-    }, "keys");
+    });
 
-    spec.putEach = fn(function($keys, $values) {
+    builder.addMethod("putEach", {
+      args: "keys; values"
+    }, function($keys, $values) {
       var keys, values, i, imax;
 
       $keys   = $keys.asArray();
@@ -260,9 +279,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "keys; values");
+    });
 
-    spec.includes = fn(function($item1) {
+    builder.addMethod("includes", {
+      args: "item1"
+    }, function($item1) {
       var $res = null;
 
       this.do($.Func(function($item2) {
@@ -274,9 +295,11 @@ SCScript.install(function(sc) {
       }));
 
       return $res || $false;
-    }, "item1");
+    });
 
-    spec.includesEqual = fn(function($item1) {
+    builder.addMethod("includesEqual", {
+      args: "item1"
+    }, function($item1) {
       var $res = null;
 
       this.do($.Func(function($item2) {
@@ -288,9 +311,11 @@ SCScript.install(function(sc) {
       }));
 
       return $res || $false;
-    }, "item1");
+    });
 
-    spec.includesAny = fn(function($aCollection) {
+    builder.addMethod("includesAny", {
+      args: "aCollection"
+    }, function($aCollection) {
       var $this = this, $res = null;
 
       $aCollection.do($.Func(function($item) {
@@ -302,9 +327,11 @@ SCScript.install(function(sc) {
       }));
 
       return $res || $false;
-    }, "aCollection");
+    });
 
-    spec.includesAll = fn(function($aCollection) {
+    builder.addMethod("includesAll", {
+      args: "aCollection"
+    }, function($aCollection) {
       var $this = this, $res = null;
 
       $aCollection.do($.Func(function($item) {
@@ -316,25 +343,29 @@ SCScript.install(function(sc) {
       }));
 
       return $res || $true;
-    }, "aCollection");
+    });
 
-    spec.matchItem = fn(function($item) {
+    builder.addMethod("matchItem", {
+      args: "item"
+    }, function($item) {
       return this.includes($item);
-    }, "item");
+    });
 
-    spec.collect = function($function) {
+    builder.addMethod("collect", function($function) {
       return this.collectAs($function, this.species());
-    };
+    });
 
-    spec.select = function($function) {
+    builder.addMethod("select", function($function) {
       return this.selectAs($function, this.species());
-    };
+    });
 
-    spec.reject = function($function) {
+    builder.addMethod("reject", function($function) {
       return this.rejectAs($function, this.species());
-    };
+    });
 
-    spec.collectAs = fn(function($function, $class) {
+    builder.addMethod("collectAs", {
+      args: "function; class"
+    }, function($function, $class) {
       var $res;
 
       $res = $class.new(this.size());
@@ -343,9 +374,11 @@ SCScript.install(function(sc) {
       }));
 
       return $res;
-    }, "function; class");
+    });
 
-    spec.selectAs = fn(function($function, $class) {
+    builder.addMethod("selectAs", {
+      args: "function; class"
+    }, function($function, $class) {
       var $res;
 
       $res = $class.new(this.size());
@@ -357,9 +390,11 @@ SCScript.install(function(sc) {
       }));
 
       return $res;
-    }, "function; class");
+    });
 
-    spec.rejectAs = fn(function($function, $class) {
+    builder.addMethod("rejectAs", {
+      args: "function; class"
+    }, function($function, $class) {
       var $res;
 
       $res = $class.new(this.size());
@@ -371,9 +406,9 @@ SCScript.install(function(sc) {
       }));
 
       return $res;
-    }, "function; class");
+    });
 
-    spec.detect = function($function) {
+    builder.addMethod("detect", function($function) {
       var $res = null;
 
       this.do($.Func(function($elem, $i) {
@@ -385,9 +420,9 @@ SCScript.install(function(sc) {
       }));
 
       return $res || $nil;
-    };
+    });
 
-    spec.detectIndex = function($function) {
+    builder.addMethod("detectIndex", function($function) {
       var $res = null;
 
       this.do($.Func(function($elem, $i) {
@@ -398,50 +433,54 @@ SCScript.install(function(sc) {
         return $nil;
       }));
       return $res || $nil;
-    };
+    });
 
-    spec.doMsg = function() {
+    builder.addMethod("doMsg", function() {
       var args = arguments;
       this.do($.Func(function($item) {
         return $item.perform.apply($item, args);
       }));
       return this;
-    };
+    });
 
-    spec.collectMsg = function() {
+    builder.addMethod("collectMsg", function() {
       var args = arguments;
       return this.collect($.Func(function($item) {
         return $item.perform.apply($item, args);
       }));
-    };
+    });
 
-    spec.selectMsg = function() {
+    builder.addMethod("selectMsg", function() {
       var args = arguments;
       return this.select($.Func(function($item) {
         return $item.perform.apply($item, args);
       }));
-    };
+    });
 
-    spec.rejectMsg = function() {
+    builder.addMethod("rejectMsg", function() {
       var args = arguments;
       return this.reject($.Func(function($item) {
         return $item.perform.apply($item, args);
       }));
-    };
+    });
 
-    spec.detectMsg = fn(function($selector, $$args) {
+    builder.addMethod("detectMsg", {
+      args: "selector; *args"
+    }, function($selector, $$args) {
       return this.detect($.Func(function($item) {
         return $item.performList($selector, $$args);
       }));
-    }, "selector; *args");
+    });
 
-    spec.detectIndexMsg = fn(function($selector, $$args) {
+    builder.addMethod("detectIndexMsg", {
+      args: "selector; *args"
+    }, function($selector, $$args) {
       return this.detectIndex($.Func(function($item) {
         return $item.performList($selector, $$args);
       }));
-    }, "selector; *args");
+    });
 
-    spec.lastForWhich = function($function) {
+    builder.addMethod("lastForWhich", function($function) {
       var $res = null;
       this.do($.Func(function($elem, $i) {
         if ($function.value($elem, $i).__bool__()) {
@@ -452,9 +491,9 @@ SCScript.install(function(sc) {
         return $nil;
       }));
       return $res || $nil;
-    };
+    });
 
-    spec.lastIndexForWhich = function($function) {
+    builder.addMethod("lastIndexForWhich", function($function) {
       var $res = null;
       this.do($.Func(function($elem, $i) {
         if ($function.value($elem, $i).__bool__()) {
@@ -465,9 +504,11 @@ SCScript.install(function(sc) {
         return $nil;
       }));
       return $res || $nil;
-    };
+    });
 
-    spec.inject = fn(function($thisValue, $function) {
+    builder.addMethod("inject", {
+      args: "thisValue; function"
+    }, function($thisValue, $function) {
       var $nextValue;
       $nextValue = $thisValue;
       this.do($.Func(function($item, $i) {
@@ -475,9 +516,11 @@ SCScript.install(function(sc) {
         return $nextValue;
       }));
       return $nextValue;
-    }, "thisValue; function");
+    });
 
-    spec.injectr = fn(function($thisValue, $function) {
+    builder.addMethod("injectr", {
+      args: "thisValue; function"
+    }, function($thisValue, $function) {
       var $this = this, size, $nextValue;
       size = this.size().__int__();
       $nextValue = $thisValue;
@@ -487,9 +530,9 @@ SCScript.install(function(sc) {
         return $nextValue;
       }));
       return $nextValue;
-    }, "thisValue; function");
+    });
 
-    spec.count = function($function) {
+    builder.addMethod("count", function($function) {
       var sum = 0;
       this.do($.Func(function($elem, $i) {
         if ($function.value($elem, $i).__bool__()) {
@@ -498,9 +541,11 @@ SCScript.install(function(sc) {
         return $nil;
       }));
       return $.Integer(sum);
-    };
+    });
 
-    spec.occurrencesOf = fn(function($obj) {
+    builder.addMethod("occurrencesOf", {
+      args: "obj"
+    }, function($obj) {
       var sum = 0;
       this.do($.Func(function($elem) {
         if ($elem ["=="] ($obj).__bool__()) {
@@ -509,9 +554,9 @@ SCScript.install(function(sc) {
         return $nil;
       }));
       return $.Integer(sum);
-    }, "obj");
+    });
 
-    spec.any = function($function) {
+    builder.addMethod("any", function($function) {
       var $res = null;
       this.do($.Func(function($elem, $i) {
         if ($function.value($elem, $i).__bool__()) {
@@ -521,9 +566,9 @@ SCScript.install(function(sc) {
         return $nil;
       }));
       return $res || $false;
-    };
+    });
 
-    spec.every = function($function) {
+    builder.addMethod("every", function($function) {
       var $res = null;
       this.do($.Func(function($elem, $i) {
         if (!$function.value($elem, $i).__bool__()) {
@@ -533,9 +578,11 @@ SCScript.install(function(sc) {
         return $nil;
       }));
       return $res || $true;
-    };
+    });
 
-    spec.sum = fn(function($function) {
+    builder.addMethod("sum", {
+      args: "function"
+    }, function($function) {
       var $sum;
       $sum = $int0;
       if ($function === $nil) {
@@ -550,13 +597,15 @@ SCScript.install(function(sc) {
         }));
       }
       return $sum;
-    }, "function");
+    });
 
-    spec.mean = function($function) {
+    builder.addMethod("mean", function($function) {
       return this.sum($function) ["/"] (this.size());
-    };
+    });
 
-    spec.product = fn(function($function) {
+    builder.addMethod("product", {
+      args: "function"
+    }, function($function) {
       var $product;
       $product = $int1;
       if ($function === $nil) {
@@ -571,9 +620,9 @@ SCScript.install(function(sc) {
         }));
       }
       return $product;
-    }, "function");
+    });
 
-    spec.sumabs = function() {
+    builder.addMethod("sumabs", function() {
       var $sum;
       $sum = $int0;
       this.do($.Func(function($elem) {
@@ -584,9 +633,11 @@ SCScript.install(function(sc) {
         return $sum;
       }));
       return $sum;
-    };
+    });
 
-    spec.maxItem = fn(function($function) {
+    builder.addMethod("maxItem", {
+      args: "function"
+    }, function($function) {
       var $maxValue, $maxElement;
 
       $maxValue   = $nil;
@@ -618,9 +669,11 @@ SCScript.install(function(sc) {
       }
 
       return $maxElement;
-    }, "function");
+    });
 
-    spec.minItem = fn(function($function) {
+    builder.addMethod("minItem", {
+      args: "function"
+    }, function($function) {
       var $minValue, $minElement;
 
       $minValue   = $nil;
@@ -652,9 +705,11 @@ SCScript.install(function(sc) {
       }
 
       return $minElement;
-    }, "function");
+    });
 
-    spec.maxIndex = fn(function($function) {
+    builder.addMethod("maxIndex", {
+      args: "function"
+    }, function($function) {
       var $maxValue, $maxIndex;
 
       $maxValue = $nil;
@@ -688,9 +743,11 @@ SCScript.install(function(sc) {
       }
 
       return $maxIndex;
-    }, "function");
+    });
 
-    spec.minIndex = fn(function($function) {
+    builder.addMethod("minIndex", {
+      args: "function"
+    }, function($function) {
       var $maxValue, $minIndex;
 
       $maxValue = $nil;
@@ -724,9 +781,11 @@ SCScript.install(function(sc) {
       }
 
       return $minIndex;
-    }, "function");
+    });
 
-    spec.maxValue = fn(function($function) {
+    builder.addMethod("maxValue", {
+      args: "function"
+    }, function($function) {
       var $maxValue, $maxElement;
 
       $maxValue   = $nil;
@@ -747,9 +806,11 @@ SCScript.install(function(sc) {
       }));
 
       return $maxValue;
-    }, "function");
+    });
 
-    spec.minValue = fn(function($function) {
+    builder.addMethod("minValue", {
+      args: "function"
+    }, function($function) {
       var $minValue, $minElement;
 
       $minValue   = $nil;
@@ -770,9 +831,11 @@ SCScript.install(function(sc) {
       }));
 
       return $minValue;
-    }, "function");
+    });
 
-    spec.maxSizeAtDepth = fn(function($rank) {
+    builder.addMethod("maxSizeAtDepth", {
+      args: "rank"
+    }, function($rank) {
       var rank, maxsize = 0;
 
       rank = $rank.__num__();
@@ -794,9 +857,11 @@ SCScript.install(function(sc) {
       }));
 
       return $.Integer(maxsize);
-    }, "rank");
+    });
 
-    spec.maxDepth = fn(function($max) {
+    builder.addMethod("maxDepth", {
+      args: "max=1"
+    }, function($max) {
       var $res;
 
       $res = $max;
@@ -808,9 +873,11 @@ SCScript.install(function(sc) {
       }));
 
       return $res;
-    }, "max=1");
+    });
 
-    spec.deepCollect = fn(function($depth, $function, $index, $rank) {
+    builder.addMethod("deepCollect", {
+      args: "depth=1; function; index=0; rank=0"
+    }, function($depth, $function, $index, $rank) {
       if ($depth === $nil) {
         $rank = $rank.__inc__();
         return this.collect($.Func(function($item, $i) {
@@ -826,9 +893,11 @@ SCScript.install(function(sc) {
       return this.collect($.Func(function($item, $i) {
         return $item.deepCollect($depth, $function, $i, $rank);
       }));
-    }, "depth=1; function; index=0; rank=0");
+    });
 
-    spec.deepDo = fn(function($depth, $function, $index, $rank) {
+    builder.addMethod("deepDo", {
+      args: "depth=1; function; index=0; rank=0"
+    }, function($depth, $function, $index, $rank) {
       if ($depth === $nil) {
         $rank = $rank.__inc__();
         return this.do($.Func(function($item, $i) {
@@ -845,9 +914,11 @@ SCScript.install(function(sc) {
       return this.do($.Func(function($item, $i) {
         return $item.deepDo($depth, $function, $i, $rank);
       }));
-    }, "depth=1; function; index=0; rank=0");
+    });
 
-    spec.invert = fn(function($axis) {
+    builder.addMethod("invert", {
+      args: "axis"
+    }, function($axis) {
       var $index;
 
       if (this.isEmpty().__bool__()) {
@@ -860,9 +931,11 @@ SCScript.install(function(sc) {
       }
 
       return $index ["-"] (this);
-    }, "axis");
+    });
 
-    spec.sect = fn(function($that) {
+    builder.addMethod("sect", {
+      args: "that"
+    }, function($that) {
       var $result;
 
       $result = this.species().new();
@@ -874,9 +947,11 @@ SCScript.install(function(sc) {
       }));
 
       return $result;
-    }, "that");
+    });
 
-    spec.union = fn(function($that) {
+    builder.addMethod("union", {
+      args: "that"
+    }, function($that) {
       var $result;
 
       $result = this.copy();
@@ -888,13 +963,17 @@ SCScript.install(function(sc) {
       }));
 
       return $result;
-    }, "that");
+    });
 
-    spec.difference = fn(function($that) {
+    builder.addMethod("difference", {
+      args: "that"
+    }, function($that) {
       return this.copy().removeAll($that);
-    }, "that");
+    });
 
-    spec.symmetricDifference = fn(function($that) {
+    builder.addMethod("symmetricDifference", {
+      args: "that"
+    }, function($that) {
       var $this = this, $result;
 
       $result = this.species().new();
@@ -912,31 +991,33 @@ SCScript.install(function(sc) {
       }));
 
       return $result;
-    }, "that");
+    });
 
-    spec.isSubsetOf = fn(function($that) {
+    builder.addMethod("isSubsetOf", {
+      args: "that"
+    }, function($that) {
       return $that.$("includesAll", [ this ]);
-    }, "that");
+    });
 
-    spec.asArray = function() {
+    builder.addMethod("asArray", function() {
       return SCArray.new(this.size()).addAll(this);
-    };
+    });
 
-    spec.asBag = function() {
+    builder.addMethod("asBag", function() {
       return $("Bag").new(this.size()).addAll(this);
-    };
+    });
 
-    spec.asList = function() {
+    builder.addMethod("asList", function() {
       return $("List").new(this.size()).addAll(this);
-    };
+    });
 
-    spec.asSet = function() {
+    builder.addMethod("asSet", function() {
       return $("Set").new(this.size()).addAll(this);
-    };
+    });
 
-    spec.asSortedList = function($function) {
+    builder.addMethod("asSortedList", function($function) {
       return $("SortedList").new(this.size(), $function).addAll(this);
-    };
+    });
 
     // TODO: implements powerset
     // TODO: implements flopDict
@@ -953,7 +1034,7 @@ SCScript.install(function(sc) {
     // TODO: implements case
     // TODO: implements makeEnvirValPairs
 
-    spec.asString = function() {
+    builder.addMethod("asString", function() {
       var items = [];
       this.do($.Func(function($elem) {
         items.push($elem.__str__());
@@ -962,6 +1043,6 @@ SCScript.install(function(sc) {
       return $.String(
         this.__className + "[ " + items.join(", ") + " ]"
       );
-    };
+    });
   });
 });

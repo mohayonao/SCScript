@@ -299,7 +299,7 @@
     it("#asSet", function() {
       var instance;
       instance = this.createInstance();
-      expect(instance.asSet).to.be.nop;
+      expect(instance.asSet).to.doNothing;
     });
   });
 })();

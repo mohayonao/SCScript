@@ -338,7 +338,7 @@
     }));
     it("#real", function() {
       var instance = this.createInstance();
-      expect(instance.real).to.be.nop;
+      expect(instance.real).to.doNothing;
     });
     it("#imag", function() {
       testCase(this, [

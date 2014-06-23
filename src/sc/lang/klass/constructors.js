@@ -109,8 +109,8 @@
     return $nil;
   };
 
-  $.Boolean = function($value) {
-    return $value ? $true : $false;
+  $.Boolean = function(value) {
+    return value ? $true : $false;
   };
 
   $.True = function() {

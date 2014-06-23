@@ -104,23 +104,23 @@
   var $symbols  = {};
   var $chars    = {};
 
-  $.Nil = function() {
+  $.addProperty("Nil", function() {
     return $nil;
-  };
+  });
 
-  $.Boolean = function(value) {
+  $.addProperty("Boolean", function(value) {
     return value ? $true : $false;
-  };
+  });
 
-  $.True = function() {
+  $.addProperty("True", function() {
     return $true;
-  };
+  });
 
-  $.False = function() {
+  $.addProperty("False", function() {
     return $false;
-  };
+  });
 
-  $.Integer = function(value) {
+  $.addProperty("Integer", function(value) {
     var instance;
 
     if (!global.isFinite(value)) {
@@ -136,9 +136,9 @@
     }
 
     return $integers[value];
-  };
+  });
 
-  $.Float = function(value) {
+  $.addProperty("Float", function(value) {
     var instance;
 
     value = +value;
@@ -150,9 +150,9 @@
     }
 
     return $floats[value];
-  };
+  });
 
-  $.Symbol = function(value) {
+  $.addProperty("Symbol", function(value) {
     var instance;
     value = String(value);
     if (!$symbols.hasOwnProperty(value)) {
@@ -161,9 +161,9 @@
       $symbols[value] = instance;
     }
     return $symbols[value];
-  };
+  });
 
-  $.Char = function(value) {
+  $.addProperty("Char", function(value) {
     var instance;
 
     value = String(value).charAt(0);
@@ -175,23 +175,23 @@
     }
 
     return $chars[value];
-  };
+  });
 
-  $.Array = function(value, immutable) {
+  $.addProperty("Array", function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
     instance.__immutable = !!immutable;
     return instance;
-  };
+  });
 
-  $.String = function(value, mutable) {
+  $.addProperty("String", function(value, mutable) {
     var instance = new SCString();
     instance._ = String(value).split("").map($.Char);
     instance.__immutable = !mutable;
     return instance;
-  };
+  });
 
-  $.Event = function(value) {
+  $.addProperty("Event", function(value) {
     var instance, i, imax, j;
     i = imax = j = value;
     instance = $("Event").new();
@@ -199,29 +199,29 @@
       instance.put(value[j++], value[j++]);
     }
     return instance;
-  };
+  });
 
-  $.Function = function(value, def) {
+  $.addProperty("Function", function(value, def) {
     var instance = new SCFunction();
     instance._bytecode = sc.lang.bytecode.create(value, def).setOwner(instance);
     return instance;
-  };
+  });
 
-  $.Func = function(func) {
+  $.addProperty("Func", function(func) {
     return $.Function(function() {
       return [ func ];
     });
-  };
+  });
 
-  $.Ref = function(value) {
+  $.addProperty("Ref", function(value) {
     var instance = new SCRef();
     instance._$value = value;
     return instance;
-  };
+  });
 
-  $.nil = $nil;
-  $.true = $true;
-  $.false = $false;
-  $.int0 = $.Integer(0);
-  $.int1 = $.Integer(1);
+  $.addProperty("nil", $nil);
+  $.addProperty("true", $true);
+  $.addProperty("false", $false);
+  $.addProperty("int0", $.Integer(0));
+  $.addProperty("int1", $.Integer(1));
 })(sc);

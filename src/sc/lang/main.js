@@ -59,25 +59,25 @@
     return $currentThread;
   };
 
-  $.Environment = function(key, $value) {
+  $.addProperty("Environment", function(key, $value) {
     if ($value) {
       $currentEnvir.put($.Symbol(key), $value);
       return $value;
     }
     return $currentEnvir.at($.Symbol(key));
-  };
+  });
 
-  $.This = function() {
+  $.addProperty("This", function() {
     return main.$process.interpreter();
-  };
+  });
 
-  $.ThisProcess = function() {
+  $.addProperty("ThisProcess", function() {
     return main.$process;
-  };
+  });
 
-  $.ThisThread = function() {
+  $.addProperty("ThisThread", function() {
     return $currentThread;
-  };
+  });
 
   sc.lang.main = main;
 })(sc);

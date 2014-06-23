@@ -23,11 +23,11 @@ SCScript.install(function(sc) {
       return item || $nil;
     });
 
-    builder.addMethod("_ThrowIfImmutable", function() {
-      if (this.__immutable) {
+    function throwIfImmutable($this) {
+      if ($this.__immutable) {
         throw new Error("Attempted write to immutable object.");
       }
-    });
+    }
 
     builder.addClassMethod("newClear", {
       args: "indexedSize=0"
@@ -61,7 +61,7 @@ SCScript.install(function(sc) {
       var raw = this._;
       var a, b, len, tmp;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       a = $a.__int__();
       b = $b.__int__();
@@ -154,7 +154,7 @@ SCScript.install(function(sc) {
     }, function($index, $item) {
       var i;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       if (Array.isArray($index._)) {
         $index._.forEach(function($index) {
@@ -178,7 +178,7 @@ SCScript.install(function(sc) {
     builder.addMethod("clipPut", {
       args: "index; item"
     }, function($index, $item) {
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       if (Array.isArray($index._)) {
         $index._.forEach(function($index) {
@@ -194,7 +194,7 @@ SCScript.install(function(sc) {
     builder.addMethod("wrapPut", {
       args: "index; item"
     }, function($index, $item) {
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       if (Array.isArray($index._)) {
         $index._.forEach(function($index) {
@@ -210,7 +210,7 @@ SCScript.install(function(sc) {
     builder.addMethod("foldPut", {
       args: "index; item"
     }, function($index, $item) {
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       if (Array.isArray($index._)) {
         $index._.forEach(function($index) {
@@ -229,7 +229,7 @@ SCScript.install(function(sc) {
       var raw = this._;
       var index;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       index = $index.__int__();
       if (index < 0 || raw.length <= index) {
@@ -245,7 +245,7 @@ SCScript.install(function(sc) {
       var raw = this._;
       var index, ret, instead;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       index = $index.__int__();
       if (index < 0 || raw.length <= index) {
@@ -307,7 +307,7 @@ SCScript.install(function(sc) {
     }, function($find, $replace) {
       var $index, $out, $array;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       $out     = $.Array();
       $array   = this;
@@ -442,7 +442,7 @@ SCScript.install(function(sc) {
     }, function($first, $second, $last, $value) {
       var i, first, second, last, step;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       if ($first === $nil) {
         first = 0;
@@ -480,7 +480,7 @@ SCScript.install(function(sc) {
     builder.addMethod("add", {
       args: "item"
     }, function($item) {
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
       this._.push(this.__elem__($item));
 
       return this;
@@ -491,7 +491,7 @@ SCScript.install(function(sc) {
     }, function($aCollection) {
       var $this = this;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       if ($aCollection.isCollection().__bool__()) {
         $aCollection.do($.Func(function($item) {
@@ -509,7 +509,7 @@ SCScript.install(function(sc) {
     }, function($keys, $values) {
       var keys, values, i, imax;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       $keys   = $keys.asArray();
       $values = $values.asArray();
@@ -548,7 +548,7 @@ SCScript.install(function(sc) {
     }, function($index, $item) {
       var index;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       index = Math.max(0, $index.__int__());
       this._.splice(index, 0, this.__elem__($item));
@@ -586,7 +586,7 @@ SCScript.install(function(sc) {
       if (this._.length === 0) {
         return $nil;
       }
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
       return this._.pop();
     });
 
@@ -625,7 +625,7 @@ SCScript.install(function(sc) {
     }, function($value) {
       var raw, i, imax;
 
-      this._ThrowIfImmutable();
+      throwIfImmutable(this);
 
       $value = this.__elem__($value);
 
@@ -846,8 +846,8 @@ SCScript.install(function(sc) {
     });
 
     /* istanbul ignore next */
-    builder.addMethod("_sort", function($function) {
-      this._ThrowIfImmutable();
+    builder.addMethod("__sort__", function($function) {
+      throwIfImmutable(this);
       this._.sort(function($a, $b) {
         return $function.value($a, $b).__bool__() ? -1 : 1;
       });

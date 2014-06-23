@@ -13,19 +13,19 @@ SCScript.install(function(sc) {
     builder.addClassMethod("new", {
       args: "func"
     }, function($func) {
-      return this.__super__("new")._init($func);
+      return init(this.__super__("new"), $func);
     });
 
-    builder.addMethod("_init", function($func) {
+    function init($this, $func) {
       if ($func.__tag !== sc.TAG_FUNC) {
         throw new Error("Thread.init failed");
       }
-      this._bytecode = $func._bytecode.setOwner(this);
-      this._state    = sc.STATE_INIT;
-      this._parent   = null;
-      this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
-      return this;
-    });
+      $this._bytecode = $func._bytecode.setOwner($this);
+      $this._state    = sc.STATE_INIT;
+      $this._parent   = null;
+      $this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
+      return $this;
+    }
 
     builder.addMethod("state", function() {
       return $.Integer(this._state);

@@ -690,21 +690,21 @@ SCScript.install(function(sc) {
     builder.addMethod("flatten", {
       args: "numLevels=1"
     }, function($numLevels) {
-      return this._flatten($numLevels.__num__());
+      return flatten(this, $numLevels.__num__());
     });
 
-    builder.addMethod("_flatten", function(numLevels) {
+    function flatten($this, numLevels) {
       var $list;
 
       if (numLevels <= 0) {
-        return this;
+        return $this;
       }
       numLevels = numLevels - 1;
 
-      $list = this.species().new();
-      this.do($.Func(function($item) {
-        if ($item._flatten) {
-          $list = $list.addAll($item._flatten(numLevels));
+      $list = $this.species().new();
+      $this.do($.Func(function($item) {
+        if ($item.flatten) {
+          $list = $list.addAll(flatten($item, numLevels));
         } else {
           $list = $list.add($item);
         }
@@ -712,39 +712,35 @@ SCScript.install(function(sc) {
       }));
 
       return $list;
-    });
+    }
 
     builder.addMethod("flat", function() {
-      return this._flat(this.species().new(this.flatSize()));
+      return flat(this, this.species().new(this.flatSize()));
     });
 
-    builder.addMethod("_flat", {
-      args: "list"
-    }, function($list) {
-      this.do($.Func(function($item) {
-        if ($item._flat) {
-          $list = $item._flat($list);
+    function flat($this, $list) {
+      $this.do($.Func(function($item) {
+        if ($item.flat) {
+          $list = flat($item, $list);
         } else {
           $list = $list.add($item);
         }
         return $nil;
       }));
       return $list;
+    }
+
+    builder.addMethod("flatIf", function($func) {
+      return flatIf(this, $func);
     });
 
-    builder.addMethod("flatIf", {
-      args: "func"
-    }, function($func) {
-      return this._flatIf($func);
-    });
-
-    builder.addMethod("_flatIf", function($func) {
+    function flatIf($this, $func) {
       var $list;
 
-      $list = this.species().new(this.size());
-      this.do($.Func(function($item, $i) {
-        if ($item._flatIf && $func.value($item, $i).__bool__()) {
-          $list = $list.addAll($item._flatIf($func));
+      $list = $this.species().new($this.size());
+      $this.do($.Func(function($item, $i) {
+        if ($item.flatIf && $func.value($item, $i).__bool__()) {
+          $list = $list.addAll(flatIf($item, $func));
         } else {
           $list = $list.add($item);
         }
@@ -752,7 +748,7 @@ SCScript.install(function(sc) {
       }));
 
       return $list;
-    });
+    }
 
     builder.addMethod("flop", function() {
       var $this = this, $list, $size, $maxsize;
@@ -1890,7 +1886,7 @@ SCScript.install(function(sc) {
           return $a.$("<=", [ $b ]);
         });
       }
-      this._sort($function);
+      this.__sort__($function);
       return this;
     });
 

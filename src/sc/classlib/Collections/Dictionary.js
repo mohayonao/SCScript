@@ -13,6 +13,13 @@ SCScript.install(function(sc) {
   var SCArray = $("Array");
   var SCAssociation = $("Association");
 
+  function incrementSize($this) {
+    $this._size += 1;
+    if ($this._$array.size().__inc__() < $this._size * 4) {
+      $this.grow();
+    }
+  }
+
   sc.lang.klass.refine("Dictionary", function(builder, _) {
     builder.addClassMethod("new", {
       args: "n=8"
@@ -114,7 +121,7 @@ SCScript.install(function(sc) {
         $array.put($index.__inc__(), $value);
         if ($array.at($index) === $nil) {
           $array.put($index, $key);
-          this._incrementSize();
+          incrementSize(this);
         }
       }
 
@@ -593,13 +600,6 @@ SCScript.install(function(sc) {
 
     // TODO: implements storeItemsOn
     // TODO: implements printItemsOn
-
-    builder.addMethod("_incrementSize", function() {
-      this._size += 1;
-      if (this._$array.size().__inc__() < this._size * 4) {
-        this.grow();
-      }
-    });
   });
 
   sc.lang.klass.refine("IdentityDictionary", function(builder) {
@@ -625,7 +625,7 @@ SCScript.install(function(sc) {
       $array.put($index.__inc__(), $value);
       if ($array.at($index) === $nil) {
         $array.put($index, $key);
-        this._incrementSize();
+        incrementSize(this);
       }
 
       return $prev;

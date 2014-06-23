@@ -4,7 +4,6 @@
   require("./klass");
   require("./builder");
   require("../dollar");
-  require("../../libs/strlib");
 
   var $ = sc.lang.$;
   var isClassName = sc.libs.strlib.isClassName;

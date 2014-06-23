@@ -3,7 +3,6 @@
 
   require("./klass");
   require("./dollar");
-  require("../libs/random");
 
   var main = {};
 

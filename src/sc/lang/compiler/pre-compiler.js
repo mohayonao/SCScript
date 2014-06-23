@@ -1,7 +1,6 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
   require("./compiler");
   require("./node");
 

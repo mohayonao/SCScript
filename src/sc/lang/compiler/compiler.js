@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("../sc");
 
   var compiler = {
     Token: {

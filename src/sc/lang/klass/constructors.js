@@ -1,6 +1,7 @@
 (function(sc) {
   "use strict";
 
+  require("./klass");
   require("./define");
   require("../bytecode");
 

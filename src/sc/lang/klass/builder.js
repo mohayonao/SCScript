@@ -4,7 +4,6 @@
   require("./klass");
   require("../dollar");
   require("../fn");
-  require("../../libs/strlib");
 
   var $ = sc.lang.$;
   var fn = sc.lang.fn;

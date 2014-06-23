@@ -1,10 +1,9 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("./compiler");
   require("./scope");
   require("./pre-compiler");
-  require("../../libs/strlib");
 
   var codegen = {};
 

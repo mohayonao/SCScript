@@ -27,7 +27,7 @@ SCScript.install(function(sc) {
     // TODO: implements $initClass
     // TODO: implements $makeDefaultSynthDef
     // TODO: implements $makeParentEvents
-    builder.addMethod("_doesNotUnderstand", function(methodName, args) {
+    builder.addMethod("__attr__", function(methodName, args) {
       var $value;
 
       if (methodName.charAt(methodName.length - 1) === "_") {

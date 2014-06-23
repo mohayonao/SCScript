@@ -4,8 +4,7 @@ SCScript.install(function(sc) {
   require("./SimpleNumber");
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
-  var mathlib  = sc.libs.mathlib;
+  var mathlib = sc.libs.mathlib;
 
   var bop = function(selector, type1, type2) {
     var func = mathlib[selector];
@@ -194,16 +193,16 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("do", function($function) {
-      iterator.execute(
-        iterator.float$do(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.float$do(this),
         $function
       );
       return this;
     });
 
     builder.addMethod("reverseDo", function($function) {
-      iterator.execute(
-        iterator.float$reverseDo(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.float$reverseDo(this),
         $function
       );
       return this;

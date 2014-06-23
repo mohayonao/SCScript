@@ -3,10 +3,9 @@ SCScript.install(function(sc) {
 
   require("./Environment");
 
-  var $  = sc.lang.$;
+  var $ = sc.lang.$;
   var $nil = $.nil;
-  var io = sc.lang.io;
-  var q  = sc.libs.strlib.quote;
+  var format = sc.libs.strlib.format;
 
   sc.lang.klass.refine("Event", function(builder) {
     // TODO: implements $default
@@ -34,10 +33,10 @@ SCScript.install(function(sc) {
         // setter
         methodName = methodName.substr(0, methodName.length - 1);
         if (this[methodName]) {
-          io.warn(
-            "WARNING: " + q(methodName) + " exists a method name, " +
-              "so you can't use it as pseudo-method"
-          );
+          sc.lang.io.warn(format(
+            "WARNING: '#{0}' exists a method name, so you can't use it as pseudo-method",
+            methodName
+          ));
         }
         $value = args[0] || /* istanbul ignore next */ $nil;
         this.put($.Symbol(methodName), $value);

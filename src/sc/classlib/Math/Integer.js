@@ -6,9 +6,7 @@ SCScript.install(function(sc) {
   var $ = sc.lang.$;
   var $nil  = $.nil;
   var $int1 = $.int1;
-  var iterator = sc.lang.iterator;
-  var mathlib  = sc.libs.mathlib;
-
+  var mathlib = sc.libs.mathlib;
   var SCArray = $("Array");
 
   var bop = function(selector, type1, type2) {
@@ -221,8 +219,8 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("do", function($function) {
-      iterator.execute(
-        iterator.integer$do(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.integer$do(this),
         $function
       );
       return this;
@@ -256,8 +254,8 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("reverseDo", function($function) {
-      iterator.execute(
-        iterator.integer$reverseDo(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.integer$reverseDo(this),
         $function
       );
       return this;
@@ -266,8 +264,8 @@ SCScript.install(function(sc) {
     builder.addMethod("for", {
       args: "endval; function"
     }, function($endval, $function) {
-      iterator.execute(
-        iterator.integer$for(this, $endval),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.integer$for(this, $endval),
         $function
       );
       return this;
@@ -276,8 +274,8 @@ SCScript.install(function(sc) {
     builder.addMethod("forBy", {
       args: "endval; stepval; function"
     }, function($endval, $stepval, $function) {
-      iterator.execute(
-        iterator.integer$forBy(this, $endval, $stepval),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.integer$forBy(this, $endval, $stepval),
         $function
       );
       return this;

@@ -7,11 +7,10 @@
   require("../../libs/strlib");
 
   var $ = sc.lang.$;
-  var strlib = sc.libs.strlib;
-
-  var klass       = sc.lang.klass;
+  var isClassName = sc.libs.strlib.isClassName;
+  var format = sc.libs.strlib.format;
   var metaClasses = {};
-  var classes     = klass.classes;
+  var classes     = sc.lang.klass.classes;
   var hash = 0x100000;
 
   function createClassInstance(MetaSpec) {
@@ -37,21 +36,21 @@
   }
 
   function throwIfInvalidClassName(className, superClassName) {
-    if (!strlib.isClassName(className)) {
-      throw new Error(strlib.format(
+    if (!isClassName(className)) {
+      throw new Error(format(
         "sc.lang.klass.define: classname should be CamelCase, but got '#{0}'", className
       ));
     }
 
     if (metaClasses.hasOwnProperty(className)) {
-      throw new Error(strlib.format(
+      throw new Error(format(
         "sc.lang.klass.define: class '#{0}' is already defined.", className
       ));
     }
 
     if (className !== "Object") {
       if (!metaClasses.hasOwnProperty(superClassName)) {
-        throw new Error(strlib.format(
+        throw new Error(format(
           "sc.lang.klass.define: superclass '#{0}' is not defined.", superClassName
         ));
       }
@@ -80,9 +79,9 @@
 
   function buildClass(constructor, spec) {
     if (typeof spec !== "function") {
-      return new klass.Builder(constructor).init(spec);
+      return new sc.lang.klass.Builder(constructor).init(spec);
     }
-    spec(new klass.Builder(constructor), klass.utils);
+    spec(new sc.lang.klass.Builder(constructor), sc.lang.klass.utils);
   }
 
   function __super__(that, root, funcName, args) {
@@ -98,7 +97,7 @@
     if (func) {
       result = func.apply(that, args);
     } else {
-      throw new Error(strlib.format("supermethod '#{0}' not found", funcName));
+      throw new Error(format("supermethod '#{0}' not found", funcName));
     }
 
     that.__superClassP = null;
@@ -106,7 +105,7 @@
     return result || /* istanbul ignore next */ $.Nil();
   }
 
-  klass.define = function(className, spec) {
+  var define = sc.lang.klass.define = function(className, spec) {
     var items = className.split(":");
     var superClassName = (items[1] || "Object").trim();
 
@@ -131,9 +130,9 @@
     return constructor;
   };
 
-  klass.refine = function(className, spec) {
+  var refine = sc.lang.klass.refine = function(className, spec) {
     if (!metaClasses.hasOwnProperty(className)) {
-      throw new Error(strlib.format(
+      throw new Error(format(
         "sc.lang.klass.refine: class '#{0}' is not defined.", className
       ));
     }
@@ -160,19 +159,19 @@
 
   SCObject.metaClass = createClassInstance(function() {});
 
-  klass.define("Object", {
+  define("Object", {
     constructor: SCObject,
     __tag: sc.TAG_OBJ,
     __init__: function() {},
     __super__: function(funcName, args) {
-      if (strlib.isClassName(funcName)) {
+      if (isClassName(funcName)) {
         return metaClasses[funcName].__Spec.call(this);
       }
       return __super__(this, this.__Spec.__superClass, funcName, args);
     }
   });
 
-  klass.define("Class", {
+  define("Class", {
     constructor: SCClass,
     __super__: function(funcName, args) {
       return __super__(this, this.__superClass, funcName, args);
@@ -186,7 +185,7 @@
 
   registerClass("Object", SCObject.metaClass, classes.Object.__Spec);
 
-  klass.refine("Object", function(builder) {
+  refine("Object", function(builder) {
     builder.addClassMethod("new", function() {
       if (this.__Spec === SCClass) {
         return $.Nil();
@@ -202,11 +201,9 @@
     });
 
     builder.addMethod("__attr__", function(methodName) {
-      throw new Error(strlib.format(
+      throw new Error(format(
         "RECEIVER #{0}: Message '#{1}' not understood.", this.__str__(), methodName
       ));
     });
   });
-
-  sc.lang.klass = klass;
 })(sc);

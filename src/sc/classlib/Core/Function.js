@@ -5,9 +5,6 @@ SCScript.install(function(sc) {
 
   var $ = sc.lang.$;
   var $nil = $.nil;
-  var iterator = sc.lang.iterator;
-  var bytecode = sc.lang.bytecode;
-
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
 
@@ -83,8 +80,8 @@ SCScript.install(function(sc) {
     // TODO: implements varArgs
 
     builder.addMethod("loop", function() {
-      iterator.execute(
-        iterator.function$loop(),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.function$loop(),
         this
       );
       return this;
@@ -116,14 +113,14 @@ SCScript.install(function(sc) {
 
     builder.addMethod("protect", function($handler) {
       var result;
-      var current = bytecode.getCurrent();
+      var current = sc.lang.bytecode.getCurrent();
 
       try {
         result = this.value();
       } catch (e) {
         result = null;
       }
-      bytecode.setCurrent(current);
+      sc.lang.bytecode.setCurrent(current);
 
       $handler.value();
 
@@ -183,8 +180,8 @@ SCScript.install(function(sc) {
     builder.addMethod("while", {
       args: "body"
     }, function($body) {
-      iterator.execute(
-        iterator.function$while(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.function$while(this),
         $body
       );
       return this;

@@ -4,10 +4,8 @@ SCScript.install(function(sc) {
   require("./SequenceableCollection");
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
-  var rand     = sc.libs.random;
-  var mathlib  = sc.libs.mathlib;
-
+  var random  = sc.libs.random;
+  var mathlib = sc.libs.mathlib;
   var $nil  = $.nil;
   var $int0 = $.int0;
   var $int1 = $.int1;
@@ -638,16 +636,16 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("do", function($function) {
-      iterator.execute(
-        iterator.array$do(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.array$do(this),
         $function
       );
       return this;
     });
 
     builder.addMethod("reverseDo", function($function) {
-      iterator.execute(
-        iterator.array$reverseDo(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.array$reverseDo(this),
         $function
       );
       return this;
@@ -665,7 +663,7 @@ SCScript.install(function(sc) {
 
       // <-- _ArrayWindex -->
       x = 0;
-      r = rand.next();
+      r = random.next();
       for (i = 0, imax = raw.length; i < imax; ++i) {
         x += raw[i].__num__();
         if (x >= r) {

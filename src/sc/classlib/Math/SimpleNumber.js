@@ -7,8 +7,8 @@ SCScript.install(function(sc) {
   var $nil  = $.nil;
   var $int0 = $.int0;
   var $int1 = $.int1;
-  var rand = sc.libs.random;
-  var q    = sc.libs.strlib.quote;
+  var random = sc.libs.random;
+  var format = sc.libs.strlib.format;
 
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
@@ -235,31 +235,31 @@ SCScript.install(function(sc) {
 
     builder.addMethod("rand", function() {
       return this.__newFrom__(
-        rand.next() * this._
+        random.next() * this._
       );
     });
 
     builder.addMethod("rand2", function() {
       return this.__newFrom__(
-        (rand.next() * 2 - 1) * this._
+        (random.next() * 2 - 1) * this._
       );
     });
 
     builder.addMethod("linrand", function() {
       return this.__newFrom__(
-        Math.min(rand.next(), rand.next()) * this._
+        Math.min(random.next(), random.next()) * this._
       );
     });
 
     builder.addMethod("bilinrand", function() {
       return this.__newFrom__(
-        (rand.next() - rand.next()) * this._
+        (random.next() - random.next()) * this._
       );
     });
 
     builder.addMethod("sum3rand", function() {
       return this.__newFrom__(
-        (rand.next() + rand.next() + rand.next() - 1.5) * 2 / 3 * this._
+        (random.next() + random.next() + random.next() - 1.5) * 2 / 3 * this._
       );
     });
 
@@ -275,7 +275,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("coin", function() {
-      return $.Boolean(rand.next() < this._);
+      return $.Boolean(random.next() < this._);
     });
 
     builder.addMethod("isPositive", function() {
@@ -462,13 +462,13 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector) {
-      throw new Error("binary operator " + q($aSelector.__sym__()) + " failed");
+      throw new Error(format("binary operator '#{0}' failed", $aSelector.__sym__()));
     });
 
     // TODO: implements performBinaryOpOnComplex
 
     builder.addMethod("performBinaryOpOnSignal", function($aSelector) {
-      throw new Error("binary operator " + q($aSelector.__sym__()) + " failed");
+      throw new Error(format("binary operator '#{0}' failed", $aSelector.__sym__()));
     });
 
     builder.addMethod("nextPowerOfTwo", function() {

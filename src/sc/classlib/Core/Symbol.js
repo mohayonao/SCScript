@@ -5,7 +5,6 @@ SCScript.install(function(sc) {
 
   var $ = sc.lang.$;
   var $nil = $.nil;
-  var klass = sc.lang.klass;
 
   sc.lang.klass.refine("Symbol", function(builder) {
     builder.addMethod("__sym__", function() {
@@ -39,8 +38,8 @@ SCScript.install(function(sc) {
     // TODO: implements asCompileString
 
     builder.addMethod("asClass", function() {
-      if (klass.exists(this._)) {
-        return klass.get(this._);
+      if (sc.lang.klass.exists(this._)) {
+        return sc.lang.klass.get(this._);
       }
       return $nil;
     });

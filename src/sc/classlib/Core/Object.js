@@ -7,9 +7,7 @@ SCScript.install(function(sc) {
   var $false = $.false;
   var $int0  = $.int0;
   var $int1  = $.int1;
-  var strlib = sc.libs.strlib;
-  var q      = strlib.quote;
-  var bytecode = sc.lang.bytecode;
+  var format = sc.libs.strlib.format;
 
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
@@ -21,7 +19,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("toString", function() {
-      return String(strlib.article(this.__className) + " " + this.__className);
+      return String(sc.libs.strlib.article(this.__className) + " " + this.__className);
     });
 
     builder.addMethod("toJSON", function() {
@@ -29,7 +27,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("__num__", function() {
-      throw new Error(this.__className + " cannot be converted to a Number.");
+      throw new Error(format("#{0} cannot be converted to a Number.", this.__className));
     });
 
     builder.addMethod("__int__", function() {
@@ -37,11 +35,11 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("__bool__", function() {
-      throw new Error(this.__className + " cannot be converted to a Boolean.");
+      throw new Error(format("#{0} cannot be converted to a Boolean.", this.__className));
     });
 
     builder.addMethod("__sym__", function() {
-      throw new Error(this.__className + " cannot be converted to a Symbol.");
+      throw new Error(format("#{0} cannot be converted to a Symbol.", this.__className));
     });
 
     builder.addMethod("__str__", function() {
@@ -149,7 +147,7 @@ SCScript.install(function(sc) {
         return method.apply($this, msg.slice(1));
       }
 
-      throw new Error("Message " + q(selector) + " not understood.");
+      throw new Error(format("Message '#{0}' not understood.", selector));
     };
 
     builder.addMethod("performMsg", function($msg) {
@@ -687,20 +685,20 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("yield", function() {
-      bytecode.yield(this.value());
+      sc.lang.bytecode.yield(this.value());
       return $nil;
     });
 
     builder.addMethod("alwaysYield", function() {
-      bytecode.alwaysYield(this.value());
+      sc.lang.bytecode.alwaysYield(this.value());
       return $nil;
     });
 
     builder.addMethod("yieldAndReset", function($reset) {
       if (!$reset || $reset === $true) {
-        bytecode.yieldAndReset(this.value());
+        sc.lang.bytecode.yieldAndReset(this.value());
       } else {
-        bytecode.yield(this.value());
+        sc.lang.bytecode.yield(this.value());
       }
       return $nil;
     });
@@ -851,7 +849,7 @@ SCScript.install(function(sc) {
         return $true;
       }
 
-      throw new Error("binary operator " + q(aSelector) + " failed.");
+      throw new Error(format("binary operator '#{0}' failed.", aSelector));
     });
 
     builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector, $thig, $adverb) {

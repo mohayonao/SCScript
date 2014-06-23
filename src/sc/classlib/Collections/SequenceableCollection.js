@@ -9,7 +9,7 @@ SCScript.install(function(sc) {
   var $false = $.false;
   var $int0  = $.int0;
   var $int1  = $.int1;
-  var q = sc.libs.strlib.quote;
+  var format = sc.libs.strlib.format;
 
   sc.lang.klass.refine("SequenceableCollection", function(builder, _) {
     builder.addMethod("|@|", function($index) {
@@ -1552,9 +1552,9 @@ SCScript.install(function(sc) {
         );
       }
 
-      throw new Error(
-        "unrecognized adverb: " + q(adverb) + " for operator " + q($aSelector)
-      );
+      throw new Error(format(
+        "unrecognized adverb: '#{0}' for operator '#{1}'", adverb, $aSelector
+      ));
     });
 
     function _performBinaryOpOnSeqColl$adverb$nil($this, $aSelector, $theOperand) {

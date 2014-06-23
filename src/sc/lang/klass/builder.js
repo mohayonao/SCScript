@@ -8,8 +8,7 @@
 
   var $ = sc.lang.$;
   var fn = sc.lang.fn;
-  var klass = sc.lang.klass;
-  var strlib = sc.libs.strlib;
+  var format = sc.libs.strlib.format;
 
   function Builder(constructor) {
     this._className = constructor.prototype.__className;
@@ -60,7 +59,7 @@
 
   Builder.prototype.subclassResponsibility = function(methodName) {
     var func = function() {
-      var errMsg = strlib.format(
+      var errMsg = format(
         "RECEIVER #{0}: '#{1}' should have been implemented by this subclass",
         this.__className, methodName
       );
@@ -72,7 +71,7 @@
 
   Builder.prototype.doesNotUnderstand = function(methodName) {
     var func = function() {
-      var errMsg = strlib.format(
+      var errMsg = format(
         "RECEIVER #{0}: '#{1}' not understood",
         this.__className, methodName
       );
@@ -84,7 +83,7 @@
 
   Builder.prototype.shouldNotImplement = function(methodName) {
     var func = function() {
-      var errMsg = strlib.format(
+      var errMsg = format(
         "RECEIVER #{0}: '#{1}' not valid for this subclass",
         this.__className, methodName
       );
@@ -96,7 +95,7 @@
 
   Builder.prototype.notYetImplemented = function(methodName) {
     var func = function() {
-      var errMsg = strlib.format(
+      var errMsg = format(
         "RECEIVER #{0}: '#{1}' is not yet implemented",
         this.__className, methodName
       );
@@ -108,7 +107,7 @@
 
   Builder.prototype.notSupported = function(methodName) {
     var func = function() {
-      var errMsg = strlib.format(
+      var errMsg = format(
         "RECEIVER #{0}: '#{1}' is not supported",
         this.__className, methodName
       );
@@ -120,7 +119,7 @@
 
   Builder.prototype._throwErrorIfAlreadyExists = function(methods, methodName, bond) {
     if (methods.hasOwnProperty(methodName)) {
-      throw new Error(strlib.format(
+      throw new Error(format(
         "#{0} is already defined", (this._className + bond + methodName)
       ));
     }
@@ -145,5 +144,5 @@
     methods[name] = fn(func, opts.args);
   }
 
-  klass.Builder = Builder;
+  sc.lang.klass.Builder = Builder;
 })(sc);

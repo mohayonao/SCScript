@@ -4,85 +4,84 @@
   require("./define");
   require("../bytecode");
 
-  var $        = sc.lang.$;
-  var klass    = sc.lang.klass;
-  var bytecode = sc.lang.bytecode;
+  var $ = sc.lang.$;
+  var define = sc.lang.klass.define;
 
-  var SCNil = klass.define("Nil", {
+  var SCNil = define("Nil", {
     __tag: sc.TAG_NIL
   });
 
-  var SCSymbol = klass.define("Symbol", {
+  var SCSymbol = define("Symbol", {
     __tag: sc.TAG_SYM
   });
 
-  klass.define("Boolean", {
+  define("Boolean", {
     __tag: sc.TAG_BOOL
   });
 
-  var SCTrue  = klass.define("True  : Boolean");
-  var SCFalse = klass.define("False : Boolean");
+  var SCTrue  = define("True  : Boolean");
+  var SCFalse = define("False : Boolean");
 
-  klass.define("Magnitude");
+  define("Magnitude");
 
-  var SCChar = klass.define("Char : Magnitude", {
+  var SCChar = define("Char : Magnitude", {
     __tag: sc.TAG_CHAR
   });
 
-  klass.define("Number : Magnitude");
-  klass.define("SimpleNumber : Number");
+  define("Number : Magnitude");
+  define("SimpleNumber : Number");
 
-  var SCInteger = klass.define("Integer : SimpleNumber", {
+  var SCInteger = define("Integer : SimpleNumber", {
     __tag: sc.TAG_INT
   });
 
-  var SCFloat = klass.define("Float : SimpleNumber", {
+  var SCFloat = define("Float : SimpleNumber", {
     __tag: sc.TAG_FLOAT
   });
 
-  klass.define("Association : Magnitude");
-  klass.define("Collection");
-  klass.define("SequenceableCollection : Collection");
+  define("Association : Magnitude");
+  define("Collection");
+  define("SequenceableCollection : Collection");
 
-  klass.define("ArrayedCollection : SequenceableCollection", {
+  define("ArrayedCollection : SequenceableCollection", {
     constructor: function SCArrayedCollection() {
       this.__super__("SequenceableCollection");
       this._ = [];
     }
   });
 
-  klass.define("RawArray : ArrayedCollection");
+  define("RawArray : ArrayedCollection");
 
-  var SCArray = klass.define("Array : ArrayedCollection");
+  var SCArray = define("Array : ArrayedCollection");
 
-  var SCString = klass.define("String : RawArray", {
+  var SCString = define("String : RawArray", {
     __tag: sc.TAG_STR
   });
 
-  klass.define("Set : Collection");
-  klass.define("Dictionary : Set");
-  klass.define("IdentityDictionary : Dictionary");
-  klass.define("Environment : IdentityDictionary");
+  define("Set : Collection");
+  define("Dictionary : Set");
+  define("IdentityDictionary : Dictionary");
+  define("Environment : IdentityDictionary");
 
-  klass.define("Event : Environment", {
+  define("Event : Environment", {
     constructor: function SCEvent() {
       this.__super__("Environment");
     }
   });
 
-  klass.define("AbstractFunction");
+  define("AbstractFunction");
 
-  var SCFunction = klass.define("Function : AbstractFunction", {
+  var SCFunction = define("Function : AbstractFunction", {
     __tag: sc.TAG_FUNC
   });
 
-  klass.define("Stream : AbstractFunction");
-  klass.define("Thread : Stream");
-  klass.define("Routine : Thread", {
+  define("Stream : AbstractFunction");
+  define("Thread : Stream");
+  define("Routine : Thread", {
     __tag: sc.TAG_ROUTINE
   });
 
-  var SCRef = klass.define("Ref : AbstractFunction");
+  var SCRef = define("Ref : AbstractFunction");
 
   // $
   var $nil = (function() {
@@ -204,7 +203,7 @@
 
   $.Function = function(value, def) {
     var instance = new SCFunction();
-    instance._bytecode = bytecode.create(value, def).setOwner(instance);
+    instance._bytecode = sc.lang.bytecode.create(value, def).setOwner(instance);
     return instance;
   };
 

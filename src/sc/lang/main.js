@@ -10,7 +10,7 @@
   var $ = sc.lang.$;
   var random = sc.libs.random;
 
-  main.$currentEnv    = null;
+  var $currentEnvir = null;
   main.$currentThread = {};
 
   main.run = function(func) {
@@ -27,7 +27,7 @@
     $process._$interpreter = $("Interpreter").new();
     $process._$mainThread  = $("Thread").new($.Func());
 
-    main.$currentEnv    = $("Environment").new();
+    $currentEnvir = $("Environment").new();
     main.$currentThread = $process._$mainThread;
 
     // $interpreter._$s = SCServer.default();
@@ -43,12 +43,20 @@
     main.$process = $process;
   }
 
+  main.setCurrentEnvir = function($envir) {
+    $currentEnvir = $envir;
+  };
+
+  main.getCurrentEnvir = function() {
+    return $currentEnvir;
+  };
+
   $.Environment = function(key, $value) {
     if ($value) {
-      main.$currentEnv.put($.Symbol(key), $value);
+      $currentEnvir.put($.Symbol(key), $value);
       return $value;
     }
-    return main.$currentEnv.at($.Symbol(key));
+    return $currentEnvir.at($.Symbol(key));
   };
 
   $.This = function() {

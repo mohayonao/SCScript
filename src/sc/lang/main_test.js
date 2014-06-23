@@ -8,6 +8,12 @@
 
   describe("sc.lang.main", function() {
     var $process;
+    it("getCurrentEnvir / setCurrentEnvir", function() {
+      var current = main.getCurrentEnvir();
+      main.setCurrentEnvir(12345);
+      expect(main.getCurrentEnvir()).to.equal(12345);
+      main.setCurrentEnvir(current);
+    });
     it("run", sinon.test(function() {
       var test, func;
 

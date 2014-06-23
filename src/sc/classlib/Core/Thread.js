@@ -5,7 +5,6 @@ SCScript.install(function(sc) {
 
   var $ = sc.lang.$;
   var $nil = $.nil;
-  var main = sc.lang.main;
   var random = sc.libs.random;
 
   sc.lang.klass.refine("Thread", function(builder) {
@@ -107,8 +106,8 @@ SCScript.install(function(sc) {
         return this._$doneValue || $nil;
       }
 
-      this._parent = main.$currentThread;
-      main.$currentThread = this;
+      this._parent = sc.lang.main.getCurrentThread();
+      sc.lang.main.setCurrentThread(this);
 
       this._state = sc.STATE_RUNNING;
       this._bytecode.runAsRoutine([ $inval || $nil ]);
@@ -118,7 +117,7 @@ SCScript.install(function(sc) {
         this._$doneValue = this._bytecode.result;
       }
 
-      main.$currentThread = this._parent;
+      sc.lang.main.setCurrentThread(this._parent);
       this._parent = null;
 
       return this._bytecode.result || $nil;

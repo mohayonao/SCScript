@@ -9,7 +9,7 @@
   var current = null;
 
   function insideOfARoutine() {
-    return sc.lang.main.$currentThread.__tag === sc.TAG_ROUTINE;
+    return sc.lang.main.getCurrentThread().__tag === sc.TAG_ROUTINE;
   }
 
   function Bytecode(initializer, def) {

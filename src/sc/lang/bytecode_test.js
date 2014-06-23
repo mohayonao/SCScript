@@ -17,13 +17,13 @@
   describe("sc.lang.bytecode", function() {
     var currentThread;
     before(function() {
-      currentThread = sc.lang.main.$currentThread;
-      sc.lang.main.$currentThread = {
+      currentThread = sc.lang.main.getCurrentThread();
+      sc.lang.main.setCurrentThread({
         __tag: sc.TAG_OBJ
-      };
+      });
     });
     after(function() {
-      sc.lang.main.$currentThread = currentThread;
+      sc.lang.main.setCurrentThread(currentThread);
     });
     it("getCurrent / setCurrent", function() {
       var current = sc.lang.bytecode.getCurrent();

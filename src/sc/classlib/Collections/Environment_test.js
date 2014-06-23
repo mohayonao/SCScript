@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCEnvironment = $("Environment");
+
   describe("SCEnvironment", function() {
-    var SCEnvironment;
     before(function() {
-      SCEnvironment = $("Environment");
       this.createInstance = function(list) {
         return SCEnvironment.newFrom($$(list || []));
       };

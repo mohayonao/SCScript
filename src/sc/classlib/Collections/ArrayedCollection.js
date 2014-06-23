@@ -4,35 +4,35 @@ SCScript.install(function(sc) {
   require("./SequenceableCollection");
 
   var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var klass    = sc.lang.klass;
+  var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
   var rand     = sc.libs.random;
   var mathlib  = sc.libs.mathlib;
 
-  klass.refine("ArrayedCollection", function(spec, utils) {
-    var $nil  = utils.$nil;
-    var $int0 = utils.$int0;
-    var $int1 = utils.$int1;
+  var $nil  = $.nil;
+  var $int0 = $.int0;
+  var $int1 = $.int1;
 
-    spec.valueOf = function() {
+  sc.lang.klass.refine("ArrayedCollection", function(builder) {
+    builder.addMethod("valueOf", function() {
       return this._.map(function(elem) {
         return elem.valueOf();
       });
-    };
+    });
 
-    spec.__elem__ = function(item) {
+    builder.addMethod("__elem__", function(item) {
       return item || $nil;
-    };
+    });
 
-    spec._ThrowIfImmutable = function() {
+    builder.addMethod("_ThrowIfImmutable", function() {
       if (this.__immutable) {
         throw new Error("Attempted write to immutable object.");
       }
-    };
+    });
 
-    spec.$newClear = fn(function($indexedSize) {
+    builder.addClassMethod("newClear", {
+      args: "indexedSize=0"
+    }, function($indexedSize) {
       var $obj;
       var array, indexedSize, i;
 
@@ -46,17 +46,19 @@ SCScript.install(function(sc) {
       $obj._ = array;
 
       return $obj;
-    }, "indexedSize=0");
+    });
 
     // TODO: implements indexedSize
 
-    spec.size = function() {
+    builder.addMethod("size", function() {
       return $.Integer(this._.length);
-    };
+    });
 
     // TODO: implements maxSize
 
-    spec.swap = fn(function($a, $b) {
+    builder.addMethod("swap", {
+      args: "a; b"
+    }, function($a, $b) {
       var raw = this._;
       var a, b, len, tmp;
 
@@ -75,9 +77,11 @@ SCScript.install(function(sc) {
       raw[a] = tmp;
 
       return this;
-    }, "a; b");
+    });
 
-    spec.at = fn(function($index) {
+    builder.addMethod("at", {
+      args: "index"
+    }, function($index) {
       var i;
 
       if (Array.isArray($index._)) {
@@ -93,9 +97,11 @@ SCScript.install(function(sc) {
       i = $index.__int__();
 
       return this._[i] || $nil;
-    }, "index");
+    });
 
-    spec.clipAt = fn(function($index) {
+    builder.addMethod("clipAt", {
+      args: "index"
+    }, function($index) {
       var i;
 
       if (Array.isArray($index._)) {
@@ -108,9 +114,11 @@ SCScript.install(function(sc) {
       i = mathlib.clipIndex($index.__int__(), this._.length);
 
       return this._[i];
-    }, "index");
+    });
 
-    spec.wrapAt = fn(function($index) {
+    builder.addMethod("wrapAt", {
+      args: "index"
+    }, function($index) {
       var i;
 
       if (Array.isArray($index._)) {
@@ -123,9 +131,11 @@ SCScript.install(function(sc) {
       i = mathlib.wrapIndex($index.__int__(), this._.length);
 
       return this._[i];
-    }, "index");
+    });
 
-    spec.foldAt = fn(function($index) {
+    builder.addMethod("foldAt", {
+      args: "index"
+    }, function($index) {
       var i;
 
       if (Array.isArray($index._)) {
@@ -138,9 +148,11 @@ SCScript.install(function(sc) {
       i = mathlib.foldIndex($index.__int__(), this._.length);
 
       return this._[i];
-    }, "index");
+    });
 
-    spec.put = fn(function($index, $item) {
+    builder.addMethod("put", {
+      args: "index; item"
+    }, function($index, $item) {
       var i;
 
       this._ThrowIfImmutable();
@@ -162,9 +174,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "index; item");
+    });
 
-    spec.clipPut = fn(function($index, $item) {
+    builder.addMethod("clipPut", {
+      args: "index; item"
+    }, function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -176,9 +190,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "index; item");
+    });
 
-    spec.wrapPut = fn(function($index, $item) {
+    builder.addMethod("wrapPut", {
+      args: "index; item"
+    }, function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -190,9 +206,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "index; item");
+    });
 
-    spec.foldPut = fn(function($index, $item) {
+    builder.addMethod("foldPut", {
+      args: "index; item"
+    }, function($index, $item) {
       this._ThrowIfImmutable();
 
       if (Array.isArray($index._)) {
@@ -204,9 +222,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "index; item");
+    });
 
-    spec.removeAt = fn(function($index) {
+    builder.addMethod("removeAt", {
+      args: "index"
+    }, function($index) {
       var raw = this._;
       var index;
 
@@ -218,9 +238,11 @@ SCScript.install(function(sc) {
       }
 
       return raw.splice(index, 1)[0];
-    }, "index");
+    });
 
-    spec.takeAt = fn(function($index) {
+    builder.addMethod("takeAt", {
+      args: "index"
+    }, function($index) {
       var raw = this._;
       var index, ret, instead;
 
@@ -238,16 +260,18 @@ SCScript.install(function(sc) {
       }
 
       return ret;
-    }, "index");
+    });
 
-    spec.indexOf = fn(function($item) {
-      var index;
-
-      index = this._.indexOf($item);
+    builder.addMethod("indexOf", {
+      args: "item"
+    }, function($item) {
+      var index = this._.indexOf($item);
       return index === -1 ? $nil : $.Integer(index);
-    }, "item");
+    });
 
-    spec.indexOfGreaterThan = fn(function($val) {
+    builder.addMethod("indexOfGreaterThan", {
+      args: "val"
+    }, function($val) {
       var raw = this._;
       var val, i, imax = raw.length;
 
@@ -259,9 +283,11 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    }, "val");
+    });
 
-    spec.takeThese = fn(function($func) {
+    builder.addMethod("takeThese", {
+      args: "func"
+    }, function($func) {
       var raw = this._;
       var i = 0, $i;
 
@@ -275,9 +301,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "func");
+    });
 
-    spec.replace = fn(function($find, $replace) {
+    builder.addMethod("replace", {
+      args: "find; replace"
+    }, function($find, $replace) {
       var $index, $out, $array;
 
       this._ThrowIfImmutable();
@@ -286,65 +314,72 @@ SCScript.install(function(sc) {
       $array   = this;
       $find    = $find.asArray();
       $replace = $replace.asArray();
-      $.Function(function() {
-        return [ function() {
-          return ($index = $array.find($find)).notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $out = $out ["++"] ($array.keep($index)) ["++"] ($replace);
-          $array = $array.drop($index ["+"] ($find.size()));
-        } ];
+      $.Func(function() {
+        return ($index = $array.find($find)).notNil();
+      }).while($.Func(function() {
+        $out = $out ["++"] ($array.keep($index)) ["++"] ($replace);
+        $array = $array.drop($index ["+"] ($find.size()));
+        return $array;
       }));
 
       return $out ["++"] ($array);
-    }, "find; replace");
+    });
 
-    spec.slotSize = function() {
+    builder.addMethod("slotSize", function() {
       return this.size();
-    };
+    });
 
-    spec.slotAt = function($index) {
+    builder.addMethod("slotAt", function($index) {
       return this.at($index);
-    };
+    });
 
-    spec.slotPut = function($index, $value) {
+    builder.addMethod("slotPut", function($index, $value) {
       return this.put($index, $value);
-    };
+    });
 
-    spec.slotKey = function($index) {
+    builder.addMethod("slotKey", function($index) {
       return $index;
-    };
+    });
 
-    spec.slotIndex = utils.alwaysReturn$nil;
+    builder.addMethod("slotIndex", function() {
+      return $nil;
+    });
 
-    spec.getSlots = function() {
+    builder.addMethod("getSlots", function() {
       return this.copy();
-    };
+    });
 
-    spec.setSlots = function($array) {
+    builder.addMethod("setSlots", function($array) {
       return this.overWrite($array);
-    };
+    });
 
-    spec.atModify = fn(function($index, $function) {
+    builder.addMethod("atModify", {
+      args: "index; function"
+    }, function($index, $function) {
       this.put($index, $function.value(this.at($index), $index));
       return this;
-    }, "index; function");
+    });
 
-    spec.atInc = fn(function($index, $inc) {
+    builder.addMethod("atInc", {
+      args: "index; inc=1"
+    }, function($index, $inc) {
       this.put($index, this.at($index).$("+", [ $inc ]));
       return this;
-    }, "index; inc=1");
+    });
 
-    spec.atDec = fn(function($index, $dec) {
+    builder.addMethod("atDec", {
+      args: "index; dec=1"
+    }, function($index, $dec) {
       this.put($index, this.at($index).$("-", [ $dec ]));
       return this;
-    }, "index; dec=1");
+    });
 
-    spec.isArray = utils.alwaysReturn$true;
-    spec.asArray = utils.nop;
+    builder.addMethod("isArray", sc.TRUE);
+    builder.addMethod("asArray");
 
-    spec.copyRange = fn(function($start, $end) {
+    builder.addMethod("copyRange", {
+      args: "start; end"
+    }, function($start, $end) {
       var start, end, instance, raw;
 
       if ($start === $nil) {
@@ -362,9 +397,11 @@ SCScript.install(function(sc) {
       instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
-    }, "start; end");
+    });
 
-    spec.copySeries = fn(function($first, $second, $last) {
+    builder.addMethod("copySeries", {
+      args: "first; second; last"
+    }, function($first, $second, $last) {
       var i, first, second, last, step, instance, raw;
 
       raw = [];
@@ -399,9 +436,11 @@ SCScript.install(function(sc) {
       instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
-    }, "first; second; last");
+    });
 
-    spec.putSeries = fn(function($first, $second, $last, $value) {
+    builder.addMethod("putSeries", {
+      args: "first; second; last; value"
+    }, function($first, $second, $last, $value) {
       var i, first, second, last, step;
 
       this._ThrowIfImmutable();
@@ -437,34 +476,38 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "first; second; last; value");
+    });
 
-    spec.add = fn(function($item) {
+    builder.addMethod("add", {
+      args: "item"
+    }, function($item) {
       this._ThrowIfImmutable();
       this._.push(this.__elem__($item));
 
       return this;
-    }, "item");
+    });
 
-    spec.addAll = fn(function($aCollection) {
+    builder.addMethod("addAll", {
+      args: "aCollection"
+    }, function($aCollection) {
       var $this = this;
 
       this._ThrowIfImmutable();
 
       if ($aCollection.isCollection().__bool__()) {
-        $aCollection.do($.Function(function() {
-          return [ function($item) {
-            $this._.push($this.__elem__($item));
-          } ];
+        $aCollection.do($.Func(function($item) {
+          return $this._.push($this.__elem__($item));
         }));
       } else {
         this.add($aCollection);
       }
 
       return this;
-    }, "aCollection");
+    });
 
-    spec.putEach = fn(function($keys, $values) {
+    builder.addMethod("putEach", {
+      args: "keys; values"
+    }, function($keys, $values) {
       var keys, values, i, imax;
 
       this._ThrowIfImmutable();
@@ -479,9 +522,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "keys; values");
+    });
 
-    spec.extend = fn(function($size, $item) {
+    builder.addMethod("extend", {
+      args: "size; item"
+    }, function($size, $item) {
       var instance, raw, size, i;
 
       raw  = this._.slice();
@@ -497,9 +542,11 @@ SCScript.install(function(sc) {
       instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
-    }, "size; item");
+    });
 
-    spec.insert = fn(function($index, $item) {
+    builder.addMethod("insert", {
+      args: "index; item"
+    }, function($index, $item) {
       var index;
 
       this._ThrowIfImmutable();
@@ -508,13 +555,15 @@ SCScript.install(function(sc) {
       this._.splice(index, 0, this.__elem__($item));
 
       return this;
-    }, "index; item");
+    });
 
-    spec.move = function($fromIndex, $toIndex) {
+    builder.addMethod("move", function($fromIndex, $toIndex) {
       return this.insert($toIndex, this.removeAt($fromIndex));
-    };
+    });
 
-    spec.addFirst = fn(function($item) {
+    builder.addMethod("addFirst", {
+      args: "item"
+    }, function($item) {
       var instance, raw;
 
       raw = this._.slice();
@@ -523,25 +572,26 @@ SCScript.install(function(sc) {
       instance = new this.__Spec([]);
       instance._ = raw;
       return instance;
-    }, "item");
+    });
 
-    spec.addIfNotNil = fn(function($item) {
+    builder.addMethod("addIfNotNil", {
+      args: "item"
+    }, function($item) {
       if ($item === $nil) {
         return this;
       }
-
       return this.addFirst(this.__elem__($item));
-    }, "item");
+    });
 
-    spec.pop = function() {
+    builder.addMethod("pop", function() {
       if (this._.length === 0) {
         return $nil;
       }
       this._ThrowIfImmutable();
       return this._.pop();
-    };
+    });
 
-    spec["++"] = function($anArray) {
+    builder.addMethod("++", function($anArray) {
       var instance, raw;
 
       raw = this._.slice();
@@ -552,13 +602,15 @@ SCScript.install(function(sc) {
         instance.addAll($anArray);
       }
       return instance;
-    };
+    });
 
     // TODO: implements overWrite
     // TODO: implements grow
     // TODO: implements growClear
 
-    spec.seriesFill = fn(function($start, $step) {
+    builder.addMethod("seriesFill", {
+      args: "start; step"
+    }, function($start, $step) {
       var i, imax;
 
       for (i = 0, imax = this._.length; i < imax; ++i) {
@@ -567,9 +619,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "start; step");
+    });
 
-    spec.fill = fn(function($value) {
+    builder.addMethod("fill", {
+      args: "value"
+    }, function($value) {
       var raw, i, imax;
 
       this._ThrowIfImmutable();
@@ -582,33 +636,31 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "value");
+    });
 
-    spec.do = function($function) {
+    builder.addMethod("do", function($function) {
       iterator.execute(
         iterator.array$do(this),
         $function
       );
       return this;
-    };
+    });
 
-    spec.reverseDo = function($function) {
+    builder.addMethod("reverseDo", function($function) {
       iterator.execute(
         iterator.array$reverseDo(this),
         $function
       );
       return this;
-    };
+    });
 
-    spec.reverse = function() {
+    builder.addMethod("reverse", function() {
       var $res = this.copy();
-
       $res._.reverse();
-
       return $res;
-    };
+    });
 
-    spec.windex = function() {
+    builder.addMethod("windex", function() {
       var raw = this._;
       var x, r, i, imax;
 
@@ -623,42 +675,44 @@ SCScript.install(function(sc) {
       }
 
       return $int0;
-    };
+    });
 
-    spec.normalizeSum = function() {
+    builder.addMethod("normalizeSum", function() {
       return this ["*"] (this.sum().reciprocal());
-    };
+    });
 
-    spec.normalize = fn(function($min, $max) {
+    builder.addMethod("normalize", {
+      args: "min=0.0; max=1.0"
+    }, function($min, $max) {
       var $minItem, $maxItem;
 
       $minItem = this.minItem();
       $maxItem = this.maxItem();
-      return this.collect($.Function(function() {
-        return [ function($el) {
-          return $el.$("linlin", [ $minItem, $maxItem, $min, $max ]);
-        } ];
+      return this.collect($.Func(function($el) {
+        return $el.$("linlin", [ $minItem, $maxItem, $min, $max ]);
       }));
-    }, "min=0.0; max=1.0");
+    });
 
     // TODO: implements asciiPlot
     // TODO: implements perfectShuffle
     // TODO: implements performInPlace
 
-    spec.clipExtend = fn(function($length) {
+    builder.addMethod("clipExtend", {
+      args: "length"
+    }, function($length) {
       var last = this._[this._.length - 1] || $nil;
       return this.extend($length, last);
-    }, "length");
+    });
 
-    spec.rank = function() {
+    builder.addMethod("rank", function() {
       return $int1 ["+"] (this.first().rank());
-    };
+    });
 
-    spec.shape = function() {
+    builder.addMethod("shape", function() {
       return $.Array([ this.size() ]) ["++"] (this.at($int0).$("shape"));
-    };
+    });
 
-    spec.reshape = function() {
+    builder.addMethod("reshape", function() {
       var $result;
       var shape, size, i, imax;
 
@@ -675,27 +729,29 @@ SCScript.install(function(sc) {
       }
 
       return $result;
-    };
+    });
 
-    spec.reshapeLike = fn(function($another, $indexing) {
+    builder.addMethod("reshapeLike", {
+      args: "another; indexing=\\wrapAt"
+    }, function($another, $indexing) {
       var $index, $flat;
 
       $index = $int0;
       $flat  = this.flat();
 
-      return $another.deepCollect($.Integer(0x7FFFFFFF), $.Function(function() {
-        return [ function() {
-          var $item = $flat.perform($indexing, $index);
-          $index = $index.__inc__();
-          return $item;
-        } ];
+      return $another.deepCollect($.Integer(0x7FFFFFFF), $.Func(function() {
+        var $item = $flat.perform($indexing, $index);
+        $index = $index.__inc__();
+        return $item;
       }));
-    }, "another; indexing=\\wrapAt");
+    });
 
     // TODO: implements deepCollect
     // TODO: implements deepDo
 
-    spec.unbubble = fn(function($depth, $levels) {
+    builder.addMethod("unbubble", {
+      args: "depth=0; levels=1"
+    }, function($depth, $levels) {
       if ($depth.__num__() <= 0) {
         if (this.size().__int__() > 1) {
           return this;
@@ -706,14 +762,14 @@ SCScript.install(function(sc) {
         return this.at($int0).unbubble($depth, $levels.__dec__());
       }
 
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.unbubble($depth.__dec__());
-        } ];
+      return this.collect($.Func(function($item) {
+        return $item.unbubble($depth.__dec__());
       }));
-    }, "depth=0; levels=1");
+    });
 
-    spec.bubble = fn(function($depth, $levels) {
+    builder.addMethod("bubble", {
+      args: "depth=0; levels=1"
+    }, function($depth, $levels) {
       if ($depth.__int__() <= 0) {
         if ($levels.__int__() <= 1) {
           return $.Array([ this ]);
@@ -721,14 +777,14 @@ SCScript.install(function(sc) {
         return $.Array([ this.bubble($depth, $levels.__dec__()) ]);
       }
 
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.bubble($depth.__dec__(), $levels);
-        } ];
+      return this.collect($.Func(function($item) {
+        return $item.bubble($depth.__dec__(), $levels);
       }));
-    }, "depth=0; levels=1");
+    });
 
-    spec.slice = fn(function($$cuts) {
+    builder.addMethod("slice", {
+      args: "*cuts"
+    }, function($$cuts) {
       var $firstCut, $list;
       var lenOfCuts, cuts;
 
@@ -749,14 +805,12 @@ SCScript.install(function(sc) {
       }
 
       cuts = $$cuts._.slice(1);
-      return $list.collect($.Function(function() {
-        return [ function($item) {
-          return $item.$("slice", cuts);
-        } ];
+      return $list.collect($.Func(function($item) {
+        return $item.$("slice", cuts);
       })).unbubble();
-    }, "*cuts");
+    });
 
-    spec.$iota = function() {
+    builder.addClassMethod("iota", function() {
       var $a;
       var args, product, i, imax, a;
 
@@ -774,7 +828,7 @@ SCScript.install(function(sc) {
 
       $a = $.Array(a);
       return $a.reshape.apply($a, args);
-    };
+    });
 
     // TODO: implements asRandomTable
     // TODO: implements tableRand
@@ -782,114 +836,114 @@ SCScript.install(function(sc) {
     // TODO: implements bundleSize
     // TODO: implements clumpBundles
 
-    spec.includes = function($item) {
+    builder.addMethod("includes", function($item) {
       return $.Boolean(this._.indexOf($item) !== -1);
-    };
+    });
 
-    spec.asString = function() {
+    builder.addMethod("asString", function() {
       return $.String("[ " + this._.map(function($elem) {
         return $elem.asString().__str__();
       }).join(", ") + " ]");
-    };
+    });
 
     /* istanbul ignore next */
-    spec._sort = function($function) {
+    builder.addMethod("_sort", function($function) {
       this._ThrowIfImmutable();
       this._.sort(function($a, $b) {
         return $function.value($a, $b).__bool__() ? -1 : 1;
       });
-    };
+    });
   });
 
-  klass.refine("RawArray", function(spec, utils) {
+  sc.lang.klass.refine("RawArray", function(builder) {
     var SCArray = $("Array");
 
-    spec.archiveAsCompileString = utils.alwaysReturn$true;
-    spec.archiveAsObject = utils.alwaysReturn$true;
+    builder.addMethod("archiveAsCompileString", sc.TRUE);
+    builder.addMethod("archiveAsObject", sc.TRUE);
 
-    spec.rate = function() {
+    builder.addMethod("rate", function() {
       return $.Symbol("scalar");
-    };
+    });
 
     // TODO: implements readFromStream
 
-    spec.powerset = function() {
+    builder.addMethod("powerset", function() {
       return this.as(SCArray).powerset();
-    };
+    });
   });
 
-  klass.define("Int8Array : RawArray", function(spec) {
+  sc.lang.klass.define("Int8Array : RawArray", function(builder) {
     var int8 = new Int8Array(1);
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return new Int8Array(this._.map(function($elem) {
         return $elem.__int__();
       }));
-    };
+    });
 
-    spec.__elem__ = function(item) {
+    builder.addMethod("__elem__", function(item) {
       int8[0] = item ? item.__int__() : 0;
       return $.Integer(int8[0]);
-    };
+    });
   });
 
-  klass.define("Int16Array : RawArray", function(spec) {
+  sc.lang.klass.define("Int16Array : RawArray", function(builder) {
     var int16 = new Int16Array(1);
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return new Int16Array(this._.map(function($elem) {
         return $elem.__int__();
       }));
-    };
+    });
 
-    spec.__elem__ = function(item) {
+    builder.addMethod("__elem__", function(item) {
       int16[0] = item ? item.__int__() : 0;
       return $.Integer(int16[0]);
-    };
+    });
   });
 
-  klass.define("Int32Array : RawArray", function(spec) {
+  sc.lang.klass.define("Int32Array : RawArray", function(builder) {
     var int32 = new Int32Array(1);
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return new Int32Array(this._.map(function($elem) {
         return $elem.__int__();
       }));
-    };
+    });
 
-    spec.__elem__ = function(item) {
+    builder.addMethod("__elem__", function(item) {
       int32[0] = item ? item.__int__() : 0;
       return $.Integer(int32[0]);
-    };
+    });
   });
 
-  klass.define("FloatArray : RawArray", function(spec) {
+  sc.lang.klass.define("FloatArray : RawArray", function(builder) {
     var float32 = new Float32Array(1);
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return new Float32Array(this._.map(function($elem) {
         return $elem.__num__();
       }));
-    };
+    });
 
-    spec.__elem__ = function(item) {
+    builder.addMethod("__elem__", function(item) {
       float32[0] = item ? item.__num__() : 0;
       return $.Float(float32[0]);
-    };
+    });
   });
 
-  klass.define("DoubleArray : RawArray", function(spec) {
+  sc.lang.klass.define("DoubleArray : RawArray", function(builder) {
     var float64 = new Float64Array(1);
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return new Float64Array(this._.map(function($elem) {
         return $elem.__num__();
       }));
-    };
+    });
 
-    spec.__elem__ = function(item) {
+    builder.addMethod("__elem__", function(item) {
       float64[0] = item ? item.__num__() : 0;
       return $.Float(float64[0]);
-    };
+    });
   });
 });

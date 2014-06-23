@@ -10,9 +10,7 @@
   var klass = sc.lang.klass;
 
   describe("SCSimpleNumber", function() {
-    var SCSimpleNumber;
     before(function() {
-      SCSimpleNumber = $("SimpleNumber");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
         return $$(instance, "SimpleNumber" + this.test.title);
@@ -873,27 +871,27 @@
     });
     it("#lag", function() {
       var instance = this.createInstance();
-      expect(instance.lag).to.be.nop;
+      expect(instance.lag).to.doNothing;
     });
     it("#lag2", function() {
       var instance = this.createInstance();
-      expect(instance.lag2).to.be.nop;
+      expect(instance.lag2).to.doNothing;
     });
     it("#lag3", function() {
       var instance = this.createInstance();
-      expect(instance.lag3).to.be.nop;
+      expect(instance.lag3).to.doNothing;
     });
     it("#lagud", function() {
       var instance = this.createInstance();
-      expect(instance.lagud).to.be.nop;
+      expect(instance.lagud).to.doNothing;
     });
     it("#lag2ud", function() {
       var instance = this.createInstance();
-      expect(instance.lag2ud).to.be.nop;
+      expect(instance.lag2ud).to.doNothing;
     });
     it("#lag3ud", function() {
       var instance = this.createInstance();
-      expect(instance.lag3ud).to.be.nop;
+      expect(instance.lag3ud).to.doNothing;
     });
     it.skip("#writeInputSpec", function() {
     });
@@ -1033,7 +1031,7 @@
     }));
     it("#playAndDelta", function() {
       var instance = this.createInstance();
-      expect(instance.playAndDelta).to.be.nop;
+      expect(instance.playAndDelta).to.doNothing;
     });
     it("#asQuant", sinon.test(function() {
       var instance, test;
@@ -1058,7 +1056,7 @@
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
   });
 })();

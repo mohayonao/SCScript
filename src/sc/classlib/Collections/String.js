@@ -4,19 +4,17 @@ SCScript.install(function(sc) {
   require("./ArrayedCollection");
 
   var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $nil   = $.nil;
+  var $false = $.false;
+  var $space = $.Char(" ");
   var io = sc.lang.io;
 
-  sc.lang.klass.refine("String", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $false = utils.$false;
-    var $space = $.Char(" ");
-
-    spec.__str__ = function() {
+  sc.lang.klass.refine("String", function(builder) {
+    builder.addMethod("__str__", function() {
       return this.valueOf();
-    };
+    });
 
-    spec.__elem__ = function($item) {
+    builder.addMethod("__elem__", function($item) {
       if (!$item) {
         return $space;
       }
@@ -24,17 +22,17 @@ SCScript.install(function(sc) {
         throw new TypeError("Wrong type.");
       }
       return $item;
-    };
+    });
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._.map(function(elem) {
         return elem.__str__();
       }).join("");
-    };
+    });
 
-    spec.toString = function() {
+    builder.addMethod("toString", function() {
       return this.valueOf();
-    };
+    });
 
     // TODO: implements unixCmdActions
     // TODO: implements unixCmdActions_
@@ -43,21 +41,21 @@ SCScript.install(function(sc) {
     // TODO: implements unixCmd
     // TODO: implements unixCmdGetStdOut
 
-    spec.asSymbol = function() {
+    builder.addMethod("asSymbol", function() {
       return $.Symbol(this.__str__());
-    };
+    });
 
-    spec.asInteger = function() {
+    builder.addMethod("asInteger", function() {
       var m = /^[-+]?\d+/.exec(this.__str__());
       return $.Integer(m ? m[0]|0 : 0);
-    };
+    });
 
-    spec.asFloat = function() {
+    builder.addMethod("asFloat", function() {
       var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
       return $.Float(m ? +m[0] : 0);
-    };
+    });
 
-    spec.ascii = function() {
+    builder.addMethod("ascii", function() {
       var raw = this.__str__();
       var a, i, imax;
 
@@ -67,13 +65,15 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    };
+    });
 
     // TODO: implements stripRTF
     // TODO: implements stripHTML
     // TODO: implements $scDir
 
-    spec.compare = fn(function($aString, $ignoreCase) {
+    builder.addMethod("compare", {
+      args: "aString; ignoreCase=false"
+    }, function($aString, $ignoreCase) {
       var araw, braw, length, i, a, b, cmp, func;
 
       if ($aString.__tag !== sc.TAG_STR) {
@@ -109,89 +109,89 @@ SCScript.install(function(sc) {
       }
 
       return $.Integer(cmp);
-    }, "aString; ignoreCase=false");
+    });
 
-    spec["<"] = function($aString) {
+    builder.addMethod("<", function($aString) {
       return $.Boolean(
         this.compare($aString, $false).valueOf() < 0
       );
-    };
+    });
 
-    spec[">"] = function($aString) {
+    builder.addMethod(">", function($aString) {
       return $.Boolean(
         this.compare($aString, $false).valueOf() > 0
       );
-    };
+    });
 
-    spec["<="] = function($aString) {
+    builder.addMethod("<=", function($aString) {
       return $.Boolean(
         this.compare($aString, $false).valueOf() <= 0
       );
-    };
+    });
 
-    spec[">="] = function($aString) {
+    builder.addMethod(">=", function($aString) {
       return $.Boolean(
         this.compare($aString, $false).valueOf() >= 0
       );
-    };
+    });
 
-    spec["=="] = function($aString) {
+    builder.addMethod("==", function($aString) {
       return $.Boolean(
         this.compare($aString, $false).valueOf() === 0
       );
-    };
+    });
 
-    spec["!="] = function($aString) {
+    builder.addMethod("!=", function($aString) {
       return $.Boolean(
         this.compare($aString, $false).valueOf() !== 0
       );
-    };
+    });
 
     // TODO: implements hash
 
-    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
+    builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector, $aNumber) {
       return $aNumber.asString().perform($aSelector, this);
-    };
+    });
 
-    spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
+    builder.addMethod("performBinaryOpOnComplex", function($aSelector, $aComplex) {
       return $aComplex.asString().perform($aSelector, this);
-    };
+    });
 
-    spec.multiChannelPerform = function() {
+    builder.addMethod("multiChannelPerform", function() {
       throw new Error("String:multiChannelPerform. Cannot expand strings.");
-    };
+    });
 
-    spec.isString = utils.alwaysReturn$true;
+    builder.addMethod("isString", sc.TRUE);
 
-    spec.asString = utils.nop;
+    builder.addMethod("asString");
 
-    spec.asCompileString = function() {
+    builder.addMethod("asCompileString", function() {
       return $.String("\"" + this.__str__() + "\"");
-    };
+    });
 
-    spec.species = function() {
+    builder.addMethod("species", function() {
       return $("String");
-    };
+    });
 
-    spec.postln = function() {
+    builder.addMethod("postln", function() {
       io.post(this.__str__() + "\n");
       return this;
-    };
+    });
 
-    spec.post = function() {
+    builder.addMethod("post", function() {
       io.post(this.__str__());
       return this;
-    };
+    });
 
-    spec.postcln = function() {
+    builder.addMethod("postcln", function() {
       io.post("// " + this.__str__() + "\n");
       return this;
-    };
+    });
 
-    spec.postc = function() {
+    builder.addMethod("postc", function() {
       io.post("// " + this.__str__());
       return this;
-    };
+    });
 
     // TODO: implements postf
     // TODO: implements format
@@ -202,17 +202,17 @@ SCScript.install(function(sc) {
     // TODO: implements warn
     // TODO: implements inform
 
-    spec["++"] = function($anObject) {
+    builder.addMethod("++", function($anObject) {
       return $.String(
         this.toString() + $anObject.asString().toString()
       );
-    };
+    });
 
-    spec["+"] = function($anObject) {
+    builder.addMethod("+", function($anObject) {
       return $.String(
         this.toString() + " " + $anObject.asString().toString()
       );
-    };
+    });
     // TODO: implements catArgs
     // TODO: implements scatArgs
     // TODO: implements ccatArgs

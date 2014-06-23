@@ -8,13 +8,12 @@
 
   var $ = sc.lang.$;
 
+  var SCCollection = $("Collection");
+  var SCArray = $("Array");
+
   describe("SCCollection", function() {
-    var SCObject, SCCollection, SCArray;
     var $int3, $int10, $int100;
     before(function() {
-      SCObject = $("Object");
-      SCCollection = $("Collection");
-      SCArray = $("Array");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source||[]).map($$), !!immutable);
         return $$(instance, "Collection" + this.test.title);
@@ -209,7 +208,7 @@
     });
     it("#asCollection", function() {
       var instance = this.createInstance();
-      expect(instance.asCollection).to.be.nop;
+      expect(instance.asCollection).to.doNothing;
     });
     it("#isCollection", function() {
       var instance, test;

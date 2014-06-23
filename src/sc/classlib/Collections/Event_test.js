@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCEvent = $("Event");
+
   describe("SCEvent", function() {
-    var SCEvent;
     before(function() {
-      SCEvent = $("Event");
       this.createInstance = function() {
         return SCEvent.new();
       };

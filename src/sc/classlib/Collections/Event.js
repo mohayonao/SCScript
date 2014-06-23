@@ -4,12 +4,11 @@ SCScript.install(function(sc) {
   require("./Environment");
 
   var $  = sc.lang.$;
+  var $nil = $.nil;
   var io = sc.lang.io;
   var q  = sc.libs.strlib.quote;
 
-  sc.lang.klass.refine("Event", function(spec, utils) {
-    var $nil = utils.$nil;
-
+  sc.lang.klass.refine("Event", function(builder) {
     // TODO: implements $default
     // TODO: implements $silent
     // TODO: implements $addEventType
@@ -28,8 +27,7 @@ SCScript.install(function(sc) {
     // TODO: implements $initClass
     // TODO: implements $makeDefaultSynthDef
     // TODO: implements $makeParentEvents
-
-    spec._doesNotUnderstand = function(methodName, args) {
+    builder.addMethod("_doesNotUnderstand", function(methodName, args) {
       var $value;
 
       if (methodName.charAt(methodName.length - 1) === "_") {
@@ -48,6 +46,6 @@ SCScript.install(function(sc) {
 
       // getter
       return this.at($.Symbol(methodName));
-    };
+    });
   });
 });

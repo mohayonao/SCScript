@@ -9,11 +9,15 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCInt8Array = $("Int8Array");
+  var SCInt16Array = $("Int16Array");
+  var SCInt32Array = $("Int32Array");
+  var SCFloatArray = $("FloatArray");
+  var SCDoubleArray = $("DoubleArray");
+  var SCArray = $("Array");
+
   describe("SCArrayedCollection", function() {
-    var SCArrayedCollection, SCArray;
     before(function() {
-      SCArrayedCollection = $("ArrayedCollection");
-      SCArray = $("Array");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source || []).map($$), !!immutable);
         return $$(instance, "ArrayedCollection" + this.test.title);
@@ -595,7 +599,7 @@
     });
     it("#asArray", function() {
       var instance = this.createInstance();
-      expect(instance.asArray).to.be.nop;
+      expect(instance.asArray).to.doNothing;
     });
     it("#copyRange", function() {
       testCase(this, [
@@ -1237,9 +1241,7 @@
   });
 
   describe("SCRawArray", function() {
-    var SCRawArray;
     before(function() {
-      SCRawArray = $("RawArray");
       this.createInstance = function(source) {
         var instance = $.String(source || "").copy();
         return $$(instance, "RawArray" + this.test.title);
@@ -1291,10 +1293,6 @@
   });
 
   describe("SCInt8Array", function() {
-    var SCInt8Array;
-    before(function() {
-      SCInt8Array = $("Int8Array");
-    });
     it("#valueOf", function() {
       var instance, test, expected;
 
@@ -1313,10 +1311,6 @@
   });
 
   describe("SCInt16Array", function() {
-    var SCInt16Array;
-    before(function() {
-      SCInt16Array = $("Int16Array");
-    });
     it("#valueOf", function() {
       var instance, test, expected;
 
@@ -1335,10 +1329,6 @@
   });
 
   describe("SCInt32Array", function() {
-    var SCInt32Array;
-    before(function() {
-      SCInt32Array = $("Int32Array");
-    });
     it("#valueOf", function() {
       var instance, test, expected;
 
@@ -1357,10 +1347,6 @@
   });
 
   describe("SCFloatArray", function() {
-    var SCFloatArray;
-    before(function() {
-      SCFloatArray = $("FloatArray");
-    });
     it("#valueOf", function() {
       var instance, test, expected;
 
@@ -1379,10 +1365,6 @@
   });
 
   describe("SCDoubleArray", function() {
-    var SCDoubleArray;
-    before(function() {
-      SCDoubleArray = $("DoubleArray");
-    });
     it("#valueOf", function() {
       var instance, test, expected;
 

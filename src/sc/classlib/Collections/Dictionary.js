@@ -5,23 +5,23 @@ SCScript.install(function(sc) {
   require("./Set");
 
   var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil   = $.nil;
+  var $true  = $.true;
+  var $false = $.false;
+  var $int1  = $.int1;
+  var SCSet = $("Set");
+  var SCArray = $("Array");
+  var SCAssociation = $("Association");
 
-  sc.lang.klass.refine("Dictionary", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $true  = utils.$true;
-    var $false = utils.$false;
-    var $int1  = utils.$int1;
-    var SCSet  = $("Set");
-    var SCArray = $("Array");
-    var SCAssociation = $("Association");
-
-    spec.$new = fn(function($n) {
+  sc.lang.klass.refine("Dictionary", function(builder) {
+    builder.addClassMethod("new", {
+      args: "n=8"
+    }, function($n) {
       return this.__super__("new", [ $n ]);
-    }, "n=8");
+    });
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       var obj;
       var array, i, imax;
 
@@ -35,26 +35,30 @@ SCScript.install(function(sc) {
       }
 
       return obj;
-    };
+    });
 
-    spec.$newFrom = fn(function($aCollection) {
+    builder.addClassMethod("newFrom", {
+      args: "aCollection"
+    }, function($aCollection) {
       var $newCollection;
 
       $newCollection = this.new($aCollection.size());
-      $aCollection.$("keysValuesDo", [ $.Function(function() {
-        return [ function($k, $v) {
-          $newCollection.put($k, $v);
-        } ];
+      $aCollection.$("keysValuesDo", [ $.Func(function($k, $v) {
+        return $newCollection.put($k, $v);
       }) ]);
 
       return $newCollection;
-    }, "aCollection");
+    });
 
-    spec.at = fn(function($key) {
+    builder.addMethod("at", {
+      args: "key"
+    }, function($key) {
       return this._$array.at(this.scanFor($key).__inc__());
-    }, "key");
+    });
 
-    spec.atFail = fn(function($key, $function) {
+    builder.addMethod("atFail", {
+      args: "key; function"
+    }, function($key, $function) {
       var $val;
 
       $val = this.at($key);
@@ -63,37 +67,44 @@ SCScript.install(function(sc) {
       }
 
       return $val;
-    }, "key; function");
+    });
 
-    spec.matchAt = fn(function($key) {
+    builder.addMethod("matchAt", {
+      args: "key"
+    }, function($key) {
       var ret = null;
 
-      this.keysValuesDo($.Function(function() {
-        return [ function($k, $v) {
-          if ($k.matchItem($key).__bool__()) {
-            ret = $v;
-            this.break();
-          }
-        } ];
+      this.keysValuesDo($.Func(function($k, $v) {
+        if ($k.matchItem($key).__bool__()) {
+          ret = $v;
+          this.break();
+        }
+        return $nil;
       }));
 
       return ret || $nil;
-    }, "key");
+    });
 
-    spec.trueAt = fn(function($key) {
+    builder.addMethod("trueAt", {
+      args: "key"
+    }, function($key) {
       var $ret;
 
       $ret = this.at($key);
 
       return $ret !== $nil ? $ret : $false;
-    }, "key");
+    });
 
-    spec.add = fn(function($anAssociation) {
+    builder.addMethod("add", {
+      args: "anAssociation"
+    }, function($anAssociation) {
       this.put($anAssociation.$("key"), $anAssociation.$("value"));
       return this;
-    }, "anAssociation");
+    });
 
-    spec.put = fn(function($key, $value) {
+    builder.addMethod("put", {
+      args: "key; value"
+    }, function($key, $value) {
       var $array, $index;
 
       if ($value === $nil) {
@@ -109,38 +120,38 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "key; value");
+    });
 
-    spec.putAll = function() {
+    builder.addMethod("putAll", function() {
       var $this = this;
-      var func;
+      var $loopfunc;
 
-      func = $.Function(function() {
-        return [ function($key, $value) {
-          $this.put($key, $value);
-        } ];
+      $loopfunc = $.Func(function($key, $value) {
+        return $this.put($key, $value);
       });
 
       slice.call(arguments).forEach(function($dict) {
-        $dict.keysValuesDo(func);
+        $dict.keysValuesDo($loopfunc);
       }, this);
 
       return this;
-    };
+    });
 
-    spec.putPairs = fn(function($args) {
+    builder.addMethod("putPairs", {
+      args: "args"
+    }, function($args) {
       var $this = this;
 
-      $args.$("pairsDo", [ $.Function(function() {
-        return [ function($key, $val) {
-          $this.put($key, $val);
-        } ];
+      $args.$("pairsDo", [ $.Func(function($key, $val) {
+        return $this.put($key, $val);
       }) ]);
 
       return this;
-    }, "args");
+    });
 
-    spec.getPairs = fn(function($args) {
+    builder.addMethod("getPairs", {
+      args: "args"
+    }, function($args) {
       var $this = this;
       var $result;
 
@@ -149,20 +160,21 @@ SCScript.install(function(sc) {
       }
 
       $result = $nil;
-      $args.do($.Function(function() {
-        return [ function($key) {
-          var $val;
-          $val = $this.at($key);
-          if ($val !== $nil) {
-            $result = $result.add($key).add($val);
-          }
-        } ];
+      $args.do($.Func(function($key) {
+        var $val;
+        $val = $this.at($key);
+        if ($val !== $nil) {
+          $result = $result.add($key).add($val);
+        }
+        return $nil;
       }));
 
       return $result;
-    }, "args");
+    });
 
-    spec.associationAt = fn(function($key) {
+    builder.addMethod("associationAt", {
+      args: "key"
+    }, function($key) {
       var $res;
       var array, index;
 
@@ -175,9 +187,11 @@ SCScript.install(function(sc) {
       }
 
       return $res || /* istanbul ignore next */ $nil;
-    }, "key");
+    });
 
-    spec.associationAtFail = fn(function($argkey, $function) {
+    builder.addMethod("associationAtFail", {
+      args: "argKey; function"
+    }, function($argkey, $function) {
       var $index, $key;
 
       $index = this.scanFor($argkey);
@@ -188,9 +202,11 @@ SCScript.install(function(sc) {
       }
 
       return SCAssociation.new($key, this._$array.at($index.__inc__()));
-    }, "argKey; function");
+    });
 
-    spec.keys = fn(function($species) {
+    builder.addMethod("keys", {
+      args: "species"
+    }, function($species) {
       var $set;
 
       if ($species === $nil) {
@@ -198,48 +214,49 @@ SCScript.install(function(sc) {
       }
 
       $set = $species.new(this.size());
-      this.keysDo($.Function(function() {
-        return [ function($key) {
-          $set.add($key);
-        } ];
+      this.keysDo($.Func(function($key) {
+        return $set.add($key);
       }));
 
       return $set;
-    }, "species");
+    });
 
-    spec.values = function() {
+    builder.addMethod("values", function() {
       var $list;
 
       $list = $("List").new(this.size());
-      this.do($.Function(function() {
-        return [ function($value) {
-          $list.add($value);
-        } ];
+      this.do($.Func(function($value) {
+        return $list.add($value);
       }));
 
       return $list;
-    };
+    });
 
-    spec.includes = fn(function($item1) {
+    builder.addMethod("includes", {
+      args: "item1"
+    }, function($item1) {
       var $ret = null;
 
-      this.do($.Function(function() {
-        return [ function($item2) {
-          if ($item1 ["=="] ($item2).__bool__()) {
-            $ret = $true;
-            this.break();
-          }
-        } ];
+      this.do($.Func(function($item2) {
+        if ($item1 ["=="] ($item2).__bool__()) {
+          $ret = $true;
+          this.break();
+        }
+        return $nil;
       }));
 
       return $ret || $false;
-    }, "item1");
+    });
 
-    spec.includesKey = fn(function($key) {
+    builder.addMethod("includesKey", {
+      args: "key"
+    }, function($key) {
       return this.at($key).notNil();
-    }, "key");
+    });
 
-    spec.removeAt = fn(function($key) {
+    builder.addMethod("removeAt", {
+      args: "key"
+    }, function($key) {
       var $array;
       var $val, $index, $atKeyIndex;
 
@@ -259,9 +276,11 @@ SCScript.install(function(sc) {
       // this.fixCollisionsFrom($index);
 
       return $val;
-    }, "key");
+    });
 
-    spec.removeAtFail = fn(function($key, $function) {
+    builder.addMethod("removeAtFail", {
+      args: "key; function"
+    }, function($key, $function) {
       var $array;
       var $val, $index, $atKeyIndex;
 
@@ -282,118 +301,124 @@ SCScript.install(function(sc) {
       // this.fixCollisionsFrom($index);
 
       return $val;
-    }, "key; function");
+    });
 
-    spec.remove = utils.shouldNotImplement("remove");
-    spec.removeFail = utils.shouldNotImplement("removeFail");
+    builder.shouldNotImplement("remove");
+    builder.shouldNotImplement("removeFail");
 
-    spec.keysValuesDo = fn(function($function) {
+    builder.addMethod("keysValuesDo", {
+      args: "function"
+    }, function($function) {
       this.keysValuesArrayDo(this._$array, $function);
       return this;
-    }, "function");
+    });
 
-    spec.keysValuesChange = fn(function($function) {
+    builder.addMethod("keysValuesChange", {
+      args: "function"
+    }, function($function) {
       var $this = this;
 
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $value, $i) {
-          $this.put($key, $function.value($key, $value, $i));
-        } ];
+      this.keysValuesDo($.Func(function($key, $value, $i) {
+        return $this.put($key, $function.value($key, $value, $i));
       }));
 
       return this;
-    }, "function");
+    });
 
-    spec.do = fn(function($function) {
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $value, $i) {
-          $function.value($value, $i);
-        } ];
+    builder.addMethod("do", {
+      args: "function"
+    },  function($function) {
+      this.keysValuesDo($.Func(function($key, $value, $i) {
+        return $function.value($value, $i);
       }));
       return this;
-    }, "function");
+    });
 
-    spec.keysDo = fn(function($function) {
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $val, $i) {
-          $function.value($key, $i);
-        } ];
+    builder.addMethod("keysDo", {
+      args: "function"
+    },  function($function) {
+      this.keysValuesDo($.Func(function($key, $val, $i) {
+        return $function.value($key, $i);
       }));
       return this;
-    }, "function");
+    });
 
-    spec.associationsDo = fn(function($function) {
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $val, $i) {
-          var $assoc = SCAssociation.new($key, $val);
-          $function.value($assoc, $i);
-        } ];
+    builder.addMethod("associationsDo", {
+      args: "function"
+    },  function($function) {
+      this.keysValuesDo($.Func(function($key, $val, $i) {
+        var $assoc = SCAssociation.new($key, $val);
+        return $function.value($assoc, $i);
       }));
       return this;
-    }, "function");
+    });
 
-    spec.pairsDo = fn(function($function) {
+    builder.addMethod("pairsDo", {
+      args: "function"
+    },  function($function) {
       this.keysValuesArrayDo(this._$array, $function);
       return this;
-    }, "function");
+    });
 
-    spec.collect = fn(function($function) {
+    builder.addMethod("collect", {
+      args: "function"
+    },  function($function) {
       var $res;
 
       $res = this.class().new(this.size());
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $elem) {
-          $res.put($key, $function.value($elem, $key));
-        } ];
+      this.keysValuesDo($.Func(function($key, $elem) {
+        return $res.put($key, $function.value($elem, $key));
       }));
 
       return $res;
-    }, "function");
+    });
 
-    spec.select = fn(function($function) {
+    builder.addMethod("select", {
+      args: "function"
+    },  function($function) {
       var $res;
 
       $res = this.class().new(this.size());
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $elem) {
-          if ($function.value($elem, $key).__bool__()) {
-            $res.put($key, $elem);
-          }
-        } ];
+      this.keysValuesDo($.Func(function($key, $elem) {
+        if ($function.value($elem, $key).__bool__()) {
+          $res.put($key, $elem);
+        }
+        return $nil;
       }));
 
       return $res;
-    }, "function");
+    });
 
-    spec.reject = fn(function($function) {
+    builder.addMethod("reject", {
+      args: "function"
+    },  function($function) {
       var $res;
 
       $res = this.class().new(this.size());
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $elem) {
-          if (!$function.value($elem, $key).__bool__()) {
-            $res.put($key, $elem);
-          }
-        } ];
+      this.keysValuesDo($.Func(function($key, $elem) {
+        if (!$function.value($elem, $key).__bool__()) {
+          $res.put($key, $elem);
+        }
+        return $nil;
       }));
 
       return $res;
-    }, "function");
+    });
 
-    spec.invert = function() {
+    builder.addMethod("invert", function() {
       var $dict;
 
       $dict = this.class().new(this.size());
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $val) {
-          $dict.put($val, $key);
-        } ];
+      this.keysValuesDo($.Func(function($key, $val) {
+        return $dict.put($val, $key);
       }));
 
       return $dict;
-    };
+    });
 
-    spec.merge = fn(function($that, $func, $fill) {
+    builder.addMethod("merge", {
+      args: "that; func; fill=true"
+    }, function($that, $func, $fill) {
       var $this = this;
       var $commonKeys, $myKeys, $otherKeys;
       var $res;
@@ -409,62 +434,57 @@ SCScript.install(function(sc) {
         $commonKeys = $myKeys.sect($otherKeys);
       }
 
-      $commonKeys.do($.Function(function() {
-        return [ function($key) {
-          $res.put($key, $func.value($this.at($key), $that.at($key), $key));
-        } ];
+      $commonKeys.do($.Func(function($key) {
+        return $res.put($key, $func.value($this.at($key), $that.at($key), $key));
       }));
 
       if ($fill.__bool__()) {
-        $myKeys.difference($otherKeys).do($.Function(function() {
-          return [ function($key) {
-            $res.put($key, $this.at($key));
-          } ];
+        $myKeys.difference($otherKeys).do($.Func(function($key) {
+          return $res.put($key, $this.at($key));
         }));
-        $otherKeys.difference($myKeys).do($.Function(function() {
-          return [ function($key) {
-            $res.put($key, $that.at($key));
-          } ];
+        $otherKeys.difference($myKeys).do($.Func(function($key) {
+          return $res.put($key, $that.at($key));
         }));
       }
 
       return $res;
-    }, "that; func; fill=true");
+    });
 
     // TODO: implements blend
 
-    spec.findKeyForValue = fn(function($argValue) {
+    builder.addMethod("findKeyForValue", {
+      args: "argValue"
+    }, function($argValue) {
       var $ret = null;
 
-      this.keysValuesArrayDo(this._$array, $.Function(function() {
-        return [ function($key, $val) {
-          if ($argValue ["=="] ($val).__bool__()) {
-            $ret = $key;
-            this.break();
-          }
-        } ];
+      this.keysValuesArrayDo(this._$array, $.Func(function($key, $val) {
+        if ($argValue ["=="] ($val).__bool__()) {
+          $ret = $key;
+          this.break();
+        }
+        return $nil;
       }));
 
       return $ret || $nil;
-    }, "argValue");
+    });
 
-    spec.sortedKeysValuesDo = fn(function($function, $sortFunc) {
+    builder.addMethod("sortedKeysValuesDo", {
+      args: "function; sortFunc"
+    }, function($function, $sortFunc) {
       var $this = this;
       var $keys;
 
       $keys = this.keys(SCArray);
       $keys.sort($sortFunc);
 
-      $keys.do($.Function(function() {
-        return [ function($key, $i) {
-          $function.value($key, $this.at($key), $i);
-        } ];
+      $keys.do($.Func(function($key, $i) {
+        return $function.value($key, $this.at($key), $i);
       }));
 
       return this;
-    }, "$function; $sortFunc");
+    });
 
-    spec.choose = function() {
+    builder.addMethod("choose", function() {
       var $array;
       var $size, $index;
 
@@ -480,9 +500,11 @@ SCScript.install(function(sc) {
       } while ($array.at($index) === $nil);
 
       return $array.at($index.__inc__());
-    };
+    });
 
-    spec.order = fn(function($func) {
+    builder.addMethod("order", {
+      args: "func"
+    }, function($func) {
       var $assoc;
 
       if (this.isEmpty().__bool__()) {
@@ -490,51 +512,46 @@ SCScript.install(function(sc) {
       }
 
       $assoc = $nil;
-      this.keysValuesDo($.Function(function() {
-        return [ function($key, $val) {
-          $assoc = $assoc.add($key.$("->", [ $val ]));
-        } ];
+      this.keysValuesDo($.Func(function($key, $val) {
+        $assoc = $assoc.add($key.$("->", [ $val ]));
+        return $assoc;
       }));
 
-      return $assoc.sort($func).collect($.Function(function() {
-        return [ function($_) {
-          return $_.$("key");
-        } ];
+      return $assoc.sort($func).collect($.Func(function($_) {
+        return $_.$("key");
       }));
-    }, "func");
+    });
 
-    spec.powerset = function() {
+    builder.addMethod("powerset", function() {
       var $this = this;
       var $keys, $class;
 
       $keys  = this.keys().asArray().powerset();
       $class = this.class();
 
-      return $keys.collect($.Function(function() {
-        return [ function($list) {
-          var $dict;
+      return $keys.collect($.Func(function($list) {
+        var $dict;
 
-          $dict = $class.new();
-          $list.do($.Function(function() {
-            return [ function($key) {
-              $dict.put($key, $this.at($key));
-            } ];
-          }));
+        $dict = $class.new();
+        $list.do($.Func(function($key) {
+          return $dict.put($key, $this.at($key));
+        }));
 
-          return $dict;
-        } ];
+        return $dict;
       }));
-    };
+    });
 
-    spec.transformEvent = fn(function($event) {
+    builder.addMethod("transformEvent", {
+      args: "event"
+    }, function($event) {
       return $event.$("putAll", [ this ]);
-    }, "event");
+    });
 
     // TODO: implements embedInStream
     // TODO: implements asSortedArray
     // TODO: implements asKeyValuePairs
 
-    spec.keysValuesArrayDo = function($argArray, $function) {
+    builder.addMethod("keysValuesArrayDo", function($argArray, $function) {
       var $key, $val;
       var array, j, i, imax;
 
@@ -546,13 +563,13 @@ SCScript.install(function(sc) {
           $function.value($key, $val, $.Integer(j));
         }
       }
-    };
+    });
 
     // TODO: implements grow
     // TODO: implements fixCollisionsFrom
 
     /* istanbul ignore next */
-    spec.scanFor = function($argKey) {
+    builder.addMethod("scanFor", function($argKey) {
       var array, i, imax;
       var $elem;
 
@@ -573,32 +590,34 @@ SCScript.install(function(sc) {
       }
 
       return $.Integer(-2);
-    };
+    });
 
     // TODO: implements storeItemsOn
     // TODO: implements printItemsOn
 
-    spec._incrementSize = function() {
+    builder.addMethod("_incrementSize", function() {
       this._size += 1;
       if (this._$array.size().__inc__() < this._size * 4) {
         this.grow();
       }
-    };
+    });
   });
 
-  sc.lang.klass.refine("IdentityDictionary", function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.refine("IdentityDictionary", function(builder) {
+    builder.addProperty("<>", "proto");
+    builder.addProperty("<>", "parent");
+    builder.addProperty("<>", "know");
 
-    utils.setProperty(spec, "<>", "proto");
-    utils.setProperty(spec, "<>", "parent");
-    utils.setProperty(spec, "<>", "know");
-
-    spec.$new = fn(function($n, $proto, $parent, $know) {
+    builder.addClassMethod("new", {
+      args: "n=8; proto; parent; know=false"
+    }, function($n, $proto, $parent, $know) {
       return this.__super__("new", [ $n ])
         .proto_($proto).parent_($parent).know_($know);
-    }, "n=8; proto; parent; know=false");
+    });
 
-    spec.putGet = fn(function($key, $value) {
+    builder.addMethod("putGet", {
+      args: "key; value"
+    }, function($key, $value) {
       var $array, $index, $prev;
 
       $array = this._$array;
@@ -611,25 +630,26 @@ SCScript.install(function(sc) {
       }
 
       return $prev;
-    }, "key; value");
+    });
 
-    spec.findKeyForValue = fn(function($argValue) {
+    builder.addMethod("findKeyForValue", {
+      args: "argValue"
+    }, function($argValue) {
       var $ret = null;
 
-      this.keysValuesArrayDo(this._$array, $.Function(function() {
-        return [ function($key, $val) {
-          if ($argValue === $val) {
-            $ret = $key;
-            this.break();
-          }
-        } ];
+      this.keysValuesArrayDo(this._$array, $.Func(function($key, $val) {
+        if ($argValue === $val) {
+          $ret = $key;
+          this.break();
+        }
+        return $nil;
       }));
 
       return $ret || $nil;
-    }, "argValue");
+    });
 
     /* istanbul ignore next */
-    spec.scanFor = function($argKey) {
+    builder.addMethod("scanFor", function($argKey) {
       var array, i, imax;
       var $elem;
 
@@ -650,7 +670,7 @@ SCScript.install(function(sc) {
       }
 
       return $.Integer(-2);
-    };
+    });
     // TODO: implements freezeAsParent
     // TODO: implements insertParent
     // TODO: implements storeItemsOn

@@ -3,594 +3,616 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $ = sc.lang.$;
+  var $int0 = $.int0;
 
-  klass.refine("AbstractFunction", function(spec, utils) {
-    spec.composeUnaryOp = function($aSelector) {
+  sc.lang.klass.refine("AbstractFunction", function(builder) {
+    builder.addMethod("composeUnaryOp", function($aSelector) {
       return $("UnaryOpFunction").new($aSelector, this);
-    };
+    });
 
-    spec.composeBinaryOp = function($aSelector, $something, $adverb) {
+    builder.addMethod("composeBinaryOp", function($aSelector, $something, $adverb) {
       return $("BinaryOpFunction").new($aSelector, this, $something, $adverb);
-    };
+    });
 
-    spec.reverseComposeBinaryOp = function($aSelector, $something, $adverb) {
+    builder.addMethod("reverseComposeBinaryOp", function($aSelector, $something, $adverb) {
       return $("BinaryOpFunction").new($aSelector, $something, this, $adverb);
-    };
+    });
 
-    spec.composeNAryOp = function($aSelector, $anArgList) {
+    builder.addMethod("composeNAryOp", function($aSelector, $anArgList) {
       return $("NAryOpFunction").new($aSelector, this, $anArgList);
-    };
+    });
 
-    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
+    builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector, $aNumber, $adverb) {
       return this.reverseComposeBinaryOp($aSelector, $aNumber, $adverb);
-    };
+    });
 
-    spec.performBinaryOpOnSignal = function($aSelector, $aSignal, $adverb) {
+    builder.addMethod("performBinaryOpOnSignal", function($aSelector, $aSignal, $adverb) {
       return this.reverseComposeBinaryOp($aSelector, $aSignal, $adverb);
-    };
+    });
 
-    spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
+    builder.addMethod("performBinaryOpOnComplex", function($aSelector, $aComplex, $adverb) {
       return this.reverseComposeBinaryOp($aSelector, $aComplex, $adverb);
-    };
+    });
 
-    spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
+    builder.addMethod("performBinaryOpOnSeqColl", function($aSelector, $aSeqColl, $adverb) {
       return this.reverseComposeBinaryOp($aSelector, $aSeqColl, $adverb);
-    };
+    });
 
-    spec.neg = function() {
+    builder.addMethod("neg", function() {
       return this.composeUnaryOp($.Symbol("neg"));
-    };
+    });
 
-    spec.reciprocal = function() {
+    builder.addMethod("reciprocal", function() {
       return this.composeUnaryOp($.Symbol("reciprocal"));
-    };
+    });
 
-    spec.bitNot = function() {
+    builder.addMethod("bitNot", function() {
       return this.composeUnaryOp($.Symbol("bitNot"));
-    };
+    });
 
-    spec.abs = function() {
+    builder.addMethod("abs", function() {
       return this.composeUnaryOp($.Symbol("abs"));
-    };
+    });
 
-    spec.asFloat = function() {
+    builder.addMethod("asFloat", function() {
       return this.composeUnaryOp($.Symbol("asFloat"));
-    };
+    });
 
-    spec.asInteger = function() {
+    builder.addMethod("asInteger", function() {
       return this.composeUnaryOp($.Symbol("asInteger"));
-    };
+    });
 
-    spec.ceil = function() {
+    builder.addMethod("ceil", function() {
       return this.composeUnaryOp($.Symbol("ceil"));
-    };
+    });
 
-    spec.floor = function() {
+    builder.addMethod("floor", function() {
       return this.composeUnaryOp($.Symbol("floor"));
-    };
+    });
 
-    spec.frac = function() {
+    builder.addMethod("frac", function() {
       return this.composeUnaryOp($.Symbol("frac"));
-    };
+    });
 
-    spec.sign = function() {
+    builder.addMethod("sign", function() {
       return this.composeUnaryOp($.Symbol("sign"));
-    };
+    });
 
-    spec.squared = function() {
+    builder.addMethod("squared", function() {
       return this.composeUnaryOp($.Symbol("squared"));
-    };
+    });
 
-    spec.cubed = function() {
+    builder.addMethod("cubed", function() {
       return this.composeUnaryOp($.Symbol("cubed"));
-    };
+    });
 
-    spec.sqrt = function() {
+    builder.addMethod("sqrt", function() {
       return this.composeUnaryOp($.Symbol("sqrt"));
-    };
+    });
 
-    spec.exp = function() {
+    builder.addMethod("exp", function() {
       return this.composeUnaryOp($.Symbol("exp"));
-    };
+    });
 
-    spec.midicps = function() {
+    builder.addMethod("midicps", function() {
       return this.composeUnaryOp($.Symbol("midicps"));
-    };
+    });
 
-    spec.cpsmidi = function() {
+    builder.addMethod("cpsmidi", function() {
       return this.composeUnaryOp($.Symbol("cpsmidi"));
-    };
+    });
 
-    spec.midiratio = function() {
+    builder.addMethod("midiratio", function() {
       return this.composeUnaryOp($.Symbol("midiratio"));
-    };
+    });
 
-    spec.ratiomidi = function() {
+    builder.addMethod("ratiomidi", function() {
       return this.composeUnaryOp($.Symbol("ratiomidi"));
-    };
+    });
 
-    spec.ampdb = function() {
+    builder.addMethod("ampdb", function() {
       return this.composeUnaryOp($.Symbol("ampdb"));
-    };
+    });
 
-    spec.dbamp = function() {
+    builder.addMethod("dbamp", function() {
       return this.composeUnaryOp($.Symbol("dbamp"));
-    };
+    });
 
-    spec.octcps = function() {
+    builder.addMethod("octcps", function() {
       return this.composeUnaryOp($.Symbol("octcps"));
-    };
+    });
 
-    spec.cpsoct = function() {
+    builder.addMethod("cpsoct", function() {
       return this.composeUnaryOp($.Symbol("cpsoct"));
-    };
+    });
 
-    spec.log = function() {
+    builder.addMethod("log", function() {
       return this.composeUnaryOp($.Symbol("log"));
-    };
+    });
 
-    spec.log2 = function() {
+    builder.addMethod("log2", function() {
       return this.composeUnaryOp($.Symbol("log2"));
-    };
+    });
 
-    spec.log10 = function() {
+    builder.addMethod("log10", function() {
       return this.composeUnaryOp($.Symbol("log10"));
-    };
+    });
 
-    spec.sin = function() {
+    builder.addMethod("sin", function() {
       return this.composeUnaryOp($.Symbol("sin"));
-    };
+    });
 
-    spec.cos = function() {
+    builder.addMethod("cos", function() {
       return this.composeUnaryOp($.Symbol("cos"));
-    };
+    });
 
-    spec.tan = function() {
+    builder.addMethod("tan", function() {
       return this.composeUnaryOp($.Symbol("tan"));
-    };
+    });
 
-    spec.asin = function() {
+    builder.addMethod("asin", function() {
       return this.composeUnaryOp($.Symbol("asin"));
-    };
+    });
 
-    spec.acos = function() {
+    builder.addMethod("acos", function() {
       return this.composeUnaryOp($.Symbol("acos"));
-    };
+    });
 
-    spec.atan = function() {
+    builder.addMethod("atan", function() {
       return this.composeUnaryOp($.Symbol("atan"));
-    };
+    });
 
-    spec.sinh = function() {
+    builder.addMethod("sinh", function() {
       return this.composeUnaryOp($.Symbol("sinh"));
-    };
+    });
 
-    spec.cosh = function() {
+    builder.addMethod("cosh", function() {
       return this.composeUnaryOp($.Symbol("cosh"));
-    };
+    });
 
-    spec.tanh = function() {
+    builder.addMethod("tanh", function() {
       return this.composeUnaryOp($.Symbol("tanh"));
-    };
+    });
 
-    spec.rand = function() {
+    builder.addMethod("rand", function() {
       return this.composeUnaryOp($.Symbol("rand"));
-    };
+    });
 
-    spec.rand2 = function() {
+    builder.addMethod("rand2", function() {
       return this.composeUnaryOp($.Symbol("rand2"));
-    };
+    });
 
-    spec.linrand = function() {
+    builder.addMethod("linrand", function() {
       return this.composeUnaryOp($.Symbol("linrand"));
-    };
+    });
 
-    spec.bilinrand = function() {
+    builder.addMethod("bilinrand", function() {
       return this.composeUnaryOp($.Symbol("bilinrand"));
-    };
+    });
 
-    spec.sum3rand = function() {
+    builder.addMethod("sum3rand", function() {
       return this.composeUnaryOp($.Symbol("sum3rand"));
-    };
+    });
 
-    spec.distort = function() {
+    builder.addMethod("distort", function() {
       return this.composeUnaryOp($.Symbol("distort"));
-    };
+    });
 
-    spec.softclip = function() {
+    builder.addMethod("softclip", function() {
       return this.composeUnaryOp($.Symbol("softclip"));
-    };
+    });
 
-    spec.coin = function() {
+    builder.addMethod("coin", function() {
       return this.composeUnaryOp($.Symbol("coin"));
-    };
+    });
 
-    spec.even = function() {
+    builder.addMethod("even", function() {
       return this.composeUnaryOp($.Symbol("even"));
-    };
+    });
 
-    spec.odd = function() {
+    builder.addMethod("odd", function() {
       return this.composeUnaryOp($.Symbol("odd"));
-    };
+    });
 
-    spec.rectWindow = function() {
+    builder.addMethod("rectWindow", function() {
       return this.composeUnaryOp($.Symbol("rectWindow"));
-    };
+    });
 
-    spec.hanWindow = function() {
+    builder.addMethod("hanWindow", function() {
       return this.composeUnaryOp($.Symbol("hanWindow"));
-    };
+    });
 
-    spec.welWindow = function() {
+    builder.addMethod("welWindow", function() {
       return this.composeUnaryOp($.Symbol("welWindow"));
-    };
+    });
 
-    spec.triWindow = function() {
+    builder.addMethod("triWindow", function() {
       return this.composeUnaryOp($.Symbol("triWindow"));
-    };
+    });
 
-    spec.scurve = function() {
+    builder.addMethod("scurve", function() {
       return this.composeUnaryOp($.Symbol("scurve"));
-    };
+    });
 
-    spec.ramp = function() {
+    builder.addMethod("ramp", function() {
       return this.composeUnaryOp($.Symbol("ramp"));
-    };
+    });
 
-    spec.isPositive = function() {
+    builder.addMethod("isPositive", function() {
       return this.composeUnaryOp($.Symbol("isPositive"));
-    };
+    });
 
-    spec.isNegative = function() {
+    builder.addMethod("isNegative", function() {
       return this.composeUnaryOp($.Symbol("isNegative"));
-    };
+    });
 
-    spec.isStrictlyPositive = function() {
+    builder.addMethod("isStrictlyPositive", function() {
       return this.composeUnaryOp($.Symbol("isStrictlyPositive"));
-    };
+    });
 
-    spec.rho = function() {
+    builder.addMethod("rho", function() {
       return this.composeUnaryOp($.Symbol("rho"));
-    };
+    });
 
-    spec.theta = function() {
+    builder.addMethod("theta", function() {
       return this.composeUnaryOp($.Symbol("theta"));
-    };
+    });
 
-    spec.rotate = function($function) {
+    builder.addMethod("rotate", function($function) {
       return this.composeBinaryOp($.Symbol("rotate"), $function);
-    };
+    });
 
-    spec.dist = function($function) {
+    builder.addMethod("dist", function($function) {
       return this.composeBinaryOp($.Symbol("dist"), $function);
-    };
+    });
 
-    spec["+"] = function($function, $adverb) {
+    builder.addMethod("+", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("+"), $function, $adverb);
-    };
+    });
 
-    spec["-"] = function($function, $adverb) {
+    builder.addMethod("-", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("-"), $function, $adverb);
-    };
+    });
 
-    spec["*"] = function($function, $adverb) {
+    builder.addMethod("*", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("*"), $function, $adverb);
-    };
+    });
 
-    spec["/"] = function($function, $adverb) {
+    builder.addMethod("/", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("/"), $function, $adverb);
-    };
+    });
 
-    spec.div = function($function, $adverb) {
+    builder.addMethod("div", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("div"), $function, $adverb);
-    };
+    });
 
-    spec.mod = function($function, $adverb) {
+    builder.addMethod("mod", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("mod"), $function, $adverb);
-    };
+    });
 
-    spec.pow = function($function, $adverb) {
+    builder.addMethod("pow", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("pow"), $function, $adverb);
-    };
+    });
 
-    spec.min = function($function, $adverb) {
+    builder.addMethod("min", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("min"), $function, $adverb);
-    };
+    });
 
-    spec.max = function($function, $adverb) {
+    builder.addMethod("max", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("max"), $function, $adverb);
-    };
+    });
 
-    spec["<"] = function($function, $adverb) {
+    builder.addMethod("<", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("<"), $function, $adverb);
-    };
+    });
 
-    spec["<="] = function($function, $adverb) {
+    builder.addMethod("<=", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("<="), $function, $adverb);
-    };
+    });
 
-    spec[">"] = function($function, $adverb) {
+    builder.addMethod(">", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol(">"), $function, $adverb);
-    };
+    });
 
-    spec[">="] = function($function, $adverb) {
+    builder.addMethod(">=", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol(">="), $function, $adverb);
-    };
+    });
 
-    spec.bitAnd = function($function, $adverb) {
+    builder.addMethod("bitAnd", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("bitAnd"), $function, $adverb);
-    };
+    });
 
-    spec.bitOr = function($function, $adverb) {
+    builder.addMethod("bitOr", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("bitOr"), $function, $adverb);
-    };
+    });
 
-    spec.bitXor = function($function, $adverb) {
+    builder.addMethod("bitXor", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("bitXor"), $function, $adverb);
-    };
+    });
 
-    spec.bitHammingDistance = function($function, $adverb) {
+    builder.addMethod("bitHammingDistance", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("bitHammingDistance"), $function, $adverb);
-    };
+    });
 
-    spec.lcm = function($function, $adverb) {
+    builder.addMethod("lcm", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("lcm"), $function, $adverb);
-    };
+    });
 
-    spec.gcd = function($function, $adverb) {
+    builder.addMethod("gcd", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("gcd"), $function, $adverb);
-    };
+    });
 
-    spec.round = function($function, $adverb) {
+    builder.addMethod("round", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("round"), $function, $adverb);
-    };
+    });
 
-    spec.roundUp = function($function, $adverb) {
+    builder.addMethod("roundUp", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("roundUp"), $function, $adverb);
-    };
+    });
 
-    spec.trunc = function($function, $adverb) {
+    builder.addMethod("trunc", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("trunc"), $function, $adverb);
-    };
+    });
 
-    spec.atan2 = function($function, $adverb) {
+    builder.addMethod("atan2", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("atan2"), $function, $adverb);
-    };
+    });
 
-    spec.hypot = function($function, $adverb) {
+    builder.addMethod("hypot", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("hypot"), $function, $adverb);
-    };
+    });
 
-    spec.hypotApx = function($function, $adverb) {
+    builder.addMethod("hypotApx", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("hypotApx"), $function, $adverb);
-    };
+    });
 
-    spec.leftShift = function($function, $adverb) {
+    builder.addMethod("leftShift", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("leftShift"), $function, $adverb);
-    };
+    });
 
-    spec.rightShift = function($function, $adverb) {
+    builder.addMethod("rightShift", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("rightShift"), $function, $adverb);
-    };
+    });
 
-    spec.unsignedRightShift = function($function, $adverb) {
+    builder.addMethod("unsignedRightShift", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("unsignedRightShift"), $function, $adverb);
-    };
+    });
 
-    spec.ring1 = function($function, $adverb) {
+    builder.addMethod("ring1", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("ring1"), $function, $adverb);
-    };
+    });
 
-    spec.ring2 = function($function, $adverb) {
+    builder.addMethod("ring2", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("ring2"), $function, $adverb);
-    };
+    });
 
-    spec.ring3 = function($function, $adverb) {
+    builder.addMethod("ring3", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("ring3"), $function, $adverb);
-    };
+    });
 
-    spec.ring4 = function($function, $adverb) {
+    builder.addMethod("ring4", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("ring4"), $function, $adverb);
-    };
+    });
 
-    spec.difsqr = function($function, $adverb) {
+    builder.addMethod("difsqr", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("difsqr"), $function, $adverb);
-    };
+    });
 
-    spec.sumsqr = function($function, $adverb) {
+    builder.addMethod("sumsqr", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("sumsqr"), $function, $adverb);
-    };
+    });
 
-    spec.sqrsum = function($function, $adverb) {
+    builder.addMethod("sqrsum", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("sqrsum"), $function, $adverb);
-    };
+    });
 
-    spec.sqrdif = function($function, $adverb) {
+    builder.addMethod("sqrdif", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("sqrdif"), $function, $adverb);
-    };
+    });
 
-    spec.absdif = function($function, $adverb) {
+    builder.addMethod("absdif", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("absdif"), $function, $adverb);
-    };
+    });
 
-    spec.thresh = function($function, $adverb) {
+    builder.addMethod("thresh", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("thresh"), $function, $adverb);
-    };
+    });
 
-    spec.amclip = function($function, $adverb) {
+    builder.addMethod("amclip", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("amclip"), $function, $adverb);
-    };
+    });
 
-    spec.scaleneg = function($function, $adverb) {
+    builder.addMethod("scaleneg", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("scaleneg"), $function, $adverb);
-    };
+    });
 
-    spec.clip2 = function($function, $adverb) {
+    builder.addMethod("clip2", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("clip2"), $function, $adverb);
-    };
+    });
 
-    spec.fold2 = function($function, $adverb) {
+    builder.addMethod("fold2", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("fold2"), $function, $adverb);
-    };
+    });
 
-    spec.wrap2 = function($function, $adverb) {
+    builder.addMethod("wrap2", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("wrap2"), $function, $adverb);
-    };
+    });
 
-    spec.excess = function($function, $adverb) {
+    builder.addMethod("excess", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("excess"), $function, $adverb);
-    };
+    });
 
-    spec.firstArg = function($function, $adverb) {
+    builder.addMethod("firstArg", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("firstArg"), $function, $adverb);
-    };
+    });
 
-    spec.rrand = function($function, $adverb) {
+    builder.addMethod("rrand", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("rrand"), $function, $adverb);
-    };
+    });
 
-    spec.exprand = function($function, $adverb) {
+    builder.addMethod("exprand", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("exprand"), $function, $adverb);
-    };
+    });
 
-    spec["@"] = function($function, $adverb) {
+    builder.addMethod("@", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("@"), $function, $adverb);
-    };
+    });
 
-    spec.real = utils.nop;
-    spec.imag = function() {
+    builder.addMethod("real");
+
+    builder.addMethod("imag", function() {
       return $.Float(0.0);
-    };
+    });
 
-    spec["||"] = function($function, $adverb) {
+    builder.addMethod("||", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("||"), $function, $adverb);
-    };
+    });
 
-    spec["&&"] = function($function, $adverb) {
+    builder.addMethod("&&", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("&&"), $function, $adverb);
-    };
+    });
 
-    spec.xor = function($function, $adverb) {
+    builder.addMethod("xor", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("xor"), $function, $adverb);
-    };
+    });
 
-    spec.nand = function($function, $adverb) {
+    builder.addMethod("nand", function($function, $adverb) {
       return this.composeBinaryOp($.Symbol("nand"), $function, $adverb);
-    };
+    });
 
-    spec.not = function() {
+    builder.addMethod("not", function() {
       return this.composeUnaryOp($.Symbol("not"));
-    };
+    });
 
-    spec.ref = function() {
+    builder.addMethod("ref", function() {
       return this.composeUnaryOp($.Symbol("asRef"));
-    };
+    });
 
-    spec.clip = function($lo, $hi) {
+    builder.addMethod("clip", function($lo, $hi) {
       return this.composeNAryOp($.Symbol("clip"), $.Array([ $lo, $hi ]));
-    };
+    });
 
-    spec.wrap = function($lo, $hi) {
+    builder.addMethod("wrap", function($lo, $hi) {
       return this.composeNAryOp($.Symbol("wrap"), $.Array([ $lo, $hi ]));
-    };
+    });
 
-    spec.fold = function($lo, $hi) {
+    builder.addMethod("fold", function($lo, $hi) {
       return this.composeNAryOp($.Symbol("fold"), $.Array([ $lo, $hi ]));
-    };
+    });
 
-    spec.blend = fn(function($that, $blendFrac) {
+    builder.addMethod("blend", {
+      args: "that; blendFrac=0.5"
+    }, function($that, $blendFrac) {
       return this.composeNAryOp(
         $.Symbol("blend"), $.Array([ $that, $blendFrac ])
       );
-    }, "that; blendFrac=0.5");
+    });
 
-    spec.linlin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("linlin", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $.Symbol("linlin"), $.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.linexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("linexp", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $.Symbol("linexp"), $.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.explin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("explin", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $.Symbol("explin"), $.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.expexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("expexp", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $.Symbol("expexp"), $.Array([ $inMin, $inMax, $outMin, $outMax, $clip ])
       );
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.lincurve = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    builder.addMethod("lincurve", {
+      args: "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       return this.composeNAryOp(
         $.Symbol("lincurve"), $.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
       );
-    }, "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax");
+    });
 
-    spec.curvelin = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    builder.addMethod("curvelin", {
+      args: "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       return this.composeNAryOp(
         $.Symbol("curvelin"), $.Array([ $inMin, $inMax, $outMin, $outMax, $curve, $clip ])
       );
-    }, "inMin=0; inMax=1; outMin=1; outMax=1; curve=-4; clip=\\minmax");
+    });
 
-    spec.bilin = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    builder.addMethod("bilin", {
+      args: "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax"
+    }, function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $.Symbol("bilin"), $.Array([
           $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
         ])
       );
-    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.biexp = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    builder.addMethod("biexp", {
+      args: "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax"
+    }, function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       return this.composeNAryOp(
         $.Symbol("biexp"), $.Array([
           $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip
         ])
       );
-    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.moddif = fn(function($function, $mod) {
+    builder.addMethod("moddif", {
+      args: "function; mod"
+    }, function($function, $mod) {
       return this.composeNAryOp(
         $.Symbol("moddif"), $.Array([ $function, $mod ])
       );
-    }, "function; mod");
+    });
 
-    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
+    builder.addMethod("degreeToKey", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
       return this.composeNAryOp(
         $.Symbol("degreeToKey"), $.Array([ $scale, $stepsPerOctave ])
       );
-    }, "scale; stepsPerOctave=12");
+    });
 
-    spec.degrad = function() {
+    builder.addMethod("degrad", function() {
       return this.composeUnaryOp($.Symbol("degrad"));
-    };
+    });
 
-    spec.raddeg = function() {
+    builder.addMethod("raddeg", function() {
       return this.composeUnaryOp($.Symbol("raddeg"));
-    };
+    });
 
-    spec.applyTo = function() {
+    builder.addMethod("applyTo", function() {
       return this.value.apply(this, arguments);
-    };
+    });
 
     // TODO: implements <>
     // TODO: implements sampled
 
-    spec.asUGenInput = function($for) {
+    builder.addMethod("asUGenInput", function($for) {
       return this.value($for);
-    };
+    });
 
-    spec.asAudioRateInput = function($for) {
+    builder.addMethod("asAudioRateInput", function($for) {
       var $result;
 
       $result = this.value($for);
@@ -600,145 +622,130 @@ SCScript.install(function(sc) {
       }
 
       return $result;
-    };
+    });
 
-    spec.asControlInput = function() {
+    builder.addMethod("asControlInput", function() {
       return this.value();
-    };
+    });
 
-    spec.isValidUGenInput = utils.alwaysReturn$true;
+    builder.addMethod("isValidUGenInput", sc.TRUE);
   });
 
-  klass.define("UnaryOpFunction : AbstractFunction", function(spec, utils) {
-    spec.constructor = function SCUnaryOpFunction() {
-      this.__super__("AbstractFunction");
-    };
-
-    spec.$new = function($selector, $a) {
-      return utils.newCopyArgs(this, {
+  sc.lang.klass.define("UnaryOpFunction : AbstractFunction", function(builder, _) {
+    builder.addClassMethod("new", function($selector, $a) {
+      return _.newCopyArgs(this, {
         selector: $selector,
         a: $a
       });
-    };
+    });
 
-    spec.value = function() {
+    builder.addMethod("value", function() {
       var $a = this._$a;
       return $a.value.apply($a, arguments).perform(this._$selector);
-    };
+    });
 
-    spec.valueArray = function($args) {
+    builder.addMethod("valueArray", function($args) {
       return this._$a.valueArray($args).perform(this._$selector);
-    };
+    });
 
-    spec.valueEnvir = function() {
+    builder.addMethod("valueEnvir", function() {
       var $a = this._$a;
       return $a.valueEnvir.apply($a, arguments).perform(this._$selector);
-    };
+    });
 
-    spec.valueArrayEnvir = function($args) {
+    builder.addMethod("valueArrayEnvir", function($args) {
       return this._$a.valueArrayEnvir($args).perform(this._$selector);
-    };
+    });
 
-    spec.functionPerformList = function($selector, $arglist) {
+    builder.addMethod("functionPerformList", function($selector, $arglist) {
       return this.performList($selector, $arglist);
-    };
+    });
     // TODO: implements storeOn
   });
 
-  klass.define("BinaryOpFunction : AbstractFunction", function(spec, utils) {
-    spec.constructor = function SCBinaryOpFunction() {
-      this.__super__("AbstractFunction");
-    };
-
-    spec.$new = function($selector, $a, $b, $adverb) {
-      return utils.newCopyArgs(this, {
+  sc.lang.klass.define("BinaryOpFunction : AbstractFunction", function(builder, _) {
+    builder.addClassMethod("new", function($selector, $a, $b, $adverb) {
+      return _.newCopyArgs(this, {
         selector: $selector,
         a: $a,
         b: $b,
         adverb: $adverb
       });
-    };
+    });
 
-    spec.value = function() {
+    builder.addMethod("value", function() {
       return this._$a.value.apply(this._$a, arguments)
         .perform(this._$selector, this._$b.value.apply(this._$b, arguments), this._$adverb);
-    };
+    });
 
-    spec.valueArray = function($args) {
+    builder.addMethod("valueArray", function($args) {
       return this._$a.valueArray($args)
         .perform(this._$selector, this._$b.valueArray($args, arguments), this._$adverb);
-    };
+    });
 
     // TODO: implements valueEnvir
     // TODO: implements valueArrayEnvir
 
-    spec.functionPerformList = function($selector, $arglist) {
+    builder.addMethod("functionPerformList", function($selector, $arglist) {
       return this.performList($selector, $arglist);
-    };
+    });
     // TODO: implements storeOn
   });
 
-  klass.define("NAryOpFunction : AbstractFunction", function(spec, utils) {
-    spec.constructor = function SCNAryOpFunction() {
-      this.__super__("AbstractFunction");
-    };
-
-    spec.$new = function($selector, $a, $arglist) {
-      return utils.newCopyArgs(this, {
+  sc.lang.klass.define("NAryOpFunction : AbstractFunction", function(builder, _) {
+    builder.addClassMethod("new", function($selector, $a, $arglist) {
+      return _.newCopyArgs(this, {
         selector: $selector,
         a: $a,
         arglist: $arglist
       });
-    };
+    });
 
-    spec.value = function() {
+    builder.addMethod("value", function() {
       var args = arguments;
       return this._$a.value.apply(this._$a, args)
-        .performList(this._$selector, this._$arglist.collect($.Function(function() {
-          return [ function($_) {
-            return $_.value.apply($_, args);
-          } ];
+        .performList(this._$selector, this._$arglist.collect($.Func(function($_) {
+          return $_.value.apply($_, args);
         })));
-    };
+    });
 
-    spec.valueArray = function($args) {
+    builder.addMethod("valueArray", function($args) {
       return this._$a.valueArray($args)
-        .performList(this._$selector, this._$arglist.collect($.Function(function() {
-          return [ function($_) {
-            return $_.valueArray($args);
-          } ];
+        .performList(this._$selector, this._$arglist.collect($.Func(function($_) {
+          return $_.valueArray($args);
         })));
-    };
+    });
 
     // TODO: implements valueEnvir
     // TODO: implements valueArrayEnvir
 
-    spec.functionPerformList = function($selector, _$arglist) {
+    builder.addMethod("functionPerformList", function($selector, _$arglist) {
       return this.performList($selector, _$arglist);
-    };
+    });
     // TODO: implements storeOn
   });
 
-  klass.define("FunctionList : AbstractFunction", function(spec, utils) {
-    var $int0 = utils.$int0;
+  sc.lang.klass.define("FunctionList : AbstractFunction", function(builder, _) {
+    builder.addProperty("<>", "array");
 
-    spec.constructor = function SCFunctionList() {
-      this.__super__("AbstractFunction");
+    builder.addMethod("__init__", function() {
+      this.__super__("__init__");
       this._flopped = false;
-    };
-    utils.setProperty(spec, "<>", "array");
+    });
 
-    spec.$new = function($functions) {
-      return utils.newCopyArgs(this, {
+    builder.addClassMethod("new", function($functions) {
+      return _.newCopyArgs(this, {
         array: $functions
       });
-    };
+    });
 
-    spec.flopped = function() {
+    builder.addMethod("flopped", function() {
       return $.Boolean(this._flopped);
-    };
+    });
 
-    spec.addFunc = fn(function($$functions) {
+    builder.addMethod("addFunc", {
+      args: "*functions"
+    }, function($$functions) {
       if (this._flopped) {
         throw new Error("cannot add a function to a flopped FunctionList");
       }
@@ -746,9 +753,9 @@ SCScript.install(function(sc) {
       this._$array = this._$array.addAll($$functions);
 
       return this;
-    }, "*functions");
+    });
 
-    spec.removeFunc = function($function) {
+    builder.addMethod("removeFunc", function($function) {
       this._$array.remove($function);
 
       if (this._$array.size() < 2) {
@@ -756,62 +763,56 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    };
+    });
 
-    spec.replaceFunc = function($find, $replace) {
+    builder.addMethod("replaceFunc", function($find, $replace) {
       this._$array = this._$array.replace($find, $replace);
       return this;
-    };
+    });
 
-    spec.value = function() {
+    builder.addMethod("value", function() {
       var $res, args = arguments;
 
-      $res = this._$array.collect($.Function(function() {
-        return [ function($_) {
-          return $_.value.apply($_, args);
-        } ];
+      $res = this._$array.collect($.Func(function($_) {
+        return $_.value.apply($_, args);
       }));
 
       return this._flopped ? $res.flop() : $res;
-    };
+    });
 
-    spec.valueArray = function($args) {
+    builder.addMethod("valueArray", function($args) {
       var $res;
 
-      $res = this._$array.collect($.Function(function() {
-        return [ function($_) {
-          return $_.valueArray($args);
-        } ];
+      $res = this._$array.collect($.Func(function($_) {
+        return $_.valueArray($args);
       }));
 
       return this._flopped ? $res.flop() : $res;
-    };
+    });
 
     // TODO: implements valueEnvir
     // TODO: implements valueArrayEnvir
 
-    spec.do = function($function) {
+    builder.addMethod("do", function($function) {
       this._$array.do($function);
       return this;
-    };
+    });
 
-    spec.flop = function() {
+    builder.addMethod("flop", function() {
       if (!this._flopped) {
-        this._$array = this._$array.collect($.Function(function() {
-          return [ function($_) {
-            return $_.$("flop");
-          } ];
+        this._$array = this._$array.collect($.Func(function($_) {
+          return $_.$("flop");
         }));
       }
       this._flopped = true;
 
       return this;
-    };
+    });
 
     // TODO: implements envirFlop
 
-    spec.storeArgs = function() {
+    builder.addMethod("storeArgs", function() {
       return $.Array([ this._$array ]);
-    };
+    });
   });
 });

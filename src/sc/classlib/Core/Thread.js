@@ -3,20 +3,21 @@ SCScript.install(function(sc) {
 
   require("../Streams/Stream");
 
-  var $    = sc.lang.$;
-  var fn   = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
   var main = sc.lang.main;
-  var klass = sc.lang.klass;
   var random = sc.libs.random;
 
-  klass.refine("Thread", function(spec, utils) {
-    utils.setProperty(spec, "<", "parent");
+  sc.lang.klass.refine("Thread", function(builder) {
+    builder.addProperty("<", "parent");
 
-    spec.$new = fn(function($func) {
+    builder.addClassMethod("new", {
+      args: "func"
+    }, function($func) {
       return this.__super__("new")._init($func);
-    }, "func");
+    });
 
-    spec._init = function($func) {
+    builder.addMethod("_init", function($func) {
       if ($func.__tag !== sc.TAG_FUNC) {
         throw new Error("Thread.init failed");
       }
@@ -25,11 +26,11 @@ SCScript.install(function(sc) {
       this._parent   = null;
       this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
       return this;
-    };
+    });
 
-    spec.state = function() {
+    builder.addMethod("state", function() {
       return $.Integer(this._state);
-    };
+    });
 
     // TODO: implements primitiveError
     // TODO: implements primitiveIndex
@@ -51,41 +52,42 @@ SCScript.install(function(sc) {
     // TODO: implements oldExecutingPath
     // TODO: implements init
 
-    spec.copy = utils.nop;
+    builder.addMethod("copy");
 
-    // spec.isPlaying = function() {
-    //   return $.Boolean(this._state._ === 5);
-    // };
-
+    // TODO: implements isPlaying
     // TODO: implements threadPlayer
     // TODO: implements findThreadPlayer
 
-    spec.randSeed_ = fn(function($seed) {
+    builder.addMethod("randSeed_", {
+      args: "seed"
+    }, function($seed) {
       this._randgen.setSeed($seed.__int__() >>> 0);
       return this;
-    }, "seed");
+    });
 
-    spec.randData_ = fn(function($data) {
+    builder.addMethod("randData_", {
+      args: "data"
+    }, function($data) {
       this._randgen.x = $data.at($.Integer(0)).__int__();
       this._randgen.y = $data.at($.Integer(1)).__int__();
       this._randgen.z = $data.at($.Integer(2)).__int__();
       return this;
-    }, "data");
+    });
 
-    spec.randData = function() {
+    builder.addMethod("randData", function() {
       return $("Int32Array").newFrom($.Array([
         $.Integer(this._randgen.x),
         $.Integer(this._randgen.y),
         $.Integer(this._randgen.z),
       ]));
-    };
+    });
 
     // TODO: implements failedPrimitiveName
     // TODO: implements handleError
 
-    spec.next = utils.nop;
-    spec.value = utils.nop;
-    spec.valueArray = utils.nop;
+    builder.addMethod("next");
+    builder.addMethod("value");
+    builder.addMethod("valueArray");
     // TODO: implements $primitiveError
     // TODO: implements $primitiveErrorString
     // TODO: implements storeOn
@@ -93,19 +95,10 @@ SCScript.install(function(sc) {
     // TODO: implements checkCanArchive
   });
 
-  klass.refine("Routine", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.__tag = sc.TAG_ROUTINE;
-
-    spec.constructor = function SCRoutine() {
-      this.__super__("Thread");
-      this._$doneValue = null;
-    };
-
-    spec.$new = function($func) {
+  sc.lang.klass.refine("Routine", function(builder) {
+    builder.addClassMethod("new", function($func) {
       return this.__super__("new", [ $func ]);
-    };
+    });
 
     // TODO: implements $run
 
@@ -131,17 +124,17 @@ SCScript.install(function(sc) {
       return this._bytecode.result || $nil;
     };
 
-    spec.next   = routine$resume;
-    spec.value  = routine$resume;
-    spec.resume = routine$resume;
-    spec.run    = routine$resume;
-    spec.valueArray = routine$resume;
+    builder.addMethod("next", routine$resume);
+    builder.addMethod("value", routine$resume);
+    builder.addMethod("resume", routine$resume);
+    builder.addMethod("run", routine$resume);
+    builder.addMethod("valueArray", routine$resume);
 
-    spec.reset = function() {
+    builder.addMethod("reset", function() {
       this._state = sc.STATE_INIT;
       this._bytecode.reset();
       return this;
-    };
+    });
     // TODO: implements stop
     // TODO: implements p
     // TODO: implements storeArgs

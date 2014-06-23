@@ -4,52 +4,50 @@ SCScript.install(function(sc) {
   require("./AbstractFunction");
 
   var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
   var iterator = sc.lang.iterator;
   var bytecode = sc.lang.bytecode;
 
-  sc.lang.klass.refine("Function", function(spec, utils) {
-    var $nil = utils.$nil;
-    var SCArray = $("Array");
-    var SCRoutine = $("Routine");
+  var SCArray = $("Array");
+  var SCRoutine = $("Routine");
 
+  sc.lang.klass.refine("Function", function(builder) {
     // TODO: implements def
-
-    spec.$new = function() {
+    builder.addClassMethod("new", function() {
       throw new Error("Function.new is illegal, should use literal.");
-    };
+    });
 
-    spec.isFunction = utils.alwaysReturn$true;
+    builder.addMethod("isFunction", sc.TRUE);
 
     // TODO: implements isClosed
 
-    spec.archiveAsCompileString = utils.alwaysReturn$true;
-    spec.archiveAsObject = utils.alwaysReturn$true;
+    builder.addMethod("archiveAsCompileString", sc.TRUE);
+    builder.addMethod("archiveAsObject", sc.TRUE);
 
     // TODO: implements checkCanArchive
 
-    spec.shallowCopy = utils.nop;
+    builder.addMethod("shallowCopy");
 
     var function$run = function(bytecode, args) {
       return bytecode.reset().run(args);
     };
 
-    spec.choose = function() {
+    builder.addMethod("choose", function() {
       return this.value();
-    };
+    });
 
-    spec.update = function() {
+    builder.addMethod("update", function() {
       return function$run(this._bytecode, arguments);
-    };
+    });
 
-    spec.value = function() {
+    builder.addMethod("value", function() {
       return function$run(this._bytecode, arguments);
-    };
+    });
 
-    spec.valueArray = function($args) {
+    builder.addMethod("valueArray", function($args) {
       return function$run(this._bytecode, $args.asArray()._);
-    };
+    });
 
     var envir = function(func, args) {
       return func._argNames.map(function(name, i) {
@@ -64,17 +62,19 @@ SCScript.install(function(sc) {
       }, args);
     };
 
-    spec.valueEnvir = function() {
+    builder.addMethod("valueEnvir", function() {
       return function$run(this._bytecode, envir(this._bytecode, arguments));
-    };
+    });
 
-    spec.valueArrayEnvir = function($args) {
+    builder.addMethod("valueArrayEnvir", function($args) {
       return function$run(this._bytecode, envir(this._bytecode, $args.asArray()._));
-    };
+    });
 
-    spec.functionPerformList = fn(function($selector, $arglist) {
+    builder.addMethod("functionPerformList", {
+      args: "selector; arglist"
+    }, function($selector, $arglist) {
       return this[$selector.__str__()].apply(this, $arglist.asArray()._);
-    }, "selector; arglist");
+    });
 
     // TODO: implements valueWithEnvir
     // TODO: implements performWithEnvir
@@ -83,23 +83,25 @@ SCScript.install(function(sc) {
     // TODO: implements numVars
     // TODO: implements varArgs
 
-    spec.loop = function() {
+    builder.addMethod("loop", function() {
       iterator.execute(
         iterator.function$loop(),
         this
       );
       return this;
-    };
+    });
 
     // TODO: implements block
 
-    spec.asRoutine = function() {
+    builder.addMethod("asRoutine", function() {
       return SCRoutine.new(this);
-    };
+    });
 
-    spec.dup = fn(function($n) {
+    builder.addMethod("dup", {
+      args: "n=2"
+    }, function($n) {
       return SCArray.fill($n, this);
-    }, "n=2");
+    });
 
     // TODO: implements sum
     // TODO: implements defer
@@ -113,7 +115,7 @@ SCScript.install(function(sc) {
     // TODO: implements cmdPeriod
     // TODO: implements bench
 
-    spec.protect = function($handler) {
+    builder.addMethod("protect", function($handler) {
       var result;
       var current = bytecode.current;
 
@@ -127,14 +129,14 @@ SCScript.install(function(sc) {
       $handler.value();
 
       return result || $nil;
-    };
+    });
 
     // TODO: implements try
     // TODO: implements prTry
 
     // TODO: implements handleError
 
-    spec.case = function() {
+    builder.addMethod("case", function() {
       var args, i, imax;
 
       args = slice.call(arguments);
@@ -151,44 +153,42 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    };
+    });
 
-    spec.r = function() {
+    builder.addMethod("r", function() {
       return SCRoutine.new(this);
-    };
+    });
 
-    spec.p = function() {
+    builder.addMethod("p", function() {
       return $("Prout").new(this);
-    };
+    });
 
     // TODO: implements matchItem
     // TODO: implements performDegreeToKey
 
-    spec.flop = function() {
+    builder.addMethod("flop", function() {
       var $this = this;
 
-      return $.Function(function() {
-        return [ function() {
-          var $$args = $.Array(slice.call(arguments));
-          return $$args.flop().collect($.Function(function() {
-            return [ function($_) {
-              return $this.valueArray($_);
-            } ];
-          }));
-        } ];
+      return $.Func(function() {
+        var $$args = $.Array(slice.call(arguments));
+        return $$args.flop().collect($.Func(function($_) {
+          return $this.valueArray($_);
+        }));
       });
-    };
+    });
 
     // TODO: implements envirFlop
     // TODO: implements makeFlopFunc
     // TODO: implements inEnvir
 
-    spec.while = fn(function($body) {
+    builder.addMethod("while", {
+      args: "body"
+    }, function($body) {
       iterator.execute(
         iterator.function$while(this),
         $body
       );
       return this;
-    }, "body");
+    });
   });
 });

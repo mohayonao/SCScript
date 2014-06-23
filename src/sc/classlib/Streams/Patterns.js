@@ -3,183 +3,189 @@ SCScript.install(function(sc) {
 
   require("../Core/AbstractFunction");
 
-  var $     = sc.lang.$;
-  var fn    = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $ = sc.lang.$;
+  var $false = $.false;
+  var SCRoutine = $("Routine");
 
-  klass.define("Pattern : AbstractFunction", function(spec, utils) {
-    var $false = utils.$false;
-
-    spec["++"] = function($aPattern) {
+  sc.lang.klass.define("Pattern : AbstractFunction", function(builder) {
+    builder.addMethod("++", function($aPattern) {
       return $("Pseq").new($.Array([ this, $aPattern ]));
-    };
+    });
 
-    spec["<>"] = function($aPattern) {
+    builder.addMethod("<>", function($aPattern) {
       return $("Pchain").new(this, $aPattern);
-    };
+    });
 
-    spec.play = fn(function($clock, $protoEvent, $quant) {
+    builder.addMethod("play", {
+      args: "clock; protoEvent; quant"
+    }, function($clock, $protoEvent, $quant) {
       return this.asEventStreamPlayer($protoEvent).play($clock, $false, $quant);
-    }, "clock; protoEvent; quant");
+    });
 
-    spec.asStream = function() {
+    builder.addMethod("asStream", function() {
       var $this = this;
-      return $("Routine").new($.Function(function() {
-        return [ function($inval) {
-          return $this.embedInStream($inval);
-        } ];
+      return SCRoutine.new($.Func(function($inval) {
+        return $this.embedInStream($inval);
       }));
-    };
+    });
 
-    spec.iter = function() {
+    builder.addMethod("iter", function() {
       return this.asStream();
-    };
+    });
 
-    spec.streamArg = function() {
+    builder.addMethod("streamArg", function() {
       return this.asStream();
-    };
+    });
 
-    spec.asEventStreamPlayer = fn(function($protoEvent) {
+    builder.addMethod("asEventStreamPlayer", {
+      args: "protoEvent"
+    }, function($protoEvent) {
       return $("EventStreamPlayer").new(this.asStream(), $protoEvent);
-    }, "protoEvent");
+    });
 
-    spec.embedInStream = fn(function($inval) {
+    builder.addMethod("embedInStream", {
+      args: "inval"
+    }, function($inval) {
       return this.asStream().embedInStream($inval);
-    }, "inval");
+    });
 
-    spec.do = function($function) {
+    builder.addMethod("do", function($function) {
       return this.asStream().do($function);
-    };
+    });
 
-    spec.collect = function($function) {
+    builder.addMethod("collect", function($function) {
       return $("Pcollect").new($function, this);
-    };
+    });
 
-    spec.select = function($function) {
+    builder.addMethod("select", function($function) {
       return $("Pselect").new($function, this);
-    };
+    });
 
-    spec.reject = function($function) {
+    builder.addMethod("reject", function($function) {
       return $("Preject").new($function, this);
-    };
+    });
 
-    spec.composeUnaryOp = function($operator) {
+    builder.addMethod("composeUnaryOp", function($operator) {
       return $("Punop").new($operator, this);
-    };
+    });
 
-    spec.composeBinaryOp = function($operator, $pattern, $adverb) {
+    builder.addMethod("composeBinaryOp", function($operator, $pattern, $adverb) {
       return $("Pbinop").new($operator, this, $pattern, $adverb);
-    };
+    });
 
-    spec.reverseComposeBinaryOp = function($operator, $pattern, $adverb) {
+    builder.addMethod("reverseComposeBinaryOp", function($operator, $pattern, $adverb) {
       return $("Pbinop").new($operator, $pattern, this, $adverb);
-    };
+    });
 
-    spec.composeNAryOp = function($selector, $argList) {
+    builder.addMethod("composeNAryOp", function($selector, $argList) {
       return $("Pnaryop").new($selector, this, $argList);
-    };
+    });
 
-    spec.mtranspose = function($n) {
+    builder.addMethod("mtranspose", function($n) {
       return $("Paddp").new($.Symbol("mtranspose"), $n, this);
-    };
+    });
 
-    spec.ctranspose = function($n) {
+    builder.addMethod("ctranspose", function($n) {
       return $("Paddp").new($.Symbol("ctranspose"), $n, this);
-    };
+    });
 
-    spec.gtranspose = function($n) {
+    builder.addMethod("gtranspose", function($n) {
       return $("Paddp").new($.Symbol("gtranspose"), $n, this);
-    };
+    });
 
-    spec.detune = function($n) {
+    builder.addMethod("detune", function($n) {
       return $("Paddp").new($.Symbol("detune"), $n, this);
-    };
+    });
 
-    spec.scaleDur = function($x) {
+    builder.addMethod("scaleDur", function($x) {
       return $("Pmulp").new($.Symbol("dur"), $x, this);
-    };
+    });
 
-    spec.addDur = function($x) {
+    builder.addMethod("addDur", function($x) {
       return $("Paddp").new($.Symbol("dur"), $x, this);
-    };
+    });
 
-    spec.stretch = function($x) {
+    builder.addMethod("stretch", function($x) {
       return $("Pmulp").new($.Symbol("stretch"), $x, this);
-    };
+    });
 
-    spec.lag = function($t) {
+    builder.addMethod("lag", function($t) {
       return $("Plag").new($t, this);
-    };
+    });
 
-    spec.legato = function($x) {
+    builder.addMethod("legato", function($x) {
       return $("Pmulp").new($.Symbol("legato"), $x, this);
-    };
+    });
 
-    spec.db = function($db) {
+    builder.addMethod("db", function($db) {
       return $("Paddp").new($.Symbol("db"), $db, this);
-    };
+    });
 
-    spec.clump = function($n) {
+    builder.addMethod("clump", function($n) {
       return $("Pclump").new($n, this);
-    };
+    });
 
-    spec.flatten = function($n) {
+    builder.addMethod("flatten", function($n) {
       return $("Pflatten").new($n, this);
-    };
+    });
 
-    spec.repeat = function($n) {
+    builder.addMethod("repeat", function($n) {
       return $("Pn").new(this, $n);
-    };
+    });
 
-    spec.keep = function($n) {
+    builder.addMethod("keep", function($n) {
       return $("Pfin").new($n, this);
-    };
+    });
 
-    spec.drop = function($n) {
+    builder.addMethod("drop", function($n) {
       return $("Pdrop").new($n, this);
-    };
+    });
 
-    spec.stutter = function($n) {
+    builder.addMethod("stutter", function($n) {
       return $("Pstutter").new($n, this);
-    };
+    });
 
-    spec.finDur = function($dur, $tolerance ) {
+    builder.addMethod("finDur", function($dur, $tolerance ) {
       return $("Pfindur").new($dur, this, $tolerance);
-    };
+    });
 
-    spec.fin = function($n) {
+    builder.addMethod("fin", function($n) {
       return $("Pfin").new($n, this);
-    };
+    });
 
-    spec.trace = function($key, $printStream, $prefix) {
+    builder.addMethod("trace", function($key, $printStream, $prefix) {
       return $("Ptrace").new(this, $key, $printStream, $prefix);
-    };
+    });
 
-    spec.differentiate = function() {
+    builder.addMethod("differentiate", function() {
       return $("Pdiff").new(this);
-    };
+    });
     // TODO: implements integrate
     // TODO: implements record
   });
 
-  klass.define("Pseries : Pattern", function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.define("Pseries : Pattern", function(builder, _) {
+    var $nil = $.nil;
 
-    utils.setProperty(spec, "<>", "start");
-    utils.setProperty(spec, "<>", "step");
-    utils.setProperty(spec, "<>", "length");
+    builder.addProperty("<>", "start");
+    builder.addProperty("<>", "step");
+    builder.addProperty("<>", "length");
 
-    spec.$new = fn(function($start, $step, $length) {
-      return utils.newCopyArgs(this, {
+    builder.addClassMethod("new", {
+      args: "start=0; step=1; length=inf"
+    }, function($start, $step, $length) {
+      return _.newCopyArgs(this, {
         start: $start,
         step: $step,
         length: $length
       });
-    }, "start=0; step=1; length=inf");
+    });
 
     // TODO: implements storeArgs
 
-    spec.embedInStream = fn(function($inval) {
+    builder.addMethod("embedInStream", {
+      args: "inval"
+    }, function($inval) {
       var counter, length;
       var $cur, $stepStr;
 
@@ -189,10 +195,8 @@ SCScript.install(function(sc) {
       $cur     = this._$start;
       $stepStr = this._$step.asStream();
 
-      $.Function(function() {
-        return [ function() {
-          return $.Boolean(counter < length);
-        } ];
+      $.Func(function() {
+        return $.Boolean(counter < length);
       }).while($.Function(function() {
         var $stepVal;
         return [
@@ -217,27 +221,31 @@ SCScript.install(function(sc) {
       }));
 
       return $inval;
-    }, "inval");
+    });
   });
 
-  klass.define("Pgeom : Pattern", function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.define("Pgeom : Pattern", function(builder, _) {
+    var $nil = $.nil;
 
-    utils.setProperty(spec, "<>", "start");
-    utils.setProperty(spec, "<>", "grow");
-    utils.setProperty(spec, "<>", "length");
+    builder.addProperty("<>", "start");
+    builder.addProperty("<>", "grow");
+    builder.addProperty("<>", "length");
 
-    spec.$new = fn(function($start, $grow, $length) {
-      return utils.newCopyArgs(this, {
+    builder.addClassMethod("new", {
+      args: "start=0; grow=1; length=inf"
+    }, function($start, $grow, $length) {
+      return _.newCopyArgs(this, {
         start: $start,
         grow: $grow,
         length: $length
       });
-    }, "start=0; grow=1; length=inf");
+    });
 
     // TODO: implements storeArgs
 
-    spec.embedInStream = fn(function($inval) {
+    builder.addMethod("embedInStream", {
+      args: "inval"
+    }, function($inval) {
       var counter, length;
       var $cur, $growStr;
 
@@ -247,10 +255,8 @@ SCScript.install(function(sc) {
       $cur     = this._$start;
       $growStr = this._$grow.asStream();
 
-      $.Function(function() {
-        return [ function() {
-          return $.Boolean(counter < length);
-        } ];
+      $.Func(function() {
+        return $.Boolean(counter < length);
       }).while($.Function(function() {
         var $growVal;
         return [
@@ -275,6 +281,6 @@ SCScript.install(function(sc) {
       }));
 
       return $inval;
-    }, "inval");
+    });
   });
 });

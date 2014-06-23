@@ -9,11 +9,10 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCFunction = $("Function");
+
   describe("SCFunction", function() {
-    var SCFunction, SCObject;
     before(function() {
-      SCFunction = $("Function");
-      SCObject = $("Object");
       this.createInstance = function(func, def) {
         return $.Function(function() {
           return [ func || function() {} ];
@@ -65,7 +64,7 @@
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
     it("#choose", sinon.test(function() {
       var instance, test;

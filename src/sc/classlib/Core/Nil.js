@@ -4,171 +4,184 @@ SCScript.install(function(sc) {
   require("./Object");
 
   var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
 
-  sc.lang.klass.refine("Nil", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.__num__ = function() {
+  sc.lang.klass.refine("Nil", function(builder) {
+    builder.addMethod("__num__", function() {
       return 0;
-    };
+    });
 
-    spec.__bool__ = function() {
+    builder.addMethod("__bool__", function() {
       return false;
-    };
+    });
 
-    spec.__sym__ = function() {
+    builder.addMethod("__sym__", function() {
       return "nil";
-    };
+    });
 
-    spec.toString = function() {
+    builder.addMethod("toString", function() {
       return "nil";
-    };
+    });
 
-    spec.$new = function() {
+    builder.addClassMethod("new", function() {
       throw new Error("Nil.new is illegal, should use literal.");
-    };
+    });
 
-    spec.isNil = utils.alwaysReturn$true;
-    spec.notNil = utils.alwaysReturn$false;
+    builder.addMethod("isNil", sc.TRUE);
+    builder.addMethod("notNil", sc.FALSE);
 
-    spec["?"] = function($obj) {
+    builder.addMethod("?", function($obj) {
       return $obj;
-    };
+    });
 
-    spec["??"] = function($obj) {
+    builder.addMethod("??", function($obj) {
       return $obj.value();
-    };
+    });
 
-    spec["!?"] = utils.nop;
+    builder.addMethod("!?");
 
-    spec.asBoolean = utils.alwaysReturn$false;
-    spec.booleanValue = utils.alwaysReturn$false;
+    builder.addMethod("asBoolean", sc.FALSE);
+    builder.addMethod("booleanValue", sc.FALSE);
 
-    spec.push = fn(function($function) {
+    builder.addMethod("push", {
+      args: "function"
+    }, function($function) {
       return $function.value();
-    }, "function");
+    });
 
-    spec.appendStream = fn(function($stream) {
+    builder.addMethod("appendStream", {
+      args: "stream"
+    }, function($stream) {
       return $stream;
-    }, "stream");
+    });
 
-    spec.pop = utils.nop;
-    spec.source = utils.nop;
-    spec.source_ = utils.nop;
+    builder.addMethod("pop");
+    builder.addMethod("source");
+    builder.addMethod("source_");
 
-    spec.rate = utils.nop;
-    spec.numChannels = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$false;
+    builder.addMethod("rate");
+    builder.addMethod("numChannels");
+    builder.addMethod("isPlaying", sc.FALSE);
 
-    spec.do = utils.nop;
-    spec.reverseDo = utils.nop;
-    spec.pairsDo = utils.nop;
-    spec.collect = utils.nop;
-    spec.select = utils.nop;
-    spec.reject = utils.nop;
-    spec.detect = utils.nop;
-    spec.collectAs = utils.nop;
-    spec.selectAs = utils.nop;
-    spec.rejectAs = utils.nop;
+    builder.addMethod("do");
+    builder.addMethod("reverseDo");
+    builder.addMethod("pairsDo");
+    builder.addMethod("collect");
+    builder.addMethod("select");
+    builder.addMethod("reject");
+    builder.addMethod("detect");
+    builder.addMethod("collectAs");
+    builder.addMethod("selectAs");
+    builder.addMethod("rejectAs");
 
-    spec.dependants = function() {
+    builder.addMethod("dependants", function() {
       return $("IdentitySet").new();
-    };
+    });
 
-    spec.changed = utils.nop;
-    spec.addDependant = utils.nop;
-    spec.removeDependant = utils.nop;
-    spec.release = utils.nop;
-    spec.update = utils.nop;
+    builder.addMethod("changed");
+    builder.addMethod("addDependant");
+    builder.addMethod("removeDependant");
+    builder.addMethod("release");
+    builder.addMethod("update");
 
-    spec.transformEvent = fn(function($event) {
+    builder.addMethod("transformEvent", {
+      args: "event"
+    }, function($event) {
       return $event;
-    }, "event");
+    });
 
-    spec.awake = utils.alwaysReturn$nil;
+    builder.addMethod("awake");
 
-    spec.play = utils.nop;
+    builder.addMethod("play");
 
-    spec.nextTimeOnGrid = fn(function($clock) {
+    builder.addMethod("nextTimeOnGrid", {
+      args: "clock"
+    }, function($clock) {
       if ($clock === $nil) {
         return $clock;
       }
-      return $.Function(function() {
-        return [ function() {
-          return $clock.$("nextTimeOnGrid");
-        } ];
+      return $.Func(function() {
+        return $clock.$("nextTimeOnGrid");
       });
-    }, "clock");
+    });
 
-    spec.asQuant = function() {
+    builder.addMethod("asQuant", function() {
       return $("Quant").default();
-    };
+    });
 
-    spec.swapThisGroup = utils.nop;
-    spec.performMsg = utils.nop;
+    builder.addMethod("swapThisGroup");
+    builder.addMethod("performMsg");
 
-    spec.printOn = fn(function($stream) {
+    builder.addMethod("printOn", {
+      args: "stream"
+    }, function($stream) {
       $stream.putAll($.String("nil"));
       return this;
-    }, "stream");
+    });
 
-    spec.storeOn = fn(function($stream) {
+    builder.addMethod("storeOn", {
+      args: "stream"
+    }, function($stream) {
       $stream.putAll($.String("nil"));
       return this;
-    }, "stream");
+    });
 
-    spec.matchItem = utils.alwaysReturn$true;
+    builder.addMethod("matchItem", sc.TRUE);
 
-    spec.add = fn(function($value) {
+    builder.addMethod("add", {
+      args: "va;ie"
+    }, function($value) {
       return $.Array([ $value ]);
-    }, "value");
+    });
 
-    spec.addAll = fn(function($array) {
+    builder.addMethod("addAll", {
+      args: "array"
+    }, function($array) {
       return $array.asArray();
-    }, "array");
+    });
 
-    spec["++"] = function($array) {
+    builder.addMethod("++", function($array) {
       return $array.asArray();
-    };
+    });
 
-    spec.asCollection = function() {
+    builder.addMethod("asCollection", function() {
       return $.Array();
-    };
+    });
 
-    spec.remove = utils.nop;
+    builder.addMethod("remove");
 
-    spec.set = utils.nop;
+    builder.addMethod("set");
 
-    spec.get = fn(function($prevVal) {
+    builder.addMethod("get", {
+      args: "prevVal"
+    }, function($prevVal) {
       return $prevVal;
-    }, "prevVal");
+    });
 
-    spec.addFunc = function() {
+    builder.addMethod("addFunc", function() {
       var functions = slice.call(arguments);
       if (functions.length <= 1) {
         return functions[0];
       }
       return $("FunctionList").new($.Array(functions));
-    };
+    });
 
-    spec.removeFunc = utils.nop;
+    builder.addMethod("removeFunc");
 
-    spec.replaceFunc = utils.nop;
-    spec.seconds_ = utils.nop;
-    spec.throw = utils.nop;
+    builder.addMethod("replaceFunc");
+    builder.addMethod("seconds_");
+    builder.addMethod("throw");
 
     // TODO: implements handleError
 
-    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    builder.addMethod("archiveAsCompileString", sc.TRUE);
 
-    spec.asSpec = function() {
+    builder.addMethod("asSpec", function() {
       return $("ControlSpec").new();
-    };
+    });
 
-    spec.superclassesDo = utils.nop;
-
-    spec.shallowCopy = utils.nop;
+    builder.addMethod("superclassesDo");
+    builder.addMethod("shallowCopy");
   });
 });

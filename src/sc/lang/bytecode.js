@@ -24,7 +24,7 @@
 
   Bytecode.prototype._init = function() {
     var code = this._initializer();
-    if (this._def && code.length) {
+    if (this._def && code[0]) {
       code[0] = fn(code[0], this._def);
       this._argNames = code[0]._argNames;
       this._argVals  = code[0]._argVals;

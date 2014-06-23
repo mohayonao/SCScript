@@ -7,10 +7,9 @@
 
   var iterator = {};
   var $     = sc.lang.$;
-  var utils = sc.lang.klass.utils;
-  var $nil  = utils.$nil;
-  var $int0 = utils.$int0;
-  var $int1 = utils.$int1;
+  var $nil  = $.nil;
+  var $int0 = $.int0;
+  var $int1 = $.int1;
 
   var __stop__ = function() {
     return null;

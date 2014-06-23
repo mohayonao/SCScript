@@ -8,10 +8,12 @@
 
   var $ = sc.lang.$;
 
+  var SCBoolean = $("Boolean");
+  var SCFalse = $("False");
+  var SCTrue = $("True");
+
   describe("SCBoolean", function() {
-    var SCBoolean;
     before(function() {
-      SCBoolean = $("Boolean");
       this.createInstance = function(value) {
         var instance = $.Boolean(!!value);
         return $$(instance, "Boolean" + this.test.title);
@@ -50,11 +52,11 @@
     });
     it("#asBoolean", function() {
       var instance = this.createInstance();
-      expect(instance.asBoolean).to.be.nop;
+      expect(instance.asBoolean).to.doNothing;
     });
     it("#booleanValue", function() {
       var instance = this.createInstance();
-      expect(instance.booleanValue).to.be.nop;
+      expect(instance.booleanValue).to.doNothing;
     });
     it("#archiveAsCompileString", function() {
       var test, instance;
@@ -72,14 +74,12 @@
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
   });
 
   describe("SCTrue", function() {
-    var SCTrue;
     before(function() {
-      SCTrue = $("True");
       this.createInstance = function() {
         return $.True();
       };
@@ -130,7 +130,7 @@
     });
     it("#||", function() {
       var instance = this.createInstance();
-      expect(instance["||"]).to.be.nop;
+      expect(instance["||"]).to.doNothing;
     });
     it("#and", function() {
       var instance, test;
@@ -147,7 +147,7 @@
     });
     it("#or", function() {
       var instance = this.createInstance();
-      expect(instance.or).to.be.nop;
+      expect(instance.or).to.doNothing;
     });
     it("#nand", function() {
       var instance, test;
@@ -184,9 +184,7 @@
   });
 
   describe("SCFalse", function() {
-    var SCFalse;
     before(function() {
-      SCFalse = $("False");
       this.createInstance = function() {
         return $.False();
       };
@@ -223,7 +221,7 @@
     });
     it("#&&", function() {
       var instance = this.createInstance();
-      expect(instance["&&"]).to.be.nop;
+      expect(instance["&&"]).to.doNothing;
     });
     it("#||", function() {
       var instance, test;
@@ -240,7 +238,7 @@
     });
     it("#and", function() {
       var instance = this.createInstance();
-      expect(instance.and).to.be.nop;
+      expect(instance.and).to.doNothing;
     });
     it("#or", function() {
       var instance, test;

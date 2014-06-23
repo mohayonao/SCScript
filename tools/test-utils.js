@@ -20,11 +20,15 @@
 
   var $ = sc.lang.$;
 
+  var SCEnvironment = $("Environment");
+  var SCPseq = $("Pseq");
+  var SCRoutine = $("Routine");
+
   sc.test = function(callback) {
     return function() {
-      $("Environment").new().push();
+      SCEnvironment.new().push();
       callback.apply(this);
-      $("Environment").pop();
+      SCEnvironment.pop();
     };
   };
 
@@ -143,7 +147,7 @@
         error  = items.error;
       }
 
-      desc = sc.test.desc(
+      desc = sc.libs.strlib.format(
         "#{0}.#{1}(#{2})", toString(source), methodName, toString(args).slice(2, -2)
       );
 
@@ -229,23 +233,6 @@
     });
   };
 
-  sc.test.desc = function(fmt, list) {
-    var msg = fmt;
-    if (Array.isArray(list)) {
-      list.forEach(function(value, index) {
-        msg = msg.replace(
-          new RegExp("@\\{" + index + "\\}", "g"), String(value)
-        );
-      });
-    }
-    [].slice.call(arguments, 1).forEach(function(value, index) {
-      msg = msg.replace(
-        new RegExp("#\\{" + index + "\\}", "g"), String(value)
-      );
-    });
-    return msg;
-  };
-
   var prev = null;
   var setSingletonMethod = function(instance, className, methodName) {
     var method;
@@ -301,9 +288,6 @@
 
     return fn;
   };
-
-  var SCPseq    = $("Pseq");
-  var SCRoutine = $("Routine");
 
   sc.test.routine = function(source, opts) {
     if (Array.isArray(source)) {
@@ -374,7 +358,7 @@
     });
 
     utils.addMethod(assert$proto, "withMessage", function() {
-      utils.flag(this, "message", sc.test.desc.apply(null, arguments));
+      utils.flag(this, "message", sc.libs.strlib.format.apply(null, arguments));
     });
 
     utils.addMethod(assert$proto, "calledLastIn", function(seed) {
@@ -387,11 +371,11 @@
       );
     });
 
-    utils.addProperty(assert$proto, "nop", function() {
+    utils.addProperty(assert$proto, "doNothing", function() {
       this.assert(
-        utils.flag(this, "object") === sc.lang.klass.utils.nop,
-        "expected #{this} to be nop",
-        "expected #{this} to be not nop",
+        utils.flag(this, "object") === sc.lang.$.DoNothing,
+        "expected #{this} to do nothing",
+        "expected #{this} to not do nothing",
         this.negate ? false : true
       );
     });

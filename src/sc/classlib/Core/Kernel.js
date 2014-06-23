@@ -4,19 +4,23 @@ SCScript.install(function(sc) {
   require("./Object");
 
   var $ = sc.lang.$;
-  var klass = sc.lang.klass;
+  var $nil = $.nil;
 
-  klass.refine("Class", function(spec) {
-    spec.class = function() {
+  sc.lang.klass.refine("Class", function(builder) {
+    builder.addMethod("toString", function() {
+      return String(this.__className);
+    });
+
+    builder.addMethod("class", function() {
       if (this.__isMetaClass) {
         return $("Class");
       }
       return $("Meta_" + this.__className);
-    };
+    });
 
-    spec.name = function() {
+    builder.addMethod("name", function() {
       return $.String(this.__className);
-    };
+    });
 
     // TODO: implements superclass
     // TODO: implements asClass
@@ -48,7 +52,7 @@ SCScript.install(function(sc) {
     // TODO: implements allSubclasses
     // TODO: implements superclasses
 
-    spec["[]"] = function($anArray) {
+    builder.addMethod("[]", function($anArray) {
       var $newCollection;
       var array, i, imax;
 
@@ -60,63 +64,64 @@ SCScript.install(function(sc) {
       }
 
       return $newCollection;
-    };
+    });
   });
 
-  klass.define("Process", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function SCProcess() {
-      this.__super__("Object");
+  sc.lang.klass.define("Process", function(builder) {
+    builder.addMethod("__init__", function() {
+      this.__super__("__init__");
       this._$interpreter = $nil;
       this._$mainThread  = $nil;
-    };
+    });
 
-    spec.interpreter = function() {
+    builder.addMethod("interpreter", function() {
       return this._$interpreter;
-    };
+    });
 
-    spec.mainThread = function() {
+    builder.addMethod("mainThread", function() {
       return this._$mainThread;
-    };
+    });
   });
 
-  klass.define("Main : Process");
+  sc.lang.klass.define("Main : Process");
 
-  klass.define("Interpreter", function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.define("Interpreter", function(builder) {
+    builder.addProperty("<>", "a");
+    builder.addProperty("<>", "b");
+    builder.addProperty("<>", "c");
+    builder.addProperty("<>", "d");
+    builder.addProperty("<>", "e");
+    builder.addProperty("<>", "f");
+    builder.addProperty("<>", "g");
+    builder.addProperty("<>", "h");
+    builder.addProperty("<>", "i");
+    builder.addProperty("<>", "j");
+    builder.addProperty("<>", "k");
+    builder.addProperty("<>", "l");
+    builder.addProperty("<>", "m");
+    builder.addProperty("<>", "n");
+    builder.addProperty("<>", "o");
+    builder.addProperty("<>", "p");
+    builder.addProperty("<>", "q");
+    builder.addProperty("<>", "r");
+    builder.addProperty("<>", "s");
+    builder.addProperty("<>", "t");
+    builder.addProperty("<>", "u");
+    builder.addProperty("<>", "v");
+    builder.addProperty("<>", "w");
+    builder.addProperty("<>", "x");
+    builder.addProperty("<>", "y");
+    builder.addProperty("<>", "z");
 
-    spec.constructor = function SCInterpreter() {
-      this.__super__("Object");
-      this._$ = {};
-    };
+    builder.addMethod("__init__", function() {
+      this.__super__("__init__");
+    });
 
-    (function() {
-      var i, ch;
-
-      function getter(name) {
-        return function() {
-          return this._$[name] || /* istanbul ignore next */ $nil;
-        };
+    builder.addMethod("clearAll", function() {
+      for (var i = 97; i <= 122; i++) {
+        this["_$" + String.fromCharCode(i)] = null;
       }
-
-      function setter(name) {
-        return function($value) {
-          this._$[name] = $value || /* istanbul ignore next */ $nil;
-          return this;
-        };
-      }
-
-      for (i = 97; i <= 122; i++) {
-        ch = String.fromCharCode(i);
-        spec[ch] = getter(ch);
-        spec[ch + "_"] = setter(ch);
-      }
-    })();
-
-    spec.clearAll = function() {
-      this._$ = {};
       return this;
-    };
+    });
   });
 });

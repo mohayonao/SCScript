@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCAssociation = $("Association");
+
   describe("SCAssociation", function() {
-    var SCAssociation;
     before(function() {
-      SCAssociation = $("Association");
       this.createInstance = function($key, $value) {
         return SCAssociation.new($key, $value);
       };

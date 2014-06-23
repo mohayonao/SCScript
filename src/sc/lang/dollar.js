@@ -8,4 +8,7 @@
   };
 
   sc.lang.$.NOP = null;
+  sc.lang.$.DoNothing = function() {
+    return this;
+  };
 })(sc);

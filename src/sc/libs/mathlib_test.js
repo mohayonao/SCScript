@@ -2,8 +2,10 @@
   "use strict";
 
   require("./mathlib");
+  require("./strlib");
 
   var mathlib = sc.libs.mathlib;
+  var strlib  = sc.libs.strlib;
 
   describe("sc.libs.mathlib", function() {
     function testCase(context, cases, opts) {
@@ -21,7 +23,7 @@
         expected = items.pop();
         actual = mathlib[methodName].apply(null, items);
 
-        desc = sc.test.desc("#{0}(#{1})", methodName, "" + items);
+        desc = strlib.format("#{0}(#{1})", methodName, "" + items);
 
         if (opts.closeTo) {
           if (isFinite(actual)) {

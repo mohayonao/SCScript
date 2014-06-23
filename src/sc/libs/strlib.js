@@ -3,6 +3,7 @@
 
   require("./sc");
 
+  var slice = [].slice;
   var strlib = {};
 
   strlib.quote = function(str) {
@@ -16,8 +17,26 @@
     return "a";
   };
 
-  strlib.methodIdentifier = function(className, methodName, isClassMethod) {
-    return className + (isClassMethod ? "." : "#") + methodName;
+  strlib.isClassName = function (name) {
+    var ch = name.charCodeAt(0);
+    return 0x41 <= ch && ch <= 0x5a;
+  };
+
+  strlib.format = function(fmt, list) {
+    var msg = fmt;
+    if (Array.isArray(list)) {
+      list.forEach(function(value, index) {
+        msg = msg.replace(
+          new RegExp("@\\{" + index + "\\}", "g"), String(value)
+        );
+      });
+    }
+    slice.call(arguments, 1).forEach(function(value, index) {
+      msg = msg.replace(
+        new RegExp("#\\{" + index + "\\}", "g"), String(value)
+      );
+    });
+    return msg;
   };
 
   sc.libs.strlib = strlib;

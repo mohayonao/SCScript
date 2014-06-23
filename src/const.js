@@ -18,6 +18,11 @@
     STATE_SUSPENDED: 5,
     STATE_DONE: 6,
     STATE_BREAK: -1,
+
+    NOP: 1,
+    NIL: 2,
+    TRUE: 3,
+    FALSE: 4
   };
 
   if (typeof global.sc !== "undefined") {

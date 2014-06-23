@@ -3,37 +3,38 @@ SCScript.install(function(sc) {
 
   require("../Math/Magnitude");
 
-  sc.lang.klass.define("Association : Magnitude", function(spec, utils) {
-    var $false = utils.$false;
+  var $ = sc.lang.$;
+  var $false = $.false;
 
-    utils.setProperty(spec, "<>", "key");
-    utils.setProperty(spec, "<>", "value");
+  sc.lang.klass.refine("Association", function(builder, _) {
+    builder.addProperty("<>", "key");
+    builder.addProperty("<>", "value");
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._$key.valueOf();
-    };
+    });
 
-    spec.$new = function($key, $value) {
-      return utils.newCopyArgs(this, {
+    builder.addClassMethod("new", function($key, $value) {
+      return _.newCopyArgs(this, {
         key: $key,
         value: $value
       });
-    };
+    });
 
-    spec["=="] = function($anAssociation) {
+    builder.addMethod("==", function($anAssociation) {
       if ($anAssociation.key) {
         return this._$key ["=="] ($anAssociation.$("key"));
       }
       return $false;
-    };
+    });
 
-    spec.hash = function() {
+    builder.addMethod("hash", function() {
       return this._$key.hash();
-    };
+    });
 
-    spec["<"] = function($anAssociation) {
+    builder.addMethod("<", function($anAssociation) {
       return this._$key.$("<", [ $anAssociation.$("key") ]);
-    };
+    });
     // TODO: implements printOn
     // TODO: implements storeOn
     // TODO: implements embedInStream

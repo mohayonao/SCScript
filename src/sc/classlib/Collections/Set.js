@@ -3,70 +3,76 @@ SCScript.install(function(sc) {
 
   require("./Collection");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil  = $.nil;
+  var $int0 = $.int0;
   var iterator = sc.lang.iterator;
+  var SCArray = $("Array");
 
-  sc.lang.klass.refine("Set", function(spec, utils) {
-    var $nil  = utils.$nil;
-    var $int0 = utils.$int0;
-    var SCArray = $("Array");
+  sc.lang.klass.refine("Set", function(builder) {
+    builder.addProperty("<>", "array");
 
-    utils.setProperty(spec, "<>", "array");
-
-    spec.$new = fn(function($n) {
+    builder.addClassMethod("new", {
+      args: "n=2"
+    }, function($n) {
       $n = $.Integer(Math.max($n.__int__(), 2) * 2);
       return this.__super__("new").initSet($n);
-    }, "n=2");
+    });
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._$array._.filter(function($elem) {
         return $elem !== $nil;
       }).map(function($elem) {
         return $elem.valueOf();
       });
-    };
+    });
 
-    spec.size = function() {
+    builder.addMethod("size", function() {
       return $.Integer(this._size);
-    };
+    });
 
-    spec.species = function() {
+    builder.addMethod("species", function() {
       return this.class();
-    };
+    });
 
-    spec.copy = function() {
+    builder.addMethod("copy", function() {
       return this.shallowCopy().array_(this._$array.copy());
-    };
+    });
 
-    spec.do = function($function) {
+    builder.addMethod("do", function($function) {
       iterator.execute(
         iterator.set$do(this),
         $function
       );
       return this;
-    };
+    });
 
-    spec.clear = function() {
+    builder.addMethod("clear", function() {
       this._$array.fill();
       this._size = 0;
       return this;
-    };
+    });
 
-    spec.makeEmpty = function() {
+    builder.addMethod("makeEmpty", function() {
       this.clear();
       return this;
-    };
+    });
 
-    spec.includes = fn(function($item) {
+    builder.addMethod("includes", {
+      args: "item"
+    }, function($item) {
       return this._$array.at(this.scanFor($item)).notNil();
-    }, "item");
+    });
 
-    spec.findMatch = fn(function($item) {
+    builder.addMethod("findMatch", {
+      args: "item"
+    }, function($item) {
       return this._$array.at(this.scanFor($item));
-    }, "item");
+    });
 
-    spec.add = fn(function($item) {
+    builder.addMethod("add", {
+      args: "item"
+    }, function($item) {
       var $index;
 
       if ($item === $nil) {
@@ -79,9 +85,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "item");
+    });
 
-    spec.remove = fn(function($item) {
+    builder.addMethod("remove", {
+      args: "item"
+    }, function($item) {
       var $index;
 
       $index = this.scanFor($item);
@@ -92,9 +100,9 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "item");
+    });
 
-    spec.choose = function() {
+    builder.addMethod("choose", function() {
       var $val;
       var $size, $array;
 
@@ -110,9 +118,9 @@ SCScript.install(function(sc) {
       } while ($val === $nil);
 
       return $val;
-    };
+    });
 
-    spec.pop = function() {
+    builder.addMethod("pop", function() {
       var $index, $val;
       var $array, $size;
 
@@ -130,11 +138,11 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    };
+    });
 
     // TODO: implements powerset
 
-    spec.unify = function() {
+    builder.addMethod("unify", function() {
       var $result;
 
       $result = this.species().new();
@@ -144,9 +152,11 @@ SCScript.install(function(sc) {
       });
 
       return $result;
-    };
+    });
 
-    spec.sect = fn(function($that) {
+    builder.addMethod("sect", {
+      args: "that"
+    }, function($that) {
       var $result;
 
       $result = this.species().new();
@@ -158,9 +168,11 @@ SCScript.install(function(sc) {
       });
 
       return $result;
-    }, "that");
+    });
 
-    spec.union = fn(function($that) {
+    builder.addMethod("union", {
+      args: "that"
+    }, function($that) {
       var $result;
 
       $result = this.species().new();
@@ -169,13 +181,17 @@ SCScript.install(function(sc) {
       $result.addAll($that);
 
       return $result;
-    }, "that");
+    });
 
-    spec.difference = fn(function($that) {
+    builder.addMethod("difference", {
+      args: "that"
+    }, function($that) {
       return this.copy().removeAll($that);
-    }, "that");
+    });
 
-    spec.symmetricDifference = fn(function($that) {
+    builder.addMethod("symmetricDifference", {
+      args: "that"
+    }, function($that) {
       var $this = this;
       var $result;
 
@@ -186,68 +202,69 @@ SCScript.install(function(sc) {
           $result.add($item);
         }
       });
-      $that.do($.Function(function() {
-        return [ function($item) {
-          if (!$this.includes($item).__bool__()) {
-            $result.add($item);
-          }
-        } ];
+      $that.do($.Func(function($item) {
+        if (!$this.includes($item).__bool__()) {
+          $result.add($item);
+        }
+        return $nil;
       }));
 
       return $result;
-    }, "that");
+    });
 
-    spec.isSubsetOf = fn(function($that) {
+    builder.addMethod("isSubsetOf", {
+      args: "that"
+    },function($that) {
       return $that.$("includesAll", [ this ]);
-    }, "that");
+    });
 
-    spec["&"] = function($that) {
+    builder.addMethod("&", function($that) {
       return this.sect($that);
-    };
+    });
 
-    spec["|"] = function($that) {
+    builder.addMethod("|", function($that) {
       return this.union($that);
-    };
+    });
 
-    spec["-"] = function($that) {
+    builder.addMethod("-", function($that) {
       return this.difference($that);
-    };
+    });
 
-    spec["--"] = function($that) {
+    builder.addMethod("--", function($that) {
       return this.symmetricDifference($that);
-    };
+    });
 
-    spec.asSet = utils.nop;
+    builder.addMethod("asSet");
 
-    spec.initSet = function($n) {
+    builder.addMethod("initSet", function($n) {
       this._$array = SCArray.newClear($n);
       this._size   = 0;
       return this;
-    };
+    });
 
-    spec.putCheck = function($index, $item) {
+    builder.addMethod("putCheck", function($index, $item) {
       this._$array.put($index, $item);
       this._size += 1;
       this.fullCheck();
       return this;
-    };
+    });
 
-    spec.fullCheck = function() {
+    builder.addMethod("fullCheck", function() {
       if (this._$array.size().__int__() < this._size * 2) {
         this.grow();
       }
-    };
+    });
 
-    spec.grow = function() {
+    builder.addMethod("grow", function() {
       var array, i, imax;
       array = this._$array._;
       for (i = array.length, imax = i * 2; i < imax; ++i) {
         array[i] = $nil;
       }
-    };
+    });
 
     /* istanbul ignore next */
-    spec.scanFor = function($obj) {
+    builder.addMethod("scanFor", function($obj) {
       var array, index;
 
       array = this._$array._;
@@ -263,7 +280,7 @@ SCScript.install(function(sc) {
       }
 
       return $.Integer(-1);
-    };
+    });
     // TODO: implements fixCollisionsFrom
     // TODO: implements keyAt
   });

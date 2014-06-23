@@ -8,7 +8,7 @@
 
   var fn   = sc.lang.fn;
   var $    = sc.lang.$;
-  var $nil = sc.lang.klass.utils.$nil;
+  var $nil = $.nil;
 
   describe("sc.lang.fn", function() {
     it("default arguments", function() {

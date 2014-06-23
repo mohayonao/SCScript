@@ -3,10 +3,13 @@ SCScript.install(function(sc) {
 
   require("./SimpleNumber");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil  = $.nil;
+  var $int1 = $.int1;
   var iterator = sc.lang.iterator;
   var mathlib  = sc.libs.mathlib;
+
+  var SCArray = $("Array");
 
   var bop = function(selector, type1, type2) {
     var func = mathlib[selector];
@@ -27,78 +30,69 @@ SCScript.install(function(sc) {
     };
   };
 
-  sc.lang.klass.refine("Integer", function(spec, utils) {
-    var $nil  = utils.$nil;
-    var $int1 = utils.$int1;
-    var SCArray = $("Array");
+  sc.lang.klass.refine("Integer", function(builder) {
+    builder.addMethod("__newFrom__", $.Integer);
 
-    spec.__newFrom__ = $.Integer;
-
-    spec.__int__ = function() {
+    builder.addMethod("__int__", function() {
       return this._;
-    };
-
-    spec.toString = function() {
-      return String("" + this._);
-    };
-
-    spec.$new = function() {
-      throw new Error("Integer.new is illegal, should use literal.");
-    };
-
-    spec.isInteger = utils.alwaysReturn$true;
-
-    spec.hash = function() {
-      return $.Float(this._).hash();
-    };
-
-    [
-      [ "+", $.Integer, $.Float ],
-      [ "-", $.Integer, $.Float ],
-      [ "*", $.Integer, $.Float ],
-      [ "/", $.Float  , $.Float ],
-      [ "mod"     , $.Integer, $.Float   ],
-      [ "div"     , $.Integer, $.Integer ],
-      [ "pow"     , $.Float  , $.Float   ],
-      [ "min"     , $.Integer, $.Float   ],
-      [ "max"     , $.Integer, $.Float   ],
-      [ "bitAnd"  , $.Integer, $.Float   ],
-      [ "bitOr"   , $.Integer, $.Float   ],
-      [ "bitXor"  , $.Integer, $.Float   ],
-      [ "lcm"     , $.Integer, $.Float   ],
-      [ "gcd"     , $.Integer, $.Float   ],
-      [ "round"   , $.Integer, $.Float   ],
-      [ "roundUp" , $.Integer, $.Float   ],
-      [ "trunc"   , $.Integer, $.Float   ],
-      [ "atan2"   , $.Float  , $.Float   ],
-      [ "hypot"   , $.Float  , $.Float   ],
-      [ "hypotApx", $.Float  , $.Float   ],
-      [ "leftShift"         , $.Integer, $.Float ],
-      [ "rightShift"        , $.Integer, $.Float ],
-      [ "unsignedRightShift", $.Integer, $.Float ],
-      [ "ring1"   , $.Integer, $.Float   ],
-      [ "ring2"   , $.Integer, $.Float   ],
-      [ "ring3"   , $.Integer, $.Float   ],
-      [ "ring4"   , $.Integer, $.Float   ],
-      [ "difsqr"  , $.Integer, $.Float   ],
-      [ "sumsqr"  , $.Integer, $.Float   ],
-      [ "sqrsum"  , $.Integer, $.Float   ],
-      [ "sqrdif"  , $.Integer, $.Float   ],
-      [ "absdif"  , $.Integer, $.Float   ],
-      [ "thresh"  , $.Integer, $.Integer ],
-      [ "amclip"  , $.Integer, $.Float   ],
-      [ "scaleneg", $.Integer, $.Float   ],
-      [ "clip2"   , $.Integer, $.Float   ],
-      [ "fold2"   , $.Integer, $.Float   ],
-      [ "excess"  , $.Integer, $.Float   ],
-      [ "firstArg", $.Integer, $.Integer ],
-      [ "rrand"   , $.Integer, $.Float   ],
-      [ "exprand" , $.Float  , $.Float   ],
-    ].forEach(function(items) {
-      spec[items[0]] = bop.apply(null, items);
     });
 
-    spec.wrap2 = function($aNumber, $adverb) {
+    builder.addMethod("toString", function() {
+      return String("" + this._);
+    });
+
+    builder.addClassMethod("new", function() {
+      throw new Error("Integer.new is illegal, should use literal.");
+    });
+
+    builder.addMethod("isInteger", sc.TRUE);
+
+    builder.addMethod("hash", function() {
+      return $.Float(this._).hash();
+    });
+
+    builder.addMethod("+", bop("+", $.Integer, $.Float));
+    builder.addMethod("-", bop("-", $.Integer, $.Float));
+    builder.addMethod("*", bop("*", $.Integer, $.Float));
+    builder.addMethod("/", bop("/", $.Float, $.Float));
+    builder.addMethod("mod", bop("mod", $.Integer, $.Float));
+    builder.addMethod("div", bop("div", $.Integer, $.Integer));
+    builder.addMethod("pow", bop("pow", $.Float, $.Float));
+    builder.addMethod("min", bop("min", $.Integer, $.Float));
+    builder.addMethod("max", bop("max", $.Integer, $.Float));
+    builder.addMethod("bitAnd", bop("bitAnd", $.Integer, $.Float));
+    builder.addMethod("bitOr", bop("bitOr", $.Integer, $.Float));
+    builder.addMethod("bitXor", bop("bitXor", $.Integer, $.Float));
+    builder.addMethod("lcm", bop("lcm", $.Integer, $.Float));
+    builder.addMethod("gcd", bop("gcd", $.Integer, $.Float));
+    builder.addMethod("round", bop("round", $.Integer, $.Float));
+    builder.addMethod("roundUp", bop("roundUp", $.Integer, $.Float));
+    builder.addMethod("trunc", bop("trunc", $.Integer, $.Float));
+    builder.addMethod("atan2", bop("atan2", $.Float, $.Float));
+    builder.addMethod("hypot", bop("hypot", $.Float, $.Float));
+    builder.addMethod("hypotApx", bop("hypotApx", $.Float, $.Float));
+    builder.addMethod("leftShift", bop("leftShift", $.Integer, $.Float));
+    builder.addMethod("rightShift", bop("rightShift", $.Integer, $.Float));
+    builder.addMethod("unsignedRightShift", bop("unsignedRightShift", $.Integer, $.Float));
+    builder.addMethod("ring1", bop("ring1", $.Integer, $.Float));
+    builder.addMethod("ring2", bop("ring2", $.Integer, $.Float));
+    builder.addMethod("ring3", bop("ring3", $.Integer, $.Float));
+    builder.addMethod("ring4", bop("ring4", $.Integer, $.Float));
+    builder.addMethod("difsqr", bop("difsqr", $.Integer, $.Float));
+    builder.addMethod("sumsqr", bop("sumsqr", $.Integer, $.Float));
+    builder.addMethod("sqrsum", bop("sqrsum", $.Integer, $.Float));
+    builder.addMethod("sqrdif", bop("sqrdif", $.Integer, $.Float));
+    builder.addMethod("absdif", bop("absdif", $.Integer, $.Float));
+    builder.addMethod("thresh", bop("thresh", $.Integer, $.Integer));
+    builder.addMethod("amclip", bop("amclip", $.Integer, $.Float));
+    builder.addMethod("scaleneg", bop("scaleneg", $.Integer, $.Float));
+    builder.addMethod("clip2", bop("clip2", $.Integer, $.Float));
+    builder.addMethod("fold2", bop("fold2", $.Integer, $.Float));
+    builder.addMethod("excess", bop("excess", $.Integer, $.Float));
+    builder.addMethod("firstArg", bop("firstArg", $.Integer, $.Integer));
+    builder.addMethod("exprand", bop("exprand", $.Float, $.Float));
+
+    builder.addMethod("wrap2", function($aNumber, $adverb) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
@@ -111,9 +105,9 @@ SCScript.install(function(sc) {
       return $aNumber.performBinaryOpOnSimpleNumber(
         $.Symbol("wrap2"), this, $adverb
       );
-    };
+    });
 
-    spec.rrand = function($aNumber, $adverb) {
+    builder.addMethod("rrand", function($aNumber, $adverb) {
       var tag = $aNumber.__tag;
 
       switch (tag) {
@@ -126,9 +120,11 @@ SCScript.install(function(sc) {
       return $aNumber.performBinaryOpOnSimpleNumber(
         $.Symbol("rrand"), this, $adverb
       );
-    };
+    });
 
-    spec.clip = fn(function($lo, $hi) {
+    builder.addMethod("clip", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
       // <-- _ClipInt -->
       if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
@@ -145,9 +141,11 @@ SCScript.install(function(sc) {
       return $.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
-    }, "lo; hi");
+    });
 
-    spec.wrap = fn(function($lo, $hi) {
+    builder.addMethod("wrap", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
       // <-- _WrapInt -->
       if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
@@ -164,9 +162,11 @@ SCScript.install(function(sc) {
       return $.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
-    }, "lo; hi");
+    });
 
-    spec.fold = fn(function($lo, $hi) {
+    builder.addMethod("fold", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
       // <-- _FoldInt -->
       if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
@@ -183,21 +183,25 @@ SCScript.install(function(sc) {
       return $.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
-    }, "lo; hi");
+    });
 
-    spec.even = function() {
+    builder.addMethod("even", function() {
       return $.Boolean(!(this._ & 1));
-    };
+    });
 
-    spec.odd = function() {
+    builder.addMethod("odd", function() {
       return $.Boolean(!!(this._ & 1));
-    };
+    });
 
-    spec.xrand = fn(function($exclude) {
+    builder.addMethod("xrand", {
+      args: "exclude=0"
+    }, function($exclude) {
       return ($exclude ["+"] (this.__dec__().rand()) ["+"] ($int1)) ["%"] (this);
-    }, "exclude=0");
+    });
 
-    spec.xrand2 = fn(function($exclude) {
+    builder.addMethod("xrand2", {
+      args: "exclude=0"
+    }, function($exclude) {
       var raw, res;
 
       raw = this._;
@@ -208,26 +212,30 @@ SCScript.install(function(sc) {
       }
 
       return $.Integer(res);
-    }, "exclude=0");
+    });
 
-    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
+    builder.addMethod("degreeToKey", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
       return $scale.performDegreeToKey(this, $stepsPerOctave);
-    }, "scale; stepsPerOctave=12");
+    });
 
-    spec.do = function($function) {
+    builder.addMethod("do", function($function) {
       iterator.execute(
         iterator.integer$do(this),
         $function
       );
       return this;
-    };
+    });
 
-    spec.generate = function($function) {
+    builder.addMethod("generate", function($function) {
       $function.value(this);
       return this;
-    };
+    });
 
-    spec.collectAs = fn(function($function, $class) {
+    builder.addMethod("collectAs", {
+      args: "function; class"
+    }, function($function, $class) {
       var $res;
       var i, imax;
 
@@ -241,48 +249,54 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "function; class");
+    });
 
-    spec.collect = function($function) {
+    builder.addMethod("collect", function($function) {
       return this.collectAs($function, SCArray);
-    };
+    });
 
-    spec.reverseDo = function($function) {
+    builder.addMethod("reverseDo", function($function) {
       iterator.execute(
         iterator.integer$reverseDo(this),
         $function
       );
       return this;
-    };
+    });
 
-    spec.for = fn(function($endval, $function) {
+    builder.addMethod("for", {
+      args: "endval; function"
+    }, function($endval, $function) {
       iterator.execute(
         iterator.integer$for(this, $endval),
         $function
       );
       return this;
-    }, "endval; function");
+    });
 
-    spec.forBy = fn(function($endval, $stepval, $function) {
+    builder.addMethod("forBy", {
+      args: "endval; stepval; function"
+    }, function($endval, $stepval, $function) {
       iterator.execute(
         iterator.integer$forBy(this, $endval, $stepval),
         $function
       );
       return this;
-    }, "endval; stepval; function");
+    });
 
-    spec.to = fn(function($hi, $step) {
+    builder.addMethod("to", {
+      args: "hi; step=1"
+    }, function($hi, $step) {
       return $("Interval").new(this, $hi, $step);
-    }, "hi; step=1");
+    });
 
-    spec.asAscii = function() {
+    builder.addMethod("asAscii", function() {
       // <-- _AsAscii -->
       return $.Char(String.fromCharCode(this._|0));
-    };
+    });
 
-    spec.asUnicode = utils.nop;
+    builder.addMethod("asUnicode");
 
-    spec.asDigit = function() {
+    builder.addMethod("asDigit", function() {
       var c;
 
       // <!-- _AsAscii -->
@@ -295,9 +309,11 @@ SCScript.install(function(sc) {
       }
 
       throw new Error("Integer: asDigit must be 0 <= this <= 35");
-    };
+    });
 
-    spec.asBinaryDigits = fn(function($numDigits) {
+    builder.addMethod("asBinaryDigits", {
+      args: "numDigits=8"
+    }, function($numDigits) {
       var raw, array, numDigits, i;
 
       raw = this._;
@@ -308,9 +324,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(array);
-    }, "numDigits=8");
+    });
 
-    spec.asDigits = fn(function($base, $numDigits) {
+    builder.addMethod("asDigits", {
+      args: "base=10; numDigits"
+    }, function($base, $numDigits) {
       var $num;
       var array, numDigits, i;
 
@@ -330,7 +348,7 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(array);
-    }, "base=10; numDigits");
+    });
 
     // TODO: implements nextPowerOfTwo
     // TODO: implements isPowerOfTwo
@@ -352,13 +370,17 @@ SCScript.install(function(sc) {
     // TODO: implements asIPString
     // TODO: implements archiveAsCompileString
 
-    spec.geom = fn(function($start, $grow) {
+    builder.addMethod("geom", {
+      args: "start; grow"
+    }, function($start, $grow) {
       return SCArray.geom(this, $start, $grow);
-    }, "start; grow");
+    });
 
-    spec.fib = fn(function($a, $b) {
+    builder.addMethod("fib", {
+      args: "a=0.0; b=1.0"
+    }, function($a, $b) {
       return SCArray.fib(this, $a, $b);
-    }, "a=0.0; b=1.0");
+    });
 
     // TODO: implements factors
     // TODO: implements pidRunning
@@ -372,8 +394,8 @@ SCScript.install(function(sc) {
     // TODO: implements isHelp
     // TODO: implements isFun
 
-    spec.bitNot = function() {
+    builder.addMethod("bitNot", function() {
       return $.Integer(~this._);
-    };
+    });
   });
 });

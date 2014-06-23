@@ -11,11 +11,11 @@
   var iterator = sc.lang.iterator;
   var bytecode = sc.lang.bytecode;
 
+  var SCObject = $("Object");
+  var SCRoutine = $("Routine");
+
   describe("SCObject", function() {
-    var SCObject, SCRoutine;
     before(function() {
-      SCObject = $("Object");
-      SCRoutine = $("Routine");
       this.createInstance = function(instance) {
         return $$($$(instance), "Object" + this.test.title);
       };
@@ -33,8 +33,31 @@
 
       instance = this.createInstance();
 
+      // test = $nil.valueOf();
+      // expect(test).to.be.a("JSNull");
+
       test = instance.valueOf();
       expect(test).to.equal(instance);
+    });
+    it("#toString", function() {
+      var instance, test;
+
+      instance = this.createInstance();
+      //
+      // test = $nil.toString();
+      // expect(test).to.be.a("JSString").that.equals("nil");
+
+      test = instance.toString();
+      expect(test).to.be.a("JSString").that.equals("an Object");
+    });
+    it("#toJSON", function() {
+      var test, json;
+
+      test = $$(null).toJSON();
+      expect(test).to.be.a("JSString");
+
+      json = JSON.parse(test);
+      expect(json.class).to.equal("Nil");
     });
     it("#__num__", function() {
       var instance;
@@ -328,7 +351,7 @@
     }));
     it("#functionPerformList", function() {
       var instance = this.createInstance();
-      expect(instance.functionPerformList).to.be.nop;
+      expect(instance.functionPerformList).to.doNothing;
     });
     it.skip("#superPerform", function() {
     });
@@ -448,19 +471,19 @@
     }));
     it("#value", function() {
       var instance = this.createInstance();
-      expect(instance.value).to.be.nop;
+      expect(instance.value).to.doNothing;
     });
     it("#valueArray", function() {
       var instance = this.createInstance();
-      expect(instance.valueArray).to.be.nop;
+      expect(instance.valueArray).to.doNothing;
     });
     it("#valueEnvir", function() {
       var instance = this.createInstance();
-      expect(instance.valueEnvir).to.be.nop;
+      expect(instance.valueEnvir).to.doNothing;
     });
     it("#valueArrayEnvir", function() {
       var instance = this.createInstance();
-      expect(instance.valueArrayEnvir).to.be.nop;
+      expect(instance.valueArrayEnvir).to.doNothing;
     });
     it("#==", sinon.test(function() {
       var instance, test;
@@ -553,29 +576,23 @@
       test = instance.identityHash();
       expect(test).to.be.a("SCInteger");
     });
-    it("#->", sinon.test(function() {
-      var instance, test, spy;
+    it("#->", function() {
+      var instance, test;
       var $obj;
 
-      spy = this.spy(sc.test.func());
       $obj = $$();
-      this.stub(sc.lang.klass, "get").withArgs("Association").returns($$({
-        new: spy
-      }));
-
       instance = this.createInstance();
 
       test = instance ["->"] ($obj);
-      expect(spy).to.be.calledWith(instance, $obj);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      expect(test).to.be.a("SCAssociation");
+    });
     it("#next", function() {
       var instance = this.createInstance();
-      expect(instance.next).to.be.nop;
+      expect(instance.next).to.doNothing;
     });
     it("#reset", function() {
       var instance = this.createInstance();
-      expect(instance.reset).to.be.nop;
+      expect(instance.reset).to.doNothing;
     });
     it("#first", sinon.test(function() {
       var instance, test;
@@ -608,19 +625,19 @@
     }));
     it("#stop", function() {
       var instance = this.createInstance();
-      expect(instance.stop).to.be.nop;
+      expect(instance.stop).to.doNothing;
     });
     it("#free", function() {
       var instance = this.createInstance();
-      expect(instance.free).to.be.nop;
+      expect(instance.free).to.doNothing;
     });
     it("#clear", function() {
       var instance = this.createInstance();
-      expect(instance.clear).to.be.nop;
+      expect(instance.clear).to.doNothing;
     });
     it("#removedFromScheduler", function() {
       var instance = this.createInstance();
-      expect(instance.removedFromScheduler).to.be.nop;
+      expect(instance.removedFromScheduler).to.doNothing;
     });
     it("#isPlaying", function() {
       var instance, test;
@@ -706,7 +723,7 @@
     }));
     it("#asStream", function() {
       var instance = this.createInstance();
-      expect(instance.asStream).to.be.nop;
+      expect(instance.asStream).to.doNothing;
     });
     it("#streamArg true", function() {
       var r = this.createInstance(
@@ -751,7 +768,7 @@
     });
     it("#finishEvent", function() {
       var instance = this.createInstance();
-      expect(instance.finishEvent).to.be.nop;
+      expect(instance.finishEvent).to.doNothing;
     });
     it("#atLimit", function() {
       var instance, test;
@@ -771,19 +788,19 @@
     });
     it("#threadPlayer", function() {
       var instance = this.createInstance();
-      expect(instance.threadPlayer).to.be.nop;
+      expect(instance.threadPlayer).to.doNothing;
     });
     it("#threadPlayer_", function() {
       var instance = this.createInstance();
-      expect(instance.threadPlayer_).to.be.nop;
+      expect(instance.threadPlayer_).to.doNothing;
     });
     it("#?", function() {
       var instance = this.createInstance();
-      expect(instance["?"]).to.be.nop;
+      expect(instance["?"]).to.doNothing;
     });
     it("#??", function() {
       var instance = this.createInstance();
-      expect(instance["??"]).to.be.nop;
+      expect(instance["??"]).to.doNothing;
     });
     it("#!?", sinon.test(function() {
       var instance, test, spy;
@@ -999,7 +1016,7 @@
     }));
     it("#dereference", function() {
       var instance = this.createInstance();
-      expect(instance.dereference).to.be.nop;
+      expect(instance.dereference).to.doNothing;
     });
     it("#reference", sinon.test(function() {
       var instance, test;
@@ -1086,7 +1103,7 @@
     }));
     it("#slice", function() {
       var instance = this.createInstance();
-      expect(instance.slice).to.be.nop;
+      expect(instance.slice).to.doNothing;
     });
     it("#shape", function() {
       var instance, test;
@@ -1097,7 +1114,7 @@
     });
     it("#unbubble", function() {
       var instance = this.createInstance();
-      expect(instance.unbubble).to.be.nop;
+      expect(instance.unbubble).to.doNothing;
     });
     it("#bubble", function() {
       var instance, test;
@@ -1527,11 +1544,11 @@
     }));
     it("#beats_", function() {
       var instance = this.createInstance();
-      expect(instance.beats_).to.be.nop;
+      expect(instance.beats_).to.doNothing;
     });
     it("#clock_", function() {
       var instance = this.createInstance();
-      expect(instance.clock_).to.be.nop;
+      expect(instance.clock_).to.doNothing;
     });
     it("#performBinaryOpOnSomething", function() {
       var instance, test;
@@ -1655,15 +1672,15 @@
     });
     it("#source", function() {
       var instance = this.createInstance();
-      expect(instance.source).to.be.nop;
+      expect(instance.source).to.doNothing;
     });
     it("#asUGenInput", function() {
       var instance = this.createInstance();
-      expect(instance.asUGenInput).to.be.nop;
+      expect(instance.asUGenInput).to.doNothing;
     });
     it("#asControlInput", function() {
       var instance = this.createInstance();
-      expect(instance.asControlInput).to.be.nop;
+      expect(instance.asControlInput).to.doNothing;
     });
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test, spy, rate;
@@ -1751,7 +1768,7 @@
     });
     it("#processRest", function() {
       var instance = this.createInstance();
-      expect(instance.processRest).to.be.nop;
+      expect(instance.processRest).to.doNothing;
     });
     it("#[]", sinon.test(function() {
       var instance, test;

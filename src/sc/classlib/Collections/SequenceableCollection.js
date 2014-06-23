@@ -4,30 +4,30 @@ SCScript.install(function(sc) {
   require("./Collection");
 
   var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var q  = sc.libs.strlib.quote;
+  var $ = sc.lang.$;
+  var $nil   = $.nil;
+  var $true  = $.true;
+  var $false = $.false;
+  var $int0  = $.int0;
+  var $int1  = $.int1;
+  var q = sc.libs.strlib.quote;
 
-  sc.lang.klass.refine("SequenceableCollection", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $true  = utils.$true;
-    var $false = utils.$false;
-    var $int0  = utils.$int0;
-    var $int1  = utils.$int1;
-
-    spec["|@|"] = function($index) {
+  sc.lang.klass.refine("SequenceableCollection", function(builder) {
+    builder.addMethod("|@|", function($index) {
       return this.clipAt($index);
-    };
+    });
 
-    spec["@@"] = function($index) {
+    builder.addMethod("@@", function($index) {
       return this.wrapAt($index);
-    };
+    });
 
-    spec["@|@"] = function($index) {
+    builder.addMethod("@|@", function($index) {
       return this.foldAt($index);
-    };
+    });
 
-    spec.$series = fn(function($size, $start, $step) {
+    builder.addClassMethod("series", {
+      args: "size; start=0; step=1"
+    }, function($size, $start, $step) {
       var $obj, i, imax;
 
       $obj = this.new($size);
@@ -36,9 +36,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; start=0; step=1");
+    });
 
-    spec.$geom = fn(function($size, $start, $grow) {
+    builder.addClassMethod("geom", {
+      args: "size; start; grow"
+    }, function($size, $start, $grow) {
       var $obj, i, imax;
 
       $obj = this.new($size);
@@ -48,9 +50,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; start; grow");
+    });
 
-    spec.$fib = fn(function($size, $a, $b) {
+    builder.addClassMethod("fib", {
+      args: "size; a=0.0; b=1.0"
+    }, function($size, $a, $b) {
       var $obj, $temp, i, imax;
 
       $obj = this.new($size);
@@ -62,9 +66,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; a=0.0; b=1.0");
+    });
 
-    spec.$rand = fn(function($size, $minVal, $maxVal) {
+    builder.addClassMethod("rand", {
+      args: "size; minVal=0.0; maxVal=1.0"
+    }, function($size, $minVal, $maxVal) {
       var $obj, i, imax;
 
       $obj = this.new($size);
@@ -73,9 +79,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; minVal=0.0; maxVal=1.0");
+    });
 
-    spec.$exprand = fn(function($size, $minVal, $maxVal) {
+    builder.addClassMethod("exprand", {
+      args: "size; minVal=0.0; maxVal=1.0"
+    }, function($size, $minVal, $maxVal) {
       var $obj, i, imax;
 
       $obj = this.new($size);
@@ -84,9 +92,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; minVal=0.0; maxVal=1.0");
+    });
 
-    spec.$rand2 = fn(function($size, $val) {
+    builder.addClassMethod("rand2", {
+      args: "size; val=1.0"
+    }, function($size, $val) {
       var $obj, i, imax;
 
       $obj = this.new($size);
@@ -95,9 +105,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; val=1.0");
+    });
 
-    spec.$linrand = fn(function($size, $minVal, $maxVal) {
+    builder.addClassMethod("linrand", {
+      args: "size; minVal; maxVal"
+    }, function($size, $minVal, $maxVal) {
       var $obj, i, imax;
       var $range;
 
@@ -109,9 +121,11 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; minVal; maxVal");
+    });
 
-    spec.$interpolation = fn(function($size, $start, $end) {
+    builder.addClassMethod("interpolation", {
+      args: "size; start=0.0; end=1.0"
+    }, function($size, $start, $end) {
       var $obj, $step, i, imax;
 
       $obj = this.new($size);
@@ -125,30 +139,32 @@ SCScript.install(function(sc) {
       }
 
       return $obj;
-    }, "size; start=0.0; end=1.0");
+    });
 
-    spec["++"] = function($aSequenceableCollection) {
+    builder.addMethod("++", function($aSequenceableCollection) {
       var $newlist;
 
       $newlist = this.species().new(this.size() ["+"] ($aSequenceableCollection.size()));
       $newlist = $newlist.addAll(this).addAll($aSequenceableCollection);
 
       return $newlist;
-    };
+    });
 
     // TODO: implements +++
 
-    spec.asSequenceableCollection = utils.nop;
+    builder.addMethod("asSequenceableCollection");
 
-    spec.choose = function() {
+    builder.addMethod("choose", function() {
       return this.at(this.size().rand());
-    };
+    });
 
-    spec.wchoose = fn(function($weights) {
+    builder.addMethod("wchoose", {
+      args: "weights"
+    }, function($weights) {
       return this.at($weights.$("windex"));
-    }, "weights");
+    });
 
-    spec["=="] = function($aCollection) {
+    builder.addMethod("==", function($aCollection) {
       var $res = null;
 
       if ($aCollection.class() !== this.class()) {
@@ -157,21 +173,22 @@ SCScript.install(function(sc) {
       if (this.size() !== $aCollection.size()) {
         return $false;
       }
-      this.do($.Function(function() {
-        return [ function($item, $i) {
-          if ($item ["!="] ($aCollection.$("at", [ $i ])).__bool__()) {
-            $res = $false;
-            this.break();
-          }
-        } ];
+      this.do($.Func(function($item, $i) {
+        if ($item ["!="] ($aCollection.$("at", [ $i ])).__bool__()) {
+          $res = $false;
+          this.break();
+        }
+        return $nil;
       }));
 
       return $res || $true;
-    };
+    });
 
     // TODO: implements hash
 
-    spec.copyRange = fn(function($start, $end) {
+    builder.addMethod("copyRange", {
+      args: "start; end"
+    }, function($start, $end) {
       var $newColl, i, end;
 
       i = $start.__int__();
@@ -182,9 +199,11 @@ SCScript.install(function(sc) {
       }
 
       return $newColl;
-    }, "start; end");
+    });
 
-    spec.keep = fn(function($n) {
+    builder.addMethod("keep", {
+      args: "n"
+    }, function($n) {
       var n, size;
 
       n = $n.__int__();
@@ -194,9 +213,11 @@ SCScript.install(function(sc) {
       size = this.size().__int__();
 
       return this.copyRange($.Integer(size + n), $.Integer(size - 1));
-    }, "n");
+    });
 
-    spec.drop = fn(function($n) {
+    builder.addMethod("drop", {
+      args: "n"
+    }, function($n) {
       var n, size;
 
       n = $n.__int__();
@@ -206,46 +227,54 @@ SCScript.install(function(sc) {
       }
 
       return this.copyRange($int0, $.Integer(size + n - 1));
-    }, "n");
+    });
 
-    spec.copyToEnd = fn(function($start) {
+    builder.addMethod("copyToEnd", {
+      args: "start"
+    }, function($start) {
       return this.copyRange($start, $.Integer(this.size().__int__() - 1));
-    }, "start");
+    });
 
-    spec.copyFromStart = fn(function($end) {
+    builder.addMethod("copyFromStart", {
+      args: "end"
+    }, function($end) {
       return this.copyRange($int0, $end);
-    }, "end");
+    });
 
-    spec.indexOf = fn(function($item) {
+    builder.addMethod("indexOf", {
+      args: "item"
+    }, function($item) {
       var $ret = null;
 
-      this.do($.Function(function() {
-        return [ function($elem, $i) {
-          if ($item === $elem) {
-            $ret = $i;
-            this.break();
-          }
-        } ];
+      this.do($.Func(function($elem, $i) {
+        if ($item === $elem) {
+          $ret = $i;
+          this.break();
+        }
+        return $nil;
       }));
 
       return $ret || $nil;
-    }, "item");
+    });
 
-    spec.indicesOfEqual = fn(function($item) {
+    builder.addMethod("indicesOfEqual", {
+      args: "item"
+    }, function($item) {
       var indices = [];
 
-      this.do($.Function(function() {
-        return [ function($elem, $i) {
-          if ($item === $elem) {
-            indices.push($i);
-          }
-        } ];
+      this.do($.Func(function($elem, $i) {
+        if ($item === $elem) {
+          indices.push($i);
+        }
+        return $nil;
       }));
 
       return indices.length ? $.Array(indices) : $nil;
-    }, "item");
+    });
 
-    spec.find = fn(function($sublist, $offset) {
+    builder.addMethod("find", {
+      args: "sublist; offset=0"
+    }, function($sublist, $offset) {
       var $subSize1, $first, $index;
       var size, offset, i, imax;
 
@@ -264,9 +293,11 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    }, "sublist; offset=0");
+    });
 
-    spec.findAll = fn(function($arr, $offset) {
+    builder.addMethod("findAll", {
+      args: "arr; offset=0"
+    }, function($arr, $offset) {
       var $this = this, $indices, $i;
 
       $indices = $nil;
@@ -278,17 +309,19 @@ SCScript.install(function(sc) {
       }
 
       return $indices;
-    }, "arr; offset=0");
+    });
 
-    spec.indexOfGreaterThan = fn(function($val) {
-      return this.detectIndex($.Function(function() {
-        return [ function($item) {
-          return $.Boolean($item > $val);
-        } ];
+    builder.addMethod("indexOfGreaterThan", {
+      args: "val"
+    }, function($val) {
+      return this.detectIndex($.Func(function($item) {
+        return $.Boolean($item > $val);
       }));
-    }, "val");
+    });
 
-    spec.indexIn = fn(function($val) {
+    builder.addMethod("indexIn", {
+      args: "val"
+    }, function($val) {
       var $i, $j;
 
       $j = this.indexOfGreaterThan($val);
@@ -306,9 +339,11 @@ SCScript.install(function(sc) {
       }
 
       return $j;
-    }, "val");
+    });
 
-    spec.indexInBetween = fn(function($val) {
+    builder.addMethod("indexInBetween", {
+      args: "val"
+    }, function($val) {
       var $a, $b, $div, $i;
 
       if (this.isEmpty().__bool__()) {
@@ -332,30 +367,33 @@ SCScript.install(function(sc) {
       // }
 
       return $val.$("-", [ $a ]).$("/", [ $div ]).$("+", [ $i.__dec__() ]);
-    }, "val");
+    });
 
-    spec.isSeries = fn(function($step) {
+    builder.addMethod("isSeries", {
+      args: "step"
+    }, function($step) {
       var $res = null;
 
       if (this.size() <= 1) {
         return $true;
       }
-      this.doAdjacentPairs($.Function(function() {
-        return [ function($a, $b) {
-          var $diff = $b.$("-", [ $a ]);
-          if ($step === $nil) {
-            $step = $diff;
-          } else if ($step ["!="] ($diff).__bool__()) {
-            $res = $false;
-            this.break();
-          }
-        } ];
+      this.doAdjacentPairs($.Func(function($a, $b) {
+        var $diff = $b.$("-", [ $a ]);
+        if ($step === $nil) {
+          $step = $diff;
+        } else if ($step ["!="] ($diff).__bool__()) {
+          $res = $false;
+          this.break();
+        }
+        return $nil;
       }));
 
       return $res || $true;
-    }, "step");
+    });
 
-    spec.resamp0 = fn(function($newSize) {
+    builder.addMethod("resamp0", {
+      args: "newSize"
+    }, function($newSize) {
       var $this = this, $factor;
 
       $factor = (
@@ -364,14 +402,14 @@ SCScript.install(function(sc) {
         ($newSize.__dec__()).max($int1)
       );
 
-      return this.species().fill($newSize, $.Function(function() {
-        return [ function($i) {
-          return $this.at($i ["*"] ($factor).round($.Float(1.0)).asInteger());
-        } ];
+      return this.species().fill($newSize, $.Func(function($i) {
+        return $this.at($i ["*"] ($factor).round($.Float(1.0)).asInteger());
       }));
-    }, "newSize");
+    });
 
-    spec.resamp1 = fn(function($newSize) {
+    builder.addMethod("resamp1", {
+      args: "newSize"
+    }, function($newSize) {
       var $this = this, $factor;
 
       $factor = (
@@ -380,14 +418,14 @@ SCScript.install(function(sc) {
         ($newSize.__dec__()).max($int1)
       );
 
-      return this.species().fill($newSize, $.Function(function() {
-        return [ function($i) {
-          return $this.blendAt($i ["*"] ($factor));
-        } ];
+      return this.species().fill($newSize, $.Func(function($i) {
+        return $this.blendAt($i ["*"] ($factor));
       }));
-    }, "newSize");
+    });
 
-    spec.remove = fn(function($item) {
+    builder.addMethod("remove", {
+      args: "item"
+    }, function($item) {
       var $index;
 
       $index = this.indexOf($item);
@@ -396,18 +434,22 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    }, "item");
+    });
 
-    spec.removing = fn(function($item) {
+    builder.addMethod("removing", {
+      args: "item"
+    }, function($item) {
       var $coll;
 
       $coll = this.copy();
       $coll.remove($item);
 
       return $coll;
-    }, "item");
+    });
 
-    spec.take = fn(function($item) {
+    builder.addMethod("take", {
+      args: "item"
+    }, function($item) {
       var $index;
 
       $index = this.indexOf($item);
@@ -416,9 +458,9 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    }, "item");
+    });
 
-    spec.lastIndex = function() {
+    builder.addMethod("lastIndex", function() {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -426,9 +468,9 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    };
+    });
 
-    spec.middleIndex = function() {
+    builder.addMethod("middleIndex", function() {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -436,9 +478,9 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    };
+    });
 
-    spec.first = function() {
+    builder.addMethod("first", function() {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -446,9 +488,9 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    };
+    });
 
-    spec.last = function() {
+    builder.addMethod("last", function() {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -456,9 +498,9 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    };
+    });
 
-    spec.middle = function() {
+    builder.addMethod("middle", function() {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -466,13 +508,15 @@ SCScript.install(function(sc) {
       }
 
       return $nil;
-    };
+    });
 
-    spec.top = function() {
+    builder.addMethod("top", function() {
       return this.last();
-    };
+    });
 
-    spec.putFirst = fn(function($obj) {
+    builder.addMethod("putFirst", {
+      args: "obj"
+    }, function($obj) {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -480,9 +524,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "obj");
+    });
 
-    spec.putLast = fn(function($obj) {
+    builder.addMethod("putLast", {
+      args: "obj"
+    }, function($obj) {
       var size = this.size().__int__();
 
       if (size > 0) {
@@ -490,9 +536,11 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "obj");
+    });
 
-    spec.obtain = fn(function($index, $default) {
+    builder.addMethod("obtain", {
+      args: "index; default"
+    }, function($index, $default) {
       var $res;
 
       $res = this.at($index);
@@ -501,9 +549,11 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "index; default");
+    });
 
-    spec.instill = fn(function($index, $item, $default) {
+    builder.addMethod("instill", {
+      args: "index; item; default"
+    }, function($index, $item, $default) {
       var $res;
 
       if ($index.__num__() >= this.size()) {
@@ -513,25 +563,23 @@ SCScript.install(function(sc) {
       }
 
       return $res.put($index, $item);
-    }, "index; item; default");
+    });
 
-    spec.pairsDo = function($function) {
+    builder.addMethod("pairsDo", function($function) {
       var $this = this, $int2 = $.Integer(2);
 
-      $int0.forBy(this.size() ["-"] ($int2), $int2, $.Function(function() {
-        return [ function($i) {
-          return $function.value($this.at($i), $this.at($i.__inc__()), $i);
-        } ];
+      $int0.forBy(this.size() ["-"] ($int2), $int2, $.Func(function($i) {
+        return $function.value($this.at($i), $this.at($i.__inc__()), $i);
       }));
 
       return this;
-    };
+    });
 
-    spec.keysValuesDo = function($function) {
+    builder.addMethod("keysValuesDo", function($function) {
       return this.pairsDo($function);
-    };
+    });
 
-    spec.doAdjacentPairs = function($function) {
+    builder.addMethod("doAdjacentPairs", function($function) {
       var $i;
       var size, i, imax;
 
@@ -542,21 +590,22 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    };
+    });
 
-    spec.separate = fn(function($function) {
+    builder.addMethod("separate", {
+      args: "function=true"
+    }, function($function) {
       var $this = this, $list, $sublist;
 
       $list = $.Array();
       $sublist = this.species().new();
-      this.doAdjacentPairs($.Function(function() {
-        return [ function($a, $b, $i) {
-          $sublist = $sublist.add($a);
-          if ($function.value($a, $b, $i).__bool__()) {
-            $list = $list.add($sublist);
-            $sublist = $this.species().new();
-          }
-        } ];
+      this.doAdjacentPairs($.Func(function($a, $b, $i) {
+        $sublist = $sublist.add($a);
+        if ($function.value($a, $b, $i).__bool__()) {
+          $list = $list.add($sublist);
+          $sublist = $this.species().new();
+        }
+        return $nil;
       }));
       if (this.notEmpty().__bool__()) {
         $sublist = $sublist.add(this.last());
@@ -564,85 +613,90 @@ SCScript.install(function(sc) {
       $list = $list.add($sublist);
 
       return $list;
-    }, "function=true");
+    });
 
-    spec.delimit = function($function) {
+    builder.addMethod("delimit", function($function) {
       var $this = this, $list, $sublist;
 
       $list = $.Array();
       $sublist = this.species().new();
-      this.do($.Function(function() {
-        return [ function($item, $i) {
-          if ($function.value($item, $i).__bool__()) {
-            $list = $list.add($sublist);
-            $sublist = $this.species().new();
-          } else {
-            $sublist = $sublist.add($item);
-          }
-        } ];
+      this.do($.Func(function($item, $i) {
+        if ($function.value($item, $i).__bool__()) {
+          $list = $list.add($sublist);
+          $sublist = $this.species().new();
+        } else {
+          $sublist = $sublist.add($item);
+        }
+        return $nil;
       }));
       $list = $list.add($sublist);
 
       return $list;
-    };
+    });
 
-    spec.clump = fn(function($groupSize) {
+    builder.addMethod("clump", {
+      args: "groupSize"
+    }, function($groupSize) {
       var $this = this, $list, $sublist;
 
       $list = $.Array();
       $sublist = this.species().new($groupSize);
-      this.do($.Function(function() {
-        return [ function($item) {
-          $sublist.add($item);
-          if ($sublist.size() >= $groupSize) {
-            $list.add($sublist);
-            $sublist = $this.species().new($groupSize);
-          }
-        } ];
+      this.do($.Func(function($item) {
+        $sublist.add($item);
+        if ($sublist.size() >= $groupSize) {
+          $list.add($sublist);
+          $sublist = $this.species().new($groupSize);
+        }
+        return $nil;
       }));
       if ($sublist.size() > 0) {
         $list = $list.add($sublist);
       }
 
       return $list;
-    }, "groupSize");
+    });
 
-    spec.clumps = fn(function($groupSizeList) {
+    builder.addMethod("clumps", {
+      args: "groupSizeList"
+    }, function($groupSizeList) {
       var $this = this, $list, $subSize, $sublist, i = 0;
 
       $list = $.Array();
       $subSize = $groupSizeList.at($int0);
       $sublist = this.species().new($subSize);
-      this.do($.Function(function() {
-        return [ function($item) {
-          $sublist = $sublist.add($item);
-          if ($sublist.size() >= $subSize) {
-            $list = $list.add($sublist);
-            $subSize = $groupSizeList.$("wrapAt", [ $.Integer(++i) ]);
-            $sublist = $this.species().new($subSize);
-          }
-        } ];
+      this.do($.Func(function($item) {
+        $sublist = $sublist.add($item);
+        if ($sublist.size() >= $subSize) {
+          $list = $list.add($sublist);
+          $subSize = $groupSizeList.$("wrapAt", [ $.Integer(++i) ]);
+          $sublist = $this.species().new($subSize);
+        }
+        return $nil;
       }));
       if ($sublist.size() > 0) {
         $list = $list.add($sublist);
       }
 
       return $list;
-    }, "groupSizeList");
+    });
 
-    spec.curdle = fn(function($probability) {
-      return this.separate($.Function(function() {
-        return [ function() {
-          return $probability.$("coin");
-        } ];
+    builder.addMethod("curdle", {
+      args: "probability"
+    }, function($probability) {
+      return this.separate($.Func(function() {
+        return $probability.$("coin");
       }));
-    }, "probability");
+    });
 
-    spec.flatten = fn(function($numLevels) {
+    builder.addMethod("flatten", {
+      args: "numLevels=1"
+    }, function($numLevels) {
       return this._flatten($numLevels.__num__());
-    }, "numLevels=1");
+    });
 
-    spec._flatten = fn(function(numLevels) {
+    builder.addMethod("_flatten", {
+      args: "numLevels"
+    }, function(numLevels) {
       var $list;
 
       if (numLevels <= 0) {
@@ -651,164 +705,149 @@ SCScript.install(function(sc) {
       numLevels = numLevels - 1;
 
       $list = this.species().new();
-      this.do($.Function(function() {
-        return [ function($item) {
-          if ($item._flatten) {
-            $list = $list.addAll($item._flatten(numLevels));
-          } else {
-            $list = $list.add($item);
-          }
-        } ];
+      this.do($.Func(function($item) {
+        if ($item._flatten) {
+          $list = $list.addAll($item._flatten(numLevels));
+        } else {
+          $list = $list.add($item);
+        }
+        return $nil;
       }));
 
       return $list;
-    }, "numLevels");
+    });
 
-    spec.flat = function() {
+    builder.addMethod("flat", function() {
       return this._flat(this.species().new(this.flatSize()));
-    };
+    });
 
-    spec._flat = fn(function($list) {
-      this.do($.Function(function() {
-        return [ function($item) {
-          if ($item._flat) {
-            $list = $item._flat($list);
-          } else {
-            $list = $list.add($item);
-          }
-        } ];
+    builder.addMethod("_flat", {
+      args: "list"
+    }, function($list) {
+      this.do($.Func(function($item) {
+        if ($item._flat) {
+          $list = $item._flat($list);
+        } else {
+          $list = $list.add($item);
+        }
+        return $nil;
       }));
       return $list;
-    }, "list");
+    });
 
-    spec.flatIf = fn(function($func) {
+    builder.addMethod("flatIf", {
+      args: "func"
+    }, function($func) {
       return this._flatIf($func);
-    }, "func");
+    });
 
-    spec._flatIf = function($func) {
+    builder.addMethod("_flatIf", function($func) {
       var $list;
 
       $list = this.species().new(this.size());
-      this.do($.Function(function() {
-        return [ function($item, $i) {
-          if ($item._flatIf && $func.value($item, $i).__bool__()) {
-            $list = $list.addAll($item._flatIf($func));
-          } else {
-            $list = $list.add($item);
-          }
-        } ];
+      this.do($.Func(function($item, $i) {
+        if ($item._flatIf && $func.value($item, $i).__bool__()) {
+          $list = $list.addAll($item._flatIf($func));
+        } else {
+          $list = $list.add($item);
+        }
+        return $nil;
       }));
 
       return $list;
-    };
+    });
 
-    spec.flop = function() {
+    builder.addMethod("flop", function() {
       var $this = this, $list, $size, $maxsize;
 
       $size = this.size();
       $maxsize = $int0;
-      this.do($.Function(function() {
-        return [ function($sublist) {
-          var $sz;
-          if ($sublist.isSequenceableCollection().__bool__()) {
-            $sz = $sublist.size();
-          } else {
-            $sz = $int1;
-          }
-          if ($sz > $maxsize) {
-            $maxsize = $sz;
-          }
-        } ];
+      this.do($.Func(function($sublist) {
+        var $sz;
+        if ($sublist.isSequenceableCollection().__bool__()) {
+          $sz = $sublist.size();
+        } else {
+          $sz = $int1;
+        }
+        if ($sz > $maxsize) {
+          $maxsize = $sz;
+        }
+        return $nil;
       }));
 
-      $list = this.species().fill($maxsize, $.Function(function() {
-        return [ function() {
-          return $this.species().new($size);
-        } ];
+      $list = this.species().fill($maxsize, $.Func(function() {
+        return $this.species().new($size);
       }));
 
-      this.do($.Function(function() {
-        return [ function($isublist) {
-          if ($isublist.isSequenceableCollection().__bool__()) {
-            $list.do($.Function(function() {
-              return [ function($jsublist, $j) {
-                $jsublist.add($isublist.wrapAt($j));
-              } ];
-            }));
-          } else {
-            $list.do($.Function(function() {
-              return [ function($jsublist) {
-                $jsublist.add($isublist);
-              } ];
-            }));
-          }
-        } ];
+      this.do($.Func(function($isublist) {
+        if ($isublist.isSequenceableCollection().__bool__()) {
+          $list.do($.Func(function($jsublist, $j) {
+            return $jsublist.add($isublist.wrapAt($j));
+          }));
+        } else {
+          $list.do($.Func(function($jsublist) {
+            return $jsublist.add($isublist);
+          }));
+        }
+        return $nil;
       }));
 
       return $list;
-    };
+    });
 
-    spec.flopWith = fn(function($func) {
+    builder.addMethod("flopWith", {
+      args: "func"
+    }, function($func) {
       var $this = this, $maxsize;
 
-      $maxsize = this.maxValue($.Function(function() {
-        return [ function($sublist) {
+      $maxsize = this.maxValue($.Func(function($sublist) {
+        if ($sublist.isSequenceableCollection().__bool__()) {
+          return $sublist.size();
+        }
+        return $int1;
+      }));
+
+      return this.species().fill($maxsize, $.Func(function($i) {
+        return $func.valueArray($this.collect($.Func(function($sublist) {
           if ($sublist.isSequenceableCollection().__bool__()) {
-            return $sublist.size();
+            return $sublist.wrapAt($i);
           }
-          return $int1;
-        } ];
+          return $sublist;
+        })));
       }));
+    });
 
-      return this.species().fill($maxsize, $.Function(function() {
-        return [ function($i) {
-          return $func.valueArray($this.collect($.Function(function() {
-            return [ function($sublist) {
-              if ($sublist.isSequenceableCollection().__bool__()) {
-                return $sublist.wrapAt($i);
-              } else {
-                return $sublist;
-              }
-            } ];
-          })));
-        } ];
-      }));
-    }, "func");
-
-    spec.flopTogether = function() {
+    builder.addMethod("flopTogether", function() {
       var $standIn, $minus1, $looper;
       var array, maxSize = 0;
 
       array = [ this ].concat(slice.call(arguments));
       array.forEach(function($sublist) {
-        $sublist.do($.Function(function() {
-          return [ function($each) {
-            var size = $each.size();
-            if (maxSize < size) {
-              maxSize = size;
-            }
-          } ];
+        $sublist.do($.Func(function($each) {
+          var size = $each.size();
+          if (maxSize < size) {
+            maxSize = size;
+          }
+          return $nil;
         }));
       });
 
       $standIn = $int0.dup($.Integer(maxSize));
       $minus1  = $.Integer(-1);
-      $looper  = $.Function(function() {
-        return [ function($each) {
-          return $each.drop($minus1);
-        } ];
+      $looper  = $.Func(function($each) {
+        return $each.drop($minus1);
       });
 
       return $.Array(array.map(function($sublist) {
         return $sublist.add($standIn);
-      })).collect($.Function(function() {
-        return [ function($sublist) {
-          return $sublist.flop().collect($looper);
-        } ];
+      })).collect($.Func(function($sublist) {
+        return $sublist.flop().collect($looper);
       }));
-    };
+    });
 
-    spec.flopDeep = fn(function($rank) {
+    builder.addMethod("flopDeep", {
+      args: "rank"
+    }, function($rank) {
       var $this = this;
       var $size, $maxsize;
 
@@ -822,155 +861,156 @@ SCScript.install(function(sc) {
       $size = this.size();
       $maxsize = this.maxSizeAtDepth($rank);
 
-      return this.species().fill($maxsize, $.Function(function() {
-        return [ function($i) {
-          return $this.wrapAtDepth($rank, $i);
-        } ];
+      return this.species().fill($maxsize, $.Func(function($i) {
+        return $this.wrapAtDepth($rank, $i);
       }));
-    }, "rank");
+    });
 
-    spec.wrapAtDepth = fn(function($rank, $index) {
+    builder.addMethod("wrapAtDepth", {
+      args: "rank; index"
+    }, function($rank, $index) {
       if ($rank === $int0) {
         return this.wrapAt($index);
       }
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          if ($item.isSequenceableCollection().__bool__()) {
-            return $item.wrapAtDepth($rank.__dec__(), $index);
-          } else {
-            return $item;
-          }
-        } ];
+      return this.collect($.Func(function($item) {
+        if ($item.isSequenceableCollection().__bool__()) {
+          return $item.wrapAtDepth($rank.__dec__(), $index);
+        }
+        return $item;
       }));
-    }, "rank; index");
+    });
 
-    spec.unlace = fn(function($numlists, $clumpSize, $clip) {
+    builder.addMethod("unlace", {
+      args: "numlists; clumpSize=1; clip=false"
+    }, function($numlists, $clumpSize, $clip) {
       var $this = this;
       var $size, $list, $self, $sublist;
 
       $size = (this.size() ["+"] ($numlists.__dec__())).div($numlists);
-      $list = this.species().fill($numlists, $.Function(function() {
-        return [ function() {
-          return $this.species().new($size);
-        } ];
+      $list = this.species().fill($numlists, $.Func(function() {
+        return $this.species().new($size);
       }));
       if ($clip.__bool__()) {
         $self = this.keep(this.size().trunc($clumpSize ["*"] ($numlists)));
       } else {
         $self = this;
       }
-      $self.do($.Function(function() {
-        return [ function($item, $i) {
-          $sublist = $list.at($i.div($clumpSize) ["%"] ($numlists));
-          return $sublist.add($item);
-        } ];
+      $self.do($.Func(function($item, $i) {
+        $sublist = $list.at($i.div($clumpSize) ["%"] ($numlists));
+        return $sublist.add($item);
       }));
       return $list;
-    }, "numlists; clumpSize=1; clip=false");
+    });
 
-    spec.integrate = function() {
+    builder.addMethod("integrate", function() {
       var $list, $sum;
 
       $sum = $int0;
 
       $list = this.class().new(this.size());
-      this.do($.Function(function() {
-        return [ function($item) {
-          $sum = $sum ["+"] ($item);
-          return $list.add( $sum );
-        } ];
+      this.do($.Func(function($item) {
+        $sum = $sum ["+"] ($item);
+        return $list.add( $sum );
       }));
 
       return $list;
-    };
+    });
 
-    spec.differentiate = function() {
+    builder.addMethod("differentiate", function() {
       var $list, $prev;
 
       $prev = $int0;
 
       $list = this.class().new(this.size());
-      this.do($.Function(function() {
-        return [ function($item) {
-          $list.add($item ["-"] ($prev));
-          $prev = $item;
-          return $item;
-        } ];
+      this.do($.Func(function($item) {
+        $list.add($item ["-"] ($prev));
+        $prev = $item;
+        return $item;
       }));
 
       return $list;
-    };
+    });
 
-    spec.convertDigits = fn(function($base) {
+    builder.addMethod("convertDigits", {
+      args: "base=10"
+    }, function($base) {
       var $lastIndex;
 
       $lastIndex = this.lastIndex();
-      return this.sum($.Function(function() {
-        return [ function($x, $i) {
-          if ($x.__int__() >= $base.__int__()) {
-            throw new Error("digit too large for base");
-          }
-          return $base ["**"] ($lastIndex ["-"] ($i)) ["*"] ($x);
-        } ];
+      return this.sum($.Func(function($x, $i) {
+        if ($x.__int__() >= $base.__int__()) {
+          throw new Error("digit too large for base");
+        }
+        return $base ["**"] ($lastIndex ["-"] ($i)) ["*"] ($x);
       })).asInteger();
-    }, "base=10");
+    });
 
-    spec.hammingDistance = fn(function($that) {
+    builder.addMethod("hammingDistance", {
+      args: "that"
+    }, function($that) {
       var count;
 
       count = Math.max(0, $that.size().__int__() - this.size().__int__());
-      this.do($.Function(function() {
-        return [ function($elem, $i) {
-          if ($elem ["!="] ($that.at($i)).__bool__()) {
-            count += 1;
-          }
-        } ];
+      this.do($.Func(function($elem, $i) {
+        if ($elem ["!="] ($that.at($i)).__bool__()) {
+          count += 1;
+        }
+        return $nil;
       }));
 
       return $.Integer(count);
-    }, "that");
+    });
 
-    spec.degreeToKey = fn(function($scale, $stepsPerOctave) {
-      return this.collect($.Function(function() {
-        return [ function($scaleDegree) {
-          return $scaleDegree.degreeToKey($scale, $stepsPerOctave);
-        } ];
+    builder.addMethod("degreeToKey", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
+      return this.collect($.Func(function($scaleDegree) {
+        return $scaleDegree.degreeToKey($scale, $stepsPerOctave);
       }));
-    }, "scale; stepsPerOctave=12");
+    });
 
-    spec.keyToDegree = fn(function($scale, $stepsPerOctave) {
-      return this.collect($.Function(function() {
-        return [ function($val) {
-          return $val.keyToDegree($scale, $stepsPerOctave);
-        } ];
+    builder.addMethod("keyToDegree", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
+      return this.collect($.Func(function($val) {
+        return $val.keyToDegree($scale, $stepsPerOctave);
       }));
-    }, "scale; stepsPerOctave=12");
+    });
 
-    spec.nearestInScale = fn(function($scale, $stepsPerOctave) {
+    builder.addMethod("nearestInScale", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
       var $root, $key;
       $root = this.trunc($stepsPerOctave);
       $key = this ["%"] ($stepsPerOctave);
       return $key.nearestInList($scale) ["+"] ($root);
-    }, "scale; stepsPerOctave=12");
+    });
 
-    spec.nearestInList = fn(function($list) {
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $list.at($list.indexIn($item));
-        } ];
+    builder.addMethod("nearestInList", {
+      args: "list"
+    }, function($list) {
+      return this.collect($.Func(function($item) {
+        return $list.at($list.indexIn($item));
       }));
-    }, "list");
+    });
 
-    spec.transposeKey = fn(function($amount, $octave) {
+    builder.addMethod("transposeKey", {
+      args: "amount; octave=12"
+    }, function($amount, $octave) {
       return ((this ["+"] ($amount)) ["%"] ($octave)).sort();
-    }, "amount; octave=12");
+    });
 
-    spec.mode = fn(function($degree, $octave) {
+    builder.addMethod("mode", {
+      args: "degree; octave=12"
+    }, function($degree, $octave) {
       return (this.rotate($degree.neg()) ["-"] (this.wrapAt($degree))) ["%"] ($octave);
-    }, "degree; octave=12");
+    });
 
-    spec.performDegreeToKey = fn(function($scaleDegree, $stepsPerOctave, $accidental) {
+    builder.addMethod("performDegreeToKey", {
+      args: "scaleDegree; stepsPerOctave=12; accidental=0"
+    }, function($scaleDegree, $stepsPerOctave, $accidental) {
       var $baseKey;
+
       $baseKey = (
         $stepsPerOctave ["*"] ($scaleDegree.div(this.size()))
       ) ["+"] (this.wrapAt($scaleDegree));
@@ -978,509 +1018,512 @@ SCScript.install(function(sc) {
         return $baseKey;
       }
       return $baseKey ["+"] ($accidental ["*"] ($stepsPerOctave ["/"] ($.Float(12.0))));
-    }, "scaleDegree; stepsPerOctave=12; accidental=0");
+    });
 
-    spec.performKeyToDegree = fn(function($degree, $stepsPerOctave) {
+    builder.addMethod("performKeyToDegree", {
+      args: "degree; stepsPerOctave=12"
+    }, function($degree, $stepsPerOctave) {
       var $n, $key;
+
       $n = $degree.div($stepsPerOctave) ["*"] (this.size());
       $key = $degree ["%"] ($stepsPerOctave);
       return this.indexInBetween($key) ["+"] ($n);
-    }, "degree; stepsPerOctave=12");
+    });
 
-    spec.performNearestInList = fn(function($degree) {
+    builder.addMethod("performNearestInList", {
+      args: "degree"
+    }, function($degree) {
       return this.at(this.indexIn($degree));
-    }, "degree");
+    });
 
-    spec.performNearestInScale = fn(function($degree, $stepsPerOctave) {
+    builder.addMethod("performNearestInScale", {
+      args: "degree; stepsPerOctave=12"
+    }, function($degree, $stepsPerOctave) {
       var $root, $key;
       $root = $degree.trunc($stepsPerOctave);
       $key  = $degree ["%"] ($stepsPerOctave);
       return $key.nearestInList(this) ["+"] ($root);
-    }, "degree; stepsPerOctave=12");
+    });
 
     // TODO: implements convertRhythm
     // TODO: implements sumRhythmDivisions
     // TODO: implements convertOneRhythm
 
-    spec.isSequenceableCollection = utils.alwaysReturn$true;
+    builder.addMethod("isSequenceableCollection", sc.TRUE);
 
-    spec.containsSeqColl = function() {
-      return this.any($.Function(function() {
-        return [ function($_) {
-          return $_.isSequenceableCollection();
-        } ];
+    builder.addMethod("containsSeqColl", function() {
+      return this.any($.Func(function($_) {
+        return $_.isSequenceableCollection();
       }));
-    };
+    });
 
-    spec.neg = function() {
+    builder.addMethod("neg", function() {
       return this.performUnaryOp($.Symbol("neg"));
-    };
+    });
 
-    spec.bitNot = function() {
+    builder.addMethod("bitNot", function() {
       return this.performUnaryOp($.Symbol("bitNot"));
-    };
+    });
 
-    spec.abs = function() {
+    builder.addMethod("abs", function() {
       return this.performUnaryOp($.Symbol("abs"));
-    };
+    });
 
-    spec.ceil = function() {
+    builder.addMethod("ceil", function() {
       return this.performUnaryOp($.Symbol("ceil"));
-    };
+    });
 
-    spec.floor = function() {
+    builder.addMethod("floor", function() {
       return this.performUnaryOp($.Symbol("floor"));
-    };
+    });
 
-    spec.frac = function() {
+    builder.addMethod("frac", function() {
       return this.performUnaryOp($.Symbol("frac"));
-    };
+    });
 
-    spec.sign = function() {
+    builder.addMethod("sign", function() {
       return this.performUnaryOp($.Symbol("sign"));
-    };
+    });
 
-    spec.squared = function() {
+    builder.addMethod("squared", function() {
       return this.performUnaryOp($.Symbol("squared"));
-    };
+    });
 
-    spec.cubed = function() {
+    builder.addMethod("cubed", function() {
       return this.performUnaryOp($.Symbol("cubed"));
-    };
+    });
 
-    spec.sqrt = function() {
+    builder.addMethod("sqrt", function() {
       return this.performUnaryOp($.Symbol("sqrt"));
-    };
+    });
 
-    spec.exp = function() {
+    builder.addMethod("exp", function() {
       return this.performUnaryOp($.Symbol("exp"));
-    };
+    });
 
-    spec.reciprocal = function() {
+    builder.addMethod("reciprocal", function() {
       return this.performUnaryOp($.Symbol("reciprocal"));
-    };
+    });
 
-    spec.midicps = function() {
+    builder.addMethod("midicps", function() {
       return this.performUnaryOp($.Symbol("midicps"));
-    };
+    });
 
-    spec.cpsmidi = function() {
+    builder.addMethod("cpsmidi", function() {
       return this.performUnaryOp($.Symbol("cpsmidi"));
-    };
+    });
 
-    spec.midiratio = function() {
+    builder.addMethod("midiratio", function() {
       return this.performUnaryOp($.Symbol("midiratio"));
-    };
+    });
 
-    spec.ratiomidi = function() {
+    builder.addMethod("ratiomidi", function() {
       return this.performUnaryOp($.Symbol("ratiomidi"));
-    };
+    });
 
-    spec.ampdb = function() {
+    builder.addMethod("ampdb", function() {
       return this.performUnaryOp($.Symbol("ampdb"));
-    };
+    });
 
-    spec.dbamp = function() {
+    builder.addMethod("dbamp", function() {
       return this.performUnaryOp($.Symbol("dbamp"));
-    };
+    });
 
-    spec.octcps = function() {
+    builder.addMethod("octcps", function() {
       return this.performUnaryOp($.Symbol("octcps"));
-    };
+    });
 
-    spec.cpsoct = function() {
+    builder.addMethod("cpsoct", function() {
       return this.performUnaryOp($.Symbol("cpsoct"));
-    };
+    });
 
-    spec.log = function() {
+    builder.addMethod("log", function() {
       return this.performUnaryOp($.Symbol("log"));
-    };
+    });
 
-    spec.log2 = function() {
+    builder.addMethod("log2", function() {
       return this.performUnaryOp($.Symbol("log2"));
-    };
+    });
 
-    spec.log10 = function() {
+    builder.addMethod("log10", function() {
       return this.performUnaryOp($.Symbol("log10"));
-    };
+    });
 
-    spec.sin = function() {
+    builder.addMethod("sin", function() {
       return this.performUnaryOp($.Symbol("sin"));
-    };
+    });
 
-    spec.cos = function() {
+    builder.addMethod("cos", function() {
       return this.performUnaryOp($.Symbol("cos"));
-    };
+    });
 
-    spec.tan = function() {
+    builder.addMethod("tan", function() {
       return this.performUnaryOp($.Symbol("tan"));
-    };
+    });
 
-    spec.asin = function() {
+    builder.addMethod("asin", function() {
       return this.performUnaryOp($.Symbol("asin"));
-    };
+    });
 
-    spec.acos = function() {
+    builder.addMethod("acos", function() {
       return this.performUnaryOp($.Symbol("acos"));
-    };
+    });
 
-    spec.atan = function() {
+    builder.addMethod("atan", function() {
       return this.performUnaryOp($.Symbol("atan"));
-    };
+    });
 
-    spec.sinh = function() {
+    builder.addMethod("sinh", function() {
       return this.performUnaryOp($.Symbol("sinh"));
-    };
+    });
 
-    spec.cosh = function() {
+    builder.addMethod("cosh", function() {
       return this.performUnaryOp($.Symbol("cosh"));
-    };
+    });
 
-    spec.tanh = function() {
+    builder.addMethod("tanh", function() {
       return this.performUnaryOp($.Symbol("tanh"));
-    };
+    });
 
-    spec.rand = function() {
+    builder.addMethod("rand", function() {
       return this.performUnaryOp($.Symbol("rand"));
-    };
+    });
 
-    spec.rand2 = function() {
+    builder.addMethod("rand2", function() {
       return this.performUnaryOp($.Symbol("rand2"));
-    };
+    });
 
-    spec.linrand = function() {
+    builder.addMethod("linrand", function() {
       return this.performUnaryOp($.Symbol("linrand"));
-    };
+    });
 
-    spec.bilinrand = function() {
+    builder.addMethod("bilinrand", function() {
       return this.performUnaryOp($.Symbol("bilinrand"));
-    };
+    });
 
-    spec.sum3rand = function() {
+    builder.addMethod("sum3rand", function() {
       return this.performUnaryOp($.Symbol("sum3rand"));
-    };
+    });
 
-    spec.distort = function() {
+    builder.addMethod("distort", function() {
       return this.performUnaryOp($.Symbol("distort"));
-    };
+    });
 
-    spec.softclip = function() {
+    builder.addMethod("softclip", function() {
       return this.performUnaryOp($.Symbol("softclip"));
-    };
+    });
 
-    spec.coin = function() {
+    builder.addMethod("coin", function() {
       return this.performUnaryOp($.Symbol("coin"));
-    };
+    });
 
-    spec.even = function() {
+    builder.addMethod("even", function() {
       return this.performUnaryOp($.Symbol("even"));
-    };
+    });
 
-    spec.odd = function() {
+    builder.addMethod("odd", function() {
       return this.performUnaryOp($.Symbol("odd"));
-    };
+    });
 
-    spec.isPositive = function() {
+    builder.addMethod("isPositive", function() {
       return this.performUnaryOp($.Symbol("isPositive"));
-    };
+    });
 
-    spec.isNegative = function() {
+    builder.addMethod("isNegative", function() {
       return this.performUnaryOp($.Symbol("isNegative"));
-    };
+    });
 
-    spec.isStrictlyPositive = function() {
+    builder.addMethod("isStrictlyPositive", function() {
       return this.performUnaryOp($.Symbol("isStrictlyPositive"));
-    };
+    });
 
-    spec.rectWindow = function() {
+    builder.addMethod("rectWindow", function() {
       return this.performUnaryOp($.Symbol("rectWindow"));
-    };
+    });
 
-    spec.hanWindow = function() {
+    builder.addMethod("hanWindow", function() {
       return this.performUnaryOp($.Symbol("hanWindow"));
-    };
+    });
 
-    spec.welWindow = function() {
+    builder.addMethod("welWindow", function() {
       return this.performUnaryOp($.Symbol("welWindow"));
-    };
+    });
 
-    spec.triWindow = function() {
+    builder.addMethod("triWindow", function() {
       return this.performUnaryOp($.Symbol("triWindow"));
-    };
+    });
 
-    spec.scurve = function() {
+    builder.addMethod("scurve", function() {
       return this.performUnaryOp($.Symbol("scurve"));
-    };
+    });
 
-    spec.ramp = function() {
+    builder.addMethod("ramp", function() {
       return this.performUnaryOp($.Symbol("ramp"));
-    };
+    });
 
-    spec.asFloat = function() {
+    builder.addMethod("asFloat", function() {
       return this.performUnaryOp($.Symbol("asFloat"));
-    };
+    });
 
-    spec.asInteger = function() {
+    builder.addMethod("asInteger", function() {
       return this.performUnaryOp($.Symbol("asInteger"));
-    };
+    });
 
-    spec.nthPrime = function() {
+    builder.addMethod("nthPrime", function() {
       return this.performUnaryOp($.Symbol("nthPrime"));
-    };
+    });
 
-    spec.prevPrime = function() {
+    builder.addMethod("prevPrime", function() {
       return this.performUnaryOp($.Symbol("prevPrime"));
-    };
+    });
 
-    spec.nextPrime = function() {
+    builder.addMethod("nextPrime", function() {
       return this.performUnaryOp($.Symbol("nextPrime"));
-    };
+    });
 
-    spec.indexOfPrime = function() {
+    builder.addMethod("indexOfPrime", function() {
       return this.performUnaryOp($.Symbol("indexOfPrime"));
-    };
+    });
 
-    spec.real = function() {
+    builder.addMethod("real", function() {
       return this.performUnaryOp($.Symbol("real"));
-    };
+    });
 
-    spec.imag = function() {
+    builder.addMethod("imag", function() {
       return this.performUnaryOp($.Symbol("imag"));
-    };
+    });
 
-    spec.magnitude = function() {
+    builder.addMethod("magnitude", function() {
       return this.performUnaryOp($.Symbol("magnitude"));
-    };
+    });
 
-    spec.magnitudeApx = function() {
+    builder.addMethod("magnitudeApx", function() {
       return this.performUnaryOp($.Symbol("magnitudeApx"));
-    };
+    });
 
-    spec.phase = function() {
+    builder.addMethod("phase", function() {
       return this.performUnaryOp($.Symbol("phase"));
-    };
+    });
 
-    spec.angle = function() {
+    builder.addMethod("angle", function() {
       return this.performUnaryOp($.Symbol("angle"));
-    };
+    });
 
-    spec.rho = function() {
+    builder.addMethod("rho", function() {
       return this.performUnaryOp($.Symbol("rho"));
-    };
+    });
 
-    spec.theta = function() {
+    builder.addMethod("theta", function() {
       return this.performUnaryOp($.Symbol("theta"));
-    };
+    });
 
-    spec.degrad = function() {
+    builder.addMethod("degrad", function() {
       return this.performUnaryOp($.Symbol("degrad"));
-    };
+    });
 
-    spec.raddeg = function() {
+    builder.addMethod("raddeg", function() {
       return this.performUnaryOp($.Symbol("raddeg"));
-    };
+    });
 
-    spec["+"] = function($aNumber, $adverb) {
+    builder.addMethod("+", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("+"), $aNumber, $adverb);
-    };
+    });
 
-    spec["-"] = function($aNumber, $adverb) {
+    builder.addMethod("-", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("-"), $aNumber, $adverb);
-    };
+    });
 
-    spec["*"] = function($aNumber, $adverb) {
+    builder.addMethod("*", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("*"), $aNumber, $adverb);
-    };
+    });
 
-    spec["/"] = function($aNumber, $adverb) {
+    builder.addMethod("/", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("/"), $aNumber, $adverb);
-    };
+    });
 
-    spec.div = function($aNumber, $adverb) {
+    builder.addMethod("div", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("div"), $aNumber, $adverb);
-    };
+    });
 
-    spec.mod = function($aNumber, $adverb) {
+    builder.addMethod("mod", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("mod"), $aNumber, $adverb);
-    };
+    });
 
-    spec.pow = function($aNumber, $adverb) {
+    builder.addMethod("pow", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("pow"), $aNumber, $adverb);
-    };
+    });
 
-    spec.min = function($aNumber, $adverb) {
+    builder.addMethod("min", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("min"), $aNumber, $adverb);
-    };
+    });
 
-    spec.max = function($aNumber, $adverb) {
+    builder.addMethod("max", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("max"), $aNumber, $adverb);
-    };
+    });
 
-    spec["<"] = function($aNumber, $adverb) {
+    builder.addMethod("<", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("<"), $aNumber, $adverb);
-    };
+    });
 
-    spec["<="] = function($aNumber, $adverb) {
+    builder.addMethod("<=", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("<="), $aNumber, $adverb);
-    };
+    });
 
-    spec[">"] = function($aNumber, $adverb) {
+    builder.addMethod(">", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol(">"), $aNumber, $adverb);
-    };
+    });
 
-    spec[">="] = function($aNumber, $adverb) {
+    builder.addMethod(">=", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol(">="), $aNumber, $adverb);
-    };
+    });
 
-    spec.bitAnd = function($aNumber, $adverb) {
+    builder.addMethod("bitAnd", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("bitAnd"), $aNumber, $adverb);
-    };
+    });
 
-    spec.bitOr = function($aNumber, $adverb) {
+    builder.addMethod("bitOr", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("bitOr"), $aNumber, $adverb);
-    };
+    });
 
-    spec.bitXor = function($aNumber, $adverb) {
+    builder.addMethod("bitXor", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("bitXor"), $aNumber, $adverb);
-    };
+    });
 
-    spec.bitHammingDistance = function($aNumber, $adverb) {
+    builder.addMethod("bitHammingDistance", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("bitHammingDistance"), $aNumber, $adverb);
-    };
+    });
 
-    spec.lcm = function($aNumber, $adverb) {
+    builder.addMethod("lcm", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("lcm"), $aNumber, $adverb);
-    };
+    });
 
-    spec.gcd = function($aNumber, $adverb) {
+    builder.addMethod("gcd", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("gcd"), $aNumber, $adverb);
-    };
+    });
 
-    spec.round = function($aNumber, $adverb) {
+    builder.addMethod("round", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("round"), $aNumber, $adverb);
-    };
+    });
 
-    spec.roundUp = function($aNumber, $adverb) {
+    builder.addMethod("roundUp", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("roundUp"), $aNumber, $adverb);
-    };
+    });
 
-    spec.trunc = function($aNumber, $adverb) {
+    builder.addMethod("trunc", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("trunc"), $aNumber, $adverb);
-    };
+    });
 
-    spec.atan2 = function($aNumber, $adverb) {
+    builder.addMethod("atan2", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("atan2"), $aNumber, $adverb);
-    };
+    });
 
-    spec.hypot = function($aNumber, $adverb) {
+    builder.addMethod("hypot", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("hypot"), $aNumber, $adverb);
-    };
+    });
 
-    spec.hypotApx = function($aNumber, $adverb) {
+    builder.addMethod("hypotApx", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("hypotApx"), $aNumber, $adverb);
-    };
+    });
 
-    spec.leftShift = function($aNumber, $adverb) {
+    builder.addMethod("leftShift", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("leftShift"), $aNumber, $adverb);
-    };
+    });
 
-    spec.rightShift = function($aNumber, $adverb) {
+    builder.addMethod("rightShift", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("rightShift"), $aNumber, $adverb);
-    };
+    });
 
-    spec.unsignedRightShift = function($aNumber, $adverb) {
+    builder.addMethod("unsignedRightShift", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("unsignedRightShift"), $aNumber, $adverb);
-    };
+    });
 
-    spec.ring1 = function($aNumber, $adverb) {
+    builder.addMethod("ring1", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("ring1"), $aNumber, $adverb);
-    };
+    });
 
-    spec.ring2 = function($aNumber, $adverb) {
+    builder.addMethod("ring2", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("ring2"), $aNumber, $adverb);
-    };
+    });
 
-    spec.ring3 = function($aNumber, $adverb) {
+    builder.addMethod("ring3", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("ring3"), $aNumber, $adverb);
-    };
+    });
 
-    spec.ring4 = function($aNumber, $adverb) {
+    builder.addMethod("ring4", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("ring4"), $aNumber, $adverb);
-    };
+    });
 
-    spec.difsqr = function($aNumber, $adverb) {
+    builder.addMethod("difsqr", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("difsqr"), $aNumber, $adverb);
-    };
+    });
 
-    spec.sumsqr = function($aNumber, $adverb) {
+    builder.addMethod("sumsqr", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("sumsqr"), $aNumber, $adverb);
-    };
+    });
 
-    spec.sqrsum = function($aNumber, $adverb) {
+    builder.addMethod("sqrsum", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("sqrsum"), $aNumber, $adverb);
-    };
+    });
 
-    spec.sqrdif = function($aNumber, $adverb) {
+    builder.addMethod("sqrdif", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("sqrdif"), $aNumber, $adverb);
-    };
+    });
 
-    spec.absdif = function($aNumber, $adverb) {
+    builder.addMethod("absdif", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("absdif"), $aNumber, $adverb);
-    };
+    });
 
-    spec.thresh = function($aNumber, $adverb) {
+    builder.addMethod("thresh", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("thresh"), $aNumber, $adverb);
-    };
+    });
 
-    spec.amclip = function($aNumber, $adverb) {
+    builder.addMethod("amclip", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("amclip"), $aNumber, $adverb);
-    };
+    });
 
-    spec.scaleneg = function($aNumber, $adverb) {
+    builder.addMethod("scaleneg", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("scaleneg"), $aNumber, $adverb);
-    };
+    });
 
-    spec.clip2 = function($aNumber, $adverb) {
+    builder.addMethod("clip2", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("clip2"), $aNumber, $adverb);
-    };
+    });
 
-    spec.fold2 = function($aNumber, $adverb) {
+    builder.addMethod("fold2", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("fold2"), $aNumber, $adverb);
-    };
+    });
 
-    spec.wrap2 = function($aNumber, $adverb) {
+    builder.addMethod("wrap2", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("wrap2"), $aNumber, $adverb);
-    };
+    });
 
-    spec.excess = function($aNumber, $adverb) {
+    builder.addMethod("excess", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("excess"), $aNumber, $adverb);
-    };
+    });
 
-    spec.firstArg = function($aNumber, $adverb) {
+    builder.addMethod("firstArg", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("firstArg"), $aNumber, $adverb);
-    };
+    });
 
-    spec.rrand = function($aNumber, $adverb) {
+    builder.addMethod("rrand", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("rrand"), $aNumber, $adverb);
-    };
+    });
 
-    spec.exprand = function($aNumber, $adverb) {
+    builder.addMethod("exprand", function($aNumber, $adverb) {
       return this.performBinaryOp($.Symbol("exprand"), $aNumber, $adverb);
-    };
+    });
 
-    spec.performUnaryOp = function($aSelector) {
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.perform($aSelector);
-        } ];
+    builder.addMethod("performUnaryOp", function($aSelector) {
+      return this.collect($.Func(function($item) {
+        return $item.perform($aSelector);
       }));
-    };
+    });
 
-    spec.performBinaryOp = function($aSelector, $theOperand, $adverb) {
+    builder.addMethod("performBinaryOp", function($aSelector, $theOperand, $adverb) {
       return $theOperand.performBinaryOpOnSeqColl($aSelector, this, $adverb);
-    };
+    });
 
-    spec.performBinaryOpOnSeqColl = function($aSelector, $theOperand, $adverb) {
+    builder.addMethod("performBinaryOpOnSeqColl", function($aSelector, $theOperand, $adverb) {
       var adverb;
 
       if ($adverb === $nil || !$adverb) {
@@ -1519,7 +1562,7 @@ SCScript.install(function(sc) {
       throw new Error(
         "unrecognized adverb: " + q(adverb) + " for operator " + q($aSelector)
       );
-    };
+    });
 
     function _performBinaryOpOnSeqColl$adverb$nil($this, $aSelector, $theOperand) {
       var $size, $newList, $i;
@@ -1553,16 +1596,12 @@ SCScript.install(function(sc) {
           $newList.add($theOperand.wrapAt($i).perform($aSelector, $this.wrapAt($i)));
         }
       } else if (adverb > 0) {
-        $newList = $theOperand.collect($.Function(function() {
-          return [ function($item) {
-            return $item.perform($aSelector, $this, $.Integer(adverb - 1));
-          } ];
+        $newList = $theOperand.collect($.Func(function($item) {
+          return $item.perform($aSelector, $this, $.Integer(adverb - 1));
         }));
       } else {
-        $newList = $this.collect($.Function(function() {
-          return [ function($item) {
-            return $theOperand.perform($aSelector, $item, $.Integer(adverb + 1));
-          } ];
+        $newList = $this.collect($.Func(function($item) {
+          return $theOperand.perform($aSelector, $item, $.Integer(adverb + 1));
         }));
       }
 
@@ -1590,14 +1629,10 @@ SCScript.install(function(sc) {
 
       $size = $theOperand.size() ["*"] ($this.size());
       $newList = $this.species().new($size);
-      $theOperand.do($.Function(function() {
-        return [ function($a) {
-          $this.do($.Function(function() {
-            return [ function($b) {
-              $newList.add($a.perform($aSelector, $b));
-            } ];
-          }));
-        } ];
+      $theOperand.do($.Func(function($a) {
+        return $this.do($.Func(function($b) {
+          return $newList.add($a.perform($aSelector, $b));
+        }));
       }));
 
       return $newList;
@@ -1635,269 +1670,257 @@ SCScript.install(function(sc) {
       return $newList;
     }
 
-    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber, $adverb) {
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $aNumber.perform($aSelector, $item, $adverb);
-        } ];
+    builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector, $aNumber, $adverb) {
+      return this.collect($.Func(function($item) {
+        return $aNumber.perform($aSelector, $item, $adverb);
       }));
-    };
+    });
 
-    spec.performBinaryOpOnComplex = function($aSelector, $aComplex, $adverb) {
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $aComplex.perform($aSelector, $item, $adverb);
-        } ];
+    builder.addMethod("performBinaryOpOnComplex", function($aSelector, $aComplex, $adverb) {
+      return this.collect($.Func(function($item) {
+        return $aComplex.perform($aSelector, $item, $adverb);
       }));
-    };
+    });
 
-    spec.asFraction = function($denominator, $fasterBetter) {
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.$("asFraction", [ $denominator, $fasterBetter ] );
-        } ];
+    builder.addMethod("asFraction", function($denominator, $fasterBetter) {
+      return this.collect($.Func(function($item) {
+        return $item.$("asFraction", [ $denominator, $fasterBetter ] );
       }));
-    };
+    });
 
     // TODO: implements asPoint
     // TODO: implements asRect
 
-    spec.ascii = function() {
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.$("ascii");
-        } ];
+    builder.addMethod("ascii", function() {
+      return this.collect($.Func(function($item) {
+        return $item.$("ascii");
       }));
-    };
+    });
 
-    spec.rate = function() {
+    builder.addMethod("rate", function() {
       if (this.size().__int__() === 1) {
         return this.first().$("rate");
       }
-      return this.collect($.Function(function() {
-        return [ function($item) {
-          return $item.$("rate");
-        } ];
+      return this.collect($.Func(function($item) {
+        return $item.$("rate");
       })).minItem();
-    };
+    });
 
-    spec.multiChannelPerform = function() {
+    builder.addMethod("multiChannelPerform", function() {
       if (this.size().__int__() > 0) {
         return this.__super__("multiChannelPerform", arguments);
       }
       return this.class().new();
-    };
+    });
 
-    spec.multichannelExpandRef = utils.nop;
+    builder.addMethod("multichannelExpandRef");
 
-    spec.clip = function() {
+    builder.addMethod("clip", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("clip") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.wrap = function() {
+    builder.addMethod("wrap", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("wrap") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.fold = function() {
+    builder.addMethod("fold", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("fold") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.linlin = function() {
+    builder.addMethod("linlin", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("linlin") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.linexp = function() {
+    builder.addMethod("linexp", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("linexp") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.explin = function() {
+    builder.addMethod("explin", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("explin") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.expexp = function() {
+    builder.addMethod("expexp", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("expexp") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.lincurve = function() {
+    builder.addMethod("lincurve", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("lincurve") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.curvelin = function() {
+    builder.addMethod("curvelin", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("curvelin") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.bilin = function() {
+    builder.addMethod("bilin", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("bilin") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.biexp = function() {
+    builder.addMethod("biexp", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("biexp") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.moddif = function() {
+    builder.addMethod("moddif", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("moddif") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.range = function() {
+    builder.addMethod("range", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("range") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.exprange = function() {
+    builder.addMethod("exprange", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("exprange") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.curverange = function() {
+    builder.addMethod("curverange", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("curverange") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.unipolar = function() {
+    builder.addMethod("unipolar", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("unipolar") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.bipolar = function() {
+    builder.addMethod("bipolar", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("bipolar") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.lag = function() {
+    builder.addMethod("lag", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("lag") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.lag2 = function() {
+    builder.addMethod("lag2", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("lag2") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.lag3 = function() {
+    builder.addMethod("lag3", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("lag3") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.lagud = function() {
+    builder.addMethod("lagud", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("lagud") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.lag2ud = function() {
+    builder.addMethod("lag2ud", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("lag2ud") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.lag3ud = function() {
+    builder.addMethod("lag3ud", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("lag3ud") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.varlag = function() {
+    builder.addMethod("varlag", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("varlag") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.slew = function() {
+    builder.addMethod("slew", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("slew") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.blend = function() {
+    builder.addMethod("blend", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("blend") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.checkBadValues = function() {
+    builder.addMethod("checkBadValues", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("checkBadValues") ].concat(slice.call(arguments))
       );
-    };
+    });
 
-    spec.prune = function() {
+    builder.addMethod("prune", function() {
       return this.multiChannelPerform.apply(
         this, [ $.Symbol("prune") ].concat(slice.call(arguments))
       );
-    };
+    });
 
     // TODO: implements minNyquist
 
-    spec.sort = fn(function($function) {
+    builder.addMethod("sort", {
+      args: "function"
+    }, function($function) {
       if ($function === $nil) {
-        $function = $.Function(function() {
-          return [ function($a, $b) {
-            return $a.$("<=", [ $b ]);
-          } ];
+        $function = $.Func(function($a, $b) {
+          return $a.$("<=", [ $b ]);
         });
       }
       this._sort($function);
       return this;
-    }, "function");
+    });
 
-    spec.sortBy = fn(function($key) {
-      return this.sort($.Function(function() {
-        return [ function($a, $b) {
-          return $a.$("at", [ $key ]).$("<=", [ $b.$("at", [ $key ]) ]);
-        } ];
+    builder.addMethod("sortBy", {
+      args: "key"
+    }, function($key) {
+      return this.sort($.Func(function($a, $b) {
+        return $a.$("at", [ $key ]).$("<=", [ $b.$("at", [ $key ]) ]);
       }));
-    }, "key");
+    });
 
-    spec.sortMap = fn(function($function) {
-      return this.sort($.Function(function() {
-        return [ function($a, $b) {
-          return $function.value($a).$("<=", [ $function.value($b) ]);
-        } ];
+    builder.addMethod("sortMap", {
+      args: "fnction"
+    }, function($function) {
+      return this.sort($.Func(function($a, $b) {
+        return $function.value($a).$("<=", [ $function.value($b) ]);
       }));
-    }, "function");
-
-    // spec._sort = function($function) {
-    //   this.mergeSort($function);
-    // };
+    });
 
     // TODO: implements sortedMedian
     // TODO: implements median
     // TODO: implements quickSort
     // TODO: implements order
 
-    spec.swap = fn(function($i, $j) {
+    builder.addMethod("swap", {
+      args: "i; j"
+    }, function($i, $j) {
       var $temp;
 
       $temp = this.at($i);
@@ -1905,7 +1928,7 @@ SCScript.install(function(sc) {
       this.put($j, $temp);
 
       return this;
-    }, "i; j");
+    });
 
     // TODO: implements quickSortRange
     // TODO: implements mergeSort
@@ -1919,17 +1942,23 @@ SCScript.install(function(sc) {
     // TODO: implements $streamContensts
     // TODO: implements $streamContenstsLimit
 
-    spec.wrapAt = fn(function($index) {
+    builder.addMethod("wrapAt", {
+      args: "index"
+    }, function($index) {
       $index = $index.$("%", [ this.size() ]);
       return this.at($index);
-    }, "index");
+    });
 
-    spec.wrapPut = fn(function($index, $value) {
+    builder.addMethod("wrapPut", {
+      args: "index; value"
+    }, function($index, $value) {
       $index = $index.$("%", [ this.size() ]);
       return this.put($index, $value);
-    }, "index; value");
+    });
 
-    spec.reduce = fn(function($operator) {
+    builder.addMethod("reduce", {
+      args: "operator"
+    }, function($operator) {
       var once;
       var $result;
 
@@ -1939,34 +1968,34 @@ SCScript.install(function(sc) {
 
       once = true;
       $result = $nil;
-      this.doAdjacentPairs($.Function(function() {
-        return [ function($a, $b) {
-          if (once) {
-            once = false;
-            $result = $operator.applyTo($a, $b);
-          } else {
-            $result = $operator.applyTo($result, $b);
-          }
-        } ];
+      this.doAdjacentPairs($.Func(function($a, $b) {
+        if (once) {
+          once = false;
+          $result = $operator.applyTo($a, $b);
+        } else {
+          $result = $operator.applyTo($result, $b);
+        }
+        return $nil;
       }));
 
       return $result;
-    }, "operator");
+    });
 
-    spec.join = fn(function($joiner) {
+    builder.addMethod("join", {
+      args: "joiner"
+    }, function($joiner) {
       var items, joiner;
 
       items = [];
-      this.do($.Function(function() {
-        return [ function($item) {
-          items.push($item.__str__());
-        } ];
+      this.do($.Func(function($item) {
+        items.push($item.__str__());
+        return $nil;
       }));
 
       joiner = ($joiner === $nil) ? "" : $joiner.__str__();
 
       return $.String(items.join(joiner), true);
-    }, "joiner");
+    });
     // TODO: implements nextTimeOnGrid
     // TODO: implements asQuant
     // TODO: implements schedBundleArrayOnClock

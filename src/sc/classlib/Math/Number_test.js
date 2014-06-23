@@ -9,9 +9,7 @@
   var iterator = sc.lang.iterator;
 
   describe("SCNumber", function() {
-    var SCNumber;
     before(function() {
-      SCNumber = $("Number");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
         return $$(instance, "Number" + this.test.title);
@@ -78,7 +76,7 @@
     });
     it("#rho", function() {
       var instance = this.createInstance();
-      expect(instance.rho).to.be.nop;
+      expect(instance.rho).to.doNothing;
     });
     it("#theta", function() {
       var instance, test;
@@ -90,7 +88,7 @@
     });
     it("#real", function() {
       var instance = this.createInstance();
-      expect(instance.real).to.be.nop;
+      expect(instance.real).to.doNothing;
     });
     it("#imag", function() {
       var instance, test;

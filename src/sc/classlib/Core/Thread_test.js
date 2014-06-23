@@ -7,10 +7,11 @@
 
   var $ = sc.lang.$;
 
+  var SCThread = $("Thread");
+  var SCRoutine = $("Routine");
+
   describe("SCThread", function() {
-    var SCThread;
     before(function() {
-      SCThread = $("Thread");
       this.createInstance = function(funcArray) {
         return SCThread.new($.Function(function() {
           return funcArray || [];
@@ -53,7 +54,7 @@
     });
     it("#copy", function() {
       var instance = this.createInstance();
-      expect(instance.copy).to.be.nop;
+      expect(instance.copy).to.doNothing;
     });
     it.skip("#clock_", function() {
     });
@@ -97,15 +98,15 @@
     });
     it("#next", function() {
       var instance = this.createInstance();
-      expect(instance.next).to.be.nop;
+      expect(instance.next).to.doNothing;
     });
     it("#value", function() {
       var instance = this.createInstance();
-      expect(instance.value).to.be.nop;
+      expect(instance.value).to.doNothing;
     });
     it("#valueArray", function() {
       var instance = this.createInstance();
-      expect(instance.valueArray).to.be.nop;
+      expect(instance.valueArray).to.doNothing;
     });
     it.skip("#$primitiveError", function() {
     });
@@ -120,9 +121,7 @@
   });
 
   describe("SCRoutine", function() {
-    var SCRoutine;
     before(function() {
-      SCRoutine = $("Routine");
       this.createInstance = function(funcArray) {
         return SCRoutine.new($.Function(function() {
           return funcArray || [];
@@ -140,9 +139,7 @@
     it(".new", function() {
       var instance;
 
-      instance = SCRoutine.new($.Function(function() {
-        return [];
-      }));
+      instance = SCRoutine.new($.Func());
       expect(instance).to.be.a("SCRoutine");
 
       expect(function() {

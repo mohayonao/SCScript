@@ -9,10 +9,10 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCInteger = $("Integer");
+
   describe("SCInteger", function() {
-    var SCInteger;
     before(function() {
-      SCInteger = $("Integer");
       this.createInstance = function(value) {
         return $.Integer(typeof value === "undefined" ? 0 : value);
       };

@@ -86,36 +86,41 @@ SCScript.install(function(sc) {
   sc.lang.klass.define("Main : Process");
 
   sc.lang.klass.define("Interpreter", function(builder) {
+    builder.addProperty("<>", "a");
+    builder.addProperty("<>", "b");
+    builder.addProperty("<>", "c");
+    builder.addProperty("<>", "d");
+    builder.addProperty("<>", "e");
+    builder.addProperty("<>", "f");
+    builder.addProperty("<>", "g");
+    builder.addProperty("<>", "h");
+    builder.addProperty("<>", "i");
+    builder.addProperty("<>", "j");
+    builder.addProperty("<>", "k");
+    builder.addProperty("<>", "l");
+    builder.addProperty("<>", "m");
+    builder.addProperty("<>", "n");
+    builder.addProperty("<>", "o");
+    builder.addProperty("<>", "p");
+    builder.addProperty("<>", "q");
+    builder.addProperty("<>", "r");
+    builder.addProperty("<>", "s");
+    builder.addProperty("<>", "t");
+    builder.addProperty("<>", "u");
+    builder.addProperty("<>", "v");
+    builder.addProperty("<>", "w");
+    builder.addProperty("<>", "x");
+    builder.addProperty("<>", "y");
+    builder.addProperty("<>", "z");
+
     builder.addMethod("__init__", function() {
       this.__super__("__init__");
-      this._$ = {};
     });
 
-    (function() {
-      var i, ch;
-
-      function getter(name) {
-        return function() {
-          return this._$[name] || /* istanbul ignore next */ $nil;
-        };
-      }
-
-      function setter(name) {
-        return function($value) {
-          this._$[name] = $value || /* istanbul ignore next */ $nil;
-          return this;
-        };
-      }
-
-      for (i = 97; i <= 122; i++) {
-        ch = String.fromCharCode(i);
-        builder.addMethod(ch, getter(ch));
-        builder.addMethod(ch + "_", setter(ch));
-      }
-    })();
-
     builder.addMethod("clearAll", function() {
-      this._$ = {};
+      for (var i = 97; i <= 122; i++) {
+        this["_$" + String.fromCharCode(i)] = null;
+      }
       return this;
     });
   });

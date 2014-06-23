@@ -694,9 +694,7 @@ SCScript.install(function(sc) {
       return this._flatten($numLevels.__num__());
     });
 
-    builder.addMethod("_flatten", {
-      args: "numLevels"
-    }, function(numLevels) {
+    builder.addMethod("_flatten", function(numLevels) {
       var $list;
 
       if (numLevels <= 0) {
@@ -1906,7 +1904,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("sortMap", {
-      args: "fnction"
+      args: "function"
     }, function($function) {
       return this.sort($.Func(function($a, $b) {
         return $function.value($a).$("<=", [ $function.value($b) ]);

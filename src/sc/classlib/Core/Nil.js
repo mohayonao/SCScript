@@ -130,7 +130,7 @@ SCScript.install(function(sc) {
     builder.addMethod("matchItem", sc.TRUE);
 
     builder.addMethod("add", {
-      args: "va;ie"
+      args: "value"
     }, function($value) {
       return $.Array([ $value ]);
     });

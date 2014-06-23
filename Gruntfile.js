@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
   "use strict";
 
+  require("./tools/strlib");
+
   var _ = require("underscore");
 
   grunt._loadNpmTasksIfNeeded = function(name) {

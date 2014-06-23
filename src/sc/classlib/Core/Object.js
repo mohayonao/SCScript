@@ -612,7 +612,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("obtain", {
-      args: "index; defaults"
+      args: "index; default"
     }, function($index, $default) {
       if ($index.__num__() === 0) {
         return this;

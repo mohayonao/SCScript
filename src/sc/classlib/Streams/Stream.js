@@ -366,7 +366,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("composeNAryOp", {
-      args: "argStream; anArgList"
+      args: "argSelector; anArgList"
     }, function($argSelector, $anArgList) {
       return $("NAryOpStream").new(
         $argSelector, this, $anArgList.collect($.Func(function($_) {

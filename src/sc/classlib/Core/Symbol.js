@@ -133,7 +133,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("applyTo", {
-      args: "first; *args"
+      args: "firstArg; *args"
     }, function($firstArg, $$args) {
       return $firstArg.perform.apply($firstArg, [ this ].concat($$args._));
     });

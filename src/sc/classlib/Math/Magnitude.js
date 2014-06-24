@@ -33,31 +33,34 @@ SCScript.install(function(sc) {
     builder.addMethod("exclusivelyBetween", {
       args: "lo; hi"
     }, function($lo, $hi) {
-      return $.Boolean($lo < this && this < $hi);
+      var value = this.valueOf(), lo = $lo.valueOf(), hi = $hi.valueOf();
+      return $.Boolean(lo < value && value < hi);
     });
 
     builder.addMethod("inclusivelyBetween", {
       args: "lo; hi"
     }, function($lo, $hi) {
-      return $.Boolean($lo <= this && this <= $hi);
+      var value = this.valueOf(), lo = $lo.valueOf(), hi = $hi.valueOf();
+      return $.Boolean(lo <= value && value <= hi);
     });
 
     builder.addMethod("min", {
       args: "aMagnitude"
     }, function($aMagnitude) {
-      return this <= $aMagnitude ? this : $aMagnitude;
+      return this.valueOf() <= $aMagnitude.valueOf() ? this : $aMagnitude;
     });
 
     builder.addMethod("max", {
       args: "aMagnitude"
     }, function($aMagnitude) {
-      return this >= $aMagnitude ? this : $aMagnitude;
+      return this.valueOf() >= $aMagnitude.valueOf() ? this : $aMagnitude;
     });
 
     builder.addMethod("clip", {
       args: "lo; hi"
     }, function($lo, $hi) {
-      return this <= $lo ? $lo : this >= $hi ? $hi : this;
+      var value = this.valueOf();
+      return value <= $lo.valueOf() ? $lo : value >= $hi.valueOf() ? $hi : this;
     });
   });
 });

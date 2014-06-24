@@ -6,11 +6,10 @@
 
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
-
-  var bytecode = { current: null };
+  var current = null;
 
   function insideOfARoutine() {
-    return sc.lang.main.$currentThread.__tag === sc.TAG_ROUTINE;
+    return sc.lang.main.getCurrentThread().__tag === sc.TAG_ROUTINE;
   }
 
   function Bytecode(initializer, def) {
@@ -91,9 +90,9 @@
     code   = this._code;
     length = this._length;
 
-    this._parent = bytecode.current;
+    this._parent = current;
 
-    bytecode.current = this;
+    current = this;
     this.state = sc.STATE_RUNNING;
 
     for (i = 0; i < length; ++i) {
@@ -107,7 +106,7 @@
       this._freeFunc();
     }
 
-    bytecode.current = this._parent;
+    current = this._parent;
     this._parent = null;
 
     this.state = sc.STATE_INIT;
@@ -128,9 +127,9 @@
   Bytecode.prototype.runAsRoutine = function(args) {
     var result;
 
-    this.setParent(bytecode.current);
+    this.setParent(current);
 
-    bytecode.current = this;
+    current = this;
 
     if (this._child) {
       result = this._child.runAsRoutine(args);
@@ -143,7 +142,7 @@
       result = this._runAsRoutine(args);
     }
 
-    bytecode.current = this._parent;
+    current = this._parent;
 
     this.advance();
 
@@ -287,10 +286,12 @@
 
   var throwIfOutsideOfRoutine = function() {
     if (!insideOfARoutine()) {
-      bytecode.current = null;
+      current = null;
       throw new Error("yield was called outside of a Routine.");
     }
   };
+
+  var bytecode = {};
 
   bytecode.create = function(initializer, def) {
     return new Bytecode(initializer, def);
@@ -298,17 +299,25 @@
 
   bytecode.yield = function($value) {
     throwIfOutsideOfRoutine();
-    return bytecode.current.yield($value).purge();
+    return current.yield($value).purge();
   };
 
   bytecode.alwaysYield = function($value) {
     throwIfOutsideOfRoutine();
-    return bytecode.current.alwaysYield($value);
+    return current.alwaysYield($value);
   };
 
   bytecode.yieldAndReset = function($value) {
     throwIfOutsideOfRoutine();
-    return bytecode.current.yieldAndReset($value);
+    return current.yieldAndReset($value);
+  };
+
+  bytecode.setCurrent = function(bytecode) {
+    current = bytecode;
+  };
+
+  bytecode.getCurrent = function() {
+    return current;
   };
 
   sc.lang.bytecode = bytecode;

@@ -8,21 +8,34 @@
     return sc.lang.main.run(fn);
   }
 
+  SCScript.VERSION = sc.VERSION;
+
   SCScript.install = function(installer) {
     installer(sc);
+    return SCScript;
   };
 
-  /* istanbul ignore next */
   SCScript.stdout = function(msg) {
     console.log(msg);
+    return SCScript;
   };
 
-  /* istanbul ignore next */
   SCScript.stderr = function(msg) {
     console.error(msg);
+    return SCScript;
   };
 
-  SCScript.VERSION = sc.VERSION;
+  SCScript.tokenize = function(source, opts) {
+    return sc.lang.compiler.tokenize(source, opts);
+  };
+
+  SCScript.parse = function(source, opts) {
+    return sc.lang.compiler.parse(source, opts);
+  };
+
+  SCScript.compile = function(source, opts) {
+    return sc.lang.compiler.compile(source, opts);
+  };
 
   global.SCScript = sc.SCScript = SCScript;
 })(sc);

@@ -4,7 +4,6 @@ SCScript.install(function(sc) {
   require("./Magnitude");
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
 
   sc.lang.klass.refine("Number", function(builder) {
     builder.addMethod("isNumber", sc.TRUE);
@@ -46,8 +45,8 @@ SCScript.install(function(sc) {
     builder.addMethod("for", {
       args: "endValue; function"
     }, function($endValue, $function) {
-      iterator.execute(
-        iterator.number$for(this, $endValue),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.number$for(this, $endValue),
         $function
       );
       return this;
@@ -56,8 +55,8 @@ SCScript.install(function(sc) {
     builder.addMethod("forBy", {
       args: "endValue; stepValue; function"
     }, function($endValue, $stepValue, $function) {
-      iterator.execute(
-        iterator.number$forBy(this, $endValue, $stepValue),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.number$forBy(this, $endValue, $stepValue),
         $function
       );
       return this;
@@ -66,8 +65,8 @@ SCScript.install(function(sc) {
     builder.addMethod("forSeries", {
       args: "second; last; function"
     }, function($second, $last, $function) {
-      iterator.execute(
-        iterator.number$forSeries(this, $second, $last),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.number$forSeries(this, $second, $last),
         $function
       );
       return this;

@@ -17,13 +17,19 @@
   describe("sc.lang.bytecode", function() {
     var currentThread;
     before(function() {
-      currentThread = sc.lang.main.$currentThread;
-      sc.lang.main.$currentThread = {
+      currentThread = sc.lang.main.getCurrentThread();
+      sc.lang.main.setCurrentThread({
         __tag: sc.TAG_OBJ
-      };
+      });
     });
     after(function() {
-      sc.lang.main.$currentThread = currentThread;
+      sc.lang.main.setCurrentThread(currentThread);
+    });
+    it("getCurrent / setCurrent", function() {
+      var current = sc.lang.bytecode.getCurrent();
+      sc.lang.bytecode.setCurrent(12345);
+      expect(sc.lang.bytecode.getCurrent()).to.equal(12345);
+      sc.lang.bytecode.setCurrent(current);
     });
     describe("as Function", function() {
       it("empty", function() {
@@ -35,7 +41,7 @@
         });
         expect(f.value(), 0).to.be.a("SCNil");
         expect(f.value(), 1).to.be.a("SCNil");
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("return", function() {
         /*
@@ -46,7 +52,7 @@
         });
         expect(f.value(), 0).to.be.a("SCInteger").that.equals(10);
         expect(f.value(), 1).to.be.a("SCInteger").that.equals(10);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("yield", function() {
         /*
@@ -58,7 +64,7 @@
         expect(function() {
           f.value();
         }).to.throw("yield was called outside of a Routine");
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("args", function() {
         /*
@@ -72,7 +78,7 @@
         expect(f.value()              , 0).to.be.a("SCArray").that.eqls([  0,  1 ]);
         expect(f.value($$(10))        , 1).to.be.a("SCArray").that.eqls([ 10,  1 ]);
         expect(f.value($$(10), $$(20)), 2).to.be.a("SCArray").that.eqls([ 10, 20 ]);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("break", function() {
         /*
@@ -96,7 +102,7 @@
         expect(spy      , 2).to.callCount(1);
         expect(f.value(), 3).to.be.a("SCInteger").that.equals(10);
         expect(spy      , 4).to.callCount(2);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("iterator", function() {
         /*
@@ -109,7 +115,7 @@
         });
         expect(f.value(), 0).to.be.a("SCArray").that.eqls([ -10, -20, -30 ]);
         expect(f.value(), 1).to.be.a("SCArray").that.eqls([ -10, -20, -30 ]);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("iterator break", function() {
         var f = $$(function() {
@@ -128,7 +134,7 @@
         passed = 0;
         expect(f.value(), 0).to.be.a("SCInteger").that.equals(100);
         expect(passed   , 1).to.equals(6);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("value", function() {
         /*
@@ -195,7 +201,7 @@
         expect(spy      , 2).to.callCount(1);
         expect(f.value(), 3).to.be.a("SCInteger").that.equals(40);
         expect(spy      , 4).to.callCount(2);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("function$while", function() {
         /*
@@ -220,7 +226,7 @@
           }));
         });
         expect(f.value()).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4 ]);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
     });
 
@@ -249,7 +255,7 @@
         expect(r.value(), 1).to.be.a("SCNil");
         expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
         expect(r.value(), 3).to.be.a("SCNil");
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("return", function() {
         /*
@@ -262,7 +268,7 @@
         expect(r.value(), 1).to.be.a("SCNil");
         expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
         expect(r.value(), 3).to.be.a("SCNil");
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("yield", function() {
         /*
@@ -276,7 +282,7 @@
         expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
         expect(r.value(), 3).to.be.a("SCNil");
         expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("args", function() {
         /*
@@ -288,7 +294,7 @@
         expect(r.reset().value()              , 0).to.be.a("SCArray").that.eqls([ null, 1 ]);
         expect(r.reset().value($$(10))        , 1).to.be.a("SCArray").that.eqls([ 10, 1 ]);
         expect(r.reset().value($$(10), $$(20)), 2).to.be.a("SCArray").that.eqls([ 10, 1 ]);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("break", function() {
         var spy = sinon.spy();
@@ -309,7 +315,7 @@
         expect(r.value(), 4).to.be.a("SCNil");
         expect(spy      , 5).to.callCount(1);
         expect(r.state(), 6).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("n-times yield", function() {
         /*
@@ -354,7 +360,7 @@
         expect(r.value(),10).to.be.a("SCNil");
         expect(spy      ,11).to.callCount(1);
         expect(r.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("nested yield", function() {
         /*
@@ -409,7 +415,7 @@
         expect(r.value(),10).to.be.a("SCNil");
         expect(spy      ,11).to.callCount(1);
         expect(r.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("iterator yield", function() {
         /*
@@ -431,7 +437,7 @@
         expect(r.state(), 8).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
         expect(r.value(), 9).to.be.a("SCNil");
         expect(r.state(),10).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("iterator n-times yield", function() {
         /*
@@ -471,7 +477,7 @@
         expect(r.state(),10).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
         expect(r.value(),11).to.be.a("SCNil");
         expect(r.state(),12).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("yieldAndReset", function() {
         /*
@@ -534,7 +540,7 @@
         expect(spy1     ,18).to.callCount(2);
         expect(spy2     ,19).to.callCount(2);
         expect(r.state(),20).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("alwaysYield", function() {
         /*
@@ -601,7 +607,7 @@
         expect(spy2     ,22).to.callCount(2);
         expect(r.state(),23).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
         expect(r.value(),24).to.be.a("SCInteger").that.equals(30);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("value", function() {
         /*
@@ -697,7 +703,7 @@
         expect(r.value(),18).to.be.a("SCNil");
         expect(spy3     ,19).to.callCount(1);
         expect(r.state(),20).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("value.yield", function() {
         /*
@@ -725,7 +731,7 @@
         expect(r.value(), 4).to.be.a("SCNil");
         expect(spy      , 5).to.callCount(1);
         expect(r.state(), 6).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("routine value", function() {
         /*
@@ -768,7 +774,7 @@
         expect(r.value(), 8).to.be.a("SCNil");
         expect(spy2     , 9).to.callCount(1);
         expect(r.state(),10).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("function$while", function() {
         /*
@@ -790,7 +796,7 @@
         expect(r.value(), 1).to.be.a("SCNil");
         expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
         expect(spy).to.callCount(3);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("use iterator in a Function", function() {
         /*
@@ -806,7 +812,7 @@
         expect(f.value(), 1).to.be.a("SCInteger").that.equals(2);
         expect(f.value(), 2).to.be.a("SCInteger").that.equals(3);
         expect(f.value(), 3).to.be.a("SCNil");
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("use iterators at the same time", function() {
         /*
@@ -826,7 +832,7 @@
         expect(f.value(), 1).to.be.a("SCArray").that.eqls([ 2, 20, 200 ]);
         expect(f.value(), 2).to.be.a("SCArray").that.eqls([ 3, 30, 300 ]);
         expect(f.value(), 3).to.be.a("SCArray").that.eqls([ null, null, null ]);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("Array.fill", function() {
         /* r = r { Array.fill(4, { |i| i + 1 }).yield } */
@@ -840,7 +846,7 @@
         expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
         expect(r.value(), 3).to.be.a("SCNil");
         expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_DONE);
-        expect(sc.lang.bytecode.current, "bytecode.current should be null").to.be.null;
+        expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
     });
   });

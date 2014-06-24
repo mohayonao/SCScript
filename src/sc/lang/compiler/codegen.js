@@ -1,19 +1,19 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("./compiler");
   require("./scope");
   require("./pre-compiler");
 
   var codegen = {};
 
-  var compiler = sc.lang.compiler;
-  var Syntax   = compiler.Syntax;
-  var Token    = compiler.Token;
-  var Message  = compiler.Message;
-  var precompile = compiler.precompile;
+  var isClassName = sc.libs.strlib.isClassName;
+  var Syntax   = sc.lang.compiler.Syntax;
+  var Token    = sc.lang.compiler.Token;
+  var Message  = sc.lang.compiler.Message;
+  var precompile = sc.lang.compiler.precompile;
 
-  var Scope = compiler.scope({
+  var Scope = sc.lang.compiler.scope({
     added: function(stmt, id, indent, peek, opts) {
       if (stmt.vars.length === 0) {
         this._addNewVariableStatement(stmt, id, indent);
@@ -799,14 +799,9 @@
     };
   };
 
-  var isClassName = function(name) {
-    var ch0 = name.charAt(0);
-    return "A" <= ch0 && ch0 <= "Z";
-  };
-
   codegen.compile = function(ast, opts) {
     return new CodeGen(opts).compile(ast);
   };
 
-  compiler.codegen = codegen;
+  sc.lang.compiler.codegen = codegen;
 })(sc);

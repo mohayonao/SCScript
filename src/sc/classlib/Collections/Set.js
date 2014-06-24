@@ -6,7 +6,6 @@ SCScript.install(function(sc) {
   var $ = sc.lang.$;
   var $nil  = $.nil;
   var $int0 = $.int0;
-  var iterator = sc.lang.iterator;
   var SCArray = $("Array");
 
   sc.lang.klass.refine("Set", function(builder) {
@@ -40,8 +39,8 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("do", function($function) {
-      iterator.execute(
-        iterator.set$do(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.set$do(this),
         $function
       );
       return this;

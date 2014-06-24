@@ -4,11 +4,9 @@
   require("./klass");
   require("../dollar");
   require("../fn");
-  require("../../libs/strlib");
 
   var $ = sc.lang.$;
   var fn = sc.lang.fn;
-  var klass = sc.lang.klass;
   var strlib = sc.libs.strlib;
 
   function Builder(constructor) {
@@ -145,5 +143,5 @@
     methods[name] = fn(func, opts.args);
   }
 
-  klass.Builder = Builder;
+  sc.lang.klass.Builder = Builder;
 })(sc);

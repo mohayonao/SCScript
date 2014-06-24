@@ -7,7 +7,6 @@ SCScript.install(function(sc) {
   var $nil   = $.nil;
   var $false = $.false;
   var $space = $.Char(" ");
-  var io = sc.lang.io;
 
   sc.lang.klass.refine("String", function(builder) {
     builder.addMethod("__str__", function() {
@@ -113,37 +112,37 @@ SCScript.install(function(sc) {
 
     builder.addMethod("<", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() < 0
+        this.compare($aString, $false).__num__() < 0
       );
     });
 
     builder.addMethod(">", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() > 0
+        this.compare($aString, $false).__num__() > 0
       );
     });
 
     builder.addMethod("<=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() <= 0
+        this.compare($aString, $false).__num__() <= 0
       );
     });
 
     builder.addMethod(">=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() >= 0
+        this.compare($aString, $false).__num__() >= 0
       );
     });
 
     builder.addMethod("==", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() === 0
+        this.compare($aString, $false).__num__() === 0
       );
     });
 
     builder.addMethod("!=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() !== 0
+        this.compare($aString, $false).__num__() !== 0
       );
     });
 
@@ -174,22 +173,22 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("postln", function() {
-      io.post(this.__str__() + "\n");
+      sc.lang.io.post(this.__str__() + "\n");
       return this;
     });
 
     builder.addMethod("post", function() {
-      io.post(this.__str__());
+      sc.lang.io.post(this.__str__());
       return this;
     });
 
     builder.addMethod("postcln", function() {
-      io.post("// " + this.__str__() + "\n");
+      sc.lang.io.post("// " + this.__str__() + "\n");
       return this;
     });
 
     builder.addMethod("postc", function() {
-      io.post("// " + this.__str__());
+      sc.lang.io.post("// " + this.__str__());
       return this;
     });
 

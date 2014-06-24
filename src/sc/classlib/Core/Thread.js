@@ -5,7 +5,6 @@ SCScript.install(function(sc) {
 
   var $ = sc.lang.$;
   var $nil = $.nil;
-  var main = sc.lang.main;
   var random = sc.libs.random;
 
   sc.lang.klass.refine("Thread", function(builder) {
@@ -14,19 +13,19 @@ SCScript.install(function(sc) {
     builder.addClassMethod("new", {
       args: "func"
     }, function($func) {
-      return this.__super__("new")._init($func);
+      return init(this.__super__("new"), $func);
     });
 
-    builder.addMethod("_init", function($func) {
+    function init($this, $func) {
       if ($func.__tag !== sc.TAG_FUNC) {
         throw new Error("Thread.init failed");
       }
-      this._bytecode = $func._bytecode.setOwner(this);
-      this._state    = sc.STATE_INIT;
-      this._parent   = null;
-      this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
-      return this;
-    });
+      $this._bytecode = $func._bytecode.setOwner($this);
+      $this._state    = sc.STATE_INIT;
+      $this._parent   = null;
+      $this._randgen  = new random.RandGen((Math.random() * 4294967295) >>> 0);
+      return $this;
+    }
 
     builder.addMethod("state", function() {
       return $.Integer(this._state);
@@ -107,8 +106,8 @@ SCScript.install(function(sc) {
         return this._$doneValue || $nil;
       }
 
-      this._parent = main.$currentThread;
-      main.$currentThread = this;
+      this._parent = sc.lang.main.getCurrentThread();
+      sc.lang.main.setCurrentThread(this);
 
       this._state = sc.STATE_RUNNING;
       this._bytecode.runAsRoutine([ $inval || $nil ]);
@@ -118,7 +117,7 @@ SCScript.install(function(sc) {
         this._$doneValue = this._bytecode.result;
       }
 
-      main.$currentThread = this._parent;
+      sc.lang.main.setCurrentThread(this._parent);
       this._parent = null;
 
       return this._bytecode.result || $nil;

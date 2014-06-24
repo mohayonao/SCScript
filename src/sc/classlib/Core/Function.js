@@ -3,16 +3,12 @@ SCScript.install(function(sc) {
 
   require("./AbstractFunction");
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var $nil = $.nil;
-  var iterator = sc.lang.iterator;
-  var bytecode = sc.lang.bytecode;
-
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
 
-  sc.lang.klass.refine("Function", function(builder) {
+  sc.lang.klass.refine("Function", function(builder, _) {
     // TODO: implements def
     builder.addClassMethod("new", function() {
       throw new Error("Function.new is illegal, should use literal.");
@@ -84,8 +80,8 @@ SCScript.install(function(sc) {
     // TODO: implements varArgs
 
     builder.addMethod("loop", function() {
-      iterator.execute(
-        iterator.function$loop(),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.function$loop(),
         this
       );
       return this;
@@ -117,14 +113,14 @@ SCScript.install(function(sc) {
 
     builder.addMethod("protect", function($handler) {
       var result;
-      var current = bytecode.current;
+      var current = sc.lang.bytecode.getCurrent();
 
       try {
         result = this.value();
       } catch (e) {
         result = null;
       }
-      bytecode.current = current;
+      sc.lang.bytecode.setCurrent(current);
 
       $handler.value();
 
@@ -139,7 +135,7 @@ SCScript.install(function(sc) {
     builder.addMethod("case", function() {
       var args, i, imax;
 
-      args = slice.call(arguments);
+      args = _.toArray(arguments);
       args.unshift(this);
 
       for (i = 0, imax = args.length >> 1; i < imax; ++i) {
@@ -170,7 +166,7 @@ SCScript.install(function(sc) {
       var $this = this;
 
       return $.Func(function() {
-        var $$args = $.Array(slice.call(arguments));
+        var $$args = $.Array(_.toArray(arguments));
         return $$args.flop().collect($.Func(function($_) {
           return $this.valueArray($_);
         }));
@@ -184,8 +180,8 @@ SCScript.install(function(sc) {
     builder.addMethod("while", {
       args: "body"
     }, function($body) {
-      iterator.execute(
-        iterator.function$while(this),
+      sc.lang.iterator.execute(
+        sc.lang.iterator.function$while(this),
         $body
       );
       return this;

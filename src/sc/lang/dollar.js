@@ -3,12 +3,18 @@
 
   require("./sc");
 
-  sc.lang.$ = function(name) {
+  var $ = function(name) {
     return sc.lang.klass.get(name);
   };
 
-  sc.lang.$.NOP = null;
-  sc.lang.$.DoNothing = function() {
-    return this;
+  $.addProperty = function(name, payload) {
+    $[name] = payload;
   };
+
+  $.addProperty("NOP", null);
+  $.addProperty("DoNothing", function() {
+    return this;
+  });
+
+  sc.lang.$ = $;
 })(sc);

@@ -7,7 +7,18 @@
   var main = sc.lang.main;
 
   describe("sc.lang.main", function() {
-    var $process;
+    it("getCurrentEnvir / setCurrentEnvir", function() {
+      var current = main.getCurrentEnvir();
+      main.setCurrentEnvir(12345);
+      expect(main.getCurrentEnvir()).to.equal(12345);
+      main.setCurrentEnvir(current);
+    });
+    it("getCurrentThread / setCurrentThread", function() {
+      var current = main.getCurrentThread();
+      main.setCurrentThread(12345);
+      expect(main.getCurrentThread()).to.equal(12345);
+      main.setCurrentThread(current);
+    });
     it("run", sinon.test(function() {
       var test, func;
 
@@ -15,25 +26,23 @@
       test = main.run(func);
       expect(func).to.be.calledWith($);
       expect(func).to.be.calledLastIn(test);
-      $process = main.$process;
 
       func = this.spy(sc.test.func());
       test = main.run(func);
       expect(func).to.be.calledWith($);
       expect(func).to.be.calledLastIn(test);
-      expect(main.$process).to.equal($process);
     }));
+    it("$.This", function() {
+      var instance = $.This();
+      expect(instance).to.be.a("SCInterpreter");
+    });
     it("$.ThisProcess", function() {
       var instance = $.ThisProcess();
-      expect(instance).to.be.a("SCMain").that.equals($process);
+      expect(instance).to.be.a("SCMain");
     });
     it("$.ThisThread", function() {
       var instance = $.ThisThread();
-      expect(instance).to.be.a("SCThread").that.equals($process.mainThread());
-    });
-    it("$.This", function() {
-      var instance = $.This();
-      expect(instance).to.be.a("SCInterpreter").that.equals($process.interpreter());
+      expect(instance).to.be.a("SCThread");
     });
     it("$.Environment", function() {
       var test;

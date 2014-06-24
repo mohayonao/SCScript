@@ -6,72 +6,57 @@
   require("./parser");
   require("./codegen");
 
-  var compiler = sc.lang.compiler;
+  describe("sc.lang.compiler", function() {
+    it(".tokenize", sinon.test(function() {
+      var source = Math.random();
+      var opts = Math.random();
+      var tokenize = this.spy(sc.test.func());
 
-  describe("sc.lang.compiler.compiler", function() {
-    it("SCScript.tokenize", sinon.test(function() {
-      var source, opts;
-      var tokenize, test;
-
-      source = Math.random();
-      opts   = Math.random();
-
-      tokenize = this.spy(sc.test.func());
-
-      this.stub(compiler, "lexer", function() {
+      this.stub(sc.lang.compiler, "lexer", function() {
         return { tokenize: tokenize };
       });
 
-      test = SCScript.tokenize(source, opts);
-      expect(compiler.lexer).to.be.calledWithNew;
-      expect(compiler.lexer).to.be.calledWith(source, opts);
+      var test = sc.lang.compiler.tokenize(source, opts);
+
+      expect(sc.lang.compiler.lexer).to.be.calledWithNew;
+      expect(sc.lang.compiler.lexer).to.be.calledWith(source, opts);
       expect(tokenize).to.be.calledLastIn(test);
     }));
-    it("SCScript.parse", sinon.test(function() {
-      var source, opts;
-      var test;
+    it(".parse", sinon.test(function() {
+      var source = Math.random();
+      var opts = Math.random();
 
-      source = Math.random();
-      opts   = Math.random();
+      this.stub(sc.lang.compiler.parser, "parse", sc.test.func());
 
-      this.stub(compiler.parser, "parse", sc.test.func());
+      var test = sc.lang.compiler.parse(source, opts);
 
-      test = SCScript.parse(source, opts);
-      expect(compiler.parser.parse).to.be.calledWith(source, opts);
-      expect(compiler.parser.parse).to.be.calledLastIn(test);
+      expect(sc.lang.compiler.parser.parse).to.be.calledWith(source, opts);
+      expect(sc.lang.compiler.parser.parse).to.be.calledLastIn(test);
     }));
-    it("SCScript.compile", sinon.test(function() {
-      var source, opts, ast;
-      var test;
+    it(".compile given string", sinon.test(function() {
+      var source = String(Math.random());
+      var opts = Math.random();
+      var ast = Math.random();
 
-      source = "source";
-      opts   = Math.random();
-      ast    = Math.random();
+      this.stub(sc.lang.compiler, "parse").withArgs(source).returns(ast);
+      this.stub(sc.lang.compiler.codegen, "compile", sc.test.func());
 
-      this.stub(SCScript, "parse", function() {
-        return ast;
-      });
-      this.stub(compiler.codegen, "compile", sc.test.func());
+      var test = sc.lang.compiler.compile(source, opts);
 
-      test = SCScript.compile(source, opts);
-
-      expect(SCScript.parse).to.be.calledWith(source, opts);
-      expect(compiler.codegen.compile).to.be.calledWith(ast, opts);
-      expect(compiler.codegen.compile).to.be.calledLastIn(test);
+      expect(sc.lang.compiler.parse).to.be.calledWith(source, opts);
+      expect(sc.lang.compiler.codegen.compile).to.be.calledWith(ast, opts);
+      expect(sc.lang.compiler.codegen.compile).to.be.calledLastIn(test);
     }));
-    it("SCScript.compile with ast", sinon.test(function() {
-      var source, opts;
-      var test;
+    it(".compile given ast", sinon.test(function() {
+      var source = Math.random();
+      var opts = Math.random();
 
-      source = {};
-      opts   = Math.random();
+      this.stub(sc.lang.compiler.codegen, "compile", sc.test.func());
 
-      this.stub(compiler.codegen, "compile", sc.test.func());
+      var test = sc.lang.compiler.compile(source, opts);
 
-      test = SCScript.compile(source, opts);
-
-      expect(compiler.codegen.compile).to.be.calledWith(source, opts);
-      expect(compiler.codegen.compile).to.be.calledLastIn(test);
+      expect(sc.lang.compiler.codegen.compile).to.be.calledWith(source, opts);
+      expect(sc.lang.compiler.codegen.compile).to.be.calledLastIn(test);
     }));
   });
 })();

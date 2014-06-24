@@ -5,7 +5,6 @@ SCScript.install(function(sc) {
 
   var $ = sc.lang.$;
   var $nil = $.nil;
-  var main = sc.lang.main;
 
   sc.lang.klass.refine("Environment", function(builder) {
     var envStack = [];
@@ -23,12 +22,12 @@ SCScript.install(function(sc) {
     }, function($function) {
       var $saveEnvir;
 
-      $saveEnvir = main.$currentEnv;
-      main.$currentEnv = this;
+      $saveEnvir = sc.lang.main.getCurrentEnvir();
+      sc.lang.main.setCurrentEnvir(this);
       try {
         $function.value(this);
       } catch (e) {}
-      main.$currentEnv = $saveEnvir;
+      sc.lang.main.setCurrentEnvir($saveEnvir);
 
       return this;
     });
@@ -38,12 +37,12 @@ SCScript.install(function(sc) {
     }, function($function) {
       var $result, $saveEnvir;
 
-      $saveEnvir = main.$currentEnv;
-      main.$currentEnv = this;
+      $saveEnvir = sc.lang.main.getCurrentEnvir();
+      sc.lang.main.setCurrentEnvir(this);
       try {
         $result = $function.value(this);
       } catch (e) {}
-      main.$currentEnv = $saveEnvir;
+      sc.lang.main.setCurrentEnvir($saveEnvir);
 
       return $result || /* istanbul ignore next */ $nil;
     });
@@ -62,7 +61,7 @@ SCScript.install(function(sc) {
 
     builder.addClassMethod("pop", function() {
       if (envStack.length) {
-        main.$currentEnv = envStack.pop();
+        sc.lang.main.setCurrentEnvir(envStack.pop());
       }
       return this;
     });
@@ -70,8 +69,8 @@ SCScript.install(function(sc) {
     builder.addClassMethod("push", {
       args: "envir"
     }, function($envir) {
-      envStack.push(main.$currentEnv);
-      main.$currentEnv = $envir;
+      envStack.push(sc.lang.main.getCurrentEnvir());
+      sc.lang.main.setCurrentEnvir($envir);
       return this;
     });
 

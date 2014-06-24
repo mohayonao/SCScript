@@ -1,9 +1,9 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("../sc");
 
-  var compiler = {
+  sc.lang.compiler = {
     Token: {
       CharLiteral: "Char",
       EOF: "<EOF>",
@@ -60,30 +60,23 @@
       thisProcess: "function",
       thisFunction: "function",
       thisFunctionDef: "function",
+    },
+    tokenize: function(source, opts) {
+      return new sc.lang.compiler.lexer(source, opts).tokenize();
+    },
+    parse: function(source, opts) {
+      return sc.lang.compiler.parser.parse(source, opts);
+    },
+    compile: function(source, opts) {
+      var ast;
+
+      if (typeof source === "string") {
+        ast = sc.lang.compiler.parse(source, opts);
+      } else {
+        ast = source;
+      }
+
+      return sc.lang.compiler.codegen.compile(ast, opts);
     }
-  };
-
-  sc.lang.compiler = compiler;
-
-  var SCScript = sc.SCScript;
-
-  SCScript.tokenize = function(source, opts) {
-    return new compiler.lexer(source, opts).tokenize();
-  };
-
-  SCScript.parse = function(source, opts) {
-    return compiler.parser.parse(source, opts);
-  };
-
-  SCScript.compile = function(source, opts) {
-    var ast;
-
-    if (typeof source === "string") {
-      ast = SCScript.parse(source, opts);
-    } else {
-      ast = source;
-    }
-
-    return compiler.codegen.compile(ast, opts);
   };
 })(sc);

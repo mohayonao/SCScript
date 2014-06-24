@@ -3,11 +3,10 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var $nil = $.nil;
 
-  sc.lang.klass.refine("Nil", function(builder) {
+  sc.lang.klass.refine("Nil", function(builder, _) {
     builder.addMethod("__num__", function() {
       return 0;
     });
@@ -160,7 +159,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("addFunc", function() {
-      var functions = slice.call(arguments);
+      var functions = _.toArray(arguments);
       if (functions.length <= 1) {
         return functions[0];
       }

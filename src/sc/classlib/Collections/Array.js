@@ -3,17 +3,16 @@ SCScript.install(function(sc) {
 
   require("./ArrayedCollection");
 
-  var slice = [].slice;
-  var $     = sc.lang.$;
-  var rand  = sc.libs.random;
+  var $ = sc.lang.$;
+  var random  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
   var SCArray = $("Array");
   var $nil = $.nil;
 
-  sc.lang.klass.refine("Array", function(builder) {
+  sc.lang.klass.refine("Array", function(builder, _) {
     builder.addClassMethod("with", function() {
-      return $.Array(slice.call(arguments));
+      return $.Array(_.toArray(arguments));
     });
 
     builder.addMethod("reverse", function() {
@@ -27,7 +26,7 @@ SCScript.install(function(sc) {
       m = a.length;
       if (m > 1) {
         for (i = 0; m > 0; ++i, --m) {
-          j = i + (rand.next() * m)|0;
+          j = i + (random.next() * m)|0;
           tmp  = a[i];
           a[i] = a[j];
           a[j] = tmp;
@@ -366,7 +365,7 @@ SCScript.install(function(sc) {
       length = this._.length;
       while (i < length && list.length < maxlen) {
         list.push(this._[i]);
-        if (rand.next() < prob) {
+        if (random.next() < prob) {
           i += 1;
         }
       }

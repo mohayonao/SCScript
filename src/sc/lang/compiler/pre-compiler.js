@@ -1,13 +1,11 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
   require("./compiler");
   require("./node");
 
-  var compiler = sc.lang.compiler;
-  var Syntax   = compiler.Syntax;
-  var Node     = sc.lang.compiler.node;
+  var Syntax = sc.lang.compiler.Syntax;
+  var Node = sc.lang.compiler.node;
 
   var SegmentedMethod = {
     idle: true,

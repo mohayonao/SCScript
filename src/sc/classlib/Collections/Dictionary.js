@@ -4,7 +4,6 @@ SCScript.install(function(sc) {
   require("./Association");
   require("./Set");
 
-  var slice = [].slice;
   var $ = sc.lang.$;
   var $nil   = $.nil;
   var $true  = $.true;
@@ -14,7 +13,14 @@ SCScript.install(function(sc) {
   var SCArray = $("Array");
   var SCAssociation = $("Association");
 
-  sc.lang.klass.refine("Dictionary", function(builder) {
+  function incrementSize($this) {
+    $this._size += 1;
+    if ($this._$array.size().__inc__() < $this._size * 4) {
+      $this.grow();
+    }
+  }
+
+  sc.lang.klass.refine("Dictionary", function(builder, _) {
     builder.addClassMethod("new", {
       args: "n=8"
     }, function($n) {
@@ -115,7 +121,7 @@ SCScript.install(function(sc) {
         $array.put($index.__inc__(), $value);
         if ($array.at($index) === $nil) {
           $array.put($index, $key);
-          this._incrementSize();
+          incrementSize(this);
         }
       }
 
@@ -130,7 +136,7 @@ SCScript.install(function(sc) {
         return $this.put($key, $value);
       });
 
-      slice.call(arguments).forEach(function($dict) {
+      _.toArray(arguments).forEach(function($dict) {
         $dict.keysValuesDo($loopfunc);
       }, this);
 
@@ -594,13 +600,6 @@ SCScript.install(function(sc) {
 
     // TODO: implements storeItemsOn
     // TODO: implements printItemsOn
-
-    builder.addMethod("_incrementSize", function() {
-      this._size += 1;
-      if (this._$array.size().__inc__() < this._size * 4) {
-        this.grow();
-      }
-    });
   });
 
   sc.lang.klass.refine("IdentityDictionary", function(builder) {
@@ -626,7 +625,7 @@ SCScript.install(function(sc) {
       $array.put($index.__inc__(), $value);
       if ($array.at($index) === $nil) {
         $array.put($index, $key);
-        this._incrementSize();
+        incrementSize(this);
       }
 
       return $prev;

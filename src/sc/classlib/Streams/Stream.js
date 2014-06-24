@@ -460,7 +460,7 @@ SCScript.install(function(sc) {
       return _.newCopyArgs(this, {
         nextFunc: $nextFunc,
         resetFunc: $resetFunc,
-        envir: sc.lang.main.$currentEnv
+        envir: sc.lang.main.getCurrentEnvir()
       });
     });
 

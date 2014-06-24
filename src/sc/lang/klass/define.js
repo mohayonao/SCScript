@@ -4,14 +4,11 @@
   require("./klass");
   require("./builder");
   require("../dollar");
-  require("../../libs/strlib");
 
   var $ = sc.lang.$;
   var strlib = sc.libs.strlib;
-
-  var klass       = sc.lang.klass;
   var metaClasses = {};
-  var classes     = klass.classes;
+  var classes     = sc.lang.klass.classes;
   var hash = 0x100000;
 
   function createClassInstance(MetaSpec) {
@@ -80,9 +77,9 @@
 
   function buildClass(constructor, spec) {
     if (typeof spec !== "function") {
-      return new klass.Builder(constructor).init(spec);
+      return new sc.lang.klass.Builder(constructor).init(spec);
     }
-    spec(new klass.Builder(constructor), klass.utils);
+    spec(new sc.lang.klass.Builder(constructor), sc.lang.klass.utils);
   }
 
   function __super__(that, root, funcName, args) {
@@ -106,7 +103,7 @@
     return result || /* istanbul ignore next */ $.Nil();
   }
 
-  klass.define = function(className, spec) {
+  var define = sc.lang.klass.define = function(className, spec) {
     var items = className.split(":");
     var superClassName = (items[1] || "Object").trim();
 
@@ -131,7 +128,7 @@
     return constructor;
   };
 
-  klass.refine = function(className, spec) {
+  var refine = sc.lang.klass.refine = function(className, spec) {
     if (!metaClasses.hasOwnProperty(className)) {
       throw new Error(strlib.format(
         "sc.lang.klass.refine: class '#{0}' is not defined.", className
@@ -160,7 +157,7 @@
 
   SCObject.metaClass = createClassInstance(function() {});
 
-  klass.define("Object", {
+  define("Object", {
     constructor: SCObject,
     __tag: sc.TAG_OBJ,
     __init__: function() {},
@@ -172,7 +169,7 @@
     }
   });
 
-  klass.define("Class", {
+  define("Class", {
     constructor: SCClass,
     __super__: function(funcName, args) {
       return __super__(this, this.__superClass, funcName, args);
@@ -186,7 +183,7 @@
 
   registerClass("Object", SCObject.metaClass, classes.Object.__Spec);
 
-  klass.refine("Object", function(builder) {
+  refine("Object", function(builder) {
     builder.addClassMethod("new", function() {
       if (this.__Spec === SCClass) {
         return $.Nil();
@@ -198,15 +195,13 @@
       if (this[methodName]) {
         return this[methodName].apply(this, args);
       }
-      return this._doesNotUnderstand(methodName, args);
+      return this.__attr__(methodName, args);
     });
 
-    builder.addMethod("_doesNotUnderstand", function(methodName) {
+    builder.addMethod("__attr__", function(methodName) {
       throw new Error(strlib.format(
         "RECEIVER #{0}: Message '#{1}' not understood.", this.__str__(), methodName
       ));
     });
   });
-
-  sc.lang.klass = klass;
 })(sc);

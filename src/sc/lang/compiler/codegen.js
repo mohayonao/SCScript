@@ -7,7 +7,8 @@
 
   var codegen = {};
 
-  var isClassName = sc.libs.strlib.isClassName;
+  var slice = [].slice;
+  var strlib = sc.libs.strlib;
   var Syntax   = sc.lang.compiler.Syntax;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
@@ -211,13 +212,7 @@
   };
 
   CodeGen.prototype.throwError = function(obj, messageFormat) {
-    var args, message;
-
-    args = Array.prototype.slice.call(arguments, 2);
-    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
-      return args[index];
-    });
-
+    var message = strlib.format(messageFormat, slice.call(arguments, 2));
     throw new Error(message);
   };
 
@@ -594,7 +589,7 @@
   CodeGen.prototype.Identifier = function(node, opts) {
     var name = node.name;
 
-    if (isClassName(name)) {
+    if (strlib.isClassName(name)) {
       return "$('" + name + "')";
     }
 

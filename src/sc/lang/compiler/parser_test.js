@@ -4,6 +4,8 @@
   require("./parser");
   require("./test-cases");
 
+  var slice = [].slice;
+  var strlib = sc.libs.strlib;
   var Syntax  = sc.lang.compiler.Syntax;
   var Token   = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
@@ -14,20 +16,16 @@
   }
 
   function error(options, messageFormat) {
-    var e, args, description, message;
+    var description = strlib.format(messageFormat, slice.call(arguments, 2));
 
-    args = Array.prototype.slice.call(arguments, 2);
-    description = messageFormat.replace(/%(\d)/g, function(whole, index) {
-      return args[index];
-    });
-
+    var message;
     if (options.line !== -1) {
       message = "Line " + options.line + ": " + description;
     } else {
       message = description;
     }
 
-    e = new Error(message);
+    var e = new Error(message);
     e.index = options.index;
     e.lineNumber = options.line;
     e.column = options.column;

@@ -52,7 +52,7 @@
       ].forEach(function(items) {
         instance = this.createInstance(items[0]);
         test = instance.toString();
-        expect(test).withMessage("@{0}.toString()", items)
+        expect(test).withMessage("#{0}.toString()", items)
           .to.be.a("JSString").that.equals(items[1]);
       }, this);
     });

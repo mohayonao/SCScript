@@ -13,26 +13,49 @@
     return "a";
   };
 
-  strlib.isClassName = function (name) {
+  strlib.isAlpha = function(ch) {
+    return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
+  };
+
+  strlib.isNumber = function(ch) {
+    return "0" <= ch && ch <= "9";
+  };
+
+  strlib.isClassName = function(name) {
     var ch = name.charCodeAt(0);
     return 0x41 <= ch && ch <= 0x5a;
   };
 
-  strlib.format = function(fmt, list) {
+  function formatWithList(fmt, list) {
     var msg = fmt;
-    if (Array.isArray(list)) {
-      list.forEach(function(value, index) {
-        msg = msg.replace(
-          new RegExp("@\\{" + index + "\\}", "g"), String(value)
-        );
-      });
-    }
-    slice.call(arguments, 1).forEach(function(value, index) {
+    list.forEach(function(value, index) {
       msg = msg.replace(
         new RegExp("#\\{" + index + "\\}", "g"), String(value)
       );
     });
     return msg;
+  }
+
+  function formatWithDict(fmt, dict) {
+    var msg = fmt;
+    Object.keys(dict).forEach(function(key) {
+      if (/^\w+$/.test(key)) {
+        msg = msg.replace(
+          new RegExp("#\\{" + key + "\\}", "g"), String(dict[key])
+        );
+      }
+    });
+    return msg;
+  }
+
+  strlib.format = function(fmt, arg) {
+    if (Array.isArray(arg)) {
+      return formatWithList(fmt, arg);
+    }
+    if (arg && arg.constructor === Object) {
+      return formatWithDict(fmt, arg);
+    }
+    return formatWithList(fmt, slice.call(arguments, 1));
   };
 
   sc.libs.strlib = strlib;

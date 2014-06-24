@@ -40,16 +40,16 @@
       ValueMethodResult: "ValueMethodResult"
     },
     Message: {
-      ArgumentAlreadyDeclared: "argument '%0' already declared",
+      ArgumentAlreadyDeclared: "argument '#{0}' already declared",
       InvalidLHSInAssignment: "invalid left-hand side in assignment",
-      NotImplemented: "not implemented %0",
+      NotImplemented: "not implemented #{0}",
       UnexpectedEOS: "unexpected end of input",
       UnexpectedIdentifier: "unexpected identifier",
       UnexpectedNumber: "unexpected number",
-      UnexpectedLiteral: "unexpected %0",
-      UnexpectedToken: "unexpected token %0",
-      VariableAlreadyDeclared: "variable '%0' already declared",
-      VariableNotDefined: "variable '%0' not defined"
+      UnexpectedLiteral: "unexpected #{0}",
+      UnexpectedToken: "unexpected token #{0}",
+      VariableAlreadyDeclared: "variable '#{0}' already declared",
+      VariableNotDefined: "variable '#{0}' not defined"
     },
     Keywords: {
       var: "keyword",

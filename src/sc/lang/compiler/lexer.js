@@ -45,6 +45,12 @@
     return n - 87; // if (97 <= n && n <= 122)
   }
 
+  Object.defineProperty(Lexer.prototype, "columnNumber", {
+    get: function() {
+      return this.index - this.lineStart;
+    }
+  });
+
   Lexer.prototype.tokenize = function() {
     var tokens = [];
 
@@ -64,7 +70,7 @@
 
     var start = {
       line: this.lineNumber,
-      column: this.index - this.lineStart
+      column: this.columnNumber
     };
 
     var token = this.advance();
@@ -82,7 +88,7 @@
         start: start,
         end: {
           line: this.lineNumber,
-          column: this.index - this.lineStart
+          column: this.columnNumber
         }
       };
     }
@@ -603,7 +609,7 @@
   };
 
   Lexer.prototype.getLocItems = function() {
-    return [ this.index, this.lineNumber, this.index - this.lineStart ];
+    return [ this.index, this.lineNumber, this.columnNumber ];
   };
 
   Lexer.prototype.throwError = function(token, messageFormat) {

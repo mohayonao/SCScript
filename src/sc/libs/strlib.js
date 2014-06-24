@@ -13,7 +13,15 @@
     return "a";
   };
 
-  strlib.isClassName = function (name) {
+  strlib.isAlpha = function(ch) {
+    return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
+  };
+
+  strlib.isNumber = function(ch) {
+    return "0" <= ch && ch <= "9";
+  };
+
+  strlib.isClassName = function(name) {
     var ch = name.charCodeAt(0);
     return 0x41 <= ch && ch <= 0x5a;
   };

@@ -5,7 +5,7 @@ SCScript.install(function(sc) {
 
   var $ = sc.lang.$;
   var $nil = $.nil;
-  var format = sc.libs.strlib.format;
+  var strlib = sc.libs.strlib;
 
   sc.lang.klass.refine("Event", function(builder) {
     // TODO: implements $default
@@ -33,7 +33,7 @@ SCScript.install(function(sc) {
         // setter
         methodName = methodName.substr(0, methodName.length - 1);
         if (this[methodName]) {
-          sc.lang.io.warn(format(
+          sc.lang.io.warn(strlib.format(
             "WARNING: '#{0}' exists a method name, so you can't use it as pseudo-method",
             methodName
           ));

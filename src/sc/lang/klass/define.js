@@ -6,8 +6,7 @@
   require("../dollar");
 
   var $ = sc.lang.$;
-  var isClassName = sc.libs.strlib.isClassName;
-  var format = sc.libs.strlib.format;
+  var strlib = sc.libs.strlib;
   var metaClasses = {};
   var classes     = sc.lang.klass.classes;
   var hash = 0x100000;
@@ -35,21 +34,21 @@
   }
 
   function throwIfInvalidClassName(className, superClassName) {
-    if (!isClassName(className)) {
-      throw new Error(format(
+    if (!strlib.isClassName(className)) {
+      throw new Error(strlib.format(
         "sc.lang.klass.define: classname should be CamelCase, but got '#{0}'", className
       ));
     }
 
     if (metaClasses.hasOwnProperty(className)) {
-      throw new Error(format(
+      throw new Error(strlib.format(
         "sc.lang.klass.define: class '#{0}' is already defined.", className
       ));
     }
 
     if (className !== "Object") {
       if (!metaClasses.hasOwnProperty(superClassName)) {
-        throw new Error(format(
+        throw new Error(strlib.format(
           "sc.lang.klass.define: superclass '#{0}' is not defined.", superClassName
         ));
       }
@@ -96,7 +95,7 @@
     if (func) {
       result = func.apply(that, args);
     } else {
-      throw new Error(format("supermethod '#{0}' not found", funcName));
+      throw new Error(strlib.format("supermethod '#{0}' not found", funcName));
     }
 
     that.__superClassP = null;
@@ -131,7 +130,7 @@
 
   var refine = sc.lang.klass.refine = function(className, spec) {
     if (!metaClasses.hasOwnProperty(className)) {
-      throw new Error(format(
+      throw new Error(strlib.format(
         "sc.lang.klass.refine: class '#{0}' is not defined.", className
       ));
     }
@@ -163,7 +162,7 @@
     __tag: sc.TAG_OBJ,
     __init__: function() {},
     __super__: function(funcName, args) {
-      if (isClassName(funcName)) {
+      if (strlib.isClassName(funcName)) {
         return metaClasses[funcName].__Spec.call(this);
       }
       return __super__(this, this.__Spec.__superClass, funcName, args);
@@ -200,7 +199,7 @@
     });
 
     builder.addMethod("__attr__", function(methodName) {
-      throw new Error(format(
+      throw new Error(strlib.format(
         "RECEIVER #{0}: Message '#{1}' not understood.", this.__str__(), methodName
       ));
     });

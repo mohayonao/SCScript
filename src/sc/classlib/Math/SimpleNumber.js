@@ -8,7 +8,7 @@ SCScript.install(function(sc) {
   var $int0 = $.int0;
   var $int1 = $.int1;
   var random = sc.libs.random;
-  var format = sc.libs.strlib.format;
+  var strlib = sc.libs.strlib;
 
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
@@ -462,13 +462,13 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector) {
-      throw new Error(format("binary operator '#{0}' failed", $aSelector.__sym__()));
+      throw new Error(strlib.format("binary operator '#{0}' failed", $aSelector.__sym__()));
     });
 
     // TODO: implements performBinaryOpOnComplex
 
     builder.addMethod("performBinaryOpOnSignal", function($aSelector) {
-      throw new Error(format("binary operator '#{0}' failed", $aSelector.__sym__()));
+      throw new Error(strlib.format("binary operator '#{0}' failed", $aSelector.__sym__()));
     });
 
     builder.addMethod("nextPowerOfTwo", function() {

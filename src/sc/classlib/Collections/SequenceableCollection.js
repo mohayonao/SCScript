@@ -9,7 +9,7 @@ SCScript.install(function(sc) {
   var $false = $.false;
   var $int0  = $.int0;
   var $int1  = $.int1;
-  var format = sc.libs.strlib.format;
+  var strlib = sc.libs.strlib;
 
   sc.lang.klass.refine("SequenceableCollection", function(builder, _) {
     builder.addMethod("|@|", function($index) {
@@ -1552,7 +1552,7 @@ SCScript.install(function(sc) {
         );
       }
 
-      throw new Error(format(
+      throw new Error(strlib.format(
         "unrecognized adverb: '#{0}' for operator '#{1}'", adverb, $aSelector
       ));
     });

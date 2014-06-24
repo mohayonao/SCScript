@@ -7,7 +7,7 @@ SCScript.install(function(sc) {
   var $false = $.false;
   var $int0  = $.int0;
   var $int1  = $.int1;
-  var format = sc.libs.strlib.format;
+  var strlib = sc.libs.strlib;
 
   var SCArray = $("Array");
   var SCRoutine = $("Routine");
@@ -27,7 +27,7 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("__num__", function() {
-      throw new Error(format("#{0} cannot be converted to a Number.", this.__className));
+      throw new Error(strlib.format("#{0} cannot be converted to a Number.", this.__className));
     });
 
     builder.addMethod("__int__", function() {
@@ -35,11 +35,11 @@ SCScript.install(function(sc) {
     });
 
     builder.addMethod("__bool__", function() {
-      throw new Error(format("#{0} cannot be converted to a Boolean.", this.__className));
+      throw new Error(strlib.format("#{0} cannot be converted to a Boolean.", this.__className));
     });
 
     builder.addMethod("__sym__", function() {
-      throw new Error(format("#{0} cannot be converted to a Symbol.", this.__className));
+      throw new Error(strlib.format("#{0} cannot be converted to a Symbol.", this.__className));
     });
 
     builder.addMethod("__str__", function() {
@@ -147,7 +147,7 @@ SCScript.install(function(sc) {
         return method.apply($this, msg.slice(1));
       }
 
-      throw new Error(format("Message '#{0}' not understood.", selector));
+      throw new Error(strlib.format("Message '#{0}' not understood.", selector));
     };
 
     builder.addMethod("performMsg", function($msg) {
@@ -849,7 +849,7 @@ SCScript.install(function(sc) {
         return $true;
       }
 
-      throw new Error(format("binary operator '#{0}' failed.", aSelector));
+      throw new Error(strlib.format("binary operator '#{0}' failed.", aSelector));
     });
 
     builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector, $thig, $adverb) {

@@ -22,9 +22,32 @@
     describe(".install", function() {
       it("should call given function with sc", function() {
         var installer = sinon.spy();
-        SCScript.install(installer);
+
+        var test = SCScript.install(installer);
+
         expect(installer).to.be.calledWith(sc);
+        expect(test, "should return SCScript").to.equal(SCScript);
       });
+    });
+    describe(".stdout", function() {
+      it("should call console.log", sinon.test(function() {
+        this.stub(console, "log");
+
+        var test = SCScript.stdout("hello!");
+
+        expect(console.log).to.be.calledWith("hello!");
+        expect(test, "should return SCScript").to.equal(SCScript);
+      }));
+    });
+    describe(".stderr", function() {
+      it("should call console.error", sinon.test(function() {
+        this.stub(console, "error");
+
+        var test = SCScript.stderr("oops!");
+
+        expect(console.error).to.be.calledWith("oops!");
+        expect(test, "should return SCScript").to.equal(SCScript);
+      }));
     });
     describe(".tokenize", function() {
       it("should call compiler.tokenize", sinon.test(function() {

@@ -12,16 +12,17 @@
 
   SCScript.install = function(installer) {
     installer(sc);
+    return SCScript;
   };
 
-  /* istanbul ignore next */
   SCScript.stdout = function(msg) {
     console.log(msg);
+    return SCScript;
   };
 
-  /* istanbul ignore next */
   SCScript.stderr = function(msg) {
     console.error(msg);
+    return SCScript;
   };
 
   SCScript.tokenize = function(source, opts) {

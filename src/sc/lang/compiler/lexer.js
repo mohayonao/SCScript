@@ -3,6 +3,7 @@
 
   require("./compiler");
 
+  var slice = [].slice;
   var strlib = sc.libs.strlib;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
@@ -606,10 +607,7 @@
   };
 
   Lexer.prototype.throwError = function(token, messageFormat) {
-    var args = Array.prototype.slice.call(arguments, 2);
-    var message = messageFormat.replace(/%(\d)/g, function(whole, index) {
-      return args[index];
-    });
+    var message = strlib.format(messageFormat, slice.call(arguments, 2));
 
     var index, lineNumber, column;
     if (typeof token.lineNumber === "number") {

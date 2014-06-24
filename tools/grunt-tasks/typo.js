@@ -71,6 +71,23 @@ module.exports = function(grunt) {
     grunt.log.writeln("^ " + message);
   };
 
+  Detector.addChecker(function(node) { // camelcase
+    if (node.type !== Syntax.Identifier) {
+      return;
+    }
+    if (node.name.indexOf("_") === -1 || node.name === "_") {
+      return;
+    }
+    if (/^_*[$a-zA-Z][$a-zA-Z0-9]*_*$/.test(node.name)) {
+      return;
+    }
+    if (/^[A-Z]+(_[A-Z0-9]+)+$/.test(node.name)) {
+      return;
+    }
+    this.showError(node, String.format("#{0} is not in camelCase.", node.name));
+    this.hasTypo = true;
+  });
+
   Detector.addChecker(function(node, parent) { // constVariables check
     if (node.type !== Syntax.Identifier) {
       return;
@@ -88,8 +105,7 @@ module.exports = function(grunt) {
       return;
     }
     if (node.name !== "VERSION" && !this.constVariables.hasOwnProperty(node.name)) {
-      this.showError(node, String.format("#{0} is not defined.", node.name)
-      );
+      this.showError(node, String.format("#{0} is not defined.", node.name));
       this.hasTypo = true;
     }
   });

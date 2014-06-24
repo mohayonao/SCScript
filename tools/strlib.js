@@ -1,4 +1,3 @@
-/* jshint freeze: false */
 "use strict";
 
 String.format = function(fmt, list) {

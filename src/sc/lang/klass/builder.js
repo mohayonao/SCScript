@@ -28,101 +28,86 @@
   };
 
   Builder.prototype.addClassMethod = function(name, opts, func) {
-    this._throwErrorIfAlreadyExists(this._classMethods, name, ".");
-    addMethod(this._classMethods, name, opts, func);
-    return this;
+    return addMethod(this, this._classMethods, name, opts, func);
   };
 
   Builder.prototype.addMethod = function(name, opts, func) {
-    this._throwErrorIfAlreadyExists(this._instanceMethods, name, "#");
-    addMethod(this._instanceMethods, name, opts, func);
-    return this;
+    return addMethod(this, this._instanceMethods, name, opts, func);
   };
 
   Builder.prototype.addProperty = function(type, name) {
     var attrName = "_$" + name;
 
-    if (type === "<>" || type === "<") {
+    if (type.indexOf("<") === 0) {
       this.addMethod(name, {}, function() {
-        return this[attrName] || $.Nil();
+        return this[attrName] || $.nil;
       });
     }
-    if (type === "<>" || type === ">") {
+    if (type.indexOf(">") === type.length - 1) {
       this.addMethod(name + "_", {}, function($_) {
-        this[attrName] = $_ || $.Nil();
+        this[attrName] = $_ || $.nil;
         return this;
       });
     }
+
     return this;
   };
 
-  Builder.prototype.subclassResponsibility = function(methodName) {
+  function createErrorFunc(errorType, message) {
     var func = function() {
-      var errMsg = strlib.format(
-        "RECEIVER #{0}: '#{1}' should have been implemented by this subclass",
-        this.__className, methodName
-      );
+      var errMsg = strlib.format("RECEIVER #{0}: #{1}", this.__className, message);
       throw new Error(errMsg);
     };
-    func.__errorType = "subclassResponsibility";
-    return this.addMethod(methodName, {}, func);
+    func.__errorType = errorType;
+    return func;
+  }
+
+  Builder.prototype.subclassResponsibility = function(methodName) {
+    return this.addMethod(methodName, {}, createErrorFunc(
+      "subclassResponsibility",
+      strlib.format("'#{0}' should have been implemented by this subclass", methodName)
+    ));
   };
 
   Builder.prototype.doesNotUnderstand = function(methodName) {
-    var func = function() {
-      var errMsg = strlib.format(
-        "RECEIVER #{0}: '#{1}' not understood",
-        this.__className, methodName
-      );
-      throw new Error(errMsg);
-    };
-    func.__errorType = "doesNotUnderstand";
-    return this.addMethod(methodName, {}, func);
+    return this.addMethod(methodName, {}, createErrorFunc(
+      "doesNotUnderstand",
+      strlib.format("'#{0}' not understood", methodName)
+    ));
   };
 
   Builder.prototype.shouldNotImplement = function(methodName) {
-    var func = function() {
-      var errMsg = strlib.format(
-        "RECEIVER #{0}: '#{1}' not valid for this subclass",
-        this.__className, methodName
-      );
-      throw new Error(errMsg);
-    };
-    func.__errorType = "shouldNotImplement";
-    return this.addMethod(methodName, {}, func);
+    return this.addMethod(methodName, {}, createErrorFunc(
+      "shouldNotImplement",
+      strlib.format("'#{0}' not valid for this subclass", methodName)
+    ));
   };
 
   Builder.prototype.notYetImplemented = function(methodName) {
-    var func = function() {
-      var errMsg = strlib.format(
-        "RECEIVER #{0}: '#{1}' is not yet implemented",
-        this.__className, methodName
-      );
-      throw new Error(errMsg);
-    };
-    func.__errorType = "notYetImplemented";
-    return this.addMethod(methodName, {}, func);
+    return this.addMethod(methodName, {}, createErrorFunc(
+      "notYetImplemented",
+      strlib.format("'#{0}' is not yet implemented", methodName)
+    ));
   };
 
   Builder.prototype.notSupported = function(methodName) {
-    var func = function() {
-      var errMsg = strlib.format(
-        "RECEIVER #{0}: '#{1}' is not supported",
-        this.__className, methodName
-      );
-      throw new Error(errMsg);
-    };
-    func.__errorType = "notSupported";
-    return this.addMethod(methodName, {}, func);
+    return this.addMethod(methodName, {}, createErrorFunc(
+      "notSupported",
+      strlib.format("'#{0}' is not supported", methodName)
+    ));
   };
 
-  Builder.prototype._throwErrorIfAlreadyExists = function(methods, methodName, bond) {
+  function bond(that, methods) {
+    return methods === that._classMethods ? "." : "#";
+  }
+
+  function throwErrorIfAlreadyExists(that, methods, methodName) {
     if (methods.hasOwnProperty(methodName)) {
       throw new Error(strlib.format(
-        "#{0} is already defined", (this._className + bond + methodName)
+        "#{0} is already defined", (that._className + bond(that, methods) + methodName)
       ));
     }
-  };
+  }
 
   function choose(type) {
     switch (type) {
@@ -132,7 +117,8 @@
     return $.DoNothing;
   }
 
-  function addMethod(methods, name, opts, func) {
+  function addMethod(that, methods, name, opts, func) {
+    throwErrorIfAlreadyExists(that, methods, name);
     if (typeof opts === "function") {
       func = opts;
       opts = {};
@@ -141,6 +127,7 @@
       opts = {};
     }
     methods[name] = fn(func, opts.args);
+    return that;
   }
 
   sc.lang.klass.Builder = Builder;

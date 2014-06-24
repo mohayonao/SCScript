@@ -1,7 +1,6 @@
 (function(sc) {
   "use strict";
 
-  require("./klass");
   require("./dollar");
 
   var main = {};
@@ -9,38 +8,16 @@
   var $ = sc.lang.$;
   var random = sc.libs.random;
 
+  var $process = null;
   var $currentEnvir = null;
   var $currentThread = {};
 
   main.run = function(func) {
-    if (!initialize.done) {
+    if (!$process) {
       initialize();
     }
     return func($);
   };
-
-  function initialize() {
-    var $process;
-
-    $process = $("Main").new();
-    $process._$interpreter = $("Interpreter").new();
-    $process._$mainThread  = $("Thread").new($.Func());
-
-    $currentEnvir = $("Environment").new();
-    $currentThread = $process._$mainThread;
-
-    // $interpreter._$s = SCServer.default();
-
-    random.current = $process._$mainThread._randgen;
-
-    // TODO:
-    // SoundSystem.addProcess($process);
-    // SoundSystem.start();
-
-    initialize.done = true;
-
-    main.$process = $process;
-  }
 
   main.setCurrentEnvir = function($envir) {
     $currentEnvir = $envir;
@@ -58,6 +35,22 @@
     return $currentThread;
   };
 
+  function initialize() {
+    $process = $("Main").new();
+    $process._$interpreter = $("Interpreter").new();
+    $process._$mainThread  = $("Thread").new($.Func());
+
+    $currentEnvir = $("Environment").new();
+    $currentThread = $process._$mainThread;
+
+    // $interpreter._$s = SCServer.default();
+
+    random.current = $process._$mainThread._randgen;
+    // TODO:
+    // SoundSystem.addProcess($process);
+    // SoundSystem.start();
+  }
+
   $.addProperty("Environment", function(key, $value) {
     if ($value) {
       $currentEnvir.put($.Symbol(key), $value);
@@ -67,11 +60,11 @@
   });
 
   $.addProperty("This", function() {
-    return main.$process.interpreter();
+    return $process.interpreter();
   });
 
   $.addProperty("ThisProcess", function() {
-    return main.$process;
+    return $process;
   });
 
   $.addProperty("ThisThread", function() {

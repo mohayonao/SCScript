@@ -3,6 +3,7 @@
 
   require("./compiler");
 
+  var strlib = sc.libs.strlib;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Keywords = sc.lang.compiler.Keywords;
@@ -43,21 +44,11 @@
     return n - 87; // if (97 <= n && n <= 122)
   }
 
-  function isAlpha(ch) {
-    return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
-  }
-
-  function isNumber(ch) {
-    return "0" <= ch && ch <= "9";
-  }
-
   Lexer.prototype.tokenize = function() {
-    var tokens, token;
-
-    tokens = [];
+    var tokens = [];
 
     while (true) {
-      token = this.collectToken();
+      var token = this.collectToken();
       if (token.type === Token.EOF) {
         break;
       }
@@ -68,47 +59,43 @@
   };
 
   Lexer.prototype.collectToken = function() {
-    var loc, token, t;
-
     this.skipComment();
 
-    loc = {
-      start: {
-        line: this.lineNumber,
-        column: this.index - this.lineStart
-      }
-    };
-
-    token = this.advance();
-
-    loc.end = {
+    var start = {
       line: this.lineNumber,
       column: this.index - this.lineStart
     };
 
-    t = {
+    var token = this.advance();
+
+    var result = {
       type: token.type,
       value: token.value
     };
 
     if (this.opts.range) {
-      t.range = token.range;
+      result.range = token.range;
     }
     if (this.opts.loc) {
-      t.loc = loc;
+      result.loc = {
+        start: start,
+        end: {
+          line: this.lineNumber,
+          column: this.index - this.lineStart
+        }
+      };
     }
 
-    return t;
+    return result;
   };
 
   Lexer.prototype.skipComment = function() {
     var source = this.source;
     var length = this.length;
     var index = this.index;
-    var ch;
 
-    LOOP: while (index < length) {
-      ch = source.charAt(index);
+    while (index < length) {
+      var ch = source.charAt(index);
 
       if (ch === " " || ch === "\t") {
         index += 1;
@@ -143,10 +130,9 @@
   Lexer.prototype.skipLineComment = function(index) {
     var source = this.source;
     var length = this.length;
-    var ch;
 
     while (index < length) {
-      ch = source.charAt(index);
+      var ch = source.charAt(index);
       index += 1;
       if (ch === "\n") {
         this.lineNumber += 1;
@@ -161,11 +147,10 @@
   Lexer.prototype.skipBlockComment = function(index) {
     var source = this.source;
     var length = this.length;
-    var ch, depth;
 
-    depth = 1;
+    var depth = 1;
     while (index < length) {
-      ch = source.charAt(index);
+      var ch = source.charAt(index);
 
       if (ch === "\n") {
         this.lineNumber += 1;
@@ -192,15 +177,13 @@
   };
 
   Lexer.prototype.advance = function() {
-    var ch, token;
-
     this.skipComment();
 
     if (this.length <= this.index) {
       return this.EOFToken();
     }
 
-    ch = this.source.charAt(this.index);
+    var ch = this.source.charAt(this.index);
 
     if (ch === "\\") {
       return this.scanSymbolLiteral();
@@ -222,17 +205,17 @@
     }
 
     if (ch === "-") {
-      token = this.scanNegativeNumericLiteral();
+      var token = this.scanNegativeNumericLiteral();
       if (token) {
         return token;
       }
     }
 
-    if (isAlpha(ch)) {
+    if (strlib.isAlpha(ch)) {
       return this.scanIdentifier();
     }
 
-    if (isNumber(ch)) {
+    if (strlib.isNumber(ch)) {
       return this.scanNumericLiteral();
     }
 
@@ -240,11 +223,9 @@
   };
 
   Lexer.prototype.peek = function() {
-    var index, lineNumber, lineStart;
-
-    index      = this.index;
-    lineNumber = this.lineNumber;
-    lineStart  = this.lineStart;
+    var index      = this.index;
+    var lineNumber = this.lineNumber;
+    var lineStart  = this.lineStart;
 
     this.lookahead = this.advance();
 
@@ -303,10 +284,8 @@
   };
 
   Lexer.prototype.scanCharLiteral = function() {
-    var start, value;
-
-    start = this.index;
-    value = this.source.charAt(this.index + 1);
+    var start = this.index;
+    var value = this.source.charAt(this.index + 1);
 
     this.index += 2;
 
@@ -316,9 +295,8 @@
   Lexer.prototype.scanIdentifier = function() {
     var source = this.source.slice(this.index);
     var start = this.index;
-    var value, type;
-
-    value = /^[a-zA-Z][a-zA-Z0-9_]*/.exec(source)[0];
+    var type;
+    var value = /^[a-zA-Z][a-zA-Z0-9_]*/.exec(source)[0];
 
     this.index += value.length;
 
@@ -339,7 +317,6 @@
         break;
       case "nil":
         type = Token.NilLiteral;
-        value = "nil";
         break;
       case "true":
         type = Token.TrueLiteral;
@@ -364,21 +341,19 @@
   };
 
   Lexer.prototype.scanNegativeNumericLiteral = function() {
-    var token, ch1, ch2, ch3;
-    var start, value = null;
+    var start = this.index;
+    var ch1 = this.source.charAt(this.index + 1);
 
-    start = this.index;
-    ch1 = this.source.charAt(this.index + 1);
-
-    if (isNumber(ch1)) {
+    if (strlib.isNumber(ch1)) {
       this.index += 1;
-      token = this.scanNumericLiteral(true);
+      var token = this.scanNumericLiteral(true);
       token.range[0] = start;
       return token;
     }
 
-    ch2 = this.source.charAt(this.index + 2);
-    ch3 = this.source.charAt(this.index + 3);
+    var value = null;
+    var ch2 = this.source.charAt(this.index + 2);
+    var ch3 = this.source.charAt(this.index + 3);
 
     if (ch1 + ch2 === "pi") {
       this.index += 3;
@@ -418,37 +393,35 @@
   };
 
   Lexer.prototype.scanNAryNumberLiteral = function(neg) {
-    var re, start, items;
-    var base, integer, frac, pi;
-    var value, type;
-    var token;
+    var start = this.index;
 
+    var re, items;
     re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
-    start = this.index;
     items = re.exec(this.source.slice(this.index));
 
     if (!items) {
       return;
     }
 
-    base    = items[1].replace(/^0+(?=\d)/g, "")|0;
-    integer = items[2].replace(/(^0+(?=\d)|_)/g, "");
-    frac    = items[3] && items[3].replace(/_/g, "");
+    var base    = items[1].replace(/^0+(?=\d)/g, "")|0;
+    var integer = items[2].replace(/(^0+(?=\d)|_)/g, "");
+    var frac    = items[3] && items[3].replace(/_/g, "");
+    var pi = false;
 
     if (!frac && base < 26 && integer.substr(-2) === "pi") {
       integer = integer.slice(0, -2);
       pi = true;
     }
 
-    type  = Token.IntegerLiteral;
-    value = this.calcNBasedInteger(integer, base);
+    var type  = Token.IntegerLiteral;
+    var value = this.calcNBasedInteger(integer, base);
 
     if (frac) {
       type = Token.FloatLiteral;
       value += this.calcNBasedFrac(frac, base);
     }
 
-    token = makeNumberToken(type, value, neg, pi);
+    var token = makeNumberToken(type, value, neg, pi);
 
     this.index += items[0].length;
 
@@ -464,47 +437,38 @@
   };
 
   Lexer.prototype.calcNBasedInteger = function(integer, base) {
-    var value, i, imax;
-
-    for (i = value = 0, imax = integer.length; i < imax; ++i) {
+    var value = 0;
+    for (var i = 0, imax = integer.length; i < imax; ++i) {
       value *= base;
       value += this.char2num(integer[i], base);
     }
-
     return value;
   };
 
   Lexer.prototype.calcNBasedFrac = function(frac, base) {
-    var value, i, imax;
-
-    for (i = value = 0, imax = frac.length; i < imax; ++i) {
+    var value = 0;
+    for (var i = 0, imax = frac.length; i < imax; ++i) {
       value += this.char2num(frac[i], base) * Math.pow(base, -(i + 1));
     }
-
     return value;
   };
 
   Lexer.prototype.scanHexNumberLiteral = function(neg) {
-    var re, start, items;
-    var integer, pi;
-    var value, type;
-    var token;
-
-    re = /^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
+    var re = /^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/;
+    var start = this.index;
+    var items = re.exec(this.source.slice(this.index));
 
     if (!items) {
       return;
     }
 
-    integer = items[1].replace(/_/g, "");
-    pi      = !!items[2];
+    var integer = items[1].replace(/_/g, "");
+    var pi      = !!items[2];
 
-    type  = Token.IntegerLiteral;
-    value = +integer;
+    var type  = Token.IntegerLiteral;
+    var value = +integer;
 
-    token = makeNumberToken(type, value, neg, pi);
+    var token = makeNumberToken(type, value, neg, pi);
 
     this.index += items[0].length;
 
@@ -512,31 +476,27 @@
   };
 
   Lexer.prototype.scanAccidentalNumberLiteral = function(neg) {
-    var re, start, items;
-    var integer, accidental, cents;
-    var sign, value;
-    var token;
-
-    re = /^(\d+)([bs]+)(\d*)/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
+    var re = /^(\d+)([bs]+)(\d*)/;
+    var start = this.index;
+    var items = re.exec(this.source.slice(this.index));
 
     if (!items) {
       return;
     }
 
-    integer    = items[1];
-    accidental = items[2];
-    sign = (accidental.charAt(0) === "s") ? +1 : -1;
+    var integer    = items[1];
+    var accidental = items[2];
+    var sign = (accidental.charAt(0) === "s") ? +1 : -1;
 
+    var cents;
     if (items[3] === "") {
       cents = Math.min(accidental.length * 0.1, 0.4);
     } else {
       cents = Math.min(items[3] * 0.001, 0.499);
     }
-    value = +integer + (sign * cents);
+    var value = +integer + (sign * cents);
 
-    token = makeNumberToken(Token.FloatLiteral, value, neg, false);
+    var token = makeNumberToken(Token.FloatLiteral, value, neg, false);
 
     this.index += items[0].length;
 
@@ -544,22 +504,20 @@
   };
 
   Lexer.prototype.scanDecimalNumberLiteral = function(neg) {
-    var re, start, items, integer, frac, pi;
-    var value, type;
-    var token;
+    var start = this.index;
 
+    var re, items;
     re = /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/;
-    start = this.index;
     items = re.exec(this.source.slice(this.index));
 
-    integer = items[1];
-    frac    = items[2];
-    pi      = items[3];
+    var integer = items[1];
+    var frac    = items[2];
+    var pi      = items[3];
 
-    type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
-    value = +integer.replace(/(^0+(?=\d)|_)/g, "");
+    var type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
+    var value = +integer.replace(/(^0+(?=\d)|_)/g, "");
 
-    token = makeNumberToken(type, value, neg, pi);
+    var token = makeNumberToken(type, value, neg, pi);
 
     this.index += items[0].length;
 
@@ -567,11 +525,9 @@
   };
 
   Lexer.prototype.scanPunctuator = function() {
-    var re, start, items;
-
-    re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
+    var re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/;
+    var start = this.index;
+    var items = re.exec(this.source.slice(this.index));
 
     if (items) {
       this.index += items[0].length;
@@ -586,23 +542,20 @@
   };
 
   Lexer.prototype.scanQuotedLiteral = function(type, quote) {
-    var start, value;
-    start = this.index;
-    value = this._scanQuotedLiteral(quote);
+    var start = this.index;
+    var value = this._scanQuotedLiteral(quote);
     return value ? this.makeToken(type, value, start) : this.EOFToken();
   };
 
   Lexer.prototype._scanQuotedLiteral = function(quote) {
-    var source, length, index, start, value, ch;
-
-    source = this.source;
-    length = this.length;
-    index  = this.index + 1;
-    start  = index;
-    value  = null;
+    var source = this.source;
+    var length = this.length;
+    var index  = this.index + 1;
+    var start  = index;
+    var value  = null;
 
     while (index < length) {
-      ch = source.charAt(index);
+      var ch = source.charAt(index);
       index += 1;
       if (ch === quote) {
         value = source.substr(start, index - start - 1).replace(/\n/g, "\\n");
@@ -625,14 +578,11 @@
   };
 
   Lexer.prototype.scanSymbolLiteral = function() {
-    var re, start, items;
-    var value;
+    var re = /^\\([a-zA-Z_]\w*|\d+)?/;
+    var start = this.index;
+    var items = re.exec(this.source.slice(this.index));
 
-    re = /^\\([a-zA-Z_]\w*|\d+)?/;
-    start = this.index;
-    items = re.exec(this.source.slice(this.index));
-
-    value = items[1] || "";
+    var value = items[1] || "";
 
     this.index += items[0].length;
 
@@ -656,15 +606,12 @@
   };
 
   Lexer.prototype.throwError = function(token, messageFormat) {
-    var args, message;
-    var error, index, lineNumber, column;
-    var prev;
-
-    args = Array.prototype.slice.call(arguments, 2);
-    message = messageFormat.replace(/%(\d)/g, function(whole, index) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    var message = messageFormat.replace(/%(\d)/g, function(whole, index) {
       return args[index];
     });
 
+    var index, lineNumber, column;
     if (typeof token.lineNumber === "number") {
       index      = token.range[0];
       lineNumber = token.lineNumber;
@@ -675,14 +622,14 @@
       column     = index - this.lineStart + 1;
     }
 
-    error = new Error("Line " + lineNumber + ": " + message);
+    var error = new Error("Line " + lineNumber + ": " + message);
     error.index       = index;
     error.lineNumber  = lineNumber;
     error.column      = column;
     error.description = message;
 
     if (this.errors) {
-      prev = this.errors[this.errors.length - 1];
+      var prev = this.errors[this.errors.length - 1];
       if (!(prev && error.index <= prev.index)) {
         this.errors.push(error);
       }

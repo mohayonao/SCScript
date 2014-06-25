@@ -8036,70 +8036,82 @@
     "(var a; a = 10;)": {
       compiled: [
         "SCScript(function($) {",
-        "  var $a;",
-        "  $a = $.Nil();",
-        "  return $a = $.Integer(10);",
+        "  return (function() {",
+        "    var $a;",
+        "    $a = $.Nil();",
+        "    return $a = $.Integer(10);",
+        "  })();",
         "});",
       ],
       ast: {
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.VariableDeclaration,
-            kind: "var",
-            declarations: [
+            type: Syntax.BlockExpression,
+            body: [
               {
-                type: Syntax.VariableDeclarator,
-                id: {
+                type: Syntax.VariableDeclaration,
+                kind: "var",
+                declarations: [
+                  {
+                    type: Syntax.VariableDeclarator,
+                    id: {
+                      type: Syntax.Identifier,
+                      name: "a",
+                      range: [ 5, 6 ],
+                      loc: {
+                        start: { line: 1, column: 5 },
+                        end: { line: 1, column: 6 }
+                      }
+                    },
+                    range: [ 5, 6 ],
+                    loc: {
+                      start: { line: 1, column: 5 },
+                      end: { line: 1, column: 6 }
+                    }
+                  }
+                ],
+                range: [ 1, 6 ],
+                loc: {
+                  start: { line: 1, column: 1 },
+                  end: { line: 1, column: 6 }
+                }
+              },
+              {
+                type: Syntax.AssignmentExpression,
+                operator: "=",
+                left: {
                   type: Syntax.Identifier,
                   name: "a",
-                  range: [ 5, 6 ],
+                  range: [ 8, 9 ],
                   loc: {
-                    start: { line: 1, column: 5 },
-                    end: { line: 1, column: 6 }
+                    start: { line: 1, column: 8 },
+                    end: { line: 1, column: 9 }
                   }
                 },
-                range: [ 5, 6 ],
+                right: {
+                  type: Syntax.Literal,
+                  value: "10",
+                  valueType: Token.IntegerLiteral,
+                  range: [ 12, 14 ],
+                  loc: {
+                    start: { line: 1, column: 12 },
+                    end: { line: 1, column: 14 }
+                  }
+                },
+                range: [ 8, 14 ],
                 loc: {
-                  start: { line: 1, column: 5 },
-                  end: { line: 1, column: 6 }
+                  start: { line: 1, column: 8 },
+                  end: { line: 1, column: 14 }
                 }
               }
             ],
-            range: [ 1, 6 ],
+            range: [ 0, 16 ],
             loc: {
-              start: { line: 1, column: 1 },
-              end: { line: 1, column: 6 }
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 16 }
             }
           },
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.Identifier,
-              name: "a",
-              range: [ 8, 9 ],
-              loc: {
-                start: { line: 1, column: 8 },
-                end: { line: 1, column: 9 }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "10",
-              valueType: Token.IntegerLiteral,
-              range: [ 12, 14 ],
-              loc: {
-                start: { line: 1, column: 12 },
-                end: { line: 1, column: 14 }
-              }
-            },
-            range: [ 8, 14 ],
-            loc: {
-              start: { line: 1, column: 8 },
-              end: { line: 1, column: 14 }
-            }
-          }
         ],
         range: [ 0, 16 ],
         loc: {

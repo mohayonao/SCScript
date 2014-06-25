@@ -169,13 +169,7 @@
     var marker = Marker.create(this.lexer);
 
     var node = this.withScope(function() {
-      var body;
-
-      body = this.parseFunctionBody(null);
-      if (body.length === 1 && body[0].type === Syntax.BlockExpression) {
-        body = body[0].body;
-      }
-
+      var body = this.parseFunctionBody(null);
       return Node.createProgram(body);
     });
 

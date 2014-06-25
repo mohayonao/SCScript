@@ -8484,6 +8484,33 @@
         }
       }
     },
+    '"sc"': {
+      compiled: [
+        "SCScript(function($) {",
+        "  return $.String('sc');",
+        "});"
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.Literal,
+            value: "sc",
+            valueType: Token.StringLiteral,
+            range: [ 0, 4 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 4 }
+            }
+          }
+        ],
+        range: [ 0, 4 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end: { line: 1, column: 4 }
+        }
+      }
+    },
     '"#{69.midicps}"': {
       compiled: [
         "SCScript(function($) {",
@@ -8528,93 +8555,6 @@
         loc: {
           start: { line: 1, column: 0 },
           end: { line: 1, column: 15 }
-        }
-      }
-    },
-    '"\\#{}##{{69.midicps}.value}#{}hz"': {
-      compiled: [
-        "SCScript(function($) {",
-        "  return $.String('\\#{}#').$('++', [ $.Function(function() {",
-        "    return [",
-        "      function() {",
-        "        return $.Integer(69).$('midicps');",
-        "      },",
-        "      $.NOP",
-        "    ];",
-        "  }).$('value').$('asString') ]).$('++', [ $.String('hz') ]);",
-        "});",
-      ],
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.BinaryExpression,
-            operator: "++",
-            left: {
-              type: Syntax.BinaryExpression,
-              operator: "++",
-              left: {
-                type: Syntax.Literal,
-                value: "\\#{}#",
-                valueType: Token.StringLiteral
-              },
-              right: {
-                type: Syntax.CallExpression,
-                callee: {
-                  type: Syntax.CallExpression,
-                  callee: {
-                    type: Syntax.FunctionExpression,
-                    body: [
-                      {
-                        type: Syntax.CallExpression,
-                        callee: {
-                          type: Syntax.Literal,
-                          value: "69",
-                          valueType: Token.IntegerLiteral
-                        },
-                        method: {
-                          type: Syntax.Identifier,
-                          name: "midicps"
-                        },
-                        args: {
-                          list: []
-                        }
-                      }
-                    ]
-                  },
-                  method: {
-                    type: Syntax.Identifier,
-                    name: "value"
-                  },
-                  args: {
-                    list: []
-                  }
-                },
-                method: {
-                  type: Syntax.Identifier,
-                  name: "asString"
-                },
-                args: {
-                  list: []
-                }
-              }
-            },
-            right: {
-              type: Syntax.Literal,
-              value: "hz",
-              valueType: Token.StringLiteral
-            },
-            range: [ 0, 33 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 33 }
-            }
-          }
-        ],
-        range: [ 0, 33 ],
-        loc: {
-          start: { line: 1, column: 0 },
-          end: { line: 1, column: 33 }
         }
       }
     },

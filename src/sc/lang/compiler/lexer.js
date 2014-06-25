@@ -96,45 +96,35 @@
     return result;
   };
 
+  // 103.31
   Lexer.prototype.skipComment = function() {
     var source = this.source;
     var length = this.length;
     var index = this.index;
 
     while (index < length) {
-      var ch = source.charAt(index);
+      var ch1 = source.charAt(index);
+      var ch2 = source.charAt(index + 1);
 
-      if (ch === " " || ch === "\t") {
+      if (ch1 === " " || ch1 === "\t") {
         index += 1;
-        continue;
-      }
-
-      if (ch === "\n") {
+      } else if (ch1 === "\n") {
         index += 1;
         this.lineNumber += 1;
         this.lineStart = index;
-        continue;
+      } else if (ch1 === "/" && ch2 === "/") {
+        index = this.skipSingleLineComment(index + 2);
+      } else if (ch1 === "/" && ch2 === "*") {
+        index = this.skipMultiLineComment(index + 2);
+      } else {
+        break;
       }
-
-      if (ch === "/") {
-        ch = source.charAt(index + 1);
-        if (ch === "/") {
-          index = this.skipLineComment(index + 2);
-          continue;
-        }
-        if (ch === "*") {
-          index = this.skipBlockComment(index + 2);
-          continue;
-        }
-      }
-
-      break;
     }
 
     this.index = index;
   };
 
-  Lexer.prototype.skipLineComment = function(index) {
+  Lexer.prototype.skipSingleLineComment = function(index) {
     var source = this.source;
     var length = this.length;
 
@@ -151,28 +141,26 @@
     return index;
   };
 
-  Lexer.prototype.skipBlockComment = function(index) {
+  Lexer.prototype.skipMultiLineComment = function(index) {
     var source = this.source;
     var length = this.length;
 
     var depth = 1;
     while (index < length) {
-      var ch = source.charAt(index);
+      var ch1 = source.charAt(index);
+      var ch2 = source.charAt(index + 1);
 
-      if (ch === "\n") {
+      if (ch1 === "\n") {
         this.lineNumber += 1;
         this.lineStart = index;
-      } else {
-        ch = ch + source.charAt(index + 1);
-        if (ch === "/*") {
-          depth += 1;
-          index += 1;
-        } else if (ch === "*/") {
-          depth -= 1;
-          index += 1;
-          if (depth === 0) {
-            return index + 1;
-          }
+      } else if (ch1 === "/" && ch2 === "*") {
+        depth += 1;
+        index += 1;
+      } else if (ch1 === "*" && ch2 === "/") {
+        depth -= 1;
+        index += 1;
+        if (depth === 0) {
+          return index + 1;
         }
       }
 

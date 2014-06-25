@@ -207,10 +207,12 @@
     if (!this.match("...")) {
       do {
         args.list.push(this.parseFunctionArgumentElement());
-        if (!this.match(",")) {
+        if ((expect !== "|" && !this.match(",")) || this.matchAny([ expect, "..." ])) {
           break;
         }
-        this.lex();
+        if (this.match(",")) {
+          this.lex();
+        }
       } while (this.lookahead.type !== Token.EOF);
     }
 

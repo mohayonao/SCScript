@@ -3406,6 +3406,96 @@
         }
       }
     },
+    "{ |a=0 b=1| nil }": {
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.FunctionExpression,
+            args: {
+              list: [
+                {
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "a",
+                    range: [ 3, 4 ],
+                    loc: {
+                      start: { line: 1, column: 3 },
+                      end: { line: 1, column: 4 }
+                    }
+                  },
+                  init: {
+                    type: Syntax.Literal,
+                    value: "0",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 5, 6 ],
+                    loc: {
+                      start: { line: 1, column: 5 },
+                      end: { line: 1, column: 6 }
+                    }
+                  },
+                  range: [ 3, 6 ],
+                  loc: {
+                    start: { line: 1, column: 3 },
+                    end: { line: 1, column: 6 }
+                  }
+                },
+                {
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "b",
+                    range: [ 7, 8 ],
+                    loc: {
+                      start: { line: 1, column: 7 },
+                      end: { line: 1, column: 8 }
+                    }
+                  },
+                  init: {
+                    type: Syntax.Literal,
+                    value: "1",
+                    valueType: Token.IntegerLiteral,
+                    range: [ 9, 10 ],
+                    loc: {
+                      start: { line: 1, column: 9 },
+                      end: { line: 1, column: 10 }
+                    }
+                  },
+                  range: [ 7, 10 ],
+                  loc: {
+                    start: { line: 1, column: 7 },
+                    end: { line: 1, column: 10 }
+                  }
+                }
+              ]
+            },
+            body: [
+              {
+                type: Syntax.Literal,
+                value: "nil",
+                valueType: Token.NilLiteral,
+                range: [ 12, 15 ],
+                loc: {
+                  start: { line: 1, column: 12 },
+                  end: { line: 1, column: 15 }
+                }
+              }
+            ],
+            range: [ 0, 17 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 17 }
+            }
+          }
+        ],
+        range: [ 0, 17 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end: { line: 1, column: 17 }
+        }
+      }
+    },
     "{ a; b; c }": {
       compiled: [
         "SCScript(function($) {",

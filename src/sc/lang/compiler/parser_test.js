@@ -272,6 +272,12 @@
         ],
         "{|a=#2}": [
           error({ line: 1, column: 6, index: 5 }, Message.UnexpectedNumber),
+          error({ line: 1, column: 7, index: 6 }, Message.UnexpectedToken, "}"),
+          error({ line: 1, column: 8, index: 7 }, Message.UnexpectedEOS),
+        ],
+        "{arg a b;}": [
+          error({ line: 1, column: 8, index: 7 }, Message.UnexpectedIdentifier),
+          error({ line: 1, column: 9, index: 8 }, Message.UnexpectedToken, ";")
         ],
         "_a = 0": [
           error({ line: 1, column: 2, index: 1 }, Message.UnexpectedIdentifier),

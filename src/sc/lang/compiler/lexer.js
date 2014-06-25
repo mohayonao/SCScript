@@ -303,7 +303,7 @@
     if (this.source.charAt(this.index) === ":") {
       this.index += 1;
       return this.makeToken(Token.Label, value, start);
-    } else if (this.isKeyword(value)) {
+    } else if (isKeyword(value)) {
       type = Token.Keyword;
     } else {
       switch (value) {
@@ -600,6 +600,10 @@
       throw error;
     }
   };
+
+  function isKeyword(value) {
+    return Keywords.hasOwnProperty(value);
+  }
 
   sc.lang.compiler.lexer = Lexer;
 })(sc);

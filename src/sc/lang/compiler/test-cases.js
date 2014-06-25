@@ -7257,6 +7257,60 @@
         }
       }
     },
+    "~a.abs": {
+      compiled: [
+        "SCScript(function($) {",
+        "  return $.Environment('a').$('abs');",
+        "});"
+      ],
+      ast: {
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.CallExpression,
+            callee: {
+              type: Syntax.EnvironmentExpresion,
+              id: {
+                type: Syntax.Identifier,
+                name: "a",
+                range: [ 1, 2 ],
+                loc: {
+                  start: { line: 1, column: 1 },
+                  end: { line: 1, column: 2 }
+                }
+              },
+              range: [ 0, 2 ],
+              loc: {
+                start: { line: 1, column: 0 },
+                end: { line: 1, column: 2 }
+              }
+            },
+            method: {
+              type: Syntax.Identifier,
+              name: "abs",
+              range: [ 3, 6 ],
+              loc: {
+                start: { line: 1, column: 3 },
+                end: { line: 1, column: 6 }
+              }
+            },
+            args: {
+              list: []
+            },
+            range: [ 0, 6 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 6 }
+            }
+          }
+        ],
+        range: [ 0, 6 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end: { line: 1, column: 6 }
+        }
+      }
+    },
     "~a = 0": {
       compiled: [
         "SCScript(function($) {",

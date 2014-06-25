@@ -573,20 +573,20 @@
     return node;
   };
 
-  /* TODO: fix
+  /*
     BinaryExpression :
-      RefExpression
-      BinaryExpression BinaryOperator RefExpression
+      LeftHandSideExpression
+      BinaryExpression BinaryOperator LeftHandSideExpression
   */
   SCParser.prototype.parseBinaryExpression = function(node) {
     var marker = Marker.create(this.lexer);
-    var left   = this.parseRefExpression(node);
+    var left   = this.parseLeftHandSideExpression(node);
     var operator = this.lookahead;
 
     var prec = calcBinaryPrecedence(operator, this.binaryPrecedence);
     if (prec === 0) {
       if (node) {
-        return this.parseRefExpression(node);
+        return this.parseLeftHandSideExpression(node);
       }
       return left;
     }
@@ -601,7 +601,7 @@
   // TODO: fix to read easily
   SCParser.prototype.sortByBinaryPrecedence = function(left, operator, marker) {
     var markers = [ marker, Marker.create(this.lexer) ];
-    var right = this.parseRefExpression();
+    var right = this.parseLeftHandSideExpression();
 
     var stack = [ left, operator, right ];
 
@@ -631,7 +631,7 @@
       stack.push(token);
 
       markers.push(Marker.create(this.lexer));
-      expr = this.parseRefExpression();
+      expr = this.parseLeftHandSideExpression();
       stack.push(expr);
     }
 
@@ -681,27 +681,8 @@
   };
 
   /*
-    RefExpression :
-      ` LeftHandSideExpression
-  */
-  SCParser.prototype.parseRefExpression = function(node) {
-    var expr;
-    var marker = Marker.create(this.lexer);
-
-    if (this.match("`")) {
-      this.lex();
-      expr = this.parseLeftHandSideExpression();
-      expr = Node.createUnaryExpression("`", expr);
-    } else {
-      expr = this.parseLeftHandSideExpression(node);
-    }
-
-    return marker.update().apply(expr, true);
-  };
-
-  /*
     LeftHandSideExpression :
-      EnvironmentExpression
+      TODO: write
   */
   SCParser.prototype.parseLeftHandSideExpression = function(node) {
     var marker = Marker.create(this.lexer);
@@ -1092,8 +1073,8 @@
 
   /*
     SignedExpression :
-      EnvironmentExpresion
-      - EnvironmentExpresion
+      PrimaryExpression
+      - PrimaryExpression
   */
   SCParser.prototype.parseSignedExpression = function(node) {
     if (node) {
@@ -1106,40 +1087,30 @@
       this.lex();
       var method = Node.createIdentifier("neg");
       method = marker.update().apply(method);
-      expr = this.parseSignedExpression();
+      expr = this.parsePrimaryExpression();
       expr = Node.createCallExpression(expr, method, { list: [] }, ".");
     } else {
-      expr = this.parseEnvironmentExpression();
+      expr = this.parsePrimaryExpression();
     }
 
     return marker.update().apply(expr, true);
   };
 
   /*
-    EnvironmentExpresion :
-      ~ Identifier
-      PrimaryExpression
+    PrimaryExpression :
+      ( ... )
+      { ... }
+      [ ... ]
+      ~ ...
+      ` ...
+      Keyword
+      Identifier
+      StringLiteral
+      ArgumentableValue
   */
-  SCParser.prototype.parseEnvironmentExpression = function() {
-    var marker = Marker.create(this.lexer);
-    var expr;
-    if (this.match("~")) {
-      this.lex();
-      expr = this.parseIdentifier();
-      if (isClassName(expr)) {
-        this.throwUnexpected({ type: Token.Identifier, value: expr.id });
-      }
-      expr = Node.createEnvironmentExpresion(expr);
-    } else {
-      expr = this.parsePrimaryExpression();
-    }
-
-    return marker.update().apply(expr);
-  };
-
   SCParser.prototype.parsePrimaryExpression = function() {
     var marker = Marker.create(this.lexer);
-    var stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
+    var stamp = this.matchAny([ "(", "{", "[", "#", "`", "~" ]) || this.lookahead.type;
     var expr;
 
     switch (stamp) {
@@ -1151,6 +1122,12 @@
       break;
     case "[":
       expr = this.parseListInitialiser();
+      break;
+    case "`":
+      expr = this.parseRefExpression();
+      break;
+    case "~":
+      expr = this.parseEnvironmentExpression();
       break;
     case Token.Keyword:
       expr = this.parsePrimaryKeywordExpression();
@@ -1167,6 +1144,42 @@
     }
 
     return marker.update().apply(expr);
+  };
+
+  /*
+    EnvironmentExpresion :
+      ~ LeftHandSideExpression
+  */
+  SCParser.prototype.parseEnvironmentExpression = function() {
+    var marker = Marker.create(this.lexer);
+
+    this.expect("~");
+    var expr = this.parseIdentifier();
+    if (isClassName(expr)) {
+      this.throwUnexpected({ type: Token.Identifier, value: expr.id });
+    }
+    expr = Node.createEnvironmentExpresion(expr);
+    expr = marker.update().apply(expr);
+
+    if (this.match(".")) {
+      expr = this.parseLeftHandSideExpression(expr);
+    }
+
+    return expr;
+  };
+
+  /*
+    RefExpression
+  */
+  SCParser.prototype.parseRefExpression = function() {
+    var marker = Marker.create(this.lexer);
+
+    this.expect("`");
+
+    var expr = this.parseLeftHandSideExpression();
+    expr = Node.createUnaryExpression("`", expr);
+
+    return marker.update().apply(expr, true);
   };
 
   SCParser.prototype.parsePrimaryHashedExpression = function() {

@@ -360,10 +360,9 @@
 
   Lexer.prototype.scanNAryNumberLiteral = function() {
     var start = this.index;
-
-    var re, items;
-    re = /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/;
-    items = re.exec(this.source.slice(this.index));
+    var items = this.match(
+      /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/
+    );
 
     if (!items) {
       return;
@@ -420,9 +419,8 @@
   };
 
   Lexer.prototype.scanHexNumberLiteral = function() {
-    var re = /^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/;
     var start = this.index;
-    var items = re.exec(this.source.slice(this.index));
+    var items = this.match(/^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/);
 
     if (!items) {
       return;
@@ -442,9 +440,8 @@
   };
 
   Lexer.prototype.scanAccidentalNumberLiteral = function() {
-    var re = /^(\d+)([bs]+)(\d*)/;
     var start = this.index;
-    var items = re.exec(this.source.slice(this.index));
+    var items = this.match(/^(\d+)([bs]+)(\d*)/);
 
     if (!items) {
       return;
@@ -471,10 +468,9 @@
 
   Lexer.prototype.scanDecimalNumberLiteral = function() {
     var start = this.index;
-
-    var re, items;
-    re = /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/;
-    items = re.exec(this.source.slice(this.index));
+    var items = this.match(
+      /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/
+    );
 
     var integer = items[1];
     var frac    = items[2];
@@ -491,9 +487,8 @@
   };
 
   Lexer.prototype.scanPunctuator = function() {
-    var re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/;
     var start = this.index;
-    var items = re.exec(this.source.slice(this.index));
+    var items = this.match(/^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/);
 
     if (items) {
       this.index += items[0].length;
@@ -544,9 +539,8 @@
   };
 
   Lexer.prototype.scanSymbolLiteral = function() {
-    var re = /^\\([a-zA-Z_]\w*|\d+)?/;
     var start = this.index;
-    var items = re.exec(this.source.slice(this.index));
+    var items = this.match(/^\\([a-zA-Z_]\w*|\d+)?/);
 
     var value = items[1] || "";
 
@@ -563,8 +557,8 @@
     return this.makeToken(Token.Identifier, "_", start);
   };
 
-  Lexer.prototype.isKeyword = function(value) {
-    return !!Keywords[value] || false;
+  Lexer.prototype.match = function(re) {
+    return re.exec(this.source.slice(this.index));
   };
 
   Lexer.prototype.getLocItems = function() {

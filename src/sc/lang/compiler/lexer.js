@@ -511,8 +511,7 @@
       }
     }
 
-    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-    return this.EOFToken();
+    return this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
   };
 
   Lexer.prototype.scanQuotedSymbolLiteral = function() {
@@ -533,8 +532,7 @@
       }
     }
 
-    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-    return this.EOFToken();
+    return this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
   };
 
   Lexer.prototype.scanSymbolLiteral = function() {
@@ -592,6 +590,8 @@
     } else {
       throw error;
     }
+
+    return this.EOFToken();
   };
 
   function isKeyword(value) {

@@ -211,13 +211,6 @@
       return this.scanUnderscore();
     }
 
-    if (ch === "-") {
-      var token = this.scanNegativeNumericLiteral();
-      if (token) {
-        return token;
-      }
-    }
-
     if (strlib.isAlpha(ch)) {
       return this.scanIdentifier();
     }
@@ -340,48 +333,14 @@
     return this.makeToken(type, value, start);
   };
 
-  Lexer.prototype.scanNumericLiteral = function(neg) {
-    return this.scanNAryNumberLiteral(neg) ||
-      this.scanHexNumberLiteral(neg) ||
-      this.scanAccidentalNumberLiteral(neg) ||
-      this.scanDecimalNumberLiteral(neg);
+  Lexer.prototype.scanNumericLiteral = function() {
+    return this.scanNAryNumberLiteral() ||
+      this.scanHexNumberLiteral() ||
+      this.scanAccidentalNumberLiteral() ||
+      this.scanDecimalNumberLiteral();
   };
 
-  Lexer.prototype.scanNegativeNumericLiteral = function() {
-    var start = this.index;
-    var ch1 = this.source.charAt(this.index + 1);
-
-    if (strlib.isNumber(ch1)) {
-      this.index += 1;
-      var token = this.scanNumericLiteral(true);
-      token.range[0] = start;
-      return token;
-    }
-
-    var value = null;
-    var ch2 = this.source.charAt(this.index + 2);
-    var ch3 = this.source.charAt(this.index + 3);
-
-    if (ch1 + ch2 === "pi") {
-      this.index += 3;
-      value = String(-Math.PI);
-    } else if (ch1 + ch2 + ch3 === "inf") {
-      this.index += 4;
-      value = "-Infinity";
-    }
-
-    if (value !== null) {
-      return this.makeToken(Token.FloatLiteral, value, start);
-    }
-
-    return null;
-  };
-
-  var makeNumberToken = function(type, value, neg, pi) {
-    if (neg) {
-      value *= -1;
-    }
-
+  var makeNumberToken = function(type, value, pi) {
     if (pi) {
       type = Token.FloatLiteral;
       value = value * Math.PI;
@@ -399,7 +358,7 @@
     };
   };
 
-  Lexer.prototype.scanNAryNumberLiteral = function(neg) {
+  Lexer.prototype.scanNAryNumberLiteral = function() {
     var start = this.index;
 
     var re, items;
@@ -428,7 +387,7 @@
       value += this.calcNBasedFrac(frac, base);
     }
 
-    var token = makeNumberToken(type, value, neg, pi);
+    var token = makeNumberToken(type, value, pi);
 
     this.index += items[0].length;
 
@@ -460,7 +419,7 @@
     return value;
   };
 
-  Lexer.prototype.scanHexNumberLiteral = function(neg) {
+  Lexer.prototype.scanHexNumberLiteral = function() {
     var re = /^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/;
     var start = this.index;
     var items = re.exec(this.source.slice(this.index));
@@ -475,14 +434,14 @@
     var type  = Token.IntegerLiteral;
     var value = +integer;
 
-    var token = makeNumberToken(type, value, neg, pi);
+    var token = makeNumberToken(type, value, pi);
 
     this.index += items[0].length;
 
     return this.makeToken(token.type, token.value, start);
   };
 
-  Lexer.prototype.scanAccidentalNumberLiteral = function(neg) {
+  Lexer.prototype.scanAccidentalNumberLiteral = function() {
     var re = /^(\d+)([bs]+)(\d*)/;
     var start = this.index;
     var items = re.exec(this.source.slice(this.index));
@@ -503,14 +462,14 @@
     }
     var value = +integer + (sign * cents);
 
-    var token = makeNumberToken(Token.FloatLiteral, value, neg, false);
+    var token = makeNumberToken(Token.FloatLiteral, value, false);
 
     this.index += items[0].length;
 
     return this.makeToken(token.type, token.value, start);
   };
 
-  Lexer.prototype.scanDecimalNumberLiteral = function(neg) {
+  Lexer.prototype.scanDecimalNumberLiteral = function() {
     var start = this.index;
 
     var re, items;
@@ -524,7 +483,7 @@
     var type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
     var value = +integer.replace(/(^0+(?=\d)|_)/g, "");
 
-    var token = makeNumberToken(type, value, neg, pi);
+    var token = makeNumberToken(type, value, pi);
 
     this.index += items[0].length;
 

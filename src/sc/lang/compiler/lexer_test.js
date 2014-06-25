@@ -212,11 +212,20 @@
       ],
       "-10": [
         {
-          type: Token.IntegerLiteral,
-          value: "-10",
-          range: [ 0, 3 ],
+          type: Token.Punctuator,
+          value: "-",
+          range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
+            end: { line: 1, column: 1 }
+          }
+        },
+        {
+          type: Token.IntegerLiteral,
+          value: "10",
+          range: [ 1, 3 ],
+          loc: {
+            start: { line: 1, column: 1 },
             end: { line: 1, column: 3 }
           }
         },
@@ -245,11 +254,20 @@
       ],
       "-10.5e-1pi": [
         {
-          type: Token.FloatLiteral,
-          value: "-3.2986722862692828",
-          range: [ 0, 10 ],
+          type: Token.Punctuator,
+          value: "-",
+          range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
+            end: { line: 1, column: 1 }
+          }
+        },
+        {
+          type: Token.FloatLiteral,
+          value: "3.2986722862692828",
+          range: [ 1, 10 ],
+          loc: {
+            start: { line: 1, column: 1 },
             end: { line: 1, column: 10 }
           }
         },
@@ -278,11 +296,20 @@
       ],
       "-2r1101": [
         {
-          type: Token.IntegerLiteral,
-          value: "-13",
-          range: [ 0, 7 ],
+          type: Token.Punctuator,
+          value: "-",
+          range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
+            end: { line: 1, column: 1 }
+          }
+        },
+        {
+          type: Token.IntegerLiteral,
+          value: "13",
+          range: [ 1, 7 ],
+          loc: {
+            start: { line: 1, column: 1 },
             end: { line: 1, column: 7 }
           }
         },
@@ -398,11 +425,20 @@
       ],
       "-pi": [
         {
-          type: Token.FloatLiteral,
-          value: "-3.141592653589793",
-          range: [ 0, 3 ],
+          type: Token.Punctuator,
+          value: "-",
+          range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
+            end: { line: 1, column: 1 }
+          }
+        },
+        {
+          type: Token.FloatLiteral,
+          value: "3.141592653589793",
+          range: [ 1, 3 ],
+          loc: {
+            start: { line: 1, column: 1 },
             end: { line: 1, column: 3 }
           }
         },
@@ -420,11 +456,20 @@
       ],
       "-inf": [
         {
-          type: Token.FloatLiteral,
-          value: "-Infinity",
-          range: [ 0, 4 ],
+          type: Token.Punctuator,
+          value: "-",
+          range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
+            end: { line: 1, column: 1 }
+          }
+        },
+        {
+          type: Token.FloatLiteral,
+          value: "Infinity",
+          range: [ 1, 4 ],
+          loc: {
+            start: { line: 1, column: 1 },
             end: { line: 1, column: 4 }
           }
         },

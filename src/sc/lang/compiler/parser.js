@@ -1088,7 +1088,11 @@
       var method = Node.createIdentifier("neg");
       method = marker.update().apply(method);
       expr = this.parsePrimaryExpression();
-      expr = Node.createCallExpression(expr, method, { list: [] }, ".");
+      if (isNumber(expr)) {
+        expr.value = "-" + expr.value;
+      } else {
+        expr = Node.createCallExpression(expr, method, { list: [] }, ".");
+      }
     } else {
       expr = this.parsePrimaryExpression();
     }
@@ -1593,6 +1597,14 @@
     }
 
     return prec;
+  };
+
+  var isNumber = function(node) {
+    if (node.type !== Syntax.Literal) {
+      return false;
+    }
+    var valueType = node.valueType;
+    return valueType === Token.IntegerLiteral || valueType === Token.FloatLiteral;
   };
 
   var isClassName = function(node) {

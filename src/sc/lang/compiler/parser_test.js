@@ -265,10 +265,10 @@
           error({ line: 1, column: 3, index: 2 }, Message.InvalidLHSInAssignment),
         ],
         "#10 = []": [
-          error({ line: 1, column: 4, index: 3 }, Message.InvalidLHSInAssignment),
+          error({ line: 1, column: 2, index: 1 }, Message.UnexpectedNumber),
         ],
         "#a...10 = []": [
-          error({ line: 1, column: 8, index: 7 }, Message.InvalidLHSInAssignment),
+          error({ line: 1, column: 6, index: 5 }, Message.UnexpectedNumber),
         ],
         "{|a=#2}": [
           error({ line: 1, column: 6, index: 5 }, Message.UnexpectedNumber),

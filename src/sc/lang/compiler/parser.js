@@ -6,6 +6,7 @@
   require("./lexer");
   require("./marker");
   require("./node");
+  require("./interpolate-string");
 
   var parser = {};
 
@@ -16,6 +17,7 @@
   var Lexer    = sc.lang.compiler.lexer;
   var Marker   = sc.lang.compiler.marker;
   var Node     = sc.lang.compiler.node;
+  var InterpolateString = sc.lang.compiler.InterpolateString;
 
   var binaryPrecedenceDefaults = {
     "?": 1,
@@ -1231,47 +1233,12 @@
   SCParser.prototype.parsePrimaryStringExpression = function() {
     var token = this.lex();
 
-    if (isInterpolatedString(token.value)) {
-      return this.parseInterpolatedString(token.value);
+    if (InterpolateString.hasInterpolateString(token.value)) {
+      var code = new InterpolateString(token.value).toCompiledString();
+      return new SCParser(code, {}).parseExpression();
     }
 
     return Node.createLiteral(token);
-  };
-
-  SCParser.prototype.parseInterpolatedString = function(value) {
-    var len = value.length;
-    var items = [];
-
-    var index1 = 0;
-    var code;
-    do {
-      var index2 = findString$InterpolatedString(value, index1);
-      if (index2 >= len) {
-        break;
-      }
-      code = value.substr(index1, index2 - index1);
-      if (code) {
-        items.push('"' + code + '"');
-      }
-
-      index1 = index2 + 2;
-      index2 = findExpression$InterpolatedString(value, index1, items);
-
-      code = value.substr(index1, index2 - index1);
-      if (code) {
-        items.push("(" + code + ").asString");
-      }
-
-      index1 = index2 + 1;
-    } while (index1 < len);
-
-    if (index1 < len) {
-      items.push('"' + value.substr(index1) + '"');
-    }
-
-    code = items.join("++");
-
-    return new SCParser(code, {}).parseExpression();
   };
 
   // ( ... )
@@ -1647,48 +1614,6 @@
     }
 
     return false;
-  };
-
-  var isInterpolatedString = function(value) {
-    return /(^|[^\x5c])#\{/.test(value);
-  };
-
-  var findString$InterpolatedString = function(value, index) {
-    var len = value.length;
-
-    while (index < len) {
-      var ch = value.charAt(index);
-      if (ch === "#") {
-        if (value.charAt(index + 1) === "{") {
-          break;
-        }
-      } else if (ch === "\\") {
-        index += 1;
-      }
-      index += 1;
-    }
-
-    return index;
-  };
-
-  var findExpression$InterpolatedString = function(value, index) {
-    var len = value.length;
-
-    var depth = 0;
-    while (index < len) {
-      var ch = value.charAt(index);
-      if (ch === "}") {
-        if (depth === 0) {
-          break;
-        }
-        depth -= 1;
-      } else if (ch === "{") {
-        depth += 1;
-      }
-      index += 1;
-    }
-
-    return index;
   };
 
   parser.parse = function(source, opts) {

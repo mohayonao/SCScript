@@ -27,7 +27,6 @@
     this.index  = 0;
     this.lineNumber = this.length ? 1 : 0;
     this.lineStart  = 0;
-    this.reverted   = null;
     this.errors     = opts.tolerant ? [] : null;
 
     this.peek();

@@ -32,18 +32,6 @@
     this.peek();
   }
 
-  function char2num(ch) {
-    var n = ch.charCodeAt(0);
-
-    if (48 <= n && n <= 57) {
-      return n - 48;
-    }
-    if (65 <= n && n <= 90) {
-      return n - 55;
-    }
-    return n - 87; // if (97 <= n && n <= 122)
-  }
-
   Object.defineProperty(Lexer.prototype, "columnNumber", {
     get: function() {
       return this.index - this.lineStart;
@@ -327,24 +315,6 @@
       this.scanDecimalNumberLiteral();
   };
 
-  var makeNumberToken = function(type, value, pi) {
-    if (pi) {
-      type = Token.FloatLiteral;
-      value = value * Math.PI;
-    }
-
-    if (type === Token.FloatLiteral && value === (value|0)) {
-      value = value + ".0";
-    } else {
-      value = String(value);
-    }
-
-    return {
-      type: type,
-      value: value
-    };
-  };
-
   Lexer.prototype.scanNAryNumberLiteral = function() {
     var start = this.index;
     var items = this.match(
@@ -366,11 +336,15 @@
     }
 
     var type  = Token.IntegerLiteral;
-    var value = this.calcNBasedInteger(integer, base);
+    var value = calcNBasedInteger(integer, base);
 
     if (frac) {
       type = Token.FloatLiteral;
-      value += this.calcNBasedFrac(frac, base);
+      value += calcNBasedFrac(frac, base);
+    }
+
+    if (isNaN(value)) {
+      this.throwError({}, Message.UnexpectedToken, items[0]);
     }
 
     var token = makeNumberToken(type, value, pi);
@@ -378,31 +352,6 @@
     this.index += items[0].length;
 
     return this.makeToken(token.type, token.value, start);
-  };
-
-  Lexer.prototype.char2num = function(ch, base) {
-    var x = char2num(ch, base);
-    if (x >= base) {
-      this.throwError({}, Message.UnexpectedToken, ch);
-    }
-    return x;
-  };
-
-  Lexer.prototype.calcNBasedInteger = function(integer, base) {
-    var value = 0;
-    for (var i = 0, imax = integer.length; i < imax; ++i) {
-      value *= base;
-      value += this.char2num(integer[i], base);
-    }
-    return value;
-  };
-
-  Lexer.prototype.calcNBasedFrac = function(frac, base) {
-    var value = 0;
-    for (var i = 0, imax = frac.length; i < imax; ++i) {
-      value += this.char2num(frac[i], base) * Math.pow(base, -(i + 1));
-    }
-    return value;
   };
 
   Lexer.prototype.scanHexNumberLiteral = function() {
@@ -593,6 +542,47 @@
 
     return this.EOFToken();
   };
+
+  function char2num(ch, base) {
+    var num = strlib.char2num(ch, base);
+    if (num >= base) {
+      num = NaN;
+    }
+    return num;
+  }
+
+  function calcNBasedInteger(integer, base) {
+    var value = 0;
+    for (var i = 0, imax = integer.length; i < imax; ++i) {
+      value *= base;
+      value += char2num(integer[i], base);
+    }
+    return value;
+  }
+
+  function calcNBasedFrac(frac, base) {
+    var value = 0;
+    for (var i = 0, imax = frac.length; i < imax; ++i) {
+      value += char2num(frac[i], base) * Math.pow(base, -(i + 1));
+    }
+    return value;
+  }
+
+  function makeNumberToken(type, value, pi) {
+    if (pi) {
+      type = Token.FloatLiteral;
+      value = value * Math.PI;
+    }
+
+    if (type === Token.FloatLiteral && value === (value|0)) {
+      value = value + ".0";
+    }
+
+    return {
+      type: type,
+      value: String(value)
+    };
+  }
 
   function isKeyword(value) {
     return Keywords.hasOwnProperty(value);

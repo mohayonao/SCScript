@@ -349,12 +349,12 @@
       ],
       "2r1a": {
         error: [
-          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "a")
+          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "2r1a")
         ]
       },
       "2r1.Z": {
         error: [
-          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "Z")
+          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "2r1.Z")
         ]
       },
       "0xff": [

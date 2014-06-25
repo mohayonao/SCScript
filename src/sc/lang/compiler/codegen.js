@@ -3,7 +3,7 @@
 
   require("./compiler");
   require("./scope");
-  require("./pre-compiler");
+  require("./rewriter");
 
   var codegen = {};
 
@@ -12,7 +12,7 @@
   var Syntax   = sc.lang.compiler.Syntax;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
-  var precompile = sc.lang.compiler.precompile;
+  var rewriter = sc.lang.compiler.rewriter;
 
   var Scope = sc.lang.compiler.scope({
     added: function(stmt, id, indent, peek, opts) {
@@ -83,7 +83,7 @@
   }
 
   CodeGen.prototype.compile = function(ast) {
-    ast = precompile(ast);
+    ast = rewriter.rewrite(ast);
     return this.generate(ast);
   };
 

@@ -1,12 +1,12 @@
 (function() {
   "use strict";
 
-  require("./pre-compiler");
+  require("./rewriter");
 
-  var Syntax     = sc.lang.compiler.Syntax;
-  var precompile = sc.lang.compiler.precompile;
+  var Syntax   = sc.lang.compiler.Syntax;
+  var rewriter = sc.lang.compiler.rewriter;
 
-  describe("sc.lang.compiler.precompile", function() {
+  describe("sc.lang.compiler.rewriter", function() {
     it("segmented check", function() {
       var ast, actual, expected;
 
@@ -80,7 +80,7 @@
         ]
       };
 
-      actual = precompile(ast);
+      actual = rewriter.rewrite(ast);
       expect(actual).to.eql(expected);
     });
 
@@ -204,7 +204,7 @@
         ]
       };
 
-      actual = precompile(ast);
+      actual = rewriter.rewrite(ast);;
       expect(actual).to.eql(expected);
     });
   });

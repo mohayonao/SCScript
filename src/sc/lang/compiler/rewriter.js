@@ -17,12 +17,12 @@
     embedInStream: true,
   };
 
-  function PreCompiler() {
+  function Rewriter() {
     this.functionStack = [];
     this.functionArray = [];
   }
 
-  PreCompiler.prototype.compile = function(ast) {
+  Rewriter.prototype.rewrite = function(ast) {
     ast = this.traverse(ast);
     this.functionArray.forEach(function(node) {
       node.body = this.segment(node.body);
@@ -30,7 +30,7 @@
     return ast;
   };
 
-  PreCompiler.prototype.traverse = function(node) {
+  Rewriter.prototype.traverse = function(node) {
     var result;
 
     if (Array.isArray(node)) {
@@ -44,13 +44,13 @@
     return result;
   };
 
-  PreCompiler.prototype.traverse$Array = function(node) {
+  Rewriter.prototype.traverse$Array = function(node) {
     return node.map(function(node) {
       return this.traverse(node);
     }, this);
   };
 
-  PreCompiler.prototype.traverse$Object = function(node) {
+  Rewriter.prototype.traverse$Object = function(node) {
     var result = {};
 
     if (isFunctionExpression(node)) {
@@ -81,7 +81,7 @@
     return result;
   };
 
-  PreCompiler.prototype.segment = function(list) {
+  Rewriter.prototype.segment = function(list) {
     var result = [];
     var id = 0;
     var i, imax;
@@ -123,9 +123,9 @@
       node.method.name.substr(0, 5) === "value";
   }
 
-  function precompile(ast) {
-    return new PreCompiler().compile(ast);
-  }
-
-  sc.lang.compiler.precompile = precompile;
+  sc.lang.compiler.rewriter = {
+    rewrite: function(ast) {
+      return new Rewriter().rewrite(ast);
+    }
+  };
 })(sc);

@@ -8,7 +8,7 @@
   }
 
   InterpolateString.hasInterpolateString = function(str) {
-    return /(^|[^\x5c])#\{/.test(str);
+    return (/(?:^|[^\\\\])#\{/).test(str);
   };
 
   InterpolateString.prototype.toCompiledString = function() {

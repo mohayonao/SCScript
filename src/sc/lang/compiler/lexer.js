@@ -183,7 +183,7 @@
       return this.scanSymbolLiteral();
     }
     if (ch === "'") {
-      return this.scanQuotedLiteral(Token.SymbolLiteral, ch);
+      return this.scanQuotedSymbolLiteral();
     }
 
     if (ch === "$") {
@@ -191,7 +191,7 @@
     }
 
     if (ch === '"') {
-      return this.scanQuotedLiteral(Token.StringLiteral, ch);
+      return this.scanStringLiteral();
     }
 
     if (ch === "_") {
@@ -489,39 +489,52 @@
     return this.EOFToken();
   };
 
-  Lexer.prototype.scanQuotedLiteral = function(type, quote) {
+  Lexer.prototype.scanStringLiteral = function() {
     var start = this.index;
-    var value = this._scanQuotedLiteral(quote);
-    return (value !== null) ? this.makeToken(type, value, start) : this.EOFToken();
-  };
-
-  Lexer.prototype._scanQuotedLiteral = function(quote) {
     var source = this.source;
     var length = this.length;
-    var index  = this.index + 1;
-    var start  = index;
-    var value  = null;
+    var str = "";
 
-    while (index < length) {
-      var ch = source.charAt(index++);
-      if (ch === quote) {
-        value = source.substr(start, index - start - 1).replace(/\n/g, "\\n");
-        break;
+    this.index += 1;
+    while (this.index < length) {
+      var ch = source.charAt(this.index++);
+      if (ch === '"') {
+        return this.makeToken(Token.StringLiteral, str, start);
       } else if (ch === "\n") {
         this.lineNumber += 1;
-        this.lineStart = index;
+        this.lineStart = this.index;
+        str += "\\n";
       } else if (ch === "\\") {
-        index += 1;
+        str += "\\" + source.charAt(this.index++);
+      } else {
+        str += ch;
       }
     }
 
-    this.index = index;
+    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+    return this.EOFToken();
+  };
 
-    if (value === null) {
-      this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+  Lexer.prototype.scanQuotedSymbolLiteral = function() {
+    var start = this.index;
+    var source = this.source;
+    var length = this.length;
+    var str = "";
+
+    this.index += 1;
+    while (this.index < length) {
+      var ch = source.charAt(this.index++);
+      if (ch === "'") {
+        return this.makeToken(Token.SymbolLiteral, str, start);
+      } else if (ch === "\n") {
+        this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+      } else if (ch !== "\\") {
+        str += ch;
+      }
     }
 
-    return value;
+    this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
+    return this.EOFToken();
   };
 
   Lexer.prototype.scanSymbolLiteral = function() {

@@ -540,9 +540,25 @@
           }
         }
       ],
+      "'\\0'": [
+        {
+          type: Token.SymbolLiteral,
+          value: "0",
+          range: [ 0, 4 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 1, column: 4 }
+          }
+        }
+      ],
       "'symbol": {
         error: [
           error({ line: 1, column: 8, index: 7 }, Message.UnexpectedToken, "ILLEGAL")
+        ]
+      },
+      "'\n'": {
+        error: [
+          error({ line: 1, column: 3, index: 2 }, Message.UnexpectedToken, "ILLEGAL")
         ]
       },
       '""': [
@@ -556,14 +572,36 @@
           }
         }
       ],
-      '"s\\tri\ng"': [
+      '"string"': [
         {
           type: Token.StringLiteral,
-          value: "s\\tri\\ng",
-          range: [ 0, 9 ],
+          value: "string",
+          range: [ 0, 8 ],
           loc: {
             start: { line: 1, column: 0 },
-            end: { line: 2, column: 2 }
+            end: { line: 1, column: 8 }
+          }
+        },
+      ],
+      '"\n"': [
+        {
+          type: Token.StringLiteral,
+          value: "\\n",
+          range: [ 0, 3 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 2, column: 1 }
+          }
+        },
+      ],
+      '"\\\\n"': [
+        {
+          type: Token.StringLiteral,
+          value: "\\\\n",
+          range: [ 0, 5 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 1, column: 5 }
           }
         },
       ],

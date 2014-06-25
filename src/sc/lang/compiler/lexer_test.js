@@ -529,11 +529,33 @@
           }
         },
       ],
+      "''": [
+        {
+          type: Token.SymbolLiteral,
+          value: "",
+          range: [ 0, 2 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 1, column: 2 }
+          }
+        }
+      ],
       "'symbol": {
         error: [
           error({ line: 1, column: 8, index: 7 }, Message.UnexpectedToken, "ILLEGAL")
         ]
       },
+      '""': [
+        {
+          type: Token.StringLiteral,
+          value: "",
+          range: [ 0, 2 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 1, column: 2 }
+          }
+        }
+      ],
       '"s\\tri\ng"': [
         {
           type: Token.StringLiteral,

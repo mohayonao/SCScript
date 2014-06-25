@@ -492,7 +492,7 @@
   Lexer.prototype.scanQuotedLiteral = function(type, quote) {
     var start = this.index;
     var value = this._scanQuotedLiteral(quote);
-    return value ? this.makeToken(type, value, start) : this.EOFToken();
+    return (value !== null) ? this.makeToken(type, value, start) : this.EOFToken();
   };
 
   Lexer.prototype._scanQuotedLiteral = function(quote) {
@@ -503,8 +503,7 @@
     var value  = null;
 
     while (index < length) {
-      var ch = source.charAt(index);
-      index += 1;
+      var ch = source.charAt(index++);
       if (ch === quote) {
         value = source.substr(start, index - start - 1).replace(/\n/g, "\\n");
         break;
@@ -518,7 +517,7 @@
 
     this.index = index;
 
-    if (!value) {
+    if (value === null) {
       this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
     }
 

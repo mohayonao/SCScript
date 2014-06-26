@@ -716,22 +716,18 @@
   };
 
   Parser.prototype.parseExpressionsWithParentheses = function() {
-    this.expect("(");
-
-    var marker = this.createMarker();
-    var expr = this.parseExpressions();
-    expr = marker.update().apply(expr);
-
-    this.expect(")");
-
-    return expr;
+    return this.parseWithParentheses("parseExpressions");
   };
 
   Parser.prototype.parsePartialExpressionWithParentheses = function() {
+    return this.parseWithParentheses("parsePartialExpression");
+  };
+
+  Parser.prototype.parseWithParentheses = function(methodName) {
     this.expect("(");
 
     var marker = this.createMarker();
-    var expr = this.parsePartialExpression();
+    var expr = this[methodName].call(this);
     expr = marker.update().apply(expr);
 
     this.expect(")");

@@ -1,9 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
-  require("./node");
-  require("./parser-base");
+  require("./base-parser");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;

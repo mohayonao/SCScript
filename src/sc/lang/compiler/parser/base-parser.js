@@ -1,8 +1,9 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
-  require("./scope");
+  require("../compiler");
+  require("../scope");
+  require("../node");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;

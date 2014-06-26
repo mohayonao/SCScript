@@ -6,15 +6,15 @@
   require("./marker");
   require("./node");
   require("./interpolate-string");
-  require("./parser-base");
-  require("./parser-function-expr");
-  require("./parser-assignment-expr");
-  require("./parser-binop-expr");
-  require("./parser-list-expr");
-  require("./parser-list-indexer");
-  require("./parser-event-expr");
-  require("./parser-series-expr");
-  require("./parser-generator-expr");
+  require("./parser/base-parser");
+  require("./parser/function-expr");
+  require("./parser/assignment-expr");
+  require("./parser/binop-expr");
+  require("./parser/list-expr");
+  require("./parser/list-indexer");
+  require("./parser/event-expr");
+  require("./parser/series-expr");
+  require("./parser/generator-expr");
 
   var parser = {};
 

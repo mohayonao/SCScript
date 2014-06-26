@@ -1,9 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
-  require("./node");
-  require("./parser-base");
+  require("./base-parser");
 
   /*
     ListExpression :

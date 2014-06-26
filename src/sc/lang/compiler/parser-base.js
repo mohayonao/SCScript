@@ -41,7 +41,8 @@
   };
 
   BaseParser.prototype.unlex = function(token) {
-    return this.lexer.unlex(token);
+    this.lexer.unlex(token);
+    return this;
   };
 
   BaseParser.prototype.expect = function(value) {

@@ -104,7 +104,6 @@
     this.index = token.range[1];
     this.lineNumber = token.lineNumber;
     this.lineStart = token.lineStart;
-    return this.lookahead;
   };
 
   Lexer.prototype.advance = function() {

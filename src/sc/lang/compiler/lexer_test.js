@@ -118,11 +118,10 @@
       });
       saved = token;
 
-      token = lexer.unlex(token);
-      expect(token, 4).to.equal(saved);
+      lexer.unlex(token);
 
       token = lexer.lex();
-      expect(token, 5).to.eql({
+      expect(token, 4).to.eql({
         type: Token.IntegerLiteral,
         value: "0",
         lineNumber: 1,

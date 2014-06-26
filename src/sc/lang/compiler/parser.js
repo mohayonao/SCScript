@@ -606,11 +606,9 @@
 
     switch (this.matchAny([ "[", "{" ])) {
     case "[":
-      this.unlex(token);
-      return this.parseImmutableListExpression(lookahead);
+      return this.unlex(token).parseImmutableListExpression(lookahead);
     case "{":
-      this.unlex(token);
-      return this.parseClosedFunctionExpression();
+      return this.unlex(token).parseClosedFunctionExpression();
     }
     this.throwUnexpected(this.lookahead);
 
@@ -669,8 +667,7 @@
     }
 
     if (this.lookahead.type === Token.Label) {
-      this.unlex(token);
-      expr = this.parseEventExpression();
+      expr = this.unlex(token).parseEventExpression();
     } else if (this.match("var")) {
       expr = this.withScope(function() {
         var body;
@@ -690,8 +687,7 @@
         expr = this.parseSeriesExpression(node, generator);
         this.expect(")");
       } else if (this.match(":")) {
-        this.unlex(token);
-        expr = this.parseEventExpression();
+        expr = this.unlex(token).parseEventExpression();
       } else if (this.match(";")) {
         expr = this.parseExpressions(node);
         if (this.matchAny([ ",", ".." ])) {

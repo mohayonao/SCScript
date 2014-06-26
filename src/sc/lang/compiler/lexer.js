@@ -55,13 +55,6 @@
   };
 
   Lexer.prototype.collectToken = function() {
-    this.skipComment();
-
-    var start = {
-      line: this.lineNumber,
-      column: this.columnNumber
-    };
-
     var token = this.advance();
 
     var result = {
@@ -73,16 +66,30 @@
       result.range = token.range;
     }
     if (this.opts.loc) {
-      result.loc = {
-        start: start,
-        end: {
-          line: this.lineNumber,
-          column: this.columnNumber
-        }
-      };
+      result.loc = token.loc;
     }
 
     return result;
+  };
+
+  Lexer.prototype.advance = function() {
+    this.skipComment();
+
+    if (this.length <= this.index) {
+      return this.EOFToken();
+    }
+
+    var lineNumber = this.lineNumber;
+    var columnNumber = this.columnNumber;
+
+    var token = this._advance();
+
+    token.loc = {
+      start: { line: lineNumber, column: columnNumber },
+      end: { line: this.lineNumber, column: this.columnNumber }
+    };
+
+    return token;
   };
 
   Lexer.prototype.skipComment = function() {
@@ -159,13 +166,7 @@
     return index;
   };
 
-  Lexer.prototype.advance = function() {
-    this.skipComment();
-
-    if (this.length <= this.index) {
-      return this.EOFToken();
-    }
-
+  Lexer.prototype._advance = function() {
     var ch = this.source.charAt(this.index);
 
     if (ch === "\\") {
@@ -174,23 +175,18 @@
     if (ch === "'") {
       return this.scanQuotedSymbolLiteral();
     }
-
     if (ch === "$") {
       return this.scanCharLiteral();
     }
-
     if (ch === '"') {
       return this.scanStringLiteral();
     }
-
     if (ch === "_") {
       return this.scanUnderscore();
     }
-
     if (strlib.isAlpha(ch)) {
       return this.scanIdentifier();
     }
-
     if (strlib.isNumber(ch)) {
       return this.scanNumericLiteral();
     }

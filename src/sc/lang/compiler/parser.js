@@ -1068,7 +1068,7 @@
     var expr;
     switch (stamp) {
     case "#":
-      expr = this.parsePrimaryHashedExpression();
+      expr = this.parseHashedExpression();
       break;
     case Token.CharLiteral:
     case Token.FloatLiteral:
@@ -1204,7 +1204,12 @@
     return marker.update().apply(expr, true);
   };
 
-  Parser.prototype.parsePrimaryHashedExpression = function() {
+  /*
+    HashedExpression :
+      ImmutableListExpression
+      ClosedFunctionExpression
+  */
+  Parser.prototype.parseHashedExpression = function() {
     var lookahead = this.lookahead;
 
     var token = this.expect("#");

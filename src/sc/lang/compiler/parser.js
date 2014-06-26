@@ -608,21 +608,7 @@
 
     var prec, expr;
     while ((prec = calcBinaryPrecedence(this.lookahead, this.binaryPrecedence)) > 0) {
-      // Reduce: make a binary expression from the three topmost entries.
-      while ((stack.length > 2) && (prec <= stack[stack.length - 2].prec)) {
-        right    = stack.pop();
-        operator = stack.pop();
-        left     = stack.pop();
-        expr = Node.createBinaryExpression(operator, left, right);
-        markers.pop();
-
-        marker = markers.pop();
-        marker.update().apply(expr);
-
-        stack.push(expr);
-
-        markers.push(marker);
-      }
+      prec = sortByBinaryPrecedence(prec, stack, markers);
 
       // Shift.
       var token = this.lex();
@@ -649,6 +635,26 @@
 
     return expr;
   };
+
+  function sortByBinaryPrecedence(prec, stack, markers) {
+    // Reduce: make a binary expression from the three topmost entries.
+    while ((stack.length > 2) && (prec <= stack[stack.length - 2].prec)) {
+      var right    = stack.pop();
+      var operator = stack.pop();
+      var left     = stack.pop();
+      var expr = Node.createBinaryExpression(operator, left, right);
+      markers.pop();
+
+      var marker = markers.pop();
+      marker.update().apply(expr);
+
+      stack.push(expr);
+
+      markers.push(marker);
+    }
+
+    return prec;
+  }
 
   /* TODO: ???
     Adverb :

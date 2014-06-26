@@ -618,12 +618,13 @@
       ],
       "'symbol": {
         error: [
-          error({ line: 1, column: 8, index: 7 }, Message.UnexpectedToken, "ILLEGAL")
+          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "'symbol")
         ]
       },
       "'\n'": {
         error: [
-          error({ line: 1, column: 3, index: 2 }, Message.UnexpectedToken, "ILLEGAL")
+          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "'"),
+          error({ line: 2, column: 1, index: 2 }, Message.UnexpectedToken, "'"),
         ]
       },
       '""': [
@@ -672,7 +673,7 @@
       ],
       '"string': {
         error: [
-          error({ line: 1, column: 8, index: 7 }, Message.UnexpectedToken, "ILLEGAL")
+          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, '"string')
         ]
       },
       "nil ": [

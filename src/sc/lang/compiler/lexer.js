@@ -3,6 +3,7 @@
 
   require("./compiler");
   require("./marker");
+  require("./lexer-string");
   require("./lexer-number");
 
   var slice = [].slice;
@@ -11,6 +12,7 @@
   var Message  = sc.lang.compiler.Message;
   var Keywords = sc.lang.compiler.Keywords;
   var Marker = sc.lang.compiler.Marker;
+  var lexString = sc.lang.compiler.lexString;
   var lexNumber = sc.lang.compiler.lexNumber;
 
   function Lexer(source, opts) {
@@ -201,17 +203,11 @@
   Lexer.prototype._advance = function() {
     var ch = this.source.charAt(this.index);
 
-    if (ch === "\\") {
-      return this.scanSymbolLiteral();
-    }
-    if (ch === "'") {
-      return this.scanQuotedSymbolLiteral();
-    }
     if (ch === "$") {
       return this.scanCharLiteral();
     }
-    if (ch === '"') {
-      return this.scanStringLiteral();
+    if (ch === "\\" || ch === "'" || ch === '"') {
+      return this.scanWithFunc(lexString);
     }
     if (ch === "_") {
       return this.scanUnderscore();
@@ -220,7 +216,7 @@
       return this.scanIdentifier();
     }
     if (strlib.isNumber(ch)) {
-      return this.scanNumericLiteral();
+      return this.scanWithFunc(lexNumber);
     }
 
     return this.scanPunctuator();
@@ -290,13 +286,18 @@
     return this.makeToken(type, value, start);
   };
 
-  Lexer.prototype.scanNumericLiteral = function() {
-    var token = lexNumber(this.source, this.index);
+  Lexer.prototype.scanWithFunc = function(func) {
+    var token = func(this.source, this.index);
     if (token.error) {
       this.throwError({}, Message.UnexpectedToken, token.value);
     }
     var start = this.index;
     this.index += token.length;
+    if (token.line) {
+      var value = token.value;
+      this.lineStart = this.index - (value.length - value.lastIndexOf("\n") - 2);
+      this.lineNumber += token.line;
+    }
     return this.makeToken(token.type, token.value, start);
   };
 
@@ -314,63 +315,6 @@
     this.index = this.length;
 
     return this.EOFToken();
-  };
-
-  Lexer.prototype.scanStringLiteral = function() {
-    var start = this.index;
-    var source = this.source;
-    var length = this.length;
-    var str = "";
-
-    this.index += 1;
-    while (this.index < length) {
-      var ch = source.charAt(this.index++);
-      if (ch === '"') {
-        return this.makeToken(Token.StringLiteral, str, start);
-      } else if (ch === "\n") {
-        this.lineNumber += 1;
-        this.lineStart = this.index;
-        str += "\\n";
-      } else if (ch === "\\") {
-        str += "\\" + source.charAt(this.index++);
-      } else {
-        str += ch;
-      }
-    }
-
-    return this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-  };
-
-  Lexer.prototype.scanQuotedSymbolLiteral = function() {
-    var start = this.index;
-    var source = this.source;
-    var length = this.length;
-    var str = "";
-
-    this.index += 1;
-    while (this.index < length) {
-      var ch = source.charAt(this.index++);
-      if (ch === "'") {
-        return this.makeToken(Token.SymbolLiteral, str, start);
-      } else if (ch === "\n") {
-        this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-      } else if (ch !== "\\") {
-        str += ch;
-      }
-    }
-
-    return this.throwError({}, Message.UnexpectedToken, "ILLEGAL");
-  };
-
-  Lexer.prototype.scanSymbolLiteral = function() {
-    var start = this.index;
-    var items = this.match(/^\\([a-zA-Z_]\w*|\d+)?/);
-
-    var value = items[1] || "";
-
-    this.index += items[0].length;
-
-    return this.makeToken(Token.SymbolLiteral, value, start);
   };
 
   Lexer.prototype.scanUnderscore = function() {

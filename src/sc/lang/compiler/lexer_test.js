@@ -8,6 +8,7 @@
   var Token   = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
   var Lexer   = sc.lang.compiler.lexer;
+  var Marker  = sc.lang.compiler.Marker;
 
   function s(str) {
     str = JSON.stringify(str);
@@ -133,6 +134,15 @@
         }
       });
     });
+    it("createMarker", sinon.test(function() {
+      this.stub(Marker, "create", sc.test.func());
+
+      var lexer = new Lexer("a = 0");
+      var test = lexer.createMarker(12345);
+
+      expect(Marker.create).to.be.calledWith(lexer, 12345);
+      expect(Marker.create).to.be.calledLastIn(test);
+    }));
 
     var cases = {
       "": [],

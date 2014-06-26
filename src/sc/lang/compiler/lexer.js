@@ -2,12 +2,14 @@
   "use strict";
 
   require("./compiler");
+  require("./marker");
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Keywords = sc.lang.compiler.Keywords;
+  var Marker = sc.lang.compiler.Marker;
 
   function Lexer(source, opts) {
     /* istanbul ignore next */
@@ -114,6 +116,10 @@
     };
 
     return token;
+  };
+
+  Lexer.prototype.createMarker = function(node) {
+    return Marker.create(this, node);
   };
 
   Lexer.prototype.skipComment = function() {

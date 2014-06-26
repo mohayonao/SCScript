@@ -84,5 +84,5 @@
     }
   };
 
-  sc.lang.compiler.marker = Marker;
+  sc.lang.compiler.Marker = Marker;
 })(sc);

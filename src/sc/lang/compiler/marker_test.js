@@ -3,7 +3,7 @@
 
   require("./marker");
 
-  var Marker = sc.lang.compiler.marker;
+  var Marker = sc.lang.compiler.Marker;
 
   function Lexer(opts) {
     this.opts = opts || {};

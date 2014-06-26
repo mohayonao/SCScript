@@ -7,6 +7,7 @@
   require("./node");
   require("./interpolate-string");
   require("./parser-base");
+  require("./parser-function-expr");
   require("./parser-assignment-expr");
   require("./parser-list-expr");
   require("./parser-list-indexer");
@@ -21,6 +22,7 @@
   var Node     = sc.lang.compiler.Node;
   var InterpolateString = sc.lang.compiler.InterpolateString;
   var BaseParser = sc.lang.compiler.BaseParser;
+  var FunctionExpressionParser = sc.lang.compiler.FunctionExpressionParser;
   var AssignmentExpressionParser = sc.lang.compiler.AssignmentExpressionParser;
   var ListExpressionParser = sc.lang.compiler.ListExpressionParser;
   var ListIndexerParser = sc.lang.compiler.ListIndexerParser;
@@ -92,207 +94,12 @@
     return marker.update().apply(node);
   };
 
-  /*
-    FunctionExpression :
-      { FunctionArgumentDefinition(opt) FunctionBody(opt) }
-  */
   Parser.prototype.parseFunctionExpression = function(closed, blocklist) {
-    this.expect("{");
-
-    var node = this.withScope(function() {
-      var args = this.parseFunctionArgumentDefinition();
-      var body = this.parseFunctionBody("}");
-      return Node.createFunctionExpression(args, body, closed, false, blocklist);
-    });
-
-    this.expect("}");
-
-    return node;
+    return new FunctionExpressionParser(this).parse(closed, blocklist);
   };
 
-  /*
-    FunctionArgumentDefinition :
-         | FunctionArguments |
-      args FunctionArguments ;
-  */
-  Parser.prototype.parseFunctionArgumentDefinition = function() {
-    if (this.match("|")) {
-      return this.parseFunctionArguments("|");
-    }
-    if (this.match("arg")) {
-      return this.parseFunctionArguments(";");
-    }
-    return null;
-  };
-
-  /*
-    FunctionArguments :
-      FunctionArgumentList
-      FunctionArgumentList ... VariableIdentifier
-                           ... VariableIdentifier
-  */
-  Parser.prototype.parseFunctionArguments = function(expect) {
-    var args = { list: [] };
-
-    this.lex();
-
-    args.list = this.parseFunctionArgumentList(expect);
-
-    if (this.match("...")) {
-      this.lex();
-      args.remain = this.parseVariableIdentifier();
-      this.scope.add("arg", args.remain.name);
-    }
-
-    this.expect(expect);
-
-    return args;
-  };
-
-  /*
-      FunctionArgumentList :
-        FunctionArgumentElement
-        FunctionArgumentList , FunctionArgumentElement
-  */
-  Parser.prototype.parseFunctionArgumentList = function(expect) {
-    var elements = [];
-
-    if (!this.match("...")) {
-      do {
-        elements.push(this.parseFunctionArgumentElement());
-        if ((expect !== "|" && !this.match(",")) || this.matchAny([ expect, "..." ])) {
-          break;
-        }
-        if (this.match(",")) {
-          this.lex();
-        }
-      } while (this.hasNextToken());
-    }
-
-    return elements;
-  };
-
-  Parser.prototype._parseArgVarElement = function(type, method) {
-    var marker = this.createMarker();
-
-    var id = this.parseVariableIdentifier();
-    this.scope.add(type, id.name);
-
-    var init = null;
-    if (this.match("=")) {
-      this.lex();
-      init = this[method]();
-    }
-
-    var declarator = Node.createVariableDeclarator(id, init);
-
-    return marker.update().apply(declarator);
-  };
-
-  /*
-    FunctionArgumentElement :
-      VariableIdentifier
-      VariableIdentifier = ArgumentableValue
-  */
-  Parser.prototype.parseFunctionArgumentElement = function() {
-    var node = this._parseArgVarElement("arg", "parseArgumentableValue");
-
-    if (node.init && !isValidArgumentValue(node.init)) {
-      this.throwUnexpected(this.lookahead);
-    }
-
-    return node;
-  };
-
-  /*
-    FunctionBody :
-      VariableDeclarations(opt) SourceElements(opt)
-  */
   Parser.prototype.parseFunctionBody = function(match) {
-    return this.parseVariableDeclarations().concat(this.parseSourceElements(match));
-  };
-
-  /*
-    VariableDeclarations :
-      VariableDeclaration
-      VariableDeclarations VariableDeclaration
-  */
-  Parser.prototype.parseVariableDeclarations = function() {
-    var elements = [];
-
-    while (this.match("var")) {
-      elements.push(this.parseVariableDeclaration());
-    }
-
-    return elements;
-  };
-
-  /*
-    SourceElements :
-      Expression
-      SourceElements ; Expression
-  */
-  Parser.prototype.parseSourceElements = function(match) {
-    var elements = [];
-
-    while (this.hasNextToken() && !this.match(match)) {
-      elements.push(this.parseExpression());
-      if (this.hasNextToken() && !this.match(match)) {
-        this.expect(";");
-      } else {
-        break;
-      }
-    }
-
-    return elements;
-  };
-
-  /*
-    VariableDeclaration :
-      var VariableDeclarationList ;
-  */
-  Parser.prototype.parseVariableDeclaration = function() {
-    var marker = this.createMarker();
-
-    this.lex(); // var
-
-    var declaration = Node.createVariableDeclaration(
-      this.parseVariableDeclarationList(), "var"
-    );
-
-    declaration = marker.update().apply(declaration);
-
-    this.expect(";");
-
-    return declaration;
-  };
-
-  /*
-    VariableDeclarationList :
-      VariableDeclarationElement
-      VariableDeclarationList , VariableDeclarationElement
-  */
-  Parser.prototype.parseVariableDeclarationList = function() {
-    var list = [];
-
-    do {
-      list.push(this.parseVariableDeclarationElement());
-      if (!this.match(",")) {
-        break;
-      }
-      this.lex();
-    } while (this.hasNextToken());
-
-    return list;
-  };
-
-  /*
-    VariableDeclarationElement :
-      VariableIdentifier
-      VariableIdentifier = AssignmentExpression
-  */
-  Parser.prototype.parseVariableDeclarationElement = function() {
-    return this._parseArgVarElement("var", "parseAssignmentExpression");
+    return new FunctionExpressionParser(this).parseFunctionBody(match);
   };
 
   /*
@@ -1299,19 +1106,6 @@
     var ch = name.charAt(0);
 
     return "A" <= ch && ch <= "Z";
-  }
-
-  function isValidArgumentValue(node) {
-    if (node.type === Syntax.Literal) {
-      return true;
-    }
-    if (node.type === Syntax.ListExpression) {
-      return node.elements.every(function(node) {
-        return node.type === Syntax.Literal;
-      });
-    }
-
-    return false;
   }
 
   parser.parse = function(source, opts) {

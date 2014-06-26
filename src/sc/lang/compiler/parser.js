@@ -8,6 +8,7 @@
   require("./node");
   require("./interpolate-string");
   require("./parser-base");
+  require("./parser-list-expr");
 
   var parser = {};
 
@@ -19,6 +20,7 @@
   var Node     = sc.lang.compiler.node;
   var InterpolateString = sc.lang.compiler.InterpolateString;
   var BaseParser = sc.lang.compiler.BaseParser;
+  var ListExpressionParser = sc.lang.compiler.ListExpressionParser;
 
   var binaryPrecedenceDefaults = {
     "?": 1,
@@ -773,7 +775,7 @@
 
     var marker = this.createMarker();
 
-    var node = this.parseListInitialiser();
+    var node = this.parseListExpression();
     node = marker.update().apply(node);
 
     return Node.createCallExpression(expr, method, { list: [ node ] }, "[");
@@ -1069,7 +1071,7 @@
       expr = this.parseBraces();
       break;
     case "[":
-      expr = this.parseListInitialiser();
+      expr = this.parseListExpression();
       break;
     case "`":
       expr = this.parseRefExpression();
@@ -1151,24 +1153,6 @@
     this.throwUnexpected(this.lookahead);
 
     return {};
-  };
-
-  /*
-    ImmutableListExpression :
-      # ListExpression
-  */
-  Parser.prototype.parseImmutableListExpression = function(lookahead) {
-    if (this.state.immutableList) {
-      this.throwUnexpected(lookahead);
-    }
-
-    var expr;
-    this.state.immutableList = true;
-    this.expect("#");
-    expr = this.parseListInitialiser();
-    this.state.immutableList = false;
-
-    return expr;
   };
 
   /*
@@ -1383,61 +1367,28 @@
   };
 
   /*
-    ListInitialiser :
-      [ ListElements(opts) ]
+    ListExpression
   */
-  Parser.prototype.parseListInitialiser = function() {
-    this.expect("[");
-
-    var elements = this.parseListElements();
-
-    this.expect("]");
-
-    return Node.createListExpression(elements, this.state.immutableList);
+  Parser.prototype.parseListExpression = function() {
+    return new ListExpressionParser(this).parse();
   };
 
   /*
-    ListElements :
-      ListElement
-      ListElements , ListElement
+    ImmutableListExpression :
+      # ListExpression
   */
-  Parser.prototype.parseListElements = function() {
-    var elements = [];
-    var innerElements = this.state.innerElements;
-
-    this.state.innerElements = true;
-
-    while (this.hasNextToken() && !this.match("]")) {
-      elements = elements.concat(this.parseListElement());
-      if (!this.match("]")) {
-        this.expect(",");
-      }
+  Parser.prototype.parseImmutableListExpression = function(lookahead) {
+    if (this.state.immutableList) {
+      this.throwUnexpected(lookahead);
     }
 
-    this.state.innerElements = innerElements;
+    var expr;
+    this.state.immutableList = true;
+    this.expect("#");
+    expr = this.parseListExpression();
+    this.state.immutableList = false;
 
-    return elements;
-  };
-
-  /*
-    ListElement :
-      Expression : Expression
-      Expression
-  */
-  Parser.prototype.parseListElement = function() {
-    var elements = [];
-
-    if (this.lookahead.type === Token.Label) {
-      elements.push(this.parseLabelAsSymbol(), this.parseExpression());
-    } else {
-      elements.push(this.parseExpression());
-      if (this.match(":")) {
-        this.lex();
-        elements.push(this.parseExpression());
-      }
-    }
-
-    return elements;
+    return expr;
   };
 
   /*

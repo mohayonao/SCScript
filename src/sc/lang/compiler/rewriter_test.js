@@ -204,7 +204,7 @@
         ]
       };
 
-      actual = rewriter.rewrite(ast);;
+      actual = rewriter.rewrite(ast);
       expect(actual).to.eql(expected);
     });
   });

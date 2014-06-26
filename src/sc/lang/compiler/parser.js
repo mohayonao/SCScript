@@ -719,7 +719,7 @@
     if (node) {
       this.expect(":");
     } else {
-      node = this.parseLabel({ as: Token.SymbolLiteral });
+      node = this.parseLabel();
     }
     elements.push(node, this.parseExpression());
 
@@ -729,7 +729,7 @@
 
     while (this.hasNextToken() && !this.match(")")) {
       if (this.lookahead.type === Token.Label) {
-        node = this.parseLabel({ as: Token.SymbolLiteral });
+        node = this.parseLabel();
       } else {
         node = this.parseExpression();
         this.expect(":");
@@ -872,19 +872,13 @@
     return new GeneratorExpressionParser(this).parse();
   };
 
-  Parser.prototype.parseLabel = function(opts) {
-    opts = opts || /* istanbul ignore next */ {};
+  Parser.prototype.parseLabel = function() {
     var marker = this.createMarker();
 
-    var label = Node.createLabel(this.lex().value);
-
-    if (opts.as) {
-      label = {
-        type: Syntax.Literal,
-        value: label.name,
-        valueType: Token.SymbolLiteral
-      };
-    }
+    var label = Node.createLiteral({
+      value: this.lex().value,
+      type: Token.SymbolLiteral
+    });
 
     return marker.update().apply(label);
   };

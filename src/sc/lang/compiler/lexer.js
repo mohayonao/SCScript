@@ -194,18 +194,8 @@
     return this.scanPunctuator();
   };
 
-  Lexer.prototype.lex = function(saved) {
-    var that = this;
+  Lexer.prototype.lex = function() {
     var token = this.lookahead;
-
-    if (saved) {
-      saved = [
-        this.lookahead,
-        this.index,
-        this.lineNumber,
-        this.lineStart
-      ];
-    }
 
     this.index      = token.range[1];
     this.lineNumber = token.lineNumber;
@@ -217,16 +207,15 @@
     this.lineNumber = token.lineNumber;
     this.lineStart  = token.lineStart;
 
-    if (saved) {
-      token.revert = function() {
-        that.lookahead  = saved[0];
-        that.index      = saved[1];
-        that.lineNumber = saved[2];
-        that.lineStart  = saved[3];
-      };
-    }
-
     return token;
+  };
+
+  Lexer.prototype.unlex = function(token) {
+    this.lookahead = token;
+    this.index = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart = token.lineStart;
+    return this.lookahead;
   };
 
   Lexer.prototype.makeToken = function(type, value, start) {

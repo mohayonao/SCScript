@@ -47,13 +47,7 @@
       expect(token.value).to.equal("a");
       expect(test).to.eql([ 1, 1, 1 ]);
 
-      token = lexer.lex(true);
-      test = lexer.getLocItems();
-      expect(token.value).to.equal("=");
-      expect(test).to.eql([ 3, 1, 3 ]);
-
-      token.revert();
-      token = lexer.lex(true);
+      token = lexer.lex();
       test = lexer.getLocItems();
       expect(token.value).to.equal("=");
       expect(test).to.eql([ 3, 1, 3 ]);
@@ -77,6 +71,67 @@
           lintStart: 0
         }, "ERROR");
       }).to.throw("ERROR");
+    });
+
+    it("lex / unlex", function() {
+      var lexer = new Lexer("a = 0");
+      var token, saved;
+
+      token = lexer.lex();
+      expect(token, 1).to.eql({
+        type: Token.Identifier,
+        value: "a",
+        lineNumber: 1,
+        lineStart: 0,
+        range: [ 0, 1 ],
+        loc: {
+          start: { line: 1, column: 0 },
+          end: { line: 1, column: 1 }
+        }
+      });
+
+      token = lexer.lex();
+      expect(token, 2).to.eql({
+        type: Token.Punctuator,
+        value: "=",
+        lineNumber: 1,
+        lineStart: 0,
+        range: [ 2, 3 ],
+        loc: {
+          start: { line: 1, column: 2 },
+          end: { line: 1, column: 3 }
+        }
+      });
+
+      token = lexer.lex();
+      expect(token, 3).to.eql({
+        type: Token.IntegerLiteral,
+        value: "0",
+        lineNumber: 1,
+        lineStart: 0,
+        range: [ 4, 5 ],
+        loc: {
+          start: { line: 1, column: 4 },
+          end: { line: 1, column: 5 }
+        }
+      });
+      saved = token;
+
+      token = lexer.unlex(token);
+      expect(token, 4).to.equal(saved);
+
+      token = lexer.lex();
+      expect(token, 5).to.eql({
+        type: Token.IntegerLiteral,
+        value: "0",
+        lineNumber: 1,
+        lineStart: 0,
+        range: [ 4, 5 ],
+        loc: {
+          start: { line: 1, column: 4 },
+          end: { line: 1, column: 5 }
+        }
+      });
     });
 
     var cases = {

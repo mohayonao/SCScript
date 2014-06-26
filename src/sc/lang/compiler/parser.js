@@ -427,9 +427,9 @@
 
     var token;
     if (this.match("#")) {
-      token = this.lexer.lex(true);
+      token = this.lexer.lex();
       if (this.matchAny([ "[", "{" ])) {
-        token.revert();
+        token = this.lexer.unlex(token);
       } else {
         node = this.parseDestructuringAssignmentExpression();
       }
@@ -439,7 +439,7 @@
       node = this.parseSimpleAssignmentExpression();
     }
 
-    return marker.update().apply(node);
+    return marker.update().apply(node, true);
   };
 
   /*

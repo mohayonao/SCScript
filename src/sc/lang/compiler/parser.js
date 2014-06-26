@@ -1207,40 +1207,53 @@
   Parser.prototype.parsePrimaryHashedExpression = function() {
     var lookahead = this.lookahead;
 
-    this.expect("#");
+    var token = this.expect("#");
 
     switch (this.matchAny([ "[", "{" ])) {
     case "[":
-      return this.parsePrimaryImmutableListExpression(lookahead);
+      this.unlex(token);
+      return this.parseImmutableListExpression(lookahead);
     case "{":
-      return this.parsePrimaryClosedFunctionExpression();
+      this.unlex(token);
+      return this.parseClosedFunctionExpression();
     }
     this.throwUnexpected(this.lookahead);
 
     return {};
   };
 
-  Parser.prototype.parsePrimaryImmutableListExpression = function(lookahead) {
+  /*
+    ImmutableListExpression :
+      # ListExpression
+  */
+  Parser.prototype.parseImmutableListExpression = function(lookahead) {
     if (this.state.immutableList) {
       this.throwUnexpected(lookahead);
     }
 
     var expr;
     this.state.immutableList = true;
+    this.expect("#");
     expr = this.parseListInitialiser();
     this.state.immutableList = false;
 
     return expr;
   };
 
-  Parser.prototype.parsePrimaryClosedFunctionExpression = function() {
+  /*
+    ClosedFunctionExpression :
+      # FunctionExpression
+  */
+  Parser.prototype.parseClosedFunctionExpression = function() {
     var expr;
     var disallowGenerator = this.state.disallowGenerator;
     var closedFunction    = this.state.closedFunction;
 
+    this.expect("#");
+
     this.state.disallowGenerator = true;
     this.state.closedFunction    = true;
-    expr = this.parseBraces();
+    expr = this.parseFunctionExpression(true);
     this.state.closedFunction    = closedFunction;
     this.state.disallowGenerator = disallowGenerator;
 

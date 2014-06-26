@@ -12,6 +12,7 @@
   require("./parser-binop-expr");
   require("./parser-list-expr");
   require("./parser-list-indexer");
+  require("./parser-event-expr");
   require("./parser-generator-expr");
 
   var parser = {};
@@ -28,6 +29,7 @@
   var BinaryExpressionParser = sc.lang.compiler.BinaryExpressionParser;
   var ListExpressionParser = sc.lang.compiler.ListExpressionParser;
   var ListIndexerParser = sc.lang.compiler.ListIndexerParser;
+  var EventExpressionParser = sc.lang.compiler.EventExpressionParser;
   var GeneratorExpressionParser = sc.lang.compiler.GeneratorExpressionParser;
 
   function Parser(source, opts) {
@@ -680,8 +682,7 @@
       expr = this.parseSeriesExpression(null, generator);
       this.expect(")");
     } else if (this.match(")")) {
-      expr = Node.createEventExpression([]);
-      this.expect(")");
+      expr = this.unlex(token).parseEventExpression();
     } else {
       var node = this.parseExpression();
 
@@ -711,30 +712,7 @@
   };
 
   Parser.prototype.parseEventExpression = function() {
-    var innerElements = this.state.innerElements;
-    this.state.innerElements = true;
-
-    this.expect("(");
-
-    var node, elements = [];
-    while (this.hasNextToken() && !this.match(")")) {
-      if (this.lookahead.type === Token.Label) {
-        node = this.parseLabel();
-      } else {
-        node = this.parseExpression();
-        this.expect(":");
-      }
-      elements.push(node, this.parseExpression());
-      if (!this.match(")")) {
-        this.expect(",");
-      }
-    }
-
-    this.expect(")");
-
-    this.state.innerElements = innerElements;
-
-    return Node.createEventExpression(elements);
+    return new EventExpressionParser(this).parse();
   };
 
   Parser.prototype.parseSeriesExpression = function(node, generator) {

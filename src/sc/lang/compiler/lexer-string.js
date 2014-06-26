@@ -13,11 +13,25 @@
   StringLexer.prototype.scan = function() {
     return this.scanSymbolLiteral() ||
       this.scanQuotedSymbolLiteral() ||
-      this.scanStringLiteral();
+      this.scanStringLiteral() ||
+      this.scanCharLiteral();
   };
 
   StringLexer.prototype.match = function(re) {
     return re.exec(this.source.slice(this.index));
+  };
+
+  StringLexer.prototype.scanCharLiteral = function() {
+    var source = this.source;
+    var index  = this.index;
+
+    if (source.charAt(index) !== "$") {
+      return;
+    }
+
+    var value = source.charAt(index + 1) || "";
+
+    return makeStringToken(Token.CharLiteral, value, 1);
   };
 
   StringLexer.prototype.scanSymbolLiteral = function() {

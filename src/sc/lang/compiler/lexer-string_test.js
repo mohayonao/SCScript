@@ -35,6 +35,12 @@
         [ '("unclosed', { error: true, value: '"unclosed', length: 9, line: 0 } ],
       ].forEach(test);
     });
+    it("Char", function() {
+      [
+        [ "($a)", { type: Token.CharLiteral, value: "a", length: 2, line: 0 } ],
+        [ "($", { type: Token.CharLiteral, value: "", length: 1, line: 0 } ],
+      ].forEach(test);
+    });
     it("Not a String", function() {
       [
         [ "(string)", undefined ],

@@ -203,6 +203,7 @@
         ],
         "/*": [
           error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "ILLEGAL"),
+          error({ line: 1, column: 2, index: 1 }, Message.UnexpectedToken, "*"),
         ],
         "'": [
           error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "'"),

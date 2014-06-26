@@ -50,8 +50,8 @@
         body: [],
         range: [ 15, 15 ],
         loc: {
-          start: { line: 3, column: 3 },
-          end: { line: 3, column: 3 }
+          start: { line: 3, column: 2 },
+          end: { line: 3, column: 2 }
         }
       }
     },

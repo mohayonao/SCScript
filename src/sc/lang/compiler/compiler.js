@@ -17,7 +17,9 @@
       Punctuator: "Punctuator",
       StringLiteral: "String",
       SymbolLiteral: "Symbol",
-      TrueLiteral: "True"
+      TrueLiteral: "True",
+      SingleLineComment: "SingleLineComment",
+      MultiLineComment: "MultiLineComment"
     },
     Syntax: {
       AssignmentExpression: "AssignmentExpression",

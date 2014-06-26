@@ -623,8 +623,7 @@
       },
       "'\n'": {
         error: [
-          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "'"),
-          error({ line: 2, column: 1, index: 2 }, Message.UnexpectedToken, "'"),
+          error({ line: 1, column: 1, index: 0 }, Message.UnexpectedToken, "'")
         ]
       },
       '""': [
@@ -656,7 +655,7 @@
           range: [ 0, 3 ],
           loc: {
             start: { line: 1, column: 0 },
-            end: { line: 2, column: 1 }
+            end: { line: 2, column: 2 }
           }
         },
       ],

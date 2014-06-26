@@ -92,8 +92,12 @@
     return this.lexer.lex();
   };
 
+  Parser.prototype.unlex = function(token) {
+    return this.lexer.unlex(token);
+  };
+
   Parser.prototype.expect = function(value) {
-    var token = this.lexer.lex();
+    var token = this.lex();
     if (token.type !== Token.Punctuator || token.value !== value) {
       this.throwUnexpected(token, value);
     }
@@ -428,9 +432,9 @@
 
     var token;
     if (this.match("#")) {
-      token = this.lexer.lex();
+      token = this.lex();
       if (this.matchAny([ "[", "{" ])) {
-        token = this.lexer.unlex(token);
+        token = this.unlex(token);
       } else {
         node = this.parseDestructuringAssignmentExpression();
       }

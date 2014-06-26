@@ -659,7 +659,7 @@
     var expr, generator;
     var marker = this.createMarker();
 
-    this.expect("(");
+    var token = this.expect("(");
 
     if (this.match(":")) {
       this.lex();
@@ -667,8 +667,8 @@
     }
 
     if (this.lookahead.type === Token.Label) {
+      this.unlex(token);
       expr = this.parseEventExpression();
-      this.expect(")");
     } else if (this.match("var")) {
       expr = this.withScope(function() {
         var body;
@@ -689,8 +689,8 @@
         expr = this.parseSeriesExpression(node, generator);
         this.expect(")");
       } else if (this.match(":")) {
-        expr = this.parseEventExpression(node);
-        this.expect(")");
+        this.unlex(token);
+        expr = this.parseEventExpression();
       } else if (this.match(";")) {
         expr = this.parseExpressions(node);
         if (this.matchAny([ ",", ".." ])) {
@@ -710,23 +710,13 @@
     return expr;
   };
 
-  Parser.prototype.parseEventExpression = function(node) {
-    var elements = [];
-
+  Parser.prototype.parseEventExpression = function() {
     var innerElements = this.state.innerElements;
     this.state.innerElements = true;
 
-    if (node) {
-      this.expect(":");
-    } else {
-      node = this.parseLabel();
-    }
-    elements.push(node, this.parseExpression());
+    this.expect("(");
 
-    if (this.match(",")) {
-      this.lex();
-    }
-
+    var node, elements = [];
     while (this.hasNextToken() && !this.match(")")) {
       if (this.lookahead.type === Token.Label) {
         node = this.parseLabel();
@@ -739,6 +729,8 @@
         this.expect(",");
       }
     }
+
+    this.expect(")");
 
     this.state.innerElements = innerElements;
 

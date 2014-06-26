@@ -352,7 +352,7 @@
       return this.parseLeftHandSideDotBracket(expr);
     }
 
-    var method = this.parseProperty();
+    var method = this.parseMethodName();
     if (this.match("(")) {
       // expr.method(args)
       var args = this.parseCallArgument();
@@ -424,7 +424,7 @@
     return new ListIndexerParser(this).parse();
   };
 
-  Parser.prototype.parseProperty = function() {
+  Parser.prototype.parseMethodName = function() {
     var marker = this.createMarker();
     var property = this.lex();
 

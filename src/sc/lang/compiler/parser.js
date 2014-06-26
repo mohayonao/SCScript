@@ -284,7 +284,7 @@
     }
     var disallowGenerator = this.state.disallowGenerator;
     this.state.disallowGenerator = true;
-    node = this.parseBraces(true);
+    node = this.parseBraces({ blocklist: true });
     this.state.disallowGenerator = disallowGenerator;
 
     // TODO: refactoring
@@ -847,26 +847,22 @@
       { : GeneratorInitialiser }
       {   FunctionExpression   }
   */
-  Parser.prototype.parseBraces = function(blocklist) {
+  Parser.prototype.parseBraces = function(opts) {
+    opts = opts || /* istanbul ignore next */ {};
     var marker = this.createMarker();
 
     var token = this.expect("{");
 
     var expr;
-    if (this.match(":")) {
-      if (!this.state.disallowGenerator) {
-        this.unlex(token);
-        expr = this.parseGeneratorExpression();
-      } else {
-        expr = {};
-        this.throwUnexpected(this.lookahead);
-      }
+    if (!opts.blocklist && this.match(":")) {
+      this.unlex(token);
+      expr = this.parseGeneratorExpression();
       this.expect("}"); // TODO: remove
     } else {
       this.unlex(token);
       expr = this.parseFunctionExpression({
         closed: this.state.closedFunction,
-        blocklist: blocklist
+        blocklist: opts.blocklist
       });
     }
 

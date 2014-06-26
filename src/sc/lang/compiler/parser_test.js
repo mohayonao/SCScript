@@ -400,7 +400,7 @@
           error({ line: 1, column: 10, index: 9 }, Message.UnexpectedIdentifier),
           error({ line: 1, column: 12, index: 11 }, Message.UnexpectedToken, "<-"),
           error({ line: 1, column: 16, index: 15 }, Message.UnexpectedToken, "]"),
-          error({ line: 1, column: 20, index: 19 }, Message.UnexpectedToken, "}"),
+          // error({ line: 1, column: 20, index: 19 }, Message.UnexpectedToken, "}"),
         ],
         "a(1, 2, ": [
           error({ line: 1, column: 9, index: 8 }, Message.UnexpectedEOS),

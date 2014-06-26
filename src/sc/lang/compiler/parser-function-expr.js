@@ -61,7 +61,7 @@
   sc.libs.extend(FunctionExpressionParser, BaseParser);
 
   FunctionExpressionParser.prototype.parse = function(opts) {
-    opts = opts || {};
+    opts = opts || /* istanbul ignore next */ {};
     this.expect("{");
 
     var node = this.withScope(function() {

@@ -72,6 +72,30 @@
     return result;
   };
 
+  Lexer.prototype.lex = function() {
+    var token = this.lookahead;
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    this.lookahead = this.advance();
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    return token;
+  };
+
+  Lexer.prototype.unlex = function(token) {
+    this.lookahead = token;
+    this.index = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart = token.lineStart;
+    return this.lookahead;
+  };
+
   Lexer.prototype.advance = function() {
     this.skipComment();
 
@@ -192,30 +216,6 @@
     }
 
     return this.scanPunctuator();
-  };
-
-  Lexer.prototype.lex = function() {
-    var token = this.lookahead;
-
-    this.index      = token.range[1];
-    this.lineNumber = token.lineNumber;
-    this.lineStart  = token.lineStart;
-
-    this.lookahead = this.advance();
-
-    this.index      = token.range[1];
-    this.lineNumber = token.lineNumber;
-    this.lineStart  = token.lineStart;
-
-    return token;
-  };
-
-  Lexer.prototype.unlex = function(token) {
-    this.lookahead = token;
-    this.index = token.range[1];
-    this.lineNumber = token.lineNumber;
-    this.lineStart = token.lineStart;
-    return this.lookahead;
   };
 
   Lexer.prototype.makeToken = function(type, value, start) {

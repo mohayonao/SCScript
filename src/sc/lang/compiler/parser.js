@@ -321,8 +321,8 @@
     Expression :
       AssignmentExpression
   */
-  Parser.prototype.parseExpression = function(node) {
-    return this.parseAssignmentExpression(node);
+  Parser.prototype.parseExpression = function() {
+    return this.parseAssignmentExpression();
   };
 
   /*
@@ -362,14 +362,10 @@
       SimpleAssignmentExpression
       # DestructuringAssignmentExpression
   */
-  Parser.prototype.parseAssignmentExpression = function(node) {
-    if (node) {
-      return this.parsePartialExpression(node);
-    }
-
+  Parser.prototype.parseAssignmentExpression = function() {
     var marker = this.createMarker();
 
-    var token;
+    var node, token;
     if (this.match("#")) {
       token = this.lex();
       if (this.matchAny([ "[", "{" ])) {
@@ -1177,7 +1173,7 @@
       return expr;
     }
 
-    return this.parseExpression(node);
+    return this.parsePartialExpression(node);
   };
 
   Parser.prototype.parseObjectInitialiser = function(node) {

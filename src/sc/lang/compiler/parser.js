@@ -1581,7 +1581,7 @@
     return marker.update().apply(id);
   };
 
-  var calcBinaryPrecedence = function(token, binaryPrecedence) {
+  function calcBinaryPrecedence(token, binaryPrecedence) {
     var prec = 0;
 
     switch (token.type) {
@@ -1600,17 +1600,17 @@
     }
 
     return prec;
-  };
+  }
 
-  var isNumber = function(node) {
+  function isNumber(node) {
     if (node.type !== Syntax.Literal) {
       return false;
     }
     var valueType = node.valueType;
     return valueType === Token.IntegerLiteral || valueType === Token.FloatLiteral;
-  };
+  }
 
-  var isClassName = function(node) {
+  function isClassName(node) {
     if (node.type !== Syntax.Identifier) {
       return false;
     }
@@ -1619,18 +1619,18 @@
     var ch = name.charAt(0);
 
     return "A" <= ch && ch <= "Z";
-  };
+  }
 
-  var isLeftHandSide = function(expr) {
+  function isLeftHandSide(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
     case Syntax.EnvironmentExpresion:
       return true;
     }
     return false;
-  };
+  }
 
-  var isValidArgumentValue = function(node) {
+  function isValidArgumentValue(node) {
     if (node.type === Syntax.Literal) {
       return true;
     }
@@ -1641,7 +1641,7 @@
     }
 
     return false;
-  };
+  }
 
   parser.parse = function(source, opts) {
     opts = opts || /* istanbul ignore next */ {};

@@ -10,6 +10,7 @@
   require("./parser-base");
   require("./parser-list-expr");
   require("./parser-list-indexer");
+  require("./parser-generator-expr");
 
   var parser = {};
 
@@ -23,6 +24,7 @@
   var BaseParser = sc.lang.compiler.BaseParser;
   var ListExpressionParser = sc.lang.compiler.ListExpressionParser;
   var ListIndexerParser = sc.lang.compiler.ListIndexerParser;
+  var GeneratorExpressionParser = sc.lang.compiler.GeneratorExpressionParser;
 
   var binaryPrecedenceDefaults = {
     "?": 1,
@@ -1324,7 +1326,7 @@
     if (this.match(":")) {
       if (!this.state.disallowGenerator) {
         this.unlex(token);
-        expr = this.parseGeneratorInitialiser();
+        expr = this.parseGeneratorExpression();
       } else {
         expr = {};
         this.throwUnexpected(this.lookahead);
@@ -1338,25 +1340,8 @@
     return marker.update().apply(expr);
   };
 
-  Parser.prototype.parseGeneratorInitialiser = function() {
-    this.lexer.throwError({}, Message.NotImplemented, "generator literal");
-
-    this.expect("{");
-    this.expect(":");
-
-    this.parseExpression();
-    this.expect(",");
-
-    while (this.hasNextToken() && !this.match("}")) {
-      this.parseExpression();
-      if (!this.match("}")) {
-        this.expect(",");
-      }
-    }
-
-    // this.expect("}");
-
-    return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
+  Parser.prototype.parseGeneratorExpression = function() {
+    return new GeneratorExpressionParser(this).parse();
   };
 
   Parser.prototype.parseLabel = function() {

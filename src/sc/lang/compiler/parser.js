@@ -9,6 +9,7 @@
   require("./parser-base");
   require("./parser-function-expr");
   require("./parser-assignment-expr");
+  require("./parser-binop-expr");
   require("./parser-list-expr");
   require("./parser-list-indexer");
   require("./parser-generator-expr");
@@ -24,37 +25,10 @@
   var BaseParser = sc.lang.compiler.BaseParser;
   var FunctionExpressionParser = sc.lang.compiler.FunctionExpressionParser;
   var AssignmentExpressionParser = sc.lang.compiler.AssignmentExpressionParser;
+  var BinaryExpressionParser = sc.lang.compiler.BinaryExpressionParser;
   var ListExpressionParser = sc.lang.compiler.ListExpressionParser;
   var ListIndexerParser = sc.lang.compiler.ListIndexerParser;
   var GeneratorExpressionParser = sc.lang.compiler.GeneratorExpressionParser;
-
-  var binaryPrecedenceDefaults = {
-    "?": 1,
-    "??": 1,
-    "!?": 1,
-    "->": 2,
-    "||": 3,
-    "&&": 4,
-    "|": 5,
-    "&": 6,
-    "==": 7,
-    "!=": 7,
-    "===": 7,
-    "!==": 7,
-    "<": 8,
-    ">": 8,
-    "<=": 8,
-    ">=": 8,
-    "<<": 9,
-    ">>": 9,
-    "+>>": 9,
-    "+": 10,
-    "-": 10,
-    "*": 11,
-    "/": 11,
-    "%": 11,
-    "!": 12
-  };
 
   function Parser(source, opts) {
     opts = opts || /* istanbul ignore next */ {};
@@ -67,7 +41,7 @@
       if (typeof this.opts.binaryPrecedence === "object") {
         binaryPrecedence = this.opts.binaryPrecedence;
       } else {
-        binaryPrecedence = binaryPrecedenceDefaults;
+        binaryPrecedence = BinaryExpressionParser.binaryPrecedenceDefaults;
       }
     }
 
@@ -192,111 +166,7 @@
       BinaryExpression BinaryOperator LeftHandSideExpression
   */
   Parser.prototype.parseBinaryExpression = function(node) {
-    var marker = this.createMarker();
-    var left   = this.parseLeftHandSideExpression(node);
-    var operator = this.lookahead;
-
-    var prec = calcBinaryPrecedence(operator, this.binaryPrecedence);
-    if (prec === 0) {
-      if (node) {
-        return this.parseLeftHandSideExpression(node);
-      }
-      return left;
-    }
-    this.lex();
-
-    operator.prec   = prec;
-    operator.adverb = this.parseAdverb();
-
-    return this.sortByBinaryPrecedence(left, operator, marker);
-  };
-
-  // TODO: fix to read easily
-  Parser.prototype.sortByBinaryPrecedence = function(left, operator, marker) {
-    var markers = [ marker, this.createMarker() ];
-    var right = this.parseLeftHandSideExpression();
-
-    var stack = [ left, operator, right ];
-
-    var prec, expr;
-    while ((prec = calcBinaryPrecedence(this.lookahead, this.binaryPrecedence)) > 0) {
-      prec = sortByBinaryPrecedence(prec, stack, markers);
-
-      // Shift.
-      var token = this.lex();
-      token.prec = prec;
-      token.adverb = this.parseAdverb();
-
-      stack.push(token);
-
-      markers.push(this.createMarker());
-      expr = this.parseLeftHandSideExpression();
-      stack.push(expr);
-    }
-
-    // Final reduce to clean-up the stack.
-    var i = stack.length - 1;
-    expr = stack[i];
-    markers.pop();
-    while (i > 1) {
-      expr = Node.createBinaryExpression(stack[i - 1], stack[i - 2], expr);
-      i -= 2;
-      marker = markers.pop();
-      marker.update().apply(expr);
-    }
-
-    return expr;
-  };
-
-  function sortByBinaryPrecedence(prec, stack, markers) {
-    // Reduce: make a binary expression from the three topmost entries.
-    while ((stack.length > 2) && (prec <= stack[stack.length - 2].prec)) {
-      var right    = stack.pop();
-      var operator = stack.pop();
-      var left     = stack.pop();
-      var expr = Node.createBinaryExpression(operator, left, right);
-      markers.pop();
-
-      var marker = markers.pop();
-      marker.update().apply(expr);
-
-      stack.push(expr);
-
-      markers.push(marker);
-    }
-
-    return prec;
-  }
-
-  /* TODO: ???
-    Adverb :
-      . PrimaryExpression
-  */
-  Parser.prototype.parseAdverb = function() {
-    if (!this.match(".")) {
-      return null;
-    }
-
-    this.lex();
-
-    var lookahead = this.lookahead;
-    var adverb = this.parsePrimaryExpression();
-
-    if (adverb.type === Syntax.Literal) {
-      return adverb;
-    }
-
-    if (adverb.type === Syntax.Identifier) {
-      adverb.type = Syntax.Literal;
-      adverb.value = adverb.name;
-      adverb.valueType = Token.SymbolLiteral;
-      delete adverb.name;
-      return adverb;
-    }
-
-    this.throwUnexpected(lookahead);
-
-    return null;
+    return new BinaryExpressionParser(this).parse(node);
   };
 
   /*
@@ -1067,27 +937,6 @@
 
     return marker.update().apply(id);
   };
-
-  function calcBinaryPrecedence(token, binaryPrecedence) {
-    var prec = 0;
-
-    switch (token.type) {
-    case Token.Punctuator:
-      if (token.value !== "=") {
-        if (binaryPrecedence.hasOwnProperty(token.value)) {
-          prec = binaryPrecedence[token.value];
-        } else if (/^[-+*\/%<=>!?&|@]+$/.test(token.value)) {
-          prec = 255;
-        }
-      }
-      break;
-    case Token.Label:
-      prec = 255;
-      break;
-    }
-
-    return prec;
-  }
 
   function isNumber(node) {
     if (node.type !== Syntax.Literal) {

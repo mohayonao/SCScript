@@ -7,6 +7,7 @@
   require("./marker");
   require("./node");
   require("./interpolate-string");
+  require("./parser-base");
 
   var parser = {};
 
@@ -17,6 +18,7 @@
   var Lexer    = sc.lang.compiler.lexer;
   var Node     = sc.lang.compiler.node;
   var InterpolateString = sc.lang.compiler.InterpolateString;
+  var BaseParser = sc.lang.compiler.BaseParser;
 
   var binaryPrecedenceDefaults = {
     "?": 1,
@@ -58,19 +60,13 @@
   });
 
   function Parser(source, opts) {
-    var binaryPrecedence;
+    opts = opts || /* istanbul ignore next */ {};
 
-    this.opts  = opts || /* istanbul ignore next */ {};
-    this.lexer = new Lexer(source, opts);
+    BaseParser.call(this, new Lexer(source, opts));
+    this.opts  = opts;
     this.scope = new Scope(this);
-    this.state = {
-      closedFunction: false,
-      disallowGenerator: false,
-      innerElements: false,
-      immutableList: false,
-      underscore: []
-    };
 
+    var binaryPrecedence;
     if (this.opts.binaryPrecedence) {
       if (typeof this.opts.binaryPrecedence === "object") {
         binaryPrecedence = this.opts.binaryPrecedence;
@@ -81,77 +77,7 @@
 
     this.binaryPrecedence = binaryPrecedence || {};
   }
-
-  Object.defineProperty(Parser.prototype, "lookahead", {
-    get: function() {
-      return this.lexer.lookahead;
-    }
-  });
-
-  Parser.prototype.lex = function() {
-    return this.lexer.lex();
-  };
-
-  Parser.prototype.unlex = function(token) {
-    return this.lexer.unlex(token);
-  };
-
-  Parser.prototype.expect = function(value) {
-    var token = this.lex();
-    if (token.type !== Token.Punctuator || token.value !== value) {
-      this.throwUnexpected(token, value);
-    }
-    return token;
-  };
-
-  Parser.prototype.match = function(value) {
-    return this.lexer.lookahead.value === value;
-  };
-
-  Parser.prototype.matchAny = function(list) {
-    var value = this.lexer.lookahead.value;
-    for (var i = 0, imax = list.length; i < imax; ++i) {
-      if (list[i] === value) {
-        return value;
-      }
-    }
-    return null;
-  };
-
-  Parser.prototype.createMarker = function(node) {
-    return this.lexer.createMarker(node);
-  };
-
-  Parser.prototype.hasNextToken = function() {
-    return this.lookahead.type !== Token.EOF;
-  };
-
-  Parser.prototype.throwError = function() {
-    return this.lexer.throwError.apply(this.lexer, arguments);
-  };
-
-  Parser.prototype.throwUnexpected = function(token) {
-    switch (token.type) {
-    case Token.EOF:
-      this.throwError(token, Message.UnexpectedEOS);
-      break;
-    case Token.FloatLiteral:
-    case Token.IntegerLiteral:
-      this.throwError(token, Message.UnexpectedNumber);
-      break;
-    case Token.CharLiteral:
-    case Token.StringLiteral:
-    case Token.SymbolLiteral:
-      this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
-      break;
-    case Token.Identifier:
-      this.throwError(token, Message.UnexpectedIdentifier);
-      break;
-    default:
-      this.throwError(token, Message.UnexpectedToken, token.value);
-      break;
-    }
-  };
+  sc.libs.extend(Parser, BaseParser);
 
   Parser.prototype.withScope = function(fn) {
     var result;

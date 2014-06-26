@@ -101,6 +101,7 @@
     if (token.type !== Token.Punctuator || token.value !== value) {
       this.throwUnexpected(token, value);
     }
+    return token;
   };
 
   Parser.prototype.match = function(value) {

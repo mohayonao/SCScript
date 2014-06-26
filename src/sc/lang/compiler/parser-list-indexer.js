@@ -43,7 +43,7 @@
     this.expect("..");
 
     if (!this.match("]")) {
-      last = this.parent.parseExpressions();
+      last = this.parseExpressions();
 
       // [..last]
       return [ null, null, last ];
@@ -58,7 +58,7 @@
       this.throwUnexpected(this.lookahead);
     }
 
-    var first = this.parent.parseExpressions();
+    var first = this.parseExpressions();
 
     if (this.match("..")) {
       return this.parseListIndexerWithoutSecond(first);
@@ -75,7 +75,7 @@
 
     var last = null;
     if (!this.match("]")) {
-      last = this.parent.parseExpressions();
+      last = this.parseExpressions();
     }
 
     // [first..last]
@@ -85,12 +85,12 @@
   ListIndexerParser.prototype.parseListIndexerWithSecond = function(first) {
     this.expect(",");
 
-    var second = this.parent.parseExpressions();
+    var second = this.parseExpressions();
     var last = null;
     if (this.match("..")) {
       this.lex();
       if (!this.match("]")) {
-        last = this.parent.parseExpressions();
+        last = this.parseExpressions();
       }
     } else {
       this.throwUnexpected(this.lookahead);

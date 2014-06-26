@@ -88,5 +88,13 @@
     }
   };
 
+  BaseParser.prototype.parseExpressions = function() {
+    return this.parent.parseExpressions();
+  };
+
+  BaseParser.prototype.parseExpression = function() {
+    return this.parent.parseExpression();
+  };
+
   sc.lang.compiler.BaseParser = BaseParser;
 })(sc);

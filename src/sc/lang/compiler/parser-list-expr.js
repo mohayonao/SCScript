@@ -59,12 +59,12 @@
     var elements = [];
 
     if (this.lookahead.type === Token.Label) {
-      elements.push(this.parent.parseLabelAsSymbol(), this.parent.parseExpression());
+      elements.push(this.parent.parseLabelAsSymbol(), this.parseExpression());
     } else {
-      elements.push(this.parent.parseExpression());
+      elements.push(this.parseExpression());
       if (this.match(":")) {
         this.lex();
-        elements.push(this.parent.parseExpression());
+        elements.push(this.parseExpression());
       }
     }
 

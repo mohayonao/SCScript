@@ -2,11 +2,23 @@
   "use strict";
 
   require("./compiler");
+  require("./scope");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
 
-  function BaseParser(lexer, state) {
+  var Scope = sc.lang.compiler.scope({
+    begin: function() {
+      var declared = this.getDeclaredVariable();
+      this.stack.push({
+        vars: {},
+        args: {},
+        declared: declared
+      });
+    }
+  });
+
+  function BaseParser(lexer, state, scope) {
     this.lexer = lexer;
     this.state = state || {
       closedFunction: false,
@@ -15,6 +27,7 @@
       immutableList: false,
       underscore: []
     };
+    this.scope = scope || new Scope(this);
   }
 
   Object.defineProperty(BaseParser.prototype, "lookahead", {
@@ -86,6 +99,16 @@
       this.throwError(token, Message.UnexpectedToken, token.value);
       break;
     }
+  };
+
+  BaseParser.prototype.withScope = function(fn) {
+    var result;
+
+    this.scope.begin();
+    result = fn.call(this);
+    this.scope.end();
+
+    return result;
   };
 
   BaseParser.prototype.parseExpressions = function() {

@@ -2,7 +2,6 @@
   "use strict";
 
   require("./compiler");
-  require("./scope");
   require("./lexer");
   require("./marker");
   require("./node");
@@ -55,23 +54,11 @@
     "!": 12
   };
 
-  var Scope = sc.lang.compiler.scope({
-    begin: function() {
-      var declared = this.getDeclaredVariable();
-      this.stack.push({
-        vars: {},
-        args: {},
-        declared: declared
-      });
-    }
-  });
-
   function Parser(source, opts) {
     opts = opts || /* istanbul ignore next */ {};
 
     BaseParser.call(this, new Lexer(source, opts));
     this.opts  = opts;
-    this.scope = new Scope(this);
 
     var binaryPrecedence;
     if (this.opts.binaryPrecedence) {
@@ -85,16 +72,6 @@
     this.binaryPrecedence = binaryPrecedence || {};
   }
   sc.libs.extend(Parser, BaseParser);
-
-  Parser.prototype.withScope = function(fn) {
-    var result;
-
-    this.scope.begin();
-    result = fn.call(this);
-    this.scope.end();
-
-    return result;
-  };
 
   Parser.prototype.parse = function() {
     return this.parseProgram();

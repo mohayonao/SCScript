@@ -658,49 +658,83 @@
 
   // ( ... )
   Parser.prototype.parseParentheses = function() {
-    var expr;
-    var marker = this.createMarker();
-
     var token = this.expect("(");
 
     if (this.match(":")) {
       this.lex();
     }
 
-    if (this.lookahead.type === Token.Label) {
-      expr = this.unlex(token).parseEventExpression();
-    } else if (this.match("var")) {
-      expr = this.withScope(function() {
-        var body;
-        body = this.parseFunctionBody(")");
-        return Node.createBlockExpression(body);
-      });
-      this.expect(")");
-    } else if (this.match("..")) {
-      expr = this.unlex(token).parseSeriesExpression();
-    } else if (this.match(")")) {
-      expr = this.unlex(token).parseEventExpression();
-    } else {
-      var node = this.parseExpression();
+    var selector = this.selectParenthesesParseMethod();
 
+    return this.unlex(token)[selector].call(this);
+  };
+
+  Parser.prototype.selectParenthesesParseMethod = function() {
+    if (this.lookahead.type === Token.Label) {
+      return "parseEventExpression";
+    }
+    if (this.match("var")) {
+      return "parseBlockExpression";
+    }
+    if (this.match("..")) {
+      return "parseSeriesExpression";
+    }
+    if (this.match(")")) {
+      return "parseEventExpression";
+    }
+    var node = this.parseExpression();
+
+    if (this.matchAny([ ",", ".." ])) {
+      return "parseSeriesExpression";
+    }
+    if (this.match(":")) {
+      return "parseEventExpression";
+    }
+    if (this.match(";")) {
+      this.parseExpressions(node);
       if (this.matchAny([ ",", ".." ])) {
-        expr = this.unlex(token).parseSeriesExpression();
-      } else if (this.match(":")) {
-        expr = this.unlex(token).parseEventExpression();
-      } else if (this.match(";")) {
-        expr = this.parseExpressions(node);
-        if (this.matchAny([ ",", ".." ])) {
-          expr = this.unlex(token).parseSeriesExpression();
-        } else {
-          this.expect(")");
-        }
-      } else {
-        expr = this.parsePartialExpression(node);
-        this.expect(")");
+        return "parseSeriesExpression";
       }
+      return "parseExpressionsWithParentheses";
     }
 
-    marker.update().apply(expr);
+    return "parsePartialExpressionWithParentheses";
+  };
+
+  Parser.prototype.parseBlockExpression = function() {
+    this.expect("(");
+
+    var expr = this.withScope(function() {
+      var body;
+      body = this.parseFunctionBody(")");
+      return Node.createBlockExpression(body);
+    });
+
+    this.expect(")");
+
+    return expr;
+  };
+
+  Parser.prototype.parseExpressionsWithParentheses = function() {
+    this.expect("(");
+
+    var marker = this.createMarker();
+    var expr = this.parseExpressions();
+    expr = marker.update().apply(expr);
+
+    this.expect(")");
+
+    return expr;
+  };
+
+  Parser.prototype.parsePartialExpressionWithParentheses = function() {
+    this.expect("(");
+
+    var marker = this.createMarker();
+    var expr = this.parsePartialExpression();
+    expr = marker.update().apply(expr);
+
+    this.expect(")");
 
     return expr;
   };

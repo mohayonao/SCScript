@@ -49,7 +49,6 @@
   var Scope = sc.lang.compiler.scope({
     begin: function() {
       var declared = this.getDeclaredVariable();
-
       this.stack.push({
         vars: {},
         args: {},
@@ -111,7 +110,6 @@
         return value;
       }
     }
-
     return null;
   };
 

@@ -852,14 +852,13 @@
     var marker = this.createMarker();
 
     var token = this.expect("{");
+    var matchColon = this.match(":");
+    this.unlex(token);
 
     var expr;
-    if (!opts.blocklist && this.match(":")) {
-      this.unlex(token);
+    if (!opts.blocklist && matchColon) {
       expr = this.parseGeneratorExpression();
-      this.expect("}"); // TODO: remove
     } else {
-      this.unlex(token);
       expr = this.parseFunctionExpression({
         closed: this.state.closedFunction,
         blocklist: opts.blocklist

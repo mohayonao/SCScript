@@ -32,7 +32,7 @@
       }
     }
 
-    // this.expect("}");
+    this.expect("}");
 
     return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
   };

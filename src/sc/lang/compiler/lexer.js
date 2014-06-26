@@ -83,7 +83,6 @@
     return result;
   };
 
-  // 103.31
   Lexer.prototype.skipComment = function() {
     var source = this.source;
     var length = this.length;

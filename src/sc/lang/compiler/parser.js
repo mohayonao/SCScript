@@ -679,7 +679,7 @@
     } else if (this.match(")")) {
       expr = Node.createEventExpression([]);
     } else {
-      expr = this.parseParenthesesGuess(generator, marker);
+      expr = this.parseParenthesesGuess(generator);
     }
 
     this.expect(")");

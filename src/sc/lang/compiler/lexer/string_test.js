@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./lexer-string");
+  require("./string");
 
   var Token = sc.lang.compiler.Token;
   var lexString = sc.lang.compiler.lexString;

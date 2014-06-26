@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./lexer-punctuator");
+  require("./punctuator");
 
   var Token = sc.lang.compiler.Token;
   var lexPunctuator = sc.lang.compiler.lexPunctuator;

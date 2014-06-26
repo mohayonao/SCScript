@@ -3,11 +3,11 @@
 
   require("./compiler");
   require("./marker");
-  require("./lexer-identifier");
-  require("./lexer-string");
-  require("./lexer-number");
-  require("./lexer-punctuator");
-  require("./lexer-comment");
+  require("./lexer/identifier");
+  require("./lexer/string");
+  require("./lexer/number");
+  require("./lexer/punctuator");
+  require("./lexer/comment");
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;

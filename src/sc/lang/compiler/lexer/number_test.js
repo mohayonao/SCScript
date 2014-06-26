@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./lexer-number");
+  require("./number");
 
   var Token = sc.lang.compiler.Token;
   var lexNumber = sc.lang.compiler.lexNumber;

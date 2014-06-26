@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./lexer-comment");
+  require("./comment");
 
   var Token = sc.lang.compiler.Token;
   var lexComment = sc.lang.compiler.lexComment;

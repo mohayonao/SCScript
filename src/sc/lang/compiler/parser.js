@@ -886,13 +886,13 @@
       expr = this.parseEnvironmentExpression();
       break;
     case Token.Keyword:
-      expr = this.parsePrimaryKeywordExpression();
+      expr = this.parseKeywordExpression();
       break;
     case Token.Identifier:
       expr = this.parsePrimaryIdentifier();
       break;
     case Token.StringLiteral:
-      expr = this.parsePrimaryStringExpression();
+      expr = this.parseStringExpression();
       break;
     default:
       expr = this.parseArgumentableValue(stamp);
@@ -981,7 +981,7 @@
     return expr;
   };
 
-  Parser.prototype.parsePrimaryKeywordExpression = function() {
+  Parser.prototype.parseKeywordExpression = function() {
     if (Keywords[this.lookahead.value] === "keyword") {
       this.throwUnexpected(this.lookahead);
     }
@@ -989,16 +989,7 @@
     return Node.createThisExpression(this.lex().value);
   };
 
-  Parser.prototype.parsePrimaryIdentifier = function() {
-    var expr = this.parseIdentifier();
-    if (expr.name === "_") {
-      expr.name = "$_" + this.state.underscore.length.toString();
-      this.state.underscore.push(expr);
-    }
-    return expr;
-  };
-
-  Parser.prototype.parsePrimaryStringExpression = function() {
+  Parser.prototype.parseStringExpression = function() {
     var token = this.lex();
 
     if (InterpolateString.hasInterpolateString(token.value)) {
@@ -1022,7 +1013,7 @@
     }
 
     if (this.lookahead.type === Token.Label) {
-      expr = this.parseObjectInitialiser();
+      expr = this.parseEventExpression();
     } else if (this.match("var")) {
       expr = this.withScope(function() {
         var body;
@@ -1030,7 +1021,7 @@
         return Node.createBlockExpression(body);
       });
     } else if (this.match("..")) {
-      expr = this.parseSeriesInitialiser(null, generator);
+      expr = this.parseSeriesExpression(null, generator);
     } else if (this.match(")")) {
       expr = Node.createEventExpression([]);
     } else {
@@ -1048,16 +1039,16 @@
     var node = this.parseExpression();
 
     if (this.matchAny([ ",", ".." ])) {
-      return this.parseSeriesInitialiser(node, generator);
+      return this.parseSeriesExpression(node, generator);
     }
     if (this.match(":")) {
-      return this.parseObjectInitialiser(node);
+      return this.parseEventExpression(node);
     }
 
     if (this.match(";")) {
       var expr = this.parseExpressions(node);
       if (this.matchAny([ ",", ".." ])) {
-        return this.parseSeriesInitialiser(expr, generator);
+        return this.parseSeriesExpression(expr, generator);
       }
       return expr;
     }
@@ -1065,7 +1056,7 @@
     return this.parsePartialExpression(node);
   };
 
-  Parser.prototype.parseObjectInitialiser = function(node) {
+  Parser.prototype.parseEventExpression = function(node) {
     var elements = [];
 
     var innerElements = this.state.innerElements;
@@ -1100,7 +1091,7 @@
     return Node.createEventExpression(elements);
   };
 
-  Parser.prototype.parseSeriesInitialiser = function(node, generator) {
+  Parser.prototype.parseSeriesExpression = function(node, generator) {
     var innerElements = this.state.innerElements;
     this.state.innerElements = true;
 
@@ -1110,9 +1101,9 @@
     var items;
     if (node === null) {
       // (..), (..last)
-      items = this.parseSeriesInitialiserWithoutFirst(generator);
+      items = this.parseSeriesExpressionWithoutFirst(generator);
     } else {
-      items = this.parseSeriesInitialiserWithFirst(node, generator);
+      items = this.parseSeriesExpressionWithFirst(node, generator);
     }
 
     this.state.innerElements = innerElements;
@@ -1120,7 +1111,7 @@
     return Node.createCallExpression(items.shift(), method, { list: items });
   };
 
-  Parser.prototype.parseSeriesInitialiserWithoutFirst = function(generator) {
+  Parser.prototype.parseSeriesExpressionWithoutFirst = function(generator) {
     // (..last)
     var first = {
       type: Syntax.Literal,
@@ -1143,7 +1134,7 @@
     return [ first, null, last ];
   };
 
-  Parser.prototype.parseSeriesInitialiserWithFirst = function(node, generator) {
+  Parser.prototype.parseSeriesExpressionWithFirst = function(node, generator) {
     var first = node, second = null, last = null;
 
     if (this.match(",")) {
@@ -1252,6 +1243,15 @@
     return node;
   };
 
+  Parser.prototype.parsePrimaryIdentifier = function() {
+    var expr = this.parseIdentifier();
+    if (expr.name === "_") {
+      expr.name = "$_" + this.state.underscore.length.toString();
+      this.state.underscore.push(expr);
+    }
+    return expr;
+  };
+
   Parser.prototype.parseIdentifier = function() {
     var marker = this.createMarker();
 
@@ -1259,8 +1259,7 @@
       this.throwUnexpected(this.lookahead);
     }
 
-    var expr = this.lex();
-    expr = Node.createIdentifier(expr.value);
+    var expr = Node.createIdentifier(this.lex().value);
 
     return marker.update().apply(expr);
   };

@@ -59,7 +59,7 @@
     var elements = [];
 
     if (this.lookahead.type === Token.Label) {
-      elements.push(this.parent.parseLabelAsSymbol(), this.parseExpression());
+      elements.push(this.parent.parseLabel({ as: Token.SymbolLiteral }), this.parseExpression());
     } else {
       elements.push(this.parseExpression());
       if (this.match(":")) {

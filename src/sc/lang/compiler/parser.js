@@ -668,46 +668,46 @@
 
     if (this.lookahead.type === Token.Label) {
       expr = this.parseEventExpression();
+      this.expect(")");
     } else if (this.match("var")) {
       expr = this.withScope(function() {
         var body;
         body = this.parseFunctionBody(")");
         return Node.createBlockExpression(body);
       });
+      this.expect(")");
     } else if (this.match("..")) {
       expr = this.parseSeriesExpression(null, generator);
+      this.expect(")");
     } else if (this.match(")")) {
       expr = Node.createEventExpression([]);
+      this.expect(")");
     } else {
-      expr = this.parseParenthesesGuess(generator);
-    }
+      var node = this.parseExpression();
 
-    this.expect(")");
+      if (this.matchAny([ ",", ".." ])) {
+        expr = this.parseSeriesExpression(node, generator);
+        this.expect(")");
+      } else if (this.match(":")) {
+        expr = this.parseEventExpression(node);
+        this.expect(")");
+      } else if (this.match(";")) {
+        expr = this.parseExpressions(node);
+        if (this.matchAny([ ",", ".." ])) {
+          expr = this.parseSeriesExpression(expr, generator);
+          this.expect(")");
+        } else {
+          this.expect(")");
+        }
+      } else {
+        expr = this.parsePartialExpression(node);
+        this.expect(")");
+      }
+    }
 
     marker.update().apply(expr);
 
     return expr;
-  };
-
-  Parser.prototype.parseParenthesesGuess = function(generator) {
-    var node = this.parseExpression();
-
-    if (this.matchAny([ ",", ".." ])) {
-      return this.parseSeriesExpression(node, generator);
-    }
-    if (this.match(":")) {
-      return this.parseEventExpression(node);
-    }
-
-    if (this.match(";")) {
-      var expr = this.parseExpressions(node);
-      if (this.matchAny([ ",", ".." ])) {
-        return this.parseSeriesExpression(expr, generator);
-      }
-      return expr;
-    }
-
-    return this.parsePartialExpression(node);
   };
 
   Parser.prototype.parseEventExpression = function(node) {

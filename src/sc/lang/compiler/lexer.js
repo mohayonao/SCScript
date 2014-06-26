@@ -3,6 +3,7 @@
 
   require("./compiler");
   require("./marker");
+  require("./lexer-number");
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;
@@ -10,6 +11,7 @@
   var Message  = sc.lang.compiler.Message;
   var Keywords = sc.lang.compiler.Keywords;
   var Marker = sc.lang.compiler.Marker;
+  var lexNumber = sc.lang.compiler.lexNumber;
 
   function Lexer(source, opts) {
     /* istanbul ignore next */
@@ -289,116 +291,12 @@
   };
 
   Lexer.prototype.scanNumericLiteral = function() {
-    return this.scanNAryNumberLiteral() ||
-      this.scanHexNumberLiteral() ||
-      this.scanAccidentalNumberLiteral() ||
-      this.scanDecimalNumberLiteral();
-  };
-
-  Lexer.prototype.scanNAryNumberLiteral = function() {
+    var token = lexNumber(this.source, this.index);
+    if (token.error) {
+      this.throwError({}, Message.UnexpectedToken, token.value);
+    }
     var start = this.index;
-    var items = this.match(
-      /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/
-    );
-
-    if (!items) {
-      return;
-    }
-
-    var base    = items[1].replace(/^0+(?=\d)/g, "")|0;
-    var integer = items[2].replace(/(^0+(?=\d)|_)/g, "");
-    var frac    = items[3] && items[3].replace(/_/g, "");
-    var pi = false;
-
-    if (!frac && base < 26 && integer.substr(-2) === "pi") {
-      integer = integer.slice(0, -2);
-      pi = true;
-    }
-
-    var type  = Token.IntegerLiteral;
-    var value = calcNBasedInteger(integer, base);
-
-    if (frac) {
-      type = Token.FloatLiteral;
-      value += calcNBasedFrac(frac, base);
-    }
-
-    if (isNaN(value)) {
-      this.throwError({}, Message.UnexpectedToken, items[0]);
-    }
-
-    var token = makeNumberToken(type, value, pi);
-
-    this.index += items[0].length;
-
-    return this.makeToken(token.type, token.value, start);
-  };
-
-  Lexer.prototype.scanHexNumberLiteral = function() {
-    var start = this.index;
-    var items = this.match(/^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/);
-
-    if (!items) {
-      return;
-    }
-
-    var integer = items[1].replace(/_/g, "");
-    var pi      = !!items[2];
-
-    var type  = Token.IntegerLiteral;
-    var value = +integer;
-
-    var token = makeNumberToken(type, value, pi);
-
-    this.index += items[0].length;
-
-    return this.makeToken(token.type, token.value, start);
-  };
-
-  Lexer.prototype.scanAccidentalNumberLiteral = function() {
-    var start = this.index;
-    var items = this.match(/^(\d+)([bs]+)(\d*)/);
-
-    if (!items) {
-      return;
-    }
-
-    var integer    = items[1];
-    var accidental = items[2];
-    var sign = (accidental.charAt(0) === "s") ? +1 : -1;
-
-    var cents;
-    if (items[3] === "") {
-      cents = Math.min(accidental.length * 0.1, 0.4);
-    } else {
-      cents = Math.min(items[3] * 0.001, 0.499);
-    }
-    var value = +integer + (sign * cents);
-
-    var token = makeNumberToken(Token.FloatLiteral, value, false);
-
-    this.index += items[0].length;
-
-    return this.makeToken(token.type, token.value, start);
-  };
-
-  Lexer.prototype.scanDecimalNumberLiteral = function() {
-    var start = this.index;
-    var items = this.match(
-      /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/
-    );
-
-    var integer = items[1];
-    var frac    = items[2];
-    var pi      = items[3];
-
-    var type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
-    var value = +integer.replace(/(^0+(?=\d)|_)/g, "");
-
-    var token = makeNumberToken(type, value, pi);
-
-    this.index += items[0].length;
-
+    this.index += token.length;
     return this.makeToken(token.type, token.value, start);
   };
 
@@ -522,47 +420,6 @@
 
     return this.EOFToken();
   };
-
-  function char2num(ch, base) {
-    var num = strlib.char2num(ch, base);
-    if (num >= base) {
-      num = NaN;
-    }
-    return num;
-  }
-
-  function calcNBasedInteger(integer, base) {
-    var value = 0;
-    for (var i = 0, imax = integer.length; i < imax; ++i) {
-      value *= base;
-      value += char2num(integer[i], base);
-    }
-    return value;
-  }
-
-  function calcNBasedFrac(frac, base) {
-    var value = 0;
-    for (var i = 0, imax = frac.length; i < imax; ++i) {
-      value += char2num(frac[i], base) * Math.pow(base, -(i + 1));
-    }
-    return value;
-  }
-
-  function makeNumberToken(type, value, pi) {
-    if (pi) {
-      type = Token.FloatLiteral;
-      value = value * Math.PI;
-    }
-
-    if (type === Token.FloatLiteral && value === (value|0)) {
-      value = value + ".0";
-    }
-
-    return {
-      type: type,
-      value: String(value)
-    };
-  }
 
   function isKeyword(value) {
     return Keywords.hasOwnProperty(value);

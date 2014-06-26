@@ -187,11 +187,17 @@
       { FunctionArgumentDefinition(opt) FunctionBody(opt) }
   */
   Parser.prototype.parseFunctionExpression = function(closed, blocklist) {
-    return this.withScope(function() {
+    this.expect("{");
+
+    var node = this.withScope(function() {
       var args = this.parseFunctionArgumentDefinition();
       var body = this.parseFunctionBody("}");
       return Node.createFunctionExpression(args, body, closed, false, blocklist);
     });
+
+    this.expect("}");
+
+    return node;
   };
 
   /*
@@ -1498,28 +1504,31 @@
   Parser.prototype.parseBraces = function(blocklist) {
     var marker = this.createMarker();
 
-    this.expect("{");
+    var token = this.expect("{");
 
     var expr;
     if (this.match(":")) {
       if (!this.state.disallowGenerator) {
-        this.lex();
+        this.unlex(token);
         expr = this.parseGeneratorInitialiser();
       } else {
         expr = {};
         this.throwUnexpected(this.lookahead);
       }
+      this.expect("}"); // TODO: remove
     } else {
+      this.unlex(token);
       expr = this.parseFunctionExpression(this.state.closedFunction, blocklist);
     }
-
-    this.expect("}");
 
     return marker.update().apply(expr);
   };
 
   Parser.prototype.parseGeneratorInitialiser = function() {
     this.lexer.throwError({}, Message.NotImplemented, "generator literal");
+
+    this.expect("{");
+    this.expect(":");
 
     this.parseExpression();
     this.expect(",");
@@ -1530,6 +1539,8 @@
         this.expect(",");
       }
     }
+
+    // this.expect("}");
 
     return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
   };

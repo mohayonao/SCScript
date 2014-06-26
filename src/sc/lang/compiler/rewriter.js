@@ -5,7 +5,7 @@
   require("./node");
 
   var Syntax = sc.lang.compiler.Syntax;
-  var Node = sc.lang.compiler.node;
+  var Node = sc.lang.compiler.Node;
 
   var SegmentedMethod = {
     idle: true,

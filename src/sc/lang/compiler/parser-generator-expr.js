@@ -7,7 +7,7 @@
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
-  var Node = sc.lang.compiler.node;
+  var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
   function GeneratorExpressionParser(parent) {

@@ -166,5 +166,5 @@
     }
   };
 
-  sc.lang.compiler.node = Node;
+  sc.lang.compiler.Node = Node;
 })(sc);

@@ -18,7 +18,7 @@
       Expression
   */
   var Token = sc.lang.compiler.Token;
-  var Node = sc.lang.compiler.node;
+  var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
   function ListExpressionParser(parent) {

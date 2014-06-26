@@ -19,7 +19,7 @@
   var Message  = sc.lang.compiler.Message;
   var Keywords = sc.lang.compiler.Keywords;
   var Lexer    = sc.lang.compiler.lexer;
-  var Node     = sc.lang.compiler.node;
+  var Node     = sc.lang.compiler.Node;
   var InterpolateString = sc.lang.compiler.InterpolateString;
   var BaseParser = sc.lang.compiler.BaseParser;
   var ListExpressionParser = sc.lang.compiler.ListExpressionParser;

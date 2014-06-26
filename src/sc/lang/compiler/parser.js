@@ -68,8 +68,8 @@
     return marker.update().apply(node);
   };
 
-  Parser.prototype.parseFunctionExpression = function(closed, blocklist) {
-    return new FunctionExpressionParser(this).parse(closed, blocklist);
+  Parser.prototype.parseFunctionExpression = function(opts) {
+    return new FunctionExpressionParser(this).parse(opts);
   };
 
   Parser.prototype.parseFunctionBody = function(match) {
@@ -628,7 +628,7 @@
 
     this.state.disallowGenerator = true;
     this.state.closedFunction    = true;
-    expr = this.parseFunctionExpression(true);
+    expr = this.parseFunctionExpression({ closed: true });
     this.state.closedFunction    = closedFunction;
     this.state.disallowGenerator = disallowGenerator;
 
@@ -864,7 +864,10 @@
       this.expect("}"); // TODO: remove
     } else {
       this.unlex(token);
-      expr = this.parseFunctionExpression(this.state.closedFunction, blocklist);
+      expr = this.parseFunctionExpression({
+        closed: this.state.closedFunction,
+        blocklist: blocklist
+      });
     }
 
     return marker.update().apply(expr);

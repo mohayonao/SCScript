@@ -60,13 +60,14 @@
   }
   sc.libs.extend(FunctionExpressionParser, BaseParser);
 
-  FunctionExpressionParser.prototype.parse = function(closed, blocklist) {
+  FunctionExpressionParser.prototype.parse = function(opts) {
+    opts = opts || {};
     this.expect("{");
 
     var node = this.withScope(function() {
       var args = this.parseFunctionArgumentDefinition();
       var body = this.parseFunctionBody("}");
-      return Node.createFunctionExpression(args, body, closed, false, blocklist);
+      return Node.createFunctionExpression(args, body, opts.closed, false, opts.blocklist);
     });
 
     this.expect("}");

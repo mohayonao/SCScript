@@ -2418,10 +2418,10 @@
             method: {
               type: Syntax.Identifier,
               name: "series",
-              range: [ 2, 2 ],
+              range: [ 1, 1 ],
               loc: {
-                start: { line: 1, column: 2 },
-                end: { line: 1, column: 2 }
+                start: { line: 1, column: 1 },
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -2477,10 +2477,10 @@
             method: {
               type: Syntax.Identifier,
               name: "series",
-              range: [ 2, 2 ],
+              range: [ 1, 1 ],
               loc: {
-                start: { line: 1, column: 2 },
-                end: { line: 1, column: 2 }
+                start: { line: 1, column: 1 },
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -2559,10 +2559,10 @@
             method: {
               type: Syntax.Identifier,
               name: "series",
-              range: [ 4, 4 ],
+              range: [ 1, 1 ],
               loc: {
-                start: { line: 1, column: 4 },
-                end: { line: 1, column: 4 }
+                start: { line: 1, column: 1 },
+                end: { line: 1, column: 1 }
               }
             },
             args: {
@@ -2760,10 +2760,10 @@
             method: {
               type: Syntax.Identifier,
               name: "seriesIter",
-              range: [ 3, 3 ],
+              range: [ 2, 2 ],
               loc: {
-                start: { line: 1, column: 3 },
-                end: { line: 1, column: 3 }
+                start: { line: 1, column: 2 },
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -2810,10 +2810,10 @@
             method: {
               type: Syntax.Identifier,
               name: "seriesIter",
-              range: [ 3, 3 ],
+              range: [ 2, 2 ],
               loc: {
-                start: { line: 1, column: 3 },
-                end: { line: 1, column: 3 }
+                start: { line: 1, column: 2 },
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -2869,10 +2869,10 @@
             method: {
               type: Syntax.Identifier,
               name: "seriesIter",
-              range: [ 3, 3 ],
+              range: [ 2, 2 ],
               loc: {
-                start: { line: 1, column: 3 },
-                end: { line: 1, column: 3 }
+                start: { line: 1, column: 2 },
+                end: { line: 1, column: 2 }
               }
             },
             args: {
@@ -2928,10 +2928,10 @@
             method: {
               type: Syntax.Identifier,
               name: "seriesIter",
-              range: [ 3, 3 ],
+              range: [ 2, 2 ],
               loc: {
-                start: { line: 1, column: 3 },
-                end: { line: 1, column: 3 }
+                start: { line: 1, column: 2 },
+                end: { line: 1, column: 2 }
               }
             },
             args: {

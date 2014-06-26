@@ -13,6 +13,7 @@
   require("./parser-list-expr");
   require("./parser-list-indexer");
   require("./parser-event-expr");
+  require("./parser-series-expr");
   require("./parser-generator-expr");
 
   var parser = {};
@@ -30,6 +31,7 @@
   var ListExpressionParser = sc.lang.compiler.ListExpressionParser;
   var ListIndexerParser = sc.lang.compiler.ListIndexerParser;
   var EventExpressionParser = sc.lang.compiler.EventExpressionParser;
+  var SeriesExpressionParser = sc.lang.compiler.SeriesExpressionParser;
   var GeneratorExpressionParser = sc.lang.compiler.GeneratorExpressionParser;
 
   function Parser(source, opts) {
@@ -656,14 +658,13 @@
 
   // ( ... )
   Parser.prototype.parseParentheses = function() {
-    var expr, generator;
+    var expr;
     var marker = this.createMarker();
 
     var token = this.expect("(");
 
     if (this.match(":")) {
       this.lex();
-      generator = true;
     }
 
     if (this.lookahead.type === Token.Label) {
@@ -676,23 +677,20 @@
       });
       this.expect(")");
     } else if (this.match("..")) {
-      expr = this.parseSeriesExpression(null, generator);
-      this.expect(")");
+      expr = this.unlex(token).parseSeriesExpression();
     } else if (this.match(")")) {
       expr = this.unlex(token).parseEventExpression();
     } else {
       var node = this.parseExpression();
 
       if (this.matchAny([ ",", ".." ])) {
-        expr = this.parseSeriesExpression(node, generator);
-        this.expect(")");
+        expr = this.unlex(token).parseSeriesExpression();
       } else if (this.match(":")) {
         expr = this.unlex(token).parseEventExpression();
       } else if (this.match(";")) {
         expr = this.parseExpressions(node);
         if (this.matchAny([ ",", ".." ])) {
-          expr = this.parseSeriesExpression(expr, generator);
-          this.expect(")");
+          expr = this.unlex(token).parseSeriesExpression();
         } else {
           this.expect(")");
         }
@@ -711,76 +709,8 @@
     return new EventExpressionParser(this).parse();
   };
 
-  Parser.prototype.parseSeriesExpression = function(node, generator) {
-    var innerElements = this.state.innerElements;
-    this.state.innerElements = true;
-
-    var method = Node.createIdentifier(generator ? "seriesIter" : "series");
-    method = this.createMarker().apply(method);
-
-    var items;
-    if (node === null) {
-      // (..), (..last)
-      items = this.parseSeriesExpressionWithoutFirst(generator);
-    } else {
-      items = this.parseSeriesExpressionWithFirst(node, generator);
-    }
-
-    this.state.innerElements = innerElements;
-
-    return Node.createCallExpression(items.shift(), method, { list: items });
-  };
-
-  Parser.prototype.parseSeriesExpressionWithoutFirst = function(generator) {
-    // (..last)
-    var first = {
-      type: Syntax.Literal,
-      value: "0",
-      valueType: Token.IntegerLiteral
-    };
-    first = this.createMarker().apply(first);
-
-    this.expect("..");
-
-    var last = null;
-    if (this.match(")")) {
-      if (!generator) {
-        this.throwUnexpected(this.lookahead);
-      }
-    } else {
-      last = this.parseExpressions();
-    }
-
-    return [ first, null, last ];
-  };
-
-  Parser.prototype.parseSeriesExpressionWithFirst = function(node, generator) {
-    var first = node, second = null, last = null;
-
-    if (this.match(",")) {
-      // (first, second .. last)
-      this.lex();
-      second = this.parseExpressions();
-      if (Array.isArray(second) && second.length === 0) {
-        this.throwUnexpected(this.lookahead);
-      }
-      this.expect("..");
-      if (!this.match(")")) {
-        last = this.parseExpressions();
-      } else if (!generator) {
-        this.throwUnexpected(this.lookahead);
-      }
-    } else {
-      // (first..last)
-      this.lex();
-      if (!this.match(")")) {
-        last = this.parseExpressions();
-      } else if (!generator) {
-        this.throwUnexpected(this.lookahead);
-      }
-    }
-
-    return [ first, second, last ];
+  Parser.prototype.parseSeriesExpression = function() {
+    return new SeriesExpressionParser(this).parse();
   };
 
   /*

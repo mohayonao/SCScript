@@ -17,19 +17,21 @@
       }
       source = String(source);
     }
-    source = source.replace(/\r\n?/g, "\n");
+    this.source = source.replace(/\r\n?/g, "\n");
+    this.opts = opts = opts || /* istanbul ignore next */ {};
 
-    opts = opts || /* istanbul ignore next */ {};
-
-    this.source = source;
-    this.opts   = opts;
     this.length = source.length;
-    this.index  = 0;
-    this.lineNumber = this.length ? 1 : 0;
-    this.lineStart  = 0;
-    this.errors     = opts.tolerant ? [] : null;
+    this.errors = opts.tolerant ? [] : null;
 
-    this.peek();
+    this.index = 0;
+    this.lineNumber = this.length ? 1 : 0;
+    this.lineStart = 0;
+
+    this.lookahead = this.advance();
+
+    this.index = 0;
+    this.lineNumber = this.length ? 1 : 0;
+    this.lineStart = 0;
   }
 
   Object.defineProperty(Lexer.prototype, "columnNumber", {
@@ -194,18 +196,6 @@
     }
 
     return this.scanPunctuator();
-  };
-
-  Lexer.prototype.peek = function() {
-    var index      = this.index;
-    var lineNumber = this.lineNumber;
-    var lineStart  = this.lineStart;
-
-    this.lookahead = this.advance();
-
-    this.index      = index;
-    this.lineNumber = lineNumber;
-    this.lineStart  = lineStart;
   };
 
   Lexer.prototype.lex = function(saved) {

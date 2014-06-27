@@ -4,7 +4,6 @@
   require("../compiler");
   require("../scope");
   require("../node");
-  require("../interpolate-string");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
@@ -34,7 +33,8 @@
         disallowGenerator: false,
         innerElements: false,
         immutableList: false,
-        underscore: []
+        underscore: [],
+        binaryPrecedence: {}
       };
       this.scope = new Scope(this);
     }

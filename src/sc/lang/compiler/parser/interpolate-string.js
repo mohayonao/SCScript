@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("../compiler");
 
   function InterpolateString(str) {
     this.str = str;

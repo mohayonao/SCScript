@@ -5,7 +5,6 @@
   require("./lexer");
   require("./marker");
   require("./node");
-  require("./interpolate-string");
   require("./parser/base-parser");
   require("./parser/program");
   require("./parser/expression");
@@ -32,8 +31,6 @@
   require("./parser/braces");
 
   var Lexer = sc.lang.compiler.lexer;
-  var Node = sc.lang.compiler.Node;
-  var InterpolateString = sc.lang.compiler.InterpolateString;
   var BaseParser = sc.lang.compiler.BaseParser;
   var BinaryExpressionParser = sc.lang.compiler.BinaryExpressionParser;
 
@@ -59,18 +56,6 @@
   Parser.prototype.parse = function() {
     return this.parseProgram();
   };
-
-  // TODO: move
-  BaseParser.addParseMethod("StringExpression", function() {
-    var token = this.lex();
-
-    if (InterpolateString.hasInterpolateString(token.value)) {
-      var code = new InterpolateString(token.value).toCompiledString();
-      return new Parser(code, {}).parseExpression();
-    }
-
-    return Node.createLiteral(token);
-  });
 
   var parse = function(source, opts) {
     opts = opts || /* istanbul ignore next */ {};

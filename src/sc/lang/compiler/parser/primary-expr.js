@@ -1,9 +1,13 @@
 (function(sc) {
   "use strict";
 
+  require("./interpolate-string");
   require("./base-parser");
 
   var Token = sc.lang.compiler.Token;
+  var Node = sc.lang.compiler.Node;
+  var Lexer = sc.lang.compiler.lexer;
+  var InterpolateString = sc.lang.compiler.InterpolateString;
   var BaseParser = sc.lang.compiler.BaseParser;
 
   /*
@@ -81,5 +85,16 @@
     }
 
     return marker.update().apply(expr);
+  });
+
+  BaseParser.addParseMethod("StringExpression", function() {
+    var token = this.lex();
+
+    if (InterpolateString.hasInterpolateString(token.value)) {
+      var code = new InterpolateString(token.value).toCompiledString();
+      return new BaseParser(null, new Lexer(code, {})).parseExpression();
+    }
+
+    return Node.createLiteral(token);
   });
 })(sc);

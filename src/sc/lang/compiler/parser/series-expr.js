@@ -13,14 +13,13 @@
 
   function SeriesExpressionParser(parent) {
     Parser.call(this, parent);
-    this.parent = parent;
   }
   sc.libs.extend(SeriesExpressionParser, Parser);
 
   SeriesExpressionParser.prototype.parse = function() {
     var generator = false;
-    var innerElements = this.state.innerElements;
-    this.state.innerElements = true;
+
+    var marker = this.createMarker();
 
     this.expect("(");
 
@@ -29,52 +28,53 @@
       generator = true;
     }
 
-    var method = Node.createIdentifier(generator ? "seriesIter" : "series");
-    method = this.createMarker().apply(method);
+    var method = this.createMarker().apply(
+      Node.createIdentifier(generator ? "seriesIter" : "series")
+    );
 
-    var first, items;
-    if (this.match("..")) {
-      // (..), (..last)
-      first = Node.createLiteral({ type: Token.IntegerLiteral, value: "0" });
-      first = this.createMarker().apply(first);
-    } else {
-      first = this.parseExpressions();
-    }
-    items = this.parseSeriesExpression(first, generator);
+    var innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    var items = [
+      this.parseFirstElement(),
+      this.parseSecondElement(),
+      this.parseLastElement()
+    ];
 
     this.state.innerElements = innerElements;
 
+    if (!generator && items[2] === null) {
+      this.throwUnexpected(this.lookahead);
+    }
     this.expect(")");
 
-    return Node.createCallExpression(items.shift(), method, { list: items });
+    return marker.update().apply(
+      Node.createCallExpression(items.shift(), method, { list: items })
+    );
   };
 
-  SeriesExpressionParser.prototype.parseSeriesExpression = function(first, generator) {
-    var second = null, last = null;
-
-    if (this.match(",")) {
-      // (first, second .. last)
-      this.lex();
-      second = this.parseExpressions();
-      if (Array.isArray(second) && second.length === 0) {
-        this.throwUnexpected(this.lookahead);
-      }
-      this.expect("..");
-      if (!this.match(")")) {
-        last = this.parseExpressions();
-      } else if (!generator) {
-        this.throwUnexpected(this.lookahead);
-      }
-    } else {
-      // (first..last)
-      this.lex();
-      if (!this.match(")")) {
-        last = this.parseExpressions();
-      } else if (!generator) {
-        this.throwUnexpected(this.lookahead);
-      }
+  SeriesExpressionParser.prototype.parseFirstElement = function() {
+    if (this.match("..")) {
+      return this.createMarker().apply(
+        Node.createLiteral({ type: Token.IntegerLiteral, value: "0" })
+      );
     }
+    return this.parseExpressions();
+  };
 
-    return [ first, second, last ];
+  SeriesExpressionParser.prototype.parseSecondElement = function() {
+    if (this.match(",")) {
+      this.lex();
+      return this.parseExpressions();
+    }
+    return null;
+  };
+
+  SeriesExpressionParser.prototype.parseLastElement = function() {
+    this.expect("..");
+    if (!this.match(")")) {
+      return this.parseExpressions();
+    }
+    return null;
   };
 })(sc);

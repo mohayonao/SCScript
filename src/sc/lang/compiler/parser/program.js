@@ -10,8 +10,9 @@
     var marker = this.createMarker();
 
     var node = this.withScope(function() {
-      var body = this.parseFunctionBody(null);
-      return Node.createProgram(body);
+      return Node.createProgram(
+        this.parseFunctionBody()
+      );
     });
 
     return marker.update().apply(node);

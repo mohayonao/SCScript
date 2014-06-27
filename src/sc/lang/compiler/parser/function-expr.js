@@ -59,6 +59,23 @@
     return new FunctionExpressionParser(this).parseFunctionBody(match);
   });
 
+  /*
+    ClosedFunctionExpression :
+      # FunctionExpression
+  */
+  BaseParser.addMethod("parseClosedFunctionExpression", function() {
+    var expr;
+    var closedFunction = this.state.closedFunction;
+
+    this.expect("#");
+
+    this.state.closedFunction = true;
+    expr = this.parseFunctionExpression({ closed: true });
+    this.state.closedFunction = closedFunction;
+
+    return expr;
+  });
+
   function FunctionExpressionParser(parent) {
     BaseParser.call(this, parent);
   }

@@ -219,26 +219,6 @@
     return {};
   };
 
-  /*
-    ClosedFunctionExpression :
-      # FunctionExpression
-  */
-  BaseParser.prototype.parseClosedFunctionExpression = function() {
-    var expr;
-    var disallowGenerator = this.state.disallowGenerator;
-    var closedFunction    = this.state.closedFunction;
-
-    this.expect("#");
-
-    this.state.disallowGenerator = true;
-    this.state.closedFunction    = true;
-    expr = this.parseFunctionExpression({ closed: true });
-    this.state.closedFunction    = closedFunction;
-    this.state.disallowGenerator = disallowGenerator;
-
-    return expr;
-  };
-
   BaseParser.prototype.parseKeywordExpression = function() {
     if (Keywords[this.lookahead.value] === "keyword") {
       this.throwUnexpected(this.lookahead);

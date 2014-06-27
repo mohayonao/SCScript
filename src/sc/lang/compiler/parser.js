@@ -23,6 +23,7 @@
   require("./parser/event-expr");
   require("./parser/series-expr");
   require("./parser/generator-expr");
+  require("./parser/signed-expr");
   require("./parser/hashed-expr");
   require("./parser/identifier");
   require("./parser/parentheses");

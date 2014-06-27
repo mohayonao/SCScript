@@ -7,7 +7,6 @@
   require("../interpolate-string");
 
   var Token = sc.lang.compiler.Token;
-  var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;
   var Node = sc.lang.compiler.Node;
 
@@ -168,35 +167,6 @@
     return marker.update().apply(expr);
   };
 
-  /*
-    SignedExpression :
-      PrimaryExpression
-      - PrimaryExpression
-  */
-  BaseParser.prototype.parseSignedExpression = function(node) {
-    if (node) {
-      return node;
-    }
-
-    var marker = this.createMarker();
-    var expr;
-    if (this.match("-")) {
-      this.lex();
-      var method = Node.createIdentifier("neg");
-      method = marker.update().apply(method);
-      expr = this.parsePrimaryExpression();
-      if (isNumber(expr)) {
-        expr.value = "-" + expr.value;
-      } else {
-        expr = Node.createCallExpression(expr, method, { list: [] }, ".");
-      }
-    } else {
-      expr = this.parsePrimaryExpression();
-    }
-
-    return marker.update().apply(expr, true);
-  };
-
   BaseParser.prototype.parseLabel = function() {
     var marker = this.createMarker();
 
@@ -207,14 +177,6 @@
 
     return marker.update().apply(label);
   };
-
-  function isNumber(node) {
-    if (node.type !== Syntax.Literal) {
-      return false;
-    }
-    var valueType = node.valueType;
-    return valueType === Token.IntegerLiteral || valueType === Token.FloatLiteral;
-  }
 
   sc.lang.compiler.BaseParser = BaseParser;
 })(sc);

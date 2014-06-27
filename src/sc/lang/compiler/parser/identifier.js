@@ -3,25 +3,31 @@
 
   require("./parser");
 
-  var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
-  Parser.addParseMethod("Identifier", function() {
+  Parser.addParseMethod("Identifier", function(opts) {
+    opts = opts || {};
     var marker = this.createMarker();
 
-    if (this.lookahead.type !== Syntax.Identifier) {
-      this.throwUnexpected(this.lookahead);
+    var node = this.lex();
+
+    var err;
+    err = err || (node.type !== Token.Identifier);
+    err = err || (node.value === "_" && !opts.allowUnderscore);
+    err = err || (opts.variable && !isVariable(node.value));
+    if (err) {
+      this.throwUnexpected(node);
     }
 
-    var expr = Node.createIdentifier(this.lex().value);
-
-    return marker.update().apply(expr);
+    return marker.update().apply(
+      Node.createIdentifier(node.value)
+    );
   });
 
   Parser.addParseMethod("PrimaryIdentifier", function() {
-    var expr = this.parseIdentifier();
+    var expr = this.parseIdentifier({ allowUnderscore: true });
     if (expr.name === "_") {
       expr.name = "$_" + this.state.underscore.length.toString();
       this.state.underscore.push(expr);
@@ -29,23 +35,8 @@
     return expr;
   });
 
-  Parser.addParseMethod("VariableIdentifier", function() {
-    var marker = this.createMarker();
-
-    var token = this.lex();
-    var value = token.value;
-
-    if (token.type !== Token.Identifier) {
-      this.throwUnexpected(token);
-    } else {
-      var ch = value.charAt(0);
-      if (("A" <= ch && ch <= "Z") || ch === "_") {
-        this.throwUnexpected(token);
-      }
-    }
-
-    var id = Node.createIdentifier(value);
-
-    return marker.update().apply(id);
-  });
+  function isVariable(value) {
+    var ch = value.charCodeAt(0);
+    return 97 <= ch && ch <= 122; // startsWith(/[a-z]/)
+  }
 })(sc);

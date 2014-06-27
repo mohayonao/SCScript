@@ -17,16 +17,16 @@
 
     FunctionArguments :
       FunctionArgumentList
-      FunctionArgumentList ... VariableIdentifier
-                           ... VariableIdentifier
+      FunctionArgumentList ... Identifier
+                           ... Identifier
 
     FunctionArgumentList :
       FunctionArgumentElement
       FunctionArgumentList , FunctionArgumentElement
 
     FunctionArgumentElement :
-      VariableIdentifier
-      VariableIdentifier = parsePrimaryArgExpression
+      Identifier
+      Identifier = parsePrimaryArgExpression
 
     FunctionBody :
       VariableDeclarations(opt) SourceElements(opt)
@@ -43,8 +43,8 @@
       VariableDeclarationList , VariableDeclarationElement
 
     VariableDeclarationElement :
-      VariableIdentifier
-      VariableIdentifier = AssignmentExpression
+      Identifier
+      Identifier = AssignmentExpression
 
     SourceElements :
       Expression
@@ -107,7 +107,7 @@
 
     if (this.match("...")) {
       this.lex();
-      args.remain = this.parseVariableIdentifier();
+      args.remain = this.parseIdentifier({ variable: true });
       this.scope.add("arg", args.remain.name);
     }
 
@@ -215,7 +215,7 @@
   FunctionExpressionParser.prototype._parseArgVarElement = function(type, func) {
     var marker = this.createMarker();
 
-    var id = this.parseVariableIdentifier();
+    var id = this.parseIdentifier({ variable: true });
     this.scope.add(type, id.name);
 
     var init = null;

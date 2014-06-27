@@ -104,7 +104,7 @@
   /*
     DestructuringAssignmentLeft :
       DestructingAssignmentLeftList
-      DestructingAssignmentLeftList ... VariableIdentifier
+      DestructingAssignmentLeftList ... Identifier
   */
   AssignmentExpressionParser.prototype.parseDestructuringAssignmentLeft = function() {
     var params = {};
@@ -113,7 +113,7 @@
 
     if (this.match("...")) {
       this.lex();
-      params.remain = this.parseVariableIdentifier();
+      params.remain = this.parseIdentifier({ variable: true });
     }
 
     return params;
@@ -121,14 +121,14 @@
 
   /*
     DestructingAssignmentLeftList :
-      VariableIdentifier
-      DestructingAssignmentLeftList , VariableIdentifier
+      Identifier
+      DestructingAssignmentLeftList , Identifier
   */
   AssignmentExpressionParser.prototype.parseDestructingAssignmentLeftList = function() {
     var elemtns = [];
 
     do {
-      elemtns.push(this.parseVariableIdentifier());
+      elemtns.push(this.parseIdentifier({ variable: true }));
       if (this.match(",")) {
         this.lex();
       }

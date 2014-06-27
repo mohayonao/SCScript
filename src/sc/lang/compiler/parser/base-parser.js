@@ -199,28 +199,6 @@
   };
 
   /*
-    EnvironmentExpresion :
-      ~ LeftHandSideExpression
-  */
-  BaseParser.prototype.parseEnvironmentExpression = function() {
-    var marker = this.createMarker();
-
-    this.expect("~");
-    var expr = this.parseIdentifier();
-    if (isClassName(expr)) {
-      this.throwUnexpected({ type: Token.Identifier, value: expr.id });
-    }
-    expr = Node.createEnvironmentExpresion(expr);
-    expr = marker.update().apply(expr);
-
-    if (this.match(".")) {
-      expr = this.parseLeftHandSideExpression(expr);
-    }
-
-    return expr;
-  };
-
-  /*
     HashedExpression :
       ImmutableListExpression
       ClosedFunctionExpression
@@ -450,17 +428,6 @@
     }
     var valueType = node.valueType;
     return valueType === Token.IntegerLiteral || valueType === Token.FloatLiteral;
-  }
-
-  function isClassName(node) {
-    if (node.type !== Syntax.Identifier) {
-      return false;
-    }
-
-    var name = node.value || node.name;
-    var ch = name.charAt(0);
-
-    return "A" <= ch && ch <= "Z";
   }
 
   sc.lang.compiler.BaseParser = BaseParser;

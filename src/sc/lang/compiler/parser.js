@@ -15,6 +15,7 @@
   require("./parser/function-expr");
   require("./parser/assignment-expr");
   require("./parser/binop-expr");
+  require("./parser/envir-expr");
   require("./parser/ref-expr");
   require("./parser/list-expr");
   require("./parser/list-indexer");

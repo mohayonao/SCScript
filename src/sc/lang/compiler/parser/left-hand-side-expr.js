@@ -8,8 +8,8 @@
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
 
-  Parser.addParseMethod("LeftHandSideExpression", function(node) {
-    return new LeftHandSideExpressionParser(this).parse(node);
+  Parser.addParseMethod("LeftHandSideExpression", function() {
+    return new LeftHandSideExpressionParser(this).parse();
   });
 
   function LeftHandSideExpressionParser(parent) {
@@ -21,9 +21,9 @@
     LeftHandSideExpression :
       TODO: write
   */
-  LeftHandSideExpressionParser.prototype.parse = function(node) {
+  LeftHandSideExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
-    var expr = this.parseSignedExpression(node);
+    var expr = this.parseSignedExpression();
     var prev = null;
 
     var stamp;

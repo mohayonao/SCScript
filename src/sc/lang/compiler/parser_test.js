@@ -311,7 +311,7 @@
         "(, 2)": [
           error({ line: 1, column: 2, index: 1 }, Message.UnexpectedToken, ","),
           error({ line: 1, column: 4, index: 3 }, Message.UnexpectedNumber),
-          error({ line: 1, column: 5, index: 4 }, Message.UnexpectedToken, ")"),
+          // error({ line: 1, column: 5, index: 4 }, Message.UnexpectedToken, ")"),
         ],
         "(2..)": [
           error({ line: 1, column: 5, index: 4 }, Message.UnexpectedToken, ")"),

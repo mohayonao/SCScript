@@ -42,8 +42,8 @@
     if (this.match(")")) {
       return "parseEventExpression";
     }
-    var node = this.parseExpression();
 
+    this.parseExpression();
     if (this.matchAny([ ",", ".." ])) {
       return "parseSeriesExpression";
     }
@@ -51,7 +51,8 @@
       return "parseEventExpression";
     }
     if (this.match(";")) {
-      this.parseExpressions(node);
+      this.lex();
+      this.parseExpressions();
       if (this.matchAny([ ",", ".." ])) {
         return "parseSeriesExpression";
       }
@@ -66,7 +67,7 @@
 
     var expr = this.withScope(function() {
       var body;
-      body = this.parseFunctionBody(")");
+      body = this.parseFunctionBody();
       return Node.createBlockExpression(body);
     });
 

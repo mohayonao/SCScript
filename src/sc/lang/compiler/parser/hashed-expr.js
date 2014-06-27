@@ -11,13 +11,11 @@
       ClosedFunctionExpression
   */
   Parser.addParseMethod("HashedExpression", function() {
-    var lookahead = this.lookahead;
-
     var token = this.expect("#");
 
     switch (this.matchAny([ "[", "{" ])) {
     case "[":
-      return this.unlex(token).parseImmutableListExpression(lookahead);
+      return this.unlex(token).parseImmutableListExpression();
     case "{":
       return this.unlex(token).parseClosedFunctionExpression();
     }

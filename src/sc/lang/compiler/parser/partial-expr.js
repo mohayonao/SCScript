@@ -10,15 +10,15 @@
     PartialExpression :
       BinaryExpression
   */
-  Parser.addParseMethod("PartialExpression", function(node) {
+  Parser.addParseMethod("PartialExpression", function() {
     if (this.state.innerElements) {
-      return this.parseBinaryExpression(node);
+      return this.parseBinaryExpression();
     }
 
     var underscore = this.state.underscore;
     this.state.underscore = [];
 
-    node = this.parseBinaryExpression(node);
+    var node = this.parseBinaryExpression();
 
     if (this.state.underscore.length) {
       node = this.withScope(function() {

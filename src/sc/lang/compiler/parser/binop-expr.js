@@ -29,16 +29,13 @@
   }
   sc.libs.extend(BinaryExpressionParser, Parser);
 
-  BinaryExpressionParser.prototype.parse = function(node) {
+  BinaryExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
-    var left   = this.parseLeftHandSideExpression(node);
+    var left   = this.parseLeftHandSideExpression();
     var operator = this.lookahead;
 
     var prec = calcBinaryPrecedence(operator, this.binaryPrecedence);
     if (prec === 0) {
-      if (node) {
-        return this.parseLeftHandSideExpression(node);
-      }
       return left;
     }
     this.lex();

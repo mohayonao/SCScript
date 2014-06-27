@@ -55,8 +55,8 @@
   Parser.addParseMethod("FunctionExpression", function(opts) {
     return new FunctionExpressionParser(this).parse(opts);
   });
-  Parser.addParseMethod("FunctionBody", function(match) {
-    return new FunctionExpressionParser(this).parseFunctionBody(match);
+  Parser.addParseMethod("FunctionBody", function() {
+    return new FunctionExpressionParser(this).parseFunctionBody();
   });
 
   /*
@@ -87,7 +87,7 @@
 
     var node = this.withScope(function() {
       var args = this.parseFunctionArgumentDefinition();
-      var body = this.parseFunctionBody("}");
+      var body = this.parseFunctionBody();
       return Node.createFunctionExpression(args, body, opts.closed, false, opts.blocklist);
     });
 
@@ -154,8 +154,8 @@
     return node;
   };
 
-  FunctionExpressionParser.prototype.parseFunctionBody = function(match) {
-    return this.parseVariableDeclarations().concat(this.parseSourceElements(match));
+  FunctionExpressionParser.prototype.parseFunctionBody = function() {
+    return this.parseVariableDeclarations().concat(this.parseSourceElements());
   };
 
   FunctionExpressionParser.prototype.parseVariableDeclarations = function() {
@@ -204,15 +204,16 @@
     });
   };
 
-  FunctionExpressionParser.prototype.parseSourceElements = function(match) {
+  FunctionExpressionParser.prototype.parseSourceElements = function() {
     var elements = [];
 
-    while (this.hasNextToken() && !this.match(match)) {
+    while (this.hasNextToken() && !this.matchAny([ "}", ")" ])) {
       elements.push(this.parseExpression());
-      if (this.hasNextToken() && !this.match(match)) {
-        this.expect(";");
-      } else {
+      if (this.matchAny([ "}", ")" ])) {
         break;
+      }
+      if (this.hasNextToken()) {
+        this.expect(";");
       }
     }
 

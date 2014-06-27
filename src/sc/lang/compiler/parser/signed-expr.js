@@ -13,11 +13,7 @@
       PrimaryExpression
       - PrimaryExpression
   */
-  Parser.addParseMethod("SignedExpression", function(node) {
-    if (node) {
-      return node;
-    }
-
+  Parser.addParseMethod("SignedExpression", function() {
     var marker = this.createMarker();
     var expr;
     if (this.match("-")) {

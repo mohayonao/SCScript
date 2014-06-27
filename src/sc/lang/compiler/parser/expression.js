@@ -18,17 +18,12 @@
       Expression
       Expressions ; Expression
   */
-  Parser.addParseMethod("Expressions", function(node) {
+  Parser.addParseMethod("Expressions", function() {
     var nodes = [];
-
-    if (node) {
-      nodes.push(node);
-      this.lex();
-    }
 
     while (this.hasNextToken() && !this.matchAny([ ",", ")", "]", ".." ])) {
       var marker = this.createMarker();
-      node = this.parseExpression();
+      var node = this.parseExpression();
       node = marker.update().apply(node);
 
       nodes.push(node);

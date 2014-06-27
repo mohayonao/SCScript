@@ -27,9 +27,9 @@
     ImmutableListExpression :
       # ListExpression
   */
-  Parser.addParseMethod("ImmutableListExpression", function(lookahead) {
+  Parser.addParseMethod("ImmutableListExpression", function() {
     if (this.state.immutableList) {
-      this.throwUnexpected(lookahead);
+      this.throwUnexpected(this.lookahead);
     }
 
     var expr;

@@ -15,8 +15,9 @@
       return this.parseBinaryExpression();
     }
 
-    var underscore = this.state.underscore;
     this.state.underscore = [];
+
+    var marker = this.createMarker();
 
     var node = this.parseBinaryExpression();
 
@@ -36,8 +37,8 @@
       });
     }
 
-    this.state.underscore = underscore;
+    this.state.underscore = [];
 
-    return node;
+    return marker.update().apply(node);
   });
 })(sc);

@@ -17,6 +17,7 @@ module.exports = function(grunt) {
   global.chai = chai;
   global.sinon = sinon;
   global.esprima = esprima;
+  global._ = _;
 
   chai.use(require("sinon-chai"));
 

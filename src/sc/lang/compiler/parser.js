@@ -7,6 +7,7 @@
   require("./node");
   require("./interpolate-string");
   require("./parser/base-parser");
+  require("./parser/program");
   require("./parser/function-expr");
   require("./parser/assignment-expr");
   require("./parser/binop-expr");

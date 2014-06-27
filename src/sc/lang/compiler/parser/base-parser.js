@@ -130,21 +130,6 @@
   };
 
   /*
-    Program :
-      FunctionBody(opt)
-  */
-  BaseParser.prototype.parseProgram = function() {
-    var marker = this.createMarker();
-
-    var node = this.withScope(function() {
-      var body = this.parseFunctionBody(null);
-      return Node.createProgram(body);
-    });
-
-    return marker.update().apply(node);
-  };
-
-  /*
     Expression :
       AssignmentExpression
   */

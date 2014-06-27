@@ -46,7 +46,7 @@
 
   EventExpressionParser.prototype._getKeyElement = function() {
     if (this.lookahead.type === Token.Label) {
-      return this.parseLabel(); // as symbol
+      return this.parseLabelAsSymbol();
     }
 
     var node = this.parseExpression();

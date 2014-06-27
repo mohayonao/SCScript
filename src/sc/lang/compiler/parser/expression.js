@@ -21,13 +21,10 @@
   Parser.addParseMethod("Expressions", function() {
     var nodes = [];
 
-    while (this.hasNextToken() && !this.matchAny([ ",", ")", "]", ".." ])) {
-      var marker = this.createMarker();
-      var node = this.parseExpression();
-      node = marker.update().apply(node);
-
-      nodes.push(node);
-
+    while (this.hasNextToken() && !this.matchAny([ ",", ")", "]", "}", ":", ".." ])) {
+      nodes.push(
+        this.parseExpression()
+      );
       if (this.match(";")) {
         this.lex();
       }

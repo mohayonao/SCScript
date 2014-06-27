@@ -327,24 +327,6 @@
   };
 
   /*
-    ImmutableListExpression :
-      # ListExpression
-  */
-  BaseParser.prototype.parseImmutableListExpression = function(lookahead) {
-    if (this.state.immutableList) {
-      this.throwUnexpected(lookahead);
-    }
-
-    var expr;
-    this.state.immutableList = true;
-    this.expect("#");
-    expr = this.parseListExpression();
-    this.state.immutableList = false;
-
-    return expr;
-  };
-
-  /*
     Braces :
       { : GeneratorInitialiser }
       {   FunctionExpression   }

@@ -3,6 +3,10 @@
 
   require("./base-parser");
 
+  var Token = sc.lang.compiler.Token;
+  var Node = sc.lang.compiler.Node;
+  var BaseParser = sc.lang.compiler.BaseParser;
+
   /*
     ListExpression :
       [ ListElements(opts) ]
@@ -15,12 +19,26 @@
       Expression : Expression
       Expression
   */
-  var Token = sc.lang.compiler.Token;
-  var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
-
   BaseParser.addMethod("parseListExpression", function() {
     return new ListExpressionParser(this).parse();
+  });
+
+  /*
+    ImmutableListExpression :
+      # ListExpression
+  */
+  BaseParser.addMethod("parseImmutableListExpression", function(lookahead) {
+    if (this.state.immutableList) {
+      this.throwUnexpected(lookahead);
+    }
+
+    var expr;
+    this.state.immutableList = true;
+    this.expect("#");
+    expr = this.parseListExpression();
+    this.state.immutableList = false;
+
+    return expr;
   });
 
   function ListExpressionParser(parent) {

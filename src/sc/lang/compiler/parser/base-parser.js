@@ -126,45 +126,5 @@
     return result;
   };
 
-  /*
-    ArgumentableValue :
-      PrimaryHashedExpression (TODO: -> # HashedListExpression)
-      CharLiteral
-      FloatLiteral
-      FalseLiteral
-      IntegerLiteral
-      NilLiteral
-      SymbolLiteral
-      TrueLiteral
-  */
-  BaseParser.prototype.parseArgumentableValue = function() {
-    var marker = this.createMarker();
-
-    var stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
-
-    var expr;
-    switch (stamp) {
-    case "#":
-      expr = this.parseHashedExpression();
-      break;
-    case Token.CharLiteral:
-    case Token.FloatLiteral:
-    case Token.FalseLiteral:
-    case Token.IntegerLiteral:
-    case Token.NilLiteral:
-    case Token.SymbolLiteral:
-    case Token.TrueLiteral:
-      expr = this.parseLiteral();
-      break;
-    }
-
-    if (!expr) {
-      expr = {};
-      this.throwUnexpected(this.lex());
-    }
-
-    return marker.update().apply(expr);
-  };
-
   sc.lang.compiler.BaseParser = BaseParser;
 })(sc);

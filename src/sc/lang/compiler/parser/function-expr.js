@@ -144,7 +144,7 @@
 
   FunctionExpressionParser.prototype.parseFunctionArgumentElement = function() {
     var node = this._parseArgVarElement("arg", function() {
-      return this.parseArgumentableValue();
+      return this.parsePrimaryArgExpression();
     });
 
     if (node.init && !isValidArgumentValue(node.init)) {

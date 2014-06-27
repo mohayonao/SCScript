@@ -25,8 +25,8 @@
   function Parser(source, opts) {
     opts = opts || /* istanbul ignore next */ {};
 
-    BaseParser.call(this, new Lexer(source, opts));
-    this.opts  = opts;
+    BaseParser.call(this, null, new Lexer(source, opts));
+    this.opts = opts;
 
     var binaryPrecedence;
     if (this.opts.binaryPrecedence) {

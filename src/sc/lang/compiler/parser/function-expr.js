@@ -60,8 +60,7 @@
   });
 
   function FunctionExpressionParser(parent) {
-    BaseParser.call(this, parent.lexer, parent.state, parent.scope);
-    this.parent = parent;
+    BaseParser.call(this, parent);
   }
   sc.libs.extend(FunctionExpressionParser, BaseParser);
 

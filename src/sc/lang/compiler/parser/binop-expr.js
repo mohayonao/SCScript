@@ -13,8 +13,7 @@
   });
 
   function BinaryExpressionParser(parent) {
-    BaseParser.call(this, parent.lexer, parent.state);
-    this.parent = parent;
+    BaseParser.call(this, parent);
   }
   sc.libs.extend(BinaryExpressionParser, BaseParser);
 

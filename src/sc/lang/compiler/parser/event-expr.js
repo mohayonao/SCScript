@@ -14,8 +14,7 @@
   });
 
   function EventExpressionParser(parent) {
-    BaseParser.call(this, parent.lexer, parent.state);
-    this.parent = parent;
+    BaseParser.call(this, parent);
   }
   sc.libs.extend(EventExpressionParser, BaseParser);
 

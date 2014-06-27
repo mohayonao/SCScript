@@ -10,7 +10,7 @@
   });
 
   function ListIndexerParser(parent) {
-    BaseParser.call(this, parent.lexer, parent.state);
+    BaseParser.call(this, parent);
     this.parent = parent;
   }
   sc.libs.extend(ListIndexerParser, BaseParser);

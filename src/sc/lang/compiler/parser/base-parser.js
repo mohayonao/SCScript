@@ -23,16 +23,24 @@
     }
   });
 
-  function BaseParser(lexer, state, scope) {
-    this.lexer = lexer;
-    this.state = state || {
-      closedFunction: false,
-      disallowGenerator: false,
-      innerElements: false,
-      immutableList: false,
-      underscore: []
-    };
-    this.scope = scope || new Scope(this);
+  function BaseParser(parent, lexer) {
+    if (parent) {
+      this.parent = parent;
+      this.lexer = parent.lexer;
+      this.state = parent.state;
+      this.scope = parent.scope;
+    } else {
+      this.parent = null;
+      this.lexer = lexer;
+      this.state = {
+        closedFunction: false,
+        disallowGenerator: false,
+        innerElements: false,
+        immutableList: false,
+        underscore: []
+      };
+      this.scope = new Scope(this);
+    }
   }
 
   BaseParser.addMethod = function(methodName, method) {

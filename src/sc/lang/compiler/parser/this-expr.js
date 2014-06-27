@@ -1,13 +1,13 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
 
   var Keywords = sc.lang.compiler.Keywords;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("ThisExpression", function() {
+  Parser.addParseMethod("ThisExpression", function() {
     var node = this.lex();
 
     if (Keywords[node.value] !== "function") {

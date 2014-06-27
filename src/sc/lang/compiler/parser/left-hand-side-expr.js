@@ -1,25 +1,25 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./signed-expr");
   require("./expression");
   require("./list-expr");
   require("./list-indexer");
 
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
 
-  BaseParser.addParseMethod("LeftHandSideExpression", function(node) {
+  Parser.addParseMethod("LeftHandSideExpression", function(node) {
     return new LeftHandSideExpressionParser(this).parse(node);
   });
 
   function LeftHandSideExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
   }
-  sc.libs.extend(LeftHandSideExpressionParser, BaseParser);
+  sc.libs.extend(LeftHandSideExpressionParser, Parser);
 
   /*
     LeftHandSideExpression :

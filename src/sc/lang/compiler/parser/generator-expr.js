@@ -1,23 +1,23 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./expression");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("GeneratorExpression", function() {
+  Parser.addParseMethod("GeneratorExpression", function() {
     return new GeneratorExpressionParser(this).parse();
   });
 
   function GeneratorExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
     this.parent = parent;
   }
-  sc.libs.extend(GeneratorExpressionParser, BaseParser);
+  sc.libs.extend(GeneratorExpressionParser, Parser);
 
   GeneratorExpressionParser.prototype.parse = function() {
     this.lexer.throwError({}, Message.NotImplemented, "generator literal");

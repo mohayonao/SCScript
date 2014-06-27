@@ -1,20 +1,20 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./expression");
 
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("ListIndexer", function() {
+  Parser.addParseMethod("ListIndexer", function() {
     return new ListIndexerParser(this).parse();
   });
 
   function ListIndexerParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
     this.parent = parent;
   }
-  sc.libs.extend(ListIndexerParser, BaseParser);
+  sc.libs.extend(ListIndexerParser, Parser);
 
   ListIndexerParser.prototype.parse = function() {
     var node = null;

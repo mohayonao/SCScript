@@ -19,7 +19,7 @@
     }
   });
 
-  function BaseParser(parent, lexer) {
+  function Parser(parent, lexer) {
     if (parent) {
       this.parent = parent;
       this.lexer = parent.lexer;
@@ -40,26 +40,26 @@
     }
   }
 
-  BaseParser.addParseMethod = function(name, method) {
-    BaseParser.prototype["parse" + name] = method;
+  Parser.addParseMethod = function(name, method) {
+    Parser.prototype["parse" + name] = method;
   };
 
-  Object.defineProperty(BaseParser.prototype, "lookahead", {
+  Object.defineProperty(Parser.prototype, "lookahead", {
     get: function() {
       return this.lexer.lookahead;
     }
   });
 
-  BaseParser.prototype.lex = function() {
+  Parser.prototype.lex = function() {
     return this.lexer.lex();
   };
 
-  BaseParser.prototype.unlex = function(token) {
+  Parser.prototype.unlex = function(token) {
     this.lexer.unlex(token);
     return this;
   };
 
-  BaseParser.prototype.expect = function(value) {
+  Parser.prototype.expect = function(value) {
     var token = this.lexer.lex();
     if (token.type !== Token.Punctuator || token.value !== value) {
       this.throwUnexpected(token, value);
@@ -67,11 +67,11 @@
     return token;
   };
 
-  BaseParser.prototype.match = function(value) {
+  Parser.prototype.match = function(value) {
     return this.lexer.lookahead.value === value;
   };
 
-  BaseParser.prototype.matchAny = function(list) {
+  Parser.prototype.matchAny = function(list) {
     var value = this.lexer.lookahead.value;
     for (var i = 0, imax = list.length; i < imax; ++i) {
       if (list[i] === value) {
@@ -81,19 +81,19 @@
     return null;
   };
 
-  BaseParser.prototype.createMarker = function(node) {
+  Parser.prototype.createMarker = function(node) {
     return this.lexer.createMarker(node);
   };
 
-  BaseParser.prototype.hasNextToken = function() {
+  Parser.prototype.hasNextToken = function() {
     return this.lookahead.type !== Token.EOF;
   };
 
-  BaseParser.prototype.throwError = function() {
+  Parser.prototype.throwError = function() {
     return this.lexer.throwError.apply(this.lexer, arguments);
   };
 
-  BaseParser.prototype.throwUnexpected = function(token) {
+  Parser.prototype.throwUnexpected = function(token) {
     switch (token.type) {
     case Token.EOF:
       this.throwError(token, Message.UnexpectedEOS);
@@ -116,7 +116,7 @@
     }
   };
 
-  BaseParser.prototype.withScope = function(fn) {
+  Parser.prototype.withScope = function(fn) {
     var result;
 
     this.scope.begin();
@@ -126,5 +126,5 @@
     return result;
   };
 
-  sc.lang.compiler.BaseParser = BaseParser;
+  sc.lang.compiler.Parser = Parser;
 })(sc);

@@ -1,21 +1,21 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./left-hand-side-expr");
   require("./primary-expr");
 
   var Token = sc.lang.compiler.Token;
   var Syntax = sc.lang.compiler.Syntax;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("BinaryExpression", function() {
+  Parser.addParseMethod("BinaryExpression", function() {
     return new BinaryExpressionParser(this).parse();
   });
 
   function BinaryExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
 
     // TODO: fix (this.binaryPrecedence = sc.config.binaryPrecedence)
     var binaryPrecedence;
@@ -29,7 +29,7 @@
 
     this.binaryPrecedence = binaryPrecedence || {};
   }
-  sc.libs.extend(BinaryExpressionParser, BaseParser);
+  sc.libs.extend(BinaryExpressionParser, Parser);
 
   BinaryExpressionParser.prototype.parse = function(node) {
     var marker = this.createMarker();

@@ -1,13 +1,13 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./expression");
   require("./label");
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     ListExpression :
@@ -21,7 +21,7 @@
       Expression : Expression
       Expression
   */
-  BaseParser.addParseMethod("ListExpression", function() {
+  Parser.addParseMethod("ListExpression", function() {
     return new ListExpressionParser(this).parse();
   });
 
@@ -29,7 +29,7 @@
     ImmutableListExpression :
       # ListExpression
   */
-  BaseParser.addParseMethod("ImmutableListExpression", function(lookahead) {
+  Parser.addParseMethod("ImmutableListExpression", function(lookahead) {
     if (this.state.immutableList) {
       this.throwUnexpected(lookahead);
     }
@@ -44,10 +44,10 @@
   });
 
   function ListExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
     this.parent = parent;
   }
-  sc.libs.extend(ListExpressionParser, BaseParser);
+  sc.libs.extend(ListExpressionParser, Parser);
 
   ListExpressionParser.prototype.parse = function() {
     this.expect("[");

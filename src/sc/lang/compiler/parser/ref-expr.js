@@ -1,17 +1,17 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./left-hand-side-expr");
 
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     RefExpression
       ` LeftHandSideExpression
   */
-  BaseParser.addParseMethod("RefExpression", function() {
+  Parser.addParseMethod("RefExpression", function() {
     var marker = this.createMarker();
 
     this.expect("`");

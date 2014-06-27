@@ -1,23 +1,23 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./identifier");
   require("./partial-expr");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("AssignmentExpression", function() {
+  Parser.addParseMethod("AssignmentExpression", function() {
     return new AssignmentExpressionParser(this).parse();
   });
 
   function AssignmentExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
   }
-  sc.libs.extend(AssignmentExpressionParser, BaseParser);
+  sc.libs.extend(AssignmentExpressionParser, Parser);
 
   AssignmentExpressionParser.prototype.parse = function() {
     return this.parseAssignmentExpression();

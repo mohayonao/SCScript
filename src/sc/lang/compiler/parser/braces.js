@@ -1,18 +1,18 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./function-expr");
   require("./generator-expr");
 
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     Braces :
       { : GeneratorInitialiser }
       {   FunctionExpression   }
   */
-  BaseParser.addParseMethod("Braces", function(opts) {
+  Parser.addParseMethod("Braces", function(opts) {
     opts = opts || /* istanbul ignore next */ {};
     var marker = this.createMarker();
 

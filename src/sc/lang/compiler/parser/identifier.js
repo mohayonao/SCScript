@@ -1,14 +1,14 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("Identifier", function() {
+  Parser.addParseMethod("Identifier", function() {
     var marker = this.createMarker();
 
     if (this.lookahead.type !== Syntax.Identifier) {
@@ -20,7 +20,7 @@
     return marker.update().apply(expr);
   });
 
-  BaseParser.addParseMethod("PrimaryIdentifier", function() {
+  Parser.addParseMethod("PrimaryIdentifier", function() {
     var expr = this.parseIdentifier();
     if (expr.name === "_") {
       expr.name = "$_" + this.state.underscore.length.toString();
@@ -29,7 +29,7 @@
     return expr;
   });
 
-  BaseParser.addParseMethod("VariableIdentifier", function() {
+  Parser.addParseMethod("VariableIdentifier", function() {
     var marker = this.createMarker();
 
     var token = this.lex();

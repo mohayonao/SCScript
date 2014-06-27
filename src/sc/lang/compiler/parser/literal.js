@@ -1,12 +1,12 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
 
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("Literal", function() {
+  Parser.addParseMethod("Literal", function() {
     var marker = this.createMarker();
 
     var expr = Node.createLiteral(this.lex());

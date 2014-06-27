@@ -1,22 +1,22 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./expression");
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("SeriesExpression", function() {
+  Parser.addParseMethod("SeriesExpression", function() {
     return new SeriesExpressionParser(this).parse();
   });
 
   function SeriesExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
     this.parent = parent;
   }
-  sc.libs.extend(SeriesExpressionParser, BaseParser);
+  sc.libs.extend(SeriesExpressionParser, Parser);
 
   SeriesExpressionParser.prototype.parse = function() {
     var generator = false;

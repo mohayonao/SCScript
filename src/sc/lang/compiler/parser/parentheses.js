@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./event-expr");
   require("./series-expr");
   require("./expression");
@@ -9,17 +9,17 @@
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   // ( ... )
-  BaseParser.addParseMethod("Parentheses", function() {
+  Parser.addParseMethod("Parentheses", function() {
     return new ParenthesesParser(this).parse();
   });
 
   function ParenthesesParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
   }
-  sc.libs.extend(ParenthesesParser, BaseParser);
+  sc.libs.extend(ParenthesesParser, Parser);
 
   ParenthesesParser.prototype.parse = function() {
     var token = this.expect("(");

@@ -1,20 +1,20 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./primary-expr");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     SignedExpression :
       PrimaryExpression
       - PrimaryExpression
   */
-  BaseParser.addParseMethod("SignedExpression", function(node) {
+  Parser.addParseMethod("SignedExpression", function(node) {
     if (node) {
       return node;
     }

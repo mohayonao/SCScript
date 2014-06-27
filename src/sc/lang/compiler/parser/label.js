@@ -1,13 +1,13 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("Label", function() {
+  Parser.addParseMethod("Label", function() {
     var marker = this.createMarker();
 
     var label = Node.createLiteral({

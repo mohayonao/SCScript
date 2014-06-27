@@ -1,17 +1,17 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./assignment-expr");
   require("./expression");
 
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     Expression :
       AssignmentExpression
   */
-  BaseParser.addParseMethod("Expression", function() {
+  Parser.addParseMethod("Expression", function() {
     return this.parseAssignmentExpression();
   });
 
@@ -20,7 +20,7 @@
       Expression
       Expressions ; Expression
   */
-  BaseParser.addParseMethod("Expressions", function(node) {
+  Parser.addParseMethod("Expressions", function(node) {
     var nodes = [];
 
     if (node) {

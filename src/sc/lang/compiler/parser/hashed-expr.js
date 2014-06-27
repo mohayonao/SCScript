@@ -1,18 +1,18 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./list-expr");
   require("./function-expr");
 
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     HashedExpression :
       ImmutableListExpression
       ClosedFunctionExpression
   */
-  BaseParser.addParseMethod("HashedExpression", function() {
+  Parser.addParseMethod("HashedExpression", function() {
     var lookahead = this.lookahead;
 
     var token = this.expect("#");

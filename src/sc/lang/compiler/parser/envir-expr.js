@@ -1,20 +1,20 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./identifier");
   require("./left-hand-side-expr");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     EnvironmentExpresion :
       ~ LeftHandSideExpression
   */
-  BaseParser.addParseMethod("EnvironmentExpression", function() {
+  Parser.addParseMethod("EnvironmentExpression", function() {
     var marker = this.createMarker();
 
     this.expect("~");

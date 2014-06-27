@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./primary-expr");
   require("./assignment-expr");
   require("./expression");
@@ -9,7 +9,7 @@
 
   var Syntax = sc.lang.compiler.Syntax;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     FunctionExpression :
@@ -56,10 +56,10 @@
 
   */
 
-  BaseParser.addParseMethod("FunctionExpression", function(opts) {
+  Parser.addParseMethod("FunctionExpression", function(opts) {
     return new FunctionExpressionParser(this).parse(opts);
   });
-  BaseParser.addParseMethod("FunctionBody", function(match) {
+  Parser.addParseMethod("FunctionBody", function(match) {
     return new FunctionExpressionParser(this).parseFunctionBody(match);
   });
 
@@ -67,7 +67,7 @@
     ClosedFunctionExpression :
       # FunctionExpression
   */
-  BaseParser.addParseMethod("ClosedFunctionExpression", function() {
+  Parser.addParseMethod("ClosedFunctionExpression", function() {
     var expr;
     var closedFunction = this.state.closedFunction;
 
@@ -81,9 +81,9 @@
   });
 
   function FunctionExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
   }
-  sc.libs.extend(FunctionExpressionParser, BaseParser);
+  sc.libs.extend(FunctionExpressionParser, Parser);
 
   FunctionExpressionParser.prototype.parse = function(opts) {
     opts = opts || /* istanbul ignore next */ {};

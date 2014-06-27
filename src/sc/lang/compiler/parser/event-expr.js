@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./expression");
   require("./label");
 
@@ -9,16 +9,16 @@
   */
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
-  BaseParser.addParseMethod("EventExpression", function() {
+  Parser.addParseMethod("EventExpression", function() {
     return new EventExpressionParser(this).parse();
   });
 
   function EventExpressionParser(parent) {
-    BaseParser.call(this, parent);
+    Parser.call(this, parent);
   }
-  sc.libs.extend(EventExpressionParser, BaseParser);
+  sc.libs.extend(EventExpressionParser, Parser);
 
   EventExpressionParser.prototype.parse = function() {
     var innerElements = this.state.innerElements;

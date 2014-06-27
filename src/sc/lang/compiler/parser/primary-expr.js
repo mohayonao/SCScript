@@ -2,7 +2,7 @@
   "use strict";
 
   require("./interpolate-string");
-  require("./base-parser");
+  require("./parser");
   require("./parentheses");
   require("./braces");
   require("./expression");
@@ -17,7 +17,7 @@
   var Node = sc.lang.compiler.Node;
   var Lexer = sc.lang.compiler.lexer;
   var InterpolateString = sc.lang.compiler.InterpolateString;
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
 
   /*
     PrimaryExpression :
@@ -31,7 +31,7 @@
       StringLiteral
       ArgumentableValue
   */
-  BaseParser.addParseMethod("PrimaryExpression", function() {
+  Parser.addParseMethod("PrimaryExpression", function() {
     var stamp = this.matchAny([ "(", "{", "[", "#", "`", "~" ]) || this.lookahead.type;
 
     switch (stamp) {
@@ -67,7 +67,7 @@
       SymbolLiteral
       TrueLiteral
   */
-  BaseParser.addParseMethod("PrimaryArgExpression", function() {
+  Parser.addParseMethod("PrimaryArgExpression", function() {
     var marker = this.createMarker();
 
     var stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
@@ -96,12 +96,12 @@
     return marker.update().apply(expr);
   });
 
-  BaseParser.addParseMethod("StringExpression", function() {
+  Parser.addParseMethod("StringExpression", function() {
     var token = this.lex();
 
     if (InterpolateString.hasInterpolateString(token.value)) {
       var code = new InterpolateString(token.value).toCompiledString();
-      return new BaseParser(null, new Lexer(code, {})).parseExpression();
+      return new Parser(null, new Lexer(code, {})).parseExpression();
     }
 
     return Node.createLiteral(token);

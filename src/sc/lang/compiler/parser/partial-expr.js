@@ -1,17 +1,17 @@
 (function(sc) {
   "use strict";
 
-  require("./base-parser");
+  require("./parser");
   require("./binop-expr");
 
-  var BaseParser = sc.lang.compiler.BaseParser;
+  var Parser = sc.lang.compiler.Parser;
   var Node = sc.lang.compiler.Node;
 
   /*
     PartialExpression :
       BinaryExpression
   */
-  BaseParser.addParseMethod("PartialExpression", function(node) {
+  Parser.addParseMethod("PartialExpression", function(node) {
     if (this.state.innerElements) {
       return this.parseBinaryExpression(node);
     }

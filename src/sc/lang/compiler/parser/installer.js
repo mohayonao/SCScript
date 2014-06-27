@@ -21,4 +21,5 @@ require("./program");
 require("./ref-expr");
 require("./series-expr");
 require("./signed-expr");
+require("./string-expr");
 require("./this-expr");

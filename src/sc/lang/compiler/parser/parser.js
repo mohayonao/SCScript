@@ -29,7 +29,6 @@
       this.parent = null;
       this.lexer = lexer;
       this.state = {
-        closedFunction: false,
         innerElements: false,
         immutableList: false,
         underscore: [],

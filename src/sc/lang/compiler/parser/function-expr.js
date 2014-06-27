@@ -64,16 +64,8 @@
       # FunctionExpression
   */
   Parser.addParseMethod("ClosedFunctionExpression", function() {
-    var expr;
-    var closedFunction = this.state.closedFunction;
-
     this.expect("#");
-
-    this.state.closedFunction = true;
-    expr = this.parseFunctionExpression({ closed: true });
-    this.state.closedFunction = closedFunction;
-
-    return expr;
+    return this.parseFunctionExpression({ closed: true });
   });
 
   function FunctionExpressionParser(parent) {

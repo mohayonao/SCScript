@@ -107,15 +107,10 @@
     if (!this.match("{")) {
       this.throwUnexpected(this.lookahead);
     }
-
-    this.state.closedFunction = true;
-    expr = this.parseBrace(expr);
-    this.state.closedFunction = false;
-
-    return expr;
+    return this.parseBrace(expr, true);
   };
 
-  LeftHandSideExpressionParser.prototype.parseBrace = function(expr) {
+  LeftHandSideExpressionParser.prototype.parseBrace = function(expr, closed) {
     var method, node;
 
     if (expr.type === Syntax.CallExpression && expr.stamp && expr.stamp !== "(") {
@@ -130,7 +125,7 @@
         expr = Node.createCallExpression(null, expr, { list: [] });
       }
     }
-    node = this.parseBraces({ blockList: true });
+    node = this.parseBraces({ blockList: true, closed: !!closed });
 
     // TODO: refactoring
     if (expr.callee === null) {

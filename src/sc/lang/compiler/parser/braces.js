@@ -22,10 +22,7 @@
     if (!opts.blockList && matchColon) {
       expr = this.parseGeneratorExpression();
     } else {
-      expr = this.parseFunctionExpression({
-        closed: this.state.closedFunction,
-        blockList: opts.blockList
-      });
+      expr = this.parseFunctionExpression(opts);
     }
 
     return marker.update().apply(expr);

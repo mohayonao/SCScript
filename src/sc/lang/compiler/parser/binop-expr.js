@@ -8,6 +8,18 @@
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
+  /*
+    BinaryExpression :
+      LeftHandSideExpression BinaryExpressionOperator BinaryExpressionAdverb(opts) BinaryExpression
+
+    BinaryExpressionOperator :
+      /[-+*\/%<=>!?&|@]+/
+      LabelLiteral
+
+    BinaryExpressionAdverb :
+      . Identifier
+      . IntegerLiteral
+  */
   Parser.addParseMethod("BinaryExpression", function() {
     return new BinaryExpressionParser(this).parse();
   });
@@ -15,9 +27,14 @@
   function BinaryExpressionParser(parent) {
     Parser.call(this, parent);
 
-    // TODO: fix (this.binaryPrecedence = sc.config.binaryPrecedence)
+    // TODO:
+    // replace
+    // this.binaryPrecedence = sc.config.binaryPrecedence;
+    //
+    // remove below
     var binaryPrecedence;
     if (sc.config.binaryPrecedence) {
+      // istanbul ignore next
       if (typeof sc.config.binaryPrecedence === "object") {
         binaryPrecedence = sc.config.binaryPrecedence;
       } else {
@@ -31,63 +48,62 @@
 
   BinaryExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
-    var left   = this.parseLeftHandSideExpression();
-    var operator = this.lookahead;
 
-    var prec = calcBinaryPrecedence(operator, this.binaryPrecedence);
+    var expr = this.parseLeftHandSideExpression();
+
+    var prec = this.calcBinaryPrecedence(this.lookahead);
     if (prec === 0) {
-      return left;
+      return expr;
     }
-    this.lex();
 
-    operator.prec   = prec;
-    operator.adverb = this.parseAdverb();
+    var operator = this.parseBinaryExpressionOperator(prec);
 
-    return this.sortByBinaryPrecedence(left, operator, marker);
+    return this.sortByBinaryPrecedence(expr, operator, marker);
   };
 
-  // TODO: fix to read easily
+  BinaryExpressionParser.prototype.calcBinaryPrecedence = function(token) {
+    if (token.type === Token.Label) {
+      return 255;
+    }
+
+    if (token.type === Token.Punctuator) {
+      var operator = token.value;
+      if (operator === "=") {
+        return 0;
+      }
+      if (isBinaryOperator(operator)) {
+        return this.binaryPrecedence[operator] || 255;
+      }
+    }
+
+    return 0;
+  };
+
+  BinaryExpressionParser.prototype.parseBinaryExpressionOperator = function(prec) {
+    var operator = this.lex();
+    operator.prec = prec;
+    operator.adverb = this.parseBinaryExpressionAdverb();
+    return operator;
+  };
+
   BinaryExpressionParser.prototype.sortByBinaryPrecedence = function(left, operator, marker) {
-    var markers = [ marker, this.createMarker() ];
-    var right = this.parseLeftHandSideExpression();
+    var markerStack = [ marker, this.createMarker() ];
+    var exprOpStack = [ left, operator, this.parseLeftHandSideExpression() ];
 
-    var stack = [ left, operator, right ];
+    var prec;
+    while ((prec = this.calcBinaryPrecedence(this.lookahead)) > 0) {
+      sortByBinaryPrecedence(prec, exprOpStack, markerStack);
 
-    var prec, expr;
-    while ((prec = calcBinaryPrecedence(this.lookahead, this.binaryPrecedence)) > 0) {
-      prec = sortByBinaryPrecedence(prec, stack, markers);
+      operator = this.parseBinaryExpressionOperator(prec);
 
-      // Shift.
-      var token = this.lex();
-      token.prec = prec;
-      token.adverb = this.parseAdverb();
-
-      stack.push(token);
-
-      markers.push(this.createMarker());
-      expr = this.parseLeftHandSideExpression();
-      stack.push(expr);
+      markerStack.push(this.createMarker());
+      exprOpStack.push(operator, this.parseLeftHandSideExpression());
     }
 
-    // Final reduce to clean-up the stack.
-    var i = stack.length - 1;
-    expr = stack[i];
-    markers.pop();
-    while (i > 1) {
-      expr = Node.createBinaryExpression(stack[i - 1], stack[i - 2], expr);
-      i -= 2;
-      marker = markers.pop();
-      marker.update().apply(expr);
-    }
-
-    return expr;
+    return reduceBinaryExpressionStack(exprOpStack, markerStack);
   };
 
-  /* TODO: ???
-    Adverb :
-      . PrimaryExpression
-  */
-  BinaryExpressionParser.prototype.parseAdverb = function() {
+  BinaryExpressionParser.prototype.parseBinaryExpressionAdverb = function() {
     if (!this.match(".")) {
       return null;
     }
@@ -97,61 +113,64 @@
     var lookahead = this.lookahead;
     var adverb = this.parsePrimaryExpression();
 
-    if (adverb.type === Syntax.Literal) {
+    if (isInteger(adverb)) {
       return adverb;
     }
 
-    if (adverb.type === Syntax.Identifier) {
-      adverb.type = Syntax.Literal;
-      adverb.value = adverb.name;
-      adverb.valueType = Token.SymbolLiteral;
-      delete adverb.name;
-      return adverb;
+    if (isAdverb(adverb)) {
+      return this.createMarker(adverb).update().apply(
+        Node.createLiteral({ type: Token.SymbolLiteral, value: adverb.name })
+      );
     }
 
-    this.throwUnexpected(lookahead);
-
-    return null;
+    return this.throwUnexpected(lookahead);
   };
 
-  function calcBinaryPrecedence(token, binaryPrecedence) {
-    var prec = 0;
-
-    switch (token.type) {
-    case Token.Punctuator:
-      if (token.value !== "=") {
-        if (binaryPrecedence.hasOwnProperty(token.value)) {
-          prec = binaryPrecedence[token.value];
-        } else if (/^[-+*\/%<=>!?&|@]+$/.test(token.value)) {
-          prec = 255;
-        }
-      }
-      break;
-    case Token.Label:
-      prec = 255;
-      break;
+  function sortByBinaryPrecedence(prec, exprOpStack, markerStack) {
+    while (isNeedSort(prec, exprOpStack)) {
+      var right    = exprOpStack.pop();
+      var operator = exprOpStack.pop();
+      var left     = exprOpStack.pop();
+      markerStack.pop();
+      exprOpStack.push(peek(markerStack).update().apply(
+        Node.createBinaryExpression(operator, left, right)
+      ));
     }
-
-    return prec;
   }
 
-  function sortByBinaryPrecedence(prec, stack, markers) {
-    // Reduce: make a binary expression from the three topmost entries.
-    while ((stack.length > 2) && (prec <= stack[stack.length - 2].prec)) {
-      var right    = stack.pop();
-      var operator = stack.pop();
-      var left     = stack.pop();
-      var expr = Node.createBinaryExpression(operator, left, right);
-      markers.pop();
+  function reduceBinaryExpressionStack(exprOpStack, markerStack) {
+    markerStack.pop();
 
-      var marker = markers.pop();
-      marker.update().apply(expr);
-
-      stack.push(expr);
-
-      markers.push(marker);
+    var expr = exprOpStack.pop();
+    while (exprOpStack.length) {
+      expr = markerStack.pop().update().apply(
+        Node.createBinaryExpression(exprOpStack.pop(), exprOpStack.pop(), expr)
+      );
     }
 
-    return prec;
+    return expr;
+  }
+
+  function peek(stack) {
+    return stack[stack.length - 1];
+  }
+
+  function isNeedSort(prec, exprOpStack) {
+    return exprOpStack.length > 2 && prec <= exprOpStack[exprOpStack.length - 2].prec;
+  }
+
+  function isBinaryOperator(operator) {
+    return (/^[-+*\/%<=>!?&|@]+$/).test(operator);
+  }
+
+  function isInteger(node) {
+    return node.valueType === Token.IntegerLiteral;
+  }
+
+  function isAdverb(node) {
+    if (node.type === Syntax.Identifier) {
+      return (/^[a-z]$/).test(node.name.charAt(0));
+    }
+    return false;
   }
 })(sc);

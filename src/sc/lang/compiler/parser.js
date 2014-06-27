@@ -23,6 +23,7 @@
   require("./parser/series-expr");
   require("./parser/generator-expr");
   require("./parser/identifier");
+  require("./parser/braces");
 
   var Lexer = sc.lang.compiler.lexer;
   var Node = sc.lang.compiler.Node;

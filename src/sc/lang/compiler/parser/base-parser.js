@@ -326,32 +326,6 @@
     return expr;
   };
 
-  /*
-    Braces :
-      { : GeneratorInitialiser }
-      {   FunctionExpression   }
-  */
-  BaseParser.prototype.parseBraces = function(opts) {
-    opts = opts || /* istanbul ignore next */ {};
-    var marker = this.createMarker();
-
-    var token = this.expect("{");
-    var matchColon = this.match(":");
-    this.unlex(token);
-
-    var expr;
-    if (!opts.blocklist && matchColon) {
-      expr = this.parseGeneratorExpression();
-    } else {
-      expr = this.parseFunctionExpression({
-        closed: this.state.closedFunction,
-        blocklist: opts.blocklist
-      });
-    }
-
-    return marker.update().apply(expr);
-  };
-
   BaseParser.prototype.parseLabel = function() {
     var marker = this.createMarker();
 

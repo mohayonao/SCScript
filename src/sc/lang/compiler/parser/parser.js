@@ -23,17 +23,17 @@
     if (parent) {
       this.parent = parent;
       this.lexer = parent.lexer;
-      this.state = parent.state;
       this.scope = parent.scope;
+      this.state = parent.state;
     } else {
       this.parent = null;
       this.lexer = lexer;
+      this.scope = new Scope(this);
       this.state = {
         innerElements: false,
         immutableList: false,
         underscore: []
       };
-      this.scope = new Scope(this);
     }
   }
 
@@ -111,6 +111,8 @@
       this.throwError(token, Message.UnexpectedToken, token.value);
       break;
     }
+
+    return {};
   };
 
   Parser.prototype.withScope = function(fn) {

@@ -22,6 +22,7 @@
   require("./parser/event-expr");
   require("./parser/series-expr");
   require("./parser/generator-expr");
+  require("./parser/identifier");
 
   var Lexer = sc.lang.compiler.lexer;
   var Node = sc.lang.compiler.Node;

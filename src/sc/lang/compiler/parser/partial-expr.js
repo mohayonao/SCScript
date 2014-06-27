@@ -10,7 +10,7 @@
     PartialExpression :
       BinaryExpression
   */
-  BaseParser.addMethod("parsePartialExpression", function(node) {
+  BaseParser.addParseMethod("PartialExpression", function(node) {
     if (this.state.innerElements) {
       return this.parseBinaryExpression(node);
     }

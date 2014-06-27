@@ -40,8 +40,8 @@
     }
   }
 
-  BaseParser.addMethod = function(methodName, method) {
-    BaseParser.prototype[methodName] = method;
+  BaseParser.addParseMethod = function(name, method) {
+    BaseParser.prototype["parse" + name] = method;
   };
 
   Object.defineProperty(BaseParser.prototype, "lookahead", {

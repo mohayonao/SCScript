@@ -7,7 +7,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseThisExpression", function() {
+  BaseParser.addParseMethod("ThisExpression", function() {
     var node = this.lex();
 
     if (Keywords[node.value] !== "function") {

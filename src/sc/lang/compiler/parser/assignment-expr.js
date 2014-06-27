@@ -8,7 +8,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseAssignmentExpression", function() {
+  BaseParser.addParseMethod("AssignmentExpression", function() {
     return new AssignmentExpressionParser(this).parse();
   });
 

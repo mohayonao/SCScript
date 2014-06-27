@@ -10,7 +10,7 @@
       ImmutableListExpression
       ClosedFunctionExpression
   */
-  BaseParser.addMethod("parseHashedExpression", function() {
+  BaseParser.addParseMethod("HashedExpression", function() {
     var lookahead = this.lookahead;
 
     var token = this.expect("#");

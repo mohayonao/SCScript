@@ -6,7 +6,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseLiteral", function() {
+  BaseParser.addParseMethod("Literal", function() {
     var marker = this.createMarker();
 
     var expr = Node.createLiteral(this.lex());

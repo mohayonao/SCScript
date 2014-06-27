@@ -10,7 +10,7 @@
     RefExpression
       ` LeftHandSideExpression
   */
-  BaseParser.addMethod("parseRefExpression", function() {
+  BaseParser.addParseMethod("RefExpression", function() {
     var marker = this.createMarker();
 
     this.expect("`");

@@ -52,10 +52,10 @@
 
   */
 
-  BaseParser.addMethod("parseFunctionExpression", function(opts) {
+  BaseParser.addParseMethod("FunctionExpression", function(opts) {
     return new FunctionExpressionParser(this).parse(opts);
   });
-  BaseParser.addMethod("parseFunctionBody", function(match) {
+  BaseParser.addParseMethod("FunctionBody", function(match) {
     return new FunctionExpressionParser(this).parseFunctionBody(match);
   });
 
@@ -63,7 +63,7 @@
     ClosedFunctionExpression :
       # FunctionExpression
   */
-  BaseParser.addMethod("parseClosedFunctionExpression", function() {
+  BaseParser.addParseMethod("ClosedFunctionExpression", function() {
     var expr;
     var closedFunction = this.state.closedFunction;
 

@@ -10,7 +10,7 @@
       { : GeneratorInitialiser }
       {   FunctionExpression   }
   */
-  BaseParser.addMethod("parseBraces", function(opts) {
+  BaseParser.addParseMethod("Braces", function(opts) {
     opts = opts || /* istanbul ignore next */ {};
     var marker = this.createMarker();
 

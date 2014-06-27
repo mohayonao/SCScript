@@ -9,7 +9,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseEventExpression", function() {
+  BaseParser.addParseMethod("EventExpression", function() {
     return new EventExpressionParser(this).parse();
   });
 

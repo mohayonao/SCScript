@@ -19,7 +19,7 @@
       Expression : Expression
       Expression
   */
-  BaseParser.addMethod("parseListExpression", function() {
+  BaseParser.addParseMethod("ListExpression", function() {
     return new ListExpressionParser(this).parse();
   });
 
@@ -27,7 +27,7 @@
     ImmutableListExpression :
       # ListExpression
   */
-  BaseParser.addMethod("parseImmutableListExpression", function(lookahead) {
+  BaseParser.addParseMethod("ImmutableListExpression", function(lookahead) {
     if (this.state.immutableList) {
       this.throwUnexpected(lookahead);
     }

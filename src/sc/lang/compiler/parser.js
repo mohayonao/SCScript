@@ -61,7 +61,7 @@
   };
 
   // TODO: move
-  BaseParser.addMethod("parseStringExpression", function() {
+  BaseParser.addParseMethod("StringExpression", function() {
     var token = this.lex();
 
     if (InterpolateString.hasInterpolateString(token.value)) {

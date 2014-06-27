@@ -13,7 +13,7 @@
       PrimaryExpression
       - PrimaryExpression
   */
-  BaseParser.addMethod("parseSignedExpression", function(node) {
+  BaseParser.addParseMethod("SignedExpression", function(node) {
     if (node) {
       return node;
     }

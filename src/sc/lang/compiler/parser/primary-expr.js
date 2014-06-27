@@ -18,7 +18,7 @@
       StringLiteral
       ArgumentableValue
   */
-  BaseParser.addMethod("parsePrimaryExpression", function() {
+  BaseParser.addParseMethod("PrimaryExpression", function() {
     var stamp = this.matchAny([ "(", "{", "[", "#", "`", "~" ]) || this.lookahead.type;
 
     switch (stamp) {
@@ -54,7 +54,7 @@
       SymbolLiteral
       TrueLiteral
   */
-  BaseParser.addMethod("parsePrimaryArgExpression", function() {
+  BaseParser.addParseMethod("PrimaryArgExpression", function() {
     var marker = this.createMarker();
 
     var stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;

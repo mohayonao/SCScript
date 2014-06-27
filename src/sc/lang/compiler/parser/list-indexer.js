@@ -5,7 +5,7 @@
 
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseListIndexer", function() {
+  BaseParser.addParseMethod("ListIndexer", function() {
     return new ListIndexerParser(this).parse();
   });
 

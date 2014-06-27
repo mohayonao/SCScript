@@ -8,7 +8,7 @@
   var BaseParser = sc.lang.compiler.BaseParser;
 
   // ( ... )
-  BaseParser.addMethod("parseParentheses", function() {
+  BaseParser.addParseMethod("Parentheses", function() {
     return new ParenthesesParser(this).parse();
   });
 

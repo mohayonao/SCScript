@@ -7,7 +7,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseSeriesExpression", function() {
+  BaseParser.addParseMethod("SeriesExpression", function() {
     return new SeriesExpressionParser(this).parse();
   });
 

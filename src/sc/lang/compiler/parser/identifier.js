@@ -8,7 +8,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseIdentifier", function() {
+  BaseParser.addParseMethod("Identifier", function() {
     var marker = this.createMarker();
 
     if (this.lookahead.type !== Syntax.Identifier) {
@@ -20,7 +20,7 @@
     return marker.update().apply(expr);
   });
 
-  BaseParser.addMethod("parsePrimaryIdentifier", function() {
+  BaseParser.addParseMethod("PrimaryIdentifier", function() {
     var expr = this.parseIdentifier();
     if (expr.name === "_") {
       expr.name = "$_" + this.state.underscore.length.toString();
@@ -29,7 +29,7 @@
     return expr;
   });
 
-  BaseParser.addMethod("parseVariableIdentifier", function() {
+  BaseParser.addParseMethod("VariableIdentifier", function() {
     var marker = this.createMarker();
 
     var token = this.lex();

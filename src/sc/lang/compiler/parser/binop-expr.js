@@ -8,7 +8,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseBinaryExpression", function() {
+  BaseParser.addParseMethod("BinaryExpression", function() {
     return new BinaryExpressionParser(this).parse();
   });
 

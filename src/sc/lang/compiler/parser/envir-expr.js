@@ -12,7 +12,7 @@
     EnvironmentExpresion :
       ~ LeftHandSideExpression
   */
-  BaseParser.addMethod("parseEnvironmentExpression", function() {
+  BaseParser.addParseMethod("EnvironmentExpression", function() {
     var marker = this.createMarker();
 
     this.expect("~");

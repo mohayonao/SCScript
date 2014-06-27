@@ -7,7 +7,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseLabel", function() {
+  BaseParser.addParseMethod("Label", function() {
     var marker = this.createMarker();
 
     var label = Node.createLiteral({

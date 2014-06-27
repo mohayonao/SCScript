@@ -9,7 +9,7 @@
     Expression :
       AssignmentExpression
   */
-  BaseParser.addMethod("parseExpression", function() {
+  BaseParser.addParseMethod("Expression", function() {
     return this.parseAssignmentExpression();
   });
 
@@ -18,7 +18,7 @@
       Expression
       Expressions ; Expression
   */
-  BaseParser.addMethod("parseExpressions", function(node) {
+  BaseParser.addParseMethod("Expressions", function(node) {
     var nodes = [];
 
     if (node) {

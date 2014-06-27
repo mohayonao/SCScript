@@ -8,7 +8,7 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  BaseParser.addMethod("parseGeneratorExpression", function() {
+  BaseParser.addParseMethod("GeneratorExpression", function() {
     return new GeneratorExpressionParser(this).parse();
   });
 

@@ -10,24 +10,20 @@
 
   /*
     EnvironmentExpresion :
-      ~ LeftHandSideExpression
+      ~ Identifier
   */
   Parser.addParseMethod("EnvironmentExpression", function() {
     var marker = this.createMarker();
 
     this.expect("~");
+
     var expr = this.parseIdentifier();
     if (isClassName(expr)) {
       this.throwUnexpected({ type: Token.Identifier, value: expr.id });
     }
+
     expr = Node.createEnvironmentExpresion(expr);
-    expr = marker.update().apply(expr);
-
-    if (this.match(".")) {
-      expr = this.parseLeftHandSideExpression(expr);
-    }
-
-    return expr;
+    return marker.update().apply(expr);
   });
 
   function isClassName(node) {

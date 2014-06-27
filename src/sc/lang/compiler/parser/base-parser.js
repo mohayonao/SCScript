@@ -8,7 +8,6 @@
 
   var Token = sc.lang.compiler.Token;
   var Syntax = sc.lang.compiler.Syntax;
-  var Keywords = sc.lang.compiler.Keywords;
   var Message = sc.lang.compiler.Message;
   var Node = sc.lang.compiler.Node;
 
@@ -196,16 +195,6 @@
     }
 
     return marker.update().apply(expr, true);
-  };
-
-  BaseParser.prototype.parseThisExpression = function() {
-    var node = this.lex();
-
-    if (Keywords[node.value] !== "function") {
-      this.throwUnexpected(node);
-    }
-
-    return Node.createThisExpression(node.value);
   };
 
   BaseParser.prototype.parseLabel = function() {

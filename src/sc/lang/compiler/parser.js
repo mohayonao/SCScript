@@ -17,6 +17,7 @@
   require("./parser/binop-expr");
   require("./parser/envir-expr");
   require("./parser/ref-expr");
+  require("./parser/this-expr");
   require("./parser/list-expr");
   require("./parser/list-indexer");
   require("./parser/event-expr");

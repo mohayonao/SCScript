@@ -14,6 +14,11 @@
       - PrimaryExpression
   */
   Parser.addParseMethod("SignedExpression", function() {
+    // TODO: fix like this
+    // if (!this.match("-")) {
+    //   return this.parsePrimaryExpression();
+    // }
+
     var marker = this.createMarker();
     var expr;
     if (this.match("-")) {

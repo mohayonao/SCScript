@@ -2,6 +2,7 @@
   "use strict";
 
   require("./base-parser");
+  require("./left-hand-side-expr");
 
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;

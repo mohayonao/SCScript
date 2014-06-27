@@ -2,6 +2,8 @@
   "use strict";
 
   require("./base-parser");
+  require("./function-expr");
+  require("./generator-expr");
 
   var BaseParser = sc.lang.compiler.BaseParser;
 

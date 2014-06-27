@@ -2,6 +2,10 @@
   "use strict";
 
   require("./base-parser");
+  require("./event-expr");
+  require("./series-expr");
+  require("./expression");
+  require("./partial-expr");
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;

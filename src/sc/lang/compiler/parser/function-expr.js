@@ -2,6 +2,10 @@
   "use strict";
 
   require("./base-parser");
+  require("./primary-expr");
+  require("./assignment-expr");
+  require("./expression");
+  require("./identifier");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Node = sc.lang.compiler.Node;
@@ -26,7 +30,7 @@
 
     FunctionArgumentElement :
       VariableIdentifier
-      VariableIdentifier = ArgumentableValue
+      VariableIdentifier = parsePrimaryArgExpression
 
     FunctionBody :
       VariableDeclarations(opt) SourceElements(opt)

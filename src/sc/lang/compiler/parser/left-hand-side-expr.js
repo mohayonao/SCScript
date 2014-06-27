@@ -2,6 +2,10 @@
   "use strict";
 
   require("./base-parser");
+  require("./signed-expr");
+  require("./expression");
+  require("./list-expr");
+  require("./list-indexer");
 
   var BaseParser = sc.lang.compiler.BaseParser;
   var Syntax = sc.lang.compiler.Syntax;

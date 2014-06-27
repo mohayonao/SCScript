@@ -2,6 +2,7 @@
   "use strict";
 
   require("./base-parser");
+  require("./expression");
 
   var BaseParser = sc.lang.compiler.BaseParser;
 

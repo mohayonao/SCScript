@@ -10,6 +10,7 @@
   require("./parser/program");
   require("./parser/expression");
   require("./parser/partial-expr");
+  require("./parser/left-hand-side-expr");
   require("./parser/function-expr");
   require("./parser/assignment-expr");
   require("./parser/binop-expr");

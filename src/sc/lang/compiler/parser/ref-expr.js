@@ -16,8 +16,9 @@
     this.expect("`");
 
     var expr = this.parseLeftHandSideExpression();
-    expr = Node.createUnaryExpression("`", expr);
 
-    return marker.update().apply(expr);
+    return marker.update().apply(
+      Node.createUnaryExpression("`", expr)
+    );
   });
 })(sc);

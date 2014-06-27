@@ -130,46 +130,6 @@
   };
 
   /*
-    Expression :
-      AssignmentExpression
-  */
-  BaseParser.prototype.parseExpression = function() {
-    return this.parseAssignmentExpression();
-  };
-
-  /*
-    Expressions :
-      AssignmentExpression
-      Expressions ; AssignmentExpression
-  */
-  BaseParser.prototype.parseExpressions = function(node) {
-    var nodes = [];
-
-    if (node) {
-      nodes.push(node);
-      this.lex();
-    }
-
-    while (this.hasNextToken() && !this.matchAny([ ",", ")", "]", ".." ])) {
-      var marker = this.createMarker();
-      node = this.parseAssignmentExpression();
-      node = marker.update().apply(node);
-
-      nodes.push(node);
-
-      if (this.match(";")) {
-        this.lex();
-      }
-    }
-
-    if (nodes.length === 0) {
-      this.throwUnexpected(this.lookahead);
-    }
-
-    return nodes.length === 1 ? nodes[0] : nodes;
-  };
-
-  /*
     PartialExpression :
       BinaryExpression
   */

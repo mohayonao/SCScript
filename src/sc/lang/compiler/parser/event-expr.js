@@ -19,29 +19,43 @@
   sc.libs.extend(EventExpressionParser, Parser);
 
   EventExpressionParser.prototype.parse = function() {
-    var innerElements = this.state.innerElements;
-    this.state.innerElements = true;
+    var marker = this.createMarker();
 
     this.expect("(");
 
-    var node, elements = [];
+    var innerElements = this.state.innerElements;
+    this.state.innerElements = true;
+
+    var elements = [];
     while (this.hasNextToken() && !this.match(")")) {
-      if (this.lookahead.type === Token.Label) {
-        node = this.parseLabel();
-      } else {
-        node = this.parseExpression();
-        this.expect(":");
-      }
-      elements.push(node, this.parseExpression());
-      if (!this.match(")")) {
-        this.expect(",");
+      elements.push(
+        this._getKeyElement(), this._getValElement()
+      );
+      if (this.match(",")) {
+        this.lex();
       }
     }
+    this.state.innerElements = innerElements;
 
     this.expect(")");
 
-    this.state.innerElements = innerElements;
+    return marker.update().apply(
+      Node.createEventExpression(elements)
+    );
+  };
 
-    return Node.createEventExpression(elements);
+  EventExpressionParser.prototype._getKeyElement = function() {
+    if (this.lookahead.type === Token.Label) {
+      return this.parseLabel(); // as symbol
+    }
+
+    var node = this.parseExpression();
+    this.expect(":");
+
+    return node;
+  };
+
+  EventExpressionParser.prototype._getValElement = function() {
+    return this.parseExpression();
   };
 })(sc);

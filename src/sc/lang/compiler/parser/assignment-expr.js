@@ -8,6 +8,20 @@
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
+  /*
+    AssignmentExpression :
+      PartialExpression
+      PartialExpression = AssignmentExpression
+      # DestructuringAssignmentLeft = AssignmentExpression
+
+    DestructuringAssignmentLeft :
+      DestructingAssignmentLeftList
+      DestructingAssignmentLeftList ... Identifier
+
+    DestructingAssignmentLeftList :
+      Identifier
+      DestructingAssignmentLeftList , Identifier
+  */
   Parser.addParseMethod("AssignmentExpression", function() {
     return new AssignmentExpressionParser(this).parse();
   });
@@ -18,98 +32,77 @@
   sc.libs.extend(AssignmentExpressionParser, Parser);
 
   AssignmentExpressionParser.prototype.parse = function() {
-    return this.parseAssignmentExpression();
-  };
-
-  AssignmentExpressionParser.prototype.parseAssignmentExpression = function() {
-    var marker = this.createMarker();
-
-    var node, token;
+    var token;
     if (this.match("#")) {
       token = this.lex();
-      if (this.matchAny([ "[", "{" ])) {
-        this.unlex(token);
-      } else {
-        node = this.parseDestructuringAssignmentExpression();
+      if (!this.matchAny([ "[", "{" ])) {
+        return this.unlex(token).parseDestructuringAssignmentExpression();
       }
+      this.unlex(token);
     }
-
-    if (!node) {
-      node = this.parseSimpleAssignmentExpression();
-    }
-
-    return marker.update().apply(node, true);
+    return this.parseSimpleAssignmentExpression();
   };
 
-  /*
-    DestructuringAssignmentExpression :
-      DestructuringAssignmentLeft = AssignmentExpression
-  */
-  AssignmentExpressionParser.prototype.parseDestructuringAssignmentExpression = function() {
-    var left = this.parseDestructuringAssignmentLeft();
-    var operator = this.lookahead;
-    this.expect("=");
+  AssignmentExpressionParser.prototype.parseSimpleAssignmentExpression = function() {
+    var expr = this.parsePartialExpression();
+
+    if (!this.match("=")) {
+      return expr;
+    }
+    this.lex();
+
+    if (expr.type === Syntax.CallExpression) {
+      return this.parseSimpleAssignmentExpressionViaMethod(expr);
+    }
+
+    return this.parseSimpleAssignmentExpressionViaOperator(expr);
+  };
+
+  AssignmentExpressionParser.prototype.parseSimpleAssignmentExpressionViaMethod = function(expr) {
+    var marker = this.createMarker(expr);
     var right = this.parseAssignmentExpression();
 
-    return Node.createAssignmentExpression(
-      operator.value, left.list, right, left.remain
+    expr.method.name = expr.method.name + "_";
+    expr.args.list   = expr.args.list.concat(right);
+    if (expr.stamp !== "[")  {
+      expr.stamp = "=";
+    }
+
+    return marker.update().apply(expr, true);
+  };
+
+  AssignmentExpressionParser.prototype.parseSimpleAssignmentExpressionViaOperator = function(expr) {
+    if (isInvalidLeftHandSide(expr)) {
+      this.throwError(expr, Message.InvalidLHSInAssignment);
+    }
+
+    var marker = this.createMarker(expr);
+    var right = this.parseAssignmentExpression();
+
+    return marker.update().apply(
+      Node.createAssignmentExpression("=", expr, right)
     );
   };
 
-  /*
-    SimpleAssignmentExpression :
-      PartialExpression
-      PartialExpression = AssignmentExpression
-  */
-  AssignmentExpressionParser.prototype.parseSimpleAssignmentExpression = function() {
-    var node = this.parsePartialExpression();
+  AssignmentExpressionParser.prototype.parseDestructuringAssignmentExpression = function() {
+    var marker = this.createMarker();
 
-    if (this.match("=")) {
-      if (node.type === Syntax.CallExpression) {
-        node = this._parseSimpleAssignmentCallExpression(node);
-      } else {
-        node = this._parseSimpleAssignmentExpression(node);
-      }
-    }
+    this.expect("#");
 
-    return node;
-  };
+    var left = this.parseDestructuringAssignmentLeft();
 
-  AssignmentExpressionParser.prototype._parseSimpleAssignmentCallExpression = function(node) {
     this.expect("=");
-
-    var marker = this.createMarker(node);
     var right = this.parseAssignmentExpression();
 
-    node.method.name = node.method.name + "_";
-    node.args.list   = node.args.list.concat(right);
-    if (node.stamp !== "[")  {
-      node.stamp = "=";
-    }
-
-    return marker.update().apply(node, true);
+    return marker.update().apply(
+      Node.createAssignmentExpression("=", left.list, right, left.remain)
+    );
   };
 
-  AssignmentExpressionParser.prototype._parseSimpleAssignmentExpression = function(node) {
-    if (!isLeftHandSide(node)) {
-      this.throwError(node, Message.InvalidLHSInAssignment);
-    }
-
-    var token = this.lex();
-    var right = this.parseAssignmentExpression();
-
-    return Node.createAssignmentExpression(token.value, node, right);
-  };
-
-  /*
-    DestructuringAssignmentLeft :
-      DestructingAssignmentLeftList
-      DestructingAssignmentLeftList ... Identifier
-  */
   AssignmentExpressionParser.prototype.parseDestructuringAssignmentLeft = function() {
-    var params = {};
-
-    params.list = this.parseDestructingAssignmentLeftList();
+    var params = {
+      list: this.parseDestructingAssignmentLeftList()
+    };
 
     if (this.match("...")) {
       this.lex();
@@ -119,11 +112,6 @@
     return params;
   };
 
-  /*
-    DestructingAssignmentLeftList :
-      Identifier
-      DestructingAssignmentLeftList , Identifier
-  */
   AssignmentExpressionParser.prototype.parseDestructingAssignmentLeftList = function() {
     var elemtns = [];
 
@@ -137,12 +125,12 @@
     return elemtns;
   };
 
-  function isLeftHandSide(expr) {
+  function isInvalidLeftHandSide(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
     case Syntax.EnvironmentExpresion:
-      return true;
+      return false;
     }
-    return false;
+    return true;
   }
 })(sc);

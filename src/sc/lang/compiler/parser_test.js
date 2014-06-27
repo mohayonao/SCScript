@@ -263,7 +263,7 @@
           error({ line: 1, column: 9, index: 8 }, Message.UnexpectedToken, ";"),
         ],
         "10 = a": [
-          error({ line: 1, column: 3, index: 2 }, Message.InvalidLHSInAssignment),
+          error({ line: 1, column: 5, index: 4 }, Message.InvalidLHSInAssignment),
         ],
         "#10 = []": [
           error({ line: 1, column: 2, index: 1 }, Message.UnexpectedNumber),

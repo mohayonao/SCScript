@@ -199,56 +199,6 @@
   };
 
   /*
-    PrimaryExpression :
-      ( ... )
-      { ... }
-      [ ... ]
-      ~ ...
-      ` ...
-      Keyword
-      Identifier
-      StringLiteral
-      ArgumentableValue
-  */
-  BaseParser.prototype.parsePrimaryExpression = function() {
-    var marker = this.createMarker();
-    var stamp = this.matchAny([ "(", "{", "[", "#", "`", "~" ]) || this.lookahead.type;
-    var expr;
-
-    switch (stamp) {
-    case "(":
-      expr = this.parseParentheses();
-      break;
-    case "{":
-      expr = this.parseBraces();
-      break;
-    case "[":
-      expr = this.parseListExpression();
-      break;
-    case "`":
-      expr = this.parseRefExpression();
-      break;
-    case "~":
-      expr = this.parseEnvironmentExpression();
-      break;
-    case Token.Keyword:
-      expr = this.parseKeywordExpression();
-      break;
-    case Token.Identifier:
-      expr = this.parsePrimaryIdentifier();
-      break;
-    case Token.StringLiteral:
-      expr = this.parseStringExpression();
-      break;
-    default:
-      expr = this.parseArgumentableValue(stamp);
-      break;
-    }
-
-    return marker.update().apply(expr);
-  };
-
-  /*
     EnvironmentExpresion :
       ~ LeftHandSideExpression
   */

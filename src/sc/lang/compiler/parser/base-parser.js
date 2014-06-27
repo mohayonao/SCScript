@@ -198,27 +198,6 @@
     return marker.update().apply(expr, true);
   };
 
-  /*
-    HashedExpression :
-      ImmutableListExpression
-      ClosedFunctionExpression
-  */
-  BaseParser.prototype.parseHashedExpression = function() {
-    var lookahead = this.lookahead;
-
-    var token = this.expect("#");
-
-    switch (this.matchAny([ "[", "{" ])) {
-    case "[":
-      return this.unlex(token).parseImmutableListExpression(lookahead);
-    case "{":
-      return this.unlex(token).parseClosedFunctionExpression();
-    }
-    this.throwUnexpected(this.lookahead);
-
-    return {};
-  };
-
   BaseParser.prototype.parseKeywordExpression = function() {
     if (Keywords[this.lookahead.value] === "keyword") {
       this.throwUnexpected(this.lookahead);

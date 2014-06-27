@@ -33,7 +33,7 @@
     case "~":
       return this.parseEnvironmentExpression();
     case Token.Keyword:
-      return this.parseKeywordExpression();
+      return this.parseThisExpression();
     case Token.Identifier:
       return this.parsePrimaryIdentifier();
     case Token.StringLiteral:

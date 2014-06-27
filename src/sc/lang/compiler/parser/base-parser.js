@@ -198,12 +198,14 @@
     return marker.update().apply(expr, true);
   };
 
-  BaseParser.prototype.parseKeywordExpression = function() {
-    if (Keywords[this.lookahead.value] === "keyword") {
-      this.throwUnexpected(this.lookahead);
+  BaseParser.prototype.parseThisExpression = function() {
+    var node = this.lex();
+
+    if (Keywords[node.value] !== "function") {
+      this.throwUnexpected(node);
     }
 
-    return Node.createThisExpression(this.lex().value);
+    return Node.createThisExpression(node.value);
   };
 
   BaseParser.prototype.parseLabel = function() {

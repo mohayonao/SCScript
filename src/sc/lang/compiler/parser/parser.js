@@ -31,8 +31,7 @@
       this.state = {
         innerElements: false,
         immutableList: false,
-        underscore: [],
-        binaryPrecedence: {}
+        underscore: []
       };
       this.scope = new Scope(this);
     }

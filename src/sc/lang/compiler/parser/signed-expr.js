@@ -2,7 +2,6 @@
   "use strict";
 
   require("./parser");
-  require("./primary-expr");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;

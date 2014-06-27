@@ -3,15 +3,6 @@
 
   require("./interpolate-string");
   require("./parser");
-  require("./parentheses");
-  require("./braces");
-  require("./expression");
-  require("./ref-expr");
-  require("./envir-expr");
-  require("./this-expr");
-  require("./primary-expr");
-  require("./hashed-expr");
-  require("./literal");
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;

@@ -2,8 +2,6 @@
   "use strict";
 
   require("./parser");
-  require("./identifier");
-  require("./partial-expr");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;

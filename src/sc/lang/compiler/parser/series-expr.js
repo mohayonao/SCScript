@@ -2,7 +2,6 @@
   "use strict";
 
   require("./parser");
-  require("./expression");
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;

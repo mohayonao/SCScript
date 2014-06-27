@@ -5,8 +5,7 @@
   require("./lexer");
   require("./marker");
   require("./node");
-  require("./parser/parser");
-  require("./parser/program");
+  require("./parser/installer");
 
   var Lexer = sc.lang.compiler.Lexer;
   var Parser = sc.lang.compiler.Parser;

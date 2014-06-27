@@ -2,7 +2,6 @@
   "use strict";
 
   require("./parser");
-  require("./binop-expr");
 
   var Parser = sc.lang.compiler.Parser;
   var Node = sc.lang.compiler.Node;

@@ -8,12 +8,14 @@
   var Parser = sc.lang.compiler.Parser;
 
   Parser.addParseMethod("ThisExpression", function() {
+    var marker = this.createMarker();
     var node = this.lex();
 
     if (Keywords[node.value] !== "function") {
       this.throwUnexpected(node);
     }
+    node = Node.createThisExpression(node.value);
 
-    return Node.createThisExpression(node.value);
+    return marker.update().apply(node);
   });
 })(sc);

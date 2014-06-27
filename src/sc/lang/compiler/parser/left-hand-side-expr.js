@@ -2,10 +2,6 @@
   "use strict";
 
   require("./parser");
-  require("./signed-expr");
-  require("./expression");
-  require("./list-expr");
-  require("./list-indexer");
 
   var Parser = sc.lang.compiler.Parser;
   var Syntax = sc.lang.compiler.Syntax;

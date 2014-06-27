@@ -2,8 +2,6 @@
   "use strict";
 
   require("./parser");
-  require("./expression");
-  require("./label");
 
   /*
   */

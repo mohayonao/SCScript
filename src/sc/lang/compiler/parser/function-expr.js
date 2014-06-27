@@ -64,8 +64,12 @@
       # FunctionExpression
   */
   Parser.addParseMethod("ClosedFunctionExpression", function() {
+    var marker = this.createMarker();
     this.expect("#");
-    return this.parseFunctionExpression({ closed: true });
+
+    var expr = this.parseFunctionExpression({ closed: true });
+
+    return marker.update().apply(expr, true);
   });
 
   function FunctionExpressionParser(parent) {
@@ -75,6 +79,9 @@
 
   FunctionExpressionParser.prototype.parse = function(opts) {
     opts = opts || /* istanbul ignore next */ {};
+
+    var marker = this.createMarker();
+
     this.expect("{");
 
     var node = this.withScope(function() {
@@ -85,7 +92,7 @@
 
     this.expect("}");
 
-    return node;
+    return marker.update().apply(node);
   };
 
   FunctionExpressionParser.prototype.parseFunctionArgumentDefinition = function() {

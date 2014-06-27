@@ -13,14 +13,13 @@
   Parser.addParseMethod("HashedExpression", function() {
     var token = this.expect("#");
 
-    switch (this.matchAny([ "[", "{" ])) {
-    case "[":
+    if (this.match("[")) {
       return this.unlex(token).parseImmutableListExpression();
-    case "{":
+    }
+    if (this.match("{")) {
       return this.unlex(token).parseClosedFunctionExpression();
     }
-    this.throwUnexpected(this.lookahead);
 
-    return {};
+    return this.throwUnexpected(token);
   });
 })(sc);

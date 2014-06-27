@@ -10,8 +10,14 @@
   Parser.addParseMethod("LabelAsSymbol", function() {
     var marker = this.createMarker();
 
+    var node = this.lex();
+
+    if (node.type !== Token.Label) {
+      this.throwUnexpected(node);
+    }
+
     var label = Node.createLiteral({
-      value: this.lex().value,
+      value: node.value,
       type: Token.SymbolLiteral
     });
 

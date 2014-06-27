@@ -49,6 +49,72 @@
               start: { line: 1, column: 0 },
               end: { line: 1, column: 11 },
             }
+          },
+          '"ab" "cd" "ef"': {
+            type: Syntax.Literal,
+            value: "abcdef",
+            valueType: Token.StringLiteral,
+            range: [ 0, 14 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 14 },
+            }
+          },
+          '"ab" "#{cd}"': {
+            type: Syntax.BinaryExpression,
+            operator: "++",
+            left: {
+              type: Syntax.Literal,
+              value: "ab",
+              valueType: Token.StringLiteral
+            },
+            right: {
+              type: Syntax.CallExpression,
+              callee: {
+                type: Syntax.Identifier,
+                name: "cd"
+              },
+              method: {
+                type: Syntax.Identifier,
+                name: "asString"
+              },
+              args: {
+                list: []
+              }
+            },
+            range: [ 0, 12 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 12 },
+            }
+          },
+          '"#{ab}" "cd"': {
+            type: Syntax.BinaryExpression,
+            operator: "++",
+            left: {
+              type: Syntax.CallExpression,
+              callee: {
+                type: Syntax.Identifier,
+                name: "ab"
+              },
+              method: {
+                type: Syntax.Identifier,
+                name: "asString"
+              },
+              args: {
+                list: []
+              }
+            },
+            right: {
+              type: Syntax.Literal,
+              value: "cd",
+              valueType: Token.StringLiteral
+            },
+            range: [ 0, 12 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 12 },
+            }
           }
         }).pairs().each(function(items) {
           var p = new Parser(null, new Lexer(items[0], { loc: true, range: true } ));

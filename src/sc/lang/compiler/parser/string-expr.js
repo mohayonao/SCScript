@@ -5,6 +5,7 @@
   require("./interpolate-string");
   require("../lexer");
 
+  var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
   var Lexer = sc.lang.compiler.Lexer;
@@ -33,6 +34,15 @@
     }
 
     var expr = this.parseStringLiteral();
+
+    while (this.lookahead.type === Token.StringLiteral) {
+      var next = this.parseStringLiteral();
+      if (expr.type === Syntax.Literal && next.type === Syntax.Literal) {
+        expr.value += next.value;
+      } else {
+        expr = Node.createBinaryExpression({ value: "++" }, expr, next);
+      }
+    }
 
     return marker.update().apply(expr, true);
   };

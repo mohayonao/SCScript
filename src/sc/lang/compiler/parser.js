@@ -27,6 +27,7 @@
   require("./parser/hashed-expr");
   require("./parser/identifier");
   require("./parser/label");
+  require("./parser/literal");
   require("./parser/parentheses");
   require("./parser/braces");
 

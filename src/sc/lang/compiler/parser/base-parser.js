@@ -8,7 +8,6 @@
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
-  var Node = sc.lang.compiler.Node;
 
   var Scope = sc.lang.compiler.scope({
     begin: function() {
@@ -163,14 +162,6 @@
       expr = {};
       this.throwUnexpected(this.lex());
     }
-
-    return marker.update().apply(expr);
-  };
-
-  BaseParser.prototype.parseLiteral = function() {
-    var marker = this.createMarker();
-
-    var expr = Node.createLiteral(this.lex());
 
     return marker.update().apply(expr);
   };

@@ -33,26 +33,14 @@
   var Lexer = sc.lang.compiler.lexer;
   var BaseParser = sc.lang.compiler.BaseParser;
 
-  function Parser(source, opts) {
-    opts = opts || /* istanbul ignore next */ {};
-
-    BaseParser.call(this, null, new Lexer(source, opts));
-    this.opts = opts;
-  }
-  sc.libs.extend(Parser, BaseParser);
-
-  Parser.prototype.parse = function() {
-    return this.parseProgram();
-  };
-
   var parse = function(source, opts) {
     opts = opts || /* istanbul ignore next */ {};
 
-    var instance = new Parser(source, opts);
-    var ast = instance.parse();
+    var parser = new BaseParser(null, new Lexer(source, opts));
+    var ast = parser.parseProgram();
 
-    if (!!opts.tolerant && typeof instance.lexer.errors !== "undefined") {
-      ast.errors = instance.lexer.errors;
+    if (!!opts.tolerant && typeof parser.lexer.errors !== "undefined") {
+      ast.errors = parser.lexer.errors;
     }
 
     return ast;

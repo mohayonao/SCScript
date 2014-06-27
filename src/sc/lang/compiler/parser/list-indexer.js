@@ -5,6 +5,10 @@
 
   var BaseParser = sc.lang.compiler.BaseParser;
 
+  BaseParser.addMethod("parseListIndexer", function() {
+    return new ListIndexerParser(this).parse();
+  });
+
   function ListIndexerParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state);
     this.parent = parent;
@@ -97,6 +101,4 @@
     // [first, second..last]
     return [ first, second, last ];
   };
-
-  sc.lang.compiler.ListIndexerParser = ListIndexerParser;
 })(sc);

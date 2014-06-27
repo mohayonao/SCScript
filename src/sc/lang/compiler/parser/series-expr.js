@@ -7,6 +7,10 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
+  BaseParser.addMethod("parseSeriesExpression", function() {
+    return new SeriesExpressionParser(this).parse();
+  });
+
   function SeriesExpressionParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state);
     this.parent = parent;
@@ -73,6 +77,4 @@
 
     return [ first, second, last ];
   };
-
-  sc.lang.compiler.SeriesExpressionParser = SeriesExpressionParser;
 })(sc);

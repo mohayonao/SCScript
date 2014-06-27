@@ -52,6 +52,13 @@
 
   */
 
+  BaseParser.addMethod("parseFunctionExpression", function(opts) {
+    return new FunctionExpressionParser(this).parse(opts);
+  });
+  BaseParser.addMethod("parseFunctionBody", function(match) {
+    return new FunctionExpressionParser(this).parseFunctionBody(match);
+  });
+
   function FunctionExpressionParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state, parent.scope);
     this.parent = parent;
@@ -92,7 +99,7 @@
 
     if (this.match("...")) {
       this.lex();
-      args.remain = this.parent.parseVariableIdentifier();
+      args.remain = this.parseVariableIdentifier();
       this.scope.add("arg", args.remain.name);
     }
 
@@ -121,7 +128,7 @@
 
   FunctionExpressionParser.prototype.parseFunctionArgumentElement = function() {
     var node = this._parseArgVarElement("arg", function() {
-      return this.parent.parseArgumentableValue();
+      return this.parseArgumentableValue();
     });
 
     if (node.init && !isValidArgumentValue(node.init)) {
@@ -177,7 +184,7 @@
 
   FunctionExpressionParser.prototype.parseVariableDeclarationElement = function() {
     return this._parseArgVarElement("var", function() {
-      return this.parent.parseAssignmentExpression();
+      return this.parseAssignmentExpression();
     });
   };
 
@@ -199,7 +206,7 @@
   FunctionExpressionParser.prototype._parseArgVarElement = function(type, func) {
     var marker = this.createMarker();
 
-    var id = this.parent.parseVariableIdentifier();
+    var id = this.parseVariableIdentifier();
     this.scope.add(type, id.name);
 
     var init = null;
@@ -225,6 +232,4 @@
 
     return false;
   }
-
-  sc.lang.compiler.FunctionExpressionParser = FunctionExpressionParser;
 })(sc);

@@ -8,6 +8,10 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
+  BaseParser.addMethod("parseAssignmentExpression", function() {
+    return new AssignmentExpressionParser(this).parse();
+  });
+
   function AssignmentExpressionParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state);
     this.parent = parent;
@@ -59,7 +63,7 @@
       PartialExpression = AssignmentExpression
   */
   AssignmentExpressionParser.prototype.parseSimpleAssignmentExpression = function() {
-    var node = this.parent.parsePartialExpression();
+    var node = this.parsePartialExpression();
 
     if (this.match("=")) {
       if (node.type === Syntax.CallExpression) {
@@ -110,7 +114,7 @@
 
     if (this.match("...")) {
       this.lex();
-      params.remain = this.parent.parseVariableIdentifier();
+      params.remain = this.parseVariableIdentifier();
     }
 
     return params;
@@ -125,7 +129,7 @@
     var elemtns = [];
 
     do {
-      elemtns.push(this.parent.parseVariableIdentifier());
+      elemtns.push(this.parseVariableIdentifier());
       if (this.match(",")) {
         this.lex();
       }
@@ -142,6 +146,4 @@
     }
     return false;
   }
-
-  sc.lang.compiler.AssignmentExpressionParser = AssignmentExpressionParser;
 })(sc);

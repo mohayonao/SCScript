@@ -8,6 +8,10 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
+  BaseParser.addMethod("parseGeneratorExpression", function() {
+    return new GeneratorExpressionParser(this).parse();
+  });
+
   function GeneratorExpressionParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state);
     this.parent = parent;
@@ -34,6 +38,4 @@
 
     return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
   };
-
-  sc.lang.compiler.GeneratorExpressionParser = GeneratorExpressionParser;
 })(sc);

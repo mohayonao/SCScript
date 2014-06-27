@@ -8,6 +8,10 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
+  BaseParser.addMethod("parseBinaryExpression", function() {
+    return new BinaryExpressionParser(this).parse();
+  });
+
   function BinaryExpressionParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state);
     this.parent = parent;
@@ -16,13 +20,13 @@
 
   BinaryExpressionParser.prototype.parse = function(node) {
     var marker = this.createMarker();
-    var left   = this.parent.parseLeftHandSideExpression(node);
+    var left   = this.parseLeftHandSideExpression(node);
     var operator = this.lookahead;
 
-    var prec = calcBinaryPrecedence(operator, this.parent.binaryPrecedence);
+    var prec = calcBinaryPrecedence(operator, this.state.binaryPrecedence);
     if (prec === 0) {
       if (node) {
-        return this.parent.parseLeftHandSideExpression(node);
+        return this.parseLeftHandSideExpression(node);
       }
       return left;
     }
@@ -37,12 +41,12 @@
   // TODO: fix to read easily
   BinaryExpressionParser.prototype.sortByBinaryPrecedence = function(left, operator, marker) {
     var markers = [ marker, this.createMarker() ];
-    var right = this.parent.parseLeftHandSideExpression();
+    var right = this.parseLeftHandSideExpression();
 
     var stack = [ left, operator, right ];
 
     var prec, expr;
-    while ((prec = calcBinaryPrecedence(this.lookahead, this.parent.binaryPrecedence)) > 0) {
+    while ((prec = calcBinaryPrecedence(this.lookahead, this.state.binaryPrecedence)) > 0) {
       prec = sortByBinaryPrecedence(prec, stack, markers);
 
       // Shift.
@@ -53,7 +57,7 @@
       stack.push(token);
 
       markers.push(this.createMarker());
-      expr = this.parent.parseLeftHandSideExpression();
+      expr = this.parseLeftHandSideExpression();
       stack.push(expr);
     }
 
@@ -83,7 +87,7 @@
     this.lex();
 
     var lookahead = this.lookahead;
-    var adverb = this.parent.parsePrimaryExpression();
+    var adverb = this.parsePrimaryExpression();
 
     if (adverb.type === Syntax.Literal) {
       return adverb;
@@ -143,6 +147,7 @@
     return prec;
   }
 
+  // TODO: move sc.config
   BinaryExpressionParser.binaryPrecedenceDefaults = {
     "?": 1,
     "??": 1,
@@ -171,5 +176,6 @@
     "!": 12
   };
 
+  // TODO: remove
   sc.lang.compiler.BinaryExpressionParser = BinaryExpressionParser;
 })(sc);

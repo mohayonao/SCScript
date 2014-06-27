@@ -19,6 +19,10 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
+  BaseParser.addMethod("parseListExpression", function() {
+    return new ListExpressionParser(this).parse();
+  });
+
   function ListExpressionParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state);
     this.parent = parent;
@@ -57,7 +61,7 @@
     var elements = [];
 
     if (this.lookahead.type === Token.Label) {
-      elements.push(this.parent.parseLabel(), this.parseExpression());
+      elements.push(this.parseLabel(), this.parseExpression());
     } else {
       elements.push(this.parseExpression());
       if (this.match(":")) {
@@ -68,6 +72,4 @@
 
     return elements;
   };
-
-  sc.lang.compiler.ListExpressionParser = ListExpressionParser;
 })(sc);

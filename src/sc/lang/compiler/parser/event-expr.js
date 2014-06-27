@@ -9,6 +9,10 @@
   var Node = sc.lang.compiler.Node;
   var BaseParser = sc.lang.compiler.BaseParser;
 
+  BaseParser.addMethod("parseEventExpression", function() {
+    return new EventExpressionParser(this).parse();
+  });
+
   function EventExpressionParser(parent) {
     BaseParser.call(this, parent.lexer, parent.state);
     this.parent = parent;
@@ -24,7 +28,7 @@
     var node, elements = [];
     while (this.hasNextToken() && !this.match(")")) {
       if (this.lookahead.type === Token.Label) {
-        node = this.parent.parseLabel();
+        node = this.parseLabel();
       } else {
         node = this.parseExpression();
         this.expect(":");
@@ -41,6 +45,4 @@
 
     return Node.createEventExpression(elements);
   };
-
-  sc.lang.compiler.EventExpressionParser = EventExpressionParser;
 })(sc);

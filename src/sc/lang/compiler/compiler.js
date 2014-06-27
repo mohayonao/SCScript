@@ -30,7 +30,6 @@
       EnvironmentExpresion: "EnvironmentExpresion",
       Identifier: "Identifier",
       ListExpression: "ListExpression",
-      Label: "Label",
       Literal: "Literal",
       EventExpression: "EventExpression",
       Program: "Program",

@@ -167,16 +167,5 @@
     return marker.update().apply(expr);
   };
 
-  BaseParser.prototype.parseLabel = function() {
-    var marker = this.createMarker();
-
-    var label = Node.createLiteral({
-      value: this.lex().value,
-      type: Token.SymbolLiteral
-    });
-
-    return marker.update().apply(label);
-  };
-
   sc.lang.compiler.BaseParser = BaseParser;
 })(sc);

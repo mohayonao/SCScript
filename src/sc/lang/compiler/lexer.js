@@ -240,5 +240,5 @@
     return this.EOFToken();
   };
 
-  sc.lang.compiler.lexer = Lexer;
+  sc.lang.compiler.Lexer = Lexer;
 })(sc);

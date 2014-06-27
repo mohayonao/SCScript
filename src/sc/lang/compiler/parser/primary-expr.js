@@ -15,7 +15,7 @@
 
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
-  var Lexer = sc.lang.compiler.lexer;
+  var Lexer = sc.lang.compiler.Lexer;
   var InterpolateString = sc.lang.compiler.InterpolateString;
   var Parser = sc.lang.compiler.Parser;
 

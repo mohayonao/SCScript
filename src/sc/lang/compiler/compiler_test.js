@@ -12,14 +12,14 @@
       var opts = Math.random();
       var tokenize = this.spy(sc.test.func());
 
-      this.stub(sc.lang.compiler, "lexer", function() {
+      this.stub(sc.lang.compiler, "Lexer", function() {
         return { tokenize: tokenize };
       });
 
       var test = sc.lang.compiler.tokenize(source, opts);
 
-      expect(sc.lang.compiler.lexer).to.be.calledWithNew;
-      expect(sc.lang.compiler.lexer).to.be.calledWith(source, opts);
+      expect(sc.lang.compiler.Lexer).to.be.calledWithNew;
+      expect(sc.lang.compiler.Lexer).to.be.calledWith(source, opts);
       expect(tokenize).to.be.calledLastIn(test);
     }));
     it(".parse", sinon.test(function() {

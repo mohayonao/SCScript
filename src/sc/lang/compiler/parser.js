@@ -8,7 +8,7 @@
   require("./parser/parser");
   require("./parser/program");
 
-  var Lexer = sc.lang.compiler.lexer;
+  var Lexer = sc.lang.compiler.Lexer;
   var Parser = sc.lang.compiler.Parser;
 
   var parse = function(source, opts) {

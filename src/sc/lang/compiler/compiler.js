@@ -90,7 +90,7 @@
       "!": 12
     },
     tokenize: function(source, opts) {
-      return new sc.lang.compiler.lexer(source, opts).tokenize();
+      return new sc.lang.compiler.Lexer(source, opts).tokenize();
     },
     parse: function(source, opts) {
       return sc.lang.compiler.parser.parse(source, opts);

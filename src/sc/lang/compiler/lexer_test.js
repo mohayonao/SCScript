@@ -7,7 +7,7 @@
   var strlib = sc.libs.strlib;
   var Token   = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
-  var Lexer   = sc.lang.compiler.lexer;
+  var Lexer   = sc.lang.compiler.Lexer;
   var Marker  = sc.lang.compiler.Marker;
 
   function s(str) {
@@ -34,7 +34,7 @@
     return e;
   }
 
-  describe("sc.lang.compiler.lexer", function() {
+  describe("sc.lang.compiler.Lexer", function() {
     it("Lexer", function() {
       var lexer, token, test;
 

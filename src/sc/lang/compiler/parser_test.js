@@ -430,7 +430,7 @@
           error({ line: 1, column: 21, index: 20 }, Message.UnexpectedToken, "]"),
         ],
         "~ID": [
-          error({ line: 1, column: 4, index: 3 }, Message.UnexpectedIdentifier),
+          error({ line: 1, column: 2, index: 1 }, Message.UnexpectedIdentifier),
         ],
       };
 

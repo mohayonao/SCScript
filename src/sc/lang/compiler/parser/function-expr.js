@@ -87,7 +87,7 @@
     var node = this.withScope(function() {
       var args = this.parseFunctionArgumentDefinition();
       var body = this.parseFunctionBody();
-      return Node.createFunctionExpression(args, body, opts.closed, false, opts.blockList);
+      return Node.createFunctionExpression(args, body, opts);
     });
 
     this.expect("}");

@@ -31,9 +31,7 @@
           this.scope.add("arg", this.state.underscore[i].name);
         }
 
-        return Node.createFunctionExpression(
-          { list: args }, [ node ], false, true, false
-        );
+        return Node.createFunctionExpression({ list: args }, [ node ], { partial: true });
       });
     }
 

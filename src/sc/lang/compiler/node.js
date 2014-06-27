@@ -58,7 +58,7 @@
         id: id
       };
     },
-    createFunctionExpression: function(args, body, closed, partial, blocklist) {
+    createFunctionExpression: function(args, body, opts) {
       var node;
 
       node = {
@@ -68,14 +68,14 @@
       if (args) {
         node.args = args;
       }
-      if (closed) {
+      if (opts.closed) {
         node.closed = true;
       }
-      if (partial) {
+      if (opts.partial) {
         node.partial = true;
       }
-      if (blocklist) {
-        node.blocklist = true;
+      if (opts.blockList) {
+        node.blockList = true;
       }
       return node;
     },

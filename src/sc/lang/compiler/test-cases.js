@@ -4622,7 +4622,7 @@
                           }
                         }
                       ],
-                      blocklist: true,
+                      blockList: true,
                       range: [ 12, 22 ],
                       loc: {
                         start: { line: 1, column: 12 },
@@ -5959,7 +5959,7 @@
                       }
                     }
                   ],
-                  blocklist: true,
+                  blockList: true,
                   range: [ 9, 23 ],
                   loc: {
                     start: { line: 1, column: 9 },
@@ -6001,7 +6001,7 @@
                 type: Syntax.FunctionExpression,
                 body: [
                 ],
-                blocklist: true,
+                blockList: true,
                 range: [ 2, 4 ],
                 loc: {
                   start: { line: 1, column: 2 },
@@ -6824,7 +6824,7 @@
                       }
                     }
                   ],
-                  blocklist: true,
+                  blockList: true,
                   range: [ 9, 15 ],
                   loc: {
                     start: { line: 1, column: 9 },
@@ -6845,7 +6845,7 @@
                       }
                     }
                   ],
-                  blocklist: true,
+                  blockList: true,
                   range: [ 16, 22 ],
                   loc: {
                     start: { line: 1, column: 16 },
@@ -6964,7 +6964,7 @@
                       }
                     }
                   ],
-                  blocklist: true,
+                  blockList: true,
                   range: [ 6, 19 ],
                   loc: {
                     start: { line: 1, column: 6 },
@@ -7084,7 +7084,7 @@
                     }
                   ],
                   closed: true,
-                  blocklist: true,
+                  blockList: true,
                   range: [ 6, 19 ],
                   loc: {
                     start: { line: 1, column: 6 },
@@ -7190,7 +7190,7 @@
                   }
                 }
               ],
-              blocklist: true,
+              blockList: true,
               range: [ 5, 27 ],
               loc: {
                 start: { line: 1, column: 5 },

@@ -101,7 +101,7 @@
 
   Lexer.prototype.unlex = function(token) {
     this.lookahead = token;
-    this.index = token.range[1];
+    this.index = token.range[0];
     this.lineNumber = token.lineNumber;
     this.lineStart = token.lineStart;
   };

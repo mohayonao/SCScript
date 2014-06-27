@@ -391,7 +391,7 @@
           error({ line: 1, column: 10, index: 9 }, Message.UnexpectedEOS),
         ],
         "{: a, a<-[], b<-[] }": [
-          error({ line: 1, column: 2, index: 1 }, Message.NotImplemented, "generator literal"),
+          error({ line: 1, column: 1, index: 0 }, Message.NotImplemented, "generator literal"),
         ],
         "if {: a, a <-[], a } ": [
           error({ line: 1, column: 5, index: 4 }, Message.UnexpectedToken, ":"),

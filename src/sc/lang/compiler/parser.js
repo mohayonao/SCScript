@@ -24,6 +24,7 @@
   require("./parser/generator-expr");
   require("./parser/hashed-expr");
   require("./parser/identifier");
+  require("./parser/parentheses");
   require("./parser/braces");
 
   var Lexer = sc.lang.compiler.lexer;

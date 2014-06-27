@@ -130,10 +130,7 @@
         expr = Node.createCallExpression(null, expr, { list: [] });
       }
     }
-    var disallowGenerator = this.state.disallowGenerator;
-    this.state.disallowGenerator = true;
-    node = this.parseBraces({ blocklist: true });
-    this.state.disallowGenerator = disallowGenerator;
+    node = this.parseBraces({ blockList: true });
 
     // TODO: refactoring
     if (expr.callee === null) {

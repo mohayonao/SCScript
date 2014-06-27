@@ -30,7 +30,6 @@
       this.lexer = lexer;
       this.state = {
         closedFunction: false,
-        disallowGenerator: false,
         innerElements: false,
         immutableList: false,
         underscore: [],

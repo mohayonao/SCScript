@@ -19,12 +19,12 @@
     this.unlex(token);
 
     var expr;
-    if (!opts.blocklist && matchColon) {
+    if (!opts.blockList && matchColon) {
       expr = this.parseGeneratorExpression();
     } else {
       expr = this.parseFunctionExpression({
         closed: this.state.closedFunction,
-        blocklist: opts.blocklist
+        blockList: opts.blockList
       });
     }
 

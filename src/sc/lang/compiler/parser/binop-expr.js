@@ -14,6 +14,18 @@
 
   function BinaryExpressionParser(parent) {
     BaseParser.call(this, parent);
+
+    // TODO: fix (this.binaryPrecedence = sc.config.binaryPrecedence)
+    var binaryPrecedence;
+    if (sc.config.binaryPrecedence) {
+      if (typeof sc.config.binaryPrecedence === "object") {
+        binaryPrecedence = sc.config.binaryPrecedence;
+      } else {
+        binaryPrecedence = sc.lang.compiler.binaryPrecedenceDefaults;
+      }
+    }
+
+    this.binaryPrecedence = binaryPrecedence || {};
   }
   sc.libs.extend(BinaryExpressionParser, BaseParser);
 
@@ -22,7 +34,7 @@
     var left   = this.parseLeftHandSideExpression(node);
     var operator = this.lookahead;
 
-    var prec = calcBinaryPrecedence(operator, this.state.binaryPrecedence);
+    var prec = calcBinaryPrecedence(operator, this.binaryPrecedence);
     if (prec === 0) {
       if (node) {
         return this.parseLeftHandSideExpression(node);
@@ -45,7 +57,7 @@
     var stack = [ left, operator, right ];
 
     var prec, expr;
-    while ((prec = calcBinaryPrecedence(this.lookahead, this.state.binaryPrecedence)) > 0) {
+    while ((prec = calcBinaryPrecedence(this.lookahead, this.binaryPrecedence)) > 0) {
       prec = sortByBinaryPrecedence(prec, stack, markers);
 
       // Shift.
@@ -145,36 +157,4 @@
 
     return prec;
   }
-
-  // TODO: move sc.config
-  BinaryExpressionParser.binaryPrecedenceDefaults = {
-    "?": 1,
-    "??": 1,
-    "!?": 1,
-    "->": 2,
-    "||": 3,
-    "&&": 4,
-    "|": 5,
-    "&": 6,
-    "==": 7,
-    "!=": 7,
-    "===": 7,
-    "!==": 7,
-    "<": 8,
-    ">": 8,
-    "<=": 8,
-    ">=": 8,
-    "<<": 9,
-    ">>": 9,
-    "+>>": 9,
-    "+": 10,
-    "-": 10,
-    "*": 11,
-    "/": 11,
-    "%": 11,
-    "!": 12
-  };
-
-  // TODO: remove
-  sc.lang.compiler.BinaryExpressionParser = BinaryExpressionParser;
 })(sc);

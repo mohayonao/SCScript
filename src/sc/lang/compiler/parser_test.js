@@ -189,9 +189,9 @@
 
         mocha$it(s(source), function() {
           result = items.ast;
-          test   = SCScript.parse(source, {
-            range: true, binaryPrecedence: items.binaryPrecedence
-          });
+          sc.config.binaryPrecedence = items.binaryPrecedence;
+          test   = SCScript.parse(source, { range: true });
+          sc.config.binaryPrecedence = null;
           expect(test).to.eql(result);
         });
       });

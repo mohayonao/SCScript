@@ -32,24 +32,12 @@
 
   var Lexer = sc.lang.compiler.lexer;
   var BaseParser = sc.lang.compiler.BaseParser;
-  var BinaryExpressionParser = sc.lang.compiler.BinaryExpressionParser;
 
   function Parser(source, opts) {
     opts = opts || /* istanbul ignore next */ {};
 
     BaseParser.call(this, null, new Lexer(source, opts));
     this.opts = opts;
-
-    var binaryPrecedence;
-    if (this.opts.binaryPrecedence) {
-      if (typeof this.opts.binaryPrecedence === "object") {
-        binaryPrecedence = this.opts.binaryPrecedence;
-      } else {
-        binaryPrecedence = BinaryExpressionParser.binaryPrecedenceDefaults;
-      }
-    }
-
-    this.state.binaryPrecedence = binaryPrecedence || {};
   }
   sc.libs.extend(Parser, BaseParser);
 

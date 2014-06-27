@@ -296,10 +296,7 @@
           // error({ line: 1, column: 8, index: 7 }, Message.UnexpectedIdentifier),
         ],
         "a[]": [
-          error({ line: 1, column: 4, index: 3 }, Message.UnexpectedToken, "]"),
-        ],
-        "a[1, 2]": [
-          error({ line: 1, column: 7, index: 6 }, Message.UnexpectedToken, "]"),
+          error({ line: 1, column: 3, index: 2 }, Message.UnexpectedToken, "]"),
         ],
         "a[,2..]": [
           error({ line: 1, column: 3, index: 2 }, Message.UnexpectedToken, ","),
@@ -399,8 +396,8 @@
           error({ line: 1, column: 8, index: 7 }, Message.UnexpectedToken, ","),
           error({ line: 1, column: 10, index: 9 }, Message.UnexpectedIdentifier),
           error({ line: 1, column: 12, index: 11 }, Message.UnexpectedToken, "<-"),
-          error({ line: 1, column: 16, index: 15 }, Message.UnexpectedToken, "]"),
-          // error({ line: 1, column: 20, index: 19 }, Message.UnexpectedToken, "}"),
+          error({ line: 1, column: 15, index: 14 }, Message.UnexpectedToken, "]"),
+          error({ line: 1, column: 16, index: 15 }, Message.UnexpectedToken, ","),
         ],
         "a(1, 2, ": [
           error({ line: 1, column: 9, index: 8 }, Message.UnexpectedEOS),

@@ -221,20 +221,6 @@
   };
 
   /*
-    RefExpression
-  */
-  BaseParser.prototype.parseRefExpression = function() {
-    var marker = this.createMarker();
-
-    this.expect("`");
-
-    var expr = this.parseLeftHandSideExpression();
-    expr = Node.createUnaryExpression("`", expr);
-
-    return marker.update().apply(expr, true);
-  };
-
-  /*
     HashedExpression :
       ImmutableListExpression
       ClosedFunctionExpression

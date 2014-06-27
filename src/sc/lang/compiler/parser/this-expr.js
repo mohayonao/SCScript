@@ -9,13 +9,14 @@
 
   Parser.addParseMethod("ThisExpression", function() {
     var marker = this.createMarker();
-    var node = this.lex();
 
+    var node = this.lex();
     if (Keywords[node.value] !== "function") {
       this.throwUnexpected(node);
     }
-    node = Node.createThisExpression(node.value);
 
-    return marker.update().apply(node);
+    return marker.update().apply(
+      Node.createThisExpression(node.value)
+    );
   });
 })(sc);

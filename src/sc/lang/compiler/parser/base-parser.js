@@ -155,7 +155,7 @@
     case Token.NilLiteral:
     case Token.SymbolLiteral:
     case Token.TrueLiteral:
-      expr = Node.createLiteral(this.lex());
+      expr = this.parseLiteral();
       break;
     }
 
@@ -163,6 +163,14 @@
       expr = {};
       this.throwUnexpected(this.lex());
     }
+
+    return marker.update().apply(expr);
+  };
+
+  BaseParser.prototype.parseLiteral = function() {
+    var marker = this.createMarker();
+
+    var expr = Node.createLiteral(this.lex());
 
     return marker.update().apply(expr);
   };

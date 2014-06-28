@@ -9,48 +9,40 @@
   var Node = sc.lang.compiler.Node;
 
   Parser.addParseMethod("LeftHandSideExpression", function() {
-    return new LeftHandSideExpressionParser(this).parse();
+    return new LHSExpressionParser(this).parse();
   });
 
-  function LeftHandSideExpressionParser(parent) {
+  function LHSExpressionParser(parent) {
     Parser.call(this, parent);
   }
-  sc.libs.extend(LeftHandSideExpressionParser, Parser);
+  sc.libs.extend(LHSExpressionParser, Parser);
 
   /*
     LeftHandSideExpression :
       TODO: write
   */
-  LeftHandSideExpressionParser.prototype.parse = function() {
+  LHSExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
     var expr = this.parseSignedExpression();
     var prev = null;
 
     var stamp;
     while ((stamp = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
-      var lookahead = this.lookahead;
-      if ((prev === "{" && (stamp === "(" || stamp === "[")) ||
-          (prev === "(" && stamp === "(")) {
-        this.throwUnexpected(lookahead);
+      var err = false;
+      err = err || (prev === "(" && stamp === "(");
+      err = err || (prev === "{" && stamp === "(");
+      err = err || (prev === "[" && stamp === "(");
+      err = err || (prev === "[" && stamp === "{");
+      if (err) {
+        this.throwUnexpected(this.lookahead);
       }
-      switch (stamp) {
-      case "(":
-        expr = this.parseParenthesis(expr);
-        break;
-      case "#":
-        expr = this.parseClosedBrace(expr);
-        break;
-      case "{":
-        expr = this.parseBrace(expr);
-        break;
-      case "[":
-        expr = this.parseBracket(expr);
-        break;
-      case ".":
-        expr = this.parseDot(expr);
-        break;
-      }
+
+      expr = this.parseLHSChainExpression(stamp, expr);
       marker.update().apply(expr, true);
+
+      if (stamp === "#") {
+        stamp = "{";
+      }
 
       prev = stamp;
     }
@@ -58,22 +50,77 @@
     return expr;
   };
 
-  LeftHandSideExpressionParser.prototype.parseParenthesis = function(expr) {
-    if (isClassName(expr)) {
-      // Class()
-      return this.parseAbbrMethodCall(expr, "new", "(");
+  LHSExpressionParser.prototype.parseLHSChainExpression = function(stamp, expr) {
+    if (stamp === "(") {
+      return this.parseLHSParentheses(expr);
     }
-    // func(a) -> a.func()
-    return this.parseMethodCall(expr);
+    if (stamp === "#") {
+      return this.parseLHSClosedBraces(expr);
+    }
+    if (stamp === "{") {
+      return this.parseLHSBraces(expr);
+    }
+    if (stamp === "[") {
+      return this.parseLHSBrackets(expr);
+    }
+    return this.parseLHSDot(expr);
   };
 
-  LeftHandSideExpressionParser.prototype.parseMethodCall = function(expr) {
+  LHSExpressionParser.prototype.parseLHSParentheses = function(expr) {
+    if (isClassName(expr)) {
+      // Expr.new( ... )
+      return this.parseLHSAbbrMethodCall(expr, "new", "(");
+    }
+    // expr( a ... ) -> a.expr( ... )
+    return this.parseLHSMethodCall(expr);
+  };
+
+  LHSExpressionParser.prototype.parseLHSClosedBraces = function(expr) {
+    var token = this.expect("#");
+    if (!this.match("{")) {
+      return this.throwUnexpected(token);
+    }
+    return this.parseLHSBraces(expr, { closed: true });
+  };
+
+  LHSExpressionParser.prototype.parseLHSBraces = function(expr, opts) {
+    opts = opts || {};
+
+    if (expr.type === Syntax.Identifier) {
+      expr = createCallExpressionForBraces(expr, this.createMarker());
+    }
+    var node = this.parseFunctionExpression({ blockList: true, closed: !!opts.closed });
+
+    if (expr.callee === null) {
+      expr.callee = node;
+    } else {
+      expr.args.list.push(node);
+    }
+
+    return expr;
+  };
+
+  function createCallExpressionForBraces(expr, marker) {
+    var callee, method;
+
+    if (isClassName(expr)) {
+      callee = expr;
+      method = marker.apply(Node.createIdentifier("new"));
+    } else {
+      callee = null;
+      method = expr;
+    }
+
+    return Node.createCallExpression(callee, method, { list: [] }, "{");
+  }
+
+  LHSExpressionParser.prototype.parseLHSMethodCall = function(expr) {
     if (expr.type !== Syntax.Identifier) {
       this.throwUnexpected(this.lookahead);
     }
 
     var lookahead = this.lookahead;
-    var args      = this.parseCallArgument();
+    var args      = new ArgumentsParser(this).parse();
 
     var method = expr;
 
@@ -92,118 +139,74 @@
     return Node.createCallExpression(expr, method, args, "(");
   };
 
-  LeftHandSideExpressionParser.prototype.parseAbbrMethodCall = function(expr, methodName, stamp) {
+  LHSExpressionParser.prototype.parseLHSAbbrMethodCall = function(expr, methodName, stamp) {
     var method = Node.createIdentifier(methodName);
 
     method = this.createMarker().apply(method);
 
-    var args = this.parseCallArgument();
+    var args = new ArgumentsParser(this).parse();
 
     return Node.createCallExpression(expr, method, args, stamp);
   };
 
-  LeftHandSideExpressionParser.prototype.parseClosedBrace = function(expr) {
-    this.expect("#");
-    if (!this.match("{")) {
-      this.throwUnexpected(this.lookahead);
-    }
-    return this.parseBrace(expr, true);
-  };
-
-  LeftHandSideExpressionParser.prototype.parseBrace = function(expr, closed) {
-    var method, node;
-
-    if (expr.type === Syntax.CallExpression && expr.stamp && expr.stamp !== "(") {
-      this.throwUnexpected(this.lookahead);
-    }
-    if (expr.type === Syntax.Identifier) {
-      if (isClassName(expr)) {
-        method = Node.createIdentifier("new");
-        method = this.createMarker().apply(method);
-        expr   = Node.createCallExpression(expr, method, { list: [] }, "{");
-      } else {
-        expr = Node.createCallExpression(null, expr, { list: [] });
-      }
-    }
-    node = this.parseBraces({ blockList: true, closed: !!closed });
-
-    // TODO: refactoring
-    if (expr.callee === null) {
-      expr.callee = node;
-      node = expr;
-    } else {
-      expr.args.list.push(node);
-    }
-
-    return expr;
-  };
-
-  LeftHandSideExpressionParser.prototype.parseBracket = function(expr) {
-    if (expr.type === Syntax.CallExpression && expr.stamp === "(") {
-      this.throwUnexpected(this.lookahead);
-    }
-
+  LHSExpressionParser.prototype.parseLHSBrackets = function(expr) {
     if (isClassName(expr)) {
-      expr = this.parseNewFrom(expr);
-    } else {
-      expr = this.parseListAt(expr);
+      return this.parseLHSwithList(expr);
     }
-
-    return expr;
+    return this.parseLHSwithIndexer(expr);
   };
 
-  LeftHandSideExpressionParser.prototype.parseNewFrom = function(expr) {
-    var method = Node.createIdentifier("[]");
-    method = this.createMarker().apply(method);
-
+  LHSExpressionParser.prototype.parseLHSwithList = function(expr) {
     var marker = this.createMarker();
 
-    var node = this.parseListExpression();
-    node = marker.update().apply(node);
+    var method = this.createMarker().apply(
+      Node.createIdentifier("[]")
+    );
+    var listExpr = this.parseListExpression();
 
-    return Node.createCallExpression(expr, method, { list: [ node ] }, "[");
+    return marker.update().apply(
+      Node.createCallExpression(expr, method, { list: [ listExpr ] }, "[")
+    );
   };
 
-  LeftHandSideExpressionParser.prototype.parseListAt = function(expr) {
-    var method = Node.createIdentifier("[]");
-    method = this.createMarker().apply(method);
+  LHSExpressionParser.prototype.parseLHSwithIndexer = function(expr) {
+    var marker = this.createMarker();
 
-    var indexer = this.parseListIndexer();
-    if (indexer) {
-      if (indexer.length === 3) {
-        method.name = "[..]";
-      }
-    } else {
-      this.throwUnexpected(this.lookahead);
-    }
+    var method = this.createMarker().apply(
+      Node.createIdentifier()
+    );
+    var listIndexer = this.parseListIndexer();
 
-    return Node.createCallExpression(expr, method, { list: indexer }, "[");
+    method.name = listIndexer.length === 3 ? "[..]" : "[]";
+
+    return marker.update().apply(
+      Node.createCallExpression(expr, method, { list: listIndexer }, "[")
+    );
   };
 
-  LeftHandSideExpressionParser.prototype.parseDot = function(expr) {
+  LHSExpressionParser.prototype.parseLHSDot = function(expr) {
     this.expect(".");
 
     if (this.match("(")) {
       // expr.()
-      return this.parseAbbrMethodCall(expr, "value", ".");
+      return this.parseLHSAbbrMethodCall(expr, "value", ".");
     }
     if (this.match("[")) {
       // expr.[0]
-      return this.parseDotBracket(expr);
+      return this.parseDotBrackets(expr);
     }
 
-    var method = this.parseMethodName();
-    if (this.match("(")) {
-      // expr.method(args)
-      var args = this.parseCallArgument();
-      return Node.createCallExpression(expr, method, args);
-    }
+    var marker = this.createMarker();
 
-    // expr.method
-    return Node.createCallExpression(expr, method, { list: [] });
+    var method = this.parseIdentifier({ variable: true });
+    var args   = new ArgumentsParser(this).parse();
+
+    return marker.update().apply(
+      Node.createCallExpression(expr, method, args)
+    );
   };
 
-  LeftHandSideExpressionParser.prototype.parseDotBracket = function(expr) {
+  LHSExpressionParser.prototype.parseDotBrackets = function(expr) {
     var marker = this.createMarker(expr);
 
     var method = Node.createIdentifier("value");
@@ -212,65 +215,65 @@
     expr = Node.createCallExpression(expr, method, { list: [] }, ".");
     expr = marker.update().apply(expr);
 
-    return this.parseListAt(expr);
+    return this.parseLHSwithIndexer(expr);
   };
 
-  LeftHandSideExpressionParser.prototype.parseCallArgument = function() {
-    var args = { list: [] };
-    var hasKeyword = false;
+  function ArgumentsParser(parent) {
+    Parser.call(this, parent);
+    this._hasKeyword = false;
+    this._args = { list: [] };
+  }
+  sc.libs.extend(ArgumentsParser, Parser);
 
+  ArgumentsParser.prototype.parse = function() {
+    if (this.match("(")) {
+      return this.parseArguments();
+    }
+    return { list: [] };
+  };
+
+  ArgumentsParser.prototype.parseArguments = function() {
     this.expect("(");
 
     while (this.hasNextToken() && !this.match(")")) {
       var lookahead = this.lookahead;
-      if (!hasKeyword) {
+      if (!this._hasKeyword) {
         if (this.match("*")) {
           this.lex();
-          args.expand = this.parseExpressions();
-          hasKeyword = true;
+          this._args.expand = this.parseExpressions();
+          this._hasKeyword = true;
         } else if (lookahead.type === Token.Label) {
-          this.parseCallArgumentKeyword(args);
-          hasKeyword = true;
+          this.parseKeywordArgument();
+          this._hasKeyword = true;
         } else {
-          args.list.push(this.parseExpressions());
+          this._args.list.push(this.parseExpressions());
         }
       } else {
-        if (lookahead.type !== Token.Label) {
-          this.throwUnexpected(lookahead);
-        }
-        this.parseCallArgumentKeyword(args);
+        this.parseKeywordArgument();
       }
-      if (this.match(")")) {
-        break;
+      if (!this.match(")")) {
+        this.expect(",");
       }
-      this.expect(",");
     }
 
     this.expect(")");
 
-    return args;
+    return this._args;
   };
 
-  LeftHandSideExpressionParser.prototype.parseCallArgumentKeyword = function(args) {
-    var key = this.lex().value;
-    var value = this.parseExpressions();
-    if (!args.keywords) {
-      args.keywords = {};
-    }
-    args.keywords[key] = value;
-  };
-
-  LeftHandSideExpressionParser.prototype.parseMethodName = function() {
-    var marker = this.createMarker();
-    var property = this.lex();
-
-    if (property.type !== Token.Identifier || isClassName(property)) {
-      this.throwUnexpected(property);
+  ArgumentsParser.prototype.parseKeywordArgument = function() {
+    var token = this.lex();
+    if (token.type !== Token.Label) {
+      return this.throwUnexpected(token);
     }
 
-    var id = Node.createIdentifier(property.value);
+    var key = token.value;
+    var val = this.parseExpressions();
 
-    return marker.update().apply(id);
+    if (!this._args.keywords) {
+      this._args.keywords = {};
+    }
+    this._args.keywords[key] = val;
   };
 
   function isClassName(node) {

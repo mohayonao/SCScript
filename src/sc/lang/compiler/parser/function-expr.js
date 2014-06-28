@@ -3,7 +3,6 @@
 
   require("./parser");
 
-  var Syntax = sc.lang.compiler.Syntax;
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
@@ -142,15 +141,9 @@
   };
 
   FunctionExpressionParser.prototype.parseFunctionParameterElement = function() {
-    var node = this.parseDeclaration("arg", function() {
+    return this.parseDeclaration("arg", function() {
       return this.parsePrimaryArgExpression();
     });
-
-    if (node.init && !isValidArgumentValue(node.init)) {
-      this.throwUnexpected(this.lookahead);
-    }
-
-    return node;
   };
 
   FunctionExpressionParser.prototype.parseFunctionBody = function() {
@@ -238,11 +231,4 @@
     this.lex();
     return delegate.call(this);
   };
-
-  function isValidArgumentValue(node) {
-    if (node.type === Syntax.Literal) {
-      return true;
-    }
-    return node.type === Syntax.ListExpression && node.immutable;
-  }
 })(sc);

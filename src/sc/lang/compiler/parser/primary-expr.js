@@ -10,34 +10,29 @@
     PrimaryExpression :
       ( ... )
       { ... }
-      [ ... ]
-      ~ ...
-      ` ...
-      Keyword
-      Identifier
-      StringLiteral
-      ArgumentableValue
+      ListExpression
+      HashedExpression
+      RefExpression
+      EnvironmentExpression
+      ThisExpression
+      PrimaryIdentifier
+      StringExpression
+      PrimaryArgExpression
   */
   Parser.addParseMethod("PrimaryExpression", function() {
-    var stamp = this.matchAny([ "(", "{", "[", "#", "`", "~" ]) || this.lookahead.type;
+    switch (this.matchAny([ "(", "{", "[", "#", "`", "~" ])) {
+    case "(": return this.parseParentheses();
+    case "{": return this.parseBraces();
+    case "[": return this.parseListExpression();
+    case "#": return this.parseHashedExpression();
+    case "`": return this.parseRefExpression();
+    case "~": return this.parseEnvironmentExpression();
+    }
 
-    switch (stamp) {
-    case "(":
-      return this.parseParentheses();
-    case "{":
-      return this.parseBraces();
-    case "[":
-      return this.parseListExpression();
-    case "`":
-      return this.parseRefExpression();
-    case "~":
-      return this.parseEnvironmentExpression();
-    case Token.Keyword:
-      return this.parseThisExpression();
-    case Token.Identifier:
-      return this.parsePrimaryIdentifier();
-    case Token.StringLiteral:
-      return this.parseStringExpression();
+    switch (this.lookahead.type) {
+    case Token.Keyword:       return this.parseThisExpression();
+    case Token.Identifier:    return this.parsePrimaryIdentifier();
+    case Token.StringLiteral: return this.parseStringExpression();
     }
 
     return this.parsePrimaryArgExpression();
@@ -45,41 +40,31 @@
 
   /*
     PrimaryArgExpression :
-      HashedExpression
-      CharLiteral
-      FloatLiteral
+      ImmutableListExpression
+      NilLiteral
+      TrueLiteral
       FalseLiteral
       IntegerLiteral
-      NilLiteral
+      FloatLiteral
       SymbolLiteral
-      TrueLiteral
+      CharLiteral
   */
   Parser.addParseMethod("PrimaryArgExpression", function() {
-    var marker = this.createMarker();
+    if (this.match("#")) {
+      return this.parseImmutableListExpression();
+    }
 
-    var stamp = this.matchAny([ "(", "{", "[", "#" ]) || this.lookahead.type;
-
-    var expr;
-    switch (stamp) {
-    case "#":
-      expr = this.parseHashedExpression();
-      break;
-    case Token.CharLiteral:
-    case Token.FloatLiteral:
+    switch (this.lookahead.type) {
+    case Token.NilLiteral:
+    case Token.TrueLiteral:
     case Token.FalseLiteral:
     case Token.IntegerLiteral:
-    case Token.NilLiteral:
+    case Token.FloatLiteral:
     case Token.SymbolLiteral:
-    case Token.TrueLiteral:
-      expr = this.parseLiteral();
-      break;
+    case Token.CharLiteral:
+      return this.parseLiteral();
     }
 
-    if (!expr) {
-      expr = {};
-      this.throwUnexpected(this.lex());
-    }
-
-    return marker.update().apply(expr);
+    return this.throwUnexpected(this.lex());
   });
 })(sc);

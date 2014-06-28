@@ -392,7 +392,7 @@
           "{ 0 1 }": "unexpected number",
           "{ 0": "unexpected end of input",
           "{ |a=[0]| }": "unexpected token [",
-          "{ |a=#{}| }": "unexpected token |",
+          "{ |a=#{}| }": "unexpected token {",
           "{ |a= _ | }": "unexpected identifier",
           "{ |a=Nil| }": "unexpected identifier",
           "{ ||      }": "unexpected token |",

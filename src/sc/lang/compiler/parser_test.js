@@ -272,7 +272,7 @@
           error({ line: 1, column: 6, index: 5 }, Message.UnexpectedNumber),
         ],
         "{|a=#2}": [
-          error({ line: 1, column: 5, index: 4 }, Message.UnexpectedToken, "#"),
+          // error({ line: 1, column: 5, index: 4 }, Message.UnexpectedToken, "#"),
           error({ line: 1, column: 6, index: 5 }, Message.UnexpectedNumber),
           error({ line: 1, column: 7, index: 6 }, Message.UnexpectedToken, "}"),
           error({ line: 1, column: 8, index: 7 }, Message.UnexpectedEOS),

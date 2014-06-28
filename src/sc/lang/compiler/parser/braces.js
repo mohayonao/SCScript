@@ -7,24 +7,20 @@
 
   /*
     Braces :
-      { : GeneratorInitialiser }
-      {   FunctionExpression   }
+      { : GeneratorExpression }
+      {   FunctionExpression  }
   */
   Parser.addParseMethod("Braces", function(opts) {
-    opts = opts || /* istanbul ignore next */ {};
-    var marker = this.createMarker();
-
+    opts = opts || {};
     var token = this.expect("{");
-    var matchColon = this.match(":");
+    var colon = this.match(":");
+
     this.unlex(token);
 
-    var expr;
-    if (!opts.blockList && matchColon) {
-      expr = this.parseGeneratorExpression();
-    } else {
-      expr = this.parseFunctionExpression(opts);
+    if (colon && !opts.blockList) {
+      return this.parseGeneratorExpression();
     }
 
-    return marker.update().apply(expr);
+    return this.parseFunctionExpression(opts);
   });
 })(sc);

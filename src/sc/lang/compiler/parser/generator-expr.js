@@ -14,7 +14,6 @@
 
   function GeneratorExpressionParser(parent) {
     Parser.call(this, parent);
-    this.parent = parent;
   }
   sc.libs.extend(GeneratorExpressionParser, Parser);
 

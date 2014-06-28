@@ -7,7 +7,15 @@
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
-  // ( ... )
+  /*
+    (...)
+      EventExpression
+      BlockExpression
+      SeriesExpression
+      BlockExpression
+      ( Expressions )
+      ( Expression  )
+  */
   Parser.addParseMethod("Parentheses", function() {
     return new ParenthesesParser(this).parse();
   });
@@ -24,71 +32,92 @@
       this.lex();
     }
 
-    var selector = this.selectParenthesesParseMethod();
+    var delegate = this.selectParenthesesParseMethod();
 
-    return this.unlex(token)[selector].call(this);
+    this.unlex(token);
+
+    return delegate.call(this);
   };
 
   ParenthesesParser.prototype.selectParenthesesParseMethod = function() {
-    if (this.lookahead.type === Token.Label) {
-      return "parseEventExpression";
+    if (this.lookahead.type === Token.Label || this.match(")")) {
+      return function() {
+        return this.parseEventExpression();
+      };
     }
     if (this.match("var")) {
-      return "parseBlockExpression";
+      return function() {
+        return this.parseBlockExpression();
+      };
     }
     if (this.match("..")) {
-      return "parseSeriesExpression";
-    }
-    if (this.match(")")) {
-      return "parseEventExpression";
+      return function() {
+        return this.parseSeriesExpression();
+      };
     }
 
     this.parseExpression();
     if (this.matchAny([ ",", ".." ])) {
-      return "parseSeriesExpression";
+      return function() {
+        return this.parseSeriesExpression();
+      };
     }
     if (this.match(":")) {
-      return "parseEventExpression";
+      return function() {
+        return this.parseEventExpression();
+      };
     }
     if (this.match(";")) {
       this.lex();
       this.parseExpressions();
       if (this.matchAny([ ",", ".." ])) {
-        return "parseSeriesExpression";
+        return function() {
+          return this.parseSeriesExpression();
+        };
       }
-      return "parseExpressionsWithParentheses";
+      return function() {
+        return this.parseExpressionsWithParentheses();
+      };
     }
 
-    return "parsePartialExpressionWithParentheses";
+    return function() {
+      return this.parsePartialExpressionWithParentheses();
+    };
   };
 
   ParenthesesParser.prototype.parseBlockExpression = function() {
+    var marker = this.createMarker();
+
     this.expect("(");
 
     var expr = this.withScope(function() {
-      var body;
-      body = this.parseFunctionBody();
-      return Node.createBlockExpression(body);
+      return Node.createBlockExpression(
+        this.parseFunctionBody()
+      );
     });
 
     this.expect(")");
 
-    return expr;
+    return marker.update().apply(expr);
   };
 
   ParenthesesParser.prototype.parseExpressionsWithParentheses = function() {
-    return this.parseWithParentheses("parseExpressions");
+    return this.parseWithParentheses(function() {
+      return this.parseExpressions();
+    });
   };
 
   ParenthesesParser.prototype.parsePartialExpressionWithParentheses = function() {
-    return this.parseWithParentheses("parsePartialExpression");
+    return this.parseWithParentheses(function() {
+      return this.parsePartialExpression();
+    });
   };
 
-  ParenthesesParser.prototype.parseWithParentheses = function(methodName) {
+  ParenthesesParser.prototype.parseWithParentheses = function(delegate) {
     this.expect("(");
 
     var marker = this.createMarker();
-    var expr = this[methodName].call(this);
+    var expr = delegate.call(this);
     expr = marker.update().apply(expr);
 
     this.expect(")");

@@ -14,8 +14,8 @@
   var Message  = sc.lang.compiler.Message;
   var rewriter = sc.lang.compiler.rewriter;
 
-  function Scope(codegen, error) {
-    sc.lang.compiler.Scope.call(this, error);
+  function Scope(codegen) {
+    sc.lang.compiler.Scope.call(this);
     this.codegen = codegen;
   }
   sc.libs.extend(Scope, sc.lang.compiler.Scope);
@@ -83,9 +83,7 @@
       calledSegmentedMethod: false,
       syncBlockScope: null
     };
-    this.scope = new Scope(this, function(message) {
-      that.throwError(null, message);
-    });
+    this.scope = new Scope(this);
     if (typeof this.opts.bare === "undefined") {
       this.opts.bare = false;
     }

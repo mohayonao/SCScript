@@ -3,12 +3,10 @@
 
   require("./compiler");
 
-  var Message = sc.lang.compiler.Message;
-  var strlib = sc.libs.strlib;
+  // TODO: move codegen
 
-  function Scope(error) {
+  function Scope() {
     this.stack = [];
-    this.error = error || function() {};
   }
 
   Scope.prototype.add = function(type, id, opts) {
@@ -32,14 +30,6 @@
       indent = peek.indent;
     }
 
-    if (args[id]) {
-      this.error(strlib.format(Message.ArgumentAlreadyDeclared, id));
-    }
-
-    if (vars[id] && id.charAt(0) !== "_") {
-      this.error(strlib.format(Message.ArgumentAlreadyDeclared, id));
-    }
-
     switch (type) {
     case "var":
       if (!vars[id]) {
@@ -53,17 +43,6 @@
       delete declared[id];
       break;
     }
-  };
-
-  Scope.prototype.added = function() {};
-
-  Scope.prototype.begin = function() {
-    var declared = this.getDeclaredVariable();
-    this.stack.push({
-      vars: {},
-      args: {},
-      declared: declared
-    });
   };
 
   Scope.prototype.end = function() {

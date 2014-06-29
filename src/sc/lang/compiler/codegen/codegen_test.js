@@ -1,8 +1,8 @@
 (function() {
   "use strict";
 
-  require("./codegen");
-  require("./test-cases");
+  require("../codegen");
+  require("../test-cases");
 
   var codegen  = sc.lang.compiler.codegen;
   var Syntax   = sc.lang.compiler.Syntax;

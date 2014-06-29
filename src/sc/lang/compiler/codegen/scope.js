@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("../compiler");
 
   // TODO: move codegen
 

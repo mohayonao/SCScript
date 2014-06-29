@@ -5,6 +5,7 @@
   require("./lexer");
   require("./parser");
   require("./codegen");
+  require("./rewriter");
 
   describe("sc.lang.compiler", function() {
     it(".tokenize", sinon.test(function() {

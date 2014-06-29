@@ -93,6 +93,7 @@
       return new sc.lang.compiler.Lexer(source, opts).tokenize();
     },
     parse: function(source, opts) {
+      // TODO: new sc.lang.compiler.Parser(null, lexer).parse();
       return sc.lang.compiler.parser.parse(source, opts);
     },
     compile: function(source, opts) {
@@ -104,6 +105,9 @@
         ast = source;
       }
 
+      ast = new sc.lang.compiler.Rewriter().rewrite(ast);
+
+      // TODO: new sc.lang.compiler.CodeGen(ast, opts).compile();
       return sc.lang.compiler.codegen.compile(ast, opts);
     }
   };

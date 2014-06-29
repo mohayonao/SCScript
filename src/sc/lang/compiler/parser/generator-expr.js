@@ -17,24 +17,9 @@
   }
   sc.libs.extend(GeneratorExpressionParser, Parser);
 
+  /* istanbul ignore next */
   GeneratorExpressionParser.prototype.parse = function() {
     this.lexer.throwError({}, Message.NotImplemented, "generator literal");
-
-    this.expect("{");
-    this.expect(":");
-
-    this.parseExpression();
-    this.expect(",");
-
-    while (this.hasNextToken() && !this.match("}")) {
-      this.parseExpression();
-      if (!this.match("}")) {
-        this.expect(",");
-      }
-    }
-
-    this.expect("}");
-
     return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
   };
 })(sc);

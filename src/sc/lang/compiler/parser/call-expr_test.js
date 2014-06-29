@@ -9,7 +9,7 @@
   var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
-    describe("parseLeftHandSideExpression", function() {
+    describe("parseCallExpression", function() {
       sc.test.compile(this.title).each({
         "a ": sc.test.OK,
         "a()": strlib.format(Message.UnexpectedToken, "("),

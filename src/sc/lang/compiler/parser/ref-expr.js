@@ -8,14 +8,14 @@
 
   /*
     RefExpression
-      ` LeftHandSideExpression
+      ` CallExpression
   */
   Parser.addParseMethod("RefExpression", function() {
     var marker = this.createMarker();
 
     this.expect("`");
 
-    var expr = this.parseLeftHandSideExpression();
+    var expr = this.parseCallExpression();
 
     return marker.update().apply(
       Node.createUnaryExpression("`", expr)

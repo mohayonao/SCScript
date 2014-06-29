@@ -10,7 +10,7 @@
 
   /*
     BinaryExpression :
-      LeftHandSideExpression BinaryExpressionOperator BinaryExpressionAdverb(opts) BinaryExpression
+      CallExpression BinaryExpressionOperator BinaryExpressionAdverb(opts) BinaryExpression
 
     BinaryExpressionOperator :
       /[-+*\/%<=>!?&|@]+/
@@ -49,7 +49,7 @@
   BinaryExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
 
-    var expr = this.parseLeftHandSideExpression();
+    var expr = this.parseCallExpression();
 
     var prec = this.calcBinaryPrecedence(this.lookahead);
     if (prec === 0) {
@@ -88,7 +88,7 @@
 
   BinaryExpressionParser.prototype.sortByBinaryPrecedence = function(left, operator, marker) {
     var markerStack = [ marker, this.createMarker() ];
-    var exprOpStack = [ left, operator, this.parseLeftHandSideExpression() ];
+    var exprOpStack = [ left, operator, this.parseCallExpression() ];
 
     var prec;
     while ((prec = this.calcBinaryPrecedence(this.lookahead)) > 0) {
@@ -97,7 +97,7 @@
       operator = this.parseBinaryExpressionOperator(prec);
 
       markerStack.push(this.createMarker());
-      exprOpStack.push(operator, this.parseLeftHandSideExpression());
+      exprOpStack.push(operator, this.parseCallExpression());
     }
 
     return reduceBinaryExpressionStack(exprOpStack, markerStack);

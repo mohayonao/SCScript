@@ -8,7 +8,7 @@
   var Token = sc.lang.compiler.Token;
   var Node = sc.lang.compiler.Node;
 
-  Parser.addParseMethod("LeftHandSideExpression", function() {
+  Parser.addParseMethod("CallExpression", function() {
     return new LHSExpressionParser(this).parse();
   });
 

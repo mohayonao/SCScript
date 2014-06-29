@@ -2,32 +2,30 @@
   "use strict";
 
   require("../compiler");
-  require("../scope");
   require("../node");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
-  var Scope = sc.lang.compiler.Scope;
 
   function Parser(parent, lexer) {
-    var that = this;
-    if (parent) {
+    if (!parent) {
+      initialize(this, lexer);
+    } else {
       this.parent = parent;
       this.lexer = parent.lexer;
-      this.scope = parent.scope;
       this.state = parent.state;
-    } else {
-      this.parent = null;
-      this.lexer = lexer;
-      this.scope = new Scope(function(message) {
-        that.throwError({}, message);
-      });
-      this.state = {
-        innerElements: false,
-        immutableList: false,
-        underscore: []
-      };
     }
+  }
+
+  function initialize(that, lexer) {
+    that.parent = null;
+    that.lexer = lexer;
+    that.state = {
+      innerElements: false,
+      immutableList: false,
+      declared: {},
+      underscore: []
+    };
   }
 
   Parser.addParseMethod = function(name, method) {
@@ -100,12 +98,23 @@
     return this.throwError(token, Message.UnexpectedToken, token.value);
   };
 
-  Parser.prototype.withScope = function(fn) {
+  Parser.prototype.addToScope = function(type, name) {
+    if (this.state.declared[name]) {
+      var tmpl = (type === "var") ?
+        Message.VariableAlreadyDeclared : Message.ArgumentAlreadyDeclared;
+      this.throwError({}, tmpl, name);
+    }
+    this.state.declared[name] = true;
+  };
+
+  Parser.prototype.withScope = function(func) {
     var result;
 
-    this.scope.begin();
-    result = fn.call(this);
-    this.scope.end();
+    var declared = this.state.declared;
+
+    this.state.declared = {};
+    result = func.call(this);
+    this.state.declared = declared;
 
     return result;
   };

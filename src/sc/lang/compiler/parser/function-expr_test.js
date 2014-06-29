@@ -31,6 +31,13 @@
         "{ ||      }": strlib.format(Message.UnexpectedToken, "|"),
         "{ arg;    }": strlib.format(Message.UnexpectedToken, ";"),
         "{ var;    }": strlib.format(Message.UnexpectedToken, ";"),
+
+        "{ |a, a| }": strlib.format(Message.ArgumentAlreadyDeclared, "a"),
+        "{ |a| var a; }": strlib.format(Message.VariableAlreadyDeclared, "a"),
+        "{ var a, a; }": strlib.format(Message.VariableAlreadyDeclared, "a"),
+        "{ |a| { |a| } }": sc.test.OK,
+        "{ |a| { var a; } }": sc.test.OK,
+        "{ var a; { var a; } }": sc.test.OK,
       });
       sc.test.parse(this.title).each({
         "{}": {

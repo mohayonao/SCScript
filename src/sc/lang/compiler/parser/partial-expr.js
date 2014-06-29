@@ -22,17 +22,13 @@
     var node = this.parseBinaryExpression();
 
     if (this.state.underscore.length) {
-      node = this.withScope(function() {
-        var args = new Array(this.state.underscore.length);
-        for (var i = 0, imax = args.length; i < imax; ++i) {
-          var x = this.state.underscore[i];
-          var y = Node.createVariableDeclarator(x);
-          args[i] = this.createMarker(x).update(x).apply(y);
-          this.scope.add("arg", this.state.underscore[i].name);
-        }
-
-        return Node.createFunctionExpression({ list: args }, [ node ], { partial: true });
-      });
+      var args = new Array(this.state.underscore.length);
+      for (var i = 0, imax = args.length; i < imax; ++i) {
+        var x = this.state.underscore[i];
+        var y = Node.createVariableDeclarator(x);
+        args[i] = this.createMarker(x).update(x).apply(y);
+      }
+      node = Node.createFunctionExpression({ list: args }, [ node ], { partial: true });
     }
 
     this.state.underscore = [];

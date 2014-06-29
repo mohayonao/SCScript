@@ -114,7 +114,7 @@
     if (this.match("...")) {
       this.lex();
       args.remain = this.parseIdentifier({ variable: true });
-      this.scope.add("arg", args.remain.name);
+      this.addToScope("arg", args.remain.name);
     }
 
     this.expect(sentinel);
@@ -215,7 +215,7 @@
     var marker = this.createMarker();
 
     var identifier = this.parseIdentifier({ variable: true });
-    this.scope.add(type, identifier.name);
+    this.addToScope(type, identifier.name);
 
     var initialValue = this.parseInitialiser(delegate);
 

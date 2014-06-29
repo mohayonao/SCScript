@@ -324,11 +324,9 @@
       it(code + ": " + desc, function() {
         var lexer  = new sc.lang.compiler.Lexer(code);
         var parser = new sc.lang.compiler.Parser(null, lexer);
-        parser.scope.begin();
         expect(function() {
           parser[methodName](opts);
         }).to[chain].throw(expected);
-        parser.scope.end();
       });
     };
     func.each = function(suites) {
@@ -343,10 +341,7 @@
       it(code, function() {
         var lexer  = new sc.lang.compiler.Lexer(code, { loc: true, range: true });
         var parser = new sc.lang.compiler.Parser(null, lexer);
-        var ast;
-        parser.scope.begin();
-        ast = parser[methodName](opts);
-        parser.scope.end();
+        var ast = parser[methodName](opts);
         expect(ast).to.eql(expected);
       });
     };

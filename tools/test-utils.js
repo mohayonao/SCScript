@@ -1,3 +1,4 @@
+/* globals _: true, it: true, expect: true */
 (function(sc) {
   "use strict";
 
@@ -300,6 +301,59 @@
         }));
       }));
     }
+  };
+
+  sc.test.OK   = "@OK";
+  sc.test.PASS = "@PASS";
+
+  sc.test.compile = function(methodName, opts) {
+    var func = function(items) {
+      var code = items[0], expected = items[1];
+      var chain, desc;
+      if (expected === sc.test.PASS) {
+        return;
+      }
+      if (expected === sc.test.OK) {
+        chain = "not";
+        desc = "ok";
+        expected = null;
+      } else {
+        chain = "to";
+        desc = "throw " + expected;
+      }
+      it(code + ": " + desc, function() {
+        var lexer  = new sc.lang.compiler.Lexer(code);
+        var parser = new sc.lang.compiler.Parser(null, lexer);
+        parser.scope.begin();
+        expect(function() {
+          parser[methodName](opts);
+        }).to[chain].throw(expected);
+        parser.scope.end();
+      });
+    };
+    func.each = function(suites) {
+      return _.each(_.pairs(suites), func);
+    };
+    return func;
+  };
+
+  sc.test.parse = function(methodName, opts) {
+    var func = function(items) {
+      var code = items[0], expected = items[1];
+      it(code, function() {
+        var lexer  = new sc.lang.compiler.Lexer(code, { loc: true, range: true });
+        var parser = new sc.lang.compiler.Parser(null, lexer);
+        var ast;
+        parser.scope.begin();
+        ast = parser[methodName](opts);
+        parser.scope.end();
+        expect(ast).to.eql(expected);
+      });
+    };
+    func.each = function(suites) {
+      return _.each(_.pairs(suites), func);
+    };
+    return func;
   };
 
   // for chai

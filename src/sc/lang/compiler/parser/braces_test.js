@@ -4,26 +4,27 @@
   require("./installer");
 
   var Syntax = sc.lang.compiler.Syntax;
+  var Message = sc.lang.compiler.Message;
   var Parser = sc.lang.compiler.Parser;
   var Lexer = sc.lang.compiler.Lexer;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseBraces", function() {
-      it("parse", function() {
-        _.chain({
-          "{}": {
-            type: Syntax.FunctionExpression,
-            body: [],
-            range: [ 0, 2 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 2 },
-            }
+      sc.test.compile(this.title).each({
+        "{}": sc.test.OK,
+        "[]": strlib.format(Message.UnexpectedToken, "["),
+      });
+      sc.test.parse(this.title).each({
+        "{}": {
+          type: Syntax.FunctionExpression,
+          body: [],
+          range: [ 0, 2 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 1, column: 2 },
           }
-        }).pairs().each(function(items) {
-          var p = new Parser(null, new Lexer(items[0], { loc: true, range: true } ));
-          expect(p.parseBraces(), items[0]).to.eql(items[1]);
-        });
+        }
       });
       // TODO: fix later implement parseGeneratorExpression
       describe("parse generator", function() {

@@ -31,20 +31,13 @@
       return node;
     },
     createCallExpression: function(callee, method, args, stamp) {
-      var node;
-
-      node = {
+      return {
         type: Syntax.CallExpression,
+        stamp: stamp,
         callee: callee,
         method: method,
         args: args,
       };
-
-      if (stamp) {
-        node.stamp = stamp;
-      }
-
-      return node;
     },
     createEnvironmentExpression: function(id) {
       return {

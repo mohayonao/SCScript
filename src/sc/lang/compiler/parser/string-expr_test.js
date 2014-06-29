@@ -33,6 +33,7 @@
           operator: "++",
           left: {
             type: Syntax.CallExpression,
+            stamp: ".",
             callee: {
               type: Syntax.Identifier,
               name: "freq"
@@ -76,6 +77,7 @@
           },
           right: {
             type: Syntax.CallExpression,
+            stamp: ".",
             callee: {
               type: Syntax.Identifier,
               name: "cd"
@@ -99,6 +101,7 @@
           operator: "++",
           left: {
             type: Syntax.CallExpression,
+            stamp: ".",
             callee: {
               type: Syntax.Identifier,
               name: "ab"

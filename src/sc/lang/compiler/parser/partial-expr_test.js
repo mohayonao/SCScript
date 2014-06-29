@@ -51,6 +51,7 @@
           body: [
             {
               type: Syntax.CallExpression,
+              stamp: ".",
               callee: {
                 type: Syntax.Identifier,
                 name: "$_0",

@@ -202,7 +202,7 @@
     var args   = new ArgumentsParser(this).parse();
 
     return marker.update().apply(
-      Node.createCallExpression(expr, method, args)
+      Node.createCallExpression(expr, method, args, ".")
     );
   };
 

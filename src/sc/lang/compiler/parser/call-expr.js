@@ -9,19 +9,19 @@
   var Node = sc.lang.compiler.Node;
 
   Parser.addParseMethod("CallExpression", function() {
-    return new LHSExpressionParser(this).parse();
+    return new CallExpressionParser(this).parse();
   });
 
-  function LHSExpressionParser(parent) {
+  function CallExpressionParser(parent) {
     Parser.call(this, parent);
   }
-  sc.libs.extend(LHSExpressionParser, Parser);
+  sc.libs.extend(CallExpressionParser, Parser);
 
   /*
-    LeftHandSideExpression :
+    CallExpression :
       TODO: write
   */
-  LHSExpressionParser.prototype.parse = function() {
+  CallExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
     var expr = this.parseSignedExpression();
 
@@ -35,47 +35,47 @@
         this.throwUnexpected(this.lookahead);
       }
 
-      expr = this.parseLHSChainExpression(stamp, expr);
+      expr = this.parseCallChainExpression(stamp, expr);
       marker.update().apply(expr, true);
     }
 
     return expr;
   };
 
-  LHSExpressionParser.prototype.parseLHSChainExpression = function(stamp, expr) {
+  CallExpressionParser.prototype.parseCallChainExpression = function(stamp, expr) {
     if (stamp === "(") {
-      return this.parseLHSParentheses(expr);
+      return this.parseCallParentheses(expr);
     }
     if (stamp === "#") {
-      return this.parseLHSClosedBraces(expr);
+      return this.parseCallClosedBraces(expr);
     }
     if (stamp === "{") {
-      return this.parseLHSBraces(expr);
+      return this.parseCallBraces(expr);
     }
     if (stamp === "[") {
-      return this.parseLHSBrackets(expr);
+      return this.parseCallBrackets(expr);
     }
-    return this.parseLHSDot(expr);
+    return this.parseCallDot(expr);
   };
 
-  LHSExpressionParser.prototype.parseLHSParentheses = function(expr) {
+  CallExpressionParser.prototype.parseCallParentheses = function(expr) {
     if (isClassName(expr)) {
       // Expr.new( ... )
-      return this.parseLHSAbbrMethodCall(expr, "new", "(");
+      return this.parseCallAbbrMethodCall(expr, "new", "(");
     }
     // expr( a ... ) -> a.expr( ... )
-    return this.parseLHSMethodCall(expr);
+    return this.parseCallMethodCall(expr);
   };
 
-  LHSExpressionParser.prototype.parseLHSClosedBraces = function(expr) {
+  CallExpressionParser.prototype.parseCallClosedBraces = function(expr) {
     var token = this.expect("#");
     if (!this.match("{")) {
       return this.throwUnexpected(token);
     }
-    return this.parseLHSBraces(expr, { closed: true });
+    return this.parseCallBraces(expr, { closed: true });
   };
 
-  LHSExpressionParser.prototype.parseLHSBraces = function(expr, opts) {
+  CallExpressionParser.prototype.parseCallBraces = function(expr, opts) {
     opts = opts || {};
 
     if (expr.type === Syntax.Identifier) {
@@ -106,7 +106,7 @@
     return Node.createCallExpression(callee, method, { list: [] }, "(");
   }
 
-  LHSExpressionParser.prototype.parseLHSMethodCall = function(expr) {
+  CallExpressionParser.prototype.parseCallMethodCall = function(expr) {
     if (expr.type !== Syntax.Identifier) {
       this.throwUnexpected(this.lookahead);
     }
@@ -131,7 +131,7 @@
     return Node.createCallExpression(expr, method, args, "(");
   };
 
-  LHSExpressionParser.prototype.parseLHSAbbrMethodCall = function(expr, methodName, stamp) {
+  CallExpressionParser.prototype.parseCallAbbrMethodCall = function(expr, methodName, stamp) {
     var method = Node.createIdentifier(methodName);
 
     method = this.createMarker().apply(method);
@@ -141,14 +141,14 @@
     return Node.createCallExpression(expr, method, args, stamp);
   };
 
-  LHSExpressionParser.prototype.parseLHSBrackets = function(expr) {
+  CallExpressionParser.prototype.parseCallBrackets = function(expr) {
     if (isClassName(expr)) {
-      return this.parseLHSwithList(expr);
+      return this.parseCallwithList(expr);
     }
-    return this.parseLHSwithIndexer(expr);
+    return this.parseCallwithIndexer(expr);
   };
 
-  LHSExpressionParser.prototype.parseLHSwithList = function(expr) {
+  CallExpressionParser.prototype.parseCallwithList = function(expr) {
     var marker = this.createMarker();
 
     var method = this.createMarker().apply(
@@ -161,7 +161,7 @@
     );
   };
 
-  LHSExpressionParser.prototype.parseLHSwithIndexer = function(expr) {
+  CallExpressionParser.prototype.parseCallwithIndexer = function(expr) {
     var marker = this.createMarker();
 
     var method = this.createMarker().apply(
@@ -176,12 +176,12 @@
     );
   };
 
-  LHSExpressionParser.prototype.parseLHSDot = function(expr) {
+  CallExpressionParser.prototype.parseCallDot = function(expr) {
     this.expect(".");
 
     if (this.match("(")) {
       // expr.()
-      return this.parseLHSAbbrMethodCall(expr, "value", "(");
+      return this.parseCallAbbrMethodCall(expr, "value", "(");
     }
     if (this.match("[")) {
       // expr.[0]
@@ -198,7 +198,7 @@
     );
   };
 
-  LHSExpressionParser.prototype.parseDotBrackets = function(expr) {
+  CallExpressionParser.prototype.parseDotBrackets = function(expr) {
     var marker = this.createMarker(expr);
 
     var method = Node.createIdentifier("value");
@@ -207,7 +207,7 @@
     expr = Node.createCallExpression(expr, method, { list: [] }, "(");
     expr = marker.update().apply(expr);
 
-    return this.parseLHSwithIndexer(expr);
+    return this.parseCallwithIndexer(expr);
   };
 
   function ArgumentsParser(parent) {

@@ -76,7 +76,6 @@
   };
 
   function CodeGen(opts) {
-    var that = this;
     this.opts = opts || {};
     this.base = "";
     this.state = {

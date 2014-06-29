@@ -24,27 +24,19 @@
   LHSExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
     var expr = this.parseSignedExpression();
-    var prev = null;
 
     var stamp;
     while ((stamp = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
       var err = false;
-      err = err || (prev === "(" && stamp === "(");
-      err = err || (prev === "{" && stamp === "(");
-      err = err || (prev === "[" && stamp === "(");
-      err = err || (prev === "[" && stamp === "{");
+      err = err || (expr.stamp === "(" && stamp === "(");
+      err = err || (expr.stamp === "[" && stamp === "(");
+      err = err || (expr.stamp === "[" && stamp === "{");
       if (err) {
         this.throwUnexpected(this.lookahead);
       }
 
       expr = this.parseLHSChainExpression(stamp, expr);
       marker.update().apply(expr, true);
-
-      if (stamp === "#") {
-        stamp = "{";
-      }
-
-      prev = stamp;
     }
 
     return expr;
@@ -111,7 +103,7 @@
       method = expr;
     }
 
-    return Node.createCallExpression(callee, method, { list: [] }, "{");
+    return Node.createCallExpression(callee, method, { list: [] }, "(");
   }
 
   LHSExpressionParser.prototype.parseLHSMethodCall = function(expr) {
@@ -189,7 +181,7 @@
 
     if (this.match("(")) {
       // expr.()
-      return this.parseLHSAbbrMethodCall(expr, "value", ".");
+      return this.parseLHSAbbrMethodCall(expr, "value", "(");
     }
     if (this.match("[")) {
       // expr.[0]
@@ -202,7 +194,7 @@
     var args   = new ArgumentsParser(this).parse();
 
     return marker.update().apply(
-      Node.createCallExpression(expr, method, args, ".")
+      Node.createCallExpression(expr, method, args, "(")
     );
   };
 
@@ -212,7 +204,7 @@
     var method = Node.createIdentifier("value");
     method = this.createMarker().apply(method);
 
-    expr = Node.createCallExpression(expr, method, { list: [] }, ".");
+    expr = Node.createCallExpression(expr, method, { list: [] }, "(");
     expr = marker.update().apply(expr);
 
     return this.parseLHSwithIndexer(expr);

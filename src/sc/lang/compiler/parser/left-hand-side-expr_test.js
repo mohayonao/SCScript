@@ -239,7 +239,7 @@
         },
         "a(0).a": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.CallExpression,
             stamp: "(",
@@ -291,7 +291,7 @@
         },
         "a{}": {
           type: Syntax.CallExpression,
-          stamp: "{",
+          stamp: "(",
           callee: {
             type: Syntax.FunctionExpression,
             blockList: true,
@@ -322,7 +322,7 @@
         },
         "Object{}": {
           type: Syntax.CallExpression,
-          stamp: "{",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "Object",
@@ -363,7 +363,7 @@
         },
         "a{}{}": {
           type: Syntax.CallExpression,
-          stamp: "{",
+          stamp: "(",
           callee: {
             type: Syntax.FunctionExpression,
             blockList: true,
@@ -408,7 +408,7 @@
           stamp: "[",
           callee: {
             type: Syntax.CallExpression,
-            stamp: "{",
+            stamp: "(",
             callee: {
               type: Syntax.FunctionExpression,
               blockList: true,
@@ -468,10 +468,10 @@
         },
         "a{}.a": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.CallExpression,
-            stamp: "{",
+            stamp: "(",
             callee: {
               type: Syntax.FunctionExpression,
               blockList: true,
@@ -520,7 +520,7 @@
         },
         "a#{}": {
           type: Syntax.CallExpression,
-          stamp: "{",
+          stamp: "(",
           callee: {
             type: Syntax.FunctionExpression,
             blockList: true,
@@ -552,7 +552,7 @@
         },
         "Object#{}": {
           type: Syntax.CallExpression,
-          stamp: "{",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "Object",
@@ -594,7 +594,7 @@
         },
         "a#{}#{}": {
           type: Syntax.CallExpression,
-          stamp: "{",
+          stamp: "(",
           callee: {
             type: Syntax.FunctionExpression,
             blockList: true,
@@ -641,7 +641,7 @@
           stamp: "[",
           callee: {
             type: Syntax.CallExpression,
-            stamp: "{",
+            stamp: "(",
             callee: {
               type: Syntax.FunctionExpression,
               blockList: true,
@@ -702,10 +702,10 @@
         },
         "a#{}.a": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.CallExpression,
-            stamp: "{",
+            stamp: "(",
             callee: {
               type: Syntax.FunctionExpression,
               blockList: true,
@@ -943,7 +943,7 @@
         },
         "a[0].a": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.CallExpression,
             stamp: "[",
@@ -1005,7 +1005,7 @@
         },
         "a.a": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1035,7 +1035,7 @@
         },
         "a.a()": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1065,7 +1065,7 @@
         },
         "a.a{}": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1109,7 +1109,7 @@
           stamp: "[",
           callee: {
             type: Syntax.CallExpression,
-            stamp: ".",
+            stamp: "(",
             callee: {
               type: Syntax.Identifier,
               name: "a",
@@ -1168,10 +1168,10 @@
         },
         "a.a.a": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.CallExpression,
-            stamp: ".",
+            stamp: "(",
             callee: {
               type: Syntax.Identifier,
               name: "a",
@@ -1219,7 +1219,7 @@
         },
         "a.()": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1252,7 +1252,7 @@
           stamp: "[",
           callee: {
             type: Syntax.CallExpression,
-            stamp: ".",
+            stamp: "(",
             callee: {
               type: Syntax.Identifier,
               name: "a",
@@ -1341,7 +1341,7 @@
         },
         "a.a(0)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1382,7 +1382,7 @@
         },
         "a.a(0,1)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1433,7 +1433,7 @@
         },
         "a.a(*a)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1472,7 +1472,7 @@
         },
         "a.a(a:0,a:0)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1514,7 +1514,7 @@
         },
         "a.a(0,*a,a:0)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Identifier,
             name: "a",

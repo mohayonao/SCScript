@@ -4,29 +4,18 @@
   require("./compiler");
 
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
-  function Scope(methods) {
-    var f = function(parent) {
-      this.parent = parent;
-      this.stack  = [];
-    };
-
-    function F() {}
-    F.prototype = Scope;
-    f.prototype = new F();
-
-    Object.keys(methods).forEach(function(key) {
-      f.prototype[key] = methods[key];
-    });
-
-    return f;
+  function Scope(error) {
+    this.stack = [];
+    this.error = error || function() {};
   }
 
-  Scope.add = function(type, id, opts) {
+  Scope.prototype.add = function(type, id, opts) {
+    opts = opts || {};
+
     var peek = this.stack[this.stack.length - 1];
     var scope, vars, args, declared, stmt, indent;
-
-    opts = opts || {};
 
     scope = opts.scope;
     if (scope) {
@@ -44,11 +33,11 @@
     }
 
     if (args[id]) {
-      this.parent.throwError({}, Message.ArgumentAlreadyDeclared, id);
+      this.error(strlib.format(Message.ArgumentAlreadyDeclared, id));
     }
 
     if (vars[id] && id.charAt(0) !== "_") {
-      this.parent.throwError({}, Message.VariableAlreadyDeclared, id);
+      this.error(strlib.format(Message.ArgumentAlreadyDeclared, id));
     }
 
     switch (type) {
@@ -66,14 +55,22 @@
     }
   };
 
-  Scope.added = function() {
+  Scope.prototype.added = function() {};
+
+  Scope.prototype.begin = function() {
+    var declared = this.getDeclaredVariable();
+    this.stack.push({
+      vars: {},
+      args: {},
+      declared: declared
+    });
   };
 
-  Scope.end = function() {
+  Scope.prototype.end = function() {
     this.stack.pop();
   };
 
-  Scope.getDeclaredVariable = function() {
+  Scope.prototype.getDeclaredVariable = function() {
     var peek = this.stack[this.stack.length - 1];
     var declared = {};
 
@@ -88,14 +85,14 @@
     return declared;
   };
 
-  Scope.find = function(id) {
+  Scope.prototype.find = function(id) {
     var peek = this.stack[this.stack.length - 1];
     return peek.vars[id] || peek.args[id] || peek.declared[id];
   };
 
-  Scope.peek = function() {
+  Scope.prototype.peek = function() {
     return this.stack[this.stack.length - 1];
   };
 
-  sc.lang.compiler.scope = Scope;
+  sc.lang.compiler.Scope = Scope;
 })(sc);

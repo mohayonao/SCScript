@@ -7,19 +7,10 @@
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
-
-  var Scope = sc.lang.compiler.scope({
-    begin: function() {
-      var declared = this.getDeclaredVariable();
-      this.stack.push({
-        vars: {},
-        args: {},
-        declared: declared
-      });
-    }
-  });
+  var Scope = sc.lang.compiler.Scope;
 
   function Parser(parent, lexer) {
+    var that = this;
     if (parent) {
       this.parent = parent;
       this.lexer = parent.lexer;
@@ -28,7 +19,9 @@
     } else {
       this.parent = null;
       this.lexer = lexer;
-      this.scope = new Scope(this);
+      this.scope = new Scope(function(message) {
+        that.throwError({}, message);
+      });
       this.state = {
         innerElements: false,
         immutableList: false,

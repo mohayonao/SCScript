@@ -4,8 +4,10 @@
   require("./lexer");
 
   var Token = sc.lang.compiler.Token;
+  var Message = sc.lang.compiler.Message;
   var Lexer = sc.lang.compiler.Lexer;
   var Marker = sc.lang.compiler.Marker;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Lexer", function() {
     it("Lexer", function() {
@@ -115,5 +117,71 @@
       expect(Marker.create).to.be.calledWith(lexer, 12345);
       expect(Marker.create).to.be.calledLastIn(test);
     }));
+    describe("tokeninze", function() {
+      _.chain({
+        "": [],
+        "    \n\t": [],
+        "// single line comment\n": [],
+        "/*\n/* / * */\n*/": [],
+        "$a ": [
+          { type: Token.CharLiteral, value: "a" }
+        ],
+        "\\a": [
+          { type: Token.SymbolLiteral, value: "a" }
+        ],
+        "'a'": [
+          { type: Token.SymbolLiteral, value: "a" }
+        ],
+        '"a"': [
+          { type: Token.StringLiteral, value: "a" }
+        ],
+        "_ ": [
+          { type: Token.Identifier, value: "_" }
+        ],
+        "a ": [
+          { type: Token.Identifier, value: "a" }
+        ],
+        "A ": [
+          { type: Token.Identifier, value: "A" }
+        ],
+        "0 ": [
+          { type: Token.IntegerLiteral, value: "0" }
+        ],
+        "+ ": [
+          { type: Token.Punctuator, value: "+" }
+        ],
+      }).pairs().each(function(items) {
+        var code = items[0], expected = items[1];
+        it(code, function() {
+          var lexer = new Lexer(code);
+          var tokens = lexer.tokenize();
+          expect(tokens).to.eql(expected);
+        });
+      });
+      it("with location", function() {
+        var code = "\n\t0";
+        var expected = [
+          {
+            type: Token.IntegerLiteral,
+            value: "0",
+            range: [ 2, 3 ],
+            loc: {
+              start: { line: 2, column: 1 },
+              end: { line: 2, column: 2 },
+            }
+          }
+        ];
+        var lexer = new Lexer(code, { range: true, loc: true });
+        var tokens = lexer.tokenize();
+        expect(tokens).to.eql(expected);
+      });
+      it("error", function() {
+        var code = "0 '";
+        var lexer = new Lexer(code);
+        expect(function() {
+          lexer.tokenize();
+        }).to.throw(strlib.format(Message.UnexpectedToken, "'"));
+      });
+    });
   });
 })();

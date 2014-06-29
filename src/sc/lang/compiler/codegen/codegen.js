@@ -2,7 +2,6 @@
   "use strict";
 
   require("../compiler");
-  require("../rewriter");
   require("./scope");
 
   var slice = [].slice;
@@ -11,7 +10,6 @@
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Scope = sc.lang.compiler.Scope;
-  var Rewriter = sc.lang.compiler.Rewriter;
 
   function CodeGen(opts) {
     this.opts = opts || {};
@@ -29,7 +27,6 @@
   }
 
   CodeGen.prototype.compile = function(ast) {
-    ast = new Rewriter().rewrite(ast);
     return this.generate(ast);
   };
 

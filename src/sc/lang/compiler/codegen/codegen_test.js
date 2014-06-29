@@ -2,11 +2,13 @@
   "use strict";
 
   require("../codegen");
+  require("../rewriter");
   require("../test-cases");
 
   var codegen  = sc.lang.compiler.codegen;
   var Syntax   = sc.lang.compiler.Syntax;
   var Token    = sc.lang.compiler.Message;
+  var Rewriter = sc.lang.compiler.Rewriter;
 
   describe("sc.lang.compiler.codegen", function() {
     function s(str) {
@@ -33,7 +35,7 @@
         }
 
         mocha$it = it[items.it] || it;
-        ast      = items.ast;
+        ast = new Rewriter().rewrite(items.ast);
         if (!Array.isArray(compiled)) {
           compiled = [ compiled ];
         }

@@ -93,26 +93,18 @@
   Parser.prototype.throwUnexpected = function(token) {
     switch (token.type) {
     case Token.EOF:
-      this.throwError(token, Message.UnexpectedEOS);
-      break;
+      return this.throwError(token, Message.UnexpectedEOS);
     case Token.FloatLiteral:
     case Token.IntegerLiteral:
-      this.throwError(token, Message.UnexpectedNumber);
-      break;
+      return this.throwError(token, Message.UnexpectedNumber);
     case Token.CharLiteral:
     case Token.StringLiteral:
     case Token.SymbolLiteral:
-      this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
-      break;
+      return this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
     case Token.Identifier:
-      this.throwError(token, Message.UnexpectedIdentifier);
-      break;
-    default:
-      this.throwError(token, Message.UnexpectedToken, token.value);
-      break;
+      return this.throwError(token, Message.UnexpectedIdentifier);
     }
-
-    return {};
+    return this.throwError(token, Message.UnexpectedToken, token.value);
   };
 
   Parser.prototype.withScope = function(fn) {

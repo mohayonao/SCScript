@@ -2,18 +2,37 @@
   "use strict";
 
   require("./parser");
-  require("./test-cases");
+
+  var Syntax = sc.lang.compiler.Syntax;
+  var Token = sc.lang.compiler.Token;
 
   describe("sc.lang.compiler.parser", function() {
-    describe("parse", function() {
-      _.chain(sc.test.compiler.cases).pairs().each(function(items) {
-        var code = items[0], expected = items[1].ast;
-        if (expected) {
-          it(code, function() {
-            var ast = sc.lang.compiler.parse(code);
-            expect(ast).to.eql(expected);
-          });
-        }
+    it("parse", function() {
+      var ast = sc.lang.compiler.parser.parse("[ 0, 1, 2 ]");
+      expect(ast).to.eql({
+        type: Syntax.Program,
+        body: [
+          {
+            type: Syntax.ListExpression,
+            elements: [
+              {
+                type: Syntax.Literal,
+                value: "0",
+                valueType: Token.IntegerLiteral,
+              },
+              {
+                type: Syntax.Literal,
+                value: "1",
+                valueType: Token.IntegerLiteral,
+              },
+              {
+                type: Syntax.Literal,
+                value: "2",
+                valueType: Token.IntegerLiteral,
+              }
+            ]
+          }
+        ]
       });
     });
   });

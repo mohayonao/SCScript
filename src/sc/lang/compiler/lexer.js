@@ -32,7 +32,7 @@
     this.opts = opts = opts || /* istanbul ignore next */ {};
 
     this.length = source.length;
-    this.errors = opts.tolerant ? [] : null;
+    this.errors = null;
 
     this.index = 0;
     this.lineNumber = this.length ? 1 : 0;
@@ -220,7 +220,6 @@
       lineNumber = this.lineNumber;
       column     = index - this.lineStart + 1;
     }
-    this.index += 1;
 
     var error = new Error("Line " + lineNumber + ": " + message);
     error.index       = index;
@@ -228,16 +227,7 @@
     error.column      = column;
     error.description = message;
 
-    if (this.errors) {
-      var prev = this.errors[this.errors.length - 1];
-      if (!(prev && error.index <= prev.index)) {
-        this.errors.push(error);
-      }
-    } else {
-      throw error;
-    }
-
-    return this.EOFToken();
+    throw error;
   };
 
   sc.lang.compiler.Lexer = Lexer;

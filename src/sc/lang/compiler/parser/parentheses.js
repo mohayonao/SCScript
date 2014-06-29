@@ -4,13 +4,11 @@
   require("./parser");
 
   var Token = sc.lang.compiler.Token;
-  var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
   /*
     (...)
       EventExpression
-      BlockExpression
       SeriesExpression
       BlockExpression
       ( Expressions )
@@ -43,11 +41,6 @@
     if (this.lookahead.type === Token.Label || this.match(")")) {
       return function() {
         return this.parseEventExpression();
-      };
-    }
-    if (this.match("var")) {
-      return function() {
-        return this.parseBlockExpression();
       };
     }
     if (this.match("..")) {
@@ -83,22 +76,6 @@
     return function() {
       return this.parsePartialExpressionWithParentheses();
     };
-  };
-
-  ParenthesesParser.prototype.parseBlockExpression = function() {
-    var marker = this.createMarker();
-
-    this.expect("(");
-
-    var expr = this.withScope(function() {
-      return Node.createBlockExpression(
-        this.parseFunctionBody()
-      );
-    });
-
-    this.expect(")");
-
-    return marker.update().apply(expr);
   };
 
   ParenthesesParser.prototype.parseExpressionsWithParentheses = function() {

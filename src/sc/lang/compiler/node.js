@@ -30,12 +30,6 @@
       }
       return node;
     },
-    createBlockExpression: function(body) {
-      return {
-        type: Syntax.BlockExpression,
-        body: body
-      };
-    },
     createCallExpression: function(callee, method, args, stamp) {
       var node;
 

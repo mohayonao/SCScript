@@ -14,7 +14,6 @@
         "()": sc.test.OK,        // EventExpression
         "(a:1)": sc.test.OK,     // EventExpression
         "(0:1)": sc.test.OK,     // EventExpression
-        "(var a;)": sc.test.OK,  // BlockExpression
         "(:..)": sc.test.OK,     // SeriesExpression
         "(..10)": sc.test.OK,    // SeriesExpression
         "(0..10)": sc.test.OK,   // SeriesExpression
@@ -22,6 +21,7 @@
         "(1;2)": sc.test.OK,     // Expressions
         "(1)": sc.test.OK,       // Expression
         "[1]": strlib.format(Message.UnexpectedToken, "["),
+        "(var a;)": strlib.format(Message.UnexpectedToken, "var"),
       });
       sc.test.parse(this.title).each({
         "()": {
@@ -91,44 +91,6 @@
           loc: {
             start: { line: 1, column: 0 },
             end: { line: 1, column: 5 },
-          }
-        },
-        "(var a;)": {
-          type: Syntax.BlockExpression,
-          body: [
-            {
-              type: Syntax.VariableDeclaration,
-              kind: "var",
-              declarations: [
-                {
-                  type: Syntax.VariableDeclarator,
-                  id: {
-                    type: Syntax.Identifier,
-                    name: "a",
-                    range: [ 5, 6 ],
-                    loc: {
-                      start: { line: 1, column: 5 },
-                      end: { line: 1, column: 6 },
-                    }
-                  },
-                  range: [ 5, 6 ],
-                  loc: {
-                    start: { line: 1, column: 5 },
-                    end: { line: 1, column: 6 },
-                  }
-                }
-              ],
-              range: [ 1, 6 ],
-              loc: {
-                start: { line: 1, column: 1 },
-                end: { line: 1, column: 6 },
-              }
-            }
-          ],
-          range: [ 0, 8 ],
-          loc: {
-            start: { line: 1, column: 0 },
-            end: { line: 1, column: 8 },
           }
         },
         "(:..)": {

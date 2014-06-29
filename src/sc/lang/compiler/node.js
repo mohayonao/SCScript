@@ -79,12 +79,6 @@
         name: name
       };
     },
-    createLabel: function(name) {
-      return {
-        type: Syntax.Label,
-        name: name
-      };
-    },
     createListExpression: function(elements, immutable) {
       var node = {
         type: Syntax.ListExpression,

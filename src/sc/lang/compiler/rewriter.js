@@ -123,9 +123,5 @@
       node.method.name.substr(0, 5) === "value";
   }
 
-  sc.lang.compiler.rewriter = {
-    rewrite: function(ast) {
-      return new Rewriter().rewrite(ast);
-    }
-  };
+  sc.lang.compiler.Rewriter = Rewriter;
 })(sc);

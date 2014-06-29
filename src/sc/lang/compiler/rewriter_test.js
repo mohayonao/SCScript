@@ -4,7 +4,7 @@
   require("./rewriter");
 
   var Syntax   = sc.lang.compiler.Syntax;
-  var rewriter = sc.lang.compiler.rewriter;
+  var Rewriter = sc.lang.compiler.Rewriter;
 
   describe("sc.lang.compiler.rewriter", function() {
     it("segmented check", function() {
@@ -80,7 +80,7 @@
         ]
       };
 
-      actual = rewriter.rewrite(ast);
+      actual = new Rewriter().rewrite(ast);
       expect(actual).to.eql(expected);
     });
 
@@ -204,7 +204,7 @@
         ]
       };
 
-      actual = rewriter.rewrite(ast);
+      actual = new Rewriter().rewrite(ast);
       expect(actual).to.eql(expected);
     });
   });

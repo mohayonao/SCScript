@@ -11,7 +11,7 @@
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Scope = sc.lang.compiler.Scope;
-  var rewriter = sc.lang.compiler.rewriter;
+  var Rewriter = sc.lang.compiler.Rewriter;
 
   function CodeGen(opts) {
     this.opts = opts || {};
@@ -29,7 +29,7 @@
   }
 
   CodeGen.prototype.compile = function(ast) {
-    ast = rewriter.rewrite(ast);
+    ast = new Rewriter().rewrite(ast);
     return this.generate(ast);
   };
 

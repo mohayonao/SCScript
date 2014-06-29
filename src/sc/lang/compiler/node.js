@@ -46,9 +46,9 @@
 
       return node;
     },
-    createEnvironmentExpresion: function(id) {
+    createEnvironmentExpression: function(id) {
       return {
-        type: Syntax.EnvironmentExpresion,
+        type: Syntax.EnvironmentExpression,
         id: id
       };
     },

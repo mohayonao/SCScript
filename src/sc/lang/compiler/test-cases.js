@@ -4112,7 +4112,7 @@
         type: Syntax.Program,
         body: [
           {
-            type: Syntax.EnvironmentExpresion,
+            type: Syntax.EnvironmentExpression,
             id: {
               type: Syntax.Identifier,
               name: "a",
@@ -4133,7 +4133,7 @@
           {
             type: Syntax.CallExpression,
             callee: {
-              type: Syntax.EnvironmentExpresion,
+              type: Syntax.EnvironmentExpression,
               id: {
                 type: Syntax.Identifier,
                 name: "a",
@@ -4163,7 +4163,7 @@
             type: Syntax.AssignmentExpression,
             operator: "=",
             left: {
-              type: Syntax.EnvironmentExpresion,
+              type: Syntax.EnvironmentExpression,
               id: {
                 type: Syntax.Identifier,
                 name: "a",

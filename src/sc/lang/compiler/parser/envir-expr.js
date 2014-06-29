@@ -7,7 +7,7 @@
   var Parser = sc.lang.compiler.Parser;
 
   /*
-    EnvironmentExpresion :
+    EnvironmentExpression :
       ~ Identifier
   */
   Parser.addParseMethod("EnvironmentExpression", function() {
@@ -17,7 +17,7 @@
     var expr = this.parseIdentifier({ variable: true });
 
     return marker.update().apply(
-      Node.createEnvironmentExpresion(expr)
+      Node.createEnvironmentExpression(expr)
     );
   });
 })(sc);

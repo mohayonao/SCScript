@@ -27,7 +27,7 @@
       BlockExpression: "BlockExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",
-      EnvironmentExpresion: "EnvironmentExpresion",
+      EnvironmentExpression: "EnvironmentExpression",
       Identifier: "Identifier",
       ListExpression: "ListExpression",
       Literal: "Literal",

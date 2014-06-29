@@ -407,7 +407,7 @@
     });
   };
 
-  CodeGen.prototype.EnvironmentExpresion = function(node, opts) {
+  CodeGen.prototype.EnvironmentExpression = function(node, opts) {
     var result;
 
     if (opts) {

@@ -128,7 +128,7 @@
   function isInvalidLeftHandSide(expr) {
     switch (expr.type) {
     case Syntax.Identifier:
-    case Syntax.EnvironmentExpresion:
+    case Syntax.EnvironmentExpression:
       return false;
     }
     return true;

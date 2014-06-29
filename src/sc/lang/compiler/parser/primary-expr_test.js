@@ -92,7 +92,7 @@
           }
         },
         "~a": {
-          type: Syntax.EnvironmentExpresion,
+          type: Syntax.EnvironmentExpression,
           id: {
             type: Syntax.Identifier,
             name: "a",

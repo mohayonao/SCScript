@@ -39,24 +39,6 @@
     return this.generate(ast);
   };
 
-  CodeGen.prototype.toSourceNodeWhenNeeded = function(generated) {
-    if (Array.isArray(generated)) {
-      return this.flattenToString(generated);
-    }
-    return generated;
-  };
-
-  CodeGen.prototype.flattenToString = function(list) {
-    var result = "";
-
-    for (var i = 0, imax = list.length; i < imax; ++i) {
-      var elem = list[i];
-      result += Array.isArray(elem) ? this.flattenToString(elem) : elem;
-    }
-
-    return result;
-  };
-
   CodeGen.prototype.generate = function(node, opts) {
     var result;
 
@@ -68,7 +50,7 @@
       ];
     } else if (node && node.type) {
       result = this[node.type](node, opts);
-      result = this.toSourceNodeWhenNeeded(result, node);
+      result = toSourceNodeWhenNeeded(result, node);
     } else if (typeof node === "string") {
       result = node.replace(/^(?![_$])/, "$");
     } else {
@@ -182,6 +164,24 @@
     var message = strlib.format(messageFormat, slice.call(arguments, 2));
     throw new Error(message);
   };
+
+  function toSourceNodeWhenNeeded(generated) {
+    if (Array.isArray(generated)) {
+      return flattenToString(generated);
+    }
+    return generated;
+  }
+
+  function flattenToString(list) {
+    var result = "";
+
+    for (var i = 0, imax = list.length; i < imax; ++i) {
+      var elem = list[i];
+      result += Array.isArray(elem) ? flattenToString(elem) : elem;
+    }
+
+    return result;
+  }
 
   sc.lang.compiler.CodeGen = CodeGen;
 })(sc);

@@ -7,7 +7,7 @@
   var Token = sc.lang.compiler.Token;
 
   describe("sc.lang.compiler.CodeGen", function() {
-    describe("EnvironmentExpression", function() {
+    describe("EventExpression", function() {
       sc.test.codegen().each([
         {
           code: "(a:10, b:20)",

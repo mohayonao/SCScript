@@ -10,7 +10,7 @@
   var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.CodeGen", function() {
-    describe("EnvironmentExpression", function() {
+    describe("Identifier", function() {
       sc.test.codegen().each([
         {
           code: "a",

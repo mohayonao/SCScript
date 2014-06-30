@@ -184,40 +184,6 @@
     throw new Error(message);
   };
 
-  CodeGen.prototype.BinaryExpression = function(node) {
-    var operator = node.operator;
-
-    if (operator === "===" || operator === "!==") {
-      return this._EqualityOperator(node);
-    }
-
-    return this._BinaryExpression(node);
-  };
-
-  CodeGen.prototype._EqualityOperator = function(node) {
-    return [
-      "$.Boolean(",
-      this.generate(node.left), " " + node.operator + " ", this.generate(node.right),
-      ")"
-    ];
-  };
-
-  CodeGen.prototype._BinaryExpression = function(node) {
-    var result;
-
-    result = [
-      this.generate(node.left),
-      ".$('" + node.operator + "', [ ", this.generate(node.right)
-    ];
-
-    if (node.adverb) {
-      result.push(", ", this.generate(node.adverb));
-    }
-    result.push(" ])");
-
-    return result;
-  };
-
   CodeGen.prototype.BlockExpression = function(node) {
     var body = this.withFunction([], function() {
       return this._Statements(node.body);

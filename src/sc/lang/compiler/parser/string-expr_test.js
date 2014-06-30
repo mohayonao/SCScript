@@ -6,6 +6,7 @@
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseStringExpression", function() {
@@ -15,7 +16,7 @@
         '"ab" "cd" "ef"': sc.test.OK,
         '"ab" "#{cd}"': sc.test.OK,
         '"#{ab}" "cd"': sc.test.OK,
-        "'sym'": Message.UnexpectedSymbol,
+        "'sym'": strlib.format(Message.UnexpectedLiteral, "symbol"),
       });
       sc.test.parse(this.title).each({
         '"str"': {

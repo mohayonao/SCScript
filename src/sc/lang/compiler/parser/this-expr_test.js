@@ -5,13 +5,12 @@
 
   var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;
-  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseThisExpression", function() {
       sc.test.compile(this.title).each({
         "this ": sc.test.OK,
-        "var ": strlib.format(Message.UnexpectedToken, "var"),
+        "var ": Message.UnexpectedKeyword,
         "this_ ": Message.UnexpectedIdentifier,
       });
       sc.test.parse(this.title).each({

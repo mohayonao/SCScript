@@ -37,6 +37,10 @@
     }
   });
 
+  Parser.prototype.parse = function() {
+    return this.parseProgram();
+  };
+
   Parser.prototype.lex = function() {
     return this.lexer.lex();
   };
@@ -60,10 +64,8 @@
 
   Parser.prototype.matchAny = function(list) {
     var value = this.lexer.lookahead.value;
-    for (var i = 0, imax = list.length; i < imax; ++i) {
-      if (list[i] === value) {
-        return value;
-      }
+    if (list.indexOf(value) !== -1) {
+      return value;
     }
     return null;
   };
@@ -90,7 +92,14 @@
     case Token.CharLiteral:
     case Token.StringLiteral:
     case Token.SymbolLiteral:
+    case Token.TrueLiteral:
+    case Token.FalseLiteral:
+    case Token.NilLiteral:
       return this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
+    case Token.Keyword:
+      return this.throwError(token, Message.UnexpectedKeyword);
+    case Token.Label:
+      return this.throwError(token, Message.UnexpectedLabel);
     case Token.Identifier:
       return this.throwError(token, Message.UnexpectedIdentifier);
     }

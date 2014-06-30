@@ -20,7 +20,7 @@
         "1 +.f 2": sc.test.OK,
         "1 +.[] 2": strlib.format(Message.UnexpectedToken, "["),
         "1 +.0.0 2": Message.UnexpectedNumber,
-        "1 +.nil 2": strlib.format(Message.UnexpectedToken, "nil"),
+        "1 +.nil 2": strlib.format(Message.UnexpectedLiteral, "nil"),
         "1 +.Nil 2": Message.UnexpectedIdentifier,
         "1 +._ 2": Message.UnexpectedIdentifier,
       });

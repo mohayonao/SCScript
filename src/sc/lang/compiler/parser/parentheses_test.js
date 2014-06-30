@@ -21,7 +21,7 @@
         "(1;2)": sc.test.OK,     // Expressions
         "(1)": sc.test.OK,       // Expression
         "[1]": strlib.format(Message.UnexpectedToken, "["),
-        "(var a;)": strlib.format(Message.UnexpectedToken, "var"),
+        "(var a;)": Message.UnexpectedKeyword,
       });
       sc.test.parse(this.title).each({
         "()": {

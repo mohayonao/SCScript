@@ -11,3 +11,4 @@ require("./literal");
 require("./program");
 require("./this-expr");
 require("./uop-expr");
+require("./var-stmt");

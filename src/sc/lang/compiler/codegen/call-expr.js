@@ -40,7 +40,7 @@
           that.stitchWith(list, ", ", function(item) {
             return that.generate(item);
           }),
-          that.insertKeyValueElement(node.args.keywords, hasActualArgument)
+          insertKeyValueElement(that, node.args.keywords, hasActualArgument)
         ];
         result = [
           that.generate(node.callee), ".$('" + node.method.name + "', [ ", args, " ])"
@@ -63,9 +63,26 @@
         ", " + tempVar + ".$('" + node.method.name + "', ",
         that.insertArrayElement(node.args.list), ".concat(",
         that.generate(node.args.expand), ".$('asArray')._",
-        that.insertKeyValueElement(node.args.keywords, true),
+        insertKeyValueElement(that, node.args.keywords, true),
         ")))"
       ];
     });
+  }
+
+  function insertKeyValueElement(that, keyValues, withComma) {
+    var result = [];
+
+    if (keyValues) {
+      if (withComma) {
+        result.push(", ");
+      }
+      result.push(
+        "{ ", that.stitchWith(Object.keys(keyValues), ", ", function(key) {
+          return [ key, ": ", that.generate(keyValues[key]) ];
+        }), " }"
+      );
+    }
+
+    return result;
   }
 })(sc);

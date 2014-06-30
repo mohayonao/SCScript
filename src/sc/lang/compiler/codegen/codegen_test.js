@@ -93,22 +93,6 @@
         test = toCompiledString(test);
         expect(test).to.equal("[]");
       });
-      it("insertKeyValueElement", function() {
-        var codegen = new CodeGen();
-
-        var test;
-        test = codegen.insertKeyValueElement({ a: "a", b: "b" });
-        test = toCompiledString(test);
-        expect(test).to.equal("{ a: $a, b: $b }");
-
-        test = codegen.insertKeyValueElement({ a: "a", b: "b" }, true);
-        test = toCompiledString(test);
-        expect(test).to.equal(", { a: $a, b: $b }");
-
-        test = codegen.insertKeyValueElement(null, true);
-        test = toCompiledString(test);
-        expect(test).to.equal("");
-      });
       it("useTemporaryVariable", function() {
         var codegen = new CodeGen();
 
@@ -143,7 +127,7 @@
     });
   });
 
-  describe.skip("sc.lang.compiler.codegen", function() {
+  describe("sc.lang.compiler.codegen", function() {
     function s(str) {
       str = JSON.stringify(str);
       return '"' + str.substr(1, str.length - 2) + '"';

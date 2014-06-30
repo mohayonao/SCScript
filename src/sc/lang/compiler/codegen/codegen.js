@@ -116,24 +116,6 @@
     return result;
   };
 
-  CodeGen.prototype.insertKeyValueElement = function(keyValues, withComma) {
-    var result = [];
-
-    if (keyValues) {
-      // TODO: ???
-      if (withComma) {
-        result.push(", ");
-      }
-      result.push(
-        "{ ", this.stitchWith(Object.keys(keyValues), ", ", function(key) {
-          return [ key, ": ", this.generate(keyValues[key]) ];
-        }), " }"
-      );
-    }
-
-    return result;
-  };
-
   CodeGen.prototype.stitchWith = function(elements, bond, func) {
     var result = [];
 

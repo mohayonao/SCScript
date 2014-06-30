@@ -200,23 +200,6 @@
     return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.ListExpression = function(node) {
-    var result;
-
-    result = [
-      "$.Array(",
-      this.insertArrayElement(node.elements),
-    ];
-
-    if (node.immutable) {
-      result.push(", ", "true");
-    }
-
-    result.push(")");
-
-    return result;
-  };
-
   CodeGen.prototype.Literal = function(node) {
     switch (node.valueType) {
     case Token.IntegerLiteral:

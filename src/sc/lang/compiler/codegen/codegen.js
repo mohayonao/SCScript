@@ -193,21 +193,6 @@
     return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.EnvironmentExpression = function(node, opts) {
-    var result;
-
-    if (opts) {
-      // setter
-      result = [ "$.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
-      opts.used = true;
-    } else {
-      // getter
-      result = "$.Environment('" + node.id.name + "')";
-    }
-
-    return result;
-  };
-
   CodeGen.prototype.FunctionExpression = function(node) {
     var info = getInformationOfFunction(node);
 

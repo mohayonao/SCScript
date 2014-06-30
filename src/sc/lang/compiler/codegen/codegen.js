@@ -29,9 +29,6 @@
       tempVarId: 0
     };
     that.scope = new Scope(that);
-    if (typeof that.opts.bare === "undefined") {
-      that.opts.bare = false;
-    }
   }
 
   CodeGen.addGenerateMethod = function(name, method) {
@@ -60,10 +57,6 @@
     return result;
   };
 
-  CodeGen.prototype.addIndent = function(stmt) {
-    return [ this.state.indent, stmt ];
-  };
-
   CodeGen.prototype.generate = function(node, opts) {
     var result;
 
@@ -79,7 +72,7 @@
     } else if (typeof node === "string") {
       result = node.replace(/^(?![_$])/, "$");
     } else {
-      result = node;
+      result = "null";
     }
 
     return result;
@@ -122,6 +115,10 @@
     return result;
   };
 
+  CodeGen.prototype.addIndent = function(stmt) {
+    return [ this.state.indent, stmt ];
+  };
+
   CodeGen.prototype.insertArrayElement = function(elements) {
     var result = [ "[", "]" ];
 
@@ -141,6 +138,7 @@
     var result = [];
 
     if (keyValues) {
+      // TODO: ???
       if (withComma) {
         result.push(", ");
       }

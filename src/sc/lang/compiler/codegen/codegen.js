@@ -199,26 +199,6 @@
     return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.Program = function(node) {
-    var result, body;
-
-    if (node.body.length) {
-      body = this.withFunction([ "" ], function() { // "" compiled as $
-        return this._Statements(node.body);
-      });
-
-      result = [ "(", body, ")" ];
-
-      if (!this.opts.bare) {
-        result = [ "SCScript", result, ";" ];
-      }
-    } else {
-      result = [];
-    }
-
-    return result;
-  };
-
   CodeGen.prototype.ThisExpression = function(node) {
     var name = node.name;
     name = name.charAt(0).toUpperCase() + name.substr(1);
@@ -264,6 +244,7 @@
     return "this.shift()";
   };
 
+  // TODO: remove
   CodeGen.prototype._Statements = function(elements) {
     var lastIndex = elements.length - 1;
 

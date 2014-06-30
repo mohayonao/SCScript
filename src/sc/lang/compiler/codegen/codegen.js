@@ -199,15 +199,6 @@
     return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.ValueMethodEvaluator = function(node) {
-    this.state.calledSegmentedMethod = true;
-    return [ "this.push(), ", this.generate(node.expr) ];
-  };
-
-  CodeGen.prototype.ValueMethodResult = function() {
-    return "this.shift()";
-  };
-
   // TODO: remove
   CodeGen.prototype._Statements = function(elements) {
     var lastIndex = elements.length - 1;

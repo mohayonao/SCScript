@@ -41,6 +41,10 @@
     that.functionArray = [];
   }
 
+  CodeGen.addGenerateMethod = function(name, method) {
+    CodeGen.prototype[name] = method;
+  };
+
   CodeGen.prototype.compile = function(ast) {
     return this.generate(ast);
   };
@@ -178,80 +182,6 @@
   CodeGen.prototype.throwError = function(obj, messageFormat) {
     var message = strlib.format(messageFormat, slice.call(arguments, 2));
     throw new Error(message);
-  };
-
-  CodeGen.prototype.AssignmentExpression = function(node) {
-    if (Array.isArray(node.left)) {
-      return this._DestructuringAssignment(node);
-    }
-
-    return this._SimpleAssignment(node);
-  };
-
-  CodeGen.prototype._SimpleAssignment = function(node) {
-    var result = [];
-    var opts;
-
-    opts = { right: node.right, used: false };
-
-    result.push(this.generate(node.left, opts));
-
-    if (!opts.used) {
-      result.push(" " + node.operator + " ", this.generate(opts.right));
-    }
-
-    return result;
-  };
-
-  CodeGen.prototype._DestructuringAssignment = function(node) {
-    return this.scope.useTemporaryVariable(function(tempVar) {
-      var elements = node.left;
-      var operator = node.operator;
-      var assignments;
-
-      assignments = this.withIndent(function() {
-        var result, lastUsedIndex;
-
-        lastUsedIndex = elements.length;
-
-        result = [
-          this.stitchWith(elements, ",\n", function(item, i) {
-            return this.addIndent(this._Assign(
-              item, operator, tempVar + ".$('at', [ $.Integer(" + i + ") ])"
-            ));
-          })
-        ];
-
-        if (node.remain) {
-          result.push(",\n", this.addIndent(this._Assign(
-            node.remain, operator, tempVar + ".$('copyToEnd', [ $.Integer(" + lastUsedIndex + ") ])"
-          )));
-        }
-
-        return result;
-      });
-
-      return [
-        "(" + tempVar + " = ", this.generate(node.right), ",\n",
-        assignments , ",\n",
-        this.addIndent(tempVar + ")")
-      ];
-    });
-  };
-
-  CodeGen.prototype._Assign = function(left, operator, right) {
-    var result = [];
-    var opts;
-
-    opts = { right: right, used: false };
-
-    result.push(this.generate(left, opts));
-
-    if (!opts.used) {
-      result.push(" " + operator + " ", right);
-    }
-
-    return result;
   };
 
   CodeGen.prototype.BinaryExpression = function(node) {

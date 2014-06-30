@@ -40,24 +40,23 @@
   };
 
   CodeGen.prototype.generate = function(node, opts) {
-    var result;
-
     if (Array.isArray(node)) {
-      result = [
+      return [
         "(", this.stitchWith(node, ", ", function(item) {
           return this.generate(item, opts);
         }), ")"
       ];
-    } else if (node && node.type) {
-      result = this[node.type](node, opts);
-      result = toSourceNodeWhenNeeded(result, node);
-    } else if (typeof node === "string") {
-      result = node.replace(/^(?![_$])/, "$");
-    } else {
-      result = "null";
     }
 
-    return result;
+    if (node && node.type) {
+      return toSourceNodeWhenNeeded(this[node.type](node, opts), node);
+    }
+
+    if (typeof node === "string") {
+      return node.replace(/^(?![_$])/, "$");
+    }
+
+    return "null";
   };
 
   CodeGen.prototype.withFunction = function(args, func) {
@@ -87,12 +86,12 @@
   };
 
   CodeGen.prototype.withIndent = function(func) {
-    var base, result;
+    var indent, result;
 
-    base = this.state.indent;
+    indent = this.state.indent;
     this.state.indent += "  ";
     result = func.call(this);
-    this.state.indent = base;
+    this.state.indent = indent;
 
     return result;
   };

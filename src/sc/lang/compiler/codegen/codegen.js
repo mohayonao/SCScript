@@ -184,6 +184,7 @@
     throw new Error(message);
   };
 
+  // TODO: remove
   CodeGen.prototype.BlockExpression = function(node) {
     var body = this.withFunction([], function() {
       return this._Statements(node.body);

@@ -190,32 +190,6 @@
     throw new Error(message);
   };
 
-  // TODO: remove
-  CodeGen.prototype.BlockExpression = function(node) {
-    var body = this.withFunction([], function() {
-      return this._Statements(node.body);
-    });
-
-    return [ "(", body, ")()" ];
-  };
-
-  // TODO: remove
-  CodeGen.prototype._Statements = function(elements) {
-    var lastIndex = elements.length - 1;
-
-    return this.stitchWith(elements, "\n", function(item, i) {
-      var stmt;
-
-      stmt = this.generate(item);
-
-      if (i === lastIndex) {
-        stmt = [ "return ", stmt ];
-      }
-
-      return [ this.addIndent(stmt), ";" ];
-    });
-  };
-
   var $id = function(id) {
     var ch = id.charAt(0);
 

@@ -3129,58 +3129,6 @@
         ],
       }
     },
-    "a = (var a = 1; a)": {
-      compiled: [
-        "SCScript(function($) {",
-        "  var _ref0;",
-        "  return (_ref0 = (function() {",
-        "    var $a;",
-        "    $a = $.Integer(1);",
-        "    return $a;",
-        "  })(), $.This().$('a_', [ _ref0 ]), _ref0);",
-        "});",
-      ],
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.AssignmentExpression,
-            operator: "=",
-            left: {
-              type: Syntax.Identifier,
-              name: "a",
-            },
-            right: {
-              type: Syntax.BlockExpression,
-              body: [
-                {
-                  type: Syntax.VariableDeclaration,
-                  kind: "var",
-                  declarations: [
-                    {
-                      type: Syntax.VariableDeclarator,
-                      id: {
-                        type: Syntax.Identifier,
-                        name: "a",
-                      },
-                      init: {
-                        type: Syntax.Literal,
-                        value: "1",
-                        valueType: Token.IntegerLiteral,
-                      },
-                    }
-                  ],
-                },
-                {
-                  type: Syntax.Identifier,
-                  name: "a",
-                }
-              ],
-            },
-          }
-        ],
-      }
-    },
     "a.midicps.min(220)": {
       compiled: [
         "SCScript(function($) {",
@@ -4615,53 +4563,6 @@
               valueType: Token.IntegerLiteral,
             },
           }
-        ],
-      }
-    },
-    "(var a; a = 10;)": {
-      compiled: [
-        "SCScript(function($) {",
-        "  return (function() {",
-        "    var $a;",
-        "    $a = $.Nil();",
-        "    return $a = $.Integer(10);",
-        "  })();",
-        "});",
-      ],
-      ast: {
-        type: Syntax.Program,
-        body: [
-          {
-            type: Syntax.BlockExpression,
-            body: [
-              {
-                type: Syntax.VariableDeclaration,
-                kind: "var",
-                declarations: [
-                  {
-                    type: Syntax.VariableDeclarator,
-                    id: {
-                      type: Syntax.Identifier,
-                      name: "a",
-                    },
-                  }
-                ],
-              },
-              {
-                type: Syntax.AssignmentExpression,
-                operator: "=",
-                left: {
-                  type: Syntax.Identifier,
-                  name: "a",
-                },
-                right: {
-                  type: Syntax.Literal,
-                  value: "10",
-                  valueType: Token.IntegerLiteral,
-                },
-              }
-            ],
-          },
         ],
       }
     },

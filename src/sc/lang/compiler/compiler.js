@@ -24,7 +24,6 @@
     Syntax: {
       AssignmentExpression: "AssignmentExpression",
       BinaryExpression: "BinaryExpression",
-      BlockExpression: "BlockExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",
       EnvironmentExpression: "EnvironmentExpression",

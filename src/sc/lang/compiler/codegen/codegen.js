@@ -50,11 +50,13 @@
   };
 
   CodeGen.prototype.flattenToString = function(list) {
-    var i, imax, e, result = "";
-    for (i = 0, imax = list.length; i < imax; ++i) {
-      e = list[i];
-      result += Array.isArray(e) ? this.flattenToString(e) : e;
+    var result = "";
+
+    for (var i = 0, imax = list.length; i < imax; ++i) {
+      var elem = list[i];
+      result += Array.isArray(elem) ? this.flattenToString(elem) : elem;
     }
+
     return result;
   };
 
@@ -75,7 +77,7 @@
       result = this[node.type](node, opts);
       result = this.toSourceNodeWhenNeeded(result, node);
     } else if (typeof node === "string") {
-      result = $id(node);
+      result = node.replace(/^(?![_$])/, "$");
     } else {
       result = node;
     }
@@ -83,17 +85,13 @@
     return result;
   };
 
-  CodeGen.prototype.withFunction = function(args, fn) {
-    var result;
-    var argItems, base;
-
-    argItems = this.stitchWith(args, ", ", function(item) {
+  CodeGen.prototype.withFunction = function(args, func) {
+    var argItems = this.stitchWith(args, ", ", function(item) {
       return this.generate(item);
     });
+    var result = [ "function(", argItems, ") {\n" ];
 
-    result = [ "function(", argItems, ") {\n" ];
-
-    base = this.state.indent;
+    var indent = this.state.indent;
     this.state.indent += "  ";
 
     this.scope.begin().setIndent(this.state.indent);
@@ -102,35 +100,33 @@
     }
     result.push(
       this.scope.toVariableStatement(),
-      fn.call(this)
+      func.call(this)
     );
     this.scope.end();
 
-    this.state.indent = base;
+    this.state.indent = indent;
 
     result.push("\n", this.state.indent, "}");
 
     return result;
   };
 
-  CodeGen.prototype.withIndent = function(fn) {
+  CodeGen.prototype.withIndent = function(func) {
     var base, result;
 
     base = this.state.indent;
     this.state.indent += "  ";
-    result = fn.call(this);
+    result = func.call(this);
     this.state.indent = base;
 
     return result;
   };
 
   CodeGen.prototype.insertArrayElement = function(elements) {
-    var result, items;
-
-    result = [ "[", "]" ];
+    var result = [ "[", "]" ];
 
     if (elements.length) {
-      items = this.withIndent(function() {
+      var items = this.withIndent(function() {
         return this.stitchWith(elements, "\n", function(item) {
           return [ this.state.indent, this.generate(item), "," ];
         });
@@ -158,15 +154,14 @@
     return result;
   };
 
-  CodeGen.prototype.stitchWith = function(elements, bond, fn) {
-    var result, i, imax;
+  CodeGen.prototype.stitchWith = function(elements, bond, func) {
+    var result = [];
 
-    result = [];
-    for (i = 0, imax = elements.length; i < imax; ++i) {
+    for (var i = 0, imax = elements.length; i < imax; ++i) {
       if (i) {
         result.push(bond);
       }
-      result.push(fn.call(this, elements[i], i));
+      result.push(func.call(this, elements[i], i));
     }
 
     return result;
@@ -188,16 +183,6 @@
   CodeGen.prototype.throwError = function(obj, messageFormat) {
     var message = strlib.format(messageFormat, slice.call(arguments, 2));
     throw new Error(message);
-  };
-
-  var $id = function(id) {
-    var ch = id.charAt(0);
-
-    if (ch !== "_" && ch !== "$") {
-      id = "$" + id;
-    }
-
-    return id;
   };
 
   sc.lang.compiler.CodeGen = CodeGen;

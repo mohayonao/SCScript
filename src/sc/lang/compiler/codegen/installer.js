@@ -10,3 +10,4 @@ require("./list-expr");
 require("./literal");
 require("./program");
 require("./this-expr");
+require("./uop-expr");

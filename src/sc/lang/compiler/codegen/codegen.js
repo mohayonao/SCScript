@@ -199,16 +199,6 @@
     return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.UnaryExpression = function(node) {
-    /* istanbul ignore else */
-    if (node.operator === "`") {
-      return [ "$.Ref(", this.generate(node.arg), ")" ];
-    }
-
-    /* istanbul ignore next */
-    throw new Error("Unknown UnaryExpression: " + node.operator);
-  };
-
   CodeGen.prototype.VariableDeclaration = function(node) {
     var scope = this.state.syncBlockScope;
 

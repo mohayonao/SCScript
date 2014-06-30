@@ -109,7 +109,7 @@
 
       ast = new sc.lang.compiler.Rewriter().rewrite(ast);
 
-      return new sc.lang.compiler.CodeGen(opts).compile(ast);
+      return new sc.lang.compiler.CodeGen(null, opts).compile(ast);
     }
   };
 })(sc);

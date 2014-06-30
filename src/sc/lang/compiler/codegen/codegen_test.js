@@ -65,7 +65,7 @@
             }
           ]
         };
-        var source = new CodeGen({ bare: true }).compile(ast);
+        var source = new CodeGen(null, { bare: true }).compile(ast);
         var test = esprima.parse(source);
         var compiled = esprima.parse(
           "(function($) { return $.Nil(); })"

@@ -49,7 +49,7 @@
       this.stub(sc.lang.compiler, "Rewriter").withArgs().returns({
         rewrite: Rewriter$rewrite
       });
-      this.stub(sc.lang.compiler, "CodeGen").withArgs(opts).returns({
+      this.stub(sc.lang.compiler, "CodeGen").withArgs(null, opts).returns({
         compile: CodeGen$compile
       });
 
@@ -75,7 +75,7 @@
       this.stub(sc.lang.compiler, "Rewriter").withArgs().returns({
         rewrite: Rewriter$rewrite
       });
-      this.stub(sc.lang.compiler, "CodeGen").withArgs(opts).returns({
+      this.stub(sc.lang.compiler, "CodeGen").withArgs(null, opts).returns({
         compile: CodeGen$compile
       });
 

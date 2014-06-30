@@ -11,19 +11,34 @@
   var Message  = sc.lang.compiler.Message;
   var Scope = sc.lang.compiler.Scope;
 
-  function CodeGen(opts) {
-    this.opts = opts || {};
-    this.base = "";
-    this.state = {
+  function CodeGen(parent, opts) {
+    if (!parent) {
+      initialize(this, opts);
+    } else {
+      this.parent = parent;
+      this.opts  = parent.opts;
+      this.state = parent.state;
+      this.scope = parent.scope;
+      // TODO: remove
+      this.functionStack = parent.functionStack;
+      this.functionArray = parent.functionArray;
+    }
+  }
+
+  function initialize(that, opts) {
+    that.parent = null;
+    that.opts = opts || {};
+    that.state = {
+      indent: "",
       calledSegmentedMethod: false,
       syncBlockScope: null
     };
-    this.scope = new Scope(this);
-    if (typeof this.opts.bare === "undefined") {
-      this.opts.bare = false;
+    that.scope = new Scope(that);
+    if (typeof that.opts.bare === "undefined") {
+      that.opts.bare = false;
     }
-    this.functionStack = [];
-    this.functionArray = [];
+    that.functionStack = [];
+    that.functionArray = [];
   }
 
   CodeGen.prototype.compile = function(ast) {
@@ -47,7 +62,7 @@
   };
 
   CodeGen.prototype.addIndent = function(stmt) {
-    return [ this.base, stmt ];
+    return [ this.state.indent, stmt ];
   };
 
   CodeGen.prototype.generate = function(node, opts) {
@@ -81,10 +96,10 @@
 
     result = [ "function(", argItems, ") {\n" ];
 
-    base = this.base;
-    this.base += "  ";
+    base = this.state.indent;
+    this.state.indent += "  ";
 
-    this.scope.begin().setIndent(this.base);
+    this.scope.begin().setIndent(this.state.indent);
     for (var i = 0, imax = args.length; i < imax; ++i) {
       this.scope.add("arg", args[i]);
     }
@@ -94,9 +109,9 @@
     );
     this.scope.end();
 
-    this.base = base;
+    this.state.indent = base;
 
-    result.push("\n", this.base, "}");
+    result.push("\n", this.state.indent, "}");
 
     return result;
   };
@@ -104,10 +119,10 @@
   CodeGen.prototype.withIndent = function(fn) {
     var base, result;
 
-    base = this.base;
-    this.base += "  ";
+    base = this.state.indent;
+    this.state.indent += "  ";
     result = fn.call(this);
-    this.base = base;
+    this.state.indent = base;
 
     return result;
   };
@@ -120,10 +135,10 @@
     if (elements.length) {
       items = this.withIndent(function() {
         return this.stitchWith(elements, "\n", function(item) {
-          return [ this.base, this.generate(item), "," ];
+          return [ this.state.indent, this.generate(item), "," ];
         });
       });
-      result.splice(1, 0, "\n", items, "\n", this.base);
+      result.splice(1, 0, "\n", items, "\n", this.state.indent);
     }
 
     return result;

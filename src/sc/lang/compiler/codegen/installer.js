@@ -9,3 +9,4 @@ require("./identifier");
 require("./list-expr");
 require("./literal");
 require("./program");
+require("./this-expr");

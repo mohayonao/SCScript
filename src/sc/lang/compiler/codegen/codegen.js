@@ -199,12 +199,6 @@
     return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.ThisExpression = function(node) {
-    var name = node.name;
-    name = name.charAt(0).toUpperCase() + name.substr(1);
-    return [ "$." + name + "()" ];
-  };
-
   CodeGen.prototype.UnaryExpression = function(node) {
     /* istanbul ignore else */
     if (node.operator === "`") {

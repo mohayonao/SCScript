@@ -60,11 +60,19 @@
       expect(instance).to.respondTo("method");
       expect(instance.method()).to.equal(12345);
     });
-    it("throwErrorIfAlreadyExists", function() {
+    it("throwErrorIfAlreadyExists instance method", function() {
       var builder = new Builder(TestClass).addMethod("method");
+      builder.addClassMethod("method");
       expect(function() {
         builder.addMethod("method");
       }).to.throw("TestClass#method is already defined");
+    });
+    it("throwErrorIfAlreadyExists class method", function() {
+      var builder = new Builder(TestClass).addClassMethod("method");
+      builder.addMethod("method");
+      expect(function() {
+        builder.addClassMethod("method");
+      }).to.throw("TestClass.method is already defined");
     });
     it("addProperty <>", function() {
       new Builder(TestClass).init().addProperty("<>", "value");

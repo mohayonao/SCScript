@@ -2,6 +2,9 @@
   "use strict";
 
   require("../compiler");
+  require("../lexer/lexer");
+  require("../node/node");
+  require("../marker/marker");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;

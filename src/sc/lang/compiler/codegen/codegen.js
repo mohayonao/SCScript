@@ -8,7 +8,6 @@
   var strlib = sc.libs.strlib;
   var Syntax   = sc.lang.compiler.Syntax;
   var Token    = sc.lang.compiler.Token;
-  var Message  = sc.lang.compiler.Message;
   var Scope = sc.lang.compiler.Scope;
 
   function CodeGen(parent, opts) {
@@ -366,44 +365,6 @@
     }
 
     return result;
-  };
-
-  CodeGen.prototype.Identifier = function(node, opts) {
-    var name = node.name;
-
-    if (strlib.isClassName(name)) {
-      return "$('" + name + "')";
-    }
-
-    if (this.scope.find(name)) {
-      return $id(name);
-    }
-
-    if (name.length === 1) {
-      return this._InterpreterVariable(node, opts);
-    }
-
-    this.throwError(null, Message.VariableNotDefined, name);
-  };
-
-  CodeGen.prototype._InterpreterVariable = function(node, opts) {
-    var name;
-
-    if (opts) {
-      // setter
-      name = this.scope.useTemporaryVariable(function(tempVar) {
-        return [
-          "(" + tempVar + " = ", this.generate(opts.right),
-          ", $.This().$('" + node.name + "_', [ " + tempVar + " ]), " + tempVar + ")"
-        ];
-      });
-      opts.used = true;
-    } else {
-      // getter
-      name = "$.This().$('" + node.name + "')";
-    }
-
-    return name;
   };
 
   CodeGen.prototype.ListExpression = function(node) {

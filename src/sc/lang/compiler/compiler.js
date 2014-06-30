@@ -96,7 +96,7 @@
     },
     parse: function(source, opts) {
       var lexer = new sc.lang.compiler.Lexer(source, opts);
-      return new sc.lang.compiler.Parser(null, lexer).parseProgram();
+      return new sc.lang.compiler.Parser(null, lexer).parse();
     },
     compile: function(source, opts) {
       var ast;

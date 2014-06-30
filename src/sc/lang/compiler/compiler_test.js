@@ -22,18 +22,18 @@
       var source = Math.random();
       var opts = Math.random();
       var lexer = { name: "Lexer" };
-      var Parser$parseProgram = this.spy(sc.test.func());
+      var Parser$parse = this.spy(sc.test.func());
 
       this.stub(sc.lang.compiler, "Lexer").withArgs(source, opts).returns(lexer);
       this.stub(sc.lang.compiler, "Parser").withArgs(null, lexer).returns({
-        parseProgram: Parser$parseProgram
+        parse: Parser$parse
       });
 
       var test = sc.lang.compiler.parse(source, opts);
 
       expect(sc.lang.compiler.Lexer).to.be.calledWithNew;
       expect(sc.lang.compiler.Parser).to.be.calledWithNew;
-      expect(Parser$parseProgram ).to.be.calledLastIn(test);
+      expect(Parser$parse).to.be.calledLastIn(test);
     }));
     it(".compile given string", sinon.test(function() {
       var source = String(Math.random());

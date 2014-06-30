@@ -2,12 +2,12 @@
   "use strict";
 
   require("./compiler");
-  require("./marker");
-  require("./lexer/identifier");
-  require("./lexer/string");
-  require("./lexer/number");
-  require("./lexer/punctuator");
-  require("./lexer/comment");
+  require("../marker/marker");
+  require("./identifier");
+  require("./string");
+  require("./number");
+  require("./punctuator");
+  require("./comment");
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;

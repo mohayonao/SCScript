@@ -3,7 +3,7 @@
 
   require("./parser");
   require("./interpolate-string");
-  require("../lexer");
+  require("../lexer/lexer");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;

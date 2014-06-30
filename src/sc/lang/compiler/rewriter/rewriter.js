@@ -1,8 +1,8 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
-  require("./node");
+  require("../compiler");
+  require("../node/node");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Node = sc.lang.compiler.Node;

@@ -2,7 +2,6 @@
   "use strict";
 
   require("../compiler");
-  require("../node");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;

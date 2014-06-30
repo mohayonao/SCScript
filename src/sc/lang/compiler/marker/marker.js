@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("../compiler");
 
   function Marker(lexer, locItems) {
     this.lexer = lexer;

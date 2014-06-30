@@ -1,11 +1,11 @@
 (function() {
   "use strict";
 
-  require("../codegen");
-  require("../rewriter");
+  require("./codegen");
+  require("../rewriter/rewriter"); // TODO: remove
   require("../test-cases");
 
-  var codegen  = sc.lang.compiler.codegen;
+  var CodeGen  = sc.lang.compiler.CodeGen;
   var Syntax   = sc.lang.compiler.Syntax;
   var Token    = sc.lang.compiler.Message;
   var Rewriter = sc.lang.compiler.Rewriter;
@@ -48,7 +48,7 @@
             esprima.parse(code);
           }).to.not.throw();
 
-          test = codegen.compile(ast).split("\n");
+          test = new CodeGen().compile(ast).split("\n");
           expect(test).to.eql(compiled);
         });
       });
@@ -65,7 +65,7 @@
             }
           ]
         };
-        var source = codegen.compile(ast, { bare: true });
+        var source = new CodeGen({ bare: true }).compile(ast);
         var test = esprima.parse(source);
         var compiled = esprima.parse(
           "(function($) { return $.Nil(); })"
@@ -102,6 +102,7 @@
         var ast   = items.ast;
         var error = items.error;
         it(s(key), function() {
+          var codegen = new CodeGen();
           expect(function() {
             codegen.compile(ast);
           }).to.throw(error);

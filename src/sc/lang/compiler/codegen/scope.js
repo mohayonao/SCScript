@@ -4,138 +4,87 @@
   require("../compiler");
 
   function Scope(codegen) {
-    this.stack = [];
     this.codegen = codegen;
+    this.stack = [];
+    this.tempVarId = 0;
+    this.begin();
   }
 
-  Scope.prototype.add = function(type, id, opts) {
-    opts = opts || {};
-
-    var peek = this.stack[this.stack.length - 1];
-    var scope, vars, args, declared, stmt, indent;
-
-    scope = opts.scope;
-    if (scope) {
-      vars = scope.vars;
-      args = scope.args;
-      declared = scope.declared;
-      stmt = scope.stmt;
-      indent = scope.indent;
-    } else {
-      vars = peek.vars;
-      args = peek.args;
-      declared = peek.declared;
-      stmt = peek.stmt;
-      indent = peek.indent;
-    }
-
-    switch (type) {
-    case "var":
-      if (!vars[id]) {
-        this.added(stmt, id, indent, peek, opts);
-        vars[id] = true;
-        delete declared[id];
+  var delegate = {
+    var: function addToVariable(scope, name) {
+      if (!scope.vars[name]) {
+        addVariableToStatement(scope, name);
       }
-      break;
-    case "arg":
-      args[id] = true;
-      delete declared[id];
-      break;
+      scope.vars[name] = true;
+    },
+    arg: function addToArguments(scope, name) {
+      scope.args[name] = true;
     }
   };
 
-  Scope.prototype.added = function(stmt, id, indent, peek, opts) {
-    if (stmt.vars.length === 0) {
-      this._addNewVariableStatement(stmt, id, indent);
-    } else {
-      this._appendVariable(stmt, id);
-    }
-    if (opts.scope) {
-      peek.declared[id] = true;
-    }
+  Scope.prototype.add = function(type, name, scope) {
+    delegate[type](scope || this.peek(), name);
+    return this;
   };
 
-  Scope.prototype.begin = function(stream, args) {
-    var declared = this.getDeclaredVariable();
-    var stmt = { head: [], vars: [], tail: [] };
-    var i, imax;
-
-    this.stack.push({
+  Scope.prototype.begin = function() {
+    this.stack.unshift({
       vars: {},
       args: {},
-      declared: declared,
-      indent: this.codegen.base,
-      stmt: stmt
+      indent: "",
+      stmt: { head: [], vars: [], tail: [] }
     });
-
-    for (i = 0, imax = args.length; i < imax; i++) {
-      this.add("arg", args[i]);
-    }
-
-    stream.push(stmt.head, stmt.vars, stmt.tail);
+    return this;
   };
 
   Scope.prototype.end = function() {
-    this.stack.pop();
+    this.stack.shift();
+    return this;
   };
 
-  Scope.prototype.getDeclaredVariable = function() {
-    var peek = this.stack[this.stack.length - 1];
-    var declared = {};
-
-    if (peek) {
-      Array.prototype.concat.apply([], [
-        peek.declared, peek.args, peek.vars
-      ].map(Object.keys)).forEach(function(key) {
-        declared[key] = true;
-      });
-    }
-
-    return declared;
+  Scope.prototype.toVariableStatement = function() {
+    var stmt = this.peek().stmt;
+    return [ stmt.head, stmt.vars, stmt.tail ];
   };
 
-  Scope.prototype.find = function(id) {
-    var peek = this.stack[this.stack.length - 1];
-    return peek.vars[id] || peek.args[id] || peek.declared[id];
+  Scope.prototype.setIndent = function(indent) {
+    this.peek().indent = indent;
+    return this;
   };
 
   Scope.prototype.peek = function() {
-    return this.stack[this.stack.length - 1];
+    return this.stack[0];
+  };
+
+  Scope.prototype.find = function(name) {
+    return this.stack.some(function(scope) {
+      return scope.vars[name] || scope.args[name];
+    });
   };
 
   Scope.prototype.useTemporaryVariable = function(func) {
     var result;
-    var tempVarId = (this._tempVarId | 0);
-    var tempName  = "_ref" + tempVarId;
+    var tempName = "_ref" + this.tempVarId;
 
-    this.add("var", tempName, { init: false });
+    this.add("var", tempName);
 
-    this._tempVarId = tempVarId + 1;
+    this.tempVarId += 1;
     result = func.call(this.codegen, tempName);
-    this._tempVarId = Math.max(0, tempVarId);
+    this.tempVarId -= 1;
 
     return result;
   };
 
-  Scope.prototype._addNewVariableStatement = function(stmt, id, indent) {
-    stmt.head.push(indent, "var ");
-    stmt.vars.push($id(id));
-    stmt.tail.push(";", "\n");
-  };
-
-  Scope.prototype._appendVariable = function(stmt, id) {
-    stmt.vars.push(", ", $id(id));
-  };
-
-  var $id = function(id) {
-    var ch = id.charAt(0);
-
-    if (ch !== "_" && ch !== "$") {
-      id = "$" + id;
+  function addVariableToStatement(scope, name) {
+    var stmt = scope.stmt;
+    if (stmt.vars.length) {
+      stmt.vars.push(", ");
+    } else {
+      stmt.head.push(scope.indent, "var ");
+      stmt.tail.push(";\n");
     }
-
-    return id;
-  };
+    stmt.vars.push(name.replace(/^(?![_$])/, "$"));
+  }
 
   sc.lang.compiler.Scope = Scope;
 })(sc);

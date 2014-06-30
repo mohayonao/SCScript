@@ -84,8 +84,14 @@
     base = this.base;
     this.base += "  ";
 
-    this.scope.begin(result, args);
-    result.push(fn.call(this));
+    this.scope.begin().setIndent(this.base);
+    for (var i = 0, imax = args.length; i < imax; ++i) {
+      this.scope.add("arg", args[i]);
+    }
+    result.push(
+      this.scope.toVariableStatement(),
+      fn.call(this)
+    );
     this.scope.end();
 
     this.base = base;
@@ -386,7 +392,7 @@
 
       if (elements.length) {
         for (i = 0, imax = args.length; i < imax; ++i) {
-          this.scope.add("var", args[i], { init: false });
+          this.scope.add("var", args[i]);
         }
 
         syncBlockScope = this.state.syncBlockScope;
@@ -653,7 +659,7 @@
     return this.stitchWith(node.declarations, ", ", function(item) {
       var result;
 
-      this.scope.add("var", item.id.name, { scope: scope, init: false });
+      this.scope.add("var", item.id.name, scope);
 
       result = [ this.generate(item.id) ];
 

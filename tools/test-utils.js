@@ -351,6 +351,36 @@
     return func;
   };
 
+  function toMinifiedString(code) {
+    return code.replace(/[\s\n]+/g, " ");
+  }
+
+  sc.test.codegen = function() {
+    var func = function(items) {
+      var code = items.code;
+      var ast = items.ast;
+      var expected = items.expected;
+      var before = items.before;
+      it(code, function() {
+        var codegen = new sc.lang.compiler.CodeGen();
+        codegen.scope.add("var", "a0");
+        codegen.scope.add("var", "a1");
+        codegen.scope.add("var", "a2");
+        codegen.scope.add("var", "a3");
+        codegen.scope.add("var", "a4");
+        if (before) {
+          before(codegen);
+        }
+        var test = toMinifiedString(codegen.generate(ast));
+        expect(test).to.equal(toMinifiedString(expected));
+      });
+    };
+    func.each = function(suites) {
+      return _.each(suites, func);
+    };
+    return func;
+  };
+
   // for chai
   global.chai.use(function(chai, utils) {
     var assert$proto = chai.Assertion.prototype;

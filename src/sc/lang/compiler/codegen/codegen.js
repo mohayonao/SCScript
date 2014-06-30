@@ -199,12 +199,6 @@
     return [ "(", body, ")()" ];
   };
 
-  CodeGen.prototype.EventExpression = function(node) {
-    return [
-      "$.Event(", this.insertArrayElement(node.elements), ")"
-    ];
-  };
-
   CodeGen.prototype.Program = function(node) {
     var result, body;
 

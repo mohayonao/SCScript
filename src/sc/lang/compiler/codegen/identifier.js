@@ -30,7 +30,7 @@
 
     if (opts) {
       // setter
-      name = that.scope.useTemporaryVariable(function(tempVar) {
+      name = that.useTemporaryVariable(function(tempVar) {
         return [
           "(" + tempVar + " = ", that.generate(opts.right),
           ", $.This().$('" + node.name + "_', [ " + tempVar + " ]), " + tempVar + ")"

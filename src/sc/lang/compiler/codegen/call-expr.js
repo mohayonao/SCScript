@@ -27,7 +27,7 @@
     hasActualArgument = !!list.length;
 
     if (node.stamp === "=") {
-      result = that.scope.useTemporaryVariable(function(tempVar) {
+      result = that.useTemporaryVariable(function(tempVar) {
         return [
           "(" + tempVar + " = ", that.generate(list[0]), ", ",
           that.generate(node.callee), ".$('" + node.method.name + "', [ " + tempVar + " ]), ",
@@ -56,7 +56,7 @@
   }
 
   function generateExpandCall(that, node) {
-    return that.scope.useTemporaryVariable(function(tempVar) {
+    return that.useTemporaryVariable(function(tempVar) {
       return [
         "(" + tempVar + " = ",
         that.generate(node.callee),

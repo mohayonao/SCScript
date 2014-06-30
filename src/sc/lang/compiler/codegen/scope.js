@@ -3,8 +3,7 @@
 
   require("../compiler");
 
-  function Scope(codegen) {
-    this.codegen = codegen;
+  function Scope() {
     this.stack = [];
     this.tempVarId = 0;
     this.begin();
@@ -60,19 +59,6 @@
     return this.stack.some(function(scope) {
       return scope.vars[name] || scope.args[name];
     });
-  };
-
-  Scope.prototype.useTemporaryVariable = function(func) {
-    var result;
-    var tempName = "_ref" + this.tempVarId;
-
-    this.add("var", tempName);
-
-    this.tempVarId += 1;
-    result = func.call(this.codegen, tempName);
-    this.tempVarId -= 1;
-
-    return result;
   };
 
   function addVariableToStatement(scope, name) {

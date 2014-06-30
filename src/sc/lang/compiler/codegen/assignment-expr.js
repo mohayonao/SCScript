@@ -27,7 +27,7 @@
   }
 
   function generateDestructuringAssignment(that, node) {
-    return that.scope.useTemporaryVariable(function(tempVar) {
+    return that.useTemporaryVariable(function(tempVar) {
       var elements = node.left;
       var operator = node.operator;
 

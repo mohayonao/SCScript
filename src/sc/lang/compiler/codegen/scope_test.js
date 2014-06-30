@@ -5,8 +5,6 @@
 
   var Scope = sc.lang.compiler.Scope;
 
-  var reVariableStatement = /^\s*var ([\w$]+)(, [\w$]+)*;\n$/;
-
   function compile(list) {
     return _.flatten(list).join("");
   }
@@ -115,41 +113,6 @@
         var stmt = scope.toVariableStatement();
         expect(compile(stmt)).to.equal("var $a, $b;\n");
       });
-    });
-    describe("temporary variables", function() {
-      var scope = new Scope();
-
-      var tempVars = [];
-      scope.useTemporaryVariable(function(tempVar) {
-        tempVars[0] = tempVar;
-        scope.add("var", "a");
-        scope.useTemporaryVariable(function(tempVar) {
-          tempVars[1] = tempVar;
-          scope.add("var", "b");
-        });
-      });
-      // reset temporary variable counter
-      scope.useTemporaryVariable(function(tempVar) {
-        tempVars[2] = tempVar;
-        scope.add("var", "c");
-        scope.useTemporaryVariable(function(tempVar) {
-          tempVars[3] = tempVar;
-          scope.add("var", "d");
-        });
-      });
-      var stmt = scope.toVariableStatement();
-      stmt = compile(stmt);
-
-      expect(stmt, 1).to.match(reVariableStatement);
-      expect(stmt, 2).to.have.string("$a");
-      expect(stmt, 3).to.have.string("$b");
-      expect(stmt, 4).to.have.string("$c");
-      expect(stmt, 5).to.have.string("$d");
-      expect(stmt, 6).to.have.string(tempVars[0]);
-      expect(stmt, 7).to.have.string(tempVars[1]);
-      expect(tempVars[0], 8).to.not.equal(tempVars[1]);
-      expect(tempVars[0], 9).to.equal(tempVars[2]);
-      expect(tempVars[1],10).to.equal(tempVars[3]);
     });
   });
 })();

@@ -30,7 +30,8 @@
     that.state = {
       indent: "",
       calledSegmentedMethod: false,
-      syncBlockScope: null
+      syncBlockScope: null,
+      tempVarId: 0
     };
     that.scope = new Scope(that);
     if (typeof that.opts.bare === "undefined") {
@@ -174,6 +175,19 @@
       }
       result.push(fn.call(this, elements[i], i));
     }
+
+    return result;
+  };
+
+  CodeGen.prototype.useTemporaryVariable = function(func) {
+    var result;
+    var tempName = "_ref" + this.state.tempVarId;
+
+    this.scope.add("var", tempName);
+
+    this.state.tempVarId += 1;
+    result = func.call(this, tempName);
+    this.state.tempVarId -= 1;
 
     return result;
   };

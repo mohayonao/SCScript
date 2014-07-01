@@ -26,6 +26,18 @@
     return 0x41 <= ch && ch <= 0x5a;
   };
 
+  strlib.char2num = function(ch) {
+    var n = ch.charCodeAt(0);
+
+    if (48 <= n && n <= 57) {
+      return n - 48;
+    }
+    if (65 <= n && n <= 90) {
+      return n - 55;
+    }
+    return n - 87; // if (97 <= n && n <= 122)
+  };
+
   function formatWithList(fmt, list) {
     var msg = fmt;
     list.forEach(function(value, index) {

@@ -1,0 +1,15 @@
+require("./codegen");
+require("./assignment-expr");
+require("./binop-expr");
+require("./call-expr");
+require("./envir-expr");
+require("./event-expr");
+require("./function-expr");
+require("./identifier");
+require("./list-expr");
+require("./literal");
+require("./program");
+require("./this-expr");
+require("./uop-expr");
+require("./value");
+require("./var-stmt");

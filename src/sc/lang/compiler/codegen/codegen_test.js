@@ -42,7 +42,7 @@
         var test = codegen.generate([ "a", "b", "c" ]);
         test = toCompiledString(test);
 
-        expect(test).to.equal("($a, $b, $c)");
+        expect(test).to.equal("($a,$b,$c)");
       });
       it("node", function() {
         var codegen = new CodeGen();
@@ -61,20 +61,11 @@
         var codegen = new CodeGen();
 
         var test = codegen.withFunction([ "a", "b" ], function() {
-          return this.addIndent("return;");
+          return "return;";
         });
         test = toCompiledString(test);
 
-        expect(test).to.equal("function($a, $b) {\n  return;\n}");
-      });
-      it("withIndent / addIndent", function() {
-        var codegen = new CodeGen();
-
-        var test = codegen.withIndent(function() {
-          return this.addIndent("testnode");
-        });
-        test = toCompiledString(test);
-        expect(test).to.equal("  testnode");
+        expect(test).to.equal("function($a,$b){return;}");
       });
       it("insertArrayElement", function() {
         var codegen = new CodeGen();
@@ -82,7 +73,7 @@
         var test;
         test = codegen.insertArrayElement([ "a", "b", "c" ]);
         test = toCompiledString(test);
-        expect(test).to.equal("[\n  $a,\n  $b,\n  $c,\n]");
+        expect(test).to.equal("[$a,$b,$c]");
 
         test = codegen.insertArrayElement([]);
         test = toCompiledString(test);

@@ -18,7 +18,7 @@
   function generateEqualityOperator(that, node) {
     return [
       "$.Boolean(",
-      that.generate(node.left), " " + node.operator + " ", that.generate(node.right),
+      that.generate(node.left), node.operator, that.generate(node.right),
       ")"
     ];
   }
@@ -26,13 +26,13 @@
   function generateBinaryExpression(that, node) {
     var result = [
       that.generate(node.left),
-      ".$('" + node.operator + "', [ ", that.generate(node.right)
+      ".$('" + node.operator + "',[", that.generate(node.right)
     ];
 
     if (node.adverb) {
-      result.push(", ", that.generate(node.adverb));
+      result.push(",", that.generate(node.adverb));
     }
-    result.push(" ])");
+    result.push("])");
 
     return result;
   }

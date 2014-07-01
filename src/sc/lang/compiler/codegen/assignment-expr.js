@@ -20,7 +20,7 @@
     result.push(that.generate(node.left, opts));
 
     if (!opts.used) {
-      result.push(" " + node.operator + " ", that.generate(opts.right));
+      result.push(node.operator, that.generate(opts.right));
     }
 
     return result;
@@ -31,30 +31,24 @@
       var elements = node.left;
       var operator = node.operator;
 
-      var assignments = that.withIndent(function() {
-        var result = [
-          that.stitchWith(elements, ",\n", function(item, i) {
-            return that.addIndent(generateAssign(
-              that, item, operator, tempVar + ".$('at', [ $.Integer(" + i + ") ])"
-            ));
-          })
-        ];
+      var result = [ "(" + tempVar + "=", that.generate(node.right), "," ];
 
-        if (node.remain) {
-          result.push(",\n", that.addIndent(generateAssign(
-            that, node.remain, operator,
-            tempVar + ".$('copyToEnd', [ $.Integer(" + elements.length + ") ])"
-          )));
-        }
+      result.push(that.stitchWith(elements, ",", function(item, i) {
+        return generateAssign(
+          that, item, operator, tempVar + ".$('at',[$.Integer(" + i + ")])"
+        );
+      }));
 
-        return result;
-      });
+      if (node.remain) {
+        result.push(",", generateAssign(
+          that, node.remain, operator,
+          tempVar + ".$('copyToEnd',[$.Integer(" + elements.length + ")])"
+        ));
+      }
 
-      return [
-        "(" + tempVar + " = ", that.generate(node.right), ",\n",
-        assignments , ",\n",
-        that.addIndent(tempVar + ")")
-      ];
+      result.push(",", tempVar + ")");
+
+      return result;
     });
   }
 
@@ -63,7 +57,7 @@
     var result = [ that.generate(left, opts) ];
 
     if (!opts.used) {
-      result.push(" " + operator + " ", right);
+      result.push(operator, right);
     }
 
     return result;

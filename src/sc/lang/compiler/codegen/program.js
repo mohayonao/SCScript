@@ -26,14 +26,14 @@
   function generateStatements(that, elements) {
     var lastIndex = elements.length - 1;
 
-    return that.stitchWith(elements, "\n", function(item, i) {
+    return elements.map(function(item, i) {
       var stmt = that.generate(item);
 
       if (i === lastIndex) {
         stmt = [ "return ", stmt ];
       }
 
-      return [ that.addIndent(stmt), ";" ];
+      return [ stmt, ";" ];
     });
   }
 })(sc);

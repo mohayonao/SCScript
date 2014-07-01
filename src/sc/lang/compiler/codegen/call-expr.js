@@ -23,8 +23,8 @@
     if (node.stamp === "=") {
       return that.useTemporaryVariable(function(tempVar) {
         return [
-          "(" + tempVar + " = ", that.generate(list[0]), ", ",
-          that.generate(node.callee), ".$('" + node.method.name + "', [ " + tempVar + " ]), ",
+          "(" + tempVar + "=", that.generate(list[0]), ",",
+          that.generate(node.callee), ".$('" + node.method.name + "',[" + tempVar + "]), ",
           tempVar + ")"
         ];
       });
@@ -33,13 +33,13 @@
     if (list.length || node.args.keywords) {
       var hasActualArgument = !!list.length;
       var args = [
-        that.stitchWith(list, ", ", function(item) {
+        that.stitchWith(list, ",", function(item) {
           return that.generate(item);
         }),
         insertKeyValueElement(that, node.args.keywords, hasActualArgument)
       ];
       return [
-        that.generate(node.callee), ".$('" + node.method.name + "', [ ", args, " ])"
+        that.generate(node.callee), ".$('" + node.method.name + "',[", args, "])"
       ];
     }
 
@@ -51,9 +51,9 @@
   function generateExpandCall(that, node) {
     return that.useTemporaryVariable(function(tempVar) {
       return [
-        "(" + tempVar + " = ",
+        "(" + tempVar + "=",
         that.generate(node.callee),
-        ", " + tempVar + ".$('" + node.method.name + "', ",
+        "," + tempVar + ".$('" + node.method.name + "',",
         that.insertArrayElement(node.args.list), ".concat(",
         that.generate(node.args.expand), ".$('asArray')._",
         insertKeyValueElement(that, node.args.keywords, true),
@@ -67,12 +67,12 @@
 
     if (keyValues) {
       if (withComma) {
-        result.push(", ");
+        result.push(",");
       }
       result.push(
-        "{ ", that.stitchWith(Object.keys(keyValues), ", ", function(key) {
-          return [ key, ": ", that.generate(keyValues[key]) ];
-        }), " }"
+        "{", that.stitchWith(Object.keys(keyValues), ",", function(key) {
+          return [ key, ":", that.generate(keyValues[key]) ];
+        }), "}"
       );
     }
 

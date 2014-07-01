@@ -28,7 +28,7 @@
         },
         {
           code: "{|a,b|}",
-          expected: "$.Function(function() { return []; }, 'a; b')",
+          expected: "$.Function(function() { return []; }, 'a;b')",
           ast: {
             type: Syntax.FunctionExpression,
             args: {
@@ -54,7 +54,7 @@
         },
         {
           code: "{|a=0,b=1.0,c=$c,d=\\d}",
-          expected: "$.Function(function() { return []; }, 'a=0; b=1.0; c=$c; d=\\d')",
+          expected: "$.Function(function() { return []; }, 'a=0;b=1.0;c=$c;d=\\d')",
           ast: {
             type: Syntax.FunctionExpression,
             args: {
@@ -114,7 +114,7 @@
         },
         {
           code: "{|a=nil,b=true,c=false}",
-          expected: "$.Function(function() { return []; }, 'a=nil; b=true; c=false')",
+          expected: "$.Function(function() { return []; }, 'a=nil;b=true;c=false')",
           ast: {
             type: Syntax.FunctionExpression,
             args: {
@@ -162,7 +162,7 @@
         },
         {
           code: "{|a=inf,b=-inf}",
-          expected: "$.Function(function() { return []; }, 'a=inf; b=-inf')",
+          expected: "$.Function(function() { return []; }, 'a=inf;b=-inf')",
           ast: {
             type: Syntax.FunctionExpression,
             args: {
@@ -198,7 +198,7 @@
         },
         {
           code: "{|a=#[0,1,2]}",
-          expected: "$.Function(function() { return []; }, 'a=[ 0, 1, 2 ]')",
+          expected: "$.Function(function() { return []; }, 'a=[0,1,2]')",
           ast: {
             type: Syntax.FunctionExpression,
             args: {
@@ -252,7 +252,7 @@
         },
         {
           code: "{|a,*b|}",
-          expected: "$.Function(function() { return []; }, 'a; *b')",
+          expected: "$.Function(function() { return []; }, 'a;*b')",
           ast: {
             type: Syntax.FunctionExpression,
             args: {

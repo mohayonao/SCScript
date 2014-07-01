@@ -23,7 +23,6 @@
     that.parent = null;
     that.opts = opts || {};
     that.state = {
-      indent: "",
       calledSegmentedMethod: false,
       syncBlockScope: null,
       tempVarId: 0
@@ -42,7 +41,7 @@
   CodeGen.prototype.generate = function(node, opts) {
     if (Array.isArray(node)) {
       return [
-        "(", this.stitchWith(node, ", ", function(item) {
+        "(", this.stitchWith(node, ",", function(item) {
           return this.generate(item, opts);
         }), ")"
       ];
@@ -60,15 +59,12 @@
   };
 
   CodeGen.prototype.withFunction = function(args, func) {
-    var argItems = this.stitchWith(args, ", ", function(item) {
+    var argItems = this.stitchWith(args, ",", function(item) {
       return this.generate(item);
     });
-    var result = [ "function(", argItems, ") {\n" ];
+    var result = [ "function(", argItems, "){" ];
 
-    var indent = this.state.indent;
-    this.state.indent += "  ";
-
-    this.scope.begin().setIndent(this.state.indent);
+    this.scope.begin();
     for (var i = 0, imax = args.length; i < imax; ++i) {
       this.scope.add("arg", args[i]);
     }
@@ -78,38 +74,19 @@
     );
     this.scope.end();
 
-    this.state.indent = indent;
-
-    result.push("\n", this.state.indent, "}");
+    result.push("}");
 
     return result;
-  };
-
-  CodeGen.prototype.withIndent = function(func) {
-    var indent, result;
-
-    indent = this.state.indent;
-    this.state.indent += "  ";
-    result = func.call(this);
-    this.state.indent = indent;
-
-    return result;
-  };
-
-  CodeGen.prototype.addIndent = function(stmt) {
-    return [ this.state.indent, stmt ];
   };
 
   CodeGen.prototype.insertArrayElement = function(elements) {
     var result = [ "[", "]" ];
 
     if (elements.length) {
-      var items = this.withIndent(function() {
-        return this.stitchWith(elements, "\n", function(item) {
-          return [ this.state.indent, this.generate(item), "," ];
-        });
+      var items = this.stitchWith(elements, ",", function(item) {
+        return this.generate(item);
       });
-      result.splice(1, 0, "\n", items, "\n", this.state.indent);
+      result.splice(1, 0, items);
     }
 
     return result;

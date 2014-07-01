@@ -95,7 +95,7 @@
         },
         "(:..)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "0",
@@ -129,7 +129,7 @@
         },
         "(..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "0",
@@ -172,7 +172,7 @@
         },
         "(0..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "0",
@@ -215,7 +215,7 @@
         },
         "(0;1..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: [
             {
               type: Syntax.Literal,

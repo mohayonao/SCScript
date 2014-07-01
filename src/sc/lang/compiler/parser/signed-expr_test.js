@@ -50,7 +50,7 @@
           args: {
             list: []
           },
-          stamp: ".",
+          stamp: "(",
           range: [ 0, 2 ],
           loc: {
             start: { line: 1, column: 0 },

@@ -149,7 +149,7 @@
             body: [
               {
                 type: Syntax.CallExpression,
-                stamp: ".",
+                stamp: "(",
                 callee: {
                   type: Syntax.Identifier,
                   name: "a",
@@ -179,6 +179,7 @@
                 stamp: "(",
                 callee: {
                   type: Syntax.CallExpression,
+                  stamp: "(",
                   callee: {
                     type: Syntax.Identifier,
                     name: "a",
@@ -189,8 +190,7 @@
                   },
                   args: {
                     list: []
-                  },
-                  stamp: ".",
+                  }
                 },
                 method: {
                   type: Syntax.Identifier,
@@ -764,7 +764,7 @@
             body: [
               {
                 type: Syntax.CallExpression,
-                stamp: ".", // TODO: ???
+                stamp: "(",
                 callee: [
                   {
                     type: Syntax.Literal,
@@ -1982,7 +1982,7 @@
                     stamp: "(",
                     callee: {
                       type: Syntax.CallExpression,
-                      stamp: ".",
+                      stamp: "(",
                       callee: {
                         type: Syntax.Literal,
                         value: "0",

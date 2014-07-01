@@ -152,7 +152,7 @@
     var marker = this.createMarker();
 
     var method = this.createMarker().apply(
-      Node.createIdentifier("[]")
+      Node.createIdentifier("at")
     );
     var listExpr = this.parseListExpression();
 
@@ -169,7 +169,7 @@
     );
     var listIndexer = this.parseListIndexer();
 
-    method.name = listIndexer.length === 3 ? "[..]" : "[]";
+    method.name = listIndexer.length === 3 ? "copySeries" : "at";
 
     return marker.update().apply(
       Node.createCallExpression(expr, method, { list: listIndexer }, "[")

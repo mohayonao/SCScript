@@ -303,7 +303,7 @@
         "a[0] = 1": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[]_', [ $.Integer(0), $.Integer(1) ]);",
+            "  return $.This().$('a').$('put', [ $.Integer(0), $.Integer(1) ]);",
             "});",
           ],
           ast: {
@@ -318,7 +318,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[]_",
+                  name: "put",
                 },
                 args: {
                   list: [
@@ -341,7 +341,7 @@
         "a[..10] = 1": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[..]_', [ " +
+            "  return $.This().$('a').$('putSeries', [ " +
               "null, null, $.Integer(10), $.Integer(1)" +
               " ]);",
             "});",
@@ -358,7 +358,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[..]_",
+                  name: "putSeries",
                 },
                 args: {
                   list: [
@@ -383,7 +383,7 @@
         "a[2..] = 1": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[..]_', [ " +
+            "  return $.This().$('a').$('putSeries', [ " +
               "$.Integer(2), null, null, $.Integer(1)" +
               " ]);",
             "});",
@@ -400,7 +400,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[..]_",
+                  name: "putSeries",
                 },
                 args: {
                   list: [
@@ -425,7 +425,7 @@
         "a[2..10] = 1": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[..]_', [ " +
+            "  return $.This().$('a').$('putSeries', [ " +
               "$.Integer(2), null, $.Integer(10), $.Integer(1)" +
               " ]);",
             "});",
@@ -442,7 +442,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[..]_",
+                  name: "putSeries",
                 },
                 args: {
                   list: [
@@ -471,7 +471,7 @@
         "a[2, 4..] = 1": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[..]_', [ " +
+            "  return $.This().$('a').$('putSeries', [ " +
               "$.Integer(2), $.Integer(4), null, $.Integer(1)" +
               " ]);",
             "});",
@@ -488,7 +488,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[..]_",
+                  name: "putSeries",
                 },
                 args: {
                   list: [
@@ -517,7 +517,7 @@
         "a[2, 4..10] = 1": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[..]_', [ " +
+            "  return $.This().$('a').$('putSeries', [ " +
               "$.Integer(2), $.Integer(4), $.Integer(10), $.Integer(1)" +
               " ]);",
             "});",
@@ -534,7 +534,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[..]_",
+                  name: "putSeries",
                 },
                 args: {
                   list: [
@@ -567,7 +567,7 @@
         "a[..] = 1": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[..]_', [ " +
+            "  return $.This().$('a').$('putSeries', [ " +
               "null, null, null, $.Integer(1)" +
               " ]);",
             "});",
@@ -584,7 +584,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[..]_",
+                  name: "putSeries",
                 },
                 args: {
                   list: [
@@ -605,7 +605,7 @@
         "a[0;1,2;3..4;5]": {
           expected: [
             "SCScript(function($) {",
-            "  return $.This().$('a').$('[..]', [ " +
+            "  return $.This().$('a').$('copySeries', [ " +
               "($.Integer(0), $.Integer(1)), " +
               "($.Integer(2), $.Integer(3)), " +
               "($.Integer(4), $.Integer(5))" +
@@ -624,7 +624,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[..]",
+                  name: "copySeries",
                 },
                 args: {
                   list: [
@@ -674,8 +674,8 @@
           expected: [
             "SCScript(function($) {",
             "  var _ref0;",
-            "  return $.This().$('a').$('[]', [ " +
-              "($.This().$('b').$('[]_', [ (" +
+            "  return $.This().$('a').$('at', [ " +
+              "($.This().$('b').$('put', [ (" +
               "(_ref0 = $.Integer(0), $.This().$('c_', [ _ref0 ]), _ref0), " +
               "$.Integer(1)), $.Integer(0) ]), $.Integer(1))" +
               " ]);",
@@ -693,7 +693,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[]",
+                  name: "at",
                 },
                 args: {
                   list: [
@@ -707,7 +707,7 @@
                         },
                         method: {
                           type: Syntax.Identifier,
-                          name: "[]_",
+                          name: "put",
                         },
                         args: {
                           list: [
@@ -1462,7 +1462,7 @@
         "Set[3, 4, 5]": {
           expected: [
             "SCScript(function($) {",
-            "  return $('Set').$('[]', [ $.Array([",
+            "  return $('Set').$('at', [ $.Array([",
             "    $.Integer(3),",
             "    $.Integer(4),",
             "    $.Integer(5),",
@@ -1481,7 +1481,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[]",
+                  name: "at",
                 },
                 args: {
                   list: [
@@ -1514,7 +1514,7 @@
         "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
           expected: [
             "SCScript(function($) {",
-            "  return $('Array').$('[]', [ $.Array([",
+            "  return $('Array').$('at', [ $.Array([",
             "    $.Integer(1),",
             "    $.Integer(2),",
             "  ]) ]).$('at', [ $.Integer(0) ]);",
@@ -1535,7 +1535,7 @@
                   },
                   method: {
                     type: Syntax.Identifier,
-                    name: "[]",
+                    name: "at",
                   },
                   args: {
                     list: [
@@ -1577,10 +1577,10 @@
         "Array [ 1, 2 ][0]": { // (Array [ 1, 2 ])[0]
           expected: [
             "SCScript(function($) {",
-            "  return $('Array').$('[]', [ $.Array([",
+            "  return $('Array').$('at', [ $.Array([",
             "    $.Integer(1),",
             "    $.Integer(2),",
-            "  ]) ]).$('[]', [ $.Integer(0) ]);",
+            "  ]) ]).$('at', [ $.Integer(0) ]);",
             "});",
           ],
           ast: {
@@ -1598,7 +1598,7 @@
                   },
                   method: {
                     type: Syntax.Identifier,
-                    name: "[]",
+                    name: "at",
                   },
                   args: {
                     list: [
@@ -1622,7 +1622,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "[]",
+                  name: "at",
                 },
                 args: {
                   list: [

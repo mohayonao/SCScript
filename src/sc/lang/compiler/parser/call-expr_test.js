@@ -210,7 +210,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 4, 4 ],
             loc: {
               start: { line: 1, column: 4 },
@@ -439,7 +439,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 3, 3 ],
             loc: {
               start: { line: 1, column: 3 },
@@ -673,7 +673,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 4, 4 ],
             loc: {
               start: { line: 1, column: 4 },
@@ -767,7 +767,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 6, 6 ],
             loc: {
               start: { line: 1, column: 6 },
@@ -807,7 +807,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 1, 1 ],
             loc: {
               start: { line: 1, column: 1 },
@@ -848,7 +848,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[..]",
+            name: "copySeries",
             range: [ 1, 1 ],
             loc: {
               start: { line: 1, column: 1 },
@@ -885,7 +885,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "[]",
+              name: "at",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -914,7 +914,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 4, 4 ],
             loc: {
               start: { line: 1, column: 4 },
@@ -958,7 +958,7 @@
             },
             method: {
               type: Syntax.Identifier,
-              name: "[]",
+              name: "at",
               range: [ 1, 1 ],
               loc: {
                 start: { line: 1, column: 1 },
@@ -1139,7 +1139,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 3, 3 ],
             loc: {
               start: { line: 1, column: 3 },
@@ -1282,7 +1282,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]",
+            name: "at",
             range: [ 2, 2 ],
             loc: {
               start: { line: 1, column: 2 },

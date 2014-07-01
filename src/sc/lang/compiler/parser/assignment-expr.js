@@ -62,7 +62,14 @@
     var marker = this.createMarker(expr);
     var right = this.parseAssignmentExpression();
 
-    expr.method.name = expr.method.name + "_";
+    var methodName = expr.method.name;
+    if (expr.stamp === "[") {
+      methodName = methodName === "at" ? "put" : "putSeries";
+    } else {
+      methodName = methodName + "_";
+    }
+
+    expr.method.name = methodName;
     expr.args.list   = expr.args.list.concat(right);
     if (expr.stamp !== "[")  {
       expr.stamp = "=";

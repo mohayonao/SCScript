@@ -916,21 +916,5 @@ SCScript.install(function(sc) {
     // TODO: implements help
 
     builder.addMethod("processRest");
-
-    builder.addMethod("[]", function($index) {
-      return this.$("at", [ $index ]);
-    });
-
-    builder.addMethod("[]_", function($index, $value) {
-      return this.$("put", [ $index, $value ]);
-    });
-
-    builder.addMethod("[..]", function($first, $second, $last) {
-      return this.$("copySeries", [ $first, $second, $last ]);
-    });
-
-    builder.addMethod("[..]_", function($first, $second, $last, $value) {
-      return this.$("putSeries", [ $first, $second, $last, $value ]);
-    });
   });
 });

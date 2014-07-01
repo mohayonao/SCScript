@@ -33,7 +33,7 @@
       sc.test.parse(this.title).each({
         "(..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "0",
@@ -76,7 +76,7 @@
         },
         "(1..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "1",
@@ -119,7 +119,7 @@
         },
         "(1,5..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "1",
@@ -171,7 +171,7 @@
         },
         "(:..)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "0",
@@ -205,7 +205,7 @@
         },
         "(:..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "0",
@@ -248,7 +248,7 @@
         },
         "(:1..)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "1",
@@ -282,7 +282,7 @@
         },
         "(:1..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "1",
@@ -325,7 +325,7 @@
         },
         "(:1,5..)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "1",
@@ -368,7 +368,7 @@
         },
         "(:1,5..10)": {
           type: Syntax.CallExpression,
-          stamp: ".",
+          stamp: "(",
           callee: {
             type: Syntax.Literal,
             value: "1",

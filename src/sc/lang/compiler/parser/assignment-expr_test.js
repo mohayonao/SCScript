@@ -88,7 +88,7 @@
             end: { line: 1, column: 8 }
           }
         },
-        "a[0] = 10": { // a.[]_(0, 10)
+        "a[0] = 10": { // a.put(0, 10)
           type: Syntax.CallExpression,
           stamp: "[",
           callee: {
@@ -102,7 +102,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "[]_",
+            name: "put",
             range: [ 1, 1 ],
             loc: {
               start: { line: 1, column: 1 },
@@ -137,6 +137,50 @@
           loc: {
             start: { line: 1, column: 0 },
             end: { line: 1, column: 9 }
+          }
+        },
+        "a[..] = 10": { // a.putSeries(nil, nil, nil, 10)
+          type: Syntax.CallExpression,
+          stamp: "[",
+          callee: {
+            type: Syntax.Identifier,
+            name: "a",
+            range: [ 0, 1 ],
+            loc: {
+              start: { line: 1, column: 0 },
+              end: { line: 1, column: 1 }
+            }
+          },
+          method: {
+            type: Syntax.Identifier,
+            name: "putSeries",
+            range: [ 1, 1 ],
+            loc: {
+              start: { line: 1, column: 1 },
+              end: { line: 1, column: 1 }
+            }
+          },
+          args: {
+            list: [
+              null,
+              null,
+              null,
+              {
+                type: Syntax.Literal,
+                value: "10",
+                valueType: Token.IntegerLiteral,
+                range: [ 8, 10 ],
+                loc: {
+                  start: { line: 1, column: 8 },
+                  end: { line: 1, column: 10 }
+                }
+              }
+            ]
+          },
+          range: [ 0, 10 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 1, column: 10 }
           }
         },
         "#a, b = c": {

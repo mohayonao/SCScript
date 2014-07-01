@@ -29,7 +29,7 @@
       if (isNumber(expr)) {
         expr.value = "-" + expr.value;
       } else {
-        expr = Node.createCallExpression(expr, method, { list: [] }, ".");
+        expr = Node.createCallExpression(expr, method, { list: [] }, "(");
       }
     } else {
       expr = this.parsePrimaryExpression();

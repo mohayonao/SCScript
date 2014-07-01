@@ -49,7 +49,7 @@
     this.expect(")");
 
     return marker.update().apply(
-      Node.createCallExpression(items.shift(), method, { list: items }, ".")
+      Node.createCallExpression(items.shift(), method, { list: items }, "(")
     );
   };
 

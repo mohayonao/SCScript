@@ -6,9 +6,7 @@
   var CodeGen = sc.lang.compiler.CodeGen;
 
   CodeGen.addGenerateMethod("ListExpression", function(node) {
-    var result;
-
-    result = [
+    var result = [
       "$.Array(",
       this.insertArrayElement(node.elements),
     ];

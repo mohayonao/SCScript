@@ -26,22 +26,18 @@
   });
 
   function generateInterpreterVariable(that, node, opts) {
-    var name;
-
-    if (opts) {
-      // setter
-      name = that.useTemporaryVariable(function(tempVar) {
-        return [
-          "(" + tempVar + " = ", that.generate(opts.right),
-          ", $.This().$('" + node.name + "_', [ " + tempVar + " ]), " + tempVar + ")"
-        ];
-      });
-      opts.used = true;
-    } else {
+    if (!opts) {
       // getter
-      name = "$.This().$('" + node.name + "')";
+      return "$.This().$('" + node.name + "')";
     }
 
-    return name;
+    // setter
+    opts.used = true;
+    return that.useTemporaryVariable(function(tempVar) {
+      return [
+        "(" + tempVar + " = ", that.generate(opts.right),
+        ", $.This().$('" + node.name + "_', [ " + tempVar + " ]), " + tempVar + ")"
+      ];
+    });
   }
 })(sc);

@@ -6,17 +6,13 @@
   var CodeGen = sc.lang.compiler.CodeGen;
 
   CodeGen.addGenerateMethod("EnvironmentExpression", function(node, opts) {
-    var result;
-
-    if (opts) {
-      // setter
-      result = [ "$.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
-      opts.used = true;
-    } else {
+    if (!opts) {
       // getter
-      result = "$.Environment('" + node.id.name + "')";
+      return "$.Environment('" + node.id.name + "')";
     }
 
-    return result;
+    // setter
+    opts.used = true;
+    return [ "$.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
   });
 })(sc);

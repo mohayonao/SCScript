@@ -9,11 +9,9 @@
     var scope = this.state.syncBlockScope;
 
     return this.stitchWith(node.declarations, ", ", function(item) {
-      var result;
-
       this.scope.add("var", item.id.name, scope);
 
-      result = [ this.generate(item.id) ];
+      var result = [ this.generate(item.id) ];
 
       if (item.init) {
         result.push(" = ", this.generate(item.init));

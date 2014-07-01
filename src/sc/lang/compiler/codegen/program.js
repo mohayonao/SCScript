@@ -6,20 +6,18 @@
   var CodeGen = sc.lang.compiler.CodeGen;
 
   CodeGen.addGenerateMethod("Program", function(node) {
-    var result, body;
+    if (!node.body.length) {
+      return [];
+    }
 
-    if (node.body.length) {
-      body = this.withFunction([ "" ], function() { // "" compiled as $
-        return generateStatements(this, node.body);
-      });
+    var body = this.withFunction([ "" ], function() { // "" compiled as $
+      return generateStatements(this, node.body);
+    });
 
-      result = [ "(", body, ")" ];
+    var result = [ "(", body, ")" ];
 
-      if (!this.opts.bare) {
-        result = [ "SCScript", result, ";" ];
-      }
-    } else {
-      result = [];
+    if (!this.opts.bare) {
+      result = [ "SCScript", result, ";" ];
     }
 
     return result;
@@ -29,9 +27,7 @@
     var lastIndex = elements.length - 1;
 
     return that.stitchWith(elements, "\n", function(item, i) {
-      var stmt;
-
-      stmt = that.generate(item);
+      var stmt = that.generate(item);
 
       if (i === lastIndex) {
         stmt = [ "return ", stmt ];

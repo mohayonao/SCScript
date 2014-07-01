@@ -32,11 +32,7 @@
       var operator = node.operator;
 
       var assignments = that.withIndent(function() {
-        var result, lastUsedIndex;
-
-        lastUsedIndex = elements.length;
-
-        result = [
+        var result = [
           that.stitchWith(elements, ",\n", function(item, i) {
             return that.addIndent(generateAssign(
               that, item, operator, tempVar + ".$('at', [ $.Integer(" + i + ") ])"
@@ -47,7 +43,7 @@
         if (node.remain) {
           result.push(",\n", that.addIndent(generateAssign(
             that, node.remain, operator,
-            tempVar + ".$('copyToEnd', [ $.Integer(" + lastUsedIndex + ") ])"
+            tempVar + ".$('copyToEnd', [ $.Integer(" + elements.length + ") ])"
           )));
         }
 
@@ -63,12 +59,8 @@
   }
 
   function generateAssign(that, left, operator, right) {
-    var result = [];
-    var opts;
-
-    opts = { right: right, used: false };
-
-    result.push(that.generate(left, opts));
+    var opts = { right: right, used: false };
+    var result = [ that.generate(left, opts) ];
 
     if (!opts.used) {
       result.push(" " + operator + " ", right);

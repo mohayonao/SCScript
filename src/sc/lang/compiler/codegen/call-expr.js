@@ -18,41 +18,34 @@
   });
 
   function generateSimpleCall(that, node) {
-    var args;
-    var list;
-    var hasActualArgument;
-    var result;
-
-    list = node.args.list;
-    hasActualArgument = !!list.length;
+    var list = node.args.list;
 
     if (node.stamp === "=") {
-      result = that.useTemporaryVariable(function(tempVar) {
+      return that.useTemporaryVariable(function(tempVar) {
         return [
           "(" + tempVar + " = ", that.generate(list[0]), ", ",
           that.generate(node.callee), ".$('" + node.method.name + "', [ " + tempVar + " ]), ",
           tempVar + ")"
         ];
       });
-    } else {
-      if (list.length || node.args.keywords) {
-        args = [
-          that.stitchWith(list, ", ", function(item) {
-            return that.generate(item);
-          }),
-          insertKeyValueElement(that, node.args.keywords, hasActualArgument)
-        ];
-        result = [
-          that.generate(node.callee), ".$('" + node.method.name + "', [ ", args, " ])"
-        ];
-      } else {
-        result = [
-          that.generate(node.callee), ".$('" + node.method.name + "')"
-        ];
-      }
     }
 
-    return result;
+    if (list.length || node.args.keywords) {
+      var hasActualArgument = !!list.length;
+      var args = [
+        that.stitchWith(list, ", ", function(item) {
+          return that.generate(item);
+        }),
+        insertKeyValueElement(that, node.args.keywords, hasActualArgument)
+      ];
+      return [
+        that.generate(node.callee), ".$('" + node.method.name + "', [ ", args, " ])"
+      ];
+    }
+
+    return [
+      that.generate(node.callee), ".$('" + node.method.name + "')"
+    ];
   }
 
   function generateExpandCall(that, node) {

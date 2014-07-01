@@ -23,45 +23,40 @@
 
     return [
       "$.Function(",
-      this._FunctionBody(node, info.args),
-      this._FunctionMetadata(info),
+      this.FunctionBody(node, info.args),
+      this.FunctionMetadata(info),
       ")"
     ];
   };
 
-  FunctionExpressionGenerator.prototype._FunctionBody = function(node, args) {
-    var fargs, body, assignArguments;
-
-    fargs = args.map(function(_, i) {
+  FunctionExpressionGenerator.prototype.FunctionBody = function(node, args) {
+    var fargs = args.map(function(_, i) {
       return "_arg" + i;
     });
 
-    assignArguments = function(item, i) {
+    var assignArguments = function(item, i) {
       return $id(args[i]) + " = " + fargs[i];
     };
 
-    body = this.withFunction([], function() {
+    var body = this.withFunction([], function() {
       var result = [];
-      var fragments = [], syncBlockScope;
+      var fragments = [];
       var elements = node.body;
-      var i, imax;
-      var functionBodies, calledSegmentedMethod;
-      var resetVars;
+
+      var syncBlockScope = this.state.syncBlockScope;
 
       if (elements.length) {
-        for (i = 0, imax = args.length; i < imax; ++i) {
+        for (var i = 0, imax = args.length; i < imax; ++i) {
           this.scope.add("var", args[i]);
         }
 
-        syncBlockScope = this.state.syncBlockScope;
         this.state.syncBlockScope = this.scope.peek();
 
-        functionBodies = this.withIndent(function() {
-          var fragments = [];
+        var functionBodies = this.withIndent(function() {
           var i = 0, imax = elements.length;
           var lastIndex = imax - 1;
 
-          fragments.push("\n");
+          var fragments = [ "\n" ];
 
           var loop = function() {
             var fragments = [];
@@ -77,7 +72,7 @@
                 fragments.push("\n");
               }
 
-              calledSegmentedMethod = this.state.calledSegmentedMethod;
+              var calledSegmentedMethod = this.state.calledSegmentedMethod;
               this.state.calledSegmentedMethod = false;
               stmt = this.generate(elements[i]);
 
@@ -105,7 +100,7 @@
             }
           }
 
-          resetVars = Object.keys(this.state.syncBlockScope.vars);
+          var resetVars = Object.keys(this.state.syncBlockScope.vars);
           if (resetVars.length) {
             fragments.push(",", "\n", this.addIndent(this.withFunction([], function() {
               return this.addIndent(resetVars.sort().map($id).join(" = ") + " = null;");
@@ -133,33 +128,16 @@
 
     return body;
   };
-  var toArgumentValueString = function(node) {
-    switch (node.valueType) {
-    case Token.NilLiteral   : return "nil";
-    case Token.TrueLiteral  : return "true";
-    case Token.FalseLiteral : return "false";
-    case Token.CharLiteral  : return "$" + node.value;
-    case Token.SymbolLiteral: return "\\" + node.value;
-    }
-    switch (node.value) {
-    case "Infinity" : return "inf";
-    case "-Infinity": return "-inf";
-    }
-    return node.value;
-  };
 
-  FunctionExpressionGenerator.prototype._FunctionMetadata = function(info) {
-    var keys, vals;
-    var args, result;
-
-    keys = info.keys;
-    vals = info.vals;
+  FunctionExpressionGenerator.prototype.FunctionMetadata = function(info) {
+    var keys = info.keys;
+    var vals = info.vals;
 
     if (keys.length === 0 && !info.remain && !info.closed) {
       return [];
     }
 
-    args = this.stitchWith(keys, "; ", function(item, i) {
+    var args = this.stitchWith(keys, "; ", function(item, i) {
       var result = [ keys[i] ];
 
       if (vals[i]) {
@@ -175,7 +153,7 @@
       return result;
     });
 
-    result = [ ", '", args ];
+    var result = [ ", '", args ];
 
     if (info.remain) {
       if (keys.length) {
@@ -192,17 +170,26 @@
     return result;
   };
 
-  var $id = function(id) {
-    var ch = id.charAt(0);
+  function $id(name) {
+    return name.replace(/^(?![_$])/, "$");
+  }
 
-    if (ch !== "_" && ch !== "$") {
-      id = "$" + id;
+  function toArgumentValueString(node) {
+    switch (node.valueType) {
+    case Token.NilLiteral   : return "nil";
+    case Token.TrueLiteral  : return "true";
+    case Token.FalseLiteral : return "false";
+    case Token.CharLiteral  : return "$" + node.value;
+    case Token.SymbolLiteral: return "\\" + node.value;
     }
+    switch (node.value) {
+    case "Infinity" : return "inf";
+    case "-Infinity": return "-inf";
+    }
+    return node.value;
+  }
 
-    return id;
-  };
-
-  var getInformationOfFunction = function(node) {
+  function getInformationOfFunction(node) {
     var args = [];
     var keys, vals, remain;
     var list, i, imax;
@@ -235,5 +222,5 @@
       remain: remain,
       closed: node.closed
     };
-  };
+  }
 })(sc);

@@ -13,6 +13,6 @@
 
     // setter
     opts.used = true;
-    return [ "$.Environment('" + node.id.name + "', ", this.generate(opts.right), ")" ];
+    return [ "$.Environment('" + node.id.name + "',", this.generate(opts.right), ")" ];
   });
 })(sc);

@@ -35,8 +35,8 @@
     opts.used = true;
     return that.useTemporaryVariable(function(tempVar) {
       return [
-        "(" + tempVar + " = ", that.generate(opts.right),
-        ", $.This().$('" + node.name + "_', [ " + tempVar + " ]), " + tempVar + ")"
+        "(" + tempVar + "=", that.generate(opts.right),
+        ", $.This().$('" + node.name + "_',[" + tempVar + "]), " + tempVar + ")"
       ];
     });
   }

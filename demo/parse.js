@@ -1,5 +1,5 @@
 /* jshint browser: true, devel: true */
-/* global $, SCScript */
+/* global $, SCScript, esprima, escodegen */
 $(function() {
   "use strict";
 
@@ -9,26 +9,33 @@ $(function() {
   var prev = [ "", "CODE" ];
   var hash;
 
-  var update = function(source, mode) {
-    if (prev[0] !== source || prev[1] !== mode) {
+  function beautify(code) {
+    return escodegen.generate(esprima.parse(code), { indent: "  " });
+  }
+
+  var update = function(code, mode) {
+    while (/^\([\s\S]+\)$/.test(code)) {
+      code = code.slice(1, -1);
+    }
+    if (prev[0] !== code || prev[1] !== mode) {
       try {
         switch (mode) {
         case "CODE":
-          $results.text(SCScript.compile(source));
+          $results.text(beautify(SCScript.compile(code)));
           break;
         case "AST":
-          $results.text(JSON.stringify(SCScript.parse(source), null, 2));
+          $results.text(JSON.stringify(SCScript.parse(code), null, 2));
           break;
         case "TOKEN":
-          $results.text(JSON.stringify(SCScript.tokenize(source), null, 2));
+          $results.text(JSON.stringify(SCScript.tokenize(code), null, 2));
           break;
         }
         $message.text("");
-        window.location.replace("#" + encodeURIComponent(source));
+        window.location.replace("#" + encodeURIComponent(code));
       } catch (e) {
         $message.text(e.toString());
       }
-      prev = [ source, mode ];
+      prev = [ code, mode ];
     }
   };
 

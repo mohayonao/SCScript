@@ -43,16 +43,7 @@
         scope.add("var", "b");
 
         var stmt = scope.toVariableStatement();
-        expect(compile(stmt)).to.equal("var $a, $b;\n");
-      });
-      it("work with setIndent", function() {
-        var scope = new Scope().setIndent("\t");
-
-        scope.add("var", "a");
-        scope.add("var", "b");
-
-        var stmt = scope.toVariableStatement();
-        expect(compile(stmt)).to.equal("\tvar $a, $b;\n");
+        expect(compile(stmt)).to.equal("var $a, $b;");
       });
       it("ignore duplicate", function() {
         var scope = new Scope();
@@ -63,7 +54,7 @@
         scope.add("var", "b");
 
         var stmt = scope.toVariableStatement();
-        expect(compile(stmt)).to.equal("var $a, $b;\n");
+        expect(compile(stmt)).to.equal("var $a, $b;");
       });
       it("ignore arguments", function() {
         var scope = new Scope();
@@ -81,7 +72,7 @@
         scope.add("var", "$b");
 
         var stmt = scope.toVariableStatement();
-        expect(compile(stmt)).to.equal("var _a, $b;\n");
+        expect(compile(stmt)).to.equal("var _a, $b;");
       });
       it("nest test", function() {
         var scope = new Scope();
@@ -92,12 +83,12 @@
         scope.add("var", "b");
 
         var stmt1 = scope.toVariableStatement();
-        expect(compile(stmt1)).to.equal("var $b;\n");
+        expect(compile(stmt1)).to.equal("var $b;");
 
         scope.end();
 
         var stmt2 = scope.toVariableStatement();
-        expect(compile(stmt2)).to.equal("var $a;\n");
+        expect(compile(stmt2)).to.equal("var $a;");
       });
       it("hold outside scope", function() {
         var scope = new Scope();
@@ -111,7 +102,7 @@
         scope.end();
 
         var stmt = scope.toVariableStatement();
-        expect(compile(stmt)).to.equal("var $a, $b;\n");
+        expect(compile(stmt)).to.equal("var $a, $b;");
       });
     });
   });

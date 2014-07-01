@@ -30,7 +30,6 @@
     this.stack.unshift({
       vars: {},
       args: {},
-      indent: "",
       stmt: { head: [], vars: [], tail: [] }
     });
     return this;
@@ -44,11 +43,6 @@
   Scope.prototype.toVariableStatement = function() {
     var stmt = this.peek().stmt;
     return [ stmt.head, stmt.vars, stmt.tail ];
-  };
-
-  Scope.prototype.setIndent = function(indent) {
-    this.peek().indent = indent;
-    return this;
   };
 
   Scope.prototype.peek = function() {
@@ -66,8 +60,8 @@
     if (stmt.vars.length) {
       stmt.vars.push(", ");
     } else {
-      stmt.head.push(scope.indent, "var ");
-      stmt.tail.push(";\n");
+      stmt.head.push("var ");
+      stmt.tail.push(";");
     }
     stmt.vars.push(name.replace(/^(?![_$])/, "$"));
   }

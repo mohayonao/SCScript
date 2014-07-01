@@ -18,7 +18,7 @@
   });
 
   function generateFunctionBody(that, node, args) {
-    return that.addIndent(that.withFunction([], function() {
+    return that.withFunction([], function() {
       if (!node.body.length) {
         return [ "return [];" ];
       }
@@ -26,9 +26,9 @@
       return [
         "return [",
         generateSegmentedFunctionBody(that, node, args),
-        that.addIndent("];")
+        "];"
       ];
-    }));
+    });
   }
 
   function generateSegmentedFunctionBody(that, node, args) {
@@ -36,12 +36,11 @@
       that.scope.add("var", args[i]);
     }
 
+    var result;
     var syncBlockScope = that.state.syncBlockScope;
     that.state.syncBlockScope = that.scope.peek();
 
-    var result = that.withIndent(function() {
-      return generateSegmentedFunctionBodyElements(that, node, args);
-    });
+    result = generateSegmentedFunctionBodyElements(that, node, args);
 
     that.state.syncBlockScope = syncBlockScope;
 
@@ -54,13 +53,13 @@
     });
 
     var assignArguments = function(item, i) {
-      return $id(args[i]) + " = " + fargs[i];
+      return $id(args[i]) + "=" + fargs[i];
     };
 
     var i = 0, imax = node.body.length;
     var lastIndex = imax - 1;
 
-    var fragments = [ "\n" ];
+    var fragments = [];
 
     var loop = function() {
       var fragments = [];
@@ -69,11 +68,9 @@
       while (i < imax) {
         if (i === 0) {
           if (args.length) {
-            stmt = that.stitchWith(args, "; ", assignArguments);
-            fragments.push([ that.addIndent(stmt), ";", "\n" ]);
+            stmt = that.stitchWith(args, ";", assignArguments);
+            fragments.push([ stmt, ";" ]);
           }
-        } else {
-          fragments.push("\n");
         }
 
         var calledSegmentedMethod = that.state.calledSegmentedMethod;
@@ -84,7 +81,7 @@
         if (i === lastIndex || that.state.calledSegmentedMethod) {
           stmt = [ "return ", stmt ];
         }
-        fragments.push([ that.addIndent(stmt), ";" ]);
+        fragments.push([ stmt, ";" ]);
 
         i += 1;
         if (that.state.calledSegmentedMethod) {
@@ -97,14 +94,13 @@
       return fragments;
     };
 
-    fragments.push(that.addIndent(that.withFunction(fargs, loop)));
+    fragments.push(that.withFunction(fargs, loop));
 
     while (i < imax) {
-      fragments.push(",", "\n", that.addIndent(that.withFunction([], loop)));
+      fragments.push(",", that.withFunction([], loop));
     }
 
     fragments.push(generateFunctionToCleanVariables(that));
-    fragments.push("\n");
 
     return fragments;
   }
@@ -117,14 +113,14 @@
       return [];
     }
 
-    var args = that.stitchWith(keys, "; ", function(item, i) {
+    var args = that.stitchWith(keys, ";", function(item, i) {
       var result = [ keys[i] ];
 
       if (vals[i]) {
         if (vals[i].type === Syntax.ListExpression) {
-          result.push("=[ ", that.stitchWith(vals[i].elements, ", ", function(item) {
+          result.push("=[", that.stitchWith(vals[i].elements, ",", function(item) {
             return toArgumentValueString(item);
-          }), " ]");
+          }), "]");
         } else {
           result.push("=", toArgumentValueString(vals[i]));
         }
@@ -133,18 +129,18 @@
       return result;
     });
 
-    var result = [ ", '", args ];
+    var result = [ ",'", args ];
 
     if (info.remain) {
       if (keys.length) {
-        result.push("; ");
+        result.push(";");
       }
       result.push("*" + info.remain);
     }
     result.push("'");
 
     if (info.closed) {
-      result.push(", true");
+      result.push(",true");
     }
 
     return result;
@@ -173,12 +169,12 @@
     var resetVars = Object.keys(that.state.syncBlockScope.vars);
 
     if (resetVars.length) {
-      return [ ",", "\n", that.addIndent(that.withFunction([], function() {
-        return that.addIndent(resetVars.sort().map($id).join(" = ") + " = null;");
-      })) ];
+      return [ ",", that.withFunction([], function() {
+        return resetVars.sort().map($id).join("=") + "=null;";
+      }) ];
     }
 
-    return [ ",", "\n", that.addIndent("$.NOP") ];
+    return [ ",$.NOP" ];
   }
 
   function getMetaDataOfFunction(node) {

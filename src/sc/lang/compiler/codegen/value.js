@@ -7,7 +7,7 @@
 
   CodeGen.addGenerateMethod("ValueMethodEvaluator", function(node) {
     this.state.calledSegmentedMethod = true;
-    return [ "this.push(), ", this.generate(node.expr) ];
+    return [ "this.push(),", this.generate(node.expr) ];
   });
 
   CodeGen.addGenerateMethod("ValueMethodResult", function() {

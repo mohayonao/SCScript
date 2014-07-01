@@ -12,7 +12,7 @@
     ];
 
     if (node.immutable) {
-      result.push(", ", "true");
+      result.push(",true");
     }
 
     result.push(")");

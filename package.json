@@ -21,7 +21,6 @@
   "main": "index.js",
   "devDependencies": {
     "chai": "^1.9.1",
-    "coveralls": "^2.10.1",
     "esprima": "^1.2.2",
     "estraverse": "^1.5.0",
     "grunt": "^0.4.5",
@@ -38,7 +37,6 @@
     "underscore": "^1.6.0"
   },
   "scripts": {
-    "test": "grunt test testem",
-    "travis": "grunt travis --verbose && cat ./docs/report/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "grunt test testem"
   }
 }

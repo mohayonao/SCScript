@@ -3,6 +3,8 @@
 
   require("./constructors");
 
+  var $$ = sc.test.object;
+
   var $ = sc.lang.$;
 
   describe("$", function() {
@@ -105,28 +107,50 @@
       var a;
       a = $.Event([ $.Integer(0), $.Integer(1) ]);
       expect(a).to.be.a("SCEvent").that.eql({ 0: 1 });
-
     });
-    it("Function shouldd return an instance of SCFunction", function() {
-      var a;
+    it("Function should return an instance of SCFunction", function() {
+      var f, test;
 
-      a = $.Function(function() {
+      f = $.Function(function() {
         return [ function($a) {
           return $a;
         } ];
       }, "a");
-      expect(a).to.be.a("SCFunction");
+      expect(f).to.be.a("SCFunction");
 
-      a = $.Function(function() {
-        return [];
+      test = f.value($$(10));
+      expect(test).to.be.a("SCInteger").that.equals(10);
+    });
+    it("Func is brief version Function", function() {
+      var f, test;
+
+      f = $.Func(function($_) {
+        return $_;
       });
-      expect(a).to.be.a("SCFunction");
+      expect(f).to.be.a("SCFunction");
+
+      test = f.value($$(10));
+      expect(test).to.be.a("SCInteger").that.equals(10);
     });
     it("Ref should return an instance of SCRef", function() {
       var a;
       a = $.Ref($.Integer(10));
       expect(a._$value).to.be.a("SCInteger").that.equals(10);
     });
+    it("$.nil", function() {
+      expect($.nil).to.be.a("SCNil");
+    });
+    it("$.true", function() {
+      expect($.true).to.be.a("SCBoolean").that.is.true;
+    });
+    it("$.false", function() {
+      expect($.false).to.be.a("SCBoolean").that.is.false;
+    });
+    it("$.int0", function() {
+      expect($.int0).to.be.a("SCInteger").that.equals(0);
+    });
+    it("$.int1", function() {
+      expect($.int1).to.be.a("SCInteger").that.equals(1);
+    });
   });
-
 })();

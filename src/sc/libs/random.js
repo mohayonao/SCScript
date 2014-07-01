@@ -52,5 +52,4 @@
   };
 
   sc.libs.random = random;
-
 })(sc);

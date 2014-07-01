@@ -3,9 +3,15 @@ SCScript.install(function(sc) {
 
   require("./Number");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var rand = sc.libs.random;
+  var $ = sc.lang.$;
+  var $nil  = $.nil;
+  var $int0 = $.int0;
+  var $int1 = $.int1;
+  var random = sc.libs.random;
+  var strlib = sc.libs.strlib;
+
+  var SCArray = $("Array");
+  var SCRoutine = $("Routine");
 
   function prOpSimpleNumber(selector, func) {
     return function($aNumber, $adverb) {
@@ -17,7 +23,7 @@ SCScript.install(function(sc) {
         return $.Boolean(func(this._, $aNumber._));
       }
 
-      if ($aNumber.isSequenceableCollection().valueOf()) {
+      if ($aNumber.isSequenceableCollection().__bool__()) {
         return $aNumber.performBinaryOpOnSimpleNumber(
           $.Symbol(selector), this, $adverb
         );
@@ -27,307 +33,304 @@ SCScript.install(function(sc) {
     };
   }
 
-  sc.lang.klass.refine("SimpleNumber", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $int_0 = utils.$int_0;
-    var $int_1 = utils.$int_1;
-    var SCArray = $("Array");
+  sc.lang.klass.refine("SimpleNumber", function(builder) {
+    builder.addMethod("__newFrom__", $.Float);
 
-    spec.__newFrom__ = $.Float;
-
-    spec.__bool__ = function() {
+    builder.addMethod("__bool__", function() {
       return this._ !== 0;
-    };
+    });
 
-    spec.__dec__ = function() {
+    builder.addMethod("__dec__", function() {
       return this.__newFrom__(this._ - 1);
-    };
+    });
 
-    spec.__inc__ = function() {
+    builder.addMethod("__inc__", function() {
       return this.__newFrom__(this._ + 1);
-    };
+    });
 
-    spec.__int__ = function() {
+    builder.addMethod("__int__", function() {
       if (!isFinite(this._)) {
         return this._;
       }
       return this._|0;
-    };
+    });
 
-    spec.__num__ = function() {
+    builder.addMethod("__num__", function() {
       return this._;
-    };
+    });
 
-    spec.isValidUGenInput = function() {
+    builder.addMethod("isValidUGenInput", function() {
       return $.Boolean(!isNaN(this._));
-    };
+    });
 
-    spec.numChannels = utils.alwaysReturn$int_1;
+    builder.addMethod("numChannels", function() {
+      return $int1;
+    });
 
-    spec.magnitude = function() {
+    builder.addMethod("magnitude", function() {
       return this.abs();
-    };
+    });
 
-    spec.angle = function() {
+    builder.addMethod("angle", function() {
       return $.Float(this._ >= 0 ? 0 : Math.PI);
-    };
+    });
 
-    spec.neg = function() {
+    builder.addMethod("neg", function() {
       return this.__newFrom__(-this._);
-    };
+    });
 
     // bitNot: implemented by subclass
 
-    spec.abs = function() {
+    builder.addMethod("abs", function() {
       return this.__newFrom__(Math.abs(this._));
-    };
+    });
 
-    spec.ceil = function() {
+    builder.addMethod("ceil", function() {
       return this.__newFrom__(Math.ceil(this._));
-    };
+    });
 
-    spec.floor = function() {
+    builder.addMethod("floor", function() {
       return this.__newFrom__(Math.floor(this._));
-    };
+    });
 
-    spec.frac = function() {
+    builder.addMethod("frac", function() {
       var a = this._;
 
       if (a < 0) {
         return this.__newFrom__(1 + (a - (a|0)));
       }
       return this.__newFrom__(a - (a|0));
-    };
+    });
 
-    spec.sign = function() {
+    builder.addMethod("sign", function() {
       var a = this._;
       return this.__newFrom__(
         a > 0 ? 1 : a === 0 ? 0 : -1
       );
-    };
+    });
 
-    spec.squared = function() {
+    builder.addMethod("squared", function() {
       return this.__newFrom__(this._ * this._);
-    };
+    });
 
-    spec.cubed = function() {
+    builder.addMethod("cubed", function() {
       return this.__newFrom__(this._ * this._ * this._);
-    };
+    });
 
-    spec.sqrt = function() {
+    builder.addMethod("sqrt", function() {
       return $.Float(Math.sqrt(this._));
-    };
+    });
 
-    spec.exp = function() {
+    builder.addMethod("exp", function() {
       return $.Float(Math.exp(this._));
-    };
+    });
 
-    spec.reciprocal = function() {
+    builder.addMethod("reciprocal", function() {
       return $.Float(1 / this._);
-    };
+    });
 
-    spec.midicps = function() {
+    builder.addMethod("midicps", function() {
       return $.Float(
-        440 * Math.pow(2, (this._ - 69) * 1/12)
+        440 * Math.pow(2, (this._ - 69) * 1 / 12)
       );
-    };
+    });
 
-    spec.cpsmidi = function() {
+    builder.addMethod("cpsmidi", function() {
       return $.Float(
-        Math.log(Math.abs(this._) * 1/440) * Math.LOG2E * 12 + 69
+        Math.log(Math.abs(this._) * 1 / 440) * Math.LOG2E * 12 + 69
       );
-    };
+    });
 
-    spec.midiratio = function() {
+    builder.addMethod("midiratio", function() {
       return $.Float(
-        Math.pow(2, this._ * 1/12)
+        Math.pow(2, this._ * 1 / 12)
       );
-    };
+    });
 
-    spec.ratiomidi = function() {
+    builder.addMethod("ratiomidi", function() {
       return $.Float(
         Math.log(Math.abs(this._)) * Math.LOG2E * 12
       );
-    };
+    });
 
-    spec.ampdb = function() {
+    builder.addMethod("ampdb", function() {
       return $.Float(
         Math.log(this._) * Math.LOG10E * 20
       );
-    };
+    });
 
-    spec.dbamp = function() {
+    builder.addMethod("dbamp", function() {
       return $.Float(
         Math.pow(10, this._ * 0.05)
       );
-    };
+    });
 
-    spec.octcps = function() {
+    builder.addMethod("octcps", function() {
       return $.Float(
         440 * Math.pow(2, this._ - 4.75)
       );
-    };
+    });
 
-    spec.cpsoct = function() {
+    builder.addMethod("cpsoct", function() {
       return $.Float(
-        Math.log(Math.abs(this._) * 1/440) * Math.LOG2E + 4.75
+        Math.log(Math.abs(this._) * 1 / 440) * Math.LOG2E + 4.75
       );
-    };
+    });
 
-    spec.log = function() {
+    builder.addMethod("log", function() {
       return $.Float(Math.log(this._));
-    };
+    });
 
-    spec.log2 = function() {
+    builder.addMethod("log2", function() {
       return $.Float(Math.log(Math.abs(this._)) * Math.LOG2E);
-    };
+    });
 
-    spec.log10 = function() {
+    builder.addMethod("log10", function() {
       return $.Float(Math.log(this._) * Math.LOG10E);
-    };
+    });
 
-    spec.sin = function() {
+    builder.addMethod("sin", function() {
       return $.Float(Math.sin(this._));
-    };
+    });
 
-    spec.cos = function() {
+    builder.addMethod("cos", function() {
       return $.Float(Math.cos(this._));
-    };
+    });
 
-    spec.tan = function() {
+    builder.addMethod("tan", function() {
       return $.Float(Math.tan(this._));
-    };
+    });
 
-    spec.asin = function() {
+    builder.addMethod("asin", function() {
       return $.Float(Math.asin(this._));
-    };
+    });
 
-    spec.acos = function() {
+    builder.addMethod("acos", function() {
       return $.Float(Math.acos(this._));
-    };
+    });
 
-    spec.atan = function() {
+    builder.addMethod("atan", function() {
       return $.Float(Math.atan(this._));
-    };
+    });
 
     function _sinh(a) {
       return (Math.pow(Math.E, a) - Math.pow(Math.E, -a)) * 0.5;
     }
 
-    spec.sinh = function() {
+    builder.addMethod("sinh", function() {
       return $.Float(_sinh(this._));
-    };
+    });
 
     function _cosh(a) {
       return (Math.pow(Math.E, a) + Math.pow(Math.E, -a)) * 0.5;
     }
 
-    spec.cosh = function() {
+    builder.addMethod("cosh", function() {
       return $.Float(_cosh(this._));
-    };
+    });
 
-    spec.tanh = function() {
+    builder.addMethod("tanh", function() {
       return $.Float(_sinh(this._) / _cosh(this._));
-    };
+    });
 
-    spec.rand = function() {
+    builder.addMethod("rand", function() {
       return this.__newFrom__(
-        rand.next() * this._
+        random.next() * this._
       );
-    };
+    });
 
-    spec.rand2 = function() {
+    builder.addMethod("rand2", function() {
       return this.__newFrom__(
-        (rand.next() * 2 - 1) * this._
+        (random.next() * 2 - 1) * this._
       );
-    };
+    });
 
-    spec.linrand = function() {
+    builder.addMethod("linrand", function() {
       return this.__newFrom__(
-        Math.min(rand.next(), rand.next()) * this._
+        Math.min(random.next(), random.next()) * this._
       );
-    };
+    });
 
-    spec.bilinrand = function() {
+    builder.addMethod("bilinrand", function() {
       return this.__newFrom__(
-        (rand.next() - rand.next()) * this._
+        (random.next() - random.next()) * this._
       );
-    };
+    });
 
-    spec.sum3rand = function() {
+    builder.addMethod("sum3rand", function() {
       return this.__newFrom__(
-        (rand.next() + rand.next() + rand.next() - 1.5) * 2/3 * this._
+        (random.next() + random.next() + random.next() - 1.5) * 2 / 3 * this._
       );
-    };
+    });
 
-    spec.distort = function() {
+    builder.addMethod("distort", function() {
       return $.Float(
         this._ / (1 + Math.abs(this._))
       );
-    };
+    });
 
-    spec.softclip = function() {
-      var a = this._, abs_a = Math.abs(a);
-      return $.Float(abs_a <= 0.5 ? a : (abs_a - 0.25) / a);
-    };
+    builder.addMethod("softclip", function() {
+      var a = this._, abs = Math.abs(a);
+      return $.Float(abs <= 0.5 ? a : (abs - 0.25) / a);
+    });
 
-    spec.coin = function() {
-      return $.Boolean(rand.next() < this._);
-    };
+    builder.addMethod("coin", function() {
+      return $.Boolean(random.next() < this._);
+    });
 
-    spec.isPositive = function() {
+    builder.addMethod("isPositive", function() {
       return $.Boolean(this._ >= 0);
-    };
+    });
 
-    spec.isNegative = function() {
+    builder.addMethod("isNegative", function() {
       return $.Boolean(this._ < 0);
-    };
+    });
 
-    spec.isStrictlyPositive = function() {
+    builder.addMethod("isStrictlyPositive", function() {
       return $.Boolean(this._ > 0);
-    };
+    });
 
-    spec.isNaN = function() {
+    builder.addMethod("isNaN", function() {
       return $.Boolean(isNaN(this._));
-    };
+    });
 
-    spec.asBoolean = function() {
+    builder.addMethod("asBoolean", function() {
       return $.Boolean(this._ > 0);
-    };
+    });
 
-    spec.booleanValue = function() {
+    builder.addMethod("booleanValue", function() {
       return $.Boolean(this._ > 0);
-    };
+    });
 
-    spec.binaryValue = function() {
-      return this._ > 0 ? $int_1 : $int_0;
-    };
+    builder.addMethod("binaryValue", function() {
+      return this._ > 0 ? $int1 : $int0;
+    });
 
-    spec.rectWindow = function() {
+    builder.addMethod("rectWindow", function() {
       var a = this._;
       if (a < 0 || 1 < a) {
         return $.Float(0);
       }
       return $.Float(1);
-    };
+    });
 
-    spec.hanWindow = function() {
+    builder.addMethod("hanWindow", function() {
       var a = this._;
       if (a < 0 || 1 < a) {
         return $.Float(0);
       }
       return $.Float(0.5 - 0.5 * Math.cos(a * 2 * Math.PI));
-    };
+    });
 
-    spec.welWindow = function() {
+    builder.addMethod("welWindow", function() {
       var a = this._;
       if (a < 0 || 1 < a) {
         return $.Float(0);
       }
       return $.Float(Math.sin(a * Math.PI));
-    };
+    });
 
-    spec.triWindow = function() {
+    builder.addMethod("triWindow", function() {
       var a = this._;
       if (a < 0 || 1 < a) {
         return $.Float(0);
@@ -336,9 +339,9 @@ SCScript.install(function(sc) {
         return $.Float(2 * a);
       }
       return $.Float(-2 * a + 2);
-    };
+    });
 
-    spec.scurve = function() {
+    builder.addMethod("scurve", function() {
       var a = this._;
       if (a <= 0) {
         return $.Float(0);
@@ -347,9 +350,9 @@ SCScript.install(function(sc) {
         return $.Float(1);
       }
       return $.Float(a * a * (3 - 2 * a));
-    };
+    });
 
-    spec.ramp = function() {
+    builder.addMethod("ramp", function() {
       var a = this._;
       if (a <= 0) {
         return $.Float(0);
@@ -358,7 +361,7 @@ SCScript.install(function(sc) {
         return $.Float(1);
       }
       return $.Float(a);
-    };
+    });
 
     // +: implemented by subclass
     // -: implemented by subclass
@@ -373,11 +376,11 @@ SCScript.install(function(sc) {
     // bitOr : implemented by subclass
     // bitXor: implemented by subclass
 
-    spec.bitTest = function($bit) {
+    builder.addMethod("bitTest", function($bit) {
       return $.Boolean(
-        this.bitAnd($int_1.leftShift($bit)).valueOf() !== 0
+        this.bitAnd($int1.leftShift($bit)).__num__() !== 0
       );
-    };
+    });
 
     // lcm     : implemented by subclass
     // gcd     : implemented by subclass
@@ -409,79 +412,96 @@ SCScript.install(function(sc) {
     // rrand   : implemented by subclass
     // exprand : implemented by subclass
 
-    spec["=="] = function($aNumber) {
+    builder.addMethod("==", function($aNumber) {
       return $.Boolean(this._ === $aNumber._);
-    };
+    });
 
-    spec["!="] = function($aNumber) {
+    builder.addMethod("!=", function($aNumber) {
       return $.Boolean(this._ !== $aNumber._);
-    };
+    });
 
-    spec["<"] = prOpSimpleNumber("<", function(a, b) {
+    builder.addMethod("<", prOpSimpleNumber("<", function(a, b) {
       return a < b;
-    });
-    spec[">"] = prOpSimpleNumber(">", function(a, b) {
+    }));
+
+    builder.addMethod(">", prOpSimpleNumber(">", function(a, b) {
       return a > b;
-    });
-    spec["<="] = prOpSimpleNumber("<=", function(a, b) {
+    }));
+
+    builder.addMethod("<=", prOpSimpleNumber("<=", function(a, b) {
       return a <= b;
-    });
-    spec[">="] = prOpSimpleNumber(">=", function(a, b) {
+    }));
+
+    builder.addMethod(">=", prOpSimpleNumber(">=", function(a, b) {
       return a >= b;
+    }));
+
+    builder.addMethod("equalWithPrecision", {
+      args: "that; precision=0.0001"
+    }, function($that, $precision) {
+      return this.absdif($that) ["<"] ($precision);
     });
 
-    spec.equalWithPrecision = fn(function($that, $precision) {
-      return this.absdif($that) ["<"] ($precision);
-    }, "that; precision=0.0001");
-
-    spec.asInteger = function() {
+    builder.addMethod("asInteger", function() {
       return $.Integer(this._);
-    };
+    });
 
-    spec.asFloat = function() {
+    builder.addMethod("asFloat", function() {
       return $.Float(this._);
-    };
+    });
 
     // TODO: implements asComplex
     // TODO: implements asRect
 
-    spec.degrad = function() {
+    builder.addMethod("degrad", function() {
       return $.Float(this._ * Math.PI / 180);
-    };
+    });
 
-    spec.raddeg = function() {
+    builder.addMethod("raddeg", function() {
       return $.Float(this._ * 180 / Math.PI);
-    };
+    });
 
-    // TODO: implements performBinaryOpOnSimpleNumber
+    builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector) {
+      throw new Error(strlib.format("binary operator '#{0}' failed", $aSelector.__sym__()));
+    });
+
     // TODO: implements performBinaryOpOnComplex
-    // TODO: implements performBinaryOpOnSignal
 
-    spec.nextPowerOfTwo = function() {
+    builder.addMethod("performBinaryOpOnSignal", function($aSelector) {
+      throw new Error(strlib.format("binary operator '#{0}' failed", $aSelector.__sym__()));
+    });
+
+    builder.addMethod("nextPowerOfTwo", function() {
       return $.Float(
         Math.pow(2, Math.ceil(Math.log(this._) / Math.log(2)))
       );
-    };
+    });
 
-    spec.nextPowerOf = fn(function($base) {
+    builder.addMethod("nextPowerOf", {
+      args: "base"
+    }, function($base) {
       return $base.pow(
         (this.log() ["/"] ($base.$("log"))).ceil()
       );
-    }, "base");
+    });
 
-    spec.nextPowerOfThree = function() {
+    builder.addMethod("nextPowerOfThree", function() {
       return $.Float(
         Math.pow(3, Math.ceil(Math.log(this._) / Math.log(3)))
       );
-    };
+    });
 
-    spec.previousPowerOf = fn(function($base) {
+    builder.addMethod("previousPowerOf", {
+      args: "base"
+    }, function($base) {
       return $base.pow(
         (this.log() ["/"] ($base.$("log"))).ceil().__dec__()
       );
-    }, "base");
+    });
 
-    spec.quantize = fn(function($quantum, $tolerance, $strength) {
+    builder.addMethod("quantize", {
+      args: "quantum=1.0; tolerance=0.05; strength=1.0"
+    }, function($quantum, $tolerance, $strength) {
       var $round, $diff;
 
       $round = this.round($quantum);
@@ -492,12 +512,14 @@ SCScript.install(function(sc) {
       }
 
       return this;
-    }, "quantum=1.0; tolerance=0.05; strength=1.0");
+    });
 
-    spec.linlin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("linlin", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // (this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
@@ -506,12 +528,14 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.linexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("linexp", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // Math.pow(outMax/outMin, (this-inMin)/(inMax-inMin)) * outMin;
@@ -521,12 +545,14 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.explin = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("explin", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // (((Math.log(this/inMin)) / (Math.log(inMax/inMin))) * (outMax-outMin)) + outMin;
@@ -535,12 +561,14 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.expexp = fn(function($inMin, $inMax, $outMin, $outMax, $clip) {
+    builder.addMethod("expexp", {
+      args: "inMin; inMax; outMin; outMax; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         // Math.pow(outMax/outMin, Math.log(this/inMin) / Math.log(inMax/inMin)) * outMin;
@@ -550,15 +578,17 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inMin; inMax; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.lincurve = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    builder.addMethod("lincurve", {
+      args: "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax"
+    }, function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b, $scaled;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
-        if (Math.abs($curve.valueOf()) < 0.001) {
+        if (Math.abs($curve.__num__()) < 0.001) {
           $res = this.linlin($inMin, $inMax, $outMin, $outMax);
         } else {
           $grow = $curve.exp();
@@ -571,15 +601,17 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax");
+    });
 
-    spec.curvelin = fn(function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
+    builder.addMethod("curvelin", {
+      args: "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax"
+    },function($inMin, $inMax, $outMin, $outMax, $curve, $clip) {
       var $res = null, $grow, $a, $b;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
-        if (Math.abs($curve.valueOf()) < 0.001) {
+        if (Math.abs($curve.__num__()) < 0.001) {
           $res = this.linlin($inMin, $inMax, $outMin, $outMax);
         } else {
           $grow = $curve.exp();
@@ -592,12 +624,14 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inMin=0; inMax=1; outMin=0; outMax=1; curve=-4; clip=\\minmax");
+    });
 
-    spec.bilin = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    builder.addMethod("bilin", {
+      args: "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax"
+    }, function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         if (this >= $inCenter) {
@@ -608,12 +642,14 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.biexp = fn(function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
+    builder.addMethod("biexp", {
+      args: "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax"
+    }, function($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip) {
       var $res = null;
 
-      $res = clip_for_map(this, $inMin, $inMax, $outMin, $outMax, $clip);
+      $res = getClippedValue(this, $inMin, $inMax, $outMin, $outMax, $clip);
 
       if ($res === null) {
         if (this >= $inCenter) {
@@ -624,18 +660,22 @@ SCScript.install(function(sc) {
       }
 
       return $res;
-    }, "inCenter; inMin; inMax; outCenter; outMin; outMax; clip=\\minmax");
+    });
 
-    spec.moddif = fn(function($aNumber, $mod) {
+    builder.addMethod("moddif", {
+      args: "aNumber=0.0; mod=1.0"
+    }, function($aNumber, $mod) {
       var $diff, $modhalf;
 
       $diff = this.absdif($aNumber) ["%"] ($mod);
       $modhalf = $mod.$("*", [ $.Float(0.5) ]);
 
       return $modhalf.$("-", [ $diff.absdif($modhalf) ]);
-    }, "aNumber=0.0; mod=1.0");
+    });
 
-    spec.lcurve = fn(function($a, $m, $n, $tau) {
+    builder.addMethod("lcurve", {
+      args: "a=1.0; m=0.0; n=1.0; tau=1.0"
+    }, function($a, $m, $n, $tau) {
       var $rTau, $x;
 
       $x = this.neg();
@@ -655,66 +695,74 @@ SCScript.install(function(sc) {
           $n.$("*", [ $x.exp() ]) ["*"] ($rTau).__inc__()
         ]);
       }
-    }, "a=1.0; m=0.0; n=1.0; tau=1.0");
+    });
 
-    spec.gauss = fn(function($standardDeviation) {
+    builder.addMethod("gauss", {
+      args: "standardDeviation"
+    }, function($standardDeviation) {
       // ^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
       return ($.Float(-2.0) ["*"] ($.Float(1.0).rand().log()).sqrt() ["*"] (
         $.Float(2 * Math.PI).rand().sin()
       ) ["*"] ($standardDeviation)) ["+"] (this);
-    }, "standardDeviation");
+    });
 
-    spec.gaussCurve = fn(function($a, $b, $c) {
+    builder.addMethod("gaussCurve", {
+      args: "a=1.0; b=0.0; c=1.0"
+    }, function($a, $b, $c) {
       // ^a * (exp(squared(this - b) / (-2.0 * squared(c))))
       return $a.$("*", [ ((
         (this ["-"] ($b).squared()) ["/"] ($.Float(-2.0) ["*"] ($c.$("squared")))
       ).exp()) ]);
-    }, "a=1.0; b=0.0; c=1.0");
+    });
 
     // TODO: implements asPoint
     // TODO: implements asWarp
 
-    spec.wait = function() {
+    builder.addMethod("wait", function() {
       return this.yield();
-    };
+    });
 
     // TODO: implements waitUntil
     // TODO: implements sleep
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.rate = function() {
+    builder.addMethod("rate", function() {
       return $.Symbol("scalar");
-    };
+    });
 
-    spec.asAudioRateInput = function() {
+    builder.addMethod("asAudioRateInput", function() {
       if (this._ === 0) {
         return $("Silent").ar();
       }
       return $("DC").ar(this);
-    };
+    });
 
-    spec.madd = fn(function($mul, $add) {
+    builder.addMethod("madd", {
+      args: "mul; add"
+    }, function($mul, $add) {
       return (this ["*"] ($mul)) ["+"] ($add);
-    }, "mul; add");
+    });
 
-    spec.lag = utils.nop;
-    spec.lag2 = utils.nop;
-    spec.lag3 = utils.nop;
-    spec.lagud = utils.nop;
-    spec.lag2ud = utils.nop;
-    spec.lag3ud = utils.nop;
-    spec.varlag = utils.nop;
-    spec.slew = utils.nop;
+    builder.addMethod("lag");
+    builder.addMethod("lag2");
+    builder.addMethod("lag3");
+    builder.addMethod("lagud");
+    builder.addMethod("lag2ud");
+    builder.addMethod("lag3ud");
+    builder.addMethod("varlag");
+    builder.addMethod("slew");
 
     // TODO: implements writeInputSpec
 
-    spec.series = fn(function($second, $last) {
+    builder.addMethod("series", {
+      args: "second; last"
+    }, function($second, $last) {
       var $step;
       var last, step, size;
 
       if ($second === $nil) {
-        if (this.valueOf() < $last.valueOf()) {
+        if (this.__num__() < $last.__num__()) {
           $second = this.__inc__();
         } else {
           $second = this.__dec__();
@@ -727,27 +775,99 @@ SCScript.install(function(sc) {
       size = (Math.floor((last - this._) / step + 0.001)|0) + 1;
 
       return SCArray.series($.Integer(size), this, $step);
-    }, "second; last");
+    });
 
-    // TODO: implements seriesIter
-    // TODO: implements degreeToKey
-    // TODO: implements keyToDegree
-    // TODO: implements nearestInList
-    // TODO: implements nearestInScale
-    // TODO: implements partition
-    // TODO: implements nextTimeOnGrid
-    // TODO: implements playAndDelta
-    // TODO: implements asQuant
+    builder.addMethod("seriesIter", {
+      args: "second; last"
+    }, function($second, $last) {
+      var first, second, last, step;
+      var $newFrom = this.__newFrom__;
+
+      first = this.__num__();
+      if ($second === $nil) {
+        last = ($last !== $nil) ? $last.__num__() : Infinity;
+        step = first < last ? 1 : -1;
+      } else {
+        second = $second.__num__();
+        last = ($last !== $nil) ? $last.__num__() : (
+          $second < first ? -Infinity : Infinity
+        );
+        step = second - first;
+      }
+      return SCRoutine.new($.Function(function() {
+        var val, $cond;
+        $cond = $.Func(step < 0 ? function() {
+          return $.Boolean(val >= last);
+        } : function() {
+          return $.Boolean(val <= last);
+        });
+        return [ function() {
+          val = first;
+          return $cond.while($.Func(function() {
+            $newFrom(val).yield();
+            val += step;
+            return $nil;
+          }));
+        } ];
+      }));
+    });
+
+    builder.addMethod("degreeToKey", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
+      var $scaleDegree, $accidental;
+      $scaleDegree = this.round($int1).asInteger();
+      $accidental  = (this ["-"] ($scaleDegree)) ["*"] ($.Float(10.0));
+      return $scale.performDegreeToKey($scaleDegree, $stepsPerOctave, $accidental);
+    });
+
+    builder.addMethod("keyToDegree", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
+      return $scale.performKeyToDegree(this, $stepsPerOctave);
+    });
+
+    builder.addMethod("nearestInList", {
+      args: "list"
+    }, function($list) {
+      return $list.performNearestInList(this);
+    });
+
+    builder.addMethod("nearestInScale", {
+      args: "scale; stepsPerOctave=12"
+    }, function($scale, $stepsPerOctave) {
+      return $scale.performNearestInScale(this, $stepsPerOctave);
+    });
+
+    builder.addMethod("partition", {
+      args: "parts=2; min=1"
+    }, function($parts, $min) {
+      var $n = this ["-"] ($min.__dec__() ["*"] ($parts));
+      return $int1.series(null, $n.__dec__()).scramble().keep($parts.__dec__())
+        .sort().add($n).differentiate() ["+"] ($min.__dec__());
+    });
+
+    builder.addMethod("nextTimeOnGrid", {
+      args: "clock"
+    }, function($clock) {
+      return $clock.nextTimeOnGrid(this, $int0);
+    });
+
+    builder.addMethod("playAndDelta");
+
+    builder.addMethod("asQuant", function() {
+      return $("Quant").new(this);
+    });
+
     // TODO: implements asTimeString
     // TODO: implements asFraction
     // TODO: implements asBufWithValues
     // TODO: implements schedBundleArrayOnClock
 
-    spec.shallowCopy = utils.nop;
+    builder.addMethod("shallowCopy");
   });
 
-  function clip_for_map($this, $inMin, $inMax, $outMin, $outMax, $clip) {
-
+  function getClippedValue($this, $inMin, $inMax, $outMin, $outMax, $clip) {
     switch ($clip.__sym__()) {
     case "minmax":
       if ($this <= $inMin) {
@@ -771,5 +891,4 @@ SCScript.install(function(sc) {
 
     return null;
   }
-
 });

@@ -1,9 +1,9 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("../sc");
 
-  var compiler = {
+  sc.lang.compiler = {
     Token: {
       CharLiteral: "Char",
       EOF: "<EOF>",
@@ -17,18 +17,18 @@
       Punctuator: "Punctuator",
       StringLiteral: "String",
       SymbolLiteral: "Symbol",
-      TrueLiteral: "True"
+      TrueLiteral: "True",
+      SingleLineComment: "SingleLineComment",
+      MultiLineComment: "MultiLineComment"
     },
     Syntax: {
       AssignmentExpression: "AssignmentExpression",
       BinaryExpression: "BinaryExpression",
-      BlockExpression: "BlockExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",
-      EnvironmentExpresion: "EnvironmentExpresion",
+      EnvironmentExpression: "EnvironmentExpression",
       Identifier: "Identifier",
       ListExpression: "ListExpression",
-      Label: "Label",
       Literal: "Literal",
       EventExpression: "EventExpression",
       Program: "Program",
@@ -40,16 +40,18 @@
       ValueMethodResult: "ValueMethodResult"
     },
     Message: {
-      ArgumentAlreadyDeclared: "argument '%0' already declared",
+      ArgumentAlreadyDeclared: "argument '#{0}' already declared",
       InvalidLHSInAssignment: "invalid left-hand side in assignment",
-      NotImplemented: "not implemented %0",
+      NotImplemented: "not implemented #{0}",
       UnexpectedEOS: "unexpected end of input",
       UnexpectedIdentifier: "unexpected identifier",
+      UnexpectedKeyword: "unexpected keyword",
       UnexpectedNumber: "unexpected number",
-      UnexpectedLiteral: "unexpected %0",
-      UnexpectedToken: "unexpected token %0",
-      VariableAlreadyDeclared: "variable '%0' already declared",
-      VariableNotDefined: "variable '%0' not defined"
+      UnexpectedLabel: "unexpected label",
+      UnexpectedLiteral: "unexpected #{0}",
+      UnexpectedToken: "unexpected token #{0}",
+      VariableAlreadyDeclared: "variable '#{0}' already declared",
+      VariableNotDefined: "variable '#{0}' not defined"
     },
     Keywords: {
       var: "keyword",
@@ -60,31 +62,53 @@
       thisProcess: "function",
       thisFunction: "function",
       thisFunctionDef: "function",
+    },
+    binaryPrecedenceDefaults: {
+      "?": 1,
+      "??": 1,
+      "!?": 1,
+      "->": 2,
+      "||": 3,
+      "&&": 4,
+      "|": 5,
+      "&": 6,
+      "==": 7,
+      "!=": 7,
+      "===": 7,
+      "!==": 7,
+      "<": 8,
+      ">": 8,
+      "<=": 8,
+      ">=": 8,
+      "<<": 9,
+      ">>": 9,
+      "+>>": 9,
+      "+": 10,
+      "-": 10,
+      "*": 11,
+      "/": 11,
+      "%": 11,
+      "!": 12
+    },
+    tokenize: function(source, opts) {
+      return new sc.lang.compiler.Lexer(source, opts).tokenize();
+    },
+    parse: function(source, opts) {
+      var lexer = new sc.lang.compiler.Lexer(source, opts);
+      return new sc.lang.compiler.Parser(null, lexer).parse();
+    },
+    compile: function(source, opts) {
+      var ast;
+
+      if (typeof source === "string") {
+        ast = sc.lang.compiler.parse(source, opts);
+      } else {
+        ast = source;
+      }
+
+      ast = new sc.lang.compiler.Rewriter().rewrite(ast);
+
+      return new sc.lang.compiler.CodeGen(null, opts).compile(ast);
     }
   };
-
-  sc.lang.compiler = compiler;
-
-  var SCScript = sc.SCScript;
-
-  SCScript.tokenize = function(source, opts) {
-    return new compiler.lexer(source, opts).tokenize();
-  };
-
-  SCScript.parse = function(source, opts) {
-    return compiler.parser.parse(source, opts);
-  };
-
-  SCScript.compile = function(source, opts) {
-    var ast;
-
-    if (typeof source === "string") {
-      ast = SCScript.parse(source, opts);
-    } else {
-      ast = source;
-    }
-
-    return compiler.codegen.compile(ast, opts);
-  };
-
 })(sc);

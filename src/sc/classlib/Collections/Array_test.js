@@ -8,10 +8,10 @@
 
   var $ = sc.lang.$;
 
+  var SCArray = $("Array");
+
   describe("SCArray", function() {
-    var SCArray;
     before(function() {
-      SCArray = $("Array");
       this.createInstance = function(source) {
         return $.Array((source || []).map($$));
       };
@@ -23,10 +23,6 @@
 
       test = instance.valueOf();
       expect(test).to.be.a("JSArray").to.eql([ "freq", 440 ]);
-    });
-    it(".newClear", function() {
-      var test = SCArray.newClear($$(4));
-      expect(test).to.be.a("SCArray").that.eqls([ null, null, null, null ]);
     });
     it(".with", function() {
       var test = SCArray.with($$(0), $$(1), $$(2));
@@ -120,7 +116,7 @@
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [ 1, 1, 1, 2, 2, 2, 3, 3, 3 ]
         },
       ]);
@@ -137,12 +133,12 @@
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ 2, 3, 1 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ -2 ],
+          args: [ -2 ],
           result: [ 3, 1, 2 ]
         },
       ]);
@@ -161,7 +157,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: [
             1,
             1, 2,
@@ -172,7 +168,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [
             5,
             4, 5,
@@ -183,7 +179,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [
             1, 2, 3, 4, 5,
             1, 2, 3, 4,
@@ -194,7 +190,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: [
             1, 2, 3, 4, 5,
             2, 3, 4, 5,
@@ -205,7 +201,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: [
             1,
             1, 2,
@@ -220,7 +216,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 6 ],
+          args: [ 6 ],
           result: [
             5,
             4, 5,
@@ -235,7 +231,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 7 ],
+          args: [ 7 ],
           result: [
             1, 2, 3, 4, 5,
             1, 2, 3, 4,
@@ -250,7 +246,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 8 ],
+          args: [ 8 ],
           result: [
             1, 2, 3, 4, 5,
             2, 3, 4, 5,
@@ -265,7 +261,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 9 ],
+          args: [ 9 ],
           result: [
             1,
             1, 2,
@@ -280,7 +276,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10 ],
+          args: [ 10 ],
           result: [
             5,
             4, 5,
@@ -309,7 +305,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: [
             [ 1 ],
             [ 1, 2 ],
@@ -320,7 +316,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [
             [ 5 ],
             [ 4, 5 ],
@@ -331,7 +327,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [
             [ 1, 2, 3, 4, 5 ],
             [ 1, 2, 3, 4 ],
@@ -342,7 +338,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: [
             [ 1, 2, 3, 4, 5 ],
             [ 2, 3, 4, 5 ],
@@ -353,7 +349,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: [
             [ 1 ],
             [ 1, 2 ],
@@ -368,7 +364,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 6 ],
+          args: [ 6 ],
           result: [
             [ 5 ],
             [ 4, 5 ],
@@ -383,7 +379,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 7 ],
+          args: [ 7 ],
           result: [
             [ 1, 2, 3, 4, 5 ],
             [ 1, 2, 3, 4 ],
@@ -398,7 +394,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 8 ],
+          args: [ 8 ],
           result: [
             [ 1, 2, 3, 4, 5 ],
             [ 2, 3, 4, 5 ],
@@ -413,7 +409,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 9 ],
+          args: [ 9 ],
           result: [
             [ 1 ],
             [ 1, 2 ],
@@ -428,7 +424,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 10 ],
+          args: [ 10 ],
           result: [
             [ 5 ],
             [ 4, 5 ],
@@ -447,7 +443,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 0.75, 10 ],
+          args: [ 0.75, 10 ],
           result: [ 1, 1, 2, 3, 3, 3, 3, 3, 3, 4 ]
         },
       ], { randSeed: 0 });
@@ -460,7 +456,7 @@
         },
         {
           source: [ [ 1, 2, 3 ], 6, [ -1, -2 ] ],
-          args  : [ 12 ],
+          args: [ 12 ],
           result: [ 1, 6, -1, 2, 6, -2, 3, 6, -1, 1, 6, -2 ]
         },
       ]);
@@ -473,27 +469,27 @@
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: [ 2, 1, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ 3, 2, 1 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [ 1, 3, 2 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: [ 2, 3, 1 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: [ 3, 1, 2 ]
         },
       ]);
@@ -518,7 +514,7 @@
         },
         {
           source: [ [ 1, 2, 3, 4, 5 ], [ 10, 20, 30 ] ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [
             [ 1, 10 ], [ 1, 20 ], [ 1, 30 ]
           ]
@@ -529,12 +525,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 10 ],
+          args: [ 10 ],
           result: [ 1, 2, 3, 1, 2, 3, 1, 2, 3, 1 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ 1, 2 ]
         },
       ]);
@@ -543,12 +539,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 10 ],
+          args: [ 10 ],
           result: [ 1, 2, 3, 2, 1, 2, 3, 2, 1, 2 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ 1, 2 ]
         },
       ]);
@@ -557,12 +553,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 10 ],
+          args: [ 10 ],
           result: [ 1, 2, 3, 3, 3, 3, 3, 3, 3, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ 1, 2 ]
         },
       ]);
@@ -575,12 +571,12 @@
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ 3, 1 ],
+          args: [ 3, 1 ],
           result: [ 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6 ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ 1, 2 ],
+          args: [ 1, 2 ],
           result: [ 1, 3, 5 ]
         },
       ]);
@@ -605,27 +601,27 @@
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ 1, 1 ],
+          args: [ 1, 1 ],
           result: [ [ 1, 2, 3, 4, 5, 6 ] ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ 2, 1 ],
+          args: [ 2, 1 ],
           result: [ [ 1, 3, 5 ], [ 2, 4, 6 ] ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ 3, 1 ],
+          args: [ 3, 1 ],
           result: [ [ 1, 4 ], [ 2, 5 ], [ 3, 6 ] ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ 2, 2 ],
+          args: [ 2, 2 ],
           result: [ [ 1, 2 ], [ 3, 4 ] ]
         },
         {
           source: [ 1, 2, 3, 4, 5, 6 ],
-          args  : [ 2, 3 ],
+          args: [ 2, 3 ],
           result: [ [ 1, 2, 3 ], [ 4, 5, 6 ] ]
         },
       ]);
@@ -672,12 +668,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ 2, 0 ],
+          args: [ 2, 0 ],
           result: [ 0, 0, 1, 2, 3 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ -2, 0 ],
+          args: [ -2, 0 ],
           result: [ 3, 4, 5, 0, 0 ]
         },
       ]);

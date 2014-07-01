@@ -17,6 +17,10 @@
 100% { background-color: #ffffff; }
 }
 
+body {
+  height: 100%;
+}
+
 #menualt {
   z-index: 65536;
   position: absolute;
@@ -44,7 +48,7 @@
   height: 100%;
   color: #2c3e50;
   background: #ecf0f1;
-  border: solid 0 #95a5a6;
+  border: solid 0 #bdc3c7;
   border-width: 0 0 0 1px;
   box-sizing: border-box;
   padding: 0px 15px;
@@ -88,6 +92,15 @@
 #sidemenu a {
   color: #2c3e50;
   text-decoration: underline;
+}
+
+#timecop {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-family: monospace;
+  color: #7f8c8d;
+  font-size: 10px;
 }
 
 .win {

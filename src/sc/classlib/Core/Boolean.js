@@ -3,25 +3,26 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $int0 = $.int0;
+  var $int1 = $.int1;
 
-  sc.lang.klass.refine("Boolean", function(spec, utils) {
-    spec.__bool__ = function() {
+  sc.lang.klass.refine("Boolean", function(builder) {
+    builder.addMethod("__bool__", function() {
       return this._;
-    };
+    });
 
-    spec.toString = function() {
+    builder.addMethod("toString", function() {
       return String(this._);
-    };
+    });
 
-    spec.$new = function() {
+    builder.addClassMethod("new", function() {
       throw new Error("Boolean.new is illegal, should use literal.");
-    };
+    });
 
-    spec.xor = function($bool) {
+    builder.addMethod("xor", function($bool) {
       return $.Boolean(this === $bool).not();
-    };
+    });
 
     // TODO: implements if
     // TODO: implements nop
@@ -33,82 +34,102 @@ SCScript.install(function(sc) {
     // TODO: implements asInteger
     // TODO: implements binaryValue
 
-    spec.asBoolean = utils.nop;
-    spec.booleanValue = utils.nop;
+    builder.addMethod("asBoolean");
+    builder.addMethod("booleanValue");
 
     // TODO: implements keywordWarnings
     // TODO: implements trace
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    builder.addMethod("archiveAsCompileString", sc.TRUE);
 
-    spec.while = function() {
+    builder.addMethod("while", function() {
       var msg = "While was called with a fixed (unchanging) Boolean as the condition. ";
       msg += "Please supply a Function instead.";
       throw new Error(msg);
-    };
+    });
 
-    spec.shallowCopy = utils.nop;
+    builder.addMethod("shallowCopy");
   });
 
-  sc.lang.klass.refine("True", function(spec, utils) {
-    spec.$new = function() {
+  sc.lang.klass.refine("True", function(builder) {
+    builder.addClassMethod("new", function() {
       throw new Error("True.new is illegal, should use literal.");
-    };
+    });
 
-    spec.if = fn(function($trueFunc) {
+    builder.addMethod("if", {
+      args: "trueFunc"
+    }, function($trueFunc) {
       return $trueFunc.value();
-    }, "trueFunc");
+    });
 
-    spec.not = utils.alwaysReturn$false;
+    builder.addMethod("not", sc.FALSE);
 
-    spec["&&"] = function($that) {
+    builder.addMethod("&&", function($that) {
       return $that.value();
-    };
+    });
 
-    spec["||"] = utils.nop;
+    builder.addMethod("||");
 
-    spec.and = fn(function($that) {
+    builder.addMethod("and", {
+      args: "that"
+    }, function($that) {
       return $that.value();
-    }, "that");
+    });
 
-    spec.or = spec["||"];
+    builder.addMethod("or");
 
-    spec.nand = fn(function($that) {
+    builder.addMethod("nand", {
+      args: "that"
+    }, function($that) {
       return $that.value().$("not");
-    }, "that");
+    });
 
-    spec.asInteger = utils.alwaysReturn$int_1;
-    spec.binaryValue = utils.alwaysReturn$int_1;
+    builder.addMethod("asInteger", function() {
+      return $int1;
+    });
+
+    builder.addMethod("binaryValue", function() {
+      return $int1;
+    });
   });
 
-  sc.lang.klass.refine("False", function(spec, utils) {
-    spec.$new = function() {
+  sc.lang.klass.refine("False", function(builder) {
+    builder.addClassMethod("new", function() {
       throw new Error("False.new is illegal, should use literal.");
-    };
+    });
 
-    spec.if = fn(function($trueFunc, $falseFunc) {
+    builder.addMethod("if", {
+      args: "trueFunc; falseFunc"
+    }, function($trueFunc, $falseFunc) {
       return $falseFunc.value();
-    }, "trueFunc; falseFunc");
+    });
 
-    spec.not = utils.alwaysReturn$true;
+    builder.addMethod("not", sc.TRUE);
 
-    spec["&&"] = utils.nop;
+    builder.addMethod("&&");
 
-    spec["||"] = function($that) {
+    builder.addMethod("||", function($that) {
       return $that.value();
-    };
+    });
 
-    spec.and = utils.nop;
+    builder.addMethod("and");
 
-    spec.or = fn(function($that) {
+    builder.addMethod("or", {
+      args: "that"
+    }, function($that) {
       return $that.value();
-    }, "that");
+    });
 
-    spec.nand = utils.alwaysReturn$true;
-    spec.asInteger = utils.alwaysReturn$int_0;
-    spec.binaryValue = utils.alwaysReturn$int_0;
+    builder.addMethod("nand", sc.TRUE);
+
+    builder.addMethod("asInteger", function() {
+      return $int0;
+    });
+
+    builder.addMethod("binaryValue", function() {
+      return $int0;
+    });
   });
-
 });

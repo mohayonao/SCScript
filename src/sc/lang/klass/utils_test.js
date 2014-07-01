@@ -3,59 +3,23 @@
 
   require("./utils");
 
+  var $ = sc.lang.$;
   var utils = sc.lang.klass.utils;
 
   describe("sc.lang.klass.utils", function() {
-    var test;
-    it("$nil", function() {
-      test = utils.$nil;
-      expect(test).to.be.a("SCNil");
+    it("toArray", function() {
+      var test = (function() {
+        return utils.toArray(arguments);
+      })(1, 2, 3, 4, 5);
+      expect(test).to.eql([ 1, 2, 3, 4, 5 ]);
     });
-    it("$true", function() {
-      test = utils.$true;
-      expect(test).to.be.a("SCBoolean").that.is.true;
-    });
-    it("$false", function() {
-      test = utils.$false;
-      expect(test).to.be.a("SCBoolean").that.is.false;
-    });
-    it("$int_0", function() {
-      test = utils.$int_0;
-      expect(test).to.be.a("SCInteger").that.equals(0);
-    });
-    it("$int_1", function() {
-      test = utils.$int_1;
-      expect(test).to.be.a("SCInteger").that.equals(1);
-    });
-    it("nop", function() {
-      var that = {};
-      test = utils.nop.call(that);
-      expect(test).to.equal(that);
-    });
-    it("alwaysReturn$nil", function() {
-      test = utils.alwaysReturn$nil();
-      expect(test).to.be.a("SCNil");
-    });
-    it("alwaysReturn$true", function() {
-      test = utils.alwaysReturn$true();
-      expect(test).to.be.a("SCBoolean").that.is.true;
-    });
-    it("alwaysReturn$false", function() {
-      test = utils.alwaysReturn$false();
-      expect(test).to.be.a("SCBoolean").that.is.false;
-    });
-    it("alwaysReturn$int_0", function() {
-      test = utils.alwaysReturn$int_0();
-      expect(test).to.be.a("SCInteger").that.equals(0);
-    });
-    it("alwaysReturn$int_1", function() {
-      test = utils.alwaysReturn$int_1();
-      expect(test).to.be.a("SCInteger").that.equals(1);
-    });
-    it("getMethod", function() {
-      var test = utils.getMethod("Object", "class");
-      expect(test).to.be.a("JSFunction");
+    it("newCopyArgs", function() {
+      var instance = utils.newCopyArgs($("Object"), {
+        a: $.Integer(100), b: undefined
+      });
+      expect(instance).to.be.a("SCObject");
+      expect(instance._$a).to.be.a("SCInteger").that.equals(100);
+      expect(instance._$b).to.be.a("SCNil");
     });
   });
-
 })();

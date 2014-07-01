@@ -3,46 +3,30 @@ SCScript.install(function(sc) {
 
   require("./ArrayedCollection");
 
-  var slice = [].slice;
-  var $     = sc.lang.$;
-  var fn    = sc.lang.fn;
-  var rand  = sc.libs.random;
+  var $ = sc.lang.$;
+  var random  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
-  sc.lang.klass.refine("Array", function(spec, utils) {
-    var $nil    = utils.$nil;
-    var SCArray = $("Array");
+  var SCArray = $("Array");
+  var $nil = $.nil;
 
-    spec.$newClear = fn(function($indexedSize) {
-      var array, indexedSize, i;
+  sc.lang.klass.refine("Array", function(builder, _) {
+    builder.addClassMethod("with", function() {
+      return $.Array(_.toArray(arguments));
+    });
 
-      indexedSize = $indexedSize.__int__();
-      array = new Array(indexedSize);
-      for (i = 0; i < indexedSize; ++i) {
-        array[i] = $nil;
-      }
-
-      return $.Array(array);
-    }, "indexedSize=0");
-
-    spec.$with = function() {
-      return $.Array(slice.call(arguments));
-    };
-
-    spec.reverse = function() {
-      // <-- _ArrayReverse -->
+    builder.addMethod("reverse", function() {
       return $.Array(this._.slice().reverse());
-    };
+    });
 
-    spec.scramble = function() {
+    builder.addMethod("scramble", function() {
       var a, tmp, i, j, m;
 
-      // <-- _ArrayScramble -->
       a = this._.slice();
       m = a.length;
       if (m > 1) {
         for (i = 0; m > 0; ++i, --m) {
-          j = i + (rand.next() * m)|0;
+          j = i + (random.next() * m)|0;
           tmp  = a[i];
           a[i] = a[j];
           a[j] = tmp;
@@ -50,9 +34,9 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.mirror = function() {
+    builder.addMethod("mirror", function() {
       var raw = this._;
       var size, i, j, imax, a;
 
@@ -71,9 +55,9 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.mirror1 = function() {
+    builder.addMethod("mirror1", function() {
       var raw = this._;
       var size, i, j, imax, a;
 
@@ -92,9 +76,9 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.mirror2 = function() {
+    builder.addMethod("mirror2", function() {
       var raw = this._;
       var size, i, j, imax, a;
 
@@ -113,9 +97,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.stutter = fn(function($n) {
+    builder.addMethod("stutter", {
+      args: "n=2"
+    }, function($n) {
       var raw = this._;
       var n, a, i, j, imax, k;
 
@@ -129,9 +115,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    }, "n=2");
+    });
 
-    spec.rotate = fn(function($n) {
+    builder.addMethod("rotate", {
+      args: "n=1"
+    }, function($n) {
       var raw = this._;
       var n, a, size, i, j;
 
@@ -151,9 +139,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    }, "n=1");
+    });
 
-    spec.pyramid = fn(function($patternType) {
+    builder.addMethod("pyramid", {
+      args: "patternType=1"
+    }, function($patternType) {
       var patternType;
       var obj1, obj2, i, j, k, n, numslots, x;
 
@@ -277,9 +267,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(obj2);
-    }, "n=1");
+    });
 
-    spec.pyramidg = fn(function($patternType) {
+    builder.addMethod("pyramidg", {
+      args: "patternType=1"
+    }, function($patternType) {
       var raw = this._;
       var patternType;
       var list = [], lastIndex, i;
@@ -359,9 +351,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(list);
-    }, "n=1");
+    });
 
-    spec.sputter = fn(function($probability, $maxlen) {
+    builder.addMethod("sputter", {
+      args: "probability=0.25; maxlen=100"
+    }, function($probability, $maxlen) {
       var list, prob, maxlen, i, length;
 
       list   = [];
@@ -371,15 +365,17 @@ SCScript.install(function(sc) {
       length = this._.length;
       while (i < length && list.length < maxlen) {
         list.push(this._[i]);
-        if (rand.next() < prob) {
+        if (random.next() < prob) {
           i += 1;
         }
       }
 
       return $.Array(list);
-    }, "probability=0.25; maxlen=100");
+    });
 
-    spec.lace = fn(function($length) {
+    builder.addMethod("lace", {
+      args: "length"
+    }, function($length) {
       var raw = this._;
       var length, wrap = raw.length;
       var a, i, $item;
@@ -401,9 +397,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    }, "length");
+    });
 
-    spec.permute = fn(function($nthPermutation) {
+    builder.addMethod("permute", {
+      args: "nthPermutation=0"
+    }, function($nthPermutation) {
       var raw = this._;
       var obj1, obj2, size, $item;
       var nthPermutation, i, imax, j;
@@ -423,9 +421,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(obj2);
-    }, "nthPermutation=0");
+    });
 
-    spec.allTuples = fn(function($maxTuples) {
+    builder.addMethod("allTuples", {
+      args: "maxTuples=16384"
+    }, function($maxTuples) {
       var maxSize;
       var obj1, obj2, obj3, obj4, newSize, tupSize;
       var i, j, k;
@@ -460,9 +460,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(obj2);
-    }, "maxTuples=16384");
+    });
 
-    spec.wrapExtend = fn(function($size) {
+    builder.addMethod("wrapExtend", {
+      args: "size"
+    }, function($size) {
       var raw = this._;
       var size, a, i;
 
@@ -477,9 +479,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    }, "size");
+    });
 
-    spec.foldExtend = fn(function($size) {
+    builder.addMethod("foldExtend", {
+      args: "size"
+    }, function($size) {
       var raw = this._;
       var size, a, i;
 
@@ -488,16 +492,18 @@ SCScript.install(function(sc) {
       if (raw.length < size) {
         a = new Array(size);
         for (i = 0; i < size; ++i) {
-          a[i] = raw[mathlib.fold_idx(i, raw.length)];
+          a[i] = raw[mathlib.foldIndex(i, raw.length)];
         }
       } else {
         a = raw.slice(0, size);
       }
 
       return $.Array(a);
-    }, "size");
+    });
 
-    spec.clipExtend = fn(function($size) {
+    builder.addMethod("clipExtend", {
+      args: "size"
+    }, function($size) {
       var raw = this._;
       var size, a, i, imax, b;
 
@@ -516,9 +522,11 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    }, "size");
+    });
 
-    spec.slide = fn(function($windowLength, $stepSize) {
+    builder.addMethod("slide", {
+      args: "windowLength=3; stepSize=1"
+    }, function($windowLength, $stepSize) {
       var raw = this._;
       var windowLength, stepSize;
       var obj1, obj2, m, n, numwin, numslots;
@@ -540,9 +548,9 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(obj2);
-    }, "windowLength=3; stepSize=1");
+    });
 
-    spec.containsSeqColl = function() {
+    builder.addMethod("containsSeqColl", function() {
       var raw = this._;
       var i, imax;
 
@@ -553,9 +561,11 @@ SCScript.install(function(sc) {
       }
 
       return $.False();
-    };
+    });
 
-    spec.unlace = fn(function($clumpSize, $numChan) {
+    builder.addMethod("unlace", {
+      args: "clumpSize=2; numChan=1"
+    }, function($clumpSize, $numChan) {
       var raw = this._;
       var clumpSize, numChan;
       var a, b, size, i, j, k;
@@ -580,16 +590,16 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(a);
-    }, "clumpSize=2; numChan=1");
+    });
 
     // TODO: implements interlace
     // TODO: implements deinterlace
 
-    spec.flop =  function() {
+    builder.addMethod("flop", function() {
       return this.multiChannelExpand();
-    };
+    });
 
-    spec.multiChannelExpand = function() {
+    builder.addMethod("multiChannelExpand", function() {
       var raw = this._;
       var maxSize, size, obj1, obj2, obj3;
       var i, j;
@@ -619,11 +629,13 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(obj2);
-    };
+    });
 
     // TODO: implements envirPairs
 
-    spec.shift = fn(function($n, $filler) {
+    builder.addMethod("shift", {
+      args: "n; filler=0.0"
+    }, function($n, $filler) {
       var $fill, $remain;
 
       $fill = SCArray.fill($n.$("abs"), $filler);
@@ -634,9 +646,9 @@ SCScript.install(function(sc) {
       }
 
       return $fill ["++"] ($remain);
-    }, "n; fillter=0.0");
+    });
 
-    spec.powerset = function() {
+    builder.addMethod("powerset", function() {
       var raw = this._;
       var arrSize, powersize;
       var result, elemArr, mod, i, j;
@@ -657,39 +669,33 @@ SCScript.install(function(sc) {
       }
 
       return $.Array(result);
-    };
+    });
 
     // TODO: implements source
 
-    spec.asUGenInput = function($for) {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asUGenInput($for);
-        } ];
+    builder.addMethod("asUGenInput", function($for) {
+      return this.collect($.Func(function($_) {
+        return $_.asUGenInput($for);
       }));
-    };
+    });
 
-    spec.asAudioRateInput = function($for) {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asAudioRateInput($for);
-        } ];
+    builder.addMethod("asAudioRateInput", function($for) {
+      return this.collect($.Func(function($_) {
+        return $_.asAudioRateInput($for);
       }));
-    };
+    });
 
-    spec.asControlInput = function() {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asControlInput();
-        } ];
+    builder.addMethod("asControlInput", function() {
+      return this.collect($.Func(function($_) {
+        return $_.asControlInput();
       }));
-    };
+    });
 
-    spec.isValidUGenInput = utils.alwaysReturn$true;
+    builder.addMethod("isValidUGenInput", sc.TRUE);
 
-    spec.numChannels = function() {
+    builder.addMethod("numChannels", function() {
       return this.size();
-    };
+    });
 
     // TODO: implements poll
     // TODO: implements dpoll
@@ -699,13 +705,13 @@ SCScript.install(function(sc) {
     // TODO: implements asSpec
     // TODO: implements fork
 
-    spec.madd = fn(function($mul, $add) {
+    builder.addMethod("madd", {
+      args: "mul=1.0; add=0.0"
+    }, function($mul, $add) {
       return $("MulAdd").new(this, $mul, $add);
-    }, "mul=1.0; add=0.0");
-
+    });
     // TODO: implements asRawOSC
     // TODO: implements printOn
     // TODO: implements storeOn
   });
-
 });

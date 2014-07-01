@@ -1,10 +1,18 @@
 /* jshint browser: true, devel: true */
-/* global SCScript, CodeMirror, $ */
+/* global SCScript, CodeMirror, $, _ */
 window.onload = function() {
   "use strict";
 
-  var editor;
+  var editor, now;
   var prev = "";
+
+  if (window.performance && typeof window.performance.now === "function") {
+    now = window.performance.now.bind(window.performance);
+  } else {
+    now = function() {
+      return Infinity;
+    };
+  }
 
   var update = function(source) {
     if (prev !== source) {
@@ -32,7 +40,7 @@ window.onload = function() {
       }
     }
 
-    blink(cssName, ".codemirror-focused .codemirror-selected", callback);
+    blink(cssName, ".CodeMirror-focused .CodeMirror-selected", callback);
 
     return code;
   };
@@ -78,10 +86,11 @@ window.onload = function() {
   var getCssRule = (function() {
     var cache = {};
     return function(selector) {
+      selector = selector.toLowerCase();
       if (!cache[selector]) {
-        [].slice.call(document.styleSheets).forEach(function(sheet) {
-          [].slice.call(sheet.cssRules || sheet.rules).forEach(function(rule) {
-            if (rule.selectorText && rule.selectorText.indexOf(selector) !== -1) {
+        _.each(document.styleSheets, function(sheet) {
+          _.each(sheet.cssRules || sheet.rules, function(rule) {
+            if (String(rule.selectorText).toLowerCase().indexOf(selector) !== -1) {
               cache[selector] = rule;
             }
           });
@@ -106,16 +115,29 @@ window.onload = function() {
 
   var evaluate = function() {
     var code, result;
+    var beginTime, elapsedTime;
 
-    code = SCScript.compile(getCode(editor));
+    code = getCode(editor).trim();
 
-    result = eval.call(null, code);
+    while (/^\([\s\S]+\)$/.test(code)) {
+      code = code.slice(1, -1);
+    }
+
+    beginTime = now();
+
+    result = eval.call(null, SCScript.compile(code));
+
+    elapsedTime = now() - beginTime;
 
     if (result) {
       result = result.valueOf();
     }
 
     console.log(result);
+
+    if (!isNaN(elapsedTime)) {
+      $("#timecop").text(elapsedTime.toFixed(3) + "ms");
+    }
   };
 
   var boot = function() {
@@ -132,11 +154,11 @@ window.onload = function() {
       var files, code;
       files = result.data.files;
       if (files) {
-        code = Object.keys(files).filter(function(key) {
+        code = _.chain(files).keys().filter(function(key) {
           return files[key].language === "SuperCollider";
         }).map(function(key) {
           return files[key].content;
-        }).join("\n");
+        }).value().join("\n");
       } else {
         code = "";
         console.warn("gist:" + gistid + " not found");
@@ -158,7 +180,7 @@ window.onload = function() {
       "Ctrl-Enter": evaluate,
       "Ctrl-B": boot,
       "Ctrl-.": stop,
-      "Cmd-Enter" : evaluate,
+      "Cmd-Enter": evaluate,
       "Cmd-B": boot,
       "Cmd-.": stop,
     }
@@ -189,5 +211,4 @@ window.onload = function() {
   $("#menualt").on("click", function() {
     $("#sidemenu").animate({ width: "toggle", opacity: "toggle" }, 500, "swing");
   });
-
 };

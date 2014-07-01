@@ -6,22 +6,16 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-  var SCRoutine;
 
-  function arrayToRoutine(array) {
-    return SCRoutine.new($$(function() {
-      return $$(array).do($$(function($_) {
-        return $_.yield();
-      }));
-    }));
-  }
+  var SCStream = $("Stream");
+  var SCOneShotStream = $("OneShotStream");
+  var SCFuncStream = $("FuncStream");
+  var SCPauseStream = $("PauseStream");
+  var SCTask = $("Task");
+  var SCRoutine = $("Routine");
 
   describe("SCStream", function() {
-    var SCStream, SCOneShotStream;
     before(function() {
-      SCStream        = $("Stream");
-      SCOneShotStream = $("OneShotStream");
-      SCRoutine       = $("Routine");
       this.createInstance = function(value) {
         var instance;
         value = $$(value || null);
@@ -43,19 +37,17 @@
     });
     it("#next", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.next();
-      }).to.throw("should have been implemented by subclass");
+      expect(instance.next.__errorType).to.equal("subclassResponsibility");
     });
     it("#iter", function() {
       var instance = this.createInstance();
-      expect(instance.iter).to.be.nop;
+      expect(instance.iter).to.doNothing;
     });
     it("#value", function() {
       /*
-        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }
+        r = Pseq.new([ 1, 2, 3, 4, 5 ]).asStream
       */
-      var r = this.createInstance(arrayToRoutine([ 1, 2, 3, 4, 5 ]));
+      var r = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(1);
       expect(r.value(), 2).to.be.a("SCInteger").that.equals(2);
@@ -73,7 +65,7 @@
     it("#nextN", function() {
       var instance, test;
 
-      instance = this.createInstance(arrayToRoutine([ 1, 2, 3, 4, 5 ]));
+      instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.nextN($$(3));
       expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3 ]);
@@ -81,16 +73,14 @@
     it("#all", function() {
       var instance, test;
 
-      instance = this.createInstance(arrayToRoutine([ 1, 2, 3, 4, 5 ]));
+      instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.all();
       expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
     });
     it("#put", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.put();
-      }).to.throw("should have been implemented by subclass");
+      expect(instance.put.__errorType).to.equal("subclassResponsibility");
     });
     it("#putN", sinon.test(function() {
       var instance, test;
@@ -128,7 +118,7 @@
       var instance, test;
       var $result = $$([]);
 
-      instance = this.createInstance(arrayToRoutine([ 1, 2, 3, 4, 5 ]));
+      instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.generate($$(function($a) {
         $result.add($a);
@@ -136,11 +126,11 @@
       expect(test).to.equal(instance);
       expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
     });
-    it.skip("#subSample", function() {
+    it("#subSample", function() {
       /*
-        r = r { [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ].do(_.yield) }.subSample(1, 3);
+        r = Pseq.new([ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]).asStream.subSample(1, 3)
       */
-      var r = this.createInstance(arrayToRoutine(
+      var r = this.createInstance(sc.test.routine(
         [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
       )).subSample($$(1), $$(3));
 
@@ -149,16 +139,13 @@
       expect(r.next() , 3).to.be.a("SCInteger").that.equals(10);
       expect(r.next() , 4).to.be.a("SCNil");
       expect(r.reset(), 5).to.equal(r);
-      expect(r.next() , 6).to.be.a("SCInteger").that.equals( 2);
-      expect(r.next() , 7).to.be.a("SCInteger").that.equals( 6);
-      expect(r.next() , 8).to.be.a("SCInteger").that.equals(10);
-      expect(r.next() , 9).to.be.a("SCNil");
+      expect(r.next() , 6).to.be.a("SCNil");
     });
     it("#generate", function() {
       var instance, test;
       var $result = $$([]);
 
-      instance = this.createInstance(arrayToRoutine([ 1, 2, 3, 4, 5 ]));
+      instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.generate($$(function($a) {
         $result.add($a);
@@ -168,10 +155,10 @@
     });
     it("#collect", sc.test(function() {
       /*
-        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }.collect(_.neg)
+        r = Pseq.new([ 1, 2, 3, 4, 5 ]).asStream.collect(_.neg)
       */
       var r = this.createInstance(
-        arrayToRoutine([ 1, 2, 3, 4, 5 ])
+        sc.test.routine([ 1, 2, 3, 4, 5 ])
       ).collect($$(function($a) {
         return $a.neg();
       }));
@@ -189,10 +176,10 @@
     }));
     it("#reject", sc.test(function() {
       /*
-        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }.reject(_.neg)
+        r = Pseq.new([ 1, 2, 3, 4, 5 ]).asStream.reject(_.neg)
       */
       var r = this.createInstance(
-        arrayToRoutine([ 1, 2, 3, 4, 5 ])
+        sc.test.routine([ 1, 2, 3, 4, 5 ])
       ).reject($$(function($a) {
         return $a.odd();
       }));
@@ -206,10 +193,10 @@
     }));
     it("#select", sc.test(function() {
       /*
-        r = r { [ 1, 2, 3, 4, 5 ].do(_.yield) }.select(_.neg)
+        r = Pseq.new( [ 1, 2, 3, 4, 5 ]).asStream.select(_.neg)
       */
       var r = this.createInstance(
-        arrayToRoutine([ 1, 2, 3, 4, 5 ])
+        sc.test.routine([ 1, 2, 3, 4, 5 ])
       ).select($$(function($a) {
         return $a.odd();
       }));
@@ -225,15 +212,15 @@
     }));
     it("#dot", sc.test(function() {
       /*
-        r = r { [ 0, 1, 2, 3, 4 ].do(_.yield) }.dot({ |a, b|
+        r = Pseq.new([ 0, 1, 2, 3, 4 ]).asStream.dot({ |a, b|
           a + b
-        }, r { [ 10, 20, 30 ].do(_.yield) })
+        }, Pseq.new([ 10, 20, 30 ]).asStream)
       */
       var r = this.createInstance(
-        arrayToRoutine([ 0, 1, 2, 3, 4 ])
+        sc.test.routine([ 0, 1, 2, 3, 4 ])
       ).dot($$(function($a, $b) {
         return $a ["+"] ($b);
-      }), arrayToRoutine([ 10, 20, 30 ]));
+      }), sc.test.routine([ 10, 20, 30 ]));
 
       expect(r.next() , 1).to.be.a("SCInteger").that.equals(10);
       expect(r.next() , 2).to.be.a("SCInteger").that.equals(21);
@@ -246,15 +233,15 @@
     }));
     it("#interlace case1", sc.test(function() {
       /*
-        r = r { [ 0, 5, 7 ].do(_.yield) }.interlace({ |a, b|
+        r = Pseq.new([ 0, 5, 7 ]).asStream.interlace({ |a, b|
           a < b
-        }, r { [ 1, 2 ].do(_.yield) })
+        }, Pseq.new([ 1, 2 ]).asStream)
       */
       var r = this.createInstance(
-        arrayToRoutine([ 0, 5 ])
+        sc.test.routine([ 0, 5 ])
       ).interlace($$(function($a, $b) {
         return $a ["<"] ($b);
-      }), arrayToRoutine([ 1, 2, 6 ]));
+      }), sc.test.routine([ 1, 2, 6 ]));
 
       expect(r.next() , 1).to.be.a("SCInteger").that.equals(0);
       expect(r.next() , 2).to.be.a("SCInteger").that.equals(1);
@@ -272,15 +259,15 @@
     }));
     it("#interlace case2", sc.test(function() {
       /*
-        r = r { [ 0, 5, 7 ].do(_.yield) }.interlace({ |a, b|
+        r = Pseq.new([ 0, 5, 7 ]).asStream.interlace({ |a, b|
           a < b
-        }, r { [ 1, 2 ].do(_.yield) })
+        }, Pseq.new([ 1, 2 ]).asStream)
       */
       var r = this.createInstance(
-        arrayToRoutine([ 0, 5, 7 ])
+        sc.test.routine([ 0, 5, 7 ])
       ).interlace($$(function($a, $b) {
         return $a ["<"] ($b);
-      }), arrayToRoutine([ 1, 2 ]));
+      }), sc.test.routine([ 1, 2 ]));
 
       expect(r.next() , 1).to.be.a("SCInteger").that.equals(0);
       expect(r.next() , 2).to.be.a("SCInteger").that.equals(1);
@@ -310,11 +297,11 @@
     }));
     it("#appendStream", function() {
       /*
-        r = r { [ 1, 2, 3 ].do(_.yield) }.appendStream(r { [ 4, 5, 6 ].do(_.yield) })
+        r = Pseq.new([ 1, 2, 3 ]).asStream.appendStream(Pseq.new([ 4, 5, 6 ]).asStream)
       */
-      var r = this.createInstance(arrayToRoutine([
+      var r = this.createInstance(sc.test.routine([
         1, 2, 3
-      ])).appendStream(arrayToRoutine([ 4, 5, 6 ]));
+      ])).appendStream(sc.test.routine([ 4, 5, 6 ]));
 
       expect(r.next() , 1).to.be.a("SCInteger").that.equals(1);
       expect(r.next() , 2).to.be.a("SCInteger").that.equals(2);
@@ -334,8 +321,8 @@
     });
     it("#collate", sc.test(function() {
       var r = this.createInstance(
-        arrayToRoutine([ 1, 5 ])
-      ).collate(arrayToRoutine([ 0, 6 ]));
+        sc.test.routine([ 1, 5 ])
+      ).collate(sc.test.routine([ 0, 6 ]));
 
       expect(r.next() , 1).to.be.a("SCInteger").that.equals(0);
       expect(r.next() , 2).to.be.a("SCInteger").that.equals(1);
@@ -502,7 +489,7 @@
       expect($new.args[0]).to.eql($$([ $argSelector, instance, [ 1, 2 ] ])._);
     }));
     it("#embedInStream", function() {
-      var instance = this.createInstance(arrayToRoutine([ 2, 3, 4 ]));
+      var instance = this.createInstance(sc.test.routine([ 2, 3, 4 ]));
       var r = SCRoutine.new($.Function(function() {
         return [
           function() {
@@ -513,7 +500,8 @@
           },
           function() {
             return $$(5).yield();
-          }
+          },
+          $.NOP
         ];
       }));
 
@@ -586,9 +574,9 @@
     });
     it("#repeat", function() {
       /*
-        r = r { [ 1, 2, 3 ].do(_.yield) }.repeat(3)
+        r = Pseq.new([ 1, 2, 3 ]).asStream.repeat(3)
       */
-      var r = this.createInstance(arrayToRoutine([ 1, 2, 3 ])).repeat($$(3));
+      var r = this.createInstance(sc.test.routine([ 1, 2, 3 ])).repeat($$(3));
 
       expect(r.next() , 1).to.be.a("SCInteger").that.equals(1);
       expect(r.next() , 2).to.be.a("SCInteger").that.equals(2);
@@ -615,9 +603,7 @@
   });
 
   describe("SCOneShotStream", function() {
-    var SCOneShotStream;
     before(function() {
-      SCOneShotStream = $("OneShotStream");
       this.createInstance = function(value) {
         return SCOneShotStream.new($$(value));
       };
@@ -640,23 +626,10 @@
   });
 
   describe("SCFuncStream", function() {
-    var SCFuncStream;
     before(function() {
-      SCFuncStream = $("FuncStream");
       this.createInstance = function(nextFunc, resetFunc) {
         return SCFuncStream.new($$(nextFunc), $$(resetFunc));
       };
-    });
-    it("<>envir", function() {
-      var instance, test;
-
-      instance = this.createInstance();
-
-      test = instance.envir_($$(10));
-      expect(test).to.equal(instance);
-
-      test = instance.envir();
-      expect(test).to.be.a("SCInteger").that.equals(10);
     });
     it("#next / #reset", function() {
       var instance, test;
@@ -689,9 +662,7 @@
   });
 
   describe("SCPauseStream", function() {
-    var SCPauseStream;
     before(function() {
-      SCPauseStream = $("PauseStream");
       this.createInstance = function() {
         return SCPauseStream.new();
       };
@@ -750,9 +721,7 @@
   });
 
   describe("SCTask", function() {
-    var SCTask;
     before(function() {
-      SCTask = $("Task");
       this.createInstance = function() {
         return SCTask.new();
       };

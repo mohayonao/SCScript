@@ -20,7 +20,7 @@
         0.09632408618927,
         0.93640172481537
       ].forEach(function(expected, i) {
-        expect(random.next()).with_message("i: #{0}", i)
+        expect(random.next()).withMessage("i: #{0}", i)
           .to.closeTo(expected, 1e-6);
       });
     });

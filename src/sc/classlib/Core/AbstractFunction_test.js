@@ -7,15 +7,14 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
+  var klass = sc.lang.klass;
+
+  var SCFunctionList = $("FunctionList");
 
   describe("SCAbstractFunction", function() {
-    var SCAbstractFunction;
     before(function() {
-      SCAbstractFunction = $("AbstractFunction");
       this.createInstance = function(func) {
-        var instance = $.Function(function() {
-          return [ func || function() {} ];
-        });
+        var instance = $.Func(func);
         return $$(instance, "AbstractFunction" + this.test.title);
       };
     });
@@ -26,7 +25,7 @@
 
       spy = this.spy(sc.test.func());
       $aSelector = $$();
-      this.stub(sc.lang.klass, "get").withArgs("UnaryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("UnaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -44,7 +43,7 @@
       $aSelector = $$();
       $something = $$();
       $adverb    = $$();
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("BinaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -62,7 +61,7 @@
       $aSelector = $$();
       $something = $$();
       $adverb    = $$();
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("BinaryOpFunction").returns($$({
         new: spy
       }));
 
@@ -79,7 +78,7 @@
       spy = this.spy(sc.test.func());
       $aSelector = $$();
       $anArgList = $$();
-      this.stub(sc.lang.klass, "get").withArgs("NAryOpFunction").returns($$({
+      this.stub(klass, "get").withArgs("NAryOpFunction").returns($$({
         new: spy
       }));
 
@@ -339,7 +338,7 @@
     }));
     it("#real", function() {
       var instance = this.createInstance();
-      expect(instance.real).to.be.nop;
+      expect(instance.real).to.doNothing;
     });
     it("#imag", function() {
       testCase(this, [
@@ -639,7 +638,7 @@
           return $.Symbol(rate);
         }
       });
-      this.stub(sc.lang.klass, "get").withArgs("K2A").returns($$({
+      this.stub(klass, "get").withArgs("K2A").returns($$({
         ar: spy
       }));
 
@@ -676,9 +675,7 @@
   });
 
   describe("SCUnaryOpFunction", function() {
-    var SCUnaryOpFunction;
     before(function() {
-      SCUnaryOpFunction = $("UnaryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -743,9 +740,7 @@
   });
 
   describe("SCBinaryOpFunction", function() {
-    var SCBinaryOpFunction;
     before(function() {
-      SCBinaryOpFunction = $("BinaryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -794,9 +789,7 @@
   });
 
   describe("SCNAryOpFunction", function() {
-    var SCNAryOpFunction;
     before(function() {
-      SCNAryOpFunction = $("NAryOpFunction");
       this.createInstance = function() {
         var instance;
 
@@ -845,10 +838,8 @@
   });
 
   describe("SCFunctionList", function() {
-    var SCFunctionList;
     var $int10, $int20, $int5;
     before(function() {
-      SCFunctionList = $("FunctionList");
       this.createInstance = function() {
         var instance = SCFunctionList.new($$([
           function($a, $b) {

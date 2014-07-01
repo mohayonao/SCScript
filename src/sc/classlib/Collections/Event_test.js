@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCEvent = $("Event");
+
   describe("SCEvent", function() {
-    var SCEvent;
     before(function() {
-      SCEvent = $("Event");
       this.createInstance = function() {
         return SCEvent.new();
       };
@@ -72,13 +72,13 @@
     it("setter with warning", sinon.test(function() {
       var instance, test;
 
-      this.stub(sc.SCScript, "stderr");
+      this.stub(SCScript, "stderr");
 
       instance = this.createInstance();
       test = instance.$("add_", [ $$(1) ]);
 
       expect(test).to.be.a("SCInteger").that.equals(1);
-      expect(sc.SCScript.stderr).to.be.called;
+      expect(SCScript.stderr).to.be.called;
 
       test = instance.at($$("\\add"));
       expect(test).to.be.a("SCInteger").that.equals(1);

@@ -9,10 +9,10 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCSet = $("Set");
+
   describe("SCSet", function() {
-    var SCSet;
     before(function() {
-      SCSet = $("Set");
       this.createInstance = function(source) {
         source = $$(source || []);
         return SCSet.newFrom(source);
@@ -24,20 +24,6 @@
       instance = this.createInstance();
       test = instance.valueOf();
       expect(test).to.eql([]);
-    });
-    it("<>array", function() {
-      var instance, test;
-      var $value;
-
-      $value = $$();
-
-      instance = this.createInstance();
-
-      test = instance.array_($value);
-      expect(test).to.equal(instance);
-
-      test = instance.array();
-      expect(test).to.equal($value);
     });
     it("<size", function() {
       var instance, test;
@@ -105,12 +91,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: true
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: false
         }
       ]);
@@ -119,12 +105,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: 2
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: null
         }
       ]);
@@ -134,15 +120,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: this,
-          after : [ 1, 2, 3 ]
+          after: [ 1, 2, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: this,
-          after : [ 1, 2, 3, 4 ]
+          after: [ 1, 2, 3, 4 ]
         },
       ]);
       instance = this.createInstance();
@@ -154,15 +140,15 @@
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: this,
-          after : [ 1, 3 ]
+          after: [ 1, 3 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ 4 ],
+          args: [ 4 ],
           result: this,
-          after : [ 1, 2, 3 ]
+          after: [ 1, 2, 3 ]
         },
       ]);
     });
@@ -183,12 +169,12 @@
         {
           source: [ 1, 2, 3 ],
           result: 1,
-          after : [ 2, 3 ]
+          after: [ 2, 3 ]
         },
         {
           source: [],
           result: null,
-          after : []
+          after: []
         }
       ]);
     });
@@ -313,7 +299,7 @@
     it("#asSet", function() {
       var instance;
       instance = this.createInstance();
-      expect(instance.asSet).to.be.nop;
+      expect(instance.asSet).to.doNothing;
     });
   });
 })();

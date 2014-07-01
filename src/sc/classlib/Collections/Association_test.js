@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCAssociation = $("Association");
+
   describe("SCAssociation", function() {
-    var SCAssociation;
     before(function() {
-      SCAssociation = $("Association");
       this.createInstance = function($key, $value) {
         return SCAssociation.new($key, $value);
       };
@@ -22,34 +22,6 @@
 
       test = instance.valueOf();
       expect(test).to.be.a("JSNumber").that.equals(1);
-    });
-    it("<>value", function() {
-      var instance, test;
-      var $value;
-
-      $value = $$();
-
-      instance = this.createInstance();
-
-      test = instance.value_($value);
-      expect(test).to.equal(instance);
-
-      test = instance.value();
-      expect(test).to.equal($value);
-    });
-    it("<>key", function() {
-      var instance, test;
-      var $key;
-
-      $key = $$();
-
-      instance = this.createInstance();
-
-      test = instance.key_($key);
-      expect(test).to.equal(instance);
-
-      test = instance.key();
-      expect(test).to.equal($key);
     });
     it("#==", function() {
       var instance, test;

@@ -9,9 +9,7 @@
   var iterator = sc.lang.iterator;
 
   describe("SCNumber", function() {
-    var SCNumber;
     before(function() {
-      SCNumber = $("Number");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
         return $$(instance, "Number" + this.test.title);
@@ -27,45 +25,31 @@
     });
     it("#+", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance["+"]();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance["+"].__errorType).to.equal("subclassResponsibility");
     });
     it("#-", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance["-"]();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance["-"].__errorType).to.equal("subclassResponsibility");
     });
     it("#*", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance["*"]();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance["*"].__errorType).to.equal("subclassResponsibility");
     });
     it("#/", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance["/"]();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance["/"].__errorType).to.equal("subclassResponsibility");
     });
     it("#mod", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.mod();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance.mod.__errorType).to.equal("subclassResponsibility");
     });
     it("#div", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.div();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance.div.__errorType).to.equal("subclassResponsibility");
     });
     it("#pow", function() {
       var instance = this.createInstance();
-      expect(function() {
-        instance.pow();
-      }).to.throw(Error, "should have been implemented by subclass");
+      expect(instance.pow.__errorType).to.equal("subclassResponsibility");
     });
     it("#performBinaryOpOnSeqColl", sinon.test(function() {
       var instance, test;
@@ -92,7 +76,7 @@
     });
     it("#rho", function() {
       var instance = this.createInstance();
-      expect(instance.rho).to.be.nop;
+      expect(instance.rho).to.doNothing;
     });
     it("#theta", function() {
       var instance, test;
@@ -104,7 +88,7 @@
     });
     it("#real", function() {
       var instance = this.createInstance();
-      expect(instance.real).to.be.nop;
+      expect(instance.real).to.doNothing;
     });
     it("#imag", function() {
       var instance, test;

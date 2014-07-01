@@ -1,70 +1,75 @@
 (function(sc) {
   "use strict";
 
-  require("./klass");
   require("./dollar");
-  require("../libs/random");
 
   var main = {};
 
   var $ = sc.lang.$;
   var random = sc.libs.random;
 
-  main.$currentEnv    = null;
-  main.$currentThread = {};
+  var $process = null;
+  var $currentEnvir = null;
+  var $currentThread = {};
 
   main.run = function(func) {
-    if (!initialize.done) {
+    if (!$process) {
       initialize();
     }
     return func($);
   };
 
-  function initialize() {
-    var $process;
+  main.setCurrentEnvir = function($envir) {
+    $currentEnvir = $envir;
+  };
 
+  main.getCurrentEnvir = function() {
+    return $currentEnvir;
+  };
+
+  main.setCurrentThread = function($thread) {
+    $currentThread = $thread;
+  };
+
+  main.getCurrentThread = function() {
+    return $currentThread;
+  };
+
+  function initialize() {
     $process = $("Main").new();
     $process._$interpreter = $("Interpreter").new();
-    $process._$mainThread  = $("Thread").new($.Function(function() {
-      return [];
-    }));
+    $process._$mainThread  = $("Thread").new($.Func());
 
-    main.$currentEnv    = $("Environment").new();
-    main.$currentThread = $process._$mainThread;
+    $currentEnvir = $("Environment").new();
+    $currentThread = $process._$mainThread;
 
     // $interpreter._$s = SCServer.default();
 
     random.current = $process._$mainThread._randgen;
-
     // TODO:
     // SoundSystem.addProcess($process);
     // SoundSystem.start();
-
-    initialize.done = true;
-
-    main.$process = $process;
   }
 
-  $.Environment = function(key, $value) {
+  $.addProperty("Environment", function(key, $value) {
     if ($value) {
-      main.$currentEnv.put($.Symbol(key), $value);
+      $currentEnvir.put($.Symbol(key), $value);
       return $value;
     }
-    return main.$currentEnv.at($.Symbol(key));
-  };
+    return $currentEnvir.at($.Symbol(key));
+  });
 
-  $.This = function() {
-    return main.$process.interpreter();
-  };
+  $.addProperty("This", function() {
+    return $process.interpreter();
+  });
 
-  $.ThisProcess = function() {
-    return main.$process;
-  };
+  $.addProperty("ThisProcess", function() {
+    return $process;
+  });
 
-  $.ThisThread = function() {
-    return main.$currentThread;
-  };
+  $.addProperty("ThisThread", function() {
+    return $currentThread;
+  });
 
   sc.lang.main = main;
-
 })(sc);

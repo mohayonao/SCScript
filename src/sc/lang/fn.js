@@ -50,6 +50,10 @@
     var argItems, argNames, argVals;
     var remain, wrapper;
 
+    if (!def) {
+      return func;
+    }
+
     argItems = def.split(/\s*;\s*/);
     if (argItems[argItems.length - 1].charAt(0) === "*") {
       remain = !!argItems.pop();
@@ -111,5 +115,4 @@
   };
 
   sc.lang.fn = fn;
-
 })(sc);

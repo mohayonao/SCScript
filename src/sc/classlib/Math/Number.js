@@ -3,92 +3,73 @@ SCScript.install(function(sc) {
 
   require("./Magnitude");
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var iterator = sc.lang.iterator;
+  var $ = sc.lang.$;
 
-  sc.lang.klass.refine("Number", function(spec, utils) {
-    spec.isNumber = utils.alwaysReturn$true;
+  sc.lang.klass.refine("Number", function(builder) {
+    builder.addMethod("isNumber", sc.TRUE);
 
-    spec["+"] = function() {
-      return this._subclassResponsibility("+");
-    };
+    builder.subclassResponsibility("+");
+    builder.subclassResponsibility("-");
+    builder.subclassResponsibility("*");
+    builder.subclassResponsibility("/");
+    builder.subclassResponsibility("mod");
+    builder.subclassResponsibility("div");
+    builder.subclassResponsibility("pow");
 
-    spec["-"] = function() {
-      return this._subclassResponsibility("-");
-    };
-
-    spec["*"] = function() {
-      return this._subclassResponsibility("*");
-    };
-
-    spec["/"] = function() {
-      return this._subclassResponsibility("/");
-    };
-
-    spec.mod = function() {
-      return this._subclassResponsibility("mod");
-    };
-
-    spec.div = function() {
-      return this._subclassResponsibility("div");
-    };
-
-    spec.pow = function() {
-      return this._subclassResponsibility("pow");
-    };
-
-    spec.performBinaryOpOnSeqColl = function($aSelector, $aSeqColl, $adverb) {
+    builder.addMethod("performBinaryOpOnSeqColl", function($aSelector, $aSeqColl, $adverb) {
       var $this = this;
 
-      return $aSeqColl.$("collect", [ $.Function(function() {
-        return [ function($item) {
-          return $item.perform($aSelector, $this, $adverb);
-        } ];
+      return $aSeqColl.$("collect", [ $.Func(function($item) {
+        return $item.perform($aSelector, $this, $adverb);
       }) ]);
-    };
+    });
 
     // TODO: implements performBinaryOpOnPoint
 
-    spec.rho = utils.nop;
+    builder.addMethod("rho");
 
-    spec.theta = function() {
+    builder.addMethod("theta", function() {
       return $.Float(0.0);
-    };
+    });
 
-    spec.real = utils.nop;
+    builder.addMethod("real");
 
-    spec.imag = function() {
+    builder.addMethod("imag", function() {
       return $.Float(0.0);
-    };
+    });
 
     // TODO: implements @
     // TODO: implements complex
     // TODO: implements polar
 
-    spec.for = fn(function($endValue, $function) {
-      iterator.execute(
-        iterator.number$for(this, $endValue),
+    builder.addMethod("for", {
+      args: "endValue; function"
+    }, function($endValue, $function) {
+      sc.lang.iterator.execute(
+        sc.lang.iterator.number$for(this, $endValue),
         $function
       );
       return this;
-    }, "endValue; function");
+    });
 
-    spec.forBy = fn(function($endValue, $stepValue, $function) {
-      iterator.execute(
-        iterator.number$forBy(this, $endValue, $stepValue),
+    builder.addMethod("forBy", {
+      args: "endValue; stepValue; function"
+    }, function($endValue, $stepValue, $function) {
+      sc.lang.iterator.execute(
+        sc.lang.iterator.number$forBy(this, $endValue, $stepValue),
         $function
       );
       return this;
-    }, "endValue; stepValue; function");
+    });
 
-    spec.forSeries = fn(function($second, $last, $function) {
-      iterator.execute(
-        iterator.number$forSeries(this, $second, $last),
+    builder.addMethod("forSeries", {
+      args: "second; last; function"
+    }, function($second, $last, $function) {
+      sc.lang.iterator.execute(
+        sc.lang.iterator.number$forSeries(this, $second, $last),
         $function
       );
       return this;
-    }, "second; last; function");
+    });
   });
-
 });

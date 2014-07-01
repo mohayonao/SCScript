@@ -1,8 +1,8 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html style="height:100%">
   <head>
     <meta charset="utf-8">
-    <title>ParserTest - SCScript</title>
+    <title>SCScript - Parser</title>
     <style>
       .elem {
         box-sizing: border-box;
@@ -59,7 +59,7 @@
     </style>
   </head>
   <body>
-    <textarea id="source" class="elem">// ParserTest - SCScript</textarea>
+    <textarea id="source" class="elem">// SCScript - Parser</textarea>
     <pre id="results" class="elem"></pre>
     <div id="header" class="elem">
       <span id="message"></span>
@@ -70,6 +70,8 @@
       </div>
     </div>
     <script src="../assets/jquery.min.js"></script>
+    <script src="../assets/esprima.js"></script>
+    <script src="../assets/escodegen.js"></script>
     <script src="../build/scscript.js"></script>
     <script src="./parse.js"></script>
   </body>

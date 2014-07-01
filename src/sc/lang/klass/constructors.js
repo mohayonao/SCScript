@@ -2,222 +2,126 @@
   "use strict";
 
   require("./klass");
+  require("./define");
   require("../bytecode");
 
-  var $        = sc.lang.$;
-  var klass    = sc.lang.klass;
-  var bytecode = sc.lang.bytecode;
+  var $ = sc.lang.$;
+  var define = sc.lang.klass.define;
 
-  var $nil, $true, $false;
-  var $symbols, $chars, $integers, $floats;
-
-  function SCNil() {
-    this.__super__("Object");
-    this._ = null;
-  }
-  klass.define("Nil", {
-    constructor: SCNil,
+  var SCNil = define("Nil", {
     __tag: sc.TAG_NIL
   });
 
-  function SCSymbol() {
-    this.__super__("Object");
-    this._ = "";
-  }
-  klass.define("Symbol", {
-    constructor: SCSymbol,
+  var SCSymbol = define("Symbol", {
     __tag: sc.TAG_SYM
   });
 
-  function SCBoolean() {
-    this.__super__("Object");
-  }
-  klass.define("Boolean", {
-    constructor: SCBoolean,
+  define("Boolean", {
     __tag: sc.TAG_BOOL
   });
 
-  function SCTrue() {
-    this.__super__("Boolean");
-    this._ = true;
-  }
-  klass.define("True : Boolean", {
-    constructor: SCTrue
-  });
+  var SCTrue  = define("True  : Boolean");
+  var SCFalse = define("False : Boolean");
 
-  function SCFalse() {
-    this.__super__("Boolean");
-    this._ = false;
-  }
-  klass.define("False : Boolean", {
-    constructor: SCFalse
-  });
+  define("Magnitude");
 
-  klass.define("Magnitude", {
-    constructor: function SCMagnitude() {
-      this.__super__("Object");
-    }
-  });
-
-  function SCChar() {
-    this.__super__("Magnitude");
-    this._ = "\0";
-  }
-  klass.define("Char : Magnitude", {
-    constructor: SCChar,
+  var SCChar = define("Char : Magnitude", {
     __tag: sc.TAG_CHAR
   });
 
-  klass.define("Number : Magnitude", {
-    constructor: function SCNumber() {
-      this.__super__("Magnitude");
-    }
-  });
+  define("Number : Magnitude");
+  define("SimpleNumber : Number");
 
-  klass.define("SimpleNumber : Number", {
-    constructor: function SCSimpleNumber() {
-      this.__super__("Number");
-    }
-  });
-
-  function SCInteger() {
-    this.__super__("SimpleNumber");
-    this._ = 0;
-  }
-  klass.define("Integer : SimpleNumber", {
-    constructor: SCInteger,
+  var SCInteger = define("Integer : SimpleNumber", {
     __tag: sc.TAG_INT
   });
 
-  function SCFloat() {
-    this.__super__("SimpleNumber");
-    this._ = 0.0;
-  }
-  klass.define("Float : SimpleNumber", {
-    constructor: SCFloat,
+  var SCFloat = define("Float : SimpleNumber", {
     __tag: sc.TAG_FLOAT
   });
 
-  klass.define("Collection", {
-    constructor: function SCCollection() {
-      this.__super__("Object");
-    }
-  });
+  define("Association : Magnitude");
+  define("Collection");
+  define("SequenceableCollection : Collection");
 
-  klass.define("SequenceableCollection : Collection", {
-    constructor: function SCSequenceableCollection() {
-      this.__super__("Collection");
-    }
-  });
-
-  klass.define("ArrayedCollection : SequenceableCollection", {
+  define("ArrayedCollection : SequenceableCollection", {
     constructor: function SCArrayedCollection() {
       this.__super__("SequenceableCollection");
-      this.__immutable = false;
       this._ = [];
     }
   });
 
-  klass.define("RawArray : ArrayedCollection", {
-    constructor: function SCRawArray() {
-      this.__super__("ArrayedCollection");
-    }
-  });
+  define("RawArray : ArrayedCollection");
 
-  function SCArray() {
-    this.__super__("ArrayedCollection");
-  }
-  klass.define("Array : ArrayedCollection", {
-    constructor: SCArray
-  });
+  var SCArray = define("Array : ArrayedCollection");
 
-  function SCString() {
-    this.__super__("RawArray");
-  }
-  klass.define("String : RawArray", {
-    constructor: SCString,
+  var SCString = define("String : RawArray", {
     __tag: sc.TAG_STR
   });
 
-  klass.define("Set : Collection", {
-    constructor: function SCSet() {
-      this.__super__("Collection");
-    }
-  });
+  define("Set : Collection");
+  define("Dictionary : Set");
+  define("IdentityDictionary : Dictionary");
+  define("Environment : IdentityDictionary");
 
-  klass.define("Dictionary : Set", {
-    constructor: function SCDictionary() {
-      this.__super__("Set");
-    }
-  });
-
-  klass.define("IdentityDictionary : Dictionary", {
-    constructor: function SCIdentityDictionary() {
-      this.__super__("Dictionary");
-    }
-  });
-
-  klass.define("Environment : IdentityDictionary", {
-    constructor: function SCEnvironment() {
-      this.__super__("IdentityDictionary");
-    }
-  });
-
-  klass.define("Event : Environment", {
+  define("Event : Environment", {
     constructor: function SCEvent() {
       this.__super__("Environment");
     }
   });
 
-  klass.define("AbstractFunction", {
-    constructor: function SCAbstractFunction() {
-      this.__super__("Object");
-    }
-  });
+  define("AbstractFunction");
 
-  function SCFunction() {
-    this.__super__("AbstractFunction");
-    /* istanbul ignore next */
-    this._ = function() {};
-  }
-  klass.define("Function : AbstractFunction", {
-    constructor: SCFunction,
+  var SCFunction = define("Function : AbstractFunction", {
     __tag: sc.TAG_FUNC
   });
 
-  function SCRef() {
-    this.__super__("Object");
-  }
-  klass.define("Ref : AbstractFunction", {
-    constructor: SCRef
+  define("Stream : AbstractFunction");
+  define("Thread : Stream");
+  define("Routine : Thread", {
+    __tag: sc.TAG_ROUTINE
   });
 
+  var SCRef = define("Ref : AbstractFunction");
+
   // $
-  $nil      = new SCNil();
-  $true     = new SCTrue();
-  $false    = new SCFalse();
-  $integers = {};
-  $floats   = {};
-  $symbols  = {};
-  $chars    = {};
+  var $nil = (function() {
+    var instance = new SCNil();
+    instance._ = null;
+    return instance;
+  })();
+  var $true = (function() {
+    var instance = new SCTrue();
+    instance._ = true;
+    return instance;
+  })();
+  var $false = (function() {
+    var instance = new SCFalse();
+    instance._ = false;
+    return instance;
+  })();
+  var $integers = {};
+  var $floats   = {};
+  var $symbols  = {};
+  var $chars    = {};
 
-  $.Nil = function() {
+  $.addProperty("Nil", function() {
     return $nil;
-  };
+  });
 
-  $.Boolean = function($value) {
-    return $value ? $true : $false;
-  };
+  $.addProperty("Boolean", function(value) {
+    return value ? $true : $false;
+  });
 
-  $.True = function() {
+  $.addProperty("True", function() {
     return $true;
-  };
+  });
 
-  $.False = function() {
+  $.addProperty("False", function() {
     return $false;
-  };
+  });
 
-  $.Integer = function(value) {
+  $.addProperty("Integer", function(value) {
     var instance;
 
     if (!global.isFinite(value)) {
@@ -233,9 +137,9 @@
     }
 
     return $integers[value];
-  };
+  });
 
-  $.Float = function(value) {
+  $.addProperty("Float", function(value) {
     var instance;
 
     value = +value;
@@ -247,19 +151,20 @@
     }
 
     return $floats[value];
-  };
+  });
 
-  $.Symbol = function(value) {
+  $.addProperty("Symbol", function(value) {
     var instance;
+    value = String(value);
     if (!$symbols.hasOwnProperty(value)) {
       instance = new SCSymbol();
       instance._ = value;
       $symbols[value] = instance;
     }
     return $symbols[value];
-  };
+  });
 
-  $.Char = function(value) {
+  $.addProperty("Char", function(value) {
     var instance;
 
     value = String(value).charAt(0);
@@ -271,24 +176,23 @@
     }
 
     return $chars[value];
-  };
+  });
 
-
-  $.Array = function(value, immutable) {
+  $.addProperty("Array", function(value, immutable) {
     var instance = new SCArray();
     instance._ = value || [];
     instance.__immutable = !!immutable;
     return instance;
-  };
+  });
 
-  $.String = function(value, mutable) {
+  $.addProperty("String", function(value, mutable) {
     var instance = new SCString();
     instance._ = String(value).split("").map($.Char);
     instance.__immutable = !mutable;
     return instance;
-  };
+  });
 
-  $.Event = function(value) {
+  $.addProperty("Event", function(value) {
     var instance, i, imax, j;
     i = imax = j = value;
     instance = $("Event").new();
@@ -296,18 +200,29 @@
       instance.put(value[j++], value[j++]);
     }
     return instance;
-  };
+  });
 
-  $.Function = function(value, def) {
+  $.addProperty("Function", function(value, def) {
     var instance = new SCFunction();
-    instance._ = bytecode.create(value, def);
+    instance._bytecode = sc.lang.bytecode.create(value, def).setOwner(instance);
     return instance;
-  };
+  });
 
-  $.Ref = function(value) {
+  $.addProperty("Func", function(func) {
+    return $.Function(function() {
+      return [ func ];
+    });
+  });
+
+  $.addProperty("Ref", function(value) {
     var instance = new SCRef();
     instance._$value = value;
     return instance;
-  };
+  });
 
+  $.addProperty("nil", $nil);
+  $.addProperty("true", $true);
+  $.addProperty("false", $false);
+  $.addProperty("int0", $.Integer(0));
+  $.addProperty("int1", $.Integer(1));
 })(sc);

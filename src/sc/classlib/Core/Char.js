@@ -5,42 +5,42 @@ SCScript.install(function(sc) {
 
   var $ = sc.lang.$;
 
-  sc.lang.klass.refine("Char", function(spec, utils) {
-    spec.__str__ = function() {
+  sc.lang.klass.refine("Char", function(builder) {
+    builder.addMethod("__str__", function() {
       return this._;
-    };
+    });
 
-    spec.$nl = function() {
+    builder.addClassMethod("nl", function() {
       return $.Char("\n");
-    };
+    });
 
-    spec.$ff = function() {
+    builder.addClassMethod("ff", function() {
       return $.Char("\f");
-    };
+    });
 
-    spec.$tab = function() {
+    builder.addClassMethod("tab", function() {
       return $.Char("\t");
-    };
+    });
 
-    spec.$space = function() {
+    builder.addClassMethod("space", function() {
       return $.Char(" ");
-    };
+    });
 
-    spec.$comma = function() {
+    builder.addClassMethod("comma", function() {
       return $.Char(",");
-    };
+    });
 
-    spec.$new = function() {
+    builder.addClassMethod("new", function() {
       throw new Error("Char.new is illegal, should use literal.");
-    };
+    });
 
     // TODO: implements hash
 
-    spec.ascii = function() {
+    builder.addMethod("ascii", function() {
       return $.Integer(this._.charCodeAt(0));
-    };
+    });
 
-    spec.digit = function() {
+    builder.addMethod("digit", function() {
       var ascii = this._.charCodeAt(0);
       if (0x30 <= ascii && ascii <= 0x39) {
         return $.Integer(ascii - 0x30);
@@ -52,112 +52,111 @@ SCScript.install(function(sc) {
         return $.Integer(ascii - 0x57);
       }
       throw new Error("digitValue failed");
-    };
+    });
 
-    spec.asAscii = utils.nop;
+    builder.addMethod("asAscii");
 
-    spec.asUnicode = function() {
+    builder.addMethod("asUnicode", function() {
       return this.ascii();
-    };
+    });
 
-    spec.toUpper = function() {
+    builder.addMethod("toUpper", function() {
       return $.Char(this._.toUpperCase());
-    };
+    });
 
-    spec.toLower = function() {
+    builder.addMethod("toLower", function() {
       return $.Char(this._.toLowerCase());
-    };
+    });
 
-    spec.isAlpha = function() {
+    builder.addMethod("isAlpha", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x41 <= ascii && ascii <= 0x5a) ||
                          (0x61 <= ascii && ascii <= 0x7a));
-    };
+    });
 
-    spec.isAlphaNum = function() {
+    builder.addMethod("isAlphaNum", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x30 <= ascii && ascii <= 0x39) ||
                          (0x41 <= ascii && ascii <= 0x5a) ||
                          (0x61 <= ascii && ascii <= 0x7a));
-    };
+    });
 
-    spec.isPrint = function() {
+    builder.addMethod("isPrint", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x20 <= ascii && ascii <= 0x7e));
-    };
+    });
 
-    spec.isPunct = function() {
+    builder.addMethod("isPunct", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x21 <= ascii && ascii <= 0x2f) ||
                          (0x3a <= ascii && ascii <= 0x40) ||
                          (0x5b <= ascii && ascii <= 0x60) ||
                          (0x7b <= ascii && ascii <= 0x7e));
-    };
+    });
 
-    spec.isControl = function() {
+    builder.addMethod("isControl", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x00 <= ascii && ascii <= 0x1f) || ascii === 0x7f);
-    };
+    });
 
-    spec.isSpace = function() {
+    builder.addMethod("isSpace", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x09 <= ascii && ascii <= 0x0d) || ascii === 0x20);
-    };
+    });
 
-    spec.isVowl = function() {
+    builder.addMethod("isVowl", function() {
       var ch = this._.charAt(0).toUpperCase();
       return $.Boolean("AEIOU".indexOf(ch) !== -1);
-    };
+    });
 
-    spec.isDecDigit = function() {
+    builder.addMethod("isDecDigit", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x30 <= ascii && ascii <= 0x39));
-    };
+    });
 
-    spec.isUpper = function() {
+    builder.addMethod("isUpper", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x41 <= ascii && ascii <= 0x5a));
-    };
+    });
 
-    spec.isLower = function() {
+    builder.addMethod("isLower", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x61 <= ascii && ascii <= 0x7a));
-    };
+    });
 
-    spec.isFileSafe = function() {
+    builder.addMethod("isFileSafe", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x20 <= ascii && ascii <= 0x7e) &&
                          ascii !== 0x2f && // 0x2f is '/'
                          ascii !== 0x3a && // 0x3a is ':'
                          ascii !== 0x22);  // 0x22 is '"'
-    };
+    });
 
-    spec.isPathSeparator = function() {
+    builder.addMethod("isPathSeparator", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean(ascii === 0x2f);
-    };
+    });
 
-    spec["<"] = function($aChar) {
+    builder.addMethod("<", function($aChar) {
       return $.Boolean(this.ascii() < $aChar.ascii());
-    };
+    });
 
-    spec["++"] = function($that) {
+    builder.addMethod("++", function($that) {
       return $.String(this._ + $that.__str__());
-    };
+    });
 
     // TODO: implements $bullet
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = function() {
+    builder.addMethod("archiveAsCompileString", function() {
       return $.True();
-    };
+    });
 
-    spec.asString = function() {
+    builder.addMethod("asString", function() {
       return $.String(this._);
-    };
+    });
 
-    spec.shallowCopy = utils.nop;
+    builder.addMethod("shallowCopy");
   });
-
 });

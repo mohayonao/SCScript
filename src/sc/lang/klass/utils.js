@@ -4,32 +4,19 @@
   require("./klass");
   require("./constructors");
 
-  var $     = sc.lang.$;
-  var klass = sc.lang.klass;
+  var slice = Array.prototype.slice;
+  var $nil = sc.lang.$.nil;
 
-  var utils = {
-    $nil  : $.Nil(),
-    $true : $.True(),
-    $false: $.False(),
-    $int_0: $.Integer(0),
-    $int_1: $.Integer(1),
-    nop: function() {
-      return this;
+  sc.lang.klass.utils = {
+    toArray: function(args) {
+      return slice.call(args);
     },
-    alwaysReturn$nil  : $.Nil,
-    alwaysReturn$true : $.True,
-    alwaysReturn$false: $.False,
-    alwaysReturn$int_0: function() {
-      return utils.$int_0;
-    },
-    alwaysReturn$int_1: function() {
-      return utils.$int_1;
-    },
-    getMethod: function(className, methodName) {
-      return klass.get(className).__Spec.prototype[methodName];
+    newCopyArgs: function(that, dict) {
+      var instance = new that.__Spec();
+      Object.keys(dict).forEach(function(key) {
+        instance["_$" + key] = dict[key] || $nil;
+      });
+      return instance;
     }
   };
-
-  klass.utils = utils;
-
 })(sc);

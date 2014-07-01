@@ -3,23 +3,20 @@ SCScript.install(function(sc) {
 
   require("./Stream");
 
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
 
-  sc.lang.klass.define("UnaryOpStream : Stream", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function SCUnaryOpStream() {
-      this.__super__("Stream");
-    };
-
-    spec.$new = function($operator, $a) {
-      return this._newCopyArgs({
+  sc.lang.klass.define("UnaryOpStream : Stream", function(builder, _) {
+    builder.addClassMethod("new", function($operator, $a) {
+      return _.newCopyArgs(this, {
         operator: $operator,
-        a       : $a
+        a: $a
       });
-    };
+    });
 
-    spec.next = fn(function($inval) {
+    builder.addMethod("next", {
+      args: "inval"
+    }, function($inval) {
       var $vala;
 
       $vala = this._$a.next($inval);
@@ -28,32 +25,27 @@ SCScript.install(function(sc) {
       }
 
       return $vala.perform(this._$operator);
-    }, "inval");
+    });
 
-    spec.reset = function() {
+    builder.addMethod("reset", function() {
       this._$a.reset();
       return this;
-    };
-
+    });
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("BinaryOpStream : Stream", function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function SCBinaryOpStream() {
-      this.__super__("Stream");
-    };
-
-    spec.$new = function($operator, $a, $b) {
-      return this._newCopyArgs({
+  sc.lang.klass.define("BinaryOpStream : Stream", function(builder, _) {
+    builder.addClassMethod("new", function($operator, $a, $b) {
+      return _.newCopyArgs(this, {
         operator: $operator,
-        a       : $a,
-        b       : $b
+        a: $a,
+        b: $b
       });
-    };
+    });
 
-    spec.next = fn(function($inval) {
+    builder.addMethod("next", {
+      args: "inval"
+    }, function($inval) {
       var $vala, $valb;
 
       $vala = this._$a.next($inval);
@@ -67,34 +59,33 @@ SCScript.install(function(sc) {
       }
 
       return $vala.perform(this._$operator, $valb);
-    }, "inval");
+    });
 
-    spec.reset = function() {
+    builder.addMethod("reset", function() {
       this._$a.reset();
       this._$b.reset();
       return this;
-    };
-
+    });
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("BinaryOpXStream : Stream", function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.define("BinaryOpXStream : Stream", function(builder, _) {
+    builder.addMethod("__init__", function() {
+      this.__super__("__init__");
+      this._$vala = $nil;
+    });
 
-    spec.constructor = function SCBinaryOpXStream() {
-      this.__super__("Stream");
-      this._$vala     = $nil;
-    };
-
-    spec.$new = function($operator, $a, $b) {
-      return this._newCopyArgs({
+    builder.addClassMethod("new", function($operator, $a, $b) {
+      return _.newCopyArgs(this, {
         operator: $operator,
-        a       : $a,
-        b       : $b
+        a: $a,
+        b: $b
       });
-    };
+    });
 
-    spec.next = fn(function($inval) {
+    builder.addMethod("next", {
+      args: "inval"
+    }, function($inval) {
       var $valb;
 
       if (this._$vala === $nil) {
@@ -122,41 +113,38 @@ SCScript.install(function(sc) {
       }
 
       return this._$vala.perform(this._$operator, $valb);
-    }, "inval");
+    });
 
-    spec.reset = function() {
+    builder.addMethod("reset", function() {
       this._$vala = $nil;
       this._$a.reset();
       this._$b.reset();
       return this;
-    };
-
+    });
     // TODO: implements storeOn
   });
 
-  sc.lang.klass.define("NAryOpStream : Stream", function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.define("NAryOpStream : Stream", function(builder, _) {
+    var $nil = $.nil;
 
-    spec.constructor = function SCNAryOpStream() {
-      this.__super__("Stream");
-    };
-
-    spec.$new = function($operator, $a, $arglist) {
-      return this._newCopyArgs({
+    builder.addClassMethod("new", function($operator, $a, $arglist) {
+      return _.newCopyArgs(this, {
         operator: $operator,
-        a       : $a
+        a: $a
       }).arglist_($arglist);
-    };
+    });
 
-    spec.arglist_ = function($list) {
+    builder.addMethod("arglist_", function($list) {
       this._arglist = Array.isArray($list._) ? $list._ : /* istanbul ignore next */ [];
       this._isNumeric = this._arglist.every(function($item) {
         return $item.__tag === sc.TAG_SYM || $item.isNumber().__bool__();
       });
       return this;
-    };
+    });
 
-    spec.next = fn(function($inval) {
+    builder.addMethod("next", {
+      args: "inval"
+    }, function($inval) {
       var $vala, $break;
       var values;
 
@@ -185,17 +173,15 @@ SCScript.install(function(sc) {
       }
 
       return $vala.perform.apply($vala, [ this._$operator ].concat(values));
-    }, "inval");
+    });
 
-    spec.reset = function() {
+    builder.addMethod("reset", function() {
       this._$a.reset();
       this._arglist.forEach(function($item) {
         $item.reset();
       });
       return this;
-    };
-
+    });
     // TODO: implements storeOn
   });
-
 });

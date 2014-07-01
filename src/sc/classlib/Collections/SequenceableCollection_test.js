@@ -8,11 +8,11 @@
 
   var $ = sc.lang.$;
 
+  var SCSequenceableCollection = $("SequenceableCollection");
+  var SCArray = $("Array");
+
   describe("SCSequenceableCollection", function() {
-    var SCSequenceableCollection, SCArray;
     before(function() {
-      SCSequenceableCollection = $("SequenceableCollection");
-      SCArray = $("Array");
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source||[]).map($$), !!immutable);
         return $$(instance, "SequenceableCollection" + this.test.title);
@@ -89,11 +89,57 @@
         1.0, 1.0, 2.0, 3.0, 5.0, 8.0
       ]);
     });
-    it.skip(".rand", function() {
+    it(".rand", function() {
+      sc.libs.random.setSeed(0);
+      var test = SCSequenceableCollection.rand.call(
+        SCArray, $$(5), $.Float(0.0), $.Float(1.0)
+      );
+      expect(test).to.be.a("SCArray").to.closeTo([
+        0.85755145549774,
+        0.07253098487854,
+        0.15391707420349,
+        0.53926873207092,
+        0.37802028656006
+      ], 1e-6);
     });
-    it.skip(".rand2", function() {
+    it(".exprand", function() {
+      sc.libs.random.setSeed(0);
+      var test = SCSequenceableCollection.exprand.call(
+        SCArray, $$(5), $$(0.01), $$(1)
+      );
+      expect(test).to.be.a("SCArray").to.closeTo([
+        0.5189231771037,
+        0.01396567911473,
+        0.020315818487919,
+        0.11982228128292,
+        0.057021761707466
+      ], 1e-6);
     });
-    it.skip(".linrand", function() {
+    it(".rand2", function() {
+      sc.libs.random.setSeed(0);
+      var test = SCSequenceableCollection.rand2.call(
+        SCArray, $$(5), $.Float(1.0)
+      );
+      expect(test).to.be.a("SCArray").to.closeTo([
+        0 + 0.71510291099548,
+        0 - 0.85493803024292,
+        0 - 0.69216585159302,
+        0 + 0.078537464141846,
+        0 - 0.24395942687988
+      ], 1e-6);
+    });
+    it(".linrand", function() {
+      sc.libs.random.setSeed(0);
+      var test = SCSequenceableCollection.linrand.call(
+        SCArray, $$(5), $.Float(0.0), $.Float(1.0)
+      );
+      expect(test).to.be.a("SCArray").to.closeTo([
+        0.072531029582024,
+        0.15391716198064,
+        0.35834928182885,
+        0.63415864156559,
+        0.09632418397814
+      ], 1e-6);
     });
     it(".interpolation", function() {
       var test;
@@ -114,7 +160,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 40, 50, 60 ] ],
+          args: [ [ 40, 50, 60 ] ],
           result: [ 10, 20, 30, 40, 50, 60 ]
         }
       ]);
@@ -123,7 +169,7 @@
     });
     it("#asSequenceableCollection", function() {
       var instance = this.createInstance();
-      expect(instance.asSequenceableCollection).to.be.nop;
+      expect(instance.asSequenceableCollection).to.doNothing;
     });
     it("#choose", function() {
       testCase(this, [
@@ -147,27 +193,27 @@
       testCase(this, [
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 20, 30 ] ],
+          args: [ [ 10, 20, 30 ] ],
           result: true
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 20, $.Float(30.0) ] ],
+          args: [ [ 10, 20, $.Float(30.0) ] ],
           result: true
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ [ 10, 10, 30 ] ],
+          args: [ [ 10, 10, 30 ] ],
           result: false
         },
         {
           source: [ 10, 20, 30, 40 ],
-          args  : [ [ 10, 20, 30 ] ],
+          args: [ [ 10, 20, 30 ] ],
           result: false
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ $$("102030") ],
+          args: [ $$("102030") ],
           result: false
         },
       ]);
@@ -178,7 +224,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1, 3 ],
+          args: [ 1, 3 ],
           result: [ 20, 30, 40 ],
         },
       ]);
@@ -187,12 +233,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [ 10, 20, 30 ],
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ -3 ],
+          args: [ -3 ],
           result: [ 30, 40, 50 ],
         }
       ]);
@@ -201,12 +247,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 3 ],
+          args: [ 3 ],
           result: [ 40, 50 ],
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ -3 ],
+          args: [ -3 ],
           result: [ 10, 20 ],
         }
       ]);
@@ -215,7 +261,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: [ 20, 30, 40, 50 ]
         }
       ]);
@@ -224,7 +270,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: [ 10, 20 ]
         }
       ]);
@@ -233,12 +279,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 1
         },
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -249,12 +295,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: [ 1, 6 ]
         },
         {
           source: [ 10, 20, 30, 40, 50, 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -263,12 +309,12 @@
       testCase(this, [
         {
           source: [ 0, 1, 1, 2, 3, 5, 8, 13 ],
-          args  : [ [ 1, 2 ] ],
+          args: [ [ 1, 2 ] ],
           result: 2
         },
         {
           source: [ 0, 1, 1, 2, 3, 5, 8, 13 ],
-          args  : [ [ 1, 2 ], 3 ],
+          args: [ [ 1, 2 ], 3 ],
           result: null
         },
       ]);
@@ -277,17 +323,17 @@
       testCase(this, [
         {
           source: [ 10, 20, 10, 20, 10, 20 ],
-          args  : [ [ 20, 10 ] ],
+          args: [ [ 20, 10 ] ],
           result: [ 1, 3 ]
         },
         {
           source: [ 10, 20, 10, 20, 10, 20 ],
-          args  : [ [ 20, 10 ], 2 ],
+          args: [ [ 20, 10 ], 2 ],
           result: [ 3 ]
         },
         {
           source: [ 10, 20, 10, 20, 10, 20 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -296,12 +342,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 25 ],
+          args: [ 25 ],
           result: 2
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 2
         },
       ]);
@@ -310,22 +356,22 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 60 ],
+          args: [ 60 ],
           result: 4
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: 0
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 22 ],
+          args: [ 22 ],
           result: 1
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 28 ],
+          args: [ 28 ],
           result: 2
         }
       ]);
@@ -334,22 +380,22 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 60 ],
+          args: [ 60 ],
           result: 4
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: 0
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 25 ],
+          args: [ 25 ],
           result: $$(1.5)
         },
       ]);
@@ -358,17 +404,17 @@
       testCase(this, [
         {
           source: [ 10 ],
-          args  : [],
+          args: [],
           result: true
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [],
+          args: [],
           result: true
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 5 ],
+          args: [ 5 ],
           result: false
         },
       ]);
@@ -377,7 +423,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 8 ],
+          args: [ 8 ],
           result: [ 10, 20, 20, 30, 30, 40, 40, 50 ]
         }
       ]);
@@ -386,7 +432,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 8 ],
+          args: [ 8 ],
           result: [
             10,
             15.714285714285714,
@@ -404,13 +450,13 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 20,
-          after : [ 10, 30, 40, 50 ]
+          after: [ 10, 30, 40, 50 ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -419,7 +465,7 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: [ 10, 30, 40, 50 ]
         },
       ]);
@@ -428,13 +474,13 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 20 ],
+          args: [ 20 ],
           result: 20,
-          after : [ 10, 50, 30, 40 ]
+          after: [ 10, 50, 30, 40 ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: null
         },
       ]);
@@ -523,15 +569,15 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : []
+          after: []
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : [ 0, 20, 30 ]
+          after: [ 0, 20, 30 ]
         },
       ]);
     });
@@ -539,15 +585,15 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : []
+          after: []
         },
         {
           source: [ 10, 20, 30 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this,
-          after : [ 10, 20, 0 ]
+          after: [ 10, 20, 0 ]
         },
       ]);
     });
@@ -555,12 +601,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: 20
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 10, 0 ],
+          args: [ 10, 0 ],
           result: 0
         },
       ]);
@@ -569,12 +615,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 10, 100, 0 ],
+          args: [ 10, 100, 0 ],
           result: [ 10, 20, 30, 40, 50, 0, 0, 0, 0, 0, 100 ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 3, 100, 0 ],
+          args: [ 3, 100, 0 ],
           result: [ 10, 20, 30, 100, 50 ]
         },
       ]);
@@ -631,7 +677,7 @@
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ function($a) {
+          args: [ function($a) {
             return $$($a.valueOf() === 20);
           } ],
           result: [ [ 10, 20 ], [ 30, 40, 50 ] ]
@@ -646,7 +692,7 @@
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ function($a) {
+          args: [ function($a) {
             return $$($a.valueOf() === 20);
           } ],
           result: [ [ 10 ], [ 30, 40, 50 ] ]
@@ -661,7 +707,7 @@
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ [ 10, 20 ], [ 30, 40 ], [ 50 ] ]
         },
       ]);
@@ -670,12 +716,12 @@
       testCase(this, [
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ [ 2, 1 ] ],
+          args: [ [ 2, 1 ] ],
           result: [ [ 10, 20 ], [ 30 ], [ 40, 50 ] ]
         },
         {
           source: [ 10, 20, 30, 40, 50 ],
-          args  : [ [ 2, 1, 3 ] ],
+          args: [ [ 2, 1, 3 ] ],
           result: [ [ 10, 20 ], [ 30 ], [ 40, 50 ] ]
         },
       ]);
@@ -701,7 +747,7 @@
       testCase(this, [
         {
           source: [],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: this
         },
         {
@@ -710,7 +756,7 @@
         },
         {
           source: [ [ 10, 20 ], [ 30, [ 40, 50 ] ] ],
-          args  : [ 2 ],
+          args: [ 2 ],
           result: [ 10, 20, 30, 40, 50 ]
         }
       ]);
@@ -739,7 +785,7 @@
         },
         {
           source: [ [ 10, 20 ], [ 30, [ 40, 50 ] ] ],
-          args  : [ function($item) {
+          args: [ function($item) {
             return $$($item._[0].valueOf() === 30);
           } ],
           result: [ [ 10, 20 ], 30, [ 40, 50 ] ]
@@ -770,46 +816,278 @@
         },
         {
           source: [ [ 10, 20, 30 ], [ 40, 50, 60 ], 70 ],
-          args  : [ function($a, $b, $c) {
+          args: [ function($a, $b, $c) {
             return $a ["+"] ($b) ["*"] ($c);
           } ],
           result: [ 3500, 4900, 6300 ]
         },
       ]);
     });
-    it.skip("#flopTogether", function() {
+    it("#flopTogether", function() {
+      /*
+        flopTogether(
+          [ [  1,  2 , 3 ], [  4,  5,  6, 7, 8 ] ],
+          [ [ 10, 20, 30 ], [ 40, 50, 60 ], [ 70, 80 ] ],
+          [ 100 ]
+        )
+      */
+      var instance, test;
+
+      instance = this.createInstance([ [  1,  2 , 3 ], [  4,  5,  6, 7, 8 ] ]);
+
+      test = instance.flopTogether(
+        $$([ [ 10, 20, 30 ], [ 40, 50, 60 ], [ 70, 80 ] ]), $$([ 100 ])
+      );
+      expect(test).to.be.a("SCArray").that.eqls([
+        [ [ 1, 4 ], [ 2, 5 ], [ 3, 6 ], [ 1, 7 ], [ 2, 8 ] ],
+        [ [ 10, 40, 70 ], [ 20, 50, 80 ], [ 30, 60, 70 ], [ 10, 40, 80 ], [ 20, 50, 70 ] ],
+        [ [ 100 ], [ 100 ], [ 100 ], [ 100 ], [ 100 ] ]
+      ]);
     });
-    it.skip("#flopDeep", function() {
+    it("#flopDeep", function() {
+      testCase(this, [
+        {
+          source: [ [ 1, 2, 3 ], [ [ 41, 52 ], 5, 6 ] ],
+          args: [],
+          result: [ [ [ 1, 2, 3 ], [ 41, 5, 6 ] ], [ [ 1, 2, 3 ], [ 52, 5, 6 ] ] ]
+        },
+        {
+          source: [ [ 1, 2, 3 ], [ [ 41, 52 ], 5, 6 ] ],
+          args: [ 1 ],
+          result: [ [ 1, [ 41, 52 ] ], [ 2, 5 ], [ 3, 6 ] ]
+        },
+        {
+          source: [ [ 1, 2, 3 ], [ [ 41, 52 ], 5, 6 ] ],
+          args: [ 3 ],
+          result: [ [ [ 1, 2, 3 ], [ [ 41, 52 ], 5, 6 ] ] ]
+        }
+      ]);
     });
-    it.skip("#wrapAtDepth", function() {
+    it("#wrapAtDepth", function() {
+      testCase(this, [
+        {
+          source: [ 10, [ 20, [ 30 ] ] ],
+          args: [ 0, 0 ],
+          result: 10
+        },
+        {
+          source: [ 10, [ 20, [ 30 ] ] ],
+          args: [ 0, 1 ],
+          result: [ 20, [ 30 ] ]
+        },
+        {
+          source: [ 10, [ 20, [ 30 ] ] ],
+          args: [ 1, 1 ],
+          result: [ 10, [ 30 ] ]
+        },
+      ]);
     });
-    it.skip("#unlace", function() {
+    it("#unlace", function() {
+      testCase(this, [
+        {
+          source: [ [ 10 ], [ 20, 30 ], [ 40, 50, 60 ], [ 70, 80 ] ],
+          args: [ 3, 1 ],
+          result: [ [ [ 10 ], [ 70, 80 ] ], [ [ 20, 30 ] ], [ [ 40, 50, 60 ] ] ]
+        },
+        {
+          source: [ [ 10 ], [ 20, 30 ], [ 40, 50, 60 ], [ 70, 80 ] ],
+          args: [ 3, 1, true ],
+          result: [ [ [ 10 ] ], [ [ 20, 30 ] ], [ [ 40, 50, 60 ] ] ]
+        },
+      ]);
     });
-    it.skip("#integrate", function() {
+    it("#integrate", function() {
+      testCase(this, [
+        {
+          source: [ 3, 4, 1, 1 ],
+          result: [ 3, 7, 8, 9 ]
+        },
+      ]);
     });
-    it.skip("#differentiate", function() {
+    it("#differentiate", function() {
+      testCase(this, [
+        {
+          source: [ 3, 4, 1, 1 ],
+          result: [ 3, 1, -3, 0 ]
+        },
+      ]);
     });
-    it.skip("#convertDigits", function() {
+    it("#convertDigits", function() {
+      testCase(this, [
+        {
+          source: [ 3, 4, 1, 1 ],
+          result: 3411
+        },
+        {
+          source: [ 3, 4, 1, 1 ],
+          args: [ 16 ],
+          result: 13329
+        },
+        {
+          source: [ 3, 4, 1, 1 ],
+          args: [ 2 ],
+          error: "digit too large for base"
+        },
+      ]);
     });
-    it.skip("#hammingDistance", function() {
+    it("#hammingDistance", function() {
+      testCase(this, [
+        {
+          source: [ 0, 0, 0, 1, 1, 1, 0, 1, 0, 0 ],
+          args:   [ [ 0, 0, 1, 1, 0, 0, 0, 0, 1, 1 ] ],
+          result: 6
+        }
+      ]);
     });
-    it.skip("#degreeToKey", function() {
+    it("#degreeToKey", sinon.test(function() {
+      var instance, test;
+      var $scale, $stepsPerOctave, $item1, $item2;
+
+      $scale = $$();
+      $stepsPerOctave = $$();
+      $item1 = sc.test.object({ degreeToKey: this.spy(function() {
+        return $item1;
+      }) });
+      $item2 = sc.test.object({ degreeToKey: this.spy(function() {
+        return $item2;
+      }) });
+      instance = this.createInstance([ $item1, $item2 ]);
+
+      test = instance.degreeToKey($scale, $stepsPerOctave);
+      expect(test).to.be.a("SCArray").that.eqls([ $item1, $item2 ]);
+      expect($item1.degreeToKey).to.be.calledWith($scale, $stepsPerOctave);
+      expect($item2.degreeToKey).to.be.calledWith($scale, $stepsPerOctave);
+    }));
+    it("#keyToDegree", sinon.test(function() {
+      var instance, test;
+      var $scale, $stepsPerOctave, $item1, $item2;
+
+      $scale = $$();
+      $stepsPerOctave = $$();
+      $item1 = sc.test.object({ keyToDegree: this.spy(function() {
+        return $item1;
+      }) });
+      $item2 = sc.test.object({ keyToDegree: this.spy(function() {
+        return $item2;
+      }) });
+      instance = this.createInstance([ $item1, $item2 ]);
+
+      test = instance.keyToDegree($scale, $stepsPerOctave);
+      expect(test).to.be.a("SCArray").that.eqls([ $item1, $item2 ]);
+      expect($item1.keyToDegree).to.be.calledWith($scale, $stepsPerOctave);
+      expect($item2.keyToDegree).to.be.calledWith($scale, $stepsPerOctave);
+    }));
+    it("#nearestInScale", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ [ 5, 10, 15 ] ],
+          result: [ 5, 5, 10, 17, 22, 34 ]
+        }
+      ]);
     });
-    it.skip("#keyToDegree", function() {
+    it("#nearestInList", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ [ 5, 10, 15 ] ],
+          result: [ 5, 5, 10, 15, 15, 15 ]
+        }
+      ]);
     });
-    it.skip("#nearestInScale", function() {
+    it("#transposeKey", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 2 ],
+          result: [ 0, 3, 5, 7, 10, 11 ]
+        }
+      ]);
     });
-    it.skip("#nearestInList", function() {
+    it("#mode", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 2 ],
+          result: [ 0, 5, 1, 2, 7, 9 ]
+        }
+      ]);
     });
-    it.skip("#transposeKey", function() {
+    it("#performDegreeToKey", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 2, 12, 0 ],
+          result: 8
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 2, 12, 2 ],
+          result: $.Float(10.0)
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 100 ],
+          result: 213
+        }
+      ]);
     });
-    it.skip("#mode", function() {
+    it("#performKeyToDegree", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 5 ],
+          result: $.Float(1.0)
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 10 ],
+          result: 2.4
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 100 ],
+          result: 48.5
+        }
+      ]);
     });
-    it.skip("#performDegreeToKey", function() {
+    it("#performNearestInList", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 5 ],
+          result: 5
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 10 ],
+          result: 8
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 100 ],
+          result: 34
+        }
+      ]);
     });
-    it.skip("#performNearestInList", function() {
-    });
-    it.skip("#performNearestInScale", function() {
+    it("#performNearestInScale", function() {
+      testCase(this, [
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 5 ],
+          result: 5
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 10 ],
+          result: 8
+        },
+        {
+          source: [ 3, 5, 8, 13, 21, 34 ],
+          args: [ 100 ],
+          result: 101
+        }
+      ]);
     });
     it.skip("#convertRhythm", function() {
     });
@@ -1026,17 +1304,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ] ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ] ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30 ] ],
+          args: [ "\\+", [ 10, 20, 30 ] ],
           result: [ 11, 22, 33, 14, 25 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ] ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ] ],
           result: [ 11, 22, 33, 41, 52 ]
         },
       ]);
@@ -1045,12 +1323,12 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], 0 ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], 0 ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], -1 ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], -1 ],
           result: [
             [ 11, 21, 31, 41, 51 ],
             [ 12, 22, 32, 42, 52 ],
@@ -1061,7 +1339,7 @@
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], 1 ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], 1 ],
           result: [
             [ 11, 12, 13, 14, 15 ],
             [ 21, 22, 23, 24, 25 ],
@@ -1076,7 +1354,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\t" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\t" ],
           result: [
             [ 11, 12, 13, 14, 15 ],
             [ 21, 22, 23, 24, 25 ],
@@ -1091,7 +1369,7 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\x" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\x" ],
           result: [
             11, 12, 13, 14, 15,
             21, 22, 23, 24, 25,
@@ -1106,17 +1384,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30 ], "\\s" ],
+          args: [ "\\+", [ 10, 20, 30 ], "\\s" ],
           result: [ 11, 22, 33 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\s" ],
           result: [ 11, 22, 33 ]
         },
       ]);
@@ -1125,17 +1403,17 @@
       testCase(this, [
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
           result: [ 11, 22, 33, 44, 55 ]
         },
         {
           source: [ 1, 2, 3, 4, 5 ],
-          args  : [ "\\+", [ 10, 20, 30 ], "\\f" ],
+          args: [ "\\+", [ 10, 20, 30 ], "\\f" ],
           result: [ 11, 22, 33, 24, 15 ]
         },
         {
           source: [ 1, 2, 3 ],
-          args  : [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
+          args: [ "\\+", [ 10, 20, 30, 40, 50 ], "\\f" ],
           result: [ 11, 22, 33, 42, 51 ]
         },
       ]);
@@ -1244,29 +1522,22 @@
         },
       ]);
     });
-    it("#multiChannelPerform", sinon.test(function() {
-      var instance, test, spy;
-      var $arg1, $arg2;
-
-      spy = this.spy(sc.test.func());
-      $arg1 = $$();
-      $arg2 = $$();
-      this.stub(sc.lang.klass.utils, "getMethod")
-        .withArgs("Object", "multiChannelPerform").returns(spy);
+    it("#multiChannelPerform", function() {
+      var instance, test;
 
       instance = this.createInstance();
-      test = instance.multiChannelPerform($arg1, $arg2);
+      test = instance.multiChannelPerform();
       expect(test).to.be.a("SCArray").to.eql([]);
-      expect(sc.lang.klass.utils.getMethod).to.be.not.called;
 
-      instance = this.createInstance([ 1, 2, 3 ]);
-      test = instance.multiChannelPerform($arg1, $arg2);
-      expect(spy).to.be.calledWith($arg1, $arg2);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      instance = this.createInstance([ 10, 20, 30 ]);
+      test = instance.multiChannelPerform(
+        $$("\\clip"), $$(15), $$([ 20, 25, 20 ])
+      );
+      expect(test).to.be.a("SCArray").to.eqls([ 15, 20, 20 ]);
+    });
     it("#multichannelExpandRef", function() {
       var instance = this.createInstance();
-      expect(instance.multichannelExpandRef).to.be.nop;
+      expect(instance.multichannelExpandRef).to.doNothing;
     });
 
     [
@@ -1325,7 +1596,7 @@
         {
           source: [ 1, 5, 2, 4, 3 ],
           result: this,
-          after : [ 1, 2, 3, 4, 5 ]
+          after: [ 1, 2, 3, 4, 5 ]
         },
         {
           source: [ 1, 5, 2, 4, 3 ],
@@ -1333,7 +1604,7 @@
             return $b ["<="] ($a);
           } ],
           result: this,
-          after : [ 5, 4, 3, 2, 1 ]
+          after: [ 5, 4, 3, 2, 1 ]
         }
       ]);
     });
@@ -1341,9 +1612,9 @@
       testCase(this, [
         {
           source: [ [ 9, 1 ], [ 2, 8 ], [ 5, 5 ], [ 7, 3 ], [ 4, 6 ] ],
-          args  : [ 1 ],
+          args: [ 1 ],
           result: this,
-          after : [ [ 9, 1 ], [ 7, 3 ], [ 5, 5 ], [ 4, 6 ], [ 2, 8 ] ]
+          after: [ [ 9, 1 ], [ 7, 3 ], [ 5, 5 ], [ 4, 6 ], [ 2, 8 ] ]
         }
       ]);
     });
@@ -1351,11 +1622,11 @@
       testCase(this, [
         {
           source: [ -5, 3, -2, 0, 1, 6, 4 ],
-          args  : [ function($a) {
+          args: [ function($a) {
             return $a.abs();
           } ],
           result: this,
-          after : [ 0, 1, -2, 3, 4, -5, 6 ]
+          after: [ 0, 1, -2, 3, 4, -5, 6 ]
         }
       ]);
     });
@@ -1418,12 +1689,12 @@
       testCase(this, [
         {
           source: [ 3 ],
-          args  : [ "\\*" ],
+          args: [ "\\*" ],
           result: 3
         },
         {
           source: [ 3, 4, 5, 6 ],
-          args  : [ "\\*" ],
+          args: [ "\\*" ],
           result: 360
         },
       ]);
@@ -1436,7 +1707,7 @@
         },
         {
           source: [ 1, 2, 3, 4 ],
-          args  : [ 0 ],
+          args: [ 0 ],
           result: "1020304",
         },
       ]);

@@ -1,0 +1,21 @@
+{
+  "expr"    : true,
+  "loopfunc": true,
+  "newcap"  : false,
+  "globals": {
+    "sc"        : true,
+    "SCScript"  : true,
+    "context"   : true,
+    "describe"  : true,
+    "it"        : true,
+    "chai"      : true,
+    "sinon"     : true,
+    "expect"    : true,
+    "before"    : true,
+    "beforeEach": true,
+    "afterEach" : true,
+    "after"     : true,
+    "esprima"   : true,
+    "_"         : true
+  }
+}

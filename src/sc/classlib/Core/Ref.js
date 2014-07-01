@@ -3,66 +3,67 @@ SCScript.install(function(sc) {
 
   require("./Object");
 
-  var fn = sc.lang.fn;
+  sc.lang.klass.refine("Ref", function(builder) {
+    builder.addProperty("<>", "value");
 
-  sc.lang.klass.refine("Ref", function(spec, utils) {
-    spec.$new = function($thing) {
+    builder.addClassMethod("new", function($thing) {
       return this.__super__("new").value_($thing);
-    };
+    });
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._$value.valueOf();
-    };
-
-    spec.value = function() {
-      return this._$value;
-    };
-
-    spec.value_ = fn(function($value) {
-      this._$value = $value;
-      return this;
-    }, "value");
+    });
 
     // $new
 
-    spec.set = fn(function($thing) {
+    builder.addMethod("set", {
+      args: "thing"
+    }, function($thing) {
       this._$value = $thing;
       return this;
-    }, "thing");
+    });
 
-    spec.get = function() {
+    builder.addMethod("get", function() {
       return this._$value;
-    };
+    });
 
-    spec.dereference = spec.value;
+    builder.addMethod("dereference", function() {
+      return this.value();
+    });
 
-    spec.asRef = utils.nop;
+    builder.addMethod("asRef");
 
-    spec.valueArray = spec.value;
+    builder.addMethod("valueArray", function() {
+      return this.value();
+    });
 
-    spec.valueEnvir = spec.value;
+    builder.addMethod("valueEnvir", function() {
+      return this.value();
+    });
 
-    spec.valueArrayEnvir = spec.value;
+    builder.addMethod("valueArrayEnvir", function() {
+      return this.value();
+    });
 
-    spec.next = spec.value;
+    builder.addMethod("next", function() {
+      return this.value();
+    });
 
-    spec.asUGenInput = utils.nop;
+    builder.addMethod("asUGenInput");
 
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.at = function($key) {
+    builder.addMethod("at", function($key) {
       return this._$value.at($key);
-    };
+    });
 
-    spec.put = function($key, $val) {
+    builder.addMethod("put", function($key, $val) {
       return this._$value.put($key, $val);
-    };
-
+    });
     // TODO: implements seq
     // TODO: implements asControlInput
     // TODO: implements asBufWithValues
     // TODO: implements multichannelExpandRef
   });
-
 });

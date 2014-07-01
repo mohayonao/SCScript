@@ -9,10 +9,10 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCFloat = $("Float");
+
   describe("SCFloat", function() {
-    var SCFloat;
     before(function() {
-      SCFloat = $("Float");
       this.createInstance = function(value) {
         return $.Float(typeof value === "undefined" ? 0 : value);
       };
@@ -52,7 +52,7 @@
       ].forEach(function(items) {
         instance = this.createInstance(items[0]);
         test = instance.toString();
-        expect(test).with_message("@{0}.toString()", items)
+        expect(test).withMessage("#{0}.toString()", items)
           .to.be.a("JSString").that.equals(items[1]);
       }, this);
     });
@@ -68,7 +68,7 @@
     });
     it("#asFloat", function() {
       var instance = this.createInstance(0);
-      expect(instance.asFloat).to.be.nop;
+      expect(instance.asFloat).to.doNothing;
     });
     it("#+", function() {
       testCase(this, [

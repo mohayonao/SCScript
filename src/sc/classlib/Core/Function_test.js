@@ -9,11 +9,10 @@
   var $ = sc.lang.$;
   var iterator = sc.lang.iterator;
 
+  var SCFunction = $("Function");
+
   describe("SCFunction", function() {
-    var SCFunction, SCObject;
     before(function() {
-      SCFunction = $("Function");
-      SCObject = $("Object");
       this.createInstance = function(func, def) {
         return $.Function(function() {
           return [ func || function() {} ];
@@ -65,7 +64,7 @@
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
     it("#choose", sinon.test(function() {
       var instance, test;
@@ -173,24 +172,33 @@
     });
     it.skip("#numVars", function() {
     });
-    it.skip("#loop", function() {
-    });
+    it("#loop", sinon.test(function() {
+      var instance, test, iter;
+
+      iter = {};
+
+      this.stub(iterator, "function$loop", function() {
+        return iter;
+      });
+      this.stub(iterator, "execute");
+
+      instance = this.createInstance();
+
+      test = instance.loop();
+      expect(iterator.function$loop).to.be.calledWith(undefined);
+      expect(iterator.execute).to.be.calledWith(iter, instance);
+      expect(test).to.equal(instance);
+    }));
     it.skip("#block", function() {
     });
-    it("#asRoutine", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
-        new: spy
-      }));
+    it("#asRoutine", function() {
+      var instance, test;
 
       instance = this.createInstance();
 
       test = instance.asRoutine();
-      expect(spy).to.be.calledWith(instance);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      expect(test).to.be.a("SCRoutine");
+    });
     it("#dup", sinon.test(function() {
       var instance, test, spy;
       var $n;
@@ -293,20 +301,14 @@
         },
       ]);
     });
-    it("#r", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("Routine").returns($$({
-        new: spy
-      }));
+    it("#r", function() {
+      var instance, test;
 
       instance = this.createInstance();
 
       test = instance.r();
-      expect(spy).to.be.calledWith(instance);
-      expect(spy).to.be.calledLastIn(test);
-    }));
+      expect(test).to.be.a("SCRoutine");
+    });
     it("#p", sinon.test(function() {
       var instance, test, spy;
 

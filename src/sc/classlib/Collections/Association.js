@@ -3,63 +3,41 @@ SCScript.install(function(sc) {
 
   require("../Math/Magnitude");
 
-  sc.lang.klass.define("Association : Magnitude", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $false = utils.$false;
+  var $ = sc.lang.$;
+  var $false = $.false;
 
-    spec.constructor = function SCAssociation() {
-      this.__super__("Magnitude");
-    };
+  sc.lang.klass.refine("Association", function(builder, _) {
+    builder.addProperty("<>", "key");
+    builder.addProperty("<>", "value");
 
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._$key.valueOf();
-    };
+    });
 
-    spec.key = function() {
-      return this._$key;
-    };
-
-    spec.key_ = function($value) {
-      this._$key = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.value = function() {
-      return this._$value;
-    };
-
-    spec.value_ = function($value) {
-      this._$value = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.$new = function($key, $value) {
-      return this._newCopyArgs({
+    builder.addClassMethod("new", function($key, $value) {
+      return _.newCopyArgs(this, {
         key: $key,
         value: $value
       });
-    };
+    });
 
-    spec["=="] = function($anAssociation) {
+    builder.addMethod("==", function($anAssociation) {
       if ($anAssociation.key) {
         return this._$key ["=="] ($anAssociation.$("key"));
       }
       return $false;
-    };
+    });
 
-    spec.hash = function() {
+    builder.addMethod("hash", function() {
       return this._$key.hash();
-    };
+    });
 
-    spec["<"] = function($anAssociation) {
+    builder.addMethod("<", function($anAssociation) {
       return this._$key.$("<", [ $anAssociation.$("key") ]);
-    };
-
+    });
     // TODO: implements printOn
     // TODO: implements storeOn
     // TODO: implements embedInStream
     // TODO: implements transformEvent
-
   });
-
 });

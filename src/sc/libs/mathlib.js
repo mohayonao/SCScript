@@ -349,11 +349,11 @@
     return x + lo;
   };
 
-  mathlib.clip_idx = function(index, len) {
+  mathlib.clipIndex = function(index, len) {
     return Math.max(0, Math.min(index, len - 1));
   };
 
-  mathlib.wrap_idx = function(index, len) {
+  mathlib.wrapIndex = function(index, len) {
     index = index % len;
     if (index < 0) {
       index += len;
@@ -361,7 +361,7 @@
     return index;
   };
 
-  mathlib.fold_idx = function(index, len) {
+  mathlib.foldIndex = function(index, len) {
     var len2 = len * 2 - 2;
 
     index = (index|0) % len2;
@@ -375,5 +375,4 @@
   };
 
   sc.libs.mathlib = mathlib;
-
 })(sc);

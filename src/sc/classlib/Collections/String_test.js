@@ -8,10 +8,10 @@
 
   var $ = sc.lang.$;
 
+  var SCString = $("String");
+
   describe("SCString", function() {
-    var SCString;
     before(function() {
-      SCString = $("String");
       this.createInstance = function(str) {
         return $.String(str || "str");
       };
@@ -54,6 +54,10 @@
 
       test = instance.valueOf();
       expect(test).to.be.a("JSString").that.equals("str");
+    });
+    it(".newClear", function() {
+      var test = SCString.newClear($$(4));
+      expect(test).to.be.a("SCString").that.equals("    ");
     });
     it.skip("<>unixCmdActions", function() {
     });
@@ -218,7 +222,7 @@
     });
     it("#asString", function() {
       var instance = this.createInstance();
-      expect(instance.asString).to.be.nop;
+      expect(instance.asString).to.doNothing;
     });
     it("#asCompileString", function() {
       var instance, test;

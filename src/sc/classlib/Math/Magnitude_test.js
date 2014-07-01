@@ -9,9 +9,7 @@
   var $ = sc.lang.$;
 
   describe("SCMagnitude", function() {
-    var SCMagnitude;
     before(function() {
-      SCMagnitude = $("Magnitude");
       this.createInstance = function(value) {
         var instance = $.Float(typeof value === "undefined" ? 0 : value);
         return $$(instance, "Magnitude" + this.test.title);

@@ -7,10 +7,10 @@
 
   var $ = sc.lang.$;
 
+  var SCNil = $("Nil");
+
   describe("SCNil", function() {
-    var SCNil;
     before(function() {
-      SCNil = $("Nil");
       this.createInstance = function() {
         return $.Nil();
       };
@@ -96,7 +96,7 @@
     });
     it("#!?", function() {
       var instance = this.createInstance();
-      expect(instance["!?"]).to.be.nop;
+      expect(instance["!?"]).to.doNothing;
     });
     it("#asBoolean", function() {
       var instance, test;
@@ -138,23 +138,23 @@
     });
     it("#pop", function() {
       var instance = this.createInstance();
-      expect(instance.pop).to.be.nop;
+      expect(instance.pop).to.doNothing;
     });
     it("#source", function() {
       var instance = this.createInstance();
-      expect(instance.source).to.be.nop;
+      expect(instance.source).to.doNothing;
     });
     it("#source_", function() {
       var instance = this.createInstance();
-      expect(instance.source_).to.be.nop;
+      expect(instance.source_).to.doNothing;
     });
     it("#rate", function() {
       var instance = this.createInstance();
-      expect(instance.rate).to.be.nop;
+      expect(instance.rate).to.doNothing;
     });
     it("#numChannels", function() {
       var instance = this.createInstance();
-      expect(instance.numChannels).to.be.nop;
+      expect(instance.numChannels).to.doNothing;
     });
     it("#isPlaying", function() {
       var instance, test;
@@ -166,43 +166,43 @@
     });
     it("#do", function() {
       var instance = this.createInstance();
-      expect(instance.do).to.be.nop;
+      expect(instance.do).to.doNothing;
     });
     it("#reverseDo", function() {
       var instance = this.createInstance();
-      expect(instance.reverseDo).to.be.nop;
+      expect(instance.reverseDo).to.doNothing;
     });
     it("#pairsDo", function() {
       var instance = this.createInstance();
-      expect(instance.pairsDo).to.be.nop;
+      expect(instance.pairsDo).to.doNothing;
     });
     it("#collect", function() {
       var instance = this.createInstance();
-      expect(instance.collect).to.be.nop;
+      expect(instance.collect).to.doNothing;
     });
     it("#select", function() {
       var instance = this.createInstance();
-      expect(instance.select).to.be.nop;
+      expect(instance.select).to.doNothing;
     });
     it("#reject", function() {
       var instance = this.createInstance();
-      expect(instance.reject).to.be.nop;
+      expect(instance.reject).to.doNothing;
     });
     it("#detect", function() {
       var instance = this.createInstance();
-      expect(instance.detect).to.be.nop;
+      expect(instance.detect).to.doNothing;
     });
     it("#collectAs", function() {
       var instance = this.createInstance();
-      expect(instance.collectAs).to.be.nop;
+      expect(instance.collectAs).to.doNothing;
     });
     it("#selectAs", function() {
       var instance = this.createInstance();
-      expect(instance.selectAs).to.be.nop;
+      expect(instance.selectAs).to.doNothing;
     });
     it("#rejectAs", function() {
       var instance = this.createInstance();
-      expect(instance.rejectAs).to.be.nop;
+      expect(instance.rejectAs).to.doNothing;
     });
     it("#dependants", sinon.test(function() {
       var instance, test, spy;
@@ -219,23 +219,23 @@
     }));
     it("#changed", function() {
       var instance = this.createInstance();
-      expect(instance.changed).to.be.nop;
+      expect(instance.changed).to.doNothing;
     });
     it("#addDependant", function() {
       var instance = this.createInstance();
-      expect(instance.addDependant).to.be.nop;
+      expect(instance.addDependant).to.doNothing;
     });
     it("#removeDependant", function() {
       var instance = this.createInstance();
-      expect(instance.removeDependant).to.be.nop;
+      expect(instance.removeDependant).to.doNothing;
     });
     it("#release", function() {
       var instance = this.createInstance();
-      expect(instance.release).to.be.nop;
+      expect(instance.release).to.doNothing;
     });
     it("#update", function() {
       var instance = this.createInstance();
-      expect(instance.update).to.be.nop;
+      expect(instance.update).to.doNothing;
     });
     it("#transformEvent", function() {
       var instance, test;
@@ -258,7 +258,7 @@
     });
     it("#play", function() {
       var instance = this.createInstance();
-      expect(instance.play).to.be.nop;
+      expect(instance.play).to.doNothing;
     });
     it("#nextTimeOnGrid", sinon.test(function() {
       var instance, test;
@@ -286,7 +286,7 @@
 
       spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("Quant").returns($$({
-        "default": spy
+        default: spy
       }));
 
       instance = this.createInstance();
@@ -296,11 +296,11 @@
     }));
     it("#swapThisGroup", function() {
       var instance = this.createInstance();
-      expect(instance.swapThisGroup).to.be.nop;
+      expect(instance.swapThisGroup).to.doNothing;
     });
     it("#performMsg", function() {
       var instance = this.createInstance();
-      expect(instance.swapThisGroup).to.be.nop;
+      expect(instance.swapThisGroup).to.doNothing;
     });
     it("printOn", sinon.test(function() {
       var instance, test;
@@ -380,11 +380,11 @@
     });
     it("#remove", function() {
       var instance = this.createInstance();
-      expect(instance.remove).to.be.nop;
+      expect(instance.remove).to.doNothing;
     });
     it("#set", function() {
       var instance = this.createInstance();
-      expect(instance.set).to.be.nop;
+      expect(instance.set).to.doNothing;
     });
     it("#get", function() {
       var instance, test;
@@ -423,19 +423,19 @@
     }));
     it("#removeFunc", function() {
       var instance = this.createInstance();
-      expect(instance.removeFunc).to.be.nop;
+      expect(instance.removeFunc).to.doNothing;
     });
     it("#replaceFunc", function() {
       var instance = this.createInstance();
-      expect(instance.replaceFunc).to.be.nop;
+      expect(instance.replaceFunc).to.doNothing;
     });
     it("#seconds_", function() {
       var instance = this.createInstance();
-      expect(instance.seconds_).to.be.nop;
+      expect(instance.seconds_).to.doNothing;
     });
     it("#throw", function() {
       var instance = this.createInstance();
-      expect(instance.throw).to.be.nop;
+      expect(instance.throw).to.doNothing;
     });
     it.skip("#handleError", function() {
     });
@@ -463,11 +463,11 @@
     }));
     it("#superclassesDo", function() {
       var instance = this.createInstance();
-      expect(instance.superclassesDo).to.be.nop;
+      expect(instance.superclassesDo).to.doNothing;
     });
     it("#shallowCopy", function() {
       var instance = this.createInstance();
-      expect(instance.shallowCopy).to.be.nop;
+      expect(instance.shallowCopy).to.doNothing;
     });
   });
 })();

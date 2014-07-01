@@ -7,27 +7,26 @@
 
   describe("sc.lang.io", function() {
     it("post", sinon.test(function() {
-      this.stub(sc.SCScript, "stdout");
+      this.stub(SCScript, "stdout");
 
       io.post("abc");
-      expect(sc.SCScript.stdout).to.be.not.called;
-      sc.SCScript.stdout.reset();
+      expect(SCScript.stdout).to.be.not.called;
+      SCScript.stdout.reset();
 
       io.post("d\n");
-      expect(sc.SCScript.stdout).to.be.calledWith("abcd");
-      sc.SCScript.stdout.reset();
+      expect(SCScript.stdout).to.be.calledWith("abcd");
+      SCScript.stdout.reset();
 
       io.post("abc\ndef\n");
-      expect(sc.SCScript.stdout).to.be.calledWith("abc");
-      expect(sc.SCScript.stdout).to.be.calledWith("def");
-      sc.SCScript.stdout.reset();
+      expect(SCScript.stdout).to.be.calledWith("abc");
+      expect(SCScript.stdout).to.be.calledWith("def");
+      SCScript.stdout.reset();
     }));
     it("warn", sinon.test(function() {
-      this.stub(sc.SCScript, "stderr");
+      this.stub(SCScript, "stderr");
 
       io.warn("abc");
-      expect(sc.SCScript.stderr).to.be.calledWith("abc");
+      expect(SCScript.stderr).to.be.calledWith("abc");
     }));
   });
-
 })();

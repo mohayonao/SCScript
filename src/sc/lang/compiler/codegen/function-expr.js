@@ -8,28 +8,47 @@
   var CodeGen = sc.lang.compiler.CodeGen;
 
   CodeGen.addGenerateMethod("FunctionExpression", function(node) {
-    return new FunctionExpressionGenerator(this).compile(node);
-  });
-
-  function FunctionExpressionGenerator(parent) {
-    CodeGen.call(this, parent);
-    this.functionStack = [];
-    this.functionArray = [];
-  }
-  sc.libs.extend(FunctionExpressionGenerator, CodeGen);
-
-  FunctionExpressionGenerator.prototype.compile = function(node) {
-    var info = getInformationOfFunction(node);
-
+    var meta = getMetaDataOfFunction(node);
     return [
       "$.Function(",
-      this.FunctionBody(node, info.args),
-      this.FunctionMetadata(info),
+      generateFunctionBody(this, node, meta.args),
+      generateFunctionMetadata(this, meta),
       ")"
     ];
-  };
+  });
 
-  FunctionExpressionGenerator.prototype.FunctionBody = function(node, args) {
+  function generateFunctionBody(that, node, args) {
+    return that.addIndent(that.withFunction([], function() {
+      if (!node.body.length) {
+        return [ "return [];" ];
+      }
+
+      return [
+        "return [",
+        generateSegmentedFunctionBody(that, node, args),
+        that.addIndent("];")
+      ];
+    }));
+  }
+
+  function generateSegmentedFunctionBody(that, node, args) {
+    for (var i = 0, imax = args.length; i < imax; ++i) {
+      that.scope.add("var", args[i]);
+    }
+
+    var syncBlockScope = that.state.syncBlockScope;
+    that.state.syncBlockScope = that.scope.peek();
+
+    var result = that.withIndent(function() {
+      return generateSegmentedFunctionBodyElements(that, node, args);
+    });
+
+    that.state.syncBlockScope = syncBlockScope;
+
+    return result;
+  }
+
+  function generateSegmentedFunctionBodyElements(that, node, args) {
     var fargs = args.map(function(_, i) {
       return "_arg" + i;
     });
@@ -38,98 +57,59 @@
       return $id(args[i]) + " = " + fargs[i];
     };
 
-    var body = this.withFunction([], function() {
-      var result = [];
+    var i = 0, imax = node.body.length;
+    var lastIndex = imax - 1;
+
+    var fragments = [ "\n" ];
+
+    var loop = function() {
       var fragments = [];
-      var elements = node.body;
+      var stmt;
 
-      var syncBlockScope = this.state.syncBlockScope;
-
-      if (elements.length) {
-        for (var i = 0, imax = args.length; i < imax; ++i) {
-          this.scope.add("var", args[i]);
+      while (i < imax) {
+        if (i === 0) {
+          if (args.length) {
+            stmt = that.stitchWith(args, "; ", assignArguments);
+            fragments.push([ that.addIndent(stmt), ";", "\n" ]);
+          }
+        } else {
+          fragments.push("\n");
         }
 
-        this.state.syncBlockScope = this.scope.peek();
+        var calledSegmentedMethod = that.state.calledSegmentedMethod;
+        that.state.calledSegmentedMethod = false;
 
-        var functionBodies = this.withIndent(function() {
-          var i = 0, imax = elements.length;
-          var lastIndex = imax - 1;
+        stmt = that.generate(node.body[i]);
 
-          var fragments = [ "\n" ];
+        if (i === lastIndex || that.state.calledSegmentedMethod) {
+          stmt = [ "return ", stmt ];
+        }
+        fragments.push([ that.addIndent(stmt), ";" ]);
 
-          var loop = function() {
-            var fragments = [];
-            var stmt, j = 0;
+        i += 1;
+        if (that.state.calledSegmentedMethod) {
+          break;
+        }
 
-            while (i < imax) {
-              if (i === 0) {
-                if (args.length) {
-                  stmt = this.stitchWith(args, "; ", assignArguments);
-                  fragments.push([ this.addIndent(stmt), ";", "\n" ]);
-                }
-              } else if (j) {
-                fragments.push("\n");
-              }
-
-              var calledSegmentedMethod = this.state.calledSegmentedMethod;
-              this.state.calledSegmentedMethod = false;
-              stmt = this.generate(elements[i]);
-
-              if (i === lastIndex || this.state.calledSegmentedMethod) {
-                stmt = [ "return ", stmt ];
-              }
-              fragments.push([ this.addIndent(stmt), ";" ]);
-              j += 1;
-
-              i += 1;
-              if (this.state.calledSegmentedMethod) {
-                break;
-              }
-              this.state.calledSegmentedMethod = calledSegmentedMethod;
-            }
-
-            return fragments;
-          };
-
-          while (i < imax) {
-            if (i) {
-              fragments.push(",", "\n", this.addIndent(this.withFunction([], loop)));
-            } else {
-              fragments.push(this.addIndent(this.withFunction(fargs, loop)));
-            }
-          }
-
-          var resetVars = Object.keys(this.state.syncBlockScope.vars);
-          if (resetVars.length) {
-            fragments.push(",", "\n", this.addIndent(this.withFunction([], function() {
-              return this.addIndent(resetVars.sort().map($id).join(" = ") + " = null;");
-            })));
-          } else {
-            fragments.push(",", "\n", this.addIndent("$.NOP"));
-          }
-
-          fragments.push("\n");
-
-          return fragments;
-        });
-
-        fragments.push("return [", functionBodies, this.addIndent("];"));
-      } else {
-        fragments.push("return [];");
+        that.state.calledSegmentedMethod = calledSegmentedMethod;
       }
 
-      result.push([ this.addIndent(fragments) ]);
+      return fragments;
+    };
 
-      this.state.syncBlockScope = syncBlockScope;
+    fragments.push(that.addIndent(that.withFunction(fargs, loop)));
 
-      return result;
-    });
+    while (i < imax) {
+      fragments.push(",", "\n", that.addIndent(that.withFunction([], loop)));
+    }
 
-    return body;
-  };
+    fragments.push(generateFunctionToCleanVariables(that));
+    fragments.push("\n");
 
-  FunctionExpressionGenerator.prototype.FunctionMetadata = function(info) {
+    return fragments;
+  }
+
+  function generateFunctionMetadata(that, info) {
     var keys = info.keys;
     var vals = info.vals;
 
@@ -137,12 +117,12 @@
       return [];
     }
 
-    var args = this.stitchWith(keys, "; ", function(item, i) {
+    var args = that.stitchWith(keys, "; ", function(item, i) {
       var result = [ keys[i] ];
 
       if (vals[i]) {
         if (vals[i].type === Syntax.ListExpression) {
-          result.push("=[ ", this.stitchWith(vals[i].elements, ", ", function(item) {
+          result.push("=[ ", that.stitchWith(vals[i].elements, ", ", function(item) {
             return toArgumentValueString(item);
           }), " ]");
         } else {
@@ -168,7 +148,7 @@
     }
 
     return result;
-  };
+  }
 
   function $id(name) {
     return name.replace(/^(?![_$])/, "$");
@@ -189,18 +169,27 @@
     return node.value;
   }
 
-  function getInformationOfFunction(node) {
-    var args = [];
-    var keys, vals, remain;
-    var list, i, imax;
+  function generateFunctionToCleanVariables(that) {
+    var resetVars = Object.keys(that.state.syncBlockScope.vars);
 
-    keys = [];
-    vals = [];
-    remain = null;
+    if (resetVars.length) {
+      return [ ",", "\n", that.addIndent(that.withFunction([], function() {
+        return that.addIndent(resetVars.sort().map($id).join(" = ") + " = null;");
+      })) ];
+    }
+
+    return [ ",", "\n", that.addIndent("$.NOP") ];
+  }
+
+  function getMetaDataOfFunction(node) {
+    var args = [];
+    var keys = [];
+    var vals = [];
+    var remain = null;
 
     if (node.args) {
-      list = node.args.list;
-      for (i = 0, imax = list.length; i < imax; ++i) {
+      var list = node.args.list;
+      for (var i = 0, imax = list.length; i < imax; ++i) {
         args.push(list[i].id.name);
         keys.push(list[i].id.name);
         vals.push(list[i].init);

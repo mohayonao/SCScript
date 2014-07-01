@@ -2,10 +2,19 @@ env: npm_config_mpg123_backend=dummy
 language: node_js
 node_js:
   - 0.10
+env:
+  global:
+    - secure: "sBuEie1DsmeWHNTg1mV2yO6mGL5ekclELQJV7n39ck6fkZK1XaWoBVWn5UyU90Pz3bWCFBjmPx7FdBOE9ZRCSAiWBbwTktQjKiOizeNmPh2iMQd43S4f2vrLhAmrqnyPCHtzWkncpK85e2enZyOfy5Bw4POvdXHZerLwQDika04="
+    - secure: "EBEgpTXLBfi1fmWXJ2n6jDWAQR/LninmPg8n1Lxftk71c2ZPdRe2QDPe1/iFlWeXZ0o4ZDJEMD6mSVkh/VL+eX2q4yKwut33fT6T6YYaogb5FMQaDRsFGwtd4h81vSRO+qbzStRjdDJBYfZ/+Psso9dfKPPIfWwrj4mj2GcEnAM="
 before_script:
   - npm install -g grunt-cli
+  - npm install -g coveralls
+  - npm install -g codeclimate-test-reporter
 script:
-  - npm run-script travis
+  - grunt travis --verbose
+after_success:
+  - coveralls   < ./docs/report/lcov.info
+  - codeclimate < ./docs/report/lcov.info
 notifications:
   webhooks:
     urls:

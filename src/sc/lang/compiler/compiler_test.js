@@ -91,42 +91,38 @@
       expect(CodeGen$compile).to.be.calledWith(ast2);
       expect(CodeGen$compile).to.be.calledLastIn(test);
     }));
-    it("compile work", function() {
-      var test = sc.lang.compiler.compile("\\source");
-      expect(test).to.have.match(/^SCScript\([\s\S]+\);$/m);
-    });
-    describe("compiler combined test", function() {
+    describe("combined test", function() {
       _.chain({
         "": {
-          compiled: "",
+          expected: [ "" ],
           ast: {
             type: Syntax.Program,
             body: [],
           }
         },
         "    \n\t": {
-          compiled: "",
+          expected: [ "" ],
           ast: {
             type: Syntax.Program,
             body: [],
           }
         },
         "// single line comment\n": {
-          compiled: "",
+          expected: [ "" ] ,
           ast: {
             type: Syntax.Program,
             body: [],
           }
         },
         "/*\n/* / * */\n*/": {
-          compiled: "",
+          expected: [ "" ],
           ast: {
             type: Syntax.Program,
             body: [],
           }
         },
         "-10pi": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Float(-31.41592653589793);",
             "});",
@@ -143,7 +139,7 @@
           }
         },
         "-a": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('neg');",
             "});",
@@ -170,7 +166,7 @@
           }
         },
         "-a.abs": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('neg').$('abs');",
             "});",
@@ -208,7 +204,7 @@
           }
         },
         "#[ [] ]": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Array([",
             "    $.Array([], true),",
@@ -234,7 +230,7 @@
           }
         },
         "a = 2pi": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var _ref0;",
             "  return (_ref0 = $.Float(6.283185307179586), $.This().$('a_', [ _ref0 ]), _ref0);",
@@ -260,7 +256,7 @@
           }
         },
         "a.b.c = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var _ref0;",
             "  return (_ref0 = $.Integer(1), $.This().$('a').$('b').$('c_', [ _ref0 ]), _ref0);",
@@ -305,7 +301,7 @@
           }
         },
         "a[0] = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[]_', [ $.Integer(0), $.Integer(1) ]);",
             "});",
@@ -343,7 +339,7 @@
           }
         },
         "a[..10] = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[..]_', [ " +
               "null, null, $.Integer(10), $.Integer(1)" +
@@ -385,7 +381,7 @@
           }
         },
         "a[2..] = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[..]_', [ " +
               "$.Integer(2), null, null, $.Integer(1)" +
@@ -427,7 +423,7 @@
           }
         },
         "a[2..10] = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[..]_', [ " +
               "$.Integer(2), null, $.Integer(10), $.Integer(1)" +
@@ -473,7 +469,7 @@
           }
         },
         "a[2, 4..] = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[..]_', [ " +
               "$.Integer(2), $.Integer(4), null, $.Integer(1)" +
@@ -519,7 +515,7 @@
           }
         },
         "a[2, 4..10] = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[..]_', [ " +
               "$.Integer(2), $.Integer(4), $.Integer(10), $.Integer(1)" +
@@ -569,7 +565,7 @@
           }
         },
         "a[..] = 1": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[..]_', [ " +
               "null, null, null, $.Integer(1)" +
@@ -607,7 +603,7 @@
           }
         },
         "a[0;1,2;3..4;5]": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.This().$('a').$('[..]', [ " +
               "($.Integer(0), $.Integer(1)), " +
@@ -675,7 +671,7 @@
           }
         },
         "a[b[c=0;1]=0;1]": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var _ref0;",
             "  return $.This().$('a').$('[]', [ " +
@@ -756,7 +752,7 @@
           }
         },
         "(0;1, 2;3..4;5)": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return ($.Integer(0), $.Integer(1)).$('series', [ " +
               "($.Integer(2), $.Integer(3)), ($.Integer(4), $.Integer(5))" +
@@ -818,7 +814,7 @@
           }
         },
         "{|x=1| var a = x * x; a * a; }": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Function(function() {",
             "    var $x, $a;",
@@ -900,7 +896,7 @@
           }
         },
         "var level=0, slope=1, curve=1;": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var $level, $slope, $curve;",
             "  return $level = $.Integer(0), $slope = $.Integer(1), $curve = $.Integer(1);",
@@ -955,7 +951,7 @@
           }
         },
         "var a, b; a=nil;": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var $a, $b;",
             "  $a = $.Nil(), $b = $.Nil();",
@@ -1002,7 +998,7 @@
           },
         },
         "{ |x, y| var a; a = x + y; x.wait; a }": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Function(function() {",
             "    var $x, $y, $a;",
@@ -1105,7 +1101,7 @@
           }
         },
         "{ if (true) { 1.wait }; 0 }": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Function(function() {",
             "    return [",
@@ -1183,7 +1179,7 @@
           }
         },
         "{ wait(1); 0 }": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Function(function() {",
             "    return [",
@@ -1231,7 +1227,7 @@
           }
         },
         "max(0; 1, 2; 3, 4; 5, a: 6; 7, b: 8; 9)": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return ($.Integer(0), $.Integer(1)).$('max', [ " +
               "($.Integer(2), $.Integer(3)), " +
@@ -1320,7 +1316,7 @@
           }
         },
         "a = (1; 2; 3)": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var _ref0;",
             "  return (_ref0 = " +
@@ -1361,7 +1357,7 @@
           }
         },
         "Point(3, 4)": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $('Point').$('new', [ $.Integer(3), $.Integer(4) ]);",
             "});",
@@ -1399,7 +1395,7 @@
           }
         },
         "Point.new(3, 4)": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $('Point').$('new', [ $.Integer(3), $.Integer(4) ]);",
             "});",
@@ -1437,7 +1433,7 @@
           }
         },
         "Point.new": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $('Point').$('new');",
             "});",
@@ -1464,7 +1460,7 @@
           }
         },
         "Set[3, 4, 5]": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $('Set').$('[]', [ $.Array([",
             "    $.Integer(3),",
@@ -1516,7 +1512,7 @@
           }
         },
         "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $('Array').$('[]', [ $.Array([",
             "    $.Integer(1),",
@@ -1579,7 +1575,7 @@
           }
         },
         "Array [ 1, 2 ][0]": { // (Array [ 1, 2 ])[0]
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $('Array').$('[]', [ $.Array([",
             "    $.Integer(1),",
@@ -1642,7 +1638,7 @@
           }
         },
         "~a": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Environment('a');",
             "});",
@@ -1661,7 +1657,7 @@
           }
         },
         "~a.abs": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Environment('a').$('abs');",
             "});"
@@ -1691,7 +1687,7 @@
           }
         },
         "~a = 0": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Environment('a', $.Integer(0));",
             "});",
@@ -1719,7 +1715,7 @@
           }
         },
         "x = (1 + 2: 3, 4: 5)": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var _ref0;",
             "  return (_ref0 = $.Event([",
@@ -1779,7 +1775,7 @@
           }
         },
         "f = _ + _": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var _ref0;",
             "  return (_ref0 = $.Function(function() {",
@@ -1847,7 +1843,7 @@
           }
         },
         "var a; var b;": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var $a, $b;",
             "  $a = $.Nil();",
@@ -1887,7 +1883,7 @@
           }
         },
         "var a = { var a; a }; a": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  var $a;",
             "  $a = $.Function(function() {",
@@ -1951,7 +1947,7 @@
           }
         },
         "{ (..10).do(_.yield) }": {
-          compiled: [
+          expected: [
             "SCScript(function($) {",
             "  return $.Function(function() {",
             "    return [",
@@ -2055,28 +2051,19 @@
         }
       }).pairs().each(function(items) {
         var code = items[0];
-        var ast = items[1].ast;
-        var compiled = items[1].compiled;
+        var ast  = items[1].ast;
+        var expected = items[1].expected;
         it("ast:" + code, function() {
           var test = sc.lang.compiler.parse(code);
           expect(test).to.eql(ast);
         });
         it("compile:" + code, function() {
-          var test = sc.lang.compiler.compile(code);
-          test = toMinifiedString(test);
-          compiled = toMinifiedString(toCompiledString(compiled));
-          expect(test).to.eql(compiled);
+          var expectedAST = esprima.parse(expected.join("\n"));
+          var compiled  = sc.lang.compiler.compile(code);
+          var actualAST = esprima.parse(compiled);
+          expect(actualAST).to.eql(expectedAST);
         });
       });
-      function toCompiledString(str) {
-        if (Array.isArray(str)) {
-          return str.join(" ");
-        }
-        return str;
-      }
-      function toMinifiedString(str) {
-        return str.replace(/[\s\n]+/g, " ");
-      }
     });
   });
 })();

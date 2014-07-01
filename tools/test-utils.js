@@ -1,4 +1,4 @@
-/* globals _: true, it: true, expect: true */
+/* globals _: true, it: true, expect: true, esprima: true */
 (function(sc) {
   "use strict";
 
@@ -351,17 +351,14 @@
     return func;
   };
 
-  function toMinifiedString(code) {
-    return code.replace(/[\s\n]+/g, " ");
-  }
-
   sc.test.codegen = function() {
     var func = function(items) {
       var code = items.code;
       var ast = items.ast;
       var expected = items.expected;
-      var before = items.before;
+      var before   = items.before;
       it(code, function() {
+        var expectedAST = esprima.parse(expected);
         var codegen = new sc.lang.compiler.CodeGen();
         codegen.scope.add("var", "a0");
         codegen.scope.add("var", "a1");
@@ -371,8 +368,9 @@
         if (before) {
           before(codegen);
         }
-        var test = toMinifiedString(codegen.generate(ast));
-        expect(test).to.equal(toMinifiedString(expected));
+        var compiled  = codegen.generate(ast);
+        var actualAST = esprima.parse(compiled);
+        expect(actualAST).to.eql(expectedAST);
       });
     };
     func.each = function(suites) {

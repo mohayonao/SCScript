@@ -117,7 +117,11 @@ window.onload = function() {
     var code, result;
     var beginTime, elapsedTime;
 
-    code = getCode(editor);
+    code = getCode(editor).trim();
+
+    while (/^\([\s\S]+\)$/.test(code)) {
+      code = code.slice(1, -1);
+    }
 
     beginTime = now();
 

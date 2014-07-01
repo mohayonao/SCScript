@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Online Test Suite - SCScript</title>
+    <title>SCScript - Online Test Suite</title>
     <link rel="stylesheet" href="../../../assets/mocha.css">
     <script src="../../../assets/jquery.min.js"></script>
     <script src="../../../assets/mocha.js"></script>
@@ -10,6 +10,7 @@
     <script src="../../../assets/sinon-1.9.0.js"></script>
     <script src="../../../assets/sinon-chai.js"></script>
     <script src="../../../assets/esprima.js"></script>
+    <script src="../../../assets/underscore-min.js"></script>
     <script src="../../../build/scscript.js"></script>
     <script src="../../../build/scscript-classlib.js"></script>
     <script src="/testem.js"></script>
@@ -28,27 +29,74 @@
       });
     </script>
     <script src="../../../src/const.js"></script>
-    <script src="../../../src/sc/test/utils.js"></script>
-    <script src="../../../src/sc/lang/compiler/test-cases.js"></script>
+    <script src="../../../tools/test-utils.js"></script>
     <script src="../../../src/sc/sc_test.js"></script>
+    <script src="../../../src/sc/libs/extend_test.js"></script>
+    <script src="../../../src/sc/libs/mathlib_test.js"></script>
+    <script src="../../../src/sc/libs/random_test.js"></script>
+    <script src="../../../src/sc/libs/strlib_test.js"></script>
     <script src="../../../src/sc/lang/bytecode_test.js"></script>
     <script src="../../../src/sc/lang/dollar_test.js"></script>
     <script src="../../../src/sc/lang/fn_test.js"></script>
     <script src="../../../src/sc/lang/io_test.js"></script>
     <script src="../../../src/sc/lang/iterator_test.js"></script>
     <script src="../../../src/sc/lang/main_test.js"></script>
-    <script src="../../../src/sc/lang/compiler/codegen_test.js"></script>
     <script src="../../../src/sc/lang/compiler/compiler_test.js"></script>
-    <script src="../../../src/sc/lang/compiler/lexer_test.js"></script>
-    <script src="../../../src/sc/lang/compiler/marker_test.js"></script>
-    <script src="../../../src/sc/lang/compiler/parser_test.js"></script>
-    <script src="../../../src/sc/lang/compiler/pre-compiler_test.js"></script>
+    <script src="../../../src/sc/lang/klass/builder_test.js"></script>
     <script src="../../../src/sc/lang/klass/constructors_test.js"></script>
+    <script src="../../../src/sc/lang/klass/define_test.js"></script>
     <script src="../../../src/sc/lang/klass/klass_test.js"></script>
     <script src="../../../src/sc/lang/klass/utils_test.js"></script>
-    <script src="../../../src/sc/libs/mathlib_test.js"></script>
-    <script src="../../../src/sc/libs/random_test.js"></script>
-    <script src="../../../src/sc/libs/strlib_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/assignment-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/binop-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/call-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/codegen_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/envir-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/event-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/function-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/identifier_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/list-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/literal_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/program_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/scope_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/this-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/uop-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/value_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/codegen/var-stmt_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/lexer/comment_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/lexer/identifier_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/lexer/lexer_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/lexer/number_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/lexer/punctuator_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/lexer/string_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/marker/marker_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/assignment-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/binop-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/braces_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/call-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/envir-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/event-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/expression_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/function-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/generator-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/hashed-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/identifier_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/interpolate-string_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/label_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/list-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/list-indexer_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/literal_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/parentheses_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/parser_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/partial-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/primary-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/program_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/ref-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/series-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/signed-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/string-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/parser/this-expr_test.js"></script>
+    <script src="../../../src/sc/lang/compiler/rewriter/rewriter_test.js"></script>
     <script src="../../../src/sc/classlib/Collections/Array_test.js"></script>
     <script src="../../../src/sc/classlib/Collections/ArrayedCollection_test.js"></script>
     <script src="../../../src/sc/classlib/Collections/Association_test.js"></script>
@@ -75,6 +123,8 @@
     <script src="../../../src/sc/classlib/Math/Number_test.js"></script>
     <script src="../../../src/sc/classlib/Math/SimpleNumber_test.js"></script>
     <script src="../../../src/sc/classlib/Streams/BasicOpsStream_test.js"></script>
+    <script src="../../../src/sc/classlib/Streams/ListPatterns_test.js"></script>
+    <script src="../../../src/sc/classlib/Streams/Patterns_test.js"></script>
     <script src="../../../src/sc/classlib/Streams/Stream_test.js"></script>
   </head>
   <body>

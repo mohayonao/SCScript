@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">134.11</p>
+      <p class="stat">134.34</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">114</p>
+      <p class="stat">135</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">16.50</p>
+      <p class="stat">21.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.74</p>
+      <p class="stat">0.80</p>
     </div>
   </div>
 </div>
@@ -95,25 +95,26 @@
 
   require(&quot;./Object&quot;);
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $int0 = $.int0;
+  var $int1 = $.int1;
 
-  sc.lang.klass.refine(&quot;Boolean&quot;, function(spec, utils) {
-    spec.__bool__ = function() {
+  sc.lang.klass.refine(&quot;Boolean&quot;, function(builder) {
+    builder.addMethod(&quot;__bool__&quot;, function() {
       return this._;
-    };
+    });
 
-    spec.toString = function() {
+    builder.addMethod(&quot;toString&quot;, function() {
       return String(this._);
-    };
+    });
 
-    spec.$new = function() {
+    builder.addClassMethod(&quot;new&quot;, function() {
       throw new Error(&quot;Boolean.new is illegal, should use literal.&quot;);
-    };
+    });
 
-    spec.xor = function($bool) {
+    builder.addMethod(&quot;xor&quot;, function($bool) {
       return $.Boolean(this === $bool).not();
-    };
+    });
 
     // TODO: implements if
     // TODO: implements nop
@@ -125,84 +126,104 @@
     // TODO: implements asInteger
     // TODO: implements binaryValue
 
-    spec.asBoolean = utils.nop;
-    spec.booleanValue = utils.nop;
+    builder.addMethod(&quot;asBoolean&quot;);
+    builder.addMethod(&quot;booleanValue&quot;);
 
     // TODO: implements keywordWarnings
     // TODO: implements trace
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    builder.addMethod(&quot;archiveAsCompileString&quot;, sc.TRUE);
 
-    spec.while = function() {
+    builder.addMethod(&quot;while&quot;, function() {
       var msg = &quot;While was called with a fixed (unchanging) Boolean as the condition. &quot;;
       msg += &quot;Please supply a Function instead.&quot;;
       throw new Error(msg);
-    };
+    });
 
-    spec.shallowCopy = utils.nop;
+    builder.addMethod(&quot;shallowCopy&quot;);
   });
 
-  sc.lang.klass.refine(&quot;True&quot;, function(spec, utils) {
-    spec.$new = function() {
+  sc.lang.klass.refine(&quot;True&quot;, function(builder) {
+    builder.addClassMethod(&quot;new&quot;, function() {
       throw new Error(&quot;True.new is illegal, should use literal.&quot;);
-    };
+    });
 
-    spec.if = fn(function($trueFunc) {
+    builder.addMethod(&quot;if&quot;, {
+      args: &quot;trueFunc&quot;
+    }, function($trueFunc) {
       return $trueFunc.value();
-    }, &quot;trueFunc&quot;);
+    });
 
-    spec.not = utils.alwaysReturn$false;
+    builder.addMethod(&quot;not&quot;, sc.FALSE);
 
-    spec[&quot;&amp;&amp;&quot;] = function($that) {
+    builder.addMethod(&quot;&amp;&amp;&quot;, function($that) {
       return $that.value();
-    };
+    });
 
-    spec[&quot;||&quot;] = utils.nop;
+    builder.addMethod(&quot;||&quot;);
 
-    spec.and = fn(function($that) {
+    builder.addMethod(&quot;and&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       return $that.value();
-    }, &quot;that&quot;);
+    });
 
-    spec.or = spec[&quot;||&quot;];
+    builder.addMethod(&quot;or&quot;);
 
-    spec.nand = fn(function($that) {
+    builder.addMethod(&quot;nand&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       return $that.value().$(&quot;not&quot;);
-    }, &quot;that&quot;);
+    });
 
-    spec.asInteger = utils.alwaysReturn$int_1;
-    spec.binaryValue = utils.alwaysReturn$int_1;
+    builder.addMethod(&quot;asInteger&quot;, function() {
+      return $int1;
+    });
+
+    builder.addMethod(&quot;binaryValue&quot;, function() {
+      return $int1;
+    });
   });
 
-  sc.lang.klass.refine(&quot;False&quot;, function(spec, utils) {
-    spec.$new = function() {
+  sc.lang.klass.refine(&quot;False&quot;, function(builder) {
+    builder.addClassMethod(&quot;new&quot;, function() {
       throw new Error(&quot;False.new is illegal, should use literal.&quot;);
-    };
+    });
 
-    spec.if = fn(function($trueFunc, $falseFunc) {
+    builder.addMethod(&quot;if&quot;, {
+      args: &quot;trueFunc; falseFunc&quot;
+    }, function($trueFunc, $falseFunc) {
       return $falseFunc.value();
-    }, &quot;trueFunc; falseFunc&quot;);
+    });
 
-    spec.not = utils.alwaysReturn$true;
+    builder.addMethod(&quot;not&quot;, sc.TRUE);
 
-    spec[&quot;&amp;&amp;&quot;] = utils.nop;
+    builder.addMethod(&quot;&amp;&amp;&quot;);
 
-    spec[&quot;||&quot;] = function($that) {
+    builder.addMethod(&quot;||&quot;, function($that) {
       return $that.value();
-    };
+    });
 
-    spec.and = utils.nop;
+    builder.addMethod(&quot;and&quot;);
 
-    spec.or = fn(function($that) {
+    builder.addMethod(&quot;or&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       return $that.value();
-    }, &quot;that&quot;);
+    });
 
-    spec.nand = utils.alwaysReturn$true;
-    spec.asInteger = utils.alwaysReturn$int_0;
-    spec.binaryValue = utils.alwaysReturn$int_0;
+    builder.addMethod(&quot;nand&quot;, sc.TRUE);
+
+    builder.addMethod(&quot;asInteger&quot;, function() {
+      return $int0;
+    });
+
+    builder.addMethod(&quot;binaryValue&quot;, function() {
+      return $int0;
+    });
   });
-
 });</textarea>
   </div>
 </div>

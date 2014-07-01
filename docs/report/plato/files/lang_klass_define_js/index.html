@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/klass/define.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/klass/define.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">119.13</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">207</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">47.63</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.84</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./klass&quot;);
+  require(&quot;./builder&quot;);
+  require(&quot;../dollar&quot;);
+
+  var $ = sc.lang.$;
+  var strlib = sc.libs.strlib;
+  var metaClasses = {};
+  var classes     = sc.lang.klass.classes;
+  var hash = 0x100000;
+
+  function createClassInstance(MetaSpec) {
+    var instance = new SCClass();
+    instance.__MetaSpec = MetaSpec;
+    return instance;
+  }
+
+  function extend(constructor, superMetaClass) {
+    function F() {}
+    F.prototype = superMetaClass.__Spec.prototype;
+    constructor.prototype = new F();
+
+    function MetaF() {}
+    MetaF.prototype = superMetaClass.__MetaSpec.prototype;
+
+    function MetaSpec() {}
+    MetaSpec.prototype = new MetaF();
+    MetaSpec.__superClass = superMetaClass.__MetaSpec;
+
+    constructor.metaClass = createClassInstance(MetaSpec);
+    constructor.__superClass = superMetaClass.__Spec;
+  }
+
+  function throwIfInvalidClassName(className, superClassName) {
+    if (!strlib.isClassName(className)) {
+      throw new Error(strlib.format(
+        &quot;sc.lang.klass.define: classname should be CamelCase, but got &#039;#{0}&#039;&quot;, className
+      ));
+    }
+
+    if (metaClasses.hasOwnProperty(className)) {
+      throw new Error(strlib.format(
+        &quot;sc.lang.klass.define: class &#039;#{0}&#039; is already defined.&quot;, className
+      ));
+    }
+
+    if (className !== &quot;Object&quot;) {
+      if (!metaClasses.hasOwnProperty(superClassName)) {
+        throw new Error(strlib.format(
+          &quot;sc.lang.klass.define: superclass &#039;#{0}&#039; is not defined.&quot;, superClassName
+        ));
+      }
+    }
+  }
+
+  function registerMetaClass(className, metaClass, constructor) {
+    metaClass.__className  = &quot;Meta_&quot; + className;
+    metaClass.__Spec = constructor;
+    metaClass.__isMetaClass = true;
+    metaClasses[className] = classes[&quot;Meta_&quot; + className] = metaClass;
+  }
+
+  function registerClass(className, metaClass, constructor) {
+    var newClass = new metaClass.__MetaSpec();
+    newClass.__className = className;
+    newClass.__Spec = constructor;
+    newClass.__superClass = metaClass.__MetaSpec.__superClass;
+    Object.defineProperties(constructor.prototype, {
+      __class: { value: newClass, writable: true },
+      __Spec: { value: constructor, writable: true },
+      __className: { value: className, writable: true }
+    });
+    classes[className] = newClass;
+  }
+
+  function buildClass(constructor, spec) {
+    if (typeof spec !== &quot;function&quot;) {
+      return new sc.lang.klass.Builder(constructor).init(spec);
+    }
+    spec(new sc.lang.klass.Builder(constructor), sc.lang.klass.utils);
+  }
+
+  function __super__(that, root, funcName, args) {
+    var func, result;
+
+    that.__superClassP = that.__superClassP || root;
+
+    while (!func &amp;&amp; that.__superClassP) {
+      func = that.__superClassP.prototype[funcName];
+      that.__superClassP = that.__superClassP.__superClass;
+    }
+
+    if (func) {
+      result = func.apply(that, args);
+    } else {
+      throw new Error(strlib.format(&quot;supermethod &#039;#{0}&#039; not found&quot;, funcName));
+    }
+
+    that.__superClassP = null;
+
+    return result || /* istanbul ignore next */ $.Nil();
+  }
+
+  var define = sc.lang.klass.define = function(className, spec) {
+    var items = className.split(&quot;:&quot;);
+    var superClassName = (items[1] || &quot;Object&quot;).trim();
+
+    className = items[0].trim();
+    throwIfInvalidClassName(className, superClassName);
+
+    var constructor = spec &amp;&amp; spec.hasOwnProperty(&quot;constructor&quot;) ?
+      spec.constructor : function() {
+        this.__super__(superClassName);
+      };
+
+    if (className !== &quot;Object&quot;) {
+      extend(constructor, metaClasses[superClassName]);
+    }
+
+    var metaClass = constructor.metaClass;
+    registerMetaClass(className, metaClass, constructor);
+    registerClass    (className, metaClass, constructor);
+
+    buildClass(constructor, spec);
+
+    return constructor;
+  };
+
+  var refine = sc.lang.klass.refine = function(className, spec) {
+    if (!metaClasses.hasOwnProperty(className)) {
+      throw new Error(strlib.format(
+        &quot;sc.lang.klass.refine: class &#039;#{0}&#039; is not defined.&quot;, className
+      ));
+    }
+    var constructor = metaClasses[className].__Spec;
+    buildClass(constructor, spec);
+  };
+
+  // basic classes
+  function SCObject() {
+    this._ = this;
+    Object.defineProperties(this, {
+      __immutable: { value: false, writable: true },
+      __hash: { value: hash++ }
+    });
+    if (this.__init__) {
+      this.__init__();
+    }
+  }
+
+  function SCClass() {
+    SCObject.call(this);
+    this.__isMetaClass = false;
+  }
+
+  SCObject.metaClass = createClassInstance(function() {});
+
+  define(&quot;Object&quot;, {
+    constructor: SCObject,
+    __tag: sc.TAG_OBJ,
+    __init__: function() {},
+    __super__: function(funcName, args) {
+      if (strlib.isClassName(funcName)) {
+        return metaClasses[funcName].__Spec.call(this);
+      }
+      return __super__(this, this.__Spec.__superClass, funcName, args);
+    }
+  });
+
+  define(&quot;Class&quot;, {
+    constructor: SCClass,
+    __super__: function(funcName, args) {
+      return __super__(this, this.__superClass, funcName, args);
+    }
+  });
+
+  classes.Class = createClassInstance();
+  classes.Class.__Spec = SCClass;
+
+  SCObject.metaClass.__MetaSpec.prototype = classes.Class;
+
+  registerClass(&quot;Object&quot;, SCObject.metaClass, classes.Object.__Spec);
+
+  refine(&quot;Object&quot;, function(builder) {
+    builder.addClassMethod(&quot;new&quot;, function() {
+      if (this.__Spec === SCClass) {
+        return $.Nil();
+      }
+      return new this.__Spec();
+    });
+
+    builder.addMethod(&quot;$&quot;, function(methodName, args) {
+      if (this[methodName]) {
+        return this[methodName].apply(this, args);
+      }
+      return this.__attr__(methodName, args);
+    });
+
+    builder.addMethod(&quot;__attr__&quot;, function(methodName) {
+      throw new Error(strlib.format(
+        &quot;RECEIVER #{0}: Message &#039;#{1}&#039; not understood.&quot;, this.__str__(), methodName
+      ));
+    });
+  });
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - classlib/Streams/Patterns.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>classlib/Streams/Patterns.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">132.83</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">286</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">27.12</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.78</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">SCScript.install(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;../Core/AbstractFunction&quot;);
+
+  var $ = sc.lang.$;
+  var $false = $.false;
+  var SCRoutine = $(&quot;Routine&quot;);
+
+  sc.lang.klass.define(&quot;Pattern : AbstractFunction&quot;, function(builder) {
+    builder.addMethod(&quot;++&quot;, function($aPattern) {
+      return $(&quot;Pseq&quot;).new($.Array([ this, $aPattern ]));
+    });
+
+    builder.addMethod(&quot;&lt;&gt;&quot;, function($aPattern) {
+      return $(&quot;Pchain&quot;).new(this, $aPattern);
+    });
+
+    builder.addMethod(&quot;play&quot;, {
+      args: &quot;clock; protoEvent; quant&quot;
+    }, function($clock, $protoEvent, $quant) {
+      return this.asEventStreamPlayer($protoEvent).play($clock, $false, $quant);
+    });
+
+    builder.addMethod(&quot;asStream&quot;, function() {
+      var $this = this;
+      return SCRoutine.new($.Func(function($inval) {
+        return $this.embedInStream($inval);
+      }));
+    });
+
+    builder.addMethod(&quot;iter&quot;, function() {
+      return this.asStream();
+    });
+
+    builder.addMethod(&quot;streamArg&quot;, function() {
+      return this.asStream();
+    });
+
+    builder.addMethod(&quot;asEventStreamPlayer&quot;, {
+      args: &quot;protoEvent&quot;
+    }, function($protoEvent) {
+      return $(&quot;EventStreamPlayer&quot;).new(this.asStream(), $protoEvent);
+    });
+
+    builder.addMethod(&quot;embedInStream&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
+      return this.asStream().embedInStream($inval);
+    });
+
+    builder.addMethod(&quot;do&quot;, function($function) {
+      return this.asStream().do($function);
+    });
+
+    builder.addMethod(&quot;collect&quot;, function($function) {
+      return $(&quot;Pcollect&quot;).new($function, this);
+    });
+
+    builder.addMethod(&quot;select&quot;, function($function) {
+      return $(&quot;Pselect&quot;).new($function, this);
+    });
+
+    builder.addMethod(&quot;reject&quot;, function($function) {
+      return $(&quot;Preject&quot;).new($function, this);
+    });
+
+    builder.addMethod(&quot;composeUnaryOp&quot;, function($operator) {
+      return $(&quot;Punop&quot;).new($operator, this);
+    });
+
+    builder.addMethod(&quot;composeBinaryOp&quot;, function($operator, $pattern, $adverb) {
+      return $(&quot;Pbinop&quot;).new($operator, this, $pattern, $adverb);
+    });
+
+    builder.addMethod(&quot;reverseComposeBinaryOp&quot;, function($operator, $pattern, $adverb) {
+      return $(&quot;Pbinop&quot;).new($operator, $pattern, this, $adverb);
+    });
+
+    builder.addMethod(&quot;composeNAryOp&quot;, function($selector, $argList) {
+      return $(&quot;Pnaryop&quot;).new($selector, this, $argList);
+    });
+
+    builder.addMethod(&quot;mtranspose&quot;, function($n) {
+      return $(&quot;Paddp&quot;).new($.Symbol(&quot;mtranspose&quot;), $n, this);
+    });
+
+    builder.addMethod(&quot;ctranspose&quot;, function($n) {
+      return $(&quot;Paddp&quot;).new($.Symbol(&quot;ctranspose&quot;), $n, this);
+    });
+
+    builder.addMethod(&quot;gtranspose&quot;, function($n) {
+      return $(&quot;Paddp&quot;).new($.Symbol(&quot;gtranspose&quot;), $n, this);
+    });
+
+    builder.addMethod(&quot;detune&quot;, function($n) {
+      return $(&quot;Paddp&quot;).new($.Symbol(&quot;detune&quot;), $n, this);
+    });
+
+    builder.addMethod(&quot;scaleDur&quot;, function($x) {
+      return $(&quot;Pmulp&quot;).new($.Symbol(&quot;dur&quot;), $x, this);
+    });
+
+    builder.addMethod(&quot;addDur&quot;, function($x) {
+      return $(&quot;Paddp&quot;).new($.Symbol(&quot;dur&quot;), $x, this);
+    });
+
+    builder.addMethod(&quot;stretch&quot;, function($x) {
+      return $(&quot;Pmulp&quot;).new($.Symbol(&quot;stretch&quot;), $x, this);
+    });
+
+    builder.addMethod(&quot;lag&quot;, function($t) {
+      return $(&quot;Plag&quot;).new($t, this);
+    });
+
+    builder.addMethod(&quot;legato&quot;, function($x) {
+      return $(&quot;Pmulp&quot;).new($.Symbol(&quot;legato&quot;), $x, this);
+    });
+
+    builder.addMethod(&quot;db&quot;, function($db) {
+      return $(&quot;Paddp&quot;).new($.Symbol(&quot;db&quot;), $db, this);
+    });
+
+    builder.addMethod(&quot;clump&quot;, function($n) {
+      return $(&quot;Pclump&quot;).new($n, this);
+    });
+
+    builder.addMethod(&quot;flatten&quot;, function($n) {
+      return $(&quot;Pflatten&quot;).new($n, this);
+    });
+
+    builder.addMethod(&quot;repeat&quot;, function($n) {
+      return $(&quot;Pn&quot;).new(this, $n);
+    });
+
+    builder.addMethod(&quot;keep&quot;, function($n) {
+      return $(&quot;Pfin&quot;).new($n, this);
+    });
+
+    builder.addMethod(&quot;drop&quot;, function($n) {
+      return $(&quot;Pdrop&quot;).new($n, this);
+    });
+
+    builder.addMethod(&quot;stutter&quot;, function($n) {
+      return $(&quot;Pstutter&quot;).new($n, this);
+    });
+
+    builder.addMethod(&quot;finDur&quot;, function($dur, $tolerance ) {
+      return $(&quot;Pfindur&quot;).new($dur, this, $tolerance);
+    });
+
+    builder.addMethod(&quot;fin&quot;, function($n) {
+      return $(&quot;Pfin&quot;).new($n, this);
+    });
+
+    builder.addMethod(&quot;trace&quot;, function($key, $printStream, $prefix) {
+      return $(&quot;Ptrace&quot;).new(this, $key, $printStream, $prefix);
+    });
+
+    builder.addMethod(&quot;differentiate&quot;, function() {
+      return $(&quot;Pdiff&quot;).new(this);
+    });
+    // TODO: implements integrate
+    // TODO: implements record
+  });
+
+  sc.lang.klass.define(&quot;Pseries : Pattern&quot;, function(builder, _) {
+    var $nil = $.nil;
+
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;start&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;step&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;length&quot;);
+
+    builder.addClassMethod(&quot;new&quot;, {
+      args: &quot;start=0; step=1; length=inf&quot;
+    }, function($start, $step, $length) {
+      return _.newCopyArgs(this, {
+        start: $start,
+        step: $step,
+        length: $length
+      });
+    });
+
+    // TODO: implements storeArgs
+
+    builder.addMethod(&quot;embedInStream&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
+      var counter, length;
+      var $cur, $stepStr;
+
+      counter = 0;
+      length  = this._$length.__int__();
+
+      $cur     = this._$start;
+      $stepStr = this._$step.asStream();
+
+      $.Func(function() {
+        return $.Boolean(counter &lt; length);
+      }).while($.Function(function() {
+        var $stepVal;
+        return [
+          function() {
+            $stepVal = $stepStr.next($inval);
+
+            if ($stepVal === $nil) {
+              this.break();
+            }
+          },
+          function() {
+            var $outval;
+
+            $outval = $cur;
+            $cur = $cur.$(&quot;+&quot;, [ $stepVal ]);
+            counter += 1;
+            $inval   = $outval.yield();
+            return $inval;
+          },
+          $.NOP
+        ];
+      }));
+
+      return $inval;
+    });
+  });
+
+  sc.lang.klass.define(&quot;Pgeom : Pattern&quot;, function(builder, _) {
+    var $nil = $.nil;
+
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;start&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;grow&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;length&quot;);
+
+    builder.addClassMethod(&quot;new&quot;, {
+      args: &quot;start=0; grow=1; length=inf&quot;
+    }, function($start, $grow, $length) {
+      return _.newCopyArgs(this, {
+        start: $start,
+        grow: $grow,
+        length: $length
+      });
+    });
+
+    // TODO: implements storeArgs
+
+    builder.addMethod(&quot;embedInStream&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
+      var counter, length;
+      var $cur, $growStr;
+
+      counter = 0;
+      length  = this._$length.__int__();
+
+      $cur     = this._$start;
+      $growStr = this._$grow.asStream();
+
+      $.Func(function() {
+        return $.Boolean(counter &lt; length);
+      }).while($.Function(function() {
+        var $growVal;
+        return [
+          function() {
+            $growVal = $growStr.next($inval);
+
+            if ($growVal === $nil) {
+              this.break();
+            }
+          },
+          function() {
+            var $outval;
+
+            $outval = $cur;
+            $cur = $cur.$(&quot;*&quot;, [ $growVal ]);
+            counter += 1;
+            $inval   = $outval.yield();
+            return $inval;
+          },
+          $.NOP
+        ];
+      }));
+
+      return $inval;
+    });
+  });
+});</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

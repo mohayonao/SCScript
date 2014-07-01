@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.81</p>
+      <p class="stat">126.25</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">285</p>
+      <p class="stat">286</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">49.02</p>
+      <p class="stat">54.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.79</p>
+      <p class="stat">1.92</p>
     </div>
   </div>
 </div>
@@ -96,33 +96,34 @@
   require(&quot;./ArrayedCollection&quot;);
 
   var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var io = sc.lang.io;
+  var $nil   = $.nil;
+  var $false = $.false;
+  var $space = $.Char(&quot; &quot;);
 
-  sc.lang.klass.refine(&quot;String&quot;, function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $false = utils.$false;
-
-    spec.__str__ = function() {
+  sc.lang.klass.refine(&quot;String&quot;, function(builder) {
+    builder.addMethod(&quot;__str__&quot;, function() {
       return this.valueOf();
-    };
+    });
 
-    spec.__elem__ = function($item) {
+    builder.addMethod(&quot;__elem__&quot;, function($item) {
+      if (!$item) {
+        return $space;
+      }
       if ($item.__tag !== sc.TAG_CHAR) {
         throw new TypeError(&quot;Wrong type.&quot;);
       }
       return $item;
-    };
+    });
 
-    spec.valueOf = function() {
+    builder.addMethod(&quot;valueOf&quot;, function() {
       return this._.map(function(elem) {
         return elem.__str__();
       }).join(&quot;&quot;);
-    };
+    });
 
-    spec.toString = function() {
+    builder.addMethod(&quot;toString&quot;, function() {
       return this.valueOf();
-    };
+    });
 
     // TODO: implements unixCmdActions
     // TODO: implements unixCmdActions_
@@ -131,21 +132,21 @@
     // TODO: implements unixCmd
     // TODO: implements unixCmdGetStdOut
 
-    spec.asSymbol = function() {
+    builder.addMethod(&quot;asSymbol&quot;, function() {
       return $.Symbol(this.__str__());
-    };
+    });
 
-    spec.asInteger = function() {
+    builder.addMethod(&quot;asInteger&quot;, function() {
       var m = /^[-+]?\d+/.exec(this.__str__());
       return $.Integer(m ? m[0]|0 : 0);
-    };
+    });
 
-    spec.asFloat = function() {
+    builder.addMethod(&quot;asFloat&quot;, function() {
       var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
       return $.Float(m ? +m[0] : 0);
-    };
+    });
 
-    spec.ascii = function() {
+    builder.addMethod(&quot;ascii&quot;, function() {
       var raw = this.__str__();
       var a, i, imax;
 
@@ -155,13 +156,15 @@
       }
 
       return $.Array(a);
-    };
+    });
 
     // TODO: implements stripRTF
     // TODO: implements stripHTML
     // TODO: implements $scDir
 
-    spec.compare = fn(function($aString, $ignoreCase) {
+    builder.addMethod(&quot;compare&quot;, {
+      args: &quot;aString; ignoreCase=false&quot;
+    }, function($aString, $ignoreCase) {
       var araw, braw, length, i, a, b, cmp, func;
 
       if ($aString.__tag !== sc.TAG_STR) {
@@ -197,89 +200,89 @@
       }
 
       return $.Integer(cmp);
-    }, &quot;aString; ignoreCase=false&quot;);
+    });
 
-    spec[&quot;&lt;&quot;] = function($aString) {
+    builder.addMethod(&quot;&lt;&quot;, function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &lt; 0
+        this.compare($aString, $false).__num__() &lt; 0
       );
-    };
+    });
 
-    spec[&quot;&gt;&quot;] = function($aString) {
+    builder.addMethod(&quot;&gt;&quot;, function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &gt; 0
+        this.compare($aString, $false).__num__() &gt; 0
       );
-    };
+    });
 
-    spec[&quot;&lt;=&quot;] = function($aString) {
+    builder.addMethod(&quot;&lt;=&quot;, function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &lt;= 0
+        this.compare($aString, $false).__num__() &lt;= 0
       );
-    };
+    });
 
-    spec[&quot;&gt;=&quot;] = function($aString) {
+    builder.addMethod(&quot;&gt;=&quot;, function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &gt;= 0
+        this.compare($aString, $false).__num__() &gt;= 0
       );
-    };
+    });
 
-    spec[&quot;==&quot;] = function($aString) {
+    builder.addMethod(&quot;==&quot;, function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() === 0
+        this.compare($aString, $false).__num__() === 0
       );
-    };
+    });
 
-    spec[&quot;!=&quot;] = function($aString) {
+    builder.addMethod(&quot;!=&quot;, function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() !== 0
+        this.compare($aString, $false).__num__() !== 0
       );
-    };
+    });
 
     // TODO: implements hash
 
-    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
+    builder.addMethod(&quot;performBinaryOpOnSimpleNumber&quot;, function($aSelector, $aNumber) {
       return $aNumber.asString().perform($aSelector, this);
-    };
+    });
 
-    spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
+    builder.addMethod(&quot;performBinaryOpOnComplex&quot;, function($aSelector, $aComplex) {
       return $aComplex.asString().perform($aSelector, this);
-    };
+    });
 
-    spec.multiChannelPerform = function() {
+    builder.addMethod(&quot;multiChannelPerform&quot;, function() {
       throw new Error(&quot;String:multiChannelPerform. Cannot expand strings.&quot;);
-    };
+    });
 
-    spec.isString = utils.alwaysReturn$true;
+    builder.addMethod(&quot;isString&quot;, sc.TRUE);
 
-    spec.asString = utils.nop;
+    builder.addMethod(&quot;asString&quot;);
 
-    spec.asCompileString = function() {
+    builder.addMethod(&quot;asCompileString&quot;, function() {
       return $.String(&quot;\&quot;&quot; + this.__str__() + &quot;\&quot;&quot;);
-    };
+    });
 
-    spec.species = function() {
+    builder.addMethod(&quot;species&quot;, function() {
       return $(&quot;String&quot;);
-    };
+    });
 
-    spec.postln = function() {
-      io.post(this.__str__() + &quot;\n&quot;);
+    builder.addMethod(&quot;postln&quot;, function() {
+      sc.lang.io.post(this.__str__() + &quot;\n&quot;);
       return this;
-    };
+    });
 
-    spec.post = function() {
-      io.post(this.__str__());
+    builder.addMethod(&quot;post&quot;, function() {
+      sc.lang.io.post(this.__str__());
       return this;
-    };
+    });
 
-    spec.postcln = function() {
-      io.post(&quot;// &quot; + this.__str__() + &quot;\n&quot;);
+    builder.addMethod(&quot;postcln&quot;, function() {
+      sc.lang.io.post(&quot;// &quot; + this.__str__() + &quot;\n&quot;);
       return this;
-    };
+    });
 
-    spec.postc = function() {
-      io.post(&quot;// &quot; + this.__str__());
+    builder.addMethod(&quot;postc&quot;, function() {
+      sc.lang.io.post(&quot;// &quot; + this.__str__());
       return this;
-    };
+    });
 
     // TODO: implements postf
     // TODO: implements format
@@ -290,18 +293,17 @@
     // TODO: implements warn
     // TODO: implements inform
 
-    spec[&quot;++&quot;] = function($anObject) {
+    builder.addMethod(&quot;++&quot;, function($anObject) {
       return $.String(
         this.toString() + $anObject.asString().toString()
       );
-    };
+    });
 
-    spec[&quot;+&quot;] = function($anObject) {
+    builder.addMethod(&quot;+&quot;, function($anObject) {
       return $.String(
         this.toString() + &quot; &quot; + $anObject.asString().toString()
       );
-    };
-
+    });
     // TODO: implements catArgs
     // TODO: implements scatArgs
     // TODO: implements ccatArgs
@@ -373,7 +375,6 @@
     // TODO: implements parseYAML
     // TODO: implements parseYAMLFile
   });
-
 });</textarea>
   </div>
 </div>

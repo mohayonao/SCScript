@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">99.15</p>
+      <p class="stat">92.35</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">90</p>
+      <p class="stat">114</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">9.51</p>
+      <p class="stat">9.61</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.60</p>
+      <p class="stat">0.93</p>
     </div>
   </div>
 </div>
@@ -93,9 +93,9 @@
     <textarea id="file-source" class="col-md-12">(function(sc) {
   &quot;use strict&quot;;
 
-  require(&quot;./sc&quot;);
+  require(&quot;../sc&quot;);
 
-  var compiler = {
+  sc.lang.compiler = {
     Token: {
       CharLiteral: &quot;Char&quot;,
       EOF: &quot;&lt;EOF&gt;&quot;,
@@ -109,18 +109,18 @@
       Punctuator: &quot;Punctuator&quot;,
       StringLiteral: &quot;String&quot;,
       SymbolLiteral: &quot;Symbol&quot;,
-      TrueLiteral: &quot;True&quot;
+      TrueLiteral: &quot;True&quot;,
+      SingleLineComment: &quot;SingleLineComment&quot;,
+      MultiLineComment: &quot;MultiLineComment&quot;
     },
     Syntax: {
       AssignmentExpression: &quot;AssignmentExpression&quot;,
       BinaryExpression: &quot;BinaryExpression&quot;,
-      BlockExpression: &quot;BlockExpression&quot;,
       CallExpression: &quot;CallExpression&quot;,
       FunctionExpression: &quot;FunctionExpression&quot;,
-      EnvironmentExpresion: &quot;EnvironmentExpresion&quot;,
+      EnvironmentExpression: &quot;EnvironmentExpression&quot;,
       Identifier: &quot;Identifier&quot;,
       ListExpression: &quot;ListExpression&quot;,
-      Label: &quot;Label&quot;,
       Literal: &quot;Literal&quot;,
       EventExpression: &quot;EventExpression&quot;,
       Program: &quot;Program&quot;,
@@ -132,16 +132,18 @@
       ValueMethodResult: &quot;ValueMethodResult&quot;
     },
     Message: {
-      ArgumentAlreadyDeclared: &quot;argument &#039;%0&#039; already declared&quot;,
+      ArgumentAlreadyDeclared: &quot;argument &#039;#{0}&#039; already declared&quot;,
       InvalidLHSInAssignment: &quot;invalid left-hand side in assignment&quot;,
-      NotImplemented: &quot;not implemented %0&quot;,
+      NotImplemented: &quot;not implemented #{0}&quot;,
       UnexpectedEOS: &quot;unexpected end of input&quot;,
       UnexpectedIdentifier: &quot;unexpected identifier&quot;,
+      UnexpectedKeyword: &quot;unexpected keyword&quot;,
       UnexpectedNumber: &quot;unexpected number&quot;,
-      UnexpectedLiteral: &quot;unexpected %0&quot;,
-      UnexpectedToken: &quot;unexpected token %0&quot;,
-      VariableAlreadyDeclared: &quot;variable &#039;%0&#039; already declared&quot;,
-      VariableNotDefined: &quot;variable &#039;%0&#039; not defined&quot;
+      UnexpectedLabel: &quot;unexpected label&quot;,
+      UnexpectedLiteral: &quot;unexpected #{0}&quot;,
+      UnexpectedToken: &quot;unexpected token #{0}&quot;,
+      VariableAlreadyDeclared: &quot;variable &#039;#{0}&#039; already declared&quot;,
+      VariableNotDefined: &quot;variable &#039;#{0}&#039; not defined&quot;
     },
     Keywords: {
       var: &quot;keyword&quot;,
@@ -152,33 +154,55 @@
       thisProcess: &quot;function&quot;,
       thisFunction: &quot;function&quot;,
       thisFunctionDef: &quot;function&quot;,
+    },
+    binaryPrecedenceDefaults: {
+      &quot;?&quot;: 1,
+      &quot;??&quot;: 1,
+      &quot;!?&quot;: 1,
+      &quot;-&gt;&quot;: 2,
+      &quot;||&quot;: 3,
+      &quot;&amp;&amp;&quot;: 4,
+      &quot;|&quot;: 5,
+      &quot;&amp;&quot;: 6,
+      &quot;==&quot;: 7,
+      &quot;!=&quot;: 7,
+      &quot;===&quot;: 7,
+      &quot;!==&quot;: 7,
+      &quot;&lt;&quot;: 8,
+      &quot;&gt;&quot;: 8,
+      &quot;&lt;=&quot;: 8,
+      &quot;&gt;=&quot;: 8,
+      &quot;&lt;&lt;&quot;: 9,
+      &quot;&gt;&gt;&quot;: 9,
+      &quot;+&gt;&gt;&quot;: 9,
+      &quot;+&quot;: 10,
+      &quot;-&quot;: 10,
+      &quot;*&quot;: 11,
+      &quot;/&quot;: 11,
+      &quot;%&quot;: 11,
+      &quot;!&quot;: 12
+    },
+    tokenize: function(source, opts) {
+      return new sc.lang.compiler.Lexer(source, opts).tokenize();
+    },
+    parse: function(source, opts) {
+      var lexer = new sc.lang.compiler.Lexer(source, opts);
+      return new sc.lang.compiler.Parser(null, lexer).parse();
+    },
+    compile: function(source, opts) {
+      var ast;
+
+      if (typeof source === &quot;string&quot;) {
+        ast = sc.lang.compiler.parse(source, opts);
+      } else {
+        ast = source;
+      }
+
+      ast = new sc.lang.compiler.Rewriter().rewrite(ast);
+
+      return new sc.lang.compiler.CodeGen(null, opts).compile(ast);
     }
   };
-
-  sc.lang.compiler = compiler;
-
-  var SCScript = sc.SCScript;
-
-  SCScript.tokenize = function(source, opts) {
-    return new compiler.lexer(source, opts).tokenize();
-  };
-
-  SCScript.parse = function(source, opts) {
-    return compiler.parser.parse(source, opts);
-  };
-
-  SCScript.compile = function(source, opts) {
-    var ast;
-
-    if (typeof source === &quot;string&quot;) {
-      ast = SCScript.parse(source, opts);
-    } else {
-      ast = source;
-    }
-
-    return compiler.codegen.compile(ast, opts);
-  };
-
 })(sc);</textarea>
   </div>
 </div>

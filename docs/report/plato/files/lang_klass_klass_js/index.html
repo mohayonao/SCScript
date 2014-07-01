@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">117.80</p>
+      <p class="stat">128.87</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">323</p>
+      <p class="stat">22</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">54.67</p>
+      <p class="stat">17.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.79</p>
+      <p class="stat">0.10</p>
     </div>
   </div>
 </div>
@@ -94,324 +94,23 @@
   &quot;use strict&quot;;
 
   require(&quot;../sc&quot;);
-  require(&quot;../dollar&quot;);
-  require(&quot;../../libs/strlib&quot;);
 
-  var slice  = [].slice;
-  var $      = sc.lang.$;
-  var strlib = sc.libs.strlib;
-
-  var klass       = {};
-  var metaClasses = {};
-  var classes     = klass.classes = {};
-  var hash = 0x100000;
-
-  var isClassName = function(name) {
-    var ch = name.charCodeAt(0);
-    return 0x41 &lt;= ch &amp;&amp; ch &lt;= 0x5a;
-  };
-
-  var createClassInstance = function(MetaSpec) {
-    var instance = new SCClass();
-    instance.__MetaSpec = MetaSpec;
-    return instance;
-  };
-
-  var extend = function(constructor, superMetaClass) {
-    function F() {}
-    F.prototype = superMetaClass.__Spec.prototype;
-    constructor.prototype = new F();
-
-    function Meta_F() {}
-    Meta_F.prototype = superMetaClass.__MetaSpec.prototype;
-
-    function MetaSpec() {}
-    MetaSpec.prototype = new Meta_F();
-    MetaSpec.__superClass = superMetaClass.__MetaSpec;
-
-    constructor.metaClass = createClassInstance(MetaSpec);
-    constructor.__superClass = superMetaClass.__Spec;
-  };
-
-  var def = function(className, constructor, spec, opts) {
-    var classMethods, instanceMethods, setMethod;
-
-    classMethods    = constructor.metaClass.__MetaSpec.prototype;
-    instanceMethods = constructor.prototype;
-
-    setMethod = function(methods, methodName, func) {
-      var bond;
-      if (methods.hasOwnProperty(methodName) &amp;&amp; !opts.force) {
-        bond = methods === classMethods ? &quot;.&quot; : &quot;#&quot;;
-        throw new Error(
-          &quot;sc.lang.klass.refine: &quot; +
-            className + bond + methodName + &quot; is already defined.&quot;
-        );
-      }
-      Object.defineProperty(methods, methodName, {
-        value: func, writable: true
-      });
-    };
-
-    Object.keys(spec).forEach(function(methodName) {
-      if (methodName !== &quot;constructor&quot;) {
-        if (methodName !== &quot;$&quot; &amp;&amp; methodName.charCodeAt(0) === 0x24) { // u+0024 is &#039;$&#039;
-          setMethod(classMethods, methodName.substr(1), spec[methodName]);
-        } else {
-          setMethod(instanceMethods, methodName, spec[methodName]);
-        }
-      }
-    });
-  };
-
-  var throwIfInvalidClassName = function(className, superClassName) {
-    if (!isClassName(className)) { // faster test than !/^[A-Z]/.test(className)
-      throw new Error(
-        &quot;sc.lang.klass.define: &quot; +
-          &quot;classname should be CamelCase, but got &#039;&quot; + className + &quot;&#039;&quot;
-      );
-    }
-
-    if (metaClasses.hasOwnProperty(className)) {
-      throw new Error(
-        &quot;sc.lang.klass.define: &quot; +
-          &quot;class &#039;&quot; + className + &quot;&#039; is already registered.&quot;
-      );
-    }
-
-    if (className !== &quot;Object&quot;) {
-      if (!metaClasses.hasOwnProperty(superClassName)) {
-        throw new Error(
-          &quot;sc.lang.klass.define: &quot; +
-            &quot;superclass &#039;&quot; + superClassName + &quot;&#039; is not registered.&quot;
-        );
-      }
-    }
-  };
-
-  var registerClass = function(MetaClass, className, constructor) {
-    var newClass;
-
-    newClass = new MetaClass.__MetaSpec();
-    newClass._name = className;
-    newClass.__Spec = constructor;
-    newClass.__superClass = MetaClass.__MetaSpec.__superClass;
-    Object.defineProperties(constructor.prototype, {
-      __class: { value: newClass, writable: true },
-      __Spec : { value: constructor, writable: true },
-      __className: { value: className }
-    });
-    classes[className] = newClass;
-
-    return newClass;
-  };
-
-  var buildClass = function(className, constructor) {
-    var newClass, metaClass;
-
-    metaClass = constructor.metaClass;
-    newClass  = registerClass(metaClass, className, constructor);
-
-    metaClass.__Spec = constructor;
-    metaClass._isMetaClass = true;
-    metaClass._name = &quot;Meta_&quot; + className;
-    classes[&quot;Meta_&quot; + className] = metaClass;
-
-    if (newClass.initClass) {
-      newClass.initClass();
-    }
-
-    metaClasses[className] = metaClass;
-  };
-
-  var evalSpec = function(spec) {
-    var result;
-    if (typeof spec === &quot;function&quot;) {
-      result = {};
-      spec(result, klass.utils);
-      return result;
-    }
-    return spec || /* istanbul ignore next */ {};
-  };
-
-  var __super__ = function(that, root, funcName, args) {
-    var func, result;
-
-    that.__superClassP = that.__superClassP || root;
-
-    while (!func &amp;&amp; that.__superClassP) {
-      func = that.__superClassP.prototype[funcName];
-      that.__superClassP = that.__superClassP.__superClass;
-    }
-
-    if (func) {
-      result = func.apply(that, args || []);
-    } else {
-      throw new Error(&quot;supermethod &#039;&quot; + funcName + &quot;&#039; not found&quot;);
-    }
-
-    delete that.__superClassP;
-
-    return result || /* istanbul ignore next */ $.Nil();
-  };
-
-  klass.define = function(className, spec) {
-    var items, superClassName, constructor;
-
-    items = className.split(&quot;:&quot;);
-    className      = items[0].trim();
-    superClassName = (items[1] || &quot;Object&quot;).trim();
-
-    throwIfInvalidClassName(className, superClassName);
-
-    spec = evalSpec(spec);
-
-    if (spec.hasOwnProperty(&quot;constructor&quot;)) {
-      constructor = spec.constructor;
-    } else {
-      throw new Error(
-        &quot;sc.lang.klass.define: &quot; +
-          &quot;class should have a constructor.&quot;
-      );
-    }
-
-    if (className !== &quot;Object&quot;) {
-      extend(constructor, metaClasses[superClassName]);
-    }
-
-    def(className, constructor, spec, {});
-
-    buildClass(className, constructor);
-
-    return constructor;
-  };
-
-  klass.refine = function(className, spec, opts) {
-    var constructor;
-
-    if (!metaClasses.hasOwnProperty(className)) {
-      throw new Error(
-        &quot;sc.lang.klass.refine: &quot; +
-          &quot;class &#039;&quot; + className + &quot;&#039; is not registered.&quot;
-      );
-    }
-
-    constructor = metaClasses[className].__Spec;
-
-    spec = evalSpec(spec);
-    def(className, constructor, spec, opts || {});
+  var klass = {
+    classes: {}
   };
 
   klass.get = function(name) {
-    if (!classes[name]) {
-      throw new Error(
-        &quot;sc.lang.klass.get: &quot; +
-          &quot;class &#039;&quot; + name + &quot;&#039; is not registered.&quot;
-      );
+    if (!klass.classes[name]) {
+      throw new Error(&quot;Class not defined: &quot; + name);
     }
-    return classes[name];
+    return klass.classes[name];
   };
 
   klass.exists = function(name) {
-    return !!classes[name];
+    return !!klass.classes[name];
   };
 
-  // basic classes
-  function SCObject() {
-    this._ = this;
-    Object.defineProperties(this, {
-      __immutable: {
-        value: false, writable: true
-      },
-      __hash: {
-        value: hash++
-      }
-    });
-  }
-
-  function SCClass() {
-    SCObject.call(this);
-    this._name = &quot;Class&quot;;
-    this._isMetaClass = false;
-  }
-
-  SCObject.metaClass = createClassInstance(function() {});
-
-  klass.define(&quot;Object&quot;, {
-    constructor: SCObject,
-    __tag: sc.TAG_OBJ,
-    __super__: function(funcName, args) {
-      if (isClassName(funcName)) {
-        return metaClasses[funcName].__Spec.call(this);
-      }
-
-      return __super__(this, this.__Spec.__superClass, funcName, args);
-    },
-    toString: function() {
-      var name = this.__class._name;
-      return String(strlib.article(name) + &quot; &quot; + name);
-    },
-    valueOf: function() {
-      return this._;
-    }
-  });
-
-  klass.define(&quot;Class&quot;, {
-    constructor: SCClass,
-    __super__: function(funcName, args) {
-      return __super__(this, this.__superClass, funcName, args);
-    },
-    toString: function() {
-      return String(this._name);
-    }
-  });
-
-  classes.Class = createClassInstance();
-  classes.Class.__Spec = SCClass;
-
-  SCObject.metaClass.__MetaSpec.prototype = classes.Class;
-
-  registerClass(SCObject.metaClass, &quot;Object&quot;, classes.Object.__Spec);
-
-  klass.refine(&quot;Object&quot;, function(spec) {
-    spec.$new = function() {
-      if (this.__Spec === SCClass) {
-        return $.Nil();
-      }
-      return new this.__Spec(slice.call(arguments));
-    };
-    spec.$_newCopyArgs = function(dict) {
-      var instance;
-
-      instance = new this.__Spec(slice.call(arguments));
-      Object.keys(dict).forEach(function(key) {
-        instance[&quot;_$&quot; + key] = dict[key] || $.Nil();
-      });
-
-      return instance;
-    };
-    spec.$initClass = function() {
-    };
-
-    spec.$ = function(methodName, args) {
-      if (this[methodName]) {
-        if (args) {
-          return this[methodName].apply(this, args);
-        } else {
-          return this[methodName]();
-        }
-      }
-      return this._doesNotUnderstand(methodName, args);
-    };
-
-    spec._doesNotUnderstand = function(methodName) {
-      throw new Error(&quot;RECEIVER &quot; + this.__str__() + &quot;: &quot; +
-                      &quot;Message &#039;&quot; + methodName + &quot;&#039; not understood.&quot;);
-    };
-  });
-
   sc.lang.klass = klass;
-
 })(sc);</textarea>
   </div>
 </div>

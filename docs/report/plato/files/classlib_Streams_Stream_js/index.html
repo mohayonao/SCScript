@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">136.81</p>
+      <p class="stat">129.01</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">568</p>
+      <p class="stat">517</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">44.46</p>
+      <p class="stat">44.47</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">4.73</p>
+      <p class="stat">4.41</p>
     </div>
   </div>
 </div>
@@ -95,359 +95,337 @@
 
   require(&quot;../Core/AbstractFunction&quot;);
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var klass = sc.lang.klass;
+  var $ = sc.lang.$;
+  var $nil   = $.nil;
+  var $true  = $.true;
+  var $false = $.false;
+  var $int0  = $.int0;
+  var SCArray = $(&quot;Array&quot;);
+  var SCRoutine = $(&quot;Routine&quot;);
 
-  klass.define(&quot;Stream : AbstractFunction&quot;, function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $true  = utils.$true;
-    var $false = utils.$false;
-    var $int_0 = utils.$int_0;
-    var SCArray = $(&quot;Array&quot;);
-
-    spec.constructor = function SCStream() {
-      this.__super__(&quot;AbstractFunction&quot;);
-    };
-
-    spec.parent = function() {
+  sc.lang.klass.refine(&quot;Stream&quot;, function(builder) {
+    builder.addMethod(&quot;parent&quot;, function() {
       return $nil;
-    };
+    });
 
-    spec.next = function() {
-      return this._subclassResponsibility(&quot;next&quot;);
-    };
+    builder.subclassResponsibility(&quot;next&quot;);
+    builder.addMethod(&quot;iter&quot;);
 
-    spec.iter = utils.nop;
-
-    spec.value = fn(function($inval) {
+    builder.addMethod(&quot;value&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
       return this.next($inval);
-    }, &quot;inval&quot;);
+    });
 
-    spec.valueArray = function() {
+    builder.addMethod(&quot;valueArray&quot;, function() {
       return this.next();
-    };
+    });
 
-    spec.nextN = fn(function($n, $inval) {
+    builder.addMethod(&quot;nextN&quot;, {
+      args: &quot;n; inval&quot;
+    }, function($n, $inval) {
       var $this = this;
-      return SCArray.fill($n, $.Function(function() {
-        return [ function() {
-          return $this.next($inval);
-        } ];
+      return SCArray.fill($n, $.Func(function() {
+        return $this.next($inval);
       }));
-    }, &quot;n; inval&quot;);
+    });
 
-    spec.all = fn(function($inval) {
+    builder.addMethod(&quot;all&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
       var $array;
 
       $array = $nil;
-      this.do($.Function(function() {
-        return [ function($item) {
-          $array = $array.add($item);
-        } ];
+      this.do($.Func(function($item) {
+        $array = $array.add($item);
+        return $array;
       }), $inval);
 
       return $array;
-    }, &quot;inval&quot;);
+    });
 
-    spec.put = function() {
-      return this._subclassResponsibility(&quot;put&quot;);
-    };
+    builder.subclassResponsibility(&quot;put&quot;);
 
-    spec.putN = fn(function($n, $item) {
+    builder.addMethod(&quot;putN&quot;, {
+      args: &quot;n; item&quot;
+    }, function($n, $item) {
       var $this = this;
-      $n.do($.Function(function() {
-        return [ function() {
-          $this.put($item);
-        } ];
+      $n.do($.Func(function() {
+        return $this.put($item);
       }));
       return this;
-    }, &quot;n; item&quot;);
+    });
 
-    spec.putAll = fn(function($aCollection) {
+    builder.addMethod(&quot;putAll&quot;, {
+      args: &quot;aCollection&quot;
+    }, function($aCollection) {
       var $this = this;
-      $aCollection.do($.Function(function() {
-        return [ function($item) {
-          $this.put($item);
-        } ];
+      $aCollection.do($.Func(function($item) {
+        return $this.put($item);
       }));
       return this;
-    }, &quot;aCollection&quot;);
+    });
 
-    spec.do = fn(function($function, $inval) {
+    builder.addMethod(&quot;do&quot;, {
+      args: &quot;function; inval&quot;
+    }, function($function, $inval) {
       var $this = this;
       var $item, $i;
 
-      $i = $int_0;
-      $.Function(function() {
-        return [ function() {
-          $item = $this.next($inval);
-          return $item.notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $function.value($item, $i);
-          $i = $i.__inc__();
-          return $i;
-        } ];
+      $i = $int0;
+      $.Func(function() {
+        $item = $this.next($inval);
+        return $item.notNil();
+      }).while($.Func(function() {
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
       }));
 
       return this;
-    }, &quot;function; inval&quot;);
+    });
 
-    spec.subSample = fn(function($offset, $skipSize) {
+    builder.addMethod(&quot;subSample&quot;, {
+      args: &quot;offset=0; skipSize=0&quot;
+    }, function($offset, $skipSize) {
       var $this = this;
-      var SCRoutine = $(&quot;Routine&quot;);
+      return SCRoutine.new($.Func(function() {
+        var offset, i;
 
-      return SCRoutine.new($.Function(function() {
-        return [ function() {
-          $offset.do($.Function(function() {
-            return [ function() {
-              $this.next();
-            } ];
-          }));
-          $.Function(function() {
-            return [ function() {
-              $this.next().yield();
-              $skipSize.do($.Function(function() {
-                return [ function() {
-                  $this.next();
-                } ];
-              }));
-            } ];
-          }).loop();
-        } ];
+        offset = $offset.__int__();
+        for (i = 0; i &lt; offset; ++i) {
+          $this.next();
+        }
+
+        return $.Function(function() {
+          return [
+            function() {
+              return $this.next().yield();
+            },
+            function() {
+              var skipSize, i;
+
+              skipSize = $skipSize.__int__();
+              for (i = 0; i &lt; skipSize; ++i) {
+                $this.next();
+              }
+            },
+            $.NOP
+          ];
+        }).loop();
       }));
-    }, &quot;offset=0; skipSize=0&quot;);
+    });
 
-    spec.generate = fn(function($function) {
+    builder.addMethod(&quot;generate&quot;, {
+      args: &quot;function&quot;
+    }, function($function) {
       var $this = this;
       var $item, $i;
 
-      $i = $int_0;
-      $.Function(function() {
-        return [ function() {
-          $item = $this.next($item);
-          return $item.notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $function.value($item, $i);
-          $i = $i.__inc__();
-          return $i;
-        } ];
+      $i = $int0;
+      $.Func(function() {
+        $item = $this.next($item);
+        return $item.notNil();
+      }).while($.Func(function() {
+        $function.value($item, $i);
+        $i = $i.__inc__();
+        return $i;
       }));
 
       return this;
-    }, &quot;function&quot;);
+    });
 
-    spec.collect = fn(function($argCollectFunc) {
+    builder.addMethod(&quot;collect&quot;, {
+      args: &quot;argCollectFunc&quot;
+    }, function($argCollectFunc) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $.Function(function() {
-        return [ function($inval) {
-          var $nextval;
+      $nextFunc = $.Func(function($inval) {
+        var $nextval;
 
-          $nextval = $this.next($inval);
-          if ($nextval !== $nil) {
-            return $argCollectFunc.value($nextval, $inval);
-          }
-          return $nil;
-        } ];
+        $nextval = $this.next($inval);
+        if ($nextval !== $nil) {
+          return $argCollectFunc.value($nextval, $inval);
+        }
+        return $nil;
       });
-      $resetFunc = $.Function(function() {
-        return [ function() {
-          return $this.reset();
-        } ];
+      $resetFunc = $.Func(function() {
+        return $this.reset();
       });
 
       return $(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
-    }, &quot;argCollectFunc&quot;);
+    });
 
-    spec.reject = fn(function($function) {
+    builder.addMethod(&quot;reject&quot;, {
+      args: &quot;function&quot;
+    }, function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $.Function(function() {
-        return [ function($inval) {
-          var $nextval;
+      $nextFunc = $.Func(function($inval) {
+        var $nextval;
 
-          $nextval = $this.next($inval);
-          $.Function(function() {
-            return [ function() {
-              return $nextval.notNil().and($.Function(function() {
-                return [ function() {
-                  return $function.value($nextval, $inval);
-                } ];
-              }));
-            } ];
-          }).while($.Function(function() {
-            return [ function() {
-              $nextval = $this.next($inval);
-              return $nextval;
-            } ];
+        $nextval = $this.next($inval);
+        $.Func(function() {
+          return $nextval.notNil().and($.Func(function() {
+            return $function.value($nextval, $inval);
           }));
-
+        }).while($.Func(function() {
+          $nextval = $this.next($inval);
           return $nextval;
-        } ];
+        }));
+
+        return $nextval;
       });
-      $resetFunc = $.Function(function() {
-        return [ function() {
-          return $this.reset();
-        } ];
+      $resetFunc = $.Func(function() {
+        return $this.reset();
       });
 
       return $(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
-    }, &quot;function&quot;);
+    });
 
-    spec.select = fn(function($function) {
+    builder.addMethod(&quot;select&quot;, {
+      args: &quot;function&quot;
+    }, function($function) {
       var $this = this;
       var $nextFunc, $resetFunc;
 
-      $nextFunc = $.Function(function() {
-        return [ function($inval) {
-          var $nextval;
+      $nextFunc = $.Func(function($inval) {
+        var $nextval;
 
-          $nextval = $this.next($inval);
-          $.Function(function() {
-            return [ function() {
-              return $nextval.notNil().and($.Function(function() {
-                return [ function() {
-                  return $function.value($nextval, $inval).not();
-                } ];
-              }));
-            } ];
-          }).while($.Function(function() {
-            return [ function() {
-              $nextval = $this.next($inval);
-              return $nextval;
-            } ];
+        $nextval = $this.next($inval);
+        $.Func(function() {
+          return $nextval.notNil().and($.Func(function() {
+            return $function.value($nextval, $inval).not();
           }));
-
+        }).while($.Func(function() {
+          $nextval = $this.next($inval);
           return $nextval;
-        } ];
+        }));
+
+        return $nextval;
       });
-      $resetFunc = $.Function(function() {
-        return [ function() {
-          return $this.reset();
-        } ];
+      $resetFunc = $.Func(function() {
+        return $this.reset();
       });
 
       return $(&quot;FuncStream&quot;).new($nextFunc, $resetFunc);
-    }, &quot;function&quot;);
+    });
 
-    spec.dot = fn(function($function, $stream) {
+    builder.addMethod(&quot;dot&quot;, {
+      args: &quot;function; stream&quot;
+    }, function($function, $stream) {
       var $this = this;
 
-      return $(&quot;FuncStream&quot;).new($.Function(function() {
-        return [ function($inval) {
-          var $x, $y;
+      return $(&quot;FuncStream&quot;).new($.Func(function($inval) {
+        var $x, $y;
 
-          $x = $this.next($inval);
-          $y = $stream.next($inval);
+        $x = $this.next($inval);
+        $y = $stream.next($inval);
 
-          if ($x !== $nil &amp;&amp; $y !== $nil) {
-            return $function.value($x, $y, $inval);
-          }
+        if ($x !== $nil &amp;&amp; $y !== $nil) {
+          return $function.value($x, $y, $inval);
+        }
 
-          return $nil;
-        } ];
-      }), $.Function(function() {
-        return [ function() {
-          $this.reset();
-          return $stream.reset();
-        } ];
+        return $nil;
+      }), $.Func(function() {
+        $this.reset();
+        return $stream.reset();
       }));
-    }, &quot;function; stream&quot;);
+    });
 
-    spec.interlace = fn(function($function, $stream) {
+    builder.addMethod(&quot;interlace&quot;, {
+      args:  &quot;function; stream&quot;
+    }, function($function, $stream) {
       var $this = this;
       var $nextx, $nexty;
 
       $nextx = this.next();
       $nexty = $stream.next();
 
-      return $(&quot;FuncStream&quot;).new($.Function(function() {
-        return [ function($inval) {
-          var $val;
+      return $(&quot;FuncStream&quot;).new($.Func(function($inval) {
+        var $val;
 
-          if ($nextx === $nil) {
-            if ($nexty === $nil) {
-              return $nil;
-            } else {
-              $val = $nexty;
-              $nexty = $stream.next($inval);
-              return $val;
-            }
-          } else {
-            if ($nexty === $nil ||
-              $function.value($nextx, $nexty, $inval).__bool__()) {
-              $val   = $nextx;
-              $nextx = $this.next($inval);
-              return $val;
-            } else {
-              $val   = $nexty;
-              $nexty = $stream.next($inval);
-              return $val;
-            }
+        if ($nextx === $nil) {
+          if ($nexty === $nil) {
+            return $nil;
           }
-        } ];
-      }), $.Function(function() {
-        return [ function() {
-          $this.reset();
-          $stream.reset();
-          $nextx = $this.next();
-          $nexty = $stream.next();
-          return $nexty;
-        } ];
+          $val = $nexty;
+          $nexty = $stream.next($inval);
+          return $val;
+        }
+        if ($nexty === $nil ||
+          $function.value($nextx, $nexty, $inval).__bool__()) {
+          $val   = $nextx;
+          $nextx = $this.next($inval);
+          return $val;
+        }
+        $val   = $nexty;
+        $nexty = $stream.next($inval);
+        return $val;
+      }), $.Func(function() {
+        $this.reset();
+        $stream.reset();
+        $nextx = $this.next();
+        $nexty = $stream.next();
+        return $nexty;
       }));
-    }, &quot;function; stream&quot;);
+    });
 
-    spec[&quot;++&quot;] = function($stream) {
+    builder.addMethod(&quot;++&quot;, function($stream) {
       return this.appendStream($stream);
-    };
+    });
 
-    spec.appendStream = fn(function($stream) {
+    builder.addMethod(&quot;appendStream&quot;, {
+      args: &quot;stream&quot;
+    }, function($stream) {
       var $this = this;
       var $reset;
 
       $reset = $false;
-      return $(&quot;Routine&quot;).new($.Function(function() {
+      return SCRoutine.new($.Function(function() {
         var $inval;
-        return [ function(_arg0) {
-          $inval = _arg0;
-          if ($reset.__bool__()) {
-            $this.reset();
-            $stream.reset();
-          }
-          $reset = $true;
-          $inval = $this.embedInStream($inval);
-          return $inval;
-        },
-        function() {
-          return $stream.embedInStream($inval);
-        } ];
+        return [
+          function(_arg0) {
+            $inval = _arg0;
+            if ($reset.__bool__()) {
+              $this.reset();
+              $stream.reset();
+            }
+            $reset = $true;
+            $inval = $this.embedInStream($inval);
+            return $inval;
+          },
+          function() {
+            return $stream.embedInStream($inval);
+          },
+          $.NOP
+        ];
       }));
-    }, &quot;stream&quot;);
+    });
 
-    spec.collate = fn(function($stream) {
-      return this.interlace($.Function(function() {
-        return [ function($x, $y) {
-          return $x.$(&quot;&lt;&quot;, [ $y ]);
-        } ];
+    builder.addMethod(&quot;collate&quot;, {
+      args: &quot;stream&quot;
+    }, function($stream) {
+      return this.interlace($.Func(function($x, $y) {
+        return $x.$(&quot;&lt;&quot;, [ $y ]);
       }), $stream);
-    }, &quot;stream&quot;);
+    });
 
-    spec[&quot;&lt;&gt;&quot;] = function($obj) {
+    builder.addMethod(&quot;&lt;&gt;&quot;, function($obj) {
       return $(&quot;Pchain&quot;).new(this, $obj).asStream();
-    };
+    });
 
-    spec.composeUnaryOp = fn(function($argSelector) {
+    builder.addMethod(&quot;composeUnaryOp&quot;, {
+      args: &quot;argSelector&quot;
+    }, function($argSelector) {
       return $(&quot;UnaryOpStream&quot;).new($argSelector, this);
-    }, &quot;argSelector&quot;);
+    });
 
-    spec.composeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+    builder.addMethod(&quot;composeBinaryOp&quot;, {
+      args: &quot;argSelector; argStream; adverb&quot;
+    }, function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
         return $(&quot;BinaryOpStream&quot;).new(
           $argSelector, this, $argStream.asStream()
@@ -460,9 +438,11 @@
       }
 
       return $nil;
-    }, &quot;argSelector; argStream; adverb&quot;);
+    });
 
-    spec.reverseComposeBinaryOp = fn(function($argSelector, $argStream, $adverb) {
+    builder.addMethod(&quot;reverseComposeBinaryOp&quot;, {
+      args: &quot;argSelector; argStream; adverb&quot;
+    }, function($argSelector, $argStream, $adverb) {
       if ($adverb === $nil) {
         return $(&quot;BinaryOpStream&quot;).new(
           $argSelector, $argStream.asStream(), this
@@ -475,161 +455,135 @@
       }
 
       return $nil;
-    }, &quot;argSelector; argStream; adverb&quot;);
+    });
 
-    spec.composeNAryOp = fn(function($argSelector, $anArgList) {
+    builder.addMethod(&quot;composeNAryOp&quot;, {
+      args: &quot;argSelector; anArgList&quot;
+    }, function($argSelector, $anArgList) {
       return $(&quot;NAryOpStream&quot;).new(
-        $argSelector, this, $anArgList.collect($.Function(function() {
-          return [ function($_) {
-            return $_.asStream();
-          } ];
+        $argSelector, this, $anArgList.collect($.Func(function($_) {
+          return $_.asStream();
         }))
       );
-    }, &quot;argStream; anArgList&quot;);
+    });
 
-    spec.embedInStream = fn(function($inval) {
+    builder.addMethod(&quot;embedInStream&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
       var $this = this;
       var $outval;
 
-      $.Function(function() {
-        return [ function() {
-          $outval = $this.value($inval);
-          return $outval.notNil();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          $inval = $outval.yield();
-          return $inval;
-        } ];
+      $.Func(function() {
+        $outval = $this.value($inval);
+        return $outval.notNil();
+      }).while($.Func(function() {
+        $inval = $outval.yield();
+        return $inval;
       }));
 
       return $inval;
-    }, &quot;inval&quot;);
+    });
 
-    spec.asEventStreamPlayer = fn(function($protoEvent) {
+    builder.addMethod(&quot;asEventStreamPlayer&quot;, {
+      args: &quot;protoEvent&quot;
+    }, function($protoEvent) {
       return $(&quot;EventStreamPlayer&quot;).new(this, $protoEvent);
-    }, &quot;protoEvent&quot;);
+    });
 
-    spec.play = fn(function($clock, $quant) {
+    builder.addMethod(&quot;play&quot;, {
+      args: &quot;clock; quant&quot;
+    }, function($clock, $quant) {
       if ($clock === $nil) {
         $clock = $(&quot;TempoClock&quot;).default();
       }
       $clock.play(this, $quant.asQuant());
       return this;
-    }, &quot;clock; quant&quot;);
+    });
 
     // TODO: implements trace
 
-    spec.repeat = fn(function($repeats) {
+    builder.addMethod(&quot;repeat&quot;, {
+      args: &quot;repeats=inf&quot;
+    }, function($repeats) {
       var $this = this;
 
-      return $.Function(function() {
-        return [ function($inval) {
-          return $repeats.value($inval).do($.Function(function() {
-            return [ function() {
-              $inval = $this.reset().embedInStream($inval);
-              return $inval;
-            } ];
-          }));
-        } ];
+      return $.Func(function($inval) {
+        return $repeats.value($inval).do($.Func(function() {
+          $inval = $this.reset().embedInStream($inval);
+          return $inval;
+        }));
       }).r();
-    }, &quot;repeats=inf&quot;);
-
+    });
   });
 
-  klass.define(&quot;OneShotStream : Stream&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function OneShotStream() {
-      this.__super__(&quot;Stream&quot;);
+  sc.lang.klass.define(&quot;OneShotStream : Stream&quot;, function(builder, _) {
+    builder.addMethod(&quot;__init__&quot;, function() {
+      this.__super__(&quot;__init__&quot;);
       this._once = true;
-    };
+    });
 
-    spec.$new = function($value) {
-      return this._newCopyArgs({
+    builder.addClassMethod(&quot;new&quot;, function($value) {
+      return _.newCopyArgs(this, {
         value: $value
       });
-    };
+    });
 
-    spec.next = function() {
+    builder.addMethod(&quot;next&quot;, function() {
       if (this._once) {
         this._once = false;
         return this._$value;
       }
       return $nil;
-    };
+    });
 
-    spec.reset = function() {
+    builder.addMethod(&quot;reset&quot;, function() {
       this._once = true;
       return this;
-    };
-
+    });
     // TODO: implements storeArgs
   });
 
   // EmbedOnce
 
-  klass.define(&quot;FuncStream : Stream&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.define(&quot;FuncStream : Stream&quot;, function(builder, _) {
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;envir&quot;);
 
-    spec.constructor = function SCFuncStream() {
-      this.__super__(&quot;Stream&quot;);
-    };
-
-    spec.envir = function() {
-      return this._$envir;
-    };
-
-    spec.envir_ = function($value) {
-      this._$envir = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.$new = function($nextFunc, $resetFunc) {
-      return this._newCopyArgs({
-        nextFunc : $nextFunc,
+    builder.addClassMethod(&quot;new&quot;, function($nextFunc, $resetFunc) {
+      return _.newCopyArgs(this, {
+        nextFunc: $nextFunc,
         resetFunc: $resetFunc,
-        envir    : sc.lang.main.$currentEnv
+        envir: sc.lang.main.getCurrentEnvir()
       });
-    };
+    });
 
-    spec.next = fn(function($inval) {
+    builder.addMethod(&quot;next&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
       var $this = this;
-      return this._$envir.use($.Function(function() {
-        return [ function() {
-          return $this._$nextFunc.value($inval).processRest($inval);
-        } ];
+      return this._$envir.use($.Func(function() {
+        return $this._$nextFunc.value($inval).processRest($inval);
       }));
-    }, &quot;inval&quot;);
+    });
 
-    spec.reset = function() {
+    builder.addMethod(&quot;reset&quot;, function() {
       var $this = this;
-      return this._$envir.use($.Function(function() {
-        return [ function() {
-          return $this._$resetFunc.value();
-        } ];
+      return this._$envir.use($.Func(function() {
+        return $this._$resetFunc.value();
       }));
-    };
-
+    });
     // TODO: implements storeArgs
-
   });
 
   // StreamClutch
   // CleanupStream
 
-  klass.define(&quot;PauseStream : Stream&quot;, function(spec) {
-    spec.constructor = function SCPauseStream() {
-      this.__super__(&quot;Stream&quot;);
-    };
-
+  sc.lang.klass.define(&quot;PauseStream : Stream&quot;, function() {
     // TODO: implements stream
     // TODO: implements originalStream
     // TODO: implements clock
     // TODO: implements nextBeat
     // TODO: implements streamHasEnded
     // TODO: implements streamHasEnded_
-
     // TODO: implements isPlaying
     // TODO: implements play
     // TODO: implements reset
@@ -649,14 +603,9 @@
     // TODO: implements threadPlayer
   });
 
-  klass.define(&quot;Task : PauseStream&quot;, function(spec) {
-    spec.constructor = function SCTask() {
-      this.__super__(&quot;PauseStream&quot;);
-    };
-
+  sc.lang.klass.define(&quot;Task : PauseStream&quot;, function() {
     // TODO: implements storeArgs
   });
-
 });</textarea>
   </div>
 </div>

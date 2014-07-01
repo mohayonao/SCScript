@@ -199,7 +199,7 @@
     <h1>Code coverage report for <span class="entity">sc/lang/compiler/compiler.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(15 / 15)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(2 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
@@ -208,7 +208,7 @@
         Functions: <span class="metric">100% <small>(4 / 4)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(15 / 15)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -306,7 +306,31 @@
 88
 89
 90
-91</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -371,37 +395,61 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">85</span>
+<span class="cline-any cline-yes">85</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">179</span>
+<span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">44</span>
+<span class="cline-any cline-yes">43</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2</span>
+<span class="cline-any cline-yes">44</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">44</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(sc) {
   "use strict";
 &nbsp;
-  require("./sc");
+  require("../sc");
 &nbsp;
-  var compiler = {
+  sc.lang.compiler = {
     Token: {
       CharLiteral: "Char",
       EOF: "&lt;EOF&gt;",
@@ -415,18 +463,18 @@
       Punctuator: "Punctuator",
       StringLiteral: "String",
       SymbolLiteral: "Symbol",
-      TrueLiteral: "True"
+      TrueLiteral: "True",
+      SingleLineComment: "SingleLineComment",
+      MultiLineComment: "MultiLineComment"
     },
     Syntax: {
       AssignmentExpression: "AssignmentExpression",
       BinaryExpression: "BinaryExpression",
-      BlockExpression: "BlockExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",
-      EnvironmentExpresion: "EnvironmentExpresion",
+      EnvironmentExpression: "EnvironmentExpression",
       Identifier: "Identifier",
       ListExpression: "ListExpression",
-      Label: "Label",
       Literal: "Literal",
       EventExpression: "EventExpression",
       Program: "Program",
@@ -438,16 +486,18 @@
       ValueMethodResult: "ValueMethodResult"
     },
     Message: {
-      ArgumentAlreadyDeclared: "argument '%0' already declared",
+      ArgumentAlreadyDeclared: "argument '#{0}' already declared",
       InvalidLHSInAssignment: "invalid left-hand side in assignment",
-      NotImplemented: "not implemented %0",
+      NotImplemented: "not implemented #{0}",
       UnexpectedEOS: "unexpected end of input",
       UnexpectedIdentifier: "unexpected identifier",
+      UnexpectedKeyword: "unexpected keyword",
       UnexpectedNumber: "unexpected number",
-      UnexpectedLiteral: "unexpected %0",
-      UnexpectedToken: "unexpected token %0",
-      VariableAlreadyDeclared: "variable '%0' already declared",
-      VariableNotDefined: "variable '%0' not defined"
+      UnexpectedLabel: "unexpected label",
+      UnexpectedLiteral: "unexpected #{0}",
+      UnexpectedToken: "unexpected token #{0}",
+      VariableAlreadyDeclared: "variable '#{0}' already declared",
+      VariableNotDefined: "variable '#{0}' not defined"
     },
     Keywords: {
       var: "keyword",
@@ -458,40 +508,62 @@
       thisProcess: "function",
       thisFunction: "function",
       thisFunctionDef: "function",
+    },
+    binaryPrecedenceDefaults: {
+      "?": 1,
+      "??": 1,
+      "!?": 1,
+      "-&gt;": 2,
+      "||": 3,
+      "&amp;&amp;": 4,
+      "|": 5,
+      "&amp;": 6,
+      "==": 7,
+      "!=": 7,
+      "===": 7,
+      "!==": 7,
+      "&lt;": 8,
+      "&gt;": 8,
+      "&lt;=": 8,
+      "&gt;=": 8,
+      "&lt;&lt;": 9,
+      "&gt;&gt;": 9,
+      "+&gt;&gt;": 9,
+      "+": 10,
+      "-": 10,
+      "*": 11,
+      "/": 11,
+      "%": 11,
+      "!": 12
+    },
+    tokenize: function(source, opts) {
+      return new sc.lang.compiler.Lexer(source, opts).tokenize();
+    },
+    parse: function(source, opts) {
+      var lexer = new sc.lang.compiler.Lexer(source, opts);
+      return new sc.lang.compiler.Parser(null, lexer).parse();
+    },
+    compile: function(source, opts) {
+      var ast;
+&nbsp;
+      if (typeof source === "string") {
+        ast = sc.lang.compiler.parse(source, opts);
+      } else {
+        ast = source;
+      }
+&nbsp;
+      ast = new sc.lang.compiler.Rewriter().rewrite(ast);
+&nbsp;
+      return new sc.lang.compiler.CodeGen(null, opts).compile(ast);
     }
   };
-&nbsp;
-  sc.lang.compiler = compiler;
-&nbsp;
-  var SCScript = sc.SCScript;
-&nbsp;
-  SCScript.tokenize = function(source, opts) {
-    return new compiler.lexer(source, opts).tokenize();
-  };
-&nbsp;
-  SCScript.parse = function(source, opts) {
-    return compiler.parser.parse(source, opts);
-  };
-&nbsp;
-  SCScript.compile = function(source, opts) {
-    var ast;
-&nbsp;
-    if (typeof source === "string") {
-      ast = SCScript.parse(source, opts);
-    } else {
-      ast = source;
-    }
-&nbsp;
-    return compiler.codegen.compile(ast, opts);
-  };
-&nbsp;
 })(sc);
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jun 15 2014 22:58:44 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 01 2014 20:02:13 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

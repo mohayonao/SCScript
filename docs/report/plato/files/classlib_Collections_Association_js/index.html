@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">137.51</p>
+      <p class="stat">134.53</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">65</p>
+      <p class="stat">43</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">15.46</p>
+      <p class="stat">11.49</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.36</p>
+      <p class="stat">0.28</p>
     </div>
   </div>
 </div>
@@ -95,65 +95,43 @@
 
   require(&quot;../Math/Magnitude&quot;);
 
-  sc.lang.klass.define(&quot;Association : Magnitude&quot;, function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $false = utils.$false;
+  var $ = sc.lang.$;
+  var $false = $.false;
 
-    spec.constructor = function SCAssociation() {
-      this.__super__(&quot;Magnitude&quot;);
-    };
+  sc.lang.klass.refine(&quot;Association&quot;, function(builder, _) {
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;key&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;value&quot;);
 
-    spec.valueOf = function() {
+    builder.addMethod(&quot;valueOf&quot;, function() {
       return this._$key.valueOf();
-    };
+    });
 
-    spec.key = function() {
-      return this._$key;
-    };
-
-    spec.key_ = function($value) {
-      this._$key = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.value = function() {
-      return this._$value;
-    };
-
-    spec.value_ = function($value) {
-      this._$value = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.$new = function($key, $value) {
-      return this._newCopyArgs({
+    builder.addClassMethod(&quot;new&quot;, function($key, $value) {
+      return _.newCopyArgs(this, {
         key: $key,
         value: $value
       });
-    };
+    });
 
-    spec[&quot;==&quot;] = function($anAssociation) {
+    builder.addMethod(&quot;==&quot;, function($anAssociation) {
       if ($anAssociation.key) {
         return this._$key [&quot;==&quot;] ($anAssociation.$(&quot;key&quot;));
       }
       return $false;
-    };
+    });
 
-    spec.hash = function() {
+    builder.addMethod(&quot;hash&quot;, function() {
       return this._$key.hash();
-    };
+    });
 
-    spec[&quot;&lt;&quot;] = function($anAssociation) {
+    builder.addMethod(&quot;&lt;&quot;, function($anAssociation) {
       return this._$key.$(&quot;&lt;&quot;, [ $anAssociation.$(&quot;key&quot;) ]);
-    };
-
+    });
     // TODO: implements printOn
     // TODO: implements storeOn
     // TODO: implements embedInStream
     // TODO: implements transformEvent
-
   });
-
 });</textarea>
   </div>
 </div>

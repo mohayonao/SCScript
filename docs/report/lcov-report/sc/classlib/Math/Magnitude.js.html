@@ -199,7 +199,7 @@
     <h1>Code coverage report for <span class="entity">sc/classlib/Math/Magnitude.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(27 / 27)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(29 / 29)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Branches: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
@@ -208,7 +208,7 @@
         Functions: <span class="metric">100% <small>(13 / 13)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(27 / 27)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(29 / 29)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -271,12 +271,22 @@
 53
 54
 55
-56</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -305,24 +315,36 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5</span>
+<span class="cline-any cline-yes">5</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -332,61 +354,72 @@
   require("../Core/Object");
 &nbsp;
   var $ = sc.lang.$;
-  var fn = sc.lang.fn;
 &nbsp;
-  sc.lang.klass.refine("Magnitude", function(spec) {
-    spec["=="] = function($aMagnitude) {
+  sc.lang.klass.refine("Magnitude", function(builder) {
+    builder.addMethod("==", function($aMagnitude) {
       return $.Boolean(this.valueOf() === $aMagnitude.valueOf());
-    };
+    });
 &nbsp;
-    spec["!="] = function($aMagnitude) {
+    builder.addMethod("!=", function($aMagnitude) {
       return $.Boolean(this.valueOf() !== $aMagnitude.valueOf());
-    };
+    });
 &nbsp;
-    spec["&lt;"] = function($aMagnitude) {
+    builder.addMethod("&lt;", function($aMagnitude) {
       return $.Boolean(this &lt; $aMagnitude);
-    };
+    });
 &nbsp;
-    spec["&gt;"] = function($aMagnitude) {
+    builder.addMethod("&gt;", function($aMagnitude) {
       return $.Boolean(this &gt; $aMagnitude);
-    };
+    });
 &nbsp;
-    spec["&lt;="] = function($aMagnitude) {
+    builder.addMethod("&lt;=", function($aMagnitude) {
       return $.Boolean(this &lt;= $aMagnitude);
-    };
+    });
 &nbsp;
-    spec["&gt;="] = function($aMagnitude) {
+    builder.addMethod("&gt;=", function($aMagnitude) {
       return $.Boolean(this &gt;= $aMagnitude);
-    };
+    });
 &nbsp;
-    spec.exclusivelyBetween = fn(function($lo, $hi) {
-      return $.Boolean($lo &lt; this &amp;&amp; this &lt; $hi);
-    }, "lo; hi");
+    builder.addMethod("exclusivelyBetween", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
+      var value = this.valueOf(), lo = $lo.valueOf(), hi = $hi.valueOf();
+      return $.Boolean(lo &lt; value &amp;&amp; value &lt; hi);
+    });
 &nbsp;
-    spec.inclusivelyBetween = fn(function($lo, $hi) {
-      return $.Boolean($lo &lt;= this &amp;&amp; this &lt;= $hi);
-    }, "lo; hi");
+    builder.addMethod("inclusivelyBetween", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
+      var value = this.valueOf(), lo = $lo.valueOf(), hi = $hi.valueOf();
+      return $.Boolean(lo &lt;= value &amp;&amp; value &lt;= hi);
+    });
 &nbsp;
-    spec.min = fn(function($aMagnitude) {
-      return this &lt;= $aMagnitude ? this : $aMagnitude;
-    }, "aMagnitude");
+    builder.addMethod("min", {
+      args: "aMagnitude"
+    }, function($aMagnitude) {
+      return this.valueOf() &lt;= $aMagnitude.valueOf() ? this : $aMagnitude;
+    });
 &nbsp;
-    spec.max = fn(function($aMagnitude) {
-      return this &gt;= $aMagnitude ? this : $aMagnitude;
-    }, "aMagnitude");
+    builder.addMethod("max", {
+      args: "aMagnitude"
+    }, function($aMagnitude) {
+      return this.valueOf() &gt;= $aMagnitude.valueOf() ? this : $aMagnitude;
+    });
 &nbsp;
-    spec.clip = fn(function($lo, $hi) {
-      return this &lt;= $lo ? $lo : this &gt;= $hi ? $hi : this;
-    }, "lo; hi");
+    builder.addMethod("clip", {
+      args: "lo; hi"
+    }, function($lo, $hi) {
+      var value = this.valueOf();
+      return value &lt;= $lo.valueOf() ? $lo : value &gt;= $hi.valueOf() ? $hi : this;
+    });
   });
-&nbsp;
 });
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jun 15 2014 22:58:44 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 01 2014 20:02:13 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

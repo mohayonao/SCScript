@@ -199,18 +199,18 @@
     <h1>Code coverage report for <span class="entity">sc/classlib/Collections/Association.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(29 / 29)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(19 / 19)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(6 / 6)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(2 / 2)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(7 / 7)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(29 / 29)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(19 / 19)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
-        Ignored: <span class="metric">2 branches</span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../../../index.html">All files</a> &#187; <a href="index.html">sc/classlib/Collections/</a> &#187; Association.js</div>
 </div>
@@ -259,65 +259,24 @@
 41
 42
 43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+44</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">27</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">18</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">12</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">2</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">27</span>
+<span class="cline-any cline-yes">26</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -343,80 +302,55 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">SCScript.install(function(sc) {
   "use strict";
 &nbsp;
   require("../Math/Magnitude");
 &nbsp;
-  sc.lang.klass.define("Association : Magnitude", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $false = utils.$false;
+  var $ = sc.lang.$;
+  var $false = $.false;
 &nbsp;
-    spec.constructor = function SCAssociation() {
-      this.__super__("Magnitude");
-    };
+  sc.lang.klass.refine("Association", function(builder, _) {
+    builder.addProperty("&lt;&gt;", "key");
+    builder.addProperty("&lt;&gt;", "value");
 &nbsp;
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._$key.valueOf();
-    };
+    });
 &nbsp;
-    spec.key = function() {
-      return this._$key;
-    };
-&nbsp;
-    spec.key_ = function($value) {
-      this._$key = $value || /* istanbul ignore next */ <span class="branch-1 cbranch-skip" title="branch not covered" >$nil;</span>
-      return this;
-    };
-&nbsp;
-    spec.value = function() {
-      return this._$value;
-    };
-&nbsp;
-    spec.value_ = function($value) {
-      this._$value = $value || /* istanbul ignore next */ <span class="branch-1 cbranch-skip" title="branch not covered" >$nil;</span>
-      return this;
-    };
-&nbsp;
-    spec.$new = function($key, $value) {
-      return this._newCopyArgs({
+    builder.addClassMethod("new", function($key, $value) {
+      return _.newCopyArgs(this, {
         key: $key,
         value: $value
       });
-    };
+    });
 &nbsp;
-    spec["=="] = function($anAssociation) {
+    builder.addMethod("==", function($anAssociation) {
       if ($anAssociation.key) {
         return this._$key ["=="] ($anAssociation.$("key"));
       }
       return $false;
-    };
+    });
 &nbsp;
-    spec.hash = function() {
+    builder.addMethod("hash", function() {
       return this._$key.hash();
-    };
+    });
 &nbsp;
-    spec["&lt;"] = function($anAssociation) {
+    builder.addMethod("&lt;", function($anAssociation) {
       return this._$key.$("&lt;", [ $anAssociation.$("key") ]);
-    };
-&nbsp;
+    });
     // TODO: implements printOn
     // TODO: implements storeOn
     // TODO: implements embedInStream
     // TODO: implements transformEvent
-&nbsp;
   });
-&nbsp;
 });
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jun 15 2014 22:58:44 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 01 2014 20:02:13 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

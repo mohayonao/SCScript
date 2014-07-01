@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">139.72</p>
+      <p class="stat">131.48</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">55</p>
+      <p class="stat">66</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">28.42</p>
+      <p class="stat">37.41</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.45</p>
+      <p class="stat">0.61</p>
     </div>
   </div>
 </div>
@@ -96,54 +96,65 @@
   require(&quot;../Core/Object&quot;);
 
   var $ = sc.lang.$;
-  var fn = sc.lang.fn;
 
-  sc.lang.klass.refine(&quot;Magnitude&quot;, function(spec) {
-    spec[&quot;==&quot;] = function($aMagnitude) {
+  sc.lang.klass.refine(&quot;Magnitude&quot;, function(builder) {
+    builder.addMethod(&quot;==&quot;, function($aMagnitude) {
       return $.Boolean(this.valueOf() === $aMagnitude.valueOf());
-    };
+    });
 
-    spec[&quot;!=&quot;] = function($aMagnitude) {
+    builder.addMethod(&quot;!=&quot;, function($aMagnitude) {
       return $.Boolean(this.valueOf() !== $aMagnitude.valueOf());
-    };
+    });
 
-    spec[&quot;&lt;&quot;] = function($aMagnitude) {
+    builder.addMethod(&quot;&lt;&quot;, function($aMagnitude) {
       return $.Boolean(this &lt; $aMagnitude);
-    };
+    });
 
-    spec[&quot;&gt;&quot;] = function($aMagnitude) {
+    builder.addMethod(&quot;&gt;&quot;, function($aMagnitude) {
       return $.Boolean(this &gt; $aMagnitude);
-    };
+    });
 
-    spec[&quot;&lt;=&quot;] = function($aMagnitude) {
+    builder.addMethod(&quot;&lt;=&quot;, function($aMagnitude) {
       return $.Boolean(this &lt;= $aMagnitude);
-    };
+    });
 
-    spec[&quot;&gt;=&quot;] = function($aMagnitude) {
+    builder.addMethod(&quot;&gt;=&quot;, function($aMagnitude) {
       return $.Boolean(this &gt;= $aMagnitude);
-    };
+    });
 
-    spec.exclusivelyBetween = fn(function($lo, $hi) {
-      return $.Boolean($lo &lt; this &amp;&amp; this &lt; $hi);
-    }, &quot;lo; hi&quot;);
+    builder.addMethod(&quot;exclusivelyBetween&quot;, {
+      args: &quot;lo; hi&quot;
+    }, function($lo, $hi) {
+      var value = this.valueOf(), lo = $lo.valueOf(), hi = $hi.valueOf();
+      return $.Boolean(lo &lt; value &amp;&amp; value &lt; hi);
+    });
 
-    spec.inclusivelyBetween = fn(function($lo, $hi) {
-      return $.Boolean($lo &lt;= this &amp;&amp; this &lt;= $hi);
-    }, &quot;lo; hi&quot;);
+    builder.addMethod(&quot;inclusivelyBetween&quot;, {
+      args: &quot;lo; hi&quot;
+    }, function($lo, $hi) {
+      var value = this.valueOf(), lo = $lo.valueOf(), hi = $hi.valueOf();
+      return $.Boolean(lo &lt;= value &amp;&amp; value &lt;= hi);
+    });
 
-    spec.min = fn(function($aMagnitude) {
-      return this &lt;= $aMagnitude ? this : $aMagnitude;
-    }, &quot;aMagnitude&quot;);
+    builder.addMethod(&quot;min&quot;, {
+      args: &quot;aMagnitude&quot;
+    }, function($aMagnitude) {
+      return this.valueOf() &lt;= $aMagnitude.valueOf() ? this : $aMagnitude;
+    });
 
-    spec.max = fn(function($aMagnitude) {
-      return this &gt;= $aMagnitude ? this : $aMagnitude;
-    }, &quot;aMagnitude&quot;);
+    builder.addMethod(&quot;max&quot;, {
+      args: &quot;aMagnitude&quot;
+    }, function($aMagnitude) {
+      return this.valueOf() &gt;= $aMagnitude.valueOf() ? this : $aMagnitude;
+    });
 
-    spec.clip = fn(function($lo, $hi) {
-      return this &lt;= $lo ? $lo : this &gt;= $hi ? $hi : this;
-    }, &quot;lo; hi&quot;);
+    builder.addMethod(&quot;clip&quot;, {
+      args: &quot;lo; hi&quot;
+    }, function($lo, $hi) {
+      var value = this.valueOf();
+      return value &lt;= $lo.valueOf() ? $lo : value &gt;= $hi.valueOf() ? $hi : this;
+    });
   });
-
 });</textarea>
   </div>
 </div>

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">121.86</p>
+      <p class="stat">111.16</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">220</p>
+      <p class="stat">223</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">32.27</p>
+      <p class="stat">45.62</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.27</p>
+      <p class="stat">2.78</p>
     </div>
   </div>
 </div>
@@ -95,10 +95,8 @@
 
   require(&quot;./SimpleNumber&quot;);
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var iterator = sc.lang.iterator;
-  var mathlib  = sc.libs.mathlib;
+  var $ = sc.lang.$;
+  var mathlib = sc.libs.mathlib;
 
   var bop = function(selector, type1, type2) {
     var func = mathlib[selector];
@@ -119,8 +117,8 @@
     };
   };
 
-  sc.lang.klass.refine(&quot;Float&quot;, function(spec, utils) {
-    spec.toString = function() {
+  sc.lang.klass.refine(&quot;Float&quot;, function(builder) {
+    builder.addMethod(&quot;toString&quot;, function() {
       var raw = this._;
 
       if (raw === Infinity) {
@@ -134,63 +132,61 @@
       }
 
       return String(this._);
-    };
-
-    spec.$new = function() {
-      throw new Error(&quot;Float.new is illegal, should use literal.&quot;);
-    };
-
-    spec.isFloat = utils.alwaysReturn$true;
-    spec.asFloat = utils.nop;
-
-    [
-      [ &quot;+&quot;  , $.Float, $.Float ],
-      [ &quot;-&quot;  , $.Float, $.Float ],
-      [ &quot;*&quot;  , $.Float, $.Float ],
-      [ &quot;/&quot;  , $.Float, $.Float ],
-      [ &quot;mod&quot;     , $.Float  , $.Float   ],
-      [ &quot;div&quot;     , $.Integer, $.Integer ],
-      [ &quot;pow&quot;     , $.Float  , $.Float   ],
-      [ &quot;min&quot;     , $.Float  , $.Float   ],
-      [ &quot;max&quot;     , $.Float  , $.Float   ],
-      [ &quot;bitAnd&quot;  , $.Float  , $.Float   ],
-      [ &quot;bitOr&quot;   , $.Float  , $.Float   ],
-      [ &quot;bitXor&quot;  , $.Float  , $.Float   ],
-      [ &quot;lcm&quot;     , $.Float  , $.Float   ],
-      [ &quot;gcd&quot;     , $.Float  , $.Float   ],
-      [ &quot;round&quot;   , $.Float  , $.Float   ],
-      [ &quot;roundUp&quot; , $.Float  , $.Float   ],
-      [ &quot;trunc&quot;   , $.Float  , $.Float   ],
-      [ &quot;atan2&quot;   , $.Float  , $.Float   ],
-      [ &quot;hypot&quot;   , $.Float  , $.Float   ],
-      [ &quot;hypotApx&quot;, $.Float  , $.Float   ],
-      [ &quot;leftShift&quot;         , $.Float, $.Float ],
-      [ &quot;rightShift&quot;        , $.Float, $.Float ],
-      [ &quot;unsignedRightShift&quot;, $.Float, $.Float ],
-      [ &quot;ring1&quot;   , $.Float, $.Float ],
-      [ &quot;ring2&quot;   , $.Float, $.Float ],
-      [ &quot;ring3&quot;   , $.Float, $.Float ],
-      [ &quot;ring4&quot;   , $.Float, $.Float ],
-      [ &quot;difsqr&quot;  , $.Float, $.Float ],
-      [ &quot;sumsqr&quot;  , $.Float, $.Float ],
-      [ &quot;sqrsum&quot;  , $.Float, $.Float ],
-      [ &quot;sqrdif&quot;  , $.Float, $.Float ],
-      [ &quot;absdif&quot;  , $.Float, $.Float ],
-      [ &quot;thresh&quot;  , $.Float, $.Float ],
-      [ &quot;amclip&quot;  , $.Float, $.Float ],
-      [ &quot;scaleneg&quot;, $.Float, $.Float ],
-      [ &quot;clip2&quot;   , $.Float, $.Float ],
-      [ &quot;fold2&quot;   , $.Float, $.Float ],
-      [ &quot;wrap2&quot;   , $.Float, $.Float ],
-      [ &quot;excess&quot;  , $.Float, $.Float ],
-      [ &quot;firstArg&quot;, $.Float, $.Float ],
-      [ &quot;rrand&quot;   , $.Float, $.Float ],
-      [ &quot;exprand&quot; , $.Float, $.Float ],
-    ].forEach(function(items) {
-      spec[items[0]] = bop.apply(null, items);
     });
 
-    spec.clip = fn(function($lo, $hi) {
+    builder.addClassMethod(&quot;new&quot;, function() {
+      throw new Error(&quot;Float.new is illegal, should use literal.&quot;);
+    });
+
+    builder.addMethod(&quot;isFloat&quot;, sc.TRUE);
+    builder.addMethod(&quot;asFloat&quot;);
+
+    builder.addMethod(&quot;+&quot;, bop(&quot;+&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;-&quot;, bop(&quot;-&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;*&quot;, bop(&quot;*&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;/&quot;, bop(&quot;/&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;mod&quot;, bop(&quot;mod&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;div&quot;, bop(&quot;div&quot;, $.Integer, $.Integer));
+    builder.addMethod(&quot;pow&quot;, bop(&quot;pow&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;min&quot;, bop(&quot;min&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;max&quot;, bop(&quot;max&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;bitAnd&quot;, bop(&quot;bitAnd&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;bitOr&quot;, bop(&quot;bitOr&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;bitXor&quot;, bop(&quot;bitXor&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;lcm&quot;, bop(&quot;lcm&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;gcd&quot;, bop(&quot;gcd&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;round&quot;, bop(&quot;round&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;roundUp&quot;, bop(&quot;roundUp&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;trunc&quot;, bop(&quot;trunc&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;atan2&quot;, bop(&quot;atan2&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;hypot&quot;, bop(&quot;hypot&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;hypotApx&quot;, bop(&quot;hypotApx&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;leftShift&quot;, bop(&quot;leftShift&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;rightShift&quot;, bop(&quot;rightShift&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;unsignedRightShift&quot;, bop(&quot;unsignedRightShift&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;ring1&quot;, bop(&quot;ring1&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;ring2&quot;, bop(&quot;ring2&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;ring3&quot;, bop(&quot;ring3&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;ring4&quot;, bop(&quot;ring4&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;difsqr&quot;, bop(&quot;difsqr&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;sumsqr&quot;, bop(&quot;sumsqr&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;sqrsum&quot;, bop(&quot;sqrsum&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;sqrdif&quot;, bop(&quot;sqrdif&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;absdif&quot;, bop(&quot;absdif&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;thresh&quot;, bop(&quot;thresh&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;amclip&quot;, bop(&quot;amclip&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;scaleneg&quot;, bop(&quot;scaleneg&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;clip2&quot;, bop(&quot;clip2&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;fold2&quot;, bop(&quot;fold2&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;wrap2&quot;, bop(&quot;wrap2&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;excess&quot;, bop(&quot;excess&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;firstArg&quot;, bop(&quot;firstArg&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;rrand&quot;, bop(&quot;rrand&quot;, $.Float, $.Float));
+    builder.addMethod(&quot;exprand&quot;, bop(&quot;exprand&quot;, $.Float, $.Float));
+
+    builder.addMethod(&quot;clip&quot;, {
+      args: &quot;lo; hi&quot;
+    }, function($lo, $hi) {
       // &lt;-- _ClipFloat --&gt;
       if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
@@ -202,9 +198,11 @@
       return $.Float(
         mathlib.clip(this._, $lo.__num__(), $hi.__num__())
       );
-    }, &quot;lo; hi&quot;);
+    });
 
-    spec.wrap = fn(function($lo, $hi) {
+    builder.addMethod(&quot;wrap&quot;, {
+      args: &quot;lo; hi&quot;
+    }, function($lo, $hi) {
       // &lt;-- _WrapInt --&gt;
       if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
@@ -216,9 +214,11 @@
       return $.Float(
         mathlib.wrap(this._, $lo.__num__(), $hi.__num__())
       );
-    }, &quot;lo; hi&quot;);
+    });
 
-    spec.fold = fn(function($lo, $hi) {
+    builder.addMethod(&quot;fold&quot;, {
+      args: &quot;lo; hi&quot;
+    }, function($lo, $hi) {
       // &lt;-- _FoldFloat --&gt;
       if ($lo.__tag === sc.TAG_SYM) {
         return $lo;
@@ -230,85 +230,88 @@
       return $.Float(
         mathlib.fold(this._, $lo.__num__(), $hi.__num__())
       );
-    }, &quot;lo; hi&quot;);
+    });
 
     // TODO: implements coin
     // TODO: implements xrand2
 
-    spec.as32Bits = function() {
+    builder.addMethod(&quot;as32Bits&quot;, function() {
       // &lt;-- _As32Bits --&gt;
       return $.Integer(
         new Int32Array(
           new Float32Array([ this._ ]).buffer
         )[0]
       );
-    };
+    });
 
-    spec.high32Bits = function() {
+    builder.addMethod(&quot;high32Bits&quot;, function() {
       // &lt;-- _High32Bits --&gt;
       return $.Integer(
         new Int32Array(
           new Float64Array([ this._ ]).buffer
         )[1]
       );
-    };
+    });
 
-    spec.low32Bits = function() {
+    builder.addMethod(&quot;low32Bits&quot;, function() {
       // &lt;-- _Low32Bits --&gt;
       return $.Integer(
         new Int32Array(
           new Float64Array([ this._ ]).buffer
         )[0]
       );
-    };
+    });
 
-    spec.$from32Bits = fn(function($word) {
+    builder.addClassMethod(&quot;from32Bits&quot;, {
+      args: &quot;word&quot;
+    }, function($word) {
       // &lt;-- _From32Bits --&gt;
       return $.Float(
         new Float32Array(
           new Int32Array([ $word.__num__() ]).buffer
         )[0]
       );
-    }, &quot;word&quot;);
+    });
 
-    spec.$from64Bits = fn(function($hiWord, $loWord) {
+    builder.addClassMethod(&quot;from64Bits&quot;, {
+      args: &quot;hiWord; loWord&quot;
+    }, function($hiWord, $loWord) {
       // &lt;-- _From64Bits --&gt;
       return $.Float(
         new Float64Array(
           new Int32Array([ $loWord.__num__(), $hiWord.__num__() ]).buffer
         )[0]
       );
-    }, &quot;hiWord; loWord&quot;);
+    });
 
-    spec.do = function($function) {
-      iterator.execute(
-        iterator.float$do(this),
+    builder.addMethod(&quot;do&quot;, function($function) {
+      sc.lang.iterator.execute(
+        sc.lang.iterator.float$do(this),
         $function
       );
       return this;
-    };
+    });
 
-    spec.reverseDo = function($function) {
-      iterator.execute(
-        iterator.float$reverseDo(this),
+    builder.addMethod(&quot;reverseDo&quot;, function($function) {
+      sc.lang.iterator.execute(
+        sc.lang.iterator.float$reverseDo(this),
         $function
       );
       return this;
-    };
+    });
 
     // TODO: implements asStringPrec
     // TODO: implements archiveAsCompileString
     // TODO: implements storeOn
     // TODO: implements switch
 
-    spec.bitNot = function() {
+    builder.addMethod(&quot;bitNot&quot;,function() {
       var f64 = new Float64Array([ this._ ]);
       var i32 = new Int32Array(f64.buffer);
       i32[0] = ~i32[0];
       return $.Float(f64[0]);
-    };
+    });
   });
-
 });</textarea>
   </div>
 </div>

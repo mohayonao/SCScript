@@ -378,8 +378,7 @@
 160
 161
 162
-163
-164</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+163</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -388,7 +387,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">421</span>
+<span class="cline-any cline-yes">426</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -541,7 +540,6 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">SCScript.install(function(sc) {
   "use strict";
 &nbsp;
@@ -549,42 +547,42 @@
 &nbsp;
   var $ = sc.lang.$;
 &nbsp;
-  sc.lang.klass.refine("Char", function(spec, utils) {
-    spec.__str__ = function() {
+  sc.lang.klass.refine("Char", function(builder) {
+    builder.addMethod("__str__", function() {
       return this._;
-    };
+    });
 &nbsp;
-    spec.$nl = function() {
+    builder.addClassMethod("nl", function() {
       return $.Char("\n");
-    };
+    });
 &nbsp;
-    spec.$ff = function() {
+    builder.addClassMethod("ff", function() {
       return $.Char("\f");
-    };
+    });
 &nbsp;
-    spec.$tab = function() {
+    builder.addClassMethod("tab", function() {
       return $.Char("\t");
-    };
+    });
 &nbsp;
-    spec.$space = function() {
+    builder.addClassMethod("space", function() {
       return $.Char(" ");
-    };
+    });
 &nbsp;
-    spec.$comma = function() {
+    builder.addClassMethod("comma", function() {
       return $.Char(",");
-    };
+    });
 &nbsp;
-    spec.$new = function() {
+    builder.addClassMethod("new", function() {
       throw new Error("Char.new is illegal, should use literal.");
-    };
+    });
 &nbsp;
     // TODO: implements hash
 &nbsp;
-    spec.ascii = function() {
+    builder.addMethod("ascii", function() {
       return $.Integer(this._.charCodeAt(0));
-    };
+    });
 &nbsp;
-    spec.digit = function() {
+    builder.addMethod("digit", function() {
       var ascii = this._.charCodeAt(0);
       if (0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) {
         return $.Integer(ascii - 0x30);
@@ -596,121 +594,120 @@
         return $.Integer(ascii - 0x57);
       }
       throw new Error("digitValue failed");
-    };
+    });
 &nbsp;
-    spec.asAscii = utils.nop;
+    builder.addMethod("asAscii");
 &nbsp;
-    spec.asUnicode = function() {
+    builder.addMethod("asUnicode", function() {
       return this.ascii();
-    };
+    });
 &nbsp;
-    spec.toUpper = function() {
+    builder.addMethod("toUpper", function() {
       return $.Char(this._.toUpperCase());
-    };
+    });
 &nbsp;
-    spec.toLower = function() {
+    builder.addMethod("toLower", function() {
       return $.Char(this._.toLowerCase());
-    };
+    });
 &nbsp;
-    spec.isAlpha = function() {
+    builder.addMethod("isAlpha", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
-    };
+    });
 &nbsp;
-    spec.isAlphaNum = function() {
+    builder.addMethod("isAlphaNum", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
                          (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
-    };
+    });
 &nbsp;
-    spec.isPrint = function() {
+    builder.addMethod("isPrint", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
-    };
+    });
 &nbsp;
-    spec.isPunct = function() {
+    builder.addMethod("isPunct", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
                          (0x3a &lt;= ascii &amp;&amp; ascii &lt;= 0x40) ||
                          (0x5b &lt;= ascii &amp;&amp; ascii &lt;= 0x60) ||
                          (0x7b &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
-    };
+    });
 &nbsp;
-    spec.isControl = function() {
+    builder.addMethod("isControl", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
-    };
+    });
 &nbsp;
-    spec.isSpace = function() {
+    builder.addMethod("isSpace", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
-    };
+    });
 &nbsp;
-    spec.isVowl = function() {
+    builder.addMethod("isVowl", function() {
       var ch = this._.charAt(0).toUpperCase();
       return $.Boolean("AEIOU".indexOf(ch) !== -1);
-    };
+    });
 &nbsp;
-    spec.isDecDigit = function() {
+    builder.addMethod("isDecDigit", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
-    };
+    });
 &nbsp;
-    spec.isUpper = function() {
+    builder.addMethod("isUpper", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
-    };
+    });
 &nbsp;
-    spec.isLower = function() {
+    builder.addMethod("isLower", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
-    };
+    });
 &nbsp;
-    spec.isFileSafe = function() {
+    builder.addMethod("isFileSafe", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
                          ascii !== 0x2f &amp;&amp; // 0x2f is '/'
                          ascii !== 0x3a &amp;&amp; // 0x3a is ':'
                          ascii !== 0x22);  // 0x22 is '"'
-    };
+    });
 &nbsp;
-    spec.isPathSeparator = function() {
+    builder.addMethod("isPathSeparator", function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean(ascii === 0x2f);
-    };
+    });
 &nbsp;
-    spec["&lt;"] = function($aChar) {
+    builder.addMethod("&lt;", function($aChar) {
       return $.Boolean(this.ascii() &lt; $aChar.ascii());
-    };
+    });
 &nbsp;
-    spec["++"] = function($that) {
+    builder.addMethod("++", function($that) {
       return $.String(this._ + $that.__str__());
-    };
+    });
 &nbsp;
     // TODO: implements $bullet
     // TODO: implements printOn
     // TODO: implements storeOn
 &nbsp;
-    spec.archiveAsCompileString = function() {
+    builder.addMethod("archiveAsCompileString", function() {
       return $.True();
-    };
+    });
 &nbsp;
-    spec.asString = function() {
+    builder.addMethod("asString", function() {
       return $.String(this._);
-    };
+    });
 &nbsp;
-    spec.shallowCopy = utils.nop;
+    builder.addMethod("shallowCopy");
   });
-&nbsp;
 });
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jun 15 2014 22:58:44 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 01 2014 20:02:13 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

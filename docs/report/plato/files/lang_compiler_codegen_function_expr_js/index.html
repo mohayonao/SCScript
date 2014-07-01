@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/compiler/codegen/function-expr.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/compiler/codegen/function-expr.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">110.99</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">211</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">49.19</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.83</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./codegen&quot;);
+
+  var Syntax = sc.lang.compiler.Syntax;
+  var Token = sc.lang.compiler.Token;
+  var CodeGen = sc.lang.compiler.CodeGen;
+
+  CodeGen.addGenerateMethod(&quot;FunctionExpression&quot;, function(node) {
+    var meta = getMetaDataOfFunction(node);
+    return [
+      &quot;$.Function(&quot;,
+      generateFunctionBody(this, node, meta.args),
+      generateFunctionMetadata(this, meta),
+      &quot;)&quot;
+    ];
+  });
+
+  function generateFunctionBody(that, node, args) {
+    return that.withFunction([], function() {
+      if (!node.body.length) {
+        return [ &quot;return [];&quot; ];
+      }
+
+      return [
+        &quot;return [&quot;,
+        generateSegmentedFunctionBody(that, node, args),
+        &quot;];&quot;
+      ];
+    });
+  }
+
+  function generateSegmentedFunctionBody(that, node, args) {
+    for (var i = 0, imax = args.length; i &lt; imax; ++i) {
+      that.scope.add(&quot;var&quot;, args[i]);
+    }
+
+    var result;
+    var syncBlockScope = that.state.syncBlockScope;
+    that.state.syncBlockScope = that.scope.peek();
+
+    result = generateSegmentedFunctionBodyElements(that, node, args);
+
+    that.state.syncBlockScope = syncBlockScope;
+
+    return result;
+  }
+
+  function generateSegmentedFunctionBodyElements(that, node, args) {
+    var fargs = args.map(function(_, i) {
+      return &quot;_arg&quot; + i;
+    });
+
+    var assignArguments = function(item, i) {
+      return $id(args[i]) + &quot;=&quot; + fargs[i];
+    };
+
+    var i = 0, imax = node.body.length;
+    var lastIndex = imax - 1;
+
+    var fragments = [];
+
+    var loop = function() {
+      var fragments = [];
+      var stmt;
+
+      while (i &lt; imax) {
+        if (i === 0) {
+          if (args.length) {
+            stmt = that.stitchWith(args, &quot;;&quot;, assignArguments);
+            fragments.push([ stmt, &quot;;&quot; ]);
+          }
+        }
+
+        var calledSegmentedMethod = that.state.calledSegmentedMethod;
+        that.state.calledSegmentedMethod = false;
+
+        stmt = that.generate(node.body[i]);
+
+        if (i === lastIndex || that.state.calledSegmentedMethod) {
+          stmt = [ &quot;return &quot;, stmt ];
+        }
+        fragments.push([ stmt, &quot;;&quot; ]);
+
+        i += 1;
+        if (that.state.calledSegmentedMethod) {
+          break;
+        }
+
+        that.state.calledSegmentedMethod = calledSegmentedMethod;
+      }
+
+      return fragments;
+    };
+
+    fragments.push(that.withFunction(fargs, loop));
+
+    while (i &lt; imax) {
+      fragments.push(&quot;,&quot;, that.withFunction([], loop));
+    }
+
+    fragments.push(generateFunctionToCleanVariables(that));
+
+    return fragments;
+  }
+
+  function generateFunctionMetadata(that, info) {
+    var keys = info.keys;
+    var vals = info.vals;
+
+    if (keys.length === 0 &amp;&amp; !info.remain &amp;&amp; !info.closed) {
+      return [];
+    }
+
+    var args = that.stitchWith(keys, &quot;;&quot;, function(item, i) {
+      var result = [ keys[i] ];
+
+      if (vals[i]) {
+        if (vals[i].type === Syntax.ListExpression) {
+          result.push(&quot;=[&quot;, that.stitchWith(vals[i].elements, &quot;,&quot;, function(item) {
+            return toArgumentValueString(item);
+          }), &quot;]&quot;);
+        } else {
+          result.push(&quot;=&quot;, toArgumentValueString(vals[i]));
+        }
+      }
+
+      return result;
+    });
+
+    var result = [ &quot;,&#039;&quot;, args ];
+
+    if (info.remain) {
+      if (keys.length) {
+        result.push(&quot;;&quot;);
+      }
+      result.push(&quot;*&quot; + info.remain);
+    }
+    result.push(&quot;&#039;&quot;);
+
+    if (info.closed) {
+      result.push(&quot;,true&quot;);
+    }
+
+    return result;
+  }
+
+  function $id(name) {
+    return name.replace(/^(?![_$])/, &quot;$&quot;);
+  }
+
+  function toArgumentValueString(node) {
+    switch (node.valueType) {
+    case Token.NilLiteral   : return &quot;nil&quot;;
+    case Token.TrueLiteral  : return &quot;true&quot;;
+    case Token.FalseLiteral : return &quot;false&quot;;
+    case Token.CharLiteral  : return &quot;$&quot; + node.value;
+    case Token.SymbolLiteral: return &quot;\\&quot; + node.value;
+    }
+    switch (node.value) {
+    case &quot;Infinity&quot; : return &quot;inf&quot;;
+    case &quot;-Infinity&quot;: return &quot;-inf&quot;;
+    }
+    return node.value;
+  }
+
+  function generateFunctionToCleanVariables(that) {
+    var resetVars = Object.keys(that.state.syncBlockScope.vars);
+
+    if (resetVars.length) {
+      return [ &quot;,&quot;, that.withFunction([], function() {
+        return resetVars.sort().map($id).join(&quot;=&quot;) + &quot;=null;&quot;;
+      }) ];
+    }
+
+    return [ &quot;,$.NOP&quot; ];
+  }
+
+  function getMetaDataOfFunction(node) {
+    var args = [];
+    var keys = [];
+    var vals = [];
+    var remain = null;
+
+    if (node.args) {
+      var list = node.args.list;
+      for (var i = 0, imax = list.length; i &lt; imax; ++i) {
+        args.push(list[i].id.name);
+        keys.push(list[i].id.name);
+        vals.push(list[i].init);
+      }
+      if (node.args.remain) {
+        remain = node.args.remain.name;
+        args.push(remain);
+      }
+    }
+
+    if (node.partial) {
+      keys = [];
+    }
+
+    return {
+      args: args,
+      keys: keys,
+      vals: vals,
+      remain: remain,
+      closed: node.closed
+    };
+  }
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

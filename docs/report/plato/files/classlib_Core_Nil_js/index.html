@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">125.52</p>
+      <p class="stat">124.19</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">175</p>
+      <p class="stat">186</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">17.51</p>
+      <p class="stat">20.36</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.54</p>
+      <p class="stat">1.45</p>
     </div>
   </div>
 </div>
@@ -95,175 +95,186 @@
 
   require(&quot;./Object&quot;);
 
-  var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
 
-  sc.lang.klass.refine(&quot;Nil&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.__num__ = function() {
+  sc.lang.klass.refine(&quot;Nil&quot;, function(builder, _) {
+    builder.addMethod(&quot;__num__&quot;, function() {
       return 0;
-    };
+    });
 
-    spec.__bool__ = function() {
+    builder.addMethod(&quot;__bool__&quot;, function() {
       return false;
-    };
+    });
 
-    spec.__sym__ = function() {
+    builder.addMethod(&quot;__sym__&quot;, function() {
       return &quot;nil&quot;;
-    };
+    });
 
-    spec.toString = function() {
+    builder.addMethod(&quot;toString&quot;, function() {
       return &quot;nil&quot;;
-    };
+    });
 
-    spec.$new = function() {
+    builder.addClassMethod(&quot;new&quot;, function() {
       throw new Error(&quot;Nil.new is illegal, should use literal.&quot;);
-    };
+    });
 
-    spec.isNil = utils.alwaysReturn$true;
-    spec.notNil = utils.alwaysReturn$false;
+    builder.addMethod(&quot;isNil&quot;, sc.TRUE);
+    builder.addMethod(&quot;notNil&quot;, sc.FALSE);
 
-    spec[&quot;?&quot;] = function($obj) {
+    builder.addMethod(&quot;?&quot;, function($obj) {
       return $obj;
-    };
+    });
 
-    spec[&quot;??&quot;] = function($obj) {
+    builder.addMethod(&quot;??&quot;, function($obj) {
       return $obj.value();
-    };
+    });
 
-    spec[&quot;!?&quot;] = utils.nop;
+    builder.addMethod(&quot;!?&quot;);
 
-    spec.asBoolean = utils.alwaysReturn$false;
-    spec.booleanValue = utils.alwaysReturn$false;
+    builder.addMethod(&quot;asBoolean&quot;, sc.FALSE);
+    builder.addMethod(&quot;booleanValue&quot;, sc.FALSE);
 
-    spec.push = fn(function($function) {
+    builder.addMethod(&quot;push&quot;, {
+      args: &quot;function&quot;
+    }, function($function) {
       return $function.value();
-    }, &quot;function&quot;);
+    });
 
-    spec.appendStream = fn(function($stream) {
+    builder.addMethod(&quot;appendStream&quot;, {
+      args: &quot;stream&quot;
+    }, function($stream) {
       return $stream;
-    }, &quot;stream&quot;);
+    });
 
-    spec.pop = utils.nop;
-    spec.source = utils.nop;
-    spec.source_ = utils.nop;
+    builder.addMethod(&quot;pop&quot;);
+    builder.addMethod(&quot;source&quot;);
+    builder.addMethod(&quot;source_&quot;);
 
-    spec.rate = utils.nop;
-    spec.numChannels = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$false;
+    builder.addMethod(&quot;rate&quot;);
+    builder.addMethod(&quot;numChannels&quot;);
+    builder.addMethod(&quot;isPlaying&quot;, sc.FALSE);
 
-    spec.do = utils.nop;
-    spec.reverseDo = utils.nop;
-    spec.pairsDo = utils.nop;
-    spec.collect = utils.nop;
-    spec.select = utils.nop;
-    spec.reject = utils.nop;
-    spec.detect = utils.nop;
-    spec.collectAs = utils.nop;
-    spec.selectAs = utils.nop;
-    spec.rejectAs = utils.nop;
+    builder.addMethod(&quot;do&quot;);
+    builder.addMethod(&quot;reverseDo&quot;);
+    builder.addMethod(&quot;pairsDo&quot;);
+    builder.addMethod(&quot;collect&quot;);
+    builder.addMethod(&quot;select&quot;);
+    builder.addMethod(&quot;reject&quot;);
+    builder.addMethod(&quot;detect&quot;);
+    builder.addMethod(&quot;collectAs&quot;);
+    builder.addMethod(&quot;selectAs&quot;);
+    builder.addMethod(&quot;rejectAs&quot;);
 
-    spec.dependants = function() {
+    builder.addMethod(&quot;dependants&quot;, function() {
       return $(&quot;IdentitySet&quot;).new();
-    };
+    });
 
-    spec.changed = utils.nop;
-    spec.addDependant = utils.nop;
-    spec.removeDependant = utils.nop;
-    spec.release = utils.nop;
-    spec.update = utils.nop;
+    builder.addMethod(&quot;changed&quot;);
+    builder.addMethod(&quot;addDependant&quot;);
+    builder.addMethod(&quot;removeDependant&quot;);
+    builder.addMethod(&quot;release&quot;);
+    builder.addMethod(&quot;update&quot;);
 
-    spec.transformEvent = fn(function($event) {
+    builder.addMethod(&quot;transformEvent&quot;, {
+      args: &quot;event&quot;
+    }, function($event) {
       return $event;
-    }, &quot;event&quot;);
+    });
 
-    spec.awake = utils.alwaysReturn$nil;
+    builder.addMethod(&quot;awake&quot;);
 
-    spec.play = utils.nop;
+    builder.addMethod(&quot;play&quot;);
 
-    spec.nextTimeOnGrid = fn(function($clock) {
+    builder.addMethod(&quot;nextTimeOnGrid&quot;, {
+      args: &quot;clock&quot;
+    }, function($clock) {
       if ($clock === $nil) {
         return $clock;
       }
-      return $.Function(function() {
-        return [ function() {
-          return $clock.$(&quot;nextTimeOnGrid&quot;);
-        } ];
+      return $.Func(function() {
+        return $clock.$(&quot;nextTimeOnGrid&quot;);
       });
-    }, &quot;clock&quot;);
+    });
 
-    spec.asQuant = function() {
+    builder.addMethod(&quot;asQuant&quot;, function() {
       return $(&quot;Quant&quot;).default();
-    };
+    });
 
-    spec.swapThisGroup = utils.nop;
-    spec.performMsg = utils.nop;
+    builder.addMethod(&quot;swapThisGroup&quot;);
+    builder.addMethod(&quot;performMsg&quot;);
 
-    spec.printOn = fn(function($stream) {
+    builder.addMethod(&quot;printOn&quot;, {
+      args: &quot;stream&quot;
+    }, function($stream) {
       $stream.putAll($.String(&quot;nil&quot;));
       return this;
-    }, &quot;stream&quot;);
+    });
 
-    spec.storeOn = fn(function($stream) {
+    builder.addMethod(&quot;storeOn&quot;, {
+      args: &quot;stream&quot;
+    }, function($stream) {
       $stream.putAll($.String(&quot;nil&quot;));
       return this;
-    }, &quot;stream&quot;);
+    });
 
-    spec.matchItem = utils.alwaysReturn$true;
+    builder.addMethod(&quot;matchItem&quot;, sc.TRUE);
 
-    spec.add = fn(function($value) {
+    builder.addMethod(&quot;add&quot;, {
+      args: &quot;value&quot;
+    }, function($value) {
       return $.Array([ $value ]);
-    }, &quot;value&quot;);
+    });
 
-    spec.addAll = fn(function($array) {
+    builder.addMethod(&quot;addAll&quot;, {
+      args: &quot;array&quot;
+    }, function($array) {
       return $array.asArray();
-    }, &quot;array&quot;);
+    });
 
-    spec[&quot;++&quot;] = function($array) {
+    builder.addMethod(&quot;++&quot;, function($array) {
       return $array.asArray();
-    };
+    });
 
-    spec.asCollection = function() {
+    builder.addMethod(&quot;asCollection&quot;, function() {
       return $.Array();
-    };
+    });
 
-    spec.remove = utils.nop;
+    builder.addMethod(&quot;remove&quot;);
 
-    spec.set = utils.nop;
+    builder.addMethod(&quot;set&quot;);
 
-    spec.get = fn(function($prevVal) {
+    builder.addMethod(&quot;get&quot;, {
+      args: &quot;prevVal&quot;
+    }, function($prevVal) {
       return $prevVal;
-    }, &quot;prevVal&quot;);
+    });
 
-    spec.addFunc = function() {
-      var functions = slice.call(arguments);
+    builder.addMethod(&quot;addFunc&quot;, function() {
+      var functions = _.toArray(arguments);
       if (functions.length &lt;= 1) {
         return functions[0];
       }
       return $(&quot;FunctionList&quot;).new($.Array(functions));
-    };
+    });
 
-    spec.removeFunc = utils.nop;
+    builder.addMethod(&quot;removeFunc&quot;);
 
-    spec.replaceFunc = utils.nop;
-    spec.seconds_ = utils.nop;
-    spec.throw = utils.nop;
+    builder.addMethod(&quot;replaceFunc&quot;);
+    builder.addMethod(&quot;seconds_&quot;);
+    builder.addMethod(&quot;throw&quot;);
 
     // TODO: implements handleError
 
-    spec.archiveAsCompileString = utils.alwaysReturn$true;
+    builder.addMethod(&quot;archiveAsCompileString&quot;, sc.TRUE);
 
-    spec.asSpec = function() {
+    builder.addMethod(&quot;asSpec&quot;, function() {
       return $(&quot;ControlSpec&quot;).new();
-    };
+    });
 
-    spec.superclassesDo = utils.nop;
-
-    spec.shallowCopy = utils.nop;
+    builder.addMethod(&quot;superclassesDo&quot;);
+    builder.addMethod(&quot;shallowCopy&quot;);
   });
-
 });</textarea>
   </div>
 </div>

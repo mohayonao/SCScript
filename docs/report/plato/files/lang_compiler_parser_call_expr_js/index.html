@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/compiler/parser/call-expr.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/compiler/parser/call-expr.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">110.33</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">281</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">59.07</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.68</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./parser&quot;);
+
+  var Parser = sc.lang.compiler.Parser;
+  var Syntax = sc.lang.compiler.Syntax;
+  var Token = sc.lang.compiler.Token;
+  var Node = sc.lang.compiler.Node;
+
+  Parser.addParseMethod(&quot;CallExpression&quot;, function() {
+    return new CallExpressionParser(this).parse();
+  });
+
+  function CallExpressionParser(parent) {
+    Parser.call(this, parent);
+  }
+  sc.libs.extend(CallExpressionParser, Parser);
+
+  /*
+    CallExpression :
+      TODO: write
+  */
+  CallExpressionParser.prototype.parse = function() {
+    var marker = this.createMarker();
+    var expr = this.parseSignedExpression();
+
+    var stamp;
+    while ((stamp = this.matchAny([ &quot;(&quot;, &quot;{&quot;, &quot;#&quot;, &quot;[&quot;, &quot;.&quot; ])) !== null) {
+      var err = false;
+      err = err || (expr.stamp === &quot;(&quot; &amp;&amp; stamp === &quot;(&quot;);
+      err = err || (expr.stamp === &quot;[&quot; &amp;&amp; stamp === &quot;(&quot;);
+      err = err || (expr.stamp === &quot;[&quot; &amp;&amp; stamp === &quot;{&quot;);
+      if (err) {
+        this.throwUnexpected(this.lookahead);
+      }
+
+      expr = this.parseCallChainExpression(stamp, expr);
+      marker.update().apply(expr, true);
+    }
+
+    return expr;
+  };
+
+  CallExpressionParser.prototype.parseCallChainExpression = function(stamp, expr) {
+    if (stamp === &quot;(&quot;) {
+      return this.parseCallParentheses(expr);
+    }
+    if (stamp === &quot;#&quot;) {
+      return this.parseCallClosedBraces(expr);
+    }
+    if (stamp === &quot;{&quot;) {
+      return this.parseCallBraces(expr);
+    }
+    if (stamp === &quot;[&quot;) {
+      return this.parseCallBrackets(expr);
+    }
+    return this.parseCallDot(expr);
+  };
+
+  CallExpressionParser.prototype.parseCallParentheses = function(expr) {
+    if (isClassName(expr)) {
+      // Expr.new( ... )
+      return this.parseCallAbbrMethodCall(expr, &quot;new&quot;, &quot;(&quot;);
+    }
+    // expr( a ... ) -&gt; a.expr( ... )
+    return this.parseCallMethodCall(expr);
+  };
+
+  CallExpressionParser.prototype.parseCallClosedBraces = function(expr) {
+    var token = this.expect(&quot;#&quot;);
+    if (!this.match(&quot;{&quot;)) {
+      return this.throwUnexpected(token);
+    }
+    return this.parseCallBraces(expr, { closed: true });
+  };
+
+  CallExpressionParser.prototype.parseCallBraces = function(expr, opts) {
+    opts = opts || {};
+
+    if (expr.type === Syntax.Identifier) {
+      expr = createCallExpressionForBraces(expr, this.createMarker());
+    }
+    var node = this.parseFunctionExpression({ blockList: true, closed: !!opts.closed });
+
+    if (expr.callee === null) {
+      expr.callee = node;
+    } else {
+      expr.args.list.push(node);
+    }
+
+    return expr;
+  };
+
+  function createCallExpressionForBraces(expr, marker) {
+    var callee, method;
+
+    if (isClassName(expr)) {
+      callee = expr;
+      method = marker.apply(Node.createIdentifier(&quot;new&quot;));
+    } else {
+      callee = null;
+      method = expr;
+    }
+
+    return Node.createCallExpression(callee, method, { list: [] }, &quot;(&quot;);
+  }
+
+  CallExpressionParser.prototype.parseCallMethodCall = function(expr) {
+    if (expr.type !== Syntax.Identifier) {
+      this.throwUnexpected(this.lookahead);
+    }
+
+    var lookahead = this.lookahead;
+    var args      = new ArgumentsParser(this).parse();
+
+    var method = expr;
+
+    expr = args.list.shift();
+
+    if (!expr) {
+      if (args.expand) {
+        expr = args.expand;
+        delete args.expand;
+      } else {
+        this.throwUnexpected(lookahead);
+      }
+    }
+
+    // max(0, 1) -&gt; 0.max(1)
+    return Node.createCallExpression(expr, method, args, &quot;(&quot;);
+  };
+
+  CallExpressionParser.prototype.parseCallAbbrMethodCall = function(expr, methodName, stamp) {
+    var method = Node.createIdentifier(methodName);
+
+    method = this.createMarker().apply(method);
+
+    var args = new ArgumentsParser(this).parse();
+
+    return Node.createCallExpression(expr, method, args, stamp);
+  };
+
+  CallExpressionParser.prototype.parseCallBrackets = function(expr) {
+    if (isClassName(expr)) {
+      return this.parseCallwithList(expr);
+    }
+    return this.parseCallwithIndexer(expr);
+  };
+
+  CallExpressionParser.prototype.parseCallwithList = function(expr) {
+    var marker = this.createMarker();
+
+    var method = this.createMarker().apply(
+      Node.createIdentifier(&quot;at&quot;)
+    );
+    var listExpr = this.parseListExpression();
+
+    return marker.update().apply(
+      Node.createCallExpression(expr, method, { list: [ listExpr ] }, &quot;[&quot;)
+    );
+  };
+
+  CallExpressionParser.prototype.parseCallwithIndexer = function(expr) {
+    var marker = this.createMarker();
+
+    var method = this.createMarker().apply(
+      Node.createIdentifier()
+    );
+    var listIndexer = this.parseListIndexer();
+
+    method.name = listIndexer.length === 3 ? &quot;copySeries&quot; : &quot;at&quot;;
+
+    return marker.update().apply(
+      Node.createCallExpression(expr, method, { list: listIndexer }, &quot;[&quot;)
+    );
+  };
+
+  CallExpressionParser.prototype.parseCallDot = function(expr) {
+    this.expect(&quot;.&quot;);
+
+    if (this.match(&quot;(&quot;)) {
+      // expr.()
+      return this.parseCallAbbrMethodCall(expr, &quot;value&quot;, &quot;(&quot;);
+    }
+    if (this.match(&quot;[&quot;)) {
+      // expr.[0]
+      return this.parseDotBrackets(expr);
+    }
+
+    var marker = this.createMarker();
+
+    var method = this.parseIdentifier({ variable: true });
+    var args   = new ArgumentsParser(this).parse();
+
+    return marker.update().apply(
+      Node.createCallExpression(expr, method, args, &quot;(&quot;)
+    );
+  };
+
+  CallExpressionParser.prototype.parseDotBrackets = function(expr) {
+    var marker = this.createMarker(expr);
+
+    var method = Node.createIdentifier(&quot;value&quot;);
+    method = this.createMarker().apply(method);
+
+    expr = Node.createCallExpression(expr, method, { list: [] }, &quot;(&quot;);
+    expr = marker.update().apply(expr);
+
+    return this.parseCallwithIndexer(expr);
+  };
+
+  function ArgumentsParser(parent) {
+    Parser.call(this, parent);
+    this._hasKeyword = false;
+    this._args = { list: [] };
+  }
+  sc.libs.extend(ArgumentsParser, Parser);
+
+  ArgumentsParser.prototype.parse = function() {
+    if (this.match(&quot;(&quot;)) {
+      return this.parseArguments();
+    }
+    return { list: [] };
+  };
+
+  ArgumentsParser.prototype.parseArguments = function() {
+    this.expect(&quot;(&quot;);
+
+    while (this.hasNextToken() &amp;&amp; !this.match(&quot;)&quot;)) {
+      var lookahead = this.lookahead;
+      if (!this._hasKeyword) {
+        if (this.match(&quot;*&quot;)) {
+          this.lex();
+          this._args.expand = this.parseExpressions();
+          this._hasKeyword = true;
+        } else if (lookahead.type === Token.Label) {
+          this.parseKeywordArgument();
+          this._hasKeyword = true;
+        } else {
+          this._args.list.push(this.parseExpressions());
+        }
+      } else {
+        this.parseKeywordArgument();
+      }
+      if (!this.match(&quot;)&quot;)) {
+        this.expect(&quot;,&quot;);
+      }
+    }
+
+    this.expect(&quot;)&quot;);
+
+    return this._args;
+  };
+
+  ArgumentsParser.prototype.parseKeywordArgument = function() {
+    var token = this.lex();
+    if (token.type !== Token.Label) {
+      return this.throwUnexpected(token);
+    }
+
+    var key = token.value;
+    var val = this.parseExpressions();
+
+    if (!this._args.keywords) {
+      this._args.keywords = {};
+    }
+    this._args.keywords[key] = val;
+  };
+
+  function isClassName(node) {
+    if (node.type !== Syntax.Identifier) {
+      return false;
+    }
+
+    var name = node.value || node.name;
+    var ch = name.charAt(0);
+
+    return &quot;A&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;Z&quot;;
+  }
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

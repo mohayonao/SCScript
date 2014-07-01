@@ -205,7 +205,7 @@
         Branches: <span class="metric">100% <small>(0 / 0)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(10 / 10)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(13 / 13)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Lines: <span class="metric">100% <small>(29 / 29)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
@@ -284,14 +284,15 @@
 66
 67
 68
-69</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+69
+70</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">14</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -300,18 +301,15 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">6</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">15</span>
-<span class="cline-any cline-yes">15</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -323,18 +321,11 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -345,6 +336,17 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -357,75 +359,76 @@
 &nbsp;
   require("./Object");
 &nbsp;
-  var fn = sc.lang.fn;
+  sc.lang.klass.refine("Ref", function(builder) {
+    builder.addProperty("&lt;&gt;", "value");
 &nbsp;
-  sc.lang.klass.refine("Ref", function(spec, utils) {
-    spec.$new = function($thing) {
+    builder.addClassMethod("new", function($thing) {
       return this.__super__("new").value_($thing);
-    };
+    });
 &nbsp;
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._$value.valueOf();
-    };
-&nbsp;
-    spec.value = function() {
-      return this._$value;
-    };
-&nbsp;
-    spec.value_ = fn(function($value) {
-      this._$value = $value;
-      return this;
-    }, "value");
+    });
 &nbsp;
     // $new
 &nbsp;
-    spec.set = fn(function($thing) {
+    builder.addMethod("set", {
+      args: "thing"
+    }, function($thing) {
       this._$value = $thing;
       return this;
-    }, "thing");
+    });
 &nbsp;
-    spec.get = function() {
+    builder.addMethod("get", function() {
       return this._$value;
-    };
+    });
 &nbsp;
-    spec.dereference = spec.value;
+    builder.addMethod("dereference", function() {
+      return this.value();
+    });
 &nbsp;
-    spec.asRef = utils.nop;
+    builder.addMethod("asRef");
 &nbsp;
-    spec.valueArray = spec.value;
+    builder.addMethod("valueArray", function() {
+      return this.value();
+    });
 &nbsp;
-    spec.valueEnvir = spec.value;
+    builder.addMethod("valueEnvir", function() {
+      return this.value();
+    });
 &nbsp;
-    spec.valueArrayEnvir = spec.value;
+    builder.addMethod("valueArrayEnvir", function() {
+      return this.value();
+    });
 &nbsp;
-    spec.next = spec.value;
+    builder.addMethod("next", function() {
+      return this.value();
+    });
 &nbsp;
-    spec.asUGenInput = utils.nop;
+    builder.addMethod("asUGenInput");
 &nbsp;
     // TODO: implements printOn
     // TODO: implements storeOn
 &nbsp;
-    spec.at = function($key) {
+    builder.addMethod("at", function($key) {
       return this._$value.at($key);
-    };
+    });
 &nbsp;
-    spec.put = function($key, $val) {
+    builder.addMethod("put", function($key, $val) {
       return this._$value.put($key, $val);
-    };
-&nbsp;
+    });
     // TODO: implements seq
     // TODO: implements asControlInput
     // TODO: implements asBufWithValues
     // TODO: implements multichannelExpandRef
   });
-&nbsp;
 });
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jun 15 2014 22:58:44 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 01 2014 20:02:13 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

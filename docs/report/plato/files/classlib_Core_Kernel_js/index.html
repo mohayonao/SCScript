@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">133.37</p>
+      <p class="stat">121.83</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">129</p>
+      <p class="stat">127</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">24.00</p>
+      <p class="stat">21.96</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.65</p>
+      <p class="stat">0.91</p>
     </div>
   </div>
 </div>
@@ -96,19 +96,23 @@
   require(&quot;./Object&quot;);
 
   var $ = sc.lang.$;
-  var klass = sc.lang.klass;
+  var $nil = $.nil;
 
-  klass.refine(&quot;Class&quot;, function(spec) {
-    spec.class = function() {
-      if (this._isMetaClass) {
+  sc.lang.klass.refine(&quot;Class&quot;, function(builder) {
+    builder.addMethod(&quot;toString&quot;, function() {
+      return String(this.__className);
+    });
+
+    builder.addMethod(&quot;class&quot;, function() {
+      if (this.__isMetaClass) {
         return $(&quot;Class&quot;);
       }
-      return $(&quot;Meta_&quot; + this._name);
-    };
+      return $(&quot;Meta_&quot; + this.__className);
+    });
 
-    spec.name = function() {
-      return $.String(this._name);
-    };
+    builder.addMethod(&quot;name&quot;, function() {
+      return $.String(this.__className);
+    });
 
     // TODO: implements superclass
     // TODO: implements asClass
@@ -140,7 +144,7 @@
     // TODO: implements allSubclasses
     // TODO: implements superclasses
 
-    spec[&quot;[]&quot;] = function($anArray) {
+    builder.addMethod(&quot;[]&quot;, function($anArray) {
       var $newCollection;
       var array, i, imax;
 
@@ -152,72 +156,66 @@
       }
 
       return $newCollection;
-    };
+    });
   });
 
-
-  klass.define(&quot;Process&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.constructor = function SCProcess() {
-      this.__super__(&quot;Object&quot;);
+  sc.lang.klass.define(&quot;Process&quot;, function(builder) {
+    builder.addMethod(&quot;__init__&quot;, function() {
+      this.__super__(&quot;__init__&quot;);
       this._$interpreter = $nil;
       this._$mainThread  = $nil;
-    };
+    });
 
-    spec.interpreter = function() {
+    builder.addMethod(&quot;interpreter&quot;, function() {
       return this._$interpreter;
-    };
+    });
 
-    spec.mainThread = function() {
+    builder.addMethod(&quot;mainThread&quot;, function() {
       return this._$mainThread;
-    };
+    });
   });
 
-  klass.define(&quot;Main : Process&quot;, function(spec) {
-    spec.constructor = function SCMain() {
-      this.__super__(&quot;Process&quot;);
-    };
-  });
+  sc.lang.klass.define(&quot;Main : Process&quot;);
 
+  sc.lang.klass.define(&quot;Interpreter&quot;, function(builder) {
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;a&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;b&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;c&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;d&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;e&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;f&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;g&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;h&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;i&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;j&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;k&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;l&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;m&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;n&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;o&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;p&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;q&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;r&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;s&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;t&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;u&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;v&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;w&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;x&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;y&quot;);
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;z&quot;);
 
-  klass.define(&quot;Interpreter&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
+    builder.addMethod(&quot;__init__&quot;, function() {
+      this.__super__(&quot;__init__&quot;);
+    });
 
-    spec.constructor = function SCInterpreter() {
-      this.__super__(&quot;Object&quot;);
-      this._$ = {};
-    };
-
-    (function() {
-      var i, ch;
-
-      function getter(name) {
-        return function() {
-          return this._$[name] || /* istanbul ignore next */ $nil;
-        };
+    builder.addMethod(&quot;clearAll&quot;, function() {
+      for (var i = 97; i &lt;= 122; i++) {
+        this[&quot;_$&quot; + String.fromCharCode(i)] = null;
       }
-
-      function setter(name) {
-        return function($value) {
-          this._$[name] = $value || /* istanbul ignore next */ $nil;
-          return this;
-        };
-      }
-
-      for (i = 97; i &lt;= 122; i++) {
-        ch = String.fromCharCode(i);
-        spec[ch] = getter(ch);
-        spec[ch + &quot;_&quot;] = setter(ch);
-      }
-    })();
-
-    spec.clearAll = function() {
-      this._$ = {};
       return this;
-    };
+    });
   });
-
 });</textarea>
   </div>
 </div>

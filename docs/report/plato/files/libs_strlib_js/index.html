@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">129.49</p>
+      <p class="stat">127.97</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">17</p>
+      <p class="stat">74</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">6.46</p>
+      <p class="stat">19.87</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.06</p>
+      <p class="stat">0.57</p>
     </div>
   </div>
 </div>
@@ -95,6 +95,7 @@
 
   require(&quot;./sc&quot;);
 
+  var slice = [].slice;
   var strlib = {};
 
   strlib.article = function(name) {
@@ -104,8 +105,64 @@
     return &quot;a&quot;;
   };
 
-  sc.libs.strlib = strlib;
+  strlib.isAlpha = function(ch) {
+    return (&quot;A&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;Z&quot;) || (&quot;a&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;z&quot;);
+  };
 
+  strlib.isNumber = function(ch) {
+    return &quot;0&quot; &lt;= ch &amp;&amp; ch &lt;= &quot;9&quot;;
+  };
+
+  strlib.isClassName = function(name) {
+    var ch = name.charCodeAt(0);
+    return 0x41 &lt;= ch &amp;&amp; ch &lt;= 0x5a;
+  };
+
+  strlib.char2num = function(ch) {
+    var n = ch.charCodeAt(0);
+
+    if (48 &lt;= n &amp;&amp; n &lt;= 57) {
+      return n - 48;
+    }
+    if (65 &lt;= n &amp;&amp; n &lt;= 90) {
+      return n - 55;
+    }
+    return n - 87; // if (97 &lt;= n &amp;&amp; n &lt;= 122)
+  };
+
+  function formatWithList(fmt, list) {
+    var msg = fmt;
+    list.forEach(function(value, index) {
+      msg = msg.replace(
+        new RegExp(&quot;#\\{&quot; + index + &quot;\\}&quot;, &quot;g&quot;), String(value)
+      );
+    });
+    return msg;
+  }
+
+  function formatWithDict(fmt, dict) {
+    var msg = fmt;
+    Object.keys(dict).forEach(function(key) {
+      if (/^\w+$/.test(key)) {
+        msg = msg.replace(
+          new RegExp(&quot;#\\{&quot; + key + &quot;\\}&quot;, &quot;g&quot;), String(dict[key])
+        );
+      }
+    });
+    return msg;
+  }
+
+  strlib.format = function(fmt, arg) {
+    if (Array.isArray(arg)) {
+      return formatWithList(fmt, arg);
+    }
+    if (arg &amp;&amp; arg.constructor === Object) {
+      return formatWithDict(fmt, arg);
+    }
+    return formatWithList(fmt, slice.call(arguments, 1));
+  };
+
+  sc.libs.strlib = strlib;
 })(sc);</textarea>
   </div>
 </div>

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">124.31</p>
+      <p class="stat">120.33</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">156</p>
+      <p class="stat">143</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">24.82</p>
+      <p class="stat">27.60</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.13</p>
+      <p class="stat">1.11</p>
     </div>
   </div>
 </div>
@@ -95,40 +95,33 @@
 
   require(&quot;../Streams/Stream&quot;);
 
-  var $    = sc.lang.$;
-  var fn   = sc.lang.fn;
-  var main = sc.lang.main;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
   var random = sc.libs.random;
 
-  sc.lang.klass.define(&quot;Thread : Stream&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
+  sc.lang.klass.refine(&quot;Thread&quot;, function(builder) {
+    builder.addProperty(&quot;&lt;&quot;, &quot;parent&quot;);
 
-    spec.constructor = function SCThread() {
-      this.__super__(&quot;Stream&quot;);
-    };
+    builder.addClassMethod(&quot;new&quot;, {
+      args: &quot;func&quot;
+    }, function($func) {
+      return init(this.__super__(&quot;new&quot;), $func);
+    });
 
-    spec.$new = fn(function($func) {
-      return this.__super__(&quot;new&quot;)._init($func);
-    }, &quot;func&quot;);
-
-    spec._init = function($func) {
+    function init($this, $func) {
       if ($func.__tag !== sc.TAG_FUNC) {
         throw new Error(&quot;Thread.init failed&quot;);
       }
-      this._bytecode = $func._;
-      this._state    = sc.STATE_INIT;
-      this._parent   = null;
-      this._randgen  = new random.RandGen((Math.random() * 4294967295) &gt;&gt;&gt; 0);
-      return this;
-    };
+      $this._bytecode = $func._bytecode.setOwner($this);
+      $this._state    = sc.STATE_INIT;
+      $this._parent   = null;
+      $this._randgen  = new random.RandGen((Math.random() * 4294967295) &gt;&gt;&gt; 0);
+      return $this;
+    }
 
-    spec.state = function() {
+    builder.addMethod(&quot;state&quot;, function() {
       return $.Integer(this._state);
-    };
-
-    spec.parent = function() {
-      return this._parent || $nil;
-    };
+    });
 
     // TODO: implements primitiveError
     // TODO: implements primitiveIndex
@@ -150,42 +143,42 @@
     // TODO: implements oldExecutingPath
     // TODO: implements init
 
-    spec.copy = utils.nop;
+    builder.addMethod(&quot;copy&quot;);
 
-    // spec.isPlaying = function() {
-    //   return $.Boolean(this._state._ === 5);
-    // };
-
+    // TODO: implements isPlaying
     // TODO: implements threadPlayer
     // TODO: implements findThreadPlayer
 
-    spec.randSeed_ = fn(function($seed) {
+    builder.addMethod(&quot;randSeed_&quot;, {
+      args: &quot;seed&quot;
+    }, function($seed) {
       this._randgen.setSeed($seed.__int__() &gt;&gt;&gt; 0);
       return this;
-    }, &quot;seed&quot;);
+    });
 
-    spec.randData_ = fn(function($data) {
+    builder.addMethod(&quot;randData_&quot;, {
+      args: &quot;data&quot;
+    }, function($data) {
       this._randgen.x = $data.at($.Integer(0)).__int__();
       this._randgen.y = $data.at($.Integer(1)).__int__();
       this._randgen.z = $data.at($.Integer(2)).__int__();
       return this;
-    }, &quot;data&quot;);
+    });
 
-    spec.randData = function() {
+    builder.addMethod(&quot;randData&quot;, function() {
       return $(&quot;Int32Array&quot;).newFrom($.Array([
         $.Integer(this._randgen.x),
         $.Integer(this._randgen.y),
         $.Integer(this._randgen.z),
       ]));
-    };
+    });
 
     // TODO: implements failedPrimitiveName
     // TODO: implements handleError
 
-    spec.next = utils.nop;
-    spec.value = utils.nop;
-    spec.valueArray = utils.nop;
-
+    builder.addMethod(&quot;next&quot;);
+    builder.addMethod(&quot;value&quot;);
+    builder.addMethod(&quot;valueArray&quot;);
     // TODO: implements $primitiveError
     // TODO: implements $primitiveErrorString
     // TODO: implements storeOn
@@ -193,58 +186,52 @@
     // TODO: implements checkCanArchive
   });
 
-  sc.lang.klass.define(&quot;Routine : Thread&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
-
-    spec.__tag = sc.TAG_ROUTINE;
-
-    spec.constructor = function SCRoutine() {
-      this.__super__(&quot;Thread&quot;);
-    };
-
-    spec.$new = function($func) {
+  sc.lang.klass.refine(&quot;Routine&quot;, function(builder) {
+    builder.addClassMethod(&quot;new&quot;, function($func) {
       return this.__super__(&quot;new&quot;, [ $func ]);
-    };
+    });
 
     // TODO: implements $run
 
     var routine$resume = function($inval) {
       if (this._state === sc.STATE_DONE) {
-        return $nil;
+        return this._$doneValue || $nil;
       }
 
-      this._parent = main.$currentThread;
-      main.$currentThread = this;
+      this._parent = sc.lang.main.getCurrentThread();
+      sc.lang.main.setCurrentThread(this);
 
       this._state = sc.STATE_RUNNING;
       this._bytecode.runAsRoutine([ $inval || $nil ]);
       this._state = this._bytecode.state;
 
-      main.$currentThread = this._parent;
+      if (this._state === sc.STATE_DONE) {
+        this._$doneValue = this._bytecode.result;
+      }
+
+      sc.lang.main.setCurrentThread(this._parent);
       this._parent = null;
 
       return this._bytecode.result || $nil;
     };
 
-    spec.next   = routine$resume;
-    spec.value  = routine$resume;
-    spec.resume = routine$resume;
-    spec.run    = routine$resume;
-    spec.valueArray = routine$resume;
+    builder.addMethod(&quot;next&quot;, routine$resume);
+    builder.addMethod(&quot;value&quot;, routine$resume);
+    builder.addMethod(&quot;resume&quot;, routine$resume);
+    builder.addMethod(&quot;run&quot;, routine$resume);
+    builder.addMethod(&quot;valueArray&quot;, routine$resume);
 
-    spec.reset = function() {
+    builder.addMethod(&quot;reset&quot;, function() {
       this._state = sc.STATE_INIT;
       this._bytecode.reset();
       return this;
-    };
-
+    });
     // TODO: implements stop
     // TODO: implements p
     // TODO: implements storeArgs
     // TODO: implements storeOn
     // TODO: implements awake
   });
-
 });</textarea>
   </div>
 </div>

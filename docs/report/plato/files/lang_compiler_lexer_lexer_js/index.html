@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/compiler/lexer/lexer.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/compiler/lexer/lexer.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">106.75</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">234</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">64.06</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.41</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./compiler&quot;);
+  require(&quot;../marker/marker&quot;);
+  require(&quot;./identifier&quot;);
+  require(&quot;./string&quot;);
+  require(&quot;./number&quot;);
+  require(&quot;./punctuator&quot;);
+  require(&quot;./comment&quot;);
+
+  var slice = [].slice;
+  var strlib = sc.libs.strlib;
+  var Token    = sc.lang.compiler.Token;
+  var Message  = sc.lang.compiler.Message;
+  var Marker = sc.lang.compiler.Marker;
+  var lexIdentifier = sc.lang.compiler.lexIdentifier;
+  var lexString = sc.lang.compiler.lexString;
+  var lexNumber = sc.lang.compiler.lexNumber;
+  var lexPunctuator = sc.lang.compiler.lexPunctuator;
+  var lexComment = sc.lang.compiler.lexComment;
+
+  function Lexer(source, opts) {
+    /* istanbul ignore next */
+    if (typeof source !== &quot;string&quot;) {
+      if (typeof source === &quot;undefined&quot;) {
+        source = &quot;&quot;;
+      }
+      source = String(source);
+    }
+    this.source = source.replace(/\r\n?/g, &quot;\n&quot;);
+    this.opts = opts = opts || /* istanbul ignore next */ {};
+
+    this.length = source.length;
+    this.errors = null;
+
+    this.index = 0;
+    this.lineNumber = this.length ? 1 : 0;
+    this.lineStart = 0;
+
+    this.lookahead = this.advance();
+
+    this.index = 0;
+    this.lineNumber = this.length ? 1 : 0;
+    this.lineStart = 0;
+  }
+
+  Object.defineProperty(Lexer.prototype, &quot;columnNumber&quot;, {
+    get: function() {
+      return this.index - this.lineStart;
+    }
+  });
+
+  Lexer.prototype.tokenize = function() {
+    var tokens = [];
+
+    while (true) {
+      var token = this.collectToken();
+      if (token.type === Token.EOF) {
+        break;
+      }
+      tokens.push(token);
+    }
+
+    return tokens;
+  };
+
+  Lexer.prototype.collectToken = function() {
+    var token = this.advance();
+
+    var result = {
+      type: token.type,
+      value: token.value
+    };
+
+    if (this.opts.range) {
+      result.range = token.range;
+    }
+    if (this.opts.loc) {
+      result.loc = token.loc;
+    }
+
+    return result;
+  };
+
+  Lexer.prototype.lex = function() {
+    var token = this.lookahead;
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    this.lookahead = this.advance();
+
+    this.index      = token.range[1];
+    this.lineNumber = token.lineNumber;
+    this.lineStart  = token.lineStart;
+
+    return token;
+  };
+
+  Lexer.prototype.unlex = function(token) {
+    this.lookahead = token;
+    this.index = token.range[0];
+    this.lineNumber = token.lineNumber;
+    this.lineStart = token.lineStart;
+  };
+
+  Lexer.prototype.advance = function() {
+    this.skipComment();
+
+    if (this.length &lt;= this.index) {
+      return this.EOFToken();
+    }
+
+    var lineNumber = this.lineNumber;
+    var columnNumber = this.columnNumber;
+
+    var token = this.scan();
+
+    token.loc = {
+      start: { line: lineNumber, column: columnNumber },
+      end: { line: this.lineNumber, column: this.columnNumber }
+    };
+
+    return token;
+  };
+
+  Lexer.prototype.createMarker = function(node) {
+    return Marker.create(this, node);
+  };
+
+  Lexer.prototype.skipComment = function() {
+    var source = this.source;
+    var length = this.length;
+
+    while (this.index &lt; length) {
+      var ch1 = source.charAt(this.index);
+      var ch2 = source.charAt(this.index + 1);
+
+      if (ch1 === &quot; &quot; || ch1 === &quot;\t&quot;) {
+        this.index += 1;
+      } else if (ch1 === &quot;\n&quot;) {
+        this.index += 1;
+        this.lineNumber += 1;
+        this.lineStart = this.index;
+      } else if (ch1 === &quot;/&quot; &amp;&amp; (ch2 === &quot;/&quot; || ch2 === &quot;*&quot;)) {
+        this.scanWithFunc(lexComment);
+      } else {
+        break;
+      }
+    }
+  };
+
+  Lexer.prototype.scan = function() {
+    return this.scanWithFunc(this.selectScanner());
+  };
+
+  Lexer.prototype.selectScanner = function() {
+    var ch = this.source.charAt(this.index);
+
+    if (ch === &quot;\\&quot; || ch === &quot;&#039;&quot; || ch === &#039;&quot;&#039; || ch === &quot;$&quot;) {
+      return lexString;
+    }
+
+    if (ch === &quot;_&quot; || strlib.isAlpha(ch)) {
+      return lexIdentifier;
+    }
+
+    if (strlib.isNumber(ch)) {
+      return lexNumber;
+    }
+
+    return lexPunctuator;
+  };
+
+  Lexer.prototype.scanWithFunc = function(func) {
+    var start = this.index;
+    var token = func(this.source, this.index);
+    if (token.error) {
+      return this.throwError({}, Message.UnexpectedToken, token.value);
+    }
+    this.index += token.length;
+    if (token.line) {
+      var value = token.value;
+      this.lineStart = this.index - (value.length - value.lastIndexOf(&quot;\n&quot;) - 1);
+      this.lineNumber += token.line;
+    }
+    return this.makeToken(token.type, token.value, start);
+  };
+
+  Lexer.prototype.makeToken = function(type, value, start) {
+    return {
+      type: type,
+      value: value,
+      lineNumber: this.lineNumber,
+      lineStart: this.lineStart,
+      range: [ start, this.index ]
+    };
+  };
+
+  Lexer.prototype.EOFToken = function() {
+    return this.makeToken(Token.EOF, &quot;&lt;EOF&gt;&quot;, this.index);
+  };
+
+  Lexer.prototype.getLocItems = function() {
+    return [ this.index, this.lineNumber, this.columnNumber ];
+  };
+
+  Lexer.prototype.throwError = function(token, messageFormat) {
+    var message = strlib.format(messageFormat, slice.call(arguments, 2));
+
+    var index, lineNumber, column;
+    if (typeof token.lineNumber === &quot;number&quot;) {
+      index      = token.range[0];
+      lineNumber = token.lineNumber;
+      column     = token.range[0] - token.lineStart + 1;
+    } else {
+      index      = this.index;
+      lineNumber = this.lineNumber;
+      column     = index - this.lineStart + 1;
+    }
+
+    var error = new Error(&quot;Line &quot; + lineNumber + &quot;: &quot; + message);
+    error.index       = index;
+    error.lineNumber  = lineNumber;
+    error.column      = column;
+    error.description = message;
+
+    throw error;
+  };
+
+  sc.lang.compiler.Lexer = Lexer;
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.78</p>
+      <p class="stat">124.35</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">280</p>
+      <p class="stat">286</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">58.90</p>
+      <p class="stat">54.08</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.32</p>
+      <p class="stat">2.43</p>
     </div>
   </div>
 </div>
@@ -95,77 +95,75 @@
 
   require(&quot;./Collection&quot;);
 
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var iterator = sc.lang.iterator;
+  var $ = sc.lang.$;
+  var $nil  = $.nil;
+  var $int0 = $.int0;
+  var SCArray = $(&quot;Array&quot;);
 
-  sc.lang.klass.refine(&quot;Set&quot;, function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $int_0 = utils.$int_0;
-    var SCArray = $(&quot;Array&quot;);
+  sc.lang.klass.refine(&quot;Set&quot;, function(builder) {
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;array&quot;);
 
-    spec.$new = fn(function($n) {
+    builder.addClassMethod(&quot;new&quot;, {
+      args: &quot;n=2&quot;
+    }, function($n) {
       $n = $.Integer(Math.max($n.__int__(), 2) * 2);
       return this.__super__(&quot;new&quot;).initSet($n);
-    }, &quot;n=2&quot;);
+    });
 
-    spec.valueOf = function() {
+    builder.addMethod(&quot;valueOf&quot;, function() {
       return this._$array._.filter(function($elem) {
         return $elem !== $nil;
       }).map(function($elem) {
         return $elem.valueOf();
       });
-    };
+    });
 
-    spec.array = function() {
-      return this._$array;
-    };
-
-    spec.array_ = function($value) {
-      this._$array = $value || /* istanbul ignore next */ $nil;
-      return this;
-    };
-
-    spec.size = function() {
+    builder.addMethod(&quot;size&quot;, function() {
       return $.Integer(this._size);
-    };
+    });
 
-    spec.species = function() {
+    builder.addMethod(&quot;species&quot;, function() {
       return this.class();
-    };
+    });
 
-    spec.copy = function() {
+    builder.addMethod(&quot;copy&quot;, function() {
       return this.shallowCopy().array_(this._$array.copy());
-    };
+    });
 
-    spec.do = function($function) {
-      iterator.execute(
-        iterator.set$do(this),
+    builder.addMethod(&quot;do&quot;, function($function) {
+      sc.lang.iterator.execute(
+        sc.lang.iterator.set$do(this),
         $function
       );
       return this;
-    };
+    });
 
-    spec.clear = function() {
+    builder.addMethod(&quot;clear&quot;, function() {
       this._$array.fill();
       this._size = 0;
       return this;
-    };
+    });
 
-    spec.makeEmpty = function() {
+    builder.addMethod(&quot;makeEmpty&quot;, function() {
       this.clear();
       return this;
-    };
+    });
 
-    spec.includes = fn(function($item) {
+    builder.addMethod(&quot;includes&quot;, {
+      args: &quot;item&quot;
+    }, function($item) {
       return this._$array.at(this.scanFor($item)).notNil();
-    }, &quot;item&quot;);
+    });
 
-    spec.findMatch = fn(function($item) {
+    builder.addMethod(&quot;findMatch&quot;, {
+      args: &quot;item&quot;
+    }, function($item) {
       return this._$array.at(this.scanFor($item));
-    }, &quot;item&quot;);
+    });
 
-    spec.add = fn(function($item) {
+    builder.addMethod(&quot;add&quot;, {
+      args: &quot;item&quot;
+    }, function($item) {
       var $index;
 
       if ($item === $nil) {
@@ -178,9 +176,11 @@
       }
 
       return this;
-    }, &quot;item&quot;);
+    });
 
-    spec.remove = fn(function($item) {
+    builder.addMethod(&quot;remove&quot;, {
+      args: &quot;item&quot;
+    }, function($item) {
       var $index;
 
       $index = this.scanFor($item);
@@ -191,9 +191,9 @@
       }
 
       return this;
-    }, &quot;item&quot;);
+    });
 
-    spec.choose = function() {
+    builder.addMethod(&quot;choose&quot;, function() {
       var $val;
       var $size, $array;
 
@@ -209,13 +209,13 @@
       } while ($val === $nil);
 
       return $val;
-    };
+    });
 
-    spec.pop = function() {
+    builder.addMethod(&quot;pop&quot;, function() {
       var $index, $val;
       var $array, $size;
 
-      $index = $int_0;
+      $index = $int0;
       $array = this._$array;
       $size  = $array.size();
 
@@ -229,11 +229,11 @@
       }
 
       return $nil;
-    };
+    });
 
     // TODO: implements powerset
 
-    spec.unify = function() {
+    builder.addMethod(&quot;unify&quot;, function() {
       var $result;
 
       $result = this.species().new();
@@ -243,9 +243,11 @@
       });
 
       return $result;
-    };
+    });
 
-    spec.sect = fn(function($that) {
+    builder.addMethod(&quot;sect&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       var $result;
 
       $result = this.species().new();
@@ -257,9 +259,11 @@
       });
 
       return $result;
-    }, &quot;that&quot;);
+    });
 
-    spec.union = fn(function($that) {
+    builder.addMethod(&quot;union&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       var $result;
 
       $result = this.species().new();
@@ -268,13 +272,17 @@
       $result.addAll($that);
 
       return $result;
-    }, &quot;that&quot;);
+    });
 
-    spec.difference = fn(function($that) {
+    builder.addMethod(&quot;difference&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       return this.copy().removeAll($that);
-    }, &quot;that&quot;);
+    });
 
-    spec.symmetricDifference = fn(function($that) {
+    builder.addMethod(&quot;symmetricDifference&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       var $this = this;
       var $result;
 
@@ -285,68 +293,69 @@
           $result.add($item);
         }
       });
-      $that.do($.Function(function() {
-        return [ function($item) {
-          if (!$this.includes($item).__bool__()) {
-            $result.add($item);
-          }
-        } ];
+      $that.do($.Func(function($item) {
+        if (!$this.includes($item).__bool__()) {
+          $result.add($item);
+        }
+        return $nil;
       }));
 
       return $result;
-    }, &quot;that&quot;);
+    });
 
-    spec.isSubsetOf = fn(function($that) {
+    builder.addMethod(&quot;isSubsetOf&quot;, {
+      args: &quot;that&quot;
+    },function($that) {
       return $that.$(&quot;includesAll&quot;, [ this ]);
-    }, &quot;that&quot;);
+    });
 
-    spec[&quot;&amp;&quot;] = function($that) {
+    builder.addMethod(&quot;&amp;&quot;, function($that) {
       return this.sect($that);
-    };
+    });
 
-    spec[&quot;|&quot;] = function($that) {
+    builder.addMethod(&quot;|&quot;, function($that) {
       return this.union($that);
-    };
+    });
 
-    spec[&quot;-&quot;] = function($that) {
+    builder.addMethod(&quot;-&quot;, function($that) {
       return this.difference($that);
-    };
+    });
 
-    spec[&quot;--&quot;] = function($that) {
+    builder.addMethod(&quot;--&quot;, function($that) {
       return this.symmetricDifference($that);
-    };
+    });
 
-    spec.asSet = utils.nop;
+    builder.addMethod(&quot;asSet&quot;);
 
-    spec.initSet = function($n) {
+    builder.addMethod(&quot;initSet&quot;, function($n) {
       this._$array = SCArray.newClear($n);
       this._size   = 0;
       return this;
-    };
+    });
 
-    spec.putCheck = function($index, $item) {
+    builder.addMethod(&quot;putCheck&quot;, function($index, $item) {
       this._$array.put($index, $item);
       this._size += 1;
       this.fullCheck();
       return this;
-    };
+    });
 
-    spec.fullCheck = function() {
+    builder.addMethod(&quot;fullCheck&quot;, function() {
       if (this._$array.size().__int__() &lt; this._size * 2) {
         this.grow();
       }
-    };
+    });
 
-    spec.grow = function() {
+    builder.addMethod(&quot;grow&quot;, function() {
       var array, i, imax;
       array = this._$array._;
       for (i = array.length, imax = i * 2; i &lt; imax; ++i) {
         array[i] = $nil;
       }
-    };
+    });
 
     /* istanbul ignore next */
-    spec.scanFor = function($obj) {
+    builder.addMethod(&quot;scanFor&quot;, function($obj) {
       var array, index;
 
       array = this._$array._;
@@ -362,13 +371,10 @@
       }
 
       return $.Integer(-1);
-    };
-
+    });
     // TODO: implements fixCollisionsFrom
     // TODO: implements keyAt
-
   });
-
 });</textarea>
   </div>
 </div>

@@ -49,7 +49,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">379</p>
+      <p class="stat">378</p>
     </div>
   </div>
   <div class="row historical">
@@ -441,11 +441,11 @@
     return x + lo;
   };
 
-  mathlib.clip_idx = function(index, len) {
+  mathlib.clipIndex = function(index, len) {
     return Math.max(0, Math.min(index, len - 1));
   };
 
-  mathlib.wrap_idx = function(index, len) {
+  mathlib.wrapIndex = function(index, len) {
     index = index % len;
     if (index &lt; 0) {
       index += len;
@@ -453,7 +453,7 @@
     return index;
   };
 
-  mathlib.fold_idx = function(index, len) {
+  mathlib.foldIndex = function(index, len) {
     var len2 = len * 2 - 2;
 
     index = (index|0) % len2;
@@ -467,7 +467,6 @@
   };
 
   sc.libs.mathlib = mathlib;
-
 })(sc);</textarea>
   </div>
 </div>

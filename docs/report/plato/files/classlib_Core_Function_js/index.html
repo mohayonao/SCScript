@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">128.84</p>
+      <p class="stat">127.86</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">183</p>
+      <p class="stat">190</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">34.16</p>
+      <p class="stat">35.27</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.31</p>
+      <p class="stat">1.37</p>
     </div>
   </div>
 </div>
@@ -95,47 +95,47 @@
 
   require(&quot;./AbstractFunction&quot;);
 
-  var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var bytecode = sc.lang.bytecode;
+  var $ = sc.lang.$;
+  var $nil = $.nil;
+  var SCArray = $(&quot;Array&quot;);
+  var SCRoutine = $(&quot;Routine&quot;);
 
-  sc.lang.klass.refine(&quot;Function&quot;, function(spec, utils) {
-    var $nil = utils.$nil;
-    var SCArray = $(&quot;Array&quot;);
-
+  sc.lang.klass.refine(&quot;Function&quot;, function(builder, _) {
     // TODO: implements def
-
-    spec.$new = function() {
+    builder.addClassMethod(&quot;new&quot;, function() {
       throw new Error(&quot;Function.new is illegal, should use literal.&quot;);
-    };
+    });
 
-    spec.isFunction = utils.alwaysReturn$true;
+    builder.addMethod(&quot;isFunction&quot;, sc.TRUE);
 
     // TODO: implements isClosed
 
-    spec.archiveAsCompileString = utils.alwaysReturn$true;
-    spec.archiveAsObject = utils.alwaysReturn$true;
+    builder.addMethod(&quot;archiveAsCompileString&quot;, sc.TRUE);
+    builder.addMethod(&quot;archiveAsObject&quot;, sc.TRUE);
 
     // TODO: implements checkCanArchive
 
-    spec.shallowCopy = utils.nop;
+    builder.addMethod(&quot;shallowCopy&quot;);
 
-    spec.choose = function() {
+    var function$run = function(bytecode, args) {
+      return bytecode.reset().run(args);
+    };
+
+    builder.addMethod(&quot;choose&quot;, function() {
       return this.value();
-    };
+    });
 
-    spec.update = function() {
-      return this._.reset().run(arguments);
-    };
+    builder.addMethod(&quot;update&quot;, function() {
+      return function$run(this._bytecode, arguments);
+    });
 
-    spec.value = function() {
-      return this._.reset().run(arguments);
-    };
+    builder.addMethod(&quot;value&quot;, function() {
+      return function$run(this._bytecode, arguments);
+    });
 
-    spec.valueArray = function($args) {
-      return this._.reset().run($args.asArray()._);
-    };
+    builder.addMethod(&quot;valueArray&quot;, function($args) {
+      return function$run(this._bytecode, $args.asArray()._);
+    });
 
     var envir = function(func, args) {
       return func._argNames.map(function(name, i) {
@@ -150,19 +150,19 @@
       }, args);
     };
 
-    spec.valueEnvir = function() {
-      var args = envir(this._, arguments);
-      return this._.reset().run(args);
-    };
+    builder.addMethod(&quot;valueEnvir&quot;, function() {
+      return function$run(this._bytecode, envir(this._bytecode, arguments));
+    });
 
-    spec.valueArrayEnvir = function($args) {
-      var args = envir(this._, $args.asArray()._);
-      return this._.reset().run(args);
-    };
+    builder.addMethod(&quot;valueArrayEnvir&quot;, function($args) {
+      return function$run(this._bytecode, envir(this._bytecode, $args.asArray()._));
+    });
 
-    spec.functionPerformList = fn(function($selector, $arglist) {
+    builder.addMethod(&quot;functionPerformList&quot;, {
+      args: &quot;selector; arglist&quot;
+    }, function($selector, $arglist) {
       return this[$selector.__str__()].apply(this, $arglist.asArray()._);
-    }, &quot;selector; arglist&quot;);
+    });
 
     // TODO: implements valueWithEnvir
     // TODO: implements performWithEnvir
@@ -170,16 +170,26 @@
     // TODO: implements numArgs
     // TODO: implements numVars
     // TODO: implements varArgs
-    // TODO: implements loop
+
+    builder.addMethod(&quot;loop&quot;, function() {
+      sc.lang.iterator.execute(
+        sc.lang.iterator.function$loop(),
+        this
+      );
+      return this;
+    });
+
     // TODO: implements block
 
-    spec.asRoutine = function() {
-      return $(&quot;Routine&quot;).new(this);
-    };
+    builder.addMethod(&quot;asRoutine&quot;, function() {
+      return SCRoutine.new(this);
+    });
 
-    spec.dup = fn(function($n) {
+    builder.addMethod(&quot;dup&quot;, {
+      args: &quot;n=2&quot;
+    }, function($n) {
       return SCArray.fill($n, this);
-    }, &quot;n=2&quot;);
+    });
 
     // TODO: implements sum
     // TODO: implements defer
@@ -193,31 +203,31 @@
     // TODO: implements cmdPeriod
     // TODO: implements bench
 
-    spec.protect = function($handler) {
+    builder.addMethod(&quot;protect&quot;, function($handler) {
       var result;
-      var current = bytecode.current;
+      var current = sc.lang.bytecode.getCurrent();
 
       try {
         result = this.value();
       } catch (e) {
         result = null;
       }
-      bytecode.current = current;
+      sc.lang.bytecode.setCurrent(current);
 
       $handler.value();
 
       return result || $nil;
-    };
+    });
 
     // TODO: implements try
     // TODO: implements prTry
 
     // TODO: implements handleError
 
-    spec.case = function() {
+    builder.addMethod(&quot;case&quot;, function() {
       var args, i, imax;
 
-      args = slice.call(arguments);
+      args = _.toArray(arguments);
       args.unshift(this);
 
       for (i = 0, imax = args.length &gt;&gt; 1; i &lt; imax; ++i) {
@@ -231,47 +241,44 @@
       }
 
       return $nil;
-    };
+    });
 
-    spec.r = function() {
-      return $(&quot;Routine&quot;).new(this);
-    };
+    builder.addMethod(&quot;r&quot;, function() {
+      return SCRoutine.new(this);
+    });
 
-    spec.p = function() {
+    builder.addMethod(&quot;p&quot;, function() {
       return $(&quot;Prout&quot;).new(this);
-    };
+    });
 
     // TODO: implements matchItem
     // TODO: implements performDegreeToKey
 
-    spec.flop = function() {
+    builder.addMethod(&quot;flop&quot;, function() {
       var $this = this;
 
-      return $.Function(function() {
-        return [ function() {
-          var $$args = $.Array(slice.call(arguments));
-          return $$args.flop().collect($.Function(function() {
-            return [ function($_) {
-              return $this.valueArray($_);
-            } ];
-          }));
-        } ];
+      return $.Func(function() {
+        var $$args = $.Array(_.toArray(arguments));
+        return $$args.flop().collect($.Func(function($_) {
+          return $this.valueArray($_);
+        }));
       });
-    };
+    });
 
     // TODO: implements envirFlop
     // TODO: implements makeFlopFunc
     // TODO: implements inEnvir
 
-    spec.while = fn(function($body) {
+    builder.addMethod(&quot;while&quot;, {
+      args: &quot;body&quot;
+    }, function($body) {
       sc.lang.iterator.execute(
         sc.lang.iterator.function$while(this),
         $body
       );
       return this;
-    }, &quot;body&quot;);
+    });
   });
-
 });</textarea>
   </div>
 </div>

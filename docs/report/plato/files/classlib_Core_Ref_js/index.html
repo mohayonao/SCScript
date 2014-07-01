@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">133.97</p>
+      <p class="stat">138.27</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">68</p>
+      <p class="stat">69</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">8.25</p>
+      <p class="stat">8.87</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.36</p>
+      <p class="stat">0.37</p>
     </div>
   </div>
 </div>
@@ -95,68 +95,69 @@
 
   require(&quot;./Object&quot;);
 
-  var fn = sc.lang.fn;
+  sc.lang.klass.refine(&quot;Ref&quot;, function(builder) {
+    builder.addProperty(&quot;&lt;&gt;&quot;, &quot;value&quot;);
 
-  sc.lang.klass.refine(&quot;Ref&quot;, function(spec, utils) {
-    spec.$new = function($thing) {
+    builder.addClassMethod(&quot;new&quot;, function($thing) {
       return this.__super__(&quot;new&quot;).value_($thing);
-    };
+    });
 
-    spec.valueOf = function() {
+    builder.addMethod(&quot;valueOf&quot;, function() {
       return this._$value.valueOf();
-    };
-
-    spec.value = function() {
-      return this._$value;
-    };
-
-    spec.value_ = fn(function($value) {
-      this._$value = $value;
-      return this;
-    }, &quot;value&quot;);
+    });
 
     // $new
 
-    spec.set = fn(function($thing) {
+    builder.addMethod(&quot;set&quot;, {
+      args: &quot;thing&quot;
+    }, function($thing) {
       this._$value = $thing;
       return this;
-    }, &quot;thing&quot;);
+    });
 
-    spec.get = function() {
+    builder.addMethod(&quot;get&quot;, function() {
       return this._$value;
-    };
+    });
 
-    spec.dereference = spec.value;
+    builder.addMethod(&quot;dereference&quot;, function() {
+      return this.value();
+    });
 
-    spec.asRef = utils.nop;
+    builder.addMethod(&quot;asRef&quot;);
 
-    spec.valueArray = spec.value;
+    builder.addMethod(&quot;valueArray&quot;, function() {
+      return this.value();
+    });
 
-    spec.valueEnvir = spec.value;
+    builder.addMethod(&quot;valueEnvir&quot;, function() {
+      return this.value();
+    });
 
-    spec.valueArrayEnvir = spec.value;
+    builder.addMethod(&quot;valueArrayEnvir&quot;, function() {
+      return this.value();
+    });
 
-    spec.next = spec.value;
+    builder.addMethod(&quot;next&quot;, function() {
+      return this.value();
+    });
 
-    spec.asUGenInput = utils.nop;
+    builder.addMethod(&quot;asUGenInput&quot;);
 
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.at = function($key) {
+    builder.addMethod(&quot;at&quot;, function($key) {
       return this._$value.at($key);
-    };
+    });
 
-    spec.put = function($key, $val) {
+    builder.addMethod(&quot;put&quot;, function($key, $val) {
       return this._$value.put($key, $val);
-    };
-
+    });
     // TODO: implements seq
     // TODO: implements asControlInput
     // TODO: implements asBufWithValues
     // TODO: implements multichannelExpandRef
   });
-
 });</textarea>
   </div>
 </div>

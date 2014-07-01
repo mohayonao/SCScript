@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">94.30</p>
+      <p class="stat">92.15</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">711</p>
+      <p class="stat">717</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">189.02</p>
+      <p class="stat">198.15</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">8.53</p>
+      <p class="stat">8.52</p>
     </div>
   </div>
 </div>
@@ -95,46 +95,30 @@
 
   require(&quot;./ArrayedCollection&quot;);
 
-  var slice = [].slice;
-  var $     = sc.lang.$;
-  var fn    = sc.lang.fn;
-  var rand  = sc.libs.random;
+  var $ = sc.lang.$;
+  var random  = sc.libs.random;
   var mathlib = sc.libs.mathlib;
 
-  sc.lang.klass.refine(&quot;Array&quot;, function(spec, utils) {
-    var $nil    = utils.$nil;
-    var SCArray = $(&quot;Array&quot;);
+  var SCArray = $(&quot;Array&quot;);
+  var $nil = $.nil;
 
-    spec.$newClear = fn(function($indexedSize) {
-      var array, indexedSize, i;
+  sc.lang.klass.refine(&quot;Array&quot;, function(builder, _) {
+    builder.addClassMethod(&quot;with&quot;, function() {
+      return $.Array(_.toArray(arguments));
+    });
 
-      indexedSize = $indexedSize.__int__();
-      array = new Array(indexedSize);
-      for (i = 0; i &lt; indexedSize; ++i) {
-        array[i] = $nil;
-      }
-
-      return $.Array(array);
-    }, &quot;indexedSize=0&quot;);
-
-    spec.$with = function() {
-      return $.Array(slice.call(arguments));
-    };
-
-    spec.reverse = function() {
-      // &lt;-- _ArrayReverse --&gt;
+    builder.addMethod(&quot;reverse&quot;, function() {
       return $.Array(this._.slice().reverse());
-    };
+    });
 
-    spec.scramble = function() {
+    builder.addMethod(&quot;scramble&quot;, function() {
       var a, tmp, i, j, m;
 
-      // &lt;-- _ArrayScramble --&gt;
       a = this._.slice();
       m = a.length;
       if (m &gt; 1) {
         for (i = 0; m &gt; 0; ++i, --m) {
-          j = i + (rand.next() * m)|0;
+          j = i + (random.next() * m)|0;
           tmp  = a[i];
           a[i] = a[j];
           a[j] = tmp;
@@ -142,9 +126,9 @@
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.mirror = function() {
+    builder.addMethod(&quot;mirror&quot;, function() {
       var raw = this._;
       var size, i, j, imax, a;
 
@@ -163,9 +147,9 @@
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.mirror1 = function() {
+    builder.addMethod(&quot;mirror1&quot;, function() {
       var raw = this._;
       var size, i, j, imax, a;
 
@@ -184,9 +168,9 @@
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.mirror2 = function() {
+    builder.addMethod(&quot;mirror2&quot;, function() {
       var raw = this._;
       var size, i, j, imax, a;
 
@@ -205,9 +189,11 @@
       }
 
       return $.Array(a);
-    };
+    });
 
-    spec.stutter = fn(function($n) {
+    builder.addMethod(&quot;stutter&quot;, {
+      args: &quot;n=2&quot;
+    }, function($n) {
       var raw = this._;
       var n, a, i, j, imax, k;
 
@@ -221,9 +207,11 @@
       }
 
       return $.Array(a);
-    }, &quot;n=2&quot;);
+    });
 
-    spec.rotate = fn(function($n) {
+    builder.addMethod(&quot;rotate&quot;, {
+      args: &quot;n=1&quot;
+    }, function($n) {
       var raw = this._;
       var n, a, size, i, j;
 
@@ -243,9 +231,11 @@
       }
 
       return $.Array(a);
-    }, &quot;n=1&quot;);
+    });
 
-    spec.pyramid = fn(function($patternType) {
+    builder.addMethod(&quot;pyramid&quot;, {
+      args: &quot;patternType=1&quot;
+    }, function($patternType) {
       var patternType;
       var obj1, obj2, i, j, k, n, numslots, x;
 
@@ -369,9 +359,11 @@
       }
 
       return $.Array(obj2);
-    }, &quot;n=1&quot;);
+    });
 
-    spec.pyramidg = fn(function($patternType) {
+    builder.addMethod(&quot;pyramidg&quot;, {
+      args: &quot;patternType=1&quot;
+    }, function($patternType) {
       var raw = this._;
       var patternType;
       var list = [], lastIndex, i;
@@ -451,9 +443,11 @@
       }
 
       return $.Array(list);
-    }, &quot;n=1&quot;);
+    });
 
-    spec.sputter = fn(function($probability, $maxlen) {
+    builder.addMethod(&quot;sputter&quot;, {
+      args: &quot;probability=0.25; maxlen=100&quot;
+    }, function($probability, $maxlen) {
       var list, prob, maxlen, i, length;
 
       list   = [];
@@ -463,15 +457,17 @@
       length = this._.length;
       while (i &lt; length &amp;&amp; list.length &lt; maxlen) {
         list.push(this._[i]);
-        if (rand.next() &lt; prob) {
+        if (random.next() &lt; prob) {
           i += 1;
         }
       }
 
       return $.Array(list);
-    }, &quot;probability=0.25; maxlen=100&quot;);
+    });
 
-    spec.lace = fn(function($length) {
+    builder.addMethod(&quot;lace&quot;, {
+      args: &quot;length&quot;
+    }, function($length) {
       var raw = this._;
       var length, wrap = raw.length;
       var a, i, $item;
@@ -493,9 +489,11 @@
       }
 
       return $.Array(a);
-    }, &quot;length&quot;);
+    });
 
-    spec.permute = fn(function($nthPermutation) {
+    builder.addMethod(&quot;permute&quot;, {
+      args: &quot;nthPermutation=0&quot;
+    }, function($nthPermutation) {
       var raw = this._;
       var obj1, obj2, size, $item;
       var nthPermutation, i, imax, j;
@@ -515,9 +513,11 @@
       }
 
       return $.Array(obj2);
-    }, &quot;nthPermutation=0&quot;);
+    });
 
-    spec.allTuples = fn(function($maxTuples) {
+    builder.addMethod(&quot;allTuples&quot;, {
+      args: &quot;maxTuples=16384&quot;
+    }, function($maxTuples) {
       var maxSize;
       var obj1, obj2, obj3, obj4, newSize, tupSize;
       var i, j, k;
@@ -552,9 +552,11 @@
       }
 
       return $.Array(obj2);
-    }, &quot;maxTuples=16384&quot;);
+    });
 
-    spec.wrapExtend = fn(function($size) {
+    builder.addMethod(&quot;wrapExtend&quot;, {
+      args: &quot;size&quot;
+    }, function($size) {
       var raw = this._;
       var size, a, i;
 
@@ -569,9 +571,11 @@
       }
 
       return $.Array(a);
-    }, &quot;size&quot;);
+    });
 
-    spec.foldExtend = fn(function($size) {
+    builder.addMethod(&quot;foldExtend&quot;, {
+      args: &quot;size&quot;
+    }, function($size) {
       var raw = this._;
       var size, a, i;
 
@@ -580,16 +584,18 @@
       if (raw.length &lt; size) {
         a = new Array(size);
         for (i = 0; i &lt; size; ++i) {
-          a[i] = raw[mathlib.fold_idx(i, raw.length)];
+          a[i] = raw[mathlib.foldIndex(i, raw.length)];
         }
       } else {
         a = raw.slice(0, size);
       }
 
       return $.Array(a);
-    }, &quot;size&quot;);
+    });
 
-    spec.clipExtend = fn(function($size) {
+    builder.addMethod(&quot;clipExtend&quot;, {
+      args: &quot;size&quot;
+    }, function($size) {
       var raw = this._;
       var size, a, i, imax, b;
 
@@ -608,9 +614,11 @@
       }
 
       return $.Array(a);
-    }, &quot;size&quot;);
+    });
 
-    spec.slide = fn(function($windowLength, $stepSize) {
+    builder.addMethod(&quot;slide&quot;, {
+      args: &quot;windowLength=3; stepSize=1&quot;
+    }, function($windowLength, $stepSize) {
       var raw = this._;
       var windowLength, stepSize;
       var obj1, obj2, m, n, numwin, numslots;
@@ -632,9 +640,9 @@
       }
 
       return $.Array(obj2);
-    }, &quot;windowLength=3; stepSize=1&quot;);
+    });
 
-    spec.containsSeqColl = function() {
+    builder.addMethod(&quot;containsSeqColl&quot;, function() {
       var raw = this._;
       var i, imax;
 
@@ -645,9 +653,11 @@
       }
 
       return $.False();
-    };
+    });
 
-    spec.unlace = fn(function($clumpSize, $numChan) {
+    builder.addMethod(&quot;unlace&quot;, {
+      args: &quot;clumpSize=2; numChan=1&quot;
+    }, function($clumpSize, $numChan) {
       var raw = this._;
       var clumpSize, numChan;
       var a, b, size, i, j, k;
@@ -672,16 +682,16 @@
       }
 
       return $.Array(a);
-    }, &quot;clumpSize=2; numChan=1&quot;);
+    });
 
     // TODO: implements interlace
     // TODO: implements deinterlace
 
-    spec.flop =  function() {
+    builder.addMethod(&quot;flop&quot;, function() {
       return this.multiChannelExpand();
-    };
+    });
 
-    spec.multiChannelExpand = function() {
+    builder.addMethod(&quot;multiChannelExpand&quot;, function() {
       var raw = this._;
       var maxSize, size, obj1, obj2, obj3;
       var i, j;
@@ -711,11 +721,13 @@
       }
 
       return $.Array(obj2);
-    };
+    });
 
     // TODO: implements envirPairs
 
-    spec.shift = fn(function($n, $filler) {
+    builder.addMethod(&quot;shift&quot;, {
+      args: &quot;n; filler=0.0&quot;
+    }, function($n, $filler) {
       var $fill, $remain;
 
       $fill = SCArray.fill($n.$(&quot;abs&quot;), $filler);
@@ -726,9 +738,9 @@
       }
 
       return $fill [&quot;++&quot;] ($remain);
-    }, &quot;n; fillter=0.0&quot;);
+    });
 
-    spec.powerset = function() {
+    builder.addMethod(&quot;powerset&quot;, function() {
       var raw = this._;
       var arrSize, powersize;
       var result, elemArr, mod, i, j;
@@ -749,39 +761,33 @@
       }
 
       return $.Array(result);
-    };
+    });
 
     // TODO: implements source
 
-    spec.asUGenInput = function($for) {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asUGenInput($for);
-        } ];
+    builder.addMethod(&quot;asUGenInput&quot;, function($for) {
+      return this.collect($.Func(function($_) {
+        return $_.asUGenInput($for);
       }));
-    };
+    });
 
-    spec.asAudioRateInput = function($for) {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asAudioRateInput($for);
-        } ];
+    builder.addMethod(&quot;asAudioRateInput&quot;, function($for) {
+      return this.collect($.Func(function($_) {
+        return $_.asAudioRateInput($for);
       }));
-    };
+    });
 
-    spec.asControlInput = function() {
-      return this.collect($.Function(function() {
-        return [ function($_) {
-          return $_.asControlInput();
-        } ];
+    builder.addMethod(&quot;asControlInput&quot;, function() {
+      return this.collect($.Func(function($_) {
+        return $_.asControlInput();
       }));
-    };
+    });
 
-    spec.isValidUGenInput = utils.alwaysReturn$true;
+    builder.addMethod(&quot;isValidUGenInput&quot;, sc.TRUE);
 
-    spec.numChannels = function() {
+    builder.addMethod(&quot;numChannels&quot;, function() {
       return this.size();
-    };
+    });
 
     // TODO: implements poll
     // TODO: implements dpoll
@@ -791,15 +797,15 @@
     // TODO: implements asSpec
     // TODO: implements fork
 
-    spec.madd = fn(function($mul, $add) {
+    builder.addMethod(&quot;madd&quot;, {
+      args: &quot;mul=1.0; add=0.0&quot;
+    }, function($mul, $add) {
       return $(&quot;MulAdd&quot;).new(this, $mul, $add);
-    }, &quot;mul=1.0; add=0.0&quot;);
-
+    });
     // TODO: implements asRawOSC
     // TODO: implements printOn
     // TODO: implements storeOn
   });
-
 });</textarea>
   </div>
 </div>

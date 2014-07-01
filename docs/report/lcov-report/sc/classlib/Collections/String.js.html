@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/classlib/Collections/String.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(97 / 97)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(98 / 98)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(18 / 18)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(20 / 20)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
         Functions: <span class="metric">100% <small>(31 / 31)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(97 / 97)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(98 / 98)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -501,7 +501,8 @@
 283
 284
 285
-286</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+286
+287</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -509,16 +510,17 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">25</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">26</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">6</span>
+<span class="cline-any cline-yes">4</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -526,8 +528,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">118</span>
-<span class="cline-any cline-yes">419</span>
+<span class="cline-any cline-yes">120</span>
+<span class="cline-any cline-yes">424</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -573,6 +575,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">30</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">30</span>
@@ -784,41 +788,40 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">SCScript.install(function(sc) {
   "use strict";
 &nbsp;
   require("./ArrayedCollection");
 &nbsp;
   var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var io = sc.lang.io;
+  var $nil   = $.nil;
+  var $false = $.false;
+  var $space = $.Char(" ");
 &nbsp;
-  sc.lang.klass.refine("String", function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $false = utils.$false;
-&nbsp;
-    spec.__str__ = function() {
+  sc.lang.klass.refine("String", function(builder) {
+    builder.addMethod("__str__", function() {
       return this.valueOf();
-    };
+    });
 &nbsp;
-    spec.__elem__ = function($item) {
+    builder.addMethod("__elem__", function($item) {
+      if (!$item) {
+        return $space;
+      }
       if ($item.__tag !== sc.TAG_CHAR) {
         throw new TypeError("Wrong type.");
       }
       return $item;
-    };
+    });
 &nbsp;
-    spec.valueOf = function() {
+    builder.addMethod("valueOf", function() {
       return this._.map(function(elem) {
         return elem.__str__();
       }).join("");
-    };
+    });
 &nbsp;
-    spec.toString = function() {
+    builder.addMethod("toString", function() {
       return this.valueOf();
-    };
+    });
 &nbsp;
     // TODO: implements unixCmdActions
     // TODO: implements unixCmdActions_
@@ -827,21 +830,21 @@
     // TODO: implements unixCmd
     // TODO: implements unixCmdGetStdOut
 &nbsp;
-    spec.asSymbol = function() {
+    builder.addMethod("asSymbol", function() {
       return $.Symbol(this.__str__());
-    };
+    });
 &nbsp;
-    spec.asInteger = function() {
+    builder.addMethod("asInteger", function() {
       var m = /^[-+]?\d+/.exec(this.__str__());
       return $.Integer(m ? m[0]|0 : 0);
-    };
+    });
 &nbsp;
-    spec.asFloat = function() {
+    builder.addMethod("asFloat", function() {
       var m = /^[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?/.exec(this.__str__());
       return $.Float(m ? +m[0] : 0);
-    };
+    });
 &nbsp;
-    spec.ascii = function() {
+    builder.addMethod("ascii", function() {
       var raw = this.__str__();
       var a, i, imax;
 &nbsp;
@@ -851,13 +854,15 @@
       }
 &nbsp;
       return $.Array(a);
-    };
+    });
 &nbsp;
     // TODO: implements stripRTF
     // TODO: implements stripHTML
     // TODO: implements $scDir
 &nbsp;
-    spec.compare = fn(function($aString, $ignoreCase) {
+    builder.addMethod("compare", {
+      args: "aString; ignoreCase=false"
+    }, function($aString, $ignoreCase) {
       var araw, braw, length, i, a, b, cmp, func;
 &nbsp;
       if ($aString.__tag !== sc.TAG_STR) {
@@ -893,89 +898,89 @@
       }
 &nbsp;
       return $.Integer(cmp);
-    }, "aString; ignoreCase=false");
+    });
 &nbsp;
-    spec["&lt;"] = function($aString) {
+    builder.addMethod("&lt;", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &lt; 0
+        this.compare($aString, $false).__num__() &lt; 0
       );
-    };
+    });
 &nbsp;
-    spec["&gt;"] = function($aString) {
+    builder.addMethod("&gt;", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &gt; 0
+        this.compare($aString, $false).__num__() &gt; 0
       );
-    };
+    });
 &nbsp;
-    spec["&lt;="] = function($aString) {
+    builder.addMethod("&lt;=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &lt;= 0
+        this.compare($aString, $false).__num__() &lt;= 0
       );
-    };
+    });
 &nbsp;
-    spec["&gt;="] = function($aString) {
+    builder.addMethod("&gt;=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() &gt;= 0
+        this.compare($aString, $false).__num__() &gt;= 0
       );
-    };
+    });
 &nbsp;
-    spec["=="] = function($aString) {
+    builder.addMethod("==", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() === 0
+        this.compare($aString, $false).__num__() === 0
       );
-    };
+    });
 &nbsp;
-    spec["!="] = function($aString) {
+    builder.addMethod("!=", function($aString) {
       return $.Boolean(
-        this.compare($aString, $false).valueOf() !== 0
+        this.compare($aString, $false).__num__() !== 0
       );
-    };
+    });
 &nbsp;
     // TODO: implements hash
 &nbsp;
-    spec.performBinaryOpOnSimpleNumber = function($aSelector, $aNumber) {
+    builder.addMethod("performBinaryOpOnSimpleNumber", function($aSelector, $aNumber) {
       return $aNumber.asString().perform($aSelector, this);
-    };
+    });
 &nbsp;
-    spec.performBinaryOpOnComplex = function($aSelector, $aComplex) {
+    builder.addMethod("performBinaryOpOnComplex", function($aSelector, $aComplex) {
       return $aComplex.asString().perform($aSelector, this);
-    };
+    });
 &nbsp;
-    spec.multiChannelPerform = function() {
+    builder.addMethod("multiChannelPerform", function() {
       throw new Error("String:multiChannelPerform. Cannot expand strings.");
-    };
+    });
 &nbsp;
-    spec.isString = utils.alwaysReturn$true;
+    builder.addMethod("isString", sc.TRUE);
 &nbsp;
-    spec.asString = utils.nop;
+    builder.addMethod("asString");
 &nbsp;
-    spec.asCompileString = function() {
+    builder.addMethod("asCompileString", function() {
       return $.String("\"" + this.__str__() + "\"");
-    };
+    });
 &nbsp;
-    spec.species = function() {
+    builder.addMethod("species", function() {
       return $("String");
-    };
+    });
 &nbsp;
-    spec.postln = function() {
-      io.post(this.__str__() + "\n");
+    builder.addMethod("postln", function() {
+      sc.lang.io.post(this.__str__() + "\n");
       return this;
-    };
+    });
 &nbsp;
-    spec.post = function() {
-      io.post(this.__str__());
+    builder.addMethod("post", function() {
+      sc.lang.io.post(this.__str__());
       return this;
-    };
+    });
 &nbsp;
-    spec.postcln = function() {
-      io.post("// " + this.__str__() + "\n");
+    builder.addMethod("postcln", function() {
+      sc.lang.io.post("// " + this.__str__() + "\n");
       return this;
-    };
+    });
 &nbsp;
-    spec.postc = function() {
-      io.post("// " + this.__str__());
+    builder.addMethod("postc", function() {
+      sc.lang.io.post("// " + this.__str__());
       return this;
-    };
+    });
 &nbsp;
     // TODO: implements postf
     // TODO: implements format
@@ -986,18 +991,17 @@
     // TODO: implements warn
     // TODO: implements inform
 &nbsp;
-    spec["++"] = function($anObject) {
+    builder.addMethod("++", function($anObject) {
       return $.String(
         this.toString() + $anObject.asString().toString()
       );
-    };
+    });
 &nbsp;
-    spec["+"] = function($anObject) {
+    builder.addMethod("+", function($anObject) {
       return $.String(
         this.toString() + " " + $anObject.asString().toString()
       );
-    };
-&nbsp;
+    });
     // TODO: implements catArgs
     // TODO: implements scatArgs
     // TODO: implements ccatArgs
@@ -1069,14 +1073,13 @@
     // TODO: implements parseYAML
     // TODO: implements parseYAMLFile
   });
-&nbsp;
 });
 &nbsp;</pre></td></tr>
 </table></pre>
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jun 15 2014 22:58:44 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 01 2014 20:02:13 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

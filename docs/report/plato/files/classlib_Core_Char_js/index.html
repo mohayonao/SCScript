@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">133.54</p>
+      <p class="stat">133.18</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">163</p>
+      <p class="stat">162</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">35.23</p>
+      <p class="stat">36.85</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.65</p>
+      <p class="stat">1.71</p>
     </div>
   </div>
 </div>
@@ -97,42 +97,42 @@
 
   var $ = sc.lang.$;
 
-  sc.lang.klass.refine(&quot;Char&quot;, function(spec, utils) {
-    spec.__str__ = function() {
+  sc.lang.klass.refine(&quot;Char&quot;, function(builder) {
+    builder.addMethod(&quot;__str__&quot;, function() {
       return this._;
-    };
+    });
 
-    spec.$nl = function() {
+    builder.addClassMethod(&quot;nl&quot;, function() {
       return $.Char(&quot;\n&quot;);
-    };
+    });
 
-    spec.$ff = function() {
+    builder.addClassMethod(&quot;ff&quot;, function() {
       return $.Char(&quot;\f&quot;);
-    };
+    });
 
-    spec.$tab = function() {
+    builder.addClassMethod(&quot;tab&quot;, function() {
       return $.Char(&quot;\t&quot;);
-    };
+    });
 
-    spec.$space = function() {
+    builder.addClassMethod(&quot;space&quot;, function() {
       return $.Char(&quot; &quot;);
-    };
+    });
 
-    spec.$comma = function() {
+    builder.addClassMethod(&quot;comma&quot;, function() {
       return $.Char(&quot;,&quot;);
-    };
+    });
 
-    spec.$new = function() {
+    builder.addClassMethod(&quot;new&quot;, function() {
       throw new Error(&quot;Char.new is illegal, should use literal.&quot;);
-    };
+    });
 
     // TODO: implements hash
 
-    spec.ascii = function() {
+    builder.addMethod(&quot;ascii&quot;, function() {
       return $.Integer(this._.charCodeAt(0));
-    };
+    });
 
-    spec.digit = function() {
+    builder.addMethod(&quot;digit&quot;, function() {
       var ascii = this._.charCodeAt(0);
       if (0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) {
         return $.Integer(ascii - 0x30);
@@ -144,114 +144,113 @@
         return $.Integer(ascii - 0x57);
       }
       throw new Error(&quot;digitValue failed&quot;);
-    };
+    });
 
-    spec.asAscii = utils.nop;
+    builder.addMethod(&quot;asAscii&quot;);
 
-    spec.asUnicode = function() {
+    builder.addMethod(&quot;asUnicode&quot;, function() {
       return this.ascii();
-    };
+    });
 
-    spec.toUpper = function() {
+    builder.addMethod(&quot;toUpper&quot;, function() {
       return $.Char(this._.toUpperCase());
-    };
+    });
 
-    spec.toLower = function() {
+    builder.addMethod(&quot;toLower&quot;, function() {
       return $.Char(this._.toLowerCase());
-    };
+    });
 
-    spec.isAlpha = function() {
+    builder.addMethod(&quot;isAlpha&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
-    };
+    });
 
-    spec.isAlphaNum = function() {
+    builder.addMethod(&quot;isAlphaNum&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39) ||
                          (0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a) ||
                          (0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
-    };
+    });
 
-    spec.isPrint = function() {
+    builder.addMethod(&quot;isPrint&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
-    };
+    });
 
-    spec.isPunct = function() {
+    builder.addMethod(&quot;isPunct&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x21 &lt;= ascii &amp;&amp; ascii &lt;= 0x2f) ||
                          (0x3a &lt;= ascii &amp;&amp; ascii &lt;= 0x40) ||
                          (0x5b &lt;= ascii &amp;&amp; ascii &lt;= 0x60) ||
                          (0x7b &lt;= ascii &amp;&amp; ascii &lt;= 0x7e));
-    };
+    });
 
-    spec.isControl = function() {
+    builder.addMethod(&quot;isControl&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x00 &lt;= ascii &amp;&amp; ascii &lt;= 0x1f) || ascii === 0x7f);
-    };
+    });
 
-    spec.isSpace = function() {
+    builder.addMethod(&quot;isSpace&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x09 &lt;= ascii &amp;&amp; ascii &lt;= 0x0d) || ascii === 0x20);
-    };
+    });
 
-    spec.isVowl = function() {
+    builder.addMethod(&quot;isVowl&quot;, function() {
       var ch = this._.charAt(0).toUpperCase();
       return $.Boolean(&quot;AEIOU&quot;.indexOf(ch) !== -1);
-    };
+    });
 
-    spec.isDecDigit = function() {
+    builder.addMethod(&quot;isDecDigit&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x30 &lt;= ascii &amp;&amp; ascii &lt;= 0x39));
-    };
+    });
 
-    spec.isUpper = function() {
+    builder.addMethod(&quot;isUpper&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x41 &lt;= ascii &amp;&amp; ascii &lt;= 0x5a));
-    };
+    });
 
-    spec.isLower = function() {
+    builder.addMethod(&quot;isLower&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x61 &lt;= ascii &amp;&amp; ascii &lt;= 0x7a));
-    };
+    });
 
-    spec.isFileSafe = function() {
+    builder.addMethod(&quot;isFileSafe&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean((0x20 &lt;= ascii &amp;&amp; ascii &lt;= 0x7e) &amp;&amp;
                          ascii !== 0x2f &amp;&amp; // 0x2f is &#039;/&#039;
                          ascii !== 0x3a &amp;&amp; // 0x3a is &#039;:&#039;
                          ascii !== 0x22);  // 0x22 is &#039;&quot;&#039;
-    };
+    });
 
-    spec.isPathSeparator = function() {
+    builder.addMethod(&quot;isPathSeparator&quot;, function() {
       var ascii = this._.charCodeAt(0);
       return $.Boolean(ascii === 0x2f);
-    };
+    });
 
-    spec[&quot;&lt;&quot;] = function($aChar) {
+    builder.addMethod(&quot;&lt;&quot;, function($aChar) {
       return $.Boolean(this.ascii() &lt; $aChar.ascii());
-    };
+    });
 
-    spec[&quot;++&quot;] = function($that) {
+    builder.addMethod(&quot;++&quot;, function($that) {
       return $.String(this._ + $that.__str__());
-    };
+    });
 
     // TODO: implements $bullet
     // TODO: implements printOn
     // TODO: implements storeOn
 
-    spec.archiveAsCompileString = function() {
+    builder.addMethod(&quot;archiveAsCompileString&quot;, function() {
       return $.True();
-    };
+    });
 
-    spec.asString = function() {
+    builder.addMethod(&quot;asString&quot;, function() {
       return $.String(this._);
-    };
+    });
 
-    spec.shallowCopy = utils.nop;
+    builder.addMethod(&quot;shallowCopy&quot;);
   });
-
 });</textarea>
   </div>
 </div>

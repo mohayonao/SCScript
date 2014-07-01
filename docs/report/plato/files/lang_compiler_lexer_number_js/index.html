@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/compiler/lexer/number.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/compiler/lexer/number.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">112.71</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">157</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">58.44</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.45</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./compiler&quot;);
+
+  var strlib = sc.libs.strlib;
+  var Token = sc.lang.compiler.Token;
+
+  function NumberLexer(source, index) {
+    this.source = source;
+    this.index  = index;
+  }
+
+  NumberLexer.prototype.scan = function() {
+    return this.scanNAryNumberLiteral() ||
+      this.scanHexNumberLiteral() ||
+      this.scanAccidentalNumberLiteral() ||
+      this.scanDecimalNumberLiteral();
+  };
+
+  NumberLexer.prototype.match = function(re) {
+    return re.exec(this.source.slice(this.index));
+  };
+
+  NumberLexer.prototype.scanNAryNumberLiteral = function() {
+    var items = this.match(
+      /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/
+    );
+
+    if (!items) {
+      return;
+    }
+
+    var base    = removeUnderscore(items[1])|0;
+    var integer = removeUnderscore(items[2]);
+    var frac    = removeUnderscore(items[3]) || &quot;&quot;;
+    var pi = false;
+
+    if (!frac &amp;&amp; base &lt; 26 &amp;&amp; integer.substr(-2) === &quot;pi&quot;) {
+      integer = integer.slice(0, -2);
+      pi = true;
+    }
+
+    var type  = Token.IntegerLiteral;
+    var value = calcNBasedInteger(integer, base);
+
+    if (frac) {
+      type = Token.FloatLiteral;
+      value += calcNBasedFrac(frac, base);
+    }
+
+    if (isNaN(value)) {
+      return { error: true, value: items[0], length: items[0].length };
+    }
+
+    return makeNumberToken(type, value, pi, items[0].length);
+  };
+
+  NumberLexer.prototype.scanHexNumberLiteral = function() {
+    var items = this.match(/^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/);
+
+    if (!items) {
+      return;
+    }
+
+    var integer = removeUnderscore(items[1]);
+    var pi      = !!items[2];
+
+    var type  = Token.IntegerLiteral;
+    var value = +integer;
+
+    return makeNumberToken(type, value, pi, items[0].length);
+  };
+
+  NumberLexer.prototype.scanAccidentalNumberLiteral = function() {
+    var items = this.match(/^(\d+)([bs]+)(\d*)/);
+
+    if (!items) {
+      return;
+    }
+
+    var integer    = removeUnderscore(items[1]);
+    var accidental = items[2];
+    var sign = (accidental.charAt(0) === &quot;s&quot;) ? +1 : -1;
+
+    var cents;
+    if (items[3] === &quot;&quot;) {
+      cents = Math.min(accidental.length * 0.1, 0.4);
+    } else {
+      cents = Math.min(items[3] * 0.001, 0.499);
+    }
+    var value = +integer + (sign * cents);
+
+    return makeNumberToken(Token.FloatLiteral, value, false, items[0].length);
+  };
+
+  NumberLexer.prototype.scanDecimalNumberLiteral = function() {
+    var items = this.match(
+      /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/
+    );
+
+    var integer = +removeUnderscore(items[1]);
+    var frac    = !!items[2];
+    var pi      = !!items[3];
+
+    var type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
+    var value = integer;
+
+    return makeNumberToken(type, value, pi, items[0].length);
+  };
+
+  function removeUnderscore(str) {
+    return str &amp;&amp; str.replace(/_/g, &quot;&quot;);
+  }
+
+  function char2num(ch, base) {
+    var num = strlib.char2num(ch, base);
+    if (num &gt;= base) {
+      num = NaN;
+    }
+    return num;
+  }
+
+  function calcNBasedInteger(integer, base) {
+    var value = 0;
+    for (var i = 0, imax = integer.length; i &lt; imax; ++i) {
+      value *= base;
+      value += char2num(integer[i], base);
+    }
+    return value;
+  }
+
+  function calcNBasedFrac(frac, base) {
+    var value = 0;
+    for (var i = 0, imax = frac.length; i &lt; imax; ++i) {
+      value += char2num(frac[i], base) * Math.pow(base, -(i + 1));
+    }
+    return value;
+  }
+
+  function makeNumberToken(type, value, pi, length) {
+    if (pi) {
+      type = Token.FloatLiteral;
+      value = value * Math.PI;
+    }
+
+    if (type === Token.FloatLiteral &amp;&amp; value === (value|0)) {
+      value = value + &quot;.0&quot;;
+    }
+
+    return { type: type, value: String(value), length: length };
+  }
+
+  sc.lang.compiler.lexNumber = function(source, index) {
+    return new NumberLexer(source, index).scan();
+  };
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

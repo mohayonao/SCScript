@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - lang/klass/builder.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lang/klass/builder.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">128.22</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">134</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">34.37</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.17</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">(function(sc) {
+  &quot;use strict&quot;;
+
+  require(&quot;./klass&quot;);
+  require(&quot;../dollar&quot;);
+  require(&quot;../fn&quot;);
+
+  var $ = sc.lang.$;
+  var fn = sc.lang.fn;
+  var strlib = sc.libs.strlib;
+
+  function Builder(constructor) {
+    this._className = constructor.prototype.__className;
+    this._constructor = constructor;
+    this._classMethods    = constructor.metaClass.__MetaSpec.prototype;
+    this._instanceMethods = constructor.prototype;
+  }
+
+  Builder.prototype.init = function(defaults) {
+    if (defaults) {
+      Object.keys(defaults).forEach(function(name) {
+        if (name !== &quot;constructor&quot;) {
+          this._instanceMethods[name] = defaults[name];
+        }
+      }, this);
+    }
+    return this;
+  };
+
+  Builder.prototype.addClassMethod = function(name, opts, func) {
+    return addMethod(this, this._classMethods, name, opts, func);
+  };
+
+  Builder.prototype.addMethod = function(name, opts, func) {
+    return addMethod(this, this._instanceMethods, name, opts, func);
+  };
+
+  Builder.prototype.addProperty = function(type, name) {
+    var attrName = &quot;_$&quot; + name;
+
+    if (type.indexOf(&quot;&lt;&quot;) === 0) {
+      this.addMethod(name, {}, function() {
+        return this[attrName] || $.nil;
+      });
+    }
+    if (type.indexOf(&quot;&gt;&quot;) === type.length - 1) {
+      this.addMethod(name + &quot;_&quot;, {}, function($_) {
+        this[attrName] = $_ || $.nil;
+        return this;
+      });
+    }
+
+    return this;
+  };
+
+  function createErrorFunc(errorType, message) {
+    var func = function() {
+      var errMsg = strlib.format(&quot;RECEIVER #{0}: #{1}&quot;, this.__className, message);
+      throw new Error(errMsg);
+    };
+    func.__errorType = errorType;
+    return func;
+  }
+
+  Builder.prototype.subclassResponsibility = function(methodName) {
+    return this.addMethod(methodName, {}, createErrorFunc(
+      &quot;subclassResponsibility&quot;,
+      strlib.format(&quot;&#039;#{0}&#039; should have been implemented by this subclass&quot;, methodName)
+    ));
+  };
+
+  Builder.prototype.doesNotUnderstand = function(methodName) {
+    return this.addMethod(methodName, {}, createErrorFunc(
+      &quot;doesNotUnderstand&quot;,
+      strlib.format(&quot;&#039;#{0}&#039; not understood&quot;, methodName)
+    ));
+  };
+
+  Builder.prototype.shouldNotImplement = function(methodName) {
+    return this.addMethod(methodName, {}, createErrorFunc(
+      &quot;shouldNotImplement&quot;,
+      strlib.format(&quot;&#039;#{0}&#039; not valid for this subclass&quot;, methodName)
+    ));
+  };
+
+  Builder.prototype.notYetImplemented = function(methodName) {
+    return this.addMethod(methodName, {}, createErrorFunc(
+      &quot;notYetImplemented&quot;,
+      strlib.format(&quot;&#039;#{0}&#039; is not yet implemented&quot;, methodName)
+    ));
+  };
+
+  Builder.prototype.notSupported = function(methodName) {
+    return this.addMethod(methodName, {}, createErrorFunc(
+      &quot;notSupported&quot;,
+      strlib.format(&quot;&#039;#{0}&#039; is not supported&quot;, methodName)
+    ));
+  };
+
+  function bond(that, methods) {
+    return methods === that._classMethods ? &quot;.&quot; : &quot;#&quot;;
+  }
+
+  function throwErrorIfAlreadyExists(that, methods, methodName) {
+    if (methods.hasOwnProperty(methodName)) {
+      throw new Error(strlib.format(
+        &quot;#{0} is already defined&quot;, (that._className + bond(that, methods) + methodName)
+      ));
+    }
+  }
+
+  function choose(type) {
+    switch (type) {
+    case sc.TRUE : return $.True;
+    case sc.FALSE: return $.False;
+    }
+    return $.DoNothing;
+  }
+
+  function addMethod(that, methods, name, opts, func) {
+    throwErrorIfAlreadyExists(that, methods, name);
+    if (typeof opts === &quot;function&quot;) {
+      func = opts;
+      opts = {};
+    } else if (typeof func !== &quot;function&quot;) {
+      func = choose(opts);
+      opts = {};
+    }
+    methods[name] = fn(func, opts.args);
+    return that;
+  }
+
+  sc.lang.klass.Builder = Builder;
+})(sc);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

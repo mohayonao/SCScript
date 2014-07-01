@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">127.60</p>
+      <p class="stat">126.95</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">714</p>
+      <p class="stat">920</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">56.31</p>
+      <p class="stat">70.88</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">6.62</p>
+      <p class="stat">9.15</p>
     </div>
   </div>
 </div>
@@ -93,66 +93,77 @@
     <textarea id="file-source" class="col-md-12">SCScript.install(function(sc) {
   &quot;use strict&quot;;
 
-  var slice = [].slice;
-  var $  = sc.lang.$;
-  var fn = sc.lang.fn;
-  var bytecode = sc.lang.bytecode;
+  var $ = sc.lang.$;
+  var $nil   = $.nil;
+  var $true  = $.true;
+  var $false = $.false;
+  var $int0  = $.int0;
+  var $int1  = $.int1;
+  var strlib = sc.libs.strlib;
 
-  sc.lang.klass.refine(&quot;Object&quot;, function(spec, utils) {
-    var $nil   = utils.$nil;
-    var $true  = utils.$true;
-    var $false = utils.$false;
-    var $int_1 = utils.$int_1;
-    var SCArray = $(&quot;Array&quot;);
+  var SCArray = $(&quot;Array&quot;);
+  var SCRoutine = $(&quot;Routine&quot;);
+  var SCAssociation = $(&quot;Association&quot;);
 
-    spec.__num__ = function() {
-      throw new Error(&quot;Wrong Type&quot;);
-    };
+  sc.lang.klass.refine(&quot;Object&quot;, function(builder, _) {
+    builder.addMethod(&quot;valueOf&quot;, function() {
+      return this._;
+    });
 
-    spec.__int__ = function() {
+    builder.addMethod(&quot;toString&quot;, function() {
+      return String(sc.libs.strlib.article(this.__className) + &quot; &quot; + this.__className);
+    });
+
+    builder.addMethod(&quot;toJSON&quot;, function() {
+      return JSON.stringify({ class: this.__className, hash: this.__hash });
+    });
+
+    builder.addMethod(&quot;__num__&quot;, function() {
+      throw new Error(strlib.format(&quot;#{0} cannot be converted to a Number.&quot;, this.__className));
+    });
+
+    builder.addMethod(&quot;__int__&quot;, function() {
       return this.__num__()|0;
-    };
+    });
 
-    spec.__bool__ = function() {
-      throw new Error(&quot;Wrong Type&quot;);
-    };
+    builder.addMethod(&quot;__bool__&quot;, function() {
+      throw new Error(strlib.format(&quot;#{0} cannot be converted to a Boolean.&quot;, this.__className));
+    });
 
-    spec.__sym__ = function() {
-      throw new Error(&quot;Wrong Type&quot;);
-    };
+    builder.addMethod(&quot;__sym__&quot;, function() {
+      throw new Error(strlib.format(&quot;#{0} cannot be converted to a Symbol.&quot;, this.__className));
+    });
 
-    spec.__str__ = function() {
+    builder.addMethod(&quot;__str__&quot;, function() {
       return String(this);
-    };
+    });
 
     // TODO: implements $new
     // TODO: implements $newCopyArgs
 
-    spec.$newFrom = function() {
-      return this._doesNotUnderstand(&quot;newFrom&quot;);
-    };
+    builder.doesNotUnderstand(&quot;newFrom&quot;);
 
     // TODO: implements dump
 
-    spec.post = function() {
+    builder.addMethod(&quot;post&quot;, function() {
       this.asString().post();
       return this;
-    };
+    });
 
-    spec.postln = function() {
+    builder.addMethod(&quot;postln&quot;, function() {
       this.asString().postln();
       return this;
-    };
+    });
 
-    spec.postc = function() {
+    builder.addMethod(&quot;postc&quot;, function() {
       this.asString().postc();
       return this;
-    };
+    });
 
-    spec.postcln = function() {
+    builder.addMethod(&quot;postcln&quot;, function() {
       this.asString().postcln();
       return this;
-    };
+    });
 
     // TODO: implements postcs
     // TODO: implements totalFree
@@ -163,75 +174,119 @@
     // TODO: implements gcSanity
     // TODO: implements canCallOS
 
-    spec.size = utils.alwaysReturn$int_0;
-    spec.indexedSize = utils.alwaysReturn$int_0;
-    spec.flatSize = utils.alwaysReturn$int_1;
+    builder.addMethod(&quot;size&quot;, function() {
+      return $int0;
+    });
 
-    spec.do = function($function) {
+    builder.addMethod(&quot;indexedSize&quot;, function() {
+      return $int0;
+    });
+
+    builder.addMethod(&quot;flatSize&quot;, function() {
+      return $int1;
+    });
+
+    builder.addMethod(&quot;do&quot;, function($function) {
       sc.lang.iterator.execute(
         sc.lang.iterator.object$do(this),
         $function
       );
-
       return this;
-    };
+    });
 
-    spec.generate = fn(function($function, $state) {
+    builder.addMethod(&quot;generate&quot;, {
+      args: &quot;function; state&quot;
+    }, function($function, $state) {
       this.do($function);
-
       return $state;
-    }, &quot;function; state&quot;);
+    });
 
-    spec.class = function() {
+    builder.addMethod(&quot;class&quot;, function() {
       return this.__class;
-    };
+    });
 
-    spec.isKindOf = function($aClass) {
+    builder.addMethod(&quot;isKindOf&quot;, function($aClass) {
       return $.Boolean(this instanceof $aClass.__Spec);
-    };
+    });
 
-    spec.isMemberOf = function($aClass) {
+    builder.addMethod(&quot;isMemberOf&quot;, function($aClass) {
       return $.Boolean(this.__class === $aClass);
+    });
+
+    var respondsTo = function($this, $aSymbol) {
+      return typeof $this[
+        $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ &quot;&quot;
+      ] === &quot;function&quot;;
     };
 
-    spec.respondsTo = fn(function($aSymbol) {
-      return $.Boolean(typeof this[$aSymbol.__sym__()] === &quot;function&quot;);
-    }, &quot;aSymbol&quot;);
+    builder.addMethod(&quot;respondsTo&quot;, function($aSymbol) {
+      var $this = this;
+      if ($aSymbol &amp;&amp; $aSymbol.isSequenceableCollection().__bool__()) {
+        return $.Boolean($aSymbol.asArray()._.every(function($aSymbol) {
+          return $.Boolean(respondsTo($this, $aSymbol)).__bool__();
+        }));
+      }
+      return $.Boolean(respondsTo(this, $aSymbol));
+    });
 
-    // TODO: implements performMsg
-
-    spec.perform = function($selector) {
+    var performMsg = function($this, msg) {
       var selector, method;
 
-      selector = $selector.__sym__();
-      method = this[selector];
+      selector = msg[0] ? msg[0].__sym__() : /* istanbul ignore next */ &quot;&quot;;
+      method = $this[selector];
 
       if (method) {
-        return method.apply(this, slice.call(arguments, 1));
+        return method.apply($this, msg.slice(1));
       }
 
-      throw new Error(&quot;Message &#039;&quot; + selector + &quot;&#039; not understood.&quot;);
+      throw new Error(strlib.format(&quot;Message &#039;#{0}&#039; not understood.&quot;, selector));
     };
 
-    spec.performList = function($selector, $arglist) {
-      var selector, method;
+    builder.addMethod(&quot;performMsg&quot;, function($msg) {
+      return performMsg(this, $msg ? $msg.asArray()._ : /* istanbul ignore next */ []);
+    });
 
-      selector = $selector.__sym__();
-      method = this[selector];
+    builder.addMethod(&quot;perform&quot;, function() {
+      return performMsg(this, _.toArray(arguments));
+    });
 
-      if (method) {
-        return method.apply(this, $arglist.asArray()._);
-      }
+    builder.addMethod(&quot;performList&quot;, function($selector, $arglist) {
+      return performMsg(this, [ $selector ].concat(
+        $arglist ? $arglist.asArray()._ : /* istanbul ignore next */ []
+      ));
+    });
 
-      throw new Error(&quot;Message &#039;&quot; + selector + &quot;&#039; not understood.&quot;);
-    };
-
-    spec.functionPerformList = utils.nop;
+    builder.addMethod(&quot;functionPerformList&quot;);
 
     // TODO: implements superPerform
     // TODO: implements superPerformList
-    // TODO: implements tryPerform
-    // TODO: implements multiChannelPerform
+
+    builder.addMethod(&quot;tryPerform&quot;, function($selector) {
+      if (respondsTo(this, $selector)) {
+        return performMsg(this, _.toArray(arguments));
+      }
+      return $nil;
+    });
+
+    builder.addMethod(&quot;multiChannelPerform&quot;, function($selector) {
+      var list, items, length, i, args, $obj, iter;
+      items = [ this ].concat(_.toArray(arguments).slice(1));
+      length = Math.max.apply(null, items.map(function($_) {
+        return $_.size().__int__();
+      }));
+      iter = function($_) {
+        return $_.wrapAt ? $_.wrapAt($.Integer(i)) : $_;
+      };
+      list = new Array(length);
+      for (i = 0; i &lt; length; ++i) {
+        args = items.map(iter);
+        $obj = args[0];
+        args[0] = $selector;
+        list[i] = performMsg($obj, args);
+      }
+      return $.Array(list);
+    });
+
     // TODO: implements performWithEnvir
     // TODO: implements performKeyValuePairs
 
@@ -250,13 +305,13 @@
       return copied;
     };
 
-    spec.copy = function() {
+    builder.addMethod(&quot;copy&quot;, function() {
       return this.shallowCopy();
-    };
+    });
 
     // TODO: implements contentsCopy
 
-    spec.shallowCopy = function() {
+    builder.addMethod(&quot;shallowCopy&quot;, function() {
       var a = new this.__Spec([]);
 
       Object.keys(this).forEach(function(key) {
@@ -268,152 +323,272 @@
       }
 
       return a;
-    };
+    });
 
     // TODO: implements copyImmutable
     // TODO: implements deepCopy
 
-    spec.dup = fn(function($n) {
+    builder.addMethod(&quot;dup&quot;, {
+      args: &quot;n=2&quot;
+    }, function($n) {
       var $this = this;
-      var $array, i, imax;
+      var array, i, n;
 
       if ($n.isSequenceableCollection().__bool__()) {
-        return SCArray.fillND($n, $.Function(function() {
-          return [ function() {
-            return $this.copy();
-          } ];
+        return SCArray.fillND($n, $.Func(function() {
+          return $this.copy();
         }));
       }
 
-      $array = SCArray.new($n);
-      for (i = 0, imax = $n.__int__(); i &lt; imax; ++i) {
-        $array.add(this.copy());
+      n = $n.__int__();
+      array = new Array(n);
+      for (i = 0; i &lt; n; ++i) {
+        array[i] = this.copy();
       }
 
-      return $array;
-    }, &quot;n=2&quot;);
+      return $.Array(array);
+    });
 
-    spec[&quot;!&quot;] = function($n) {
+    builder.addMethod(&quot;!&quot;, function($n) {
       return this.dup($n);
-    };
+    });
 
-    spec.poll = function() {
+    builder.addMethod(&quot;poll&quot;, function() {
       return this.value();
-    };
+    });
 
-    spec.value = utils.nop;
-    spec.valueArray = utils.nop;
-    spec.valueEnvir = utils.nop;
-    spec.valueArrayEnvir = utils.nop;
+    builder.addMethod(&quot;value&quot;);
+    builder.addMethod(&quot;valueArray&quot;);
+    builder.addMethod(&quot;valueEnvir&quot;);
+    builder.addMethod(&quot;valueArrayEnvir&quot;);
 
-    spec[&quot;==&quot;] = function($obj) {
+    builder.addMethod(&quot;==&quot;, function($obj) {
       return this [&quot;===&quot;] ($obj);
-    };
+    });
 
-    spec[&quot;!=&quot;] = function($obj) {
+    builder.addMethod(&quot;!=&quot;, function($obj) {
       return (this [&quot;==&quot;] ($obj)).not();
-    };
+    });
 
-    spec[&quot;===&quot;] = function($obj) {
+    builder.addMethod(&quot;===&quot;, function($obj) {
       return $.Boolean(this === $obj);
-    };
+    });
 
-    spec[&quot;!==&quot;] = function($obj) {
+    builder.addMethod(&quot;!==&quot;, function($obj) {
       return $.Boolean(this !== $obj);
-    };
+    });
 
-    // TODO: implements equals
+    builder.addMethod(&quot;equals&quot;, {
+      args: &quot;that; properties&quot;
+    }, function($that, $properties) {
+      var $this = this;
+      if (this === $that) {
+        return $true;
+      }
+      if (this.respondsTo($properties).__bool__() &amp;&amp; $that.respondsTo($properties).__bool__()) {
+        return $.Boolean($properties.asArray()._.every(function($_) {
+          return performMsg($this, [ $_ ]) [&quot;==&quot;] (performMsg($that, [ $_ ])).__bool__();
+        }));
+      }
+      return this [&quot;==&quot;] ($that);
+    });
+
     // TODO: implements compareObject
     // TODO: implements instVarHash
 
-    spec.basicHash = function() {
+    builder.addMethod(&quot;basicHash&quot;, function() {
       return $.Integer(this.__hash);
-    };
+    });
 
-    spec.hash = function() {
+    builder.addMethod(&quot;hash&quot;, function() {
       return $.Integer(this.__hash);
-    };
+    });
 
-    spec.identityHash = function() {
+    builder.addMethod(&quot;identityHash&quot;, function() {
       return $.Integer(this.__hash);
-    };
+    });
 
-    spec[&quot;-&gt;&quot;] = function($obj) {
-      return $(&quot;Association&quot;).new(this, $obj);
-    };
+    builder.addMethod(&quot;-&gt;&quot;, function($obj) {
+      return SCAssociation.new(this, $obj);
+    });
 
-    spec.next = utils.nop;
-    spec.reset = utils.nop;
+    builder.addMethod(&quot;next&quot;);
+    builder.addMethod(&quot;reset&quot;);
 
-    spec.first = fn(function($inval) {
+    builder.addMethod(&quot;first&quot;, {
+      args: &quot;inval&quot;
+    }, function($inval) {
       this.reset();
       return this.next($inval);
-    }, &quot;inval&quot;);
+    });
 
-    spec.iter = function() {
+    builder.addMethod(&quot;iter&quot;, function() {
       return $(&quot;OneShotStream&quot;).new(this);
-    };
+    });
 
-    spec.stop = utils.nop;
-    spec.free = utils.nop;
-    spec.clear = utils.nop;
-    spec.removedFromScheduler = utils.nop;
-    spec.isPlaying = utils.alwaysReturn$false;
+    builder.addMethod(&quot;stop&quot;);
+    builder.addMethod(&quot;free&quot;);
+    builder.addMethod(&quot;clear&quot;);
+    builder.addMethod(&quot;removedFromScheduler&quot;);
+    builder.addMethod(&quot;isPlaying&quot;, sc.FALSE);
 
-    spec.embedInStream = function() {
+    builder.addMethod(&quot;embedInStream&quot;, function() {
       return this.yield();
-    };
+    });
 
-    // TODO: implements cyc
-    // TODO: implements fin
-    // TODO: implements repeat
-    // TODO: implements loop
+    builder.addMethod(&quot;cyc&quot;, {
+      args: &quot;n=inf&quot;
+    }, function($n) {
+      var $this = this;
+      return SCRoutine.new($.Function(function() {
+        var $inval;
+        return [
+          function(_arg0) {
+            $inval = _arg0;
+            return $n.do($.Function(function() {
+              return [
+                function() {
+                  $inval = $this.embedInStream($inval);
+                  return $inval;
+                },
+                function() {
+                  return $this.reset();
+                },
+                $.NOP
+              ];
+            }));
+          },
+          function() {
+            $inval = null;
+          }
+        ];
+      }));
+    });
 
-    spec.asStream = utils.nop;
+    builder.addMethod(&quot;fin&quot;, {
+      args: &quot;n=1&quot;
+    }, function($n) {
+      var $this = this;
+      return SCRoutine.new($.Function(function() {
+        var $inval;
+        return [
+          function(_arg0) {
+            var $item;
+            $inval = _arg0;
+            return $n.do($.Function(function() {
+              return [
+                function() {
+                  $item = $this.next($inval);
+                  return $item;
+                },
+                function() {
+                  if ($item === $nil) {
+                    $nil.alwaysYield();
+                  }
+                  return $nil;
+                },
+                function() {
+                  $inval = $item.yield();
+                  return $inval;
+                },
+                $.NOP
+              ];
+            }));
+          },
+          function() {
+            $inval = null;
+          }
+        ];
+      }));
+    });
 
-    // TODO: implements streamArg
+    builder.addMethod(&quot;repeat&quot;, {
+      args: &quot;repeats=inf&quot;
+    }, function($repeats) {
+      return $(&quot;Pn&quot;).new(this, $repeats).asStream();
+    });
 
-    spec.eventAt = utils.alwaysReturn$nil;
+    builder.addMethod(&quot;loop&quot;, function() {
+      return this.repeat($.Float(Infinity));
+    });
 
-    spec.composeEvents = fn(function($event) {
+    builder.addMethod(&quot;asStream&quot;);
+
+    builder.addMethod(&quot;streamArg&quot;, {
+      args: &quot;embed=false&quot;
+    }, function($embed) {
+      var $this = this;
+      if ($embed === $true) {
+        return SCRoutine.new($.Function(function() {
+          var $inval;
+          return [
+            function(_arg) {
+              $inval = _arg;
+              return $this.embedInStream($inval);
+            },
+            function() {
+              $inval = null;
+            }
+          ];
+        }));
+      } else {
+        return SCRoutine.new($.Func(function() {
+          return $.Func(function() {
+            return $this.yield();
+          }).loop();
+        }));
+      }
+    });
+
+    builder.addMethod(&quot;eventAt&quot;, function() {
+      return $nil;
+    });
+
+    builder.addMethod(&quot;composeEvents&quot;, {
+      args: &quot;event&quot;
+    }, function($event) {
       return $event.copy();
-    }, &quot;event&quot;);
+    });
 
-    spec.finishEvent = utils.nop;
-    spec.atLimit = utils.alwaysReturn$false;
-    spec.isRest = utils.alwaysReturn$false;
-    spec.threadPlayer = utils.nop;
-    spec.threadPlayer_ = utils.nop;
-    spec[&quot;?&quot;] = utils.nop;
-    spec[&quot;??&quot;] = utils.nop;
+    builder.addMethod(&quot;finishEvent&quot;);
+    builder.addMethod(&quot;atLimit&quot;, sc.FALSE);
+    builder.addMethod(&quot;isRest&quot;, sc.FALSE);
+    builder.addMethod(&quot;threadPlayer&quot;);
+    builder.addMethod(&quot;threadPlayer_&quot;);
+    builder.addMethod(&quot;?&quot;);
+    builder.addMethod(&quot;??&quot;);
 
-    spec[&quot;!?&quot;] = function($obj) {
+    builder.addMethod(&quot;!?&quot;, function($obj) {
       return $obj.value(this);
-    };
+    });
 
-    spec.isNil = utils.alwaysReturn$false;
-    spec.notNil = utils.alwaysReturn$true;
-    spec.isNumber = utils.alwaysReturn$false;
-    spec.isInteger = utils.alwaysReturn$false;
-    spec.isFloat = utils.alwaysReturn$false;
-    spec.isSequenceableCollection = utils.alwaysReturn$false;
-    spec.isCollection = utils.alwaysReturn$false;
-    spec.isArray = utils.alwaysReturn$false;
-    spec.isString = utils.alwaysReturn$false;
-    spec.containsSeqColl = utils.alwaysReturn$false;
-    spec.isValidUGenInput = utils.alwaysReturn$false;
-    spec.isException = utils.alwaysReturn$false;
-    spec.isFunction = utils.alwaysReturn$false;
+    builder.addMethod(&quot;isNil&quot;, sc.FALSE);
+    builder.addMethod(&quot;notNil&quot;, sc.TRUE);
+    builder.addMethod(&quot;isNumber&quot;, sc.FALSE);
+    builder.addMethod(&quot;isInteger&quot;, sc.FALSE);
+    builder.addMethod(&quot;isFloat&quot;, sc.FALSE);
+    builder.addMethod(&quot;isSequenceableCollection&quot;, sc.FALSE);
+    builder.addMethod(&quot;isCollection&quot;, sc.FALSE);
+    builder.addMethod(&quot;isArray&quot;, sc.FALSE);
+    builder.addMethod(&quot;isString&quot;, sc.FALSE);
+    builder.addMethod(&quot;containsSeqColl&quot;, sc.FALSE);
+    builder.addMethod(&quot;isValidUGenInput&quot;, sc.FALSE);
+    builder.addMethod(&quot;isException&quot;, sc.FALSE);
+    builder.addMethod(&quot;isFunction&quot;, sc.FALSE);
 
-    spec.matchItem = fn(function($item) {
+    builder.addMethod(&quot;matchItem&quot;, {
+      args: &quot;item&quot;
+    }, function($item) {
       return this [&quot;===&quot;] ($item);
-    }, &quot;item&quot;);
+    });
 
-    spec.trueAt = utils.alwaysReturn$false;
+    builder.addMethod(&quot;trueAt&quot;, sc.FALSE);
 
-    spec.falseAt = fn(function($key) {
+    builder.addMethod(&quot;falseAt&quot;, {
+      args: &quot;key&quot;
+    }, function($key) {
       return this.trueAt($key).not();
-    }, &quot;key&quot;);
+    });
 
     // TODO: implements pointsTo
     // TODO: implements mutable
@@ -422,11 +597,6 @@
     // TODO: implements primitiveFailed
     // TODO: implements reportError
     // TODO: implements subclassResponsibility
-    spec._subclassResponsibility = function(methodName) {
-      throw new Error(&quot;RECEIVER &quot; + String(this) + &quot;: &quot; +
-                      &quot;&#039;&quot; + methodName + &quot;&#039; should have been implemented by subclass&quot;);
-    };
-
     // TODO: implements doesNotUnderstand
     // TODO: implements shouldNotImplement
     // TODO: implements outOfContextReturn
@@ -438,21 +608,21 @@
     // TODO: implements getBackTrace
     // TODO: implements throw
 
-    spec.species = function() {
+    builder.addMethod(&quot;species&quot;, function() {
       return this.class();
-    };
+    });
 
-    spec.asCollection = function() {
+    builder.addMethod(&quot;asCollection&quot;, function() {
       return $.Array([ this ]);
-    };
+    });
 
-    spec.asSymbol = function() {
+    builder.addMethod(&quot;asSymbol&quot;, function() {
       return this.asString().asSymbol();
-    };
+    });
 
-    spec.asString = function() {
+    builder.addMethod(&quot;asString&quot;, function() {
       return $.String(String(this));
-    };
+    });
 
     // TODO: implements asCompileString
     // TODO: implements cs
@@ -464,44 +634,58 @@
     // TODO: implements storeArgs
     // TODO: implements storeModifiersOn
 
-    spec.as = fn(function($aSimilarClass) {
+    builder.addMethod(&quot;as&quot;, {
+      args: &quot;aSimilarClass&quot;
+    }, function($aSimilarClass) {
       return $aSimilarClass.newFrom(this);
-    }, &quot;aSimilarClass&quot;);
+    });
 
-    spec.dereference = utils.nop;
+    builder.addMethod(&quot;dereference&quot;);
 
-    spec.reference = function() {
+    builder.addMethod(&quot;reference&quot;, function() {
       return $.Ref(this);
-    };
+    });
 
-    spec.asRef = function() {
+    builder.addMethod(&quot;asRef&quot;, function() {
       return $.Ref(this);
-    };
+    });
 
-    spec.asArray = function() {
+    builder.addMethod(&quot;asArray&quot;, function() {
       return this.asCollection().asArray();
-    };
+    });
 
-    spec.asSequenceableCollection = function() {
+    builder.addMethod(&quot;asSequenceableCollection&quot;, function() {
       return this.asArray();
-    };
+    });
 
-    spec.rank = utils.alwaysReturn$int_0;
+    builder.addMethod(&quot;rank&quot;, function() {
+      return $int0;
+    });
 
-    spec.deepCollect = fn(function($depth, $function, $index, $rank) {
+    builder.addMethod(&quot;deepCollect&quot;, {
+      args: &quot;depth; function; index; rank&quot;
+    }, function($depth, $function, $index, $rank) {
       return $function.value(this, $index, $rank);
-    }, &quot;depth; function; index; rank&quot;);
+    });
 
-    spec.deepDo = fn(function($depth, $function, $index, $rank) {
+    builder.addMethod(&quot;deepDo&quot;, {
+      args: &quot;depth; function; index; rank&quot;
+    }, function($depth, $function, $index, $rank) {
       $function.value(this, $index, $rank);
       return this;
-    }, &quot;depth; function; index; rank&quot;);
+    });
 
-    spec.slice = utils.nop;
-    spec.shape = utils.alwaysReturn$nil;
-    spec.unbubble = utils.nop;
+    builder.addMethod(&quot;slice&quot;);
 
-    spec.bubble = fn(function($depth, $levels) {
+    builder.addMethod(&quot;shape&quot;, function() {
+      return $nil;
+    });
+
+    builder.addMethod(&quot;unbubble&quot;);
+
+    builder.addMethod(&quot;bubble&quot;, {
+      args: &quot;depth; levels&quot;
+    }, function($depth, $levels) {
       var levels, a;
 
       levels = $levels.__int__();
@@ -514,65 +698,71 @@
       }
 
       return $.Array(a);
-    }, &quot;depth; levels&quot;);
+    });
 
-    spec.obtain = fn(function($index, $default) {
+    builder.addMethod(&quot;obtain&quot;, {
+      args: &quot;index; default&quot;
+    }, function($index, $default) {
       if ($index.__num__() === 0) {
         return this;
       } else {
         return $default;
       }
-    }, &quot;index; defaults&quot;);
+    });
 
-    spec.instill = fn(function($index, $item, $default) {
+    builder.addMethod(&quot;instill&quot;, {
+      args: &quot;index; item; default&quot;
+    }, function($index, $item, $default) {
       if ($index.__num__() === 0) {
         return $item;
       } else {
         return this.asArray().instill($index, $item, $default);
       }
-    }, &quot;index; item; default&quot;);
+    });
 
-    spec.addFunc = fn(function($$functions) {
+    builder.addMethod(&quot;addFunc&quot;, {
+      args: &quot;*functions&quot;
+    }, function($$functions) {
       return $(&quot;FunctionList&quot;).new(this [&quot;++&quot;] ($$functions));
-    }, &quot;*functions&quot;);
+    });
 
-    spec.removeFunc = function($function) {
+    builder.addMethod(&quot;removeFunc&quot;, function($function) {
       if (this === $function) {
         return $nil;
       }
       return this;
-    };
+    });
 
-    spec.replaceFunc = fn(function($find, $replace) {
+    builder.addMethod(&quot;replaceFunc&quot;, {
+      args: &quot;find; replace&quot;
+    }, function($find, $replace) {
       if (this === $find) {
         return $replace;
       }
       return this;
-    }, &quot;find; replace&quot;);
+    });
 
     // TODO: implements addFuncTo
     // TODO: implements removeFuncFrom
 
-    spec.while = fn(function($body) {
+    builder.addMethod(&quot;while&quot;, {
+      args: &quot;body&quot;
+    }, function($body) {
       var $this = this;
 
-      $.Function(function() {
-        return [ function() {
-          return $this.value();
-        } ];
-      }).while($.Function(function() {
-        return [ function() {
-          return $body.value();
-        } ];
+      $.Func(function() {
+        return $this.value();
+      }).while($.Func(function() {
+        return $body.value();
       }));
 
       return this;
-    }, &quot;body&quot;);
+    });
 
-    spec.switch = function() {
+    builder.addMethod(&quot;switch&quot;, function() {
       var args, i, imax;
 
-      args = slice.call(arguments);
+      args = _.toArray(arguments);
       for (i = 0, imax = args.length &gt;&gt; 1; i &lt; imax; i++) {
         if (this [&quot;==&quot;] (args[i * 2]).__bool__()) {
           return args[i * 2 + 1].value();
@@ -584,15 +774,27 @@
       }
 
       return $nil;
-    };
+    });
 
-    spec.yield = function() {
-      bytecode.yield(this);
-      return this;
-    };
+    builder.addMethod(&quot;yield&quot;, function() {
+      sc.lang.bytecode.yield(this.value());
+      return $nil;
+    });
 
-    // TODO: implements alwaysYield
-    // TODO: implements yieldAndReset
+    builder.addMethod(&quot;alwaysYield&quot;, function() {
+      sc.lang.bytecode.alwaysYield(this.value());
+      return $nil;
+    });
+
+    builder.addMethod(&quot;yieldAndReset&quot;, function($reset) {
+      if (!$reset || $reset === $true) {
+        sc.lang.bytecode.yieldAndReset(this.value());
+      } else {
+        sc.lang.bytecode.yield(this.value());
+      }
+      return $nil;
+    });
+
     // TODO: implements idle
     // TODO: implements $initClass
     // TODO: implements dependants
@@ -614,107 +816,121 @@
     // TODO: implements dumpDetailedBackTrace
     // TODO: implements freeze
 
-    spec[&quot;&amp;&quot;] = function($that) {
+    builder.addMethod(&quot;&amp;&quot;, function($that) {
       return this.$(&quot;bitAnd&quot;, [ $that ]);
-    };
+    });
 
-    spec[&quot;|&quot;] = function($that) {
+    builder.addMethod(&quot;|&quot;, function($that) {
       return this.$(&quot;bitOr&quot;, [ $that ]);
-    };
+    });
 
-    spec[&quot;%&quot;] = function($that) {
+    builder.addMethod(&quot;%&quot;, function($that) {
       return this.$(&quot;mod&quot;, [ $that ]);
-    };
+    });
 
-    spec[&quot;**&quot;] = function($that) {
+    builder.addMethod(&quot;**&quot;, function($that) {
       return this.$(&quot;pow&quot;, [ $that ]);
-    };
+    });
 
-    spec[&quot;&lt;&lt;&quot;] = function($that) {
+    builder.addMethod(&quot;&lt;&lt;&quot;, function($that) {
       return this.$(&quot;leftShift&quot;, [ $that ]);
-    };
+    });
 
-    spec[&quot;&gt;&gt;&quot;] = function($that) {
+    builder.addMethod(&quot;&gt;&gt;&quot;, function($that) {
       return this.$(&quot;rightShift&quot;, [ $that ]);
-    };
+    });
 
-    spec[&quot;+&gt;&gt;&quot;] = function($that) {
+    builder.addMethod(&quot;+&gt;&gt;&quot;, function($that) {
       return this.$(&quot;unsignedRightShift&quot; , [ $that ]);
-    };
+    });
 
-    spec[&quot;&lt;!&quot;] = function($that) {
+    builder.addMethod(&quot;&lt;!&quot;, function($that) {
       return this.$(&quot;firstArg&quot;, [ $that ]);
-    };
+    });
 
-    spec.asInt = function() {
+    builder.addMethod(&quot;asInt&quot;, function() {
       return this.asInteger();
-    };
+    });
 
-    spec.blend = fn(function($that, $blendFrac) {
+    builder.addMethod(&quot;blend&quot;, {
+      args: &quot;that; blendFrac=0.5&quot;
+    }, function($that, $blendFrac) {
       return this.$(&quot;+&quot;, [ $blendFrac.$(&quot;*&quot;, [ $that.$(&quot;-&quot;, [ this ]) ]) ]);
-    }, &quot;that; blendFrac=0.5&quot;);
+    });
 
-    spec.blendAt = fn(function($index, $method) {
+    builder.addMethod(&quot;blendAt&quot;, {
+      args: &quot;index; method=\\clipAt&quot;
+    }, function($index, $method) {
       var $iMin;
 
-      $iMin = $index.$(&quot;roundUp&quot;, [ $int_1 ]).asInteger().__dec__();
+      $iMin = $index.$(&quot;roundUp&quot;, [ $int1 ]).asInteger().__dec__();
       return this.perform($method, $iMin).blend(
         this.perform($method, $iMin.__inc__()),
         $index.$(&quot;absdif&quot;, [ $iMin ])
       );
-    }, &quot;index; method=\\clipAt&quot;);
+    });
 
-    spec.blendPut = fn(function($index, $val, $method) {
+    builder.addMethod(&quot;blendPut&quot;, {
+      args: &quot;index; val; method=\\wrapPut&quot;
+    }, function($index, $val, $method) {
       var $iMin, $ratio;
 
       $iMin = $index.$(&quot;floor&quot;).asInteger();
       $ratio = $index.$(&quot;absdif&quot;, [ $iMin ]);
-      this.perform($method, $iMin, $val.$(&quot;*&quot;, [ $int_1 [&quot;-&quot;] ($ratio) ]));
+      this.perform($method, $iMin, $val.$(&quot;*&quot;, [ $int1 [&quot;-&quot;] ($ratio) ]));
       this.perform($method, $iMin.__inc__(), $val.$(&quot;*&quot;, [ $ratio ]));
 
       return this;
-    }, &quot;index; val; method=\\wrapPut&quot;);
+    });
 
-    spec.fuzzyEqual = fn(function($that, $precision) {
+    builder.addMethod(&quot;fuzzyEqual&quot;, {
+      args: &quot;that; precision=1.0&quot;
+    }, function($that, $precision) {
       return $.Float(0.0).max(
         $.Float(1.0) [&quot;-&quot;] (
           this.$(&quot;-&quot;, [ $that ]).$(&quot;abs&quot;).$(&quot;/&quot;, [ $precision ])
         )
       );
-    }, &quot;that; precision=1.0&quot;);
+    });
 
-    spec.isUGen = utils.alwaysReturn$false;
-    spec.numChannels = utils.alwaysReturn$int_1;
+    builder.addMethod(&quot;isUGen&quot;, sc.FALSE);
 
-    spec.pair = fn(function($that) {
+    builder.addMethod(&quot;numChannels&quot;, function() {
+      return $int1;
+    });
+
+    builder.addMethod(&quot;pair&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       return $.Array([ this, $that ]);
-    }, &quot;that&quot;);
+    });
 
-    spec.pairs = fn(function($that) {
+    builder.addMethod(&quot;pairs&quot;, {
+      args: &quot;that&quot;
+    }, function($that) {
       var $list;
 
       $list = $.Array();
-      this.asArray().do($.Function(function() {
-        return [ function($a) {
-          $that.asArray().do($.Function(function() {
-            return [ function($b) {
-              $list = $list.add($a.asArray() [&quot;++&quot;] ($b));
-            } ];
-          }));
-        } ];
+      this.asArray().do($.Func(function($a) {
+        return $that.asArray().do($.Func(function($b) {
+          $list = $list.add($a.asArray() [&quot;++&quot;] ($b));
+          return $list;
+        }));
       }));
 
       return $list;
-    }, &quot;that&quot;);
+    });
 
-    spec.awake = fn(function($beats) {
+    builder.addMethod(&quot;awake&quot;, {
+      args: &quot;beats&quot;
+    }, function($beats) {
       return this.next($beats);
-    }, &quot;beats&quot;);
+    });
 
-    spec.beats_ = utils.nop;
-    spec.clock_ = utils.nop;
+    builder.addMethod(&quot;beats_&quot;);
+    builder.addMethod(&quot;clock_&quot;);
 
-    spec.performBinaryOpOnSomething = function($aSelector) {
+    builder.addMethod(&quot;performBinaryOpOnSomething&quot;, function($aSelector) {
       var aSelector;
 
       aSelector = $aSelector.__sym__();
@@ -725,33 +941,40 @@
         return $true;
       }
 
-      throw new Error(&quot;binary operator &#039;&quot; + aSelector + &quot;&#039; failed.&quot;);
-    };
+      throw new Error(strlib.format(&quot;binary operator &#039;#{0}&#039; failed.&quot;, aSelector));
+    });
 
-    spec.performBinaryOpOnSimpleNumber = function($aSelector, $thig, $adverb) {
+    builder.addMethod(&quot;performBinaryOpOnSimpleNumber&quot;, function($aSelector, $thig, $adverb) {
       return this.performBinaryOpOnSomething($aSelector, $thig, $adverb);
-    };
-
-    spec.performBinaryOpOnSignal  = spec.performBinaryOpOnSimpleNumber;
-    spec.performBinaryOpOnComplex = spec.performBinaryOpOnSimpleNumber;
-    spec.performBinaryOpOnSeqColl = spec.performBinaryOpOnSimpleNumber;
-    spec.performBinaryOpOnUGen    = spec.performBinaryOpOnSimpleNumber;
+    });
+    builder.addMethod(&quot;performBinaryOpOnSignal&quot;, function($aSelector, $thig, $adverb) {
+      return this.performBinaryOpOnSomething($aSelector, $thig, $adverb);
+    });
+    builder.addMethod(&quot;performBinaryOpOnComplex&quot;, function($aSelector, $thig, $adverb) {
+      return this.performBinaryOpOnSomething($aSelector, $thig, $adverb);
+    });
+    builder.addMethod(&quot;performBinaryOpOnSeqColl&quot;, function($aSelector, $thig, $adverb) {
+      return this.performBinaryOpOnSomething($aSelector, $thig, $adverb);
+    });
+    builder.addMethod(&quot;performBinaryOpOnUGen&quot;, function($aSelector, $thig, $adverb) {
+      return this.performBinaryOpOnSomething($aSelector, $thig, $adverb);
+    });
 
     // TODO: implements writeDefFile
 
-    spec.isInputUGen = utils.alwaysReturn$false;
-    spec.isOutputUGen = utils.alwaysReturn$false;
-    spec.isControlUGen = utils.alwaysReturn$false;
-    spec.source = utils.nop;
-    spec.asUGenInput = utils.nop;
-    spec.asControlInput = utils.nop;
+    builder.addMethod(&quot;isInputUGen&quot;, sc.FALSE);
+    builder.addMethod(&quot;isOutputUGen&quot;, sc.FALSE);
+    builder.addMethod(&quot;isControlUGen&quot;, sc.FALSE);
+    builder.addMethod(&quot;source&quot;);
+    builder.addMethod(&quot;asUGenInput&quot;);
+    builder.addMethod(&quot;asControlInput&quot;);
 
-    spec.asAudioRateInput = function() {
+    builder.addMethod(&quot;asAudioRateInput&quot;, function() {
       if (this.rate().__sym__() !== &quot;audio&quot;) {
         return $(&quot;K2A&quot;).ar(this);
       }
       return this;
-    };
+    });
 
     // TODO: implements slotSize
     // TODO: implements slotAt
@@ -784,25 +1007,8 @@
     // TODO: implements $classRedirect
     // TODO: implements help
 
-    spec.processRest = utils.nop;
-
-    spec[&quot;[]&quot;] = function($index) {
-      return this.$(&quot;at&quot;, [ $index ]);
-    };
-
-    spec[&quot;[]_&quot;] = function($index, $value) {
-      return this.$(&quot;put&quot;, [ $index, $value ]);
-    };
-
-    spec[&quot;[..]&quot;] = function($first, $second, $last) {
-      return this.$(&quot;copySeries&quot;, [ $first, $second, $last ]);
-    };
-
-    spec[&quot;[..]_&quot;] = function($first, $second, $last, $value) {
-      return this.$(&quot;putSeries&quot;, [ $first, $second, $last, $value ]);
-    };
+    builder.addMethod(&quot;processRest&quot;);
   });
-
 });</textarea>
   </div>
 </div>

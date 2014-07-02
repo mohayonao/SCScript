@@ -29,7 +29,7 @@
           if (isFinite(actual)) {
             expect(actual).withMessage(desc).to.be.closeTo(expected, opts.closeTo);
           } else if (isNaN(actual)) {
-            expect(actual).withMessage(desc).to.be.nan;
+            expect(actual).withMessage(desc).to.be.NaN;
           } else {
             expect(actual).withMessage(desc).to.equal(expected);
           }

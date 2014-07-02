@@ -457,9 +457,10 @@
       );
     });
 
-    utils.addProperty(assert$proto, "nan", function() {
+    utils.addProperty(assert$proto, "NaN", function() {
+      var num = utils.flag(this, "object");
       this.assert(
-        isNaN(utils.flag(this, "object")),
+        typeof num === "number" && isNaN(num),
         "expected #{this} to be NaN",
         "expected #{this} to be not NaN",
         this.negate ? false : true

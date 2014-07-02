@@ -13,7 +13,7 @@ $(function() {
     return escodegen.generate(esprima.parse(code), { indent: "  " });
   }
 
-  var update = function(code, mode) {
+  function update(code, mode) {
     while (/^\([\s\S]+\)$/.test(code)) {
       code = code.slice(1, -1);
     }
@@ -37,7 +37,7 @@ $(function() {
       }
       prev = [ code, mode ];
     }
-  };
+  }
 
   $("#selector a").each(function(i, elem) {
     $(elem).on("click", function() {

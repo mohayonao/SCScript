@@ -6,9 +6,6 @@ module.exports = function(grunt) {
   var path = require("path");
   var sorter = require("./assets/sorter");
 
-  var q = function(str) {
-    return "\"" + str + "\"";
-  };
   var constVariables = {};
 
   grunt.registerTask("build", function() {
@@ -20,28 +17,32 @@ module.exports = function(grunt) {
     makeBrowserTest();
   });
 
-  var build = function(files) {
-    return sortModules(files).map(formatter).join("").trim();
-  };
+  function q(str) {
+    return "\"" + str + "\"";
+  }
 
-  var buildSCScript = function() {
+  function build(files) {
+    return sortModules(files).map(formatter).join("").trim();
+  }
+
+  function buildSCScript() {
     var tmpl = _.template(grunt.file.read(__dirname + "/assets/scscript.tmpl"));
     grunt.file.write("build/scscript.js", tmpl({
       version: q(grunt.config.data.pkg.version),
       source: build(grunt.file._expand("src", "!classlib", "!test"))
     }));
-  };
+  }
 
-  var buildClassLib = function() {
+  function buildClassLib() {
     grunt.file.write("build/scscript-classlib.js", [
       build(grunt.file._expand("classlib", "!test"))
     ].join(""));
-  };
+  }
 
-  var sortModules = function(files) {
+  function sortModules(files) {
     var result = [];
 
-    var walker = function(filepath) {
+    function walker(filepath) {
       var index, dir, src, re, m;
 
       index = result.indexOf(filepath);
@@ -57,14 +58,14 @@ module.exports = function(grunt) {
       while ((m = re.exec(src)) !== null) {
         walker(path.join(dir, m[1] + ".js"));
       }
-    };
+    }
 
     _.each(files, walker);
 
     return result;
-  };
+  }
 
-  var formatter = function(filepath) {
+  function formatter(filepath) {
     var src;
 
     src = grunt.file.read(filepath);
@@ -83,9 +84,9 @@ module.exports = function(grunt) {
     }
 
     return src;
-  };
+  }
 
-  var makeBrowserTest = function() {
+  function makeBrowserTest() {
     var tests, html;
 
     tests = grunt.file._expand("test").sort(sorter.byFilePath).map(function(filepath) {
@@ -94,5 +95,5 @@ module.exports = function(grunt) {
     html = grunt.file.read("assets/index.tmpl").replace("#{TESTS}", tests.join("\n"));
 
     grunt.file.write("docs/report/test/index.html", html);
-  };
+  }
 };

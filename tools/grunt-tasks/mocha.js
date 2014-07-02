@@ -21,21 +21,6 @@ module.exports = function(grunt) {
 
   chai.use(require("sinon-chai"));
 
-  var trimExtJS = function(path) {
-    return (/(?:src\/)?(.+?)(?:_test)?\.js$/.exec(path) || [ null, path ])[1];
-  };
-
-  var resolveFilter = function(filter) {
-    var relationalTest = grunt.file.readJSON(__dirname + "/assets/relational-test.json");
-
-    filter = trimExtJS(filter);
-    if (relationalTest[filter]) {
-      filter = relationalTest[filter].join("+");
-    }
-
-    return filter;
-  };
-
   grunt.registerTask("-mocha", function(filter, reporter, cover) {
     var mocha, done, tstFiles;
     var matchFn, coverageVar, instrumenter;
@@ -86,7 +71,7 @@ module.exports = function(grunt) {
       done(!failure);
     });
 
-    var createCoverageReport = function(cover) {
+    function createCoverageReport(cover) {
       var collector, reports = [];
 
       collector = new istanbul.Collector();
@@ -100,6 +85,21 @@ module.exports = function(grunt) {
       _.each(reports, function(report) {
         report.writeReport(collector, true);
       });
-    };
+    }
   });
+
+  function trimExtJS(path) {
+    return (/(?:src\/)?(.+?)(?:_test)?\.js$/.exec(path) || [ null, path ])[1];
+  }
+
+  function resolveFilter(filter) {
+    var relationalTest = grunt.file.readJSON(__dirname + "/assets/relational-test.json");
+
+    filter = trimExtJS(filter);
+    if (relationalTest[filter]) {
+      filter = relationalTest[filter].join("+");
+    }
+
+    return filter;
+  }
 };

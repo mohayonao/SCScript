@@ -1,16 +1,15 @@
-SCSCRIPT
-========
-[![Build Status](https://travis-ci.org/mohayonao/SCScript.png?branch=master)](https://travis-ci.org/mohayonao/SCScript)
-[![Coverage Status](https://coveralls.io/repos/mohayonao/SCScript/badge.png?branch=master)](https://coveralls.io/r/mohayonao/SCScript?branch=master)
-[![Code Climate](https://codeclimate.com/github/mohayonao/SCScript.png)](https://codeclimate.com/github/mohayonao/SCScript)
-[![Dependency Status](https://david-dm.org/mohayonao/SCScript.png)](https://david-dm.org/mohayonao/SCScript)
+# SCSCRIPT
+> JavaScript port of [SuperCollider](http://supercollider.sourceforge.net/)
 
-JavaScript port of [SuperCollider](http://supercollider.sourceforge.net/)
+[![Build Status](http://img.shields.io/travis/mohayonao/SCScript.svg)](https://travis-ci.org/mohayonao/SCScript)
+[![Coverage Status](http://img.shields.io/coveralls/mohayonao/SCScript.svg)](https://coveralls.io/r/mohayonao/SCScript?branch=master)
+[![Code Climate](http://img.shields.io/codeclimate/github/mohayonao/SCScript.svg)](https://codeclimate.com/github/mohayonao/SCScript)
+[![Dependency Status](http://img.shields.io/david/mohayonao/SCScript.svg)](https://david-dm.org/mohayonao/SCScript)
 
-work in progress..
+:zap: work in progress..
 
-## Try SCScript
-- [SCScript - Playground](http://mohayonao.github.io/SCScript/demo/)
+## WebIDE
+- [SCScript - WebIDE](http://mohayonao.github.io/SCScript/demo/)
 
 ## Quality Control
 - [Online Test Suite](http://mohayonao.github.io/SCScript/docs/report/test/)

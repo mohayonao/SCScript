@@ -25,7 +25,7 @@
   };
   nop$iter(nop$iter);
 
-  function once$iter(value) {
+  var once$iter = function(value) {
     var iter = {
       hasNext: true,
       next: function() {
@@ -37,7 +37,7 @@
       }
     };
     return iter;
-  }
+  };
 
   iterator.execute = function(iter, $function) {
     $function._bytecode.setIterator(iter).run();

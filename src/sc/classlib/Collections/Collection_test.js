@@ -7,21 +7,18 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-
   var SCCollection = $("Collection");
   var SCArray = $("Array");
 
   describe("SCCollection", function() {
-    var $int3, $int10, $int100;
+    var $int3 = $$(3);
+    var $int10 = $$(10);
+    var $int100 = $$(100);
     before(function() {
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source||[]).map($$), !!immutable);
         return $$(instance, "Collection" + this.test.title);
       };
-
-      $int3   = $$(3);
-      $int10  = $$(10);
-      $int100 = $$(100);
     });
     it("#valueOf", function() {
       var instance, test;
@@ -33,20 +30,16 @@
     });
     it(".newFrom", function() {
       var test;
-      var $aCollection;
-
-      $aCollection = $$([ 1, 2, 3, 4, 5 ]);
+      var $aCollection = $$([ 1, 2, 3, 4, 5 ]);
 
       test = SCCollection.newFrom.call(SCArray, $aCollection);
       expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
     });
     it(".with", function() {
       var test;
-      var $arg1, $arg2, $arg3;
-
-      $arg1 = $$();
-      $arg2 = $$();
-      $arg3 = $$();
+      var $arg1 = $$();
+      var $arg2 = $$();
+      var $arg3 = $$();
 
       test = SCCollection.with.call(SCArray, $arg1, $arg2, $arg3);
       expect(test).to.be.a("SCArray").that.eqls([ $arg1, $arg2, $arg3 ]);
@@ -98,9 +91,7 @@
     });
     it("#@", sinon.test(function() {
       var instance, test;
-      var $index;
-
-      $index = $$();
+      var $index = $$();
 
       instance = this.createInstance();
       this.stub(instance, "at", sc.test.func());
@@ -149,7 +140,9 @@
       expect(test).to.equal(SCArray);
     });
     it("#do", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.do.__errorType).to.equal("subclassResponsibility");
     });
     it.skip("#iter", function() {
@@ -207,7 +200,9 @@
       ]);
     });
     it("#asCollection", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asCollection).to.doNothing;
     });
     it("#isCollection", function() {
@@ -219,7 +214,9 @@
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
     it("#add", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.add.__errorType).to.equal("subclassResponsibility");
     });
     it("#addAll", function() {
@@ -233,7 +230,9 @@
       ]);
     });
     it("#remove", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.remove.__errorType).to.equal("subclassResponsibility");
     });
     it("#removeAll", function() {
@@ -365,9 +364,7 @@
     });
     it("#matchItem", sinon.test(function() {
       var instance, test;
-      var $item;
-
-      $item = $$();
+      var $item = $$();
 
       instance = this.createInstance();
       this.stub(instance, "includes", sc.test.func());
@@ -378,9 +375,7 @@
     }));
     it("#collect", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "collectAs", sc.test.func());
@@ -391,9 +386,7 @@
     }));
     it("#select", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "selectAs", sc.test.func());
@@ -404,9 +397,7 @@
     }));
     it("#reject", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "rejectAs", sc.test.func());
@@ -417,9 +408,7 @@
     }));
     it("#collectAs", function() {
       var instance, test;
-      var $function;
-
-      $function = $$(function($elem, $i) {
+      var $function = $$(function($elem, $i) {
         return $elem ["/"] ($$(10)) ["+"] ($i);
       });
 
@@ -430,9 +419,7 @@
     });
     it("#selectAs", function() {
       var instance, test;
-      var $function;
-
-      $function = $$(function($elem, $i) {
+      var $function = $$(function($elem, $i) {
         return $$(($elem ["%"] ($i)) === $$(0));
       });
 
@@ -443,9 +430,7 @@
     });
     it("#rejectAs", function() {
       var instance, test;
-      var $function;
-
-      $function = $$(function($elem, $i) {
+      var $function = $$(function($elem, $i) {
         return $$(($elem ["%"] ($i)) === $$(0));
       });
 
@@ -492,15 +477,12 @@
     });
     it("#doMsg", sinon.test(function() {
       var instance, test;
-      var $elem1, $elem2, $elem3;
-      var $selector, $arg1, $arg2;
-
-      $elem1 = $$({ perform: this.spy() });
-      $elem2 = $$({ perform: this.spy() });
-      $elem3 = $$({ perform: this.spy() });
-      $selector = $$();
-      $arg1     = $$();
-      $arg2     = $$();
+      var $elem1 = $$({ perform: this.spy() });
+      var $elem2 = $$({ perform: this.spy() });
+      var $elem3 = $$({ perform: this.spy() });
+      var $selector = $$();
+      var $arg1 = $$();
+      var $arg2 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
 
@@ -511,122 +493,107 @@
       expect(test).to.equal(instance);
     }));
     it("#collectMsg", sinon.test(function() {
-      var instance, test, spy1, spy2, spy3;
-      var $elem1, $elem2, $elem3;
-      var $selector, $arg1, $arg2;
-
-      $elem1 = $$(1);
-      $elem2 = $$(2);
-      $elem3 = $$(3);
-      spy1   = this.spy($elem1, "odd");
-      spy2   = this.spy($elem2, "odd");
-      spy3   = this.spy($elem3, "odd");
-      $selector = $$("\\odd");
-      $arg1     = $$();
-      $arg2     = $$();
+      var instance, test;
+      var $elem1 = $$(1);
+      var $elem2 = $$(2);
+      var $elem3 = $$(3);
+      var $selector = $$("\\odd");
+      var $arg1 = $$();
+      var $arg2 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
+      this.spy($elem1, "odd");
+      this.spy($elem2, "odd");
+      this.spy($elem3, "odd");
 
       test = instance.collectMsg($selector, $arg1, $arg2);
-      expect(spy1).to.be.calledWith($arg1, $arg2);
-      expect(spy2).to.be.calledWith($arg1, $arg2);
-      expect(spy3).to.be.calledWith($arg1, $arg2);
+      expect($elem1.odd).to.be.calledWith($arg1, $arg2);
+      expect($elem2.odd).to.be.calledWith($arg1, $arg2);
+      expect($elem3.odd).to.be.calledWith($arg1, $arg2);
       expect(test).to.be.a("SCArray").that.eqls([ true, false, true ]);
     }));
     it("#selectMsg", sinon.test(function() {
-      var instance, test, spy1, spy2, spy3;
-      var $elem1, $elem2, $elem3;
-      var $selector, $arg1, $arg2;
-
-      $elem1 = $$(1);
-      $elem2 = $$(2);
-      $elem3 = $$(3);
-      spy1   = this.spy($elem1, "odd");
-      spy2   = this.spy($elem2, "odd");
-      spy3   = this.spy($elem3, "odd");
-      $selector = $$("\\odd");
-      $arg1     = $$();
-      $arg2     = $$();
+      var instance, test;
+      var $elem1 = $$(1);
+      var $elem2 = $$(2);
+      var $elem3 = $$(3);
+      var $selector = $$("\\odd");
+      var $arg1 = $$();
+      var $arg2 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
+      this.spy($elem1, "odd");
+      this.spy($elem2, "odd");
+      this.spy($elem3, "odd");
 
       test = instance.selectMsg($selector, $arg1, $arg2);
-      expect(spy1).to.be.calledWith($arg1, $arg2);
-      expect(spy2).to.be.calledWith($arg1, $arg2);
-      expect(spy3).to.be.calledWith($arg1, $arg2);
+      expect($elem1.odd).to.be.calledWith($arg1, $arg2);
+      expect($elem2.odd).to.be.calledWith($arg1, $arg2);
+      expect($elem3.odd).to.be.calledWith($arg1, $arg2);
       expect(test).to.be.a("SCArray").that.eqls([ 1, 3 ]);
     }));
     it("#rejectMsg", sinon.test(function() {
-      var instance, test, spy1, spy2, spy3;
-      var $elem1, $elem2, $elem3;
-      var $selector, $arg1, $arg2;
-
-      $elem1 = $$(1);
-      $elem2 = $$(2);
-      $elem3 = $$(3);
-      spy1   = this.spy($elem1, "odd");
-      spy2   = this.spy($elem2, "odd");
-      spy3   = this.spy($elem3, "odd");
-      $selector = $$("\\odd");
-      $arg1     = $$();
-      $arg2     = $$();
+      var instance, test;
+      var $elem1 = $$(1);
+      var $elem2 = $$(2);
+      var $elem3 = $$(3);
+      var $selector = $$("\\odd");
+      var $arg1 = $$();
+      var $arg2 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
+      this.spy($elem1, "odd");
+      this.spy($elem2, "odd");
+      this.spy($elem3, "odd");
 
       test = instance.rejectMsg($selector, $arg1, $arg2);
-      expect(spy1).to.be.calledWith($arg1, $arg2);
-      expect(spy2).to.be.calledWith($arg1, $arg2);
-      expect(spy3).to.be.calledWith($arg1, $arg2);
+      expect($elem1.odd).to.be.calledWith($arg1, $arg2);
+      expect($elem2.odd).to.be.calledWith($arg1, $arg2);
+      expect($elem3.odd).to.be.calledWith($arg1, $arg2);
       expect(test).to.be.a("SCArray").that.eqls([ 2 ]);
     }));
     it("#detectMsg", sinon.test(function() {
-      var instance, test, spy1, spy2, spy3;
-      var $elem1, $elem2, $elem3, $elem4, $elem5;
-      var $selector, $arg1, $arg2;
-
-      $elem1 = $$(-2);
-      $elem2 = $$(-1);
-      $elem3 = $$( 0);
-      $elem4 = $$( 1);
-      $elem5 = $$( 2);
-      spy1   = this.spy($elem1, "isPositive");
-      spy2   = this.spy($elem2, "isPositive");
-      spy3   = this.spy($elem3, "isPositive");
-      $selector = $$("\\isPositive");
-      $arg1     = $$();
-      $arg2     = $$();
+      var instance, test;
+      var $elem1 = $$(-2);
+      var $elem2 = $$(-1);
+      var $elem3 = $$( 0);
+      var $elem4 = $$( 1);
+      var $elem5 = $$( 2);
+      var $selector = $$("\\isPositive");
+      var $arg1 = $$();
+      var $arg2 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3, $elem4, $elem5 ]);
+      this.spy($elem1, "isPositive");
+      this.spy($elem2, "isPositive");
+      this.spy($elem3, "isPositive");
 
       test = instance.detectMsg($selector, $arg1, $arg2);
-      expect(spy1).to.be.calledWith($arg1, $arg2);
-      expect(spy2).to.be.calledWith($arg1, $arg2);
-      expect(spy3).to.be.calledWith($arg1, $arg2);
+      expect($elem1.isPositive).to.be.calledWith($arg1, $arg2);
+      expect($elem2.isPositive).to.be.calledWith($arg1, $arg2);
+      expect($elem3.isPositive).to.be.calledWith($arg1, $arg2);
       expect(test).to.be.a("SCInteger").that.equals(0);
     }));
     it("#detectIndexMsg", sinon.test(function() {
-      var instance, test, spy1, spy2, spy3;
-      var $elem1, $elem2, $elem3, $elem4, $elem5;
-      var $selector, $arg1, $arg2;
-
-      $elem1 = $$(-2);
-      $elem2 = $$(-1);
-      $elem3 = $$( 0);
-      $elem4 = $$( 1);
-      $elem5 = $$( 2);
-      spy1   = this.spy($elem1, "isPositive");
-      spy2   = this.spy($elem2, "isPositive");
-      spy3   = this.spy($elem3, "isPositive");
-      $selector = $$("\\isPositive");
-      $arg1     = $$();
-      $arg2     = $$();
+      var instance, test;
+      var $elem1 = $$(-2);
+      var $elem2 = $$(-1);
+      var $elem3 = $$( 0);
+      var $elem4 = $$( 1);
+      var $elem5 = $$( 2);
+      var $selector = $$("\\isPositive");
+      var $arg1 = $$();
+      var $arg2 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3, $elem4, $elem5 ]);
+      this.spy($elem1, "isPositive");
+      this.spy($elem2, "isPositive");
+      this.spy($elem3, "isPositive");
 
       test = instance.detectIndexMsg($selector, $arg1, $arg2);
-      expect(spy1).to.be.calledWith($arg1, $arg2);
-      expect(spy2).to.be.calledWith($arg1, $arg2);
-      expect(spy3).to.be.calledWith($arg1, $arg2);
+      expect($elem1.isPositive).to.be.calledWith($arg1, $arg2);
+      expect($elem2.isPositive).to.be.calledWith($arg1, $arg2);
+      expect($elem3.isPositive).to.be.calledWith($arg1, $arg2);
       expect(test).to.be.a("SCInteger").that.equals(2);
     }));
     it("#lastForWhich", function() {
@@ -1071,15 +1038,13 @@
     });
     it("#asArray", sinon.test(function() {
       var instance, test;
-      var $new, $addAll;
-
-      $new = this.spy(function() {
+      var $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func());
-      this.stub(SCArray, "new", $new);
+      var $addAll = this.spy(sc.test.func());
 
       instance = this.createInstance([ 1, 2, 3 ]);
+      this.stub(SCArray, "new", $new);
 
       test = instance.asArray();
       expect($new.args[0]).to.eql($$([ 3 ])._);
@@ -1088,17 +1053,15 @@
     }));
     it("#asBag", sinon.test(function() {
       var instance, test;
-      var $new, $addAll;
-
-      $new = this.spy(function() {
+      var $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func());
+      var $addAll = this.spy(sc.test.func());
+
+      instance = this.createInstance([ 1, 2, 3 ]);
       this.stub(sc.lang.klass, "get").withArgs("Bag").returns($$({
         new: $new
       }));
-
-      instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asBag();
       expect($new.args[0]).to.eql($$([ 3 ])._);
@@ -1107,17 +1070,15 @@
     }));
     it("#asList", sinon.test(function() {
       var instance, test;
-      var $new, $addAll;
-
-      $new = this.spy(function() {
+      var $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func());
+      var $addAll = this.spy(sc.test.func());
+
+      instance = this.createInstance([ 1, 2, 3 ]);
       this.stub(sc.lang.klass, "get").withArgs("List").returns($$({
         new: $new
       }));
-
-      instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asList();
       expect($new.args[0]).to.eql($$([ 3 ])._);
@@ -1126,17 +1087,15 @@
     }));
     it("#asSet", sinon.test(function() {
       var instance, test;
-      var $new, $addAll;
-
-      $new = this.spy(function() {
+      var $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func());
+      var $addAll = this.spy(sc.test.func());
+
+      instance = this.createInstance([ 1, 2, 3 ]);
       this.stub(sc.lang.klass, "get").withArgs("Set").returns($$({
         new: $new
       }));
-
-      instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asSet();
       expect($new.args[0]).to.eql($$([ 3 ])._);
@@ -1145,18 +1104,16 @@
     }));
     it("#asSortedList", sinon.test(function() {
       var instance, test;
-      var $new, $addAll, $function;
-
-      $new = this.spy(function() {
+      var $new = this.spy(function() {
         return $$({ addAll: $addAll });
       });
-      $addAll = this.spy(sc.test.func());
-      $function = $$();
+      var $addAll = this.spy(sc.test.func());
+      var $function = $$();
+
+      instance = this.createInstance([ 1, 2, 3 ]);
       this.stub(sc.lang.klass, "get").withArgs("SortedList").returns($$({
         new: $new
       }));
-
-      instance = this.createInstance([ 1, 2, 3 ]);
 
       test = instance.asSortedList($function);
       expect($new.args[0]).to.eql($$([ 3, $function ])._);

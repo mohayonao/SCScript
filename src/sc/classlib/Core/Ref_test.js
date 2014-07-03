@@ -17,9 +17,7 @@
     });
     it("#valueOf", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -28,9 +26,7 @@
     });
     it("<>value", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -56,9 +52,7 @@
     });
     it("#get", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -67,9 +61,7 @@
     });
     it("#dereference", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -82,9 +74,7 @@
     });
     it("#valueArray", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -93,9 +83,7 @@
     });
     it("#valueEnvir", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -104,9 +92,7 @@
     });
     it("#valueArrayEnvir", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -115,9 +101,7 @@
     });
     it("#next", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance($value);
 
@@ -125,7 +109,9 @@
       expect(test).to.equal($value);
     });
     it("#asUGenInput", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asUGenInput).to.doNothing;
     });
     it.skip("#printOn", function() {
@@ -134,9 +120,7 @@
     });
     it("#at", sinon.test(function() {
       var instance, test;
-      var $value;
-
-      $value = $$({
+      var $value = $$({
         at: this.spy(sc.test.func())
       });
 
@@ -148,9 +132,7 @@
     }));
     it("#put", sinon.test(function() {
       var instance, test;
-      var $value;
-
-      $value = $$({
+      var $value = $$({
         put: this.spy(sc.test.func())
       });
 

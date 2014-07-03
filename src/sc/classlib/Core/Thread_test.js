@@ -6,7 +6,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-
   var SCThread = $("Thread");
   var SCRoutine = $("Routine");
 
@@ -53,7 +52,9 @@
     it.skip("#init", function() {
     });
     it("#copy", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.copy).to.doNothing;
     });
     it.skip("#clock_", function() {
@@ -97,15 +98,21 @@
     it.skip("#handleError", function() {
     });
     it("#next", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.next).to.doNothing;
     });
     it("#value", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.value).to.doNothing;
     });
     it("#valueArray", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.valueArray).to.doNothing;
     });
     it.skip("#$primitiveError", function() {
@@ -150,9 +157,7 @@
     });
     it("#next", function() {
       var instance;
-      var $inval;
-
-      $inval = $$();
+      var $inval = $$();
 
       instance = this.createInstance([
         function($inval) {
@@ -196,19 +201,27 @@
       expect(instance.next($inval), 8).to.be.a("SCNil");
     });
     it("#value", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.value).to.equal(instance.next);
     });
     it("#resume", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.resume).to.equal(instance.next);
     });
     it("#run", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.run).to.equal(instance.next);
     });
     it("#valueArray", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.valueArray).to.equal(instance.value);
     });
     it("#reset", function() {

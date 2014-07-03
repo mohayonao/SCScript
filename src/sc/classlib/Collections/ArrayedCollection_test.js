@@ -7,8 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
-
   var SCInt8Array = $("Int8Array");
   var SCInt16Array = $("Int16Array");
   var SCInt32Array = $("Int32Array");
@@ -25,9 +23,7 @@
     });
     it("#__elem__", function() {
       var instance, test;
-      var $obj;
-
-      $obj = $$();
+      var $obj = $$();
 
       instance = this.createInstance();
 
@@ -35,7 +31,9 @@
       expect(test).to.equal($obj);
     });
     it(".newClear", function() {
-      var test = SCArray.newClear($$(4));
+      var test;
+
+      test = SCArray.newClear($$(4));
       expect(test).to.be.a("SCArray").that.eqls([ null, null, null, null ]);
     });
     it.skip("#indexedSize", function() {
@@ -520,14 +518,11 @@
       expect(instance.copy).to.be.calledLastIn(test);
     }));
     it("#setSlots", sinon.test(function() {
-      var instance, test, spy;
-      var $array;
-
-      spy = this.spy(sc.test.func());
-      $array = $$();
+      var instance, test;
+      var $array = $$();
 
       instance = this.createInstance([ 1, 2, 3 ]);
-      instance.overWrite = spy;
+      instance.overWrite = this.spy(sc.test.func());
 
       test = instance.setSlots($array);
       expect(instance.overWrite).to.be.calledWith($array);
@@ -598,7 +593,9 @@
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
     it("#asArray", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asArray).to.doNothing;
     });
     it("#copyRange", function() {
@@ -976,39 +973,35 @@
       ]);
     });
     it("#do", sinon.test(function() {
-      var test, instance, iter;
-      var $function;
-
-      iter = {};
-      $function = $$();
-      this.stub(iterator, "array$do", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var test, instance;
+      var iter = {};
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "array$do", function() {
+        return iter;
+      });
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.do($function);
-      expect(iterator.array$do).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.array$do).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#reverseDo", sinon.test(function() {
-      var test, instance, iter;
-      var $function;
-
-      iter = {};
-      $function = $$();
-      this.stub(iterator, "array$reverseDo", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var test, instance;
+      var iter = {};
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "array$reverseDo", function() {
+        return iter;
+      });
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.reverseDo($function);
-      expect(iterator.array$reverseDo).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.array$reverseDo).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#reverse", function() {
@@ -1294,12 +1287,12 @@
 
   describe("SCInt8Array", function() {
     it("#valueOf", function() {
-      var instance, test, expected;
+      var instance, test;
+      var expected = new Int8Array([ 0, -1, 0 ]);
 
       instance = SCInt8Array.newFrom($$([ 0, 255, 256 ]));
-      test = instance.valueOf();
 
-      expected = new Int8Array([ 0, -1, 0 ]);
+      test = instance.valueOf();
       expect(test).to.eql(expected);
     });
     it(".newClear", function() {
@@ -1312,12 +1305,12 @@
 
   describe("SCInt16Array", function() {
     it("#valueOf", function() {
-      var instance, test, expected;
+      var instance, test;
+      var expected = new Int16Array([ 0, -1, 0 ]);
 
       instance = SCInt16Array.newFrom($$([ 0, 65535, 65536 ]));
-      test = instance.valueOf();
 
-      expected = new Int16Array([ 0, -1, 0 ]);
+      test = instance.valueOf();
       expect(test).to.eql(expected);
     });
     it(".newClear", function() {
@@ -1330,12 +1323,12 @@
 
   describe("SCInt32Array", function() {
     it("#valueOf", function() {
-      var instance, test, expected;
+      var instance, test;
+      var expected = new Int32Array([ 0, -1, 0 ]);
 
       instance = SCInt32Array.newFrom($$([ 0, 4294967295, 4294967296 ]));
-      test = instance.valueOf();
 
-      expected = new Int32Array([ 0, -1, 0 ]);
+      test = instance.valueOf();
       expect(test).to.eql(expected);
     });
     it(".newClear", function() {
@@ -1348,12 +1341,12 @@
 
   describe("SCFloatArray", function() {
     it("#valueOf", function() {
-      var instance, test, expected;
+      var instance, test;
+      var expected = new Float32Array([ 0, 0.5, -0.5 ]);
 
       instance = SCFloatArray.newFrom($$([ 0, 0.5, -0.5 ]));
-      test = instance.valueOf();
 
-      expected = new Float32Array([ 0, 0.5, -0.5 ]);
+      test = instance.valueOf();
       expect(test).to.eql(expected);
     });
     it(".newClear", function() {
@@ -1366,12 +1359,12 @@
 
   describe("SCDoubleArray", function() {
     it("#valueOf", function() {
-      var instance, test, expected;
+      var instance, test;
+      var expected = new Float64Array([ 0, 0.5, -0.5 ]);
 
       instance = SCDoubleArray.newFrom($$([ 0, 0.5, -0.5 ]));
-      test = instance.valueOf();
 
-      expected = new Float64Array([ 0, 0.5, -0.5 ]);
+      test = instance.valueOf();
       expect(test).to.eql(expected);
     });
     it(".newClear", function() {

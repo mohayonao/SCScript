@@ -6,7 +6,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-
   var SCNil = $("Nil");
 
   describe("SCNil", function() {
@@ -72,9 +71,7 @@
     });
     it("#?", function() {
       var instance, test;
-      var $obj;
-
-      $obj = $$();
+      var $obj = $$();
 
       instance = this.createInstance();
 
@@ -83,11 +80,7 @@
     });
     it("#??", function() {
       var instance, test;
-      var $obj;
-
-      $obj = $$({
-        value: sc.test.func()
-      });
+      var $obj = $$({ value: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -95,13 +88,16 @@
       expect($obj.value).to.be.calledLastIn(test);
     });
     it("#!?", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance["!?"]).to.doNothing;
     });
     it("#asBoolean", function() {
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.asBoolean();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
@@ -109,16 +105,13 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.booleanValue();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
     it("#push", function() {
       var instance, test;
-      var $function;
-
-      $function = $$({
-        value: sc.test.func()
-      });
+      var $function = $$({ value: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -127,9 +120,7 @@
     });
     it("#appendStream", function() {
       var instance, test;
-      var $stream;
-
-      $stream = $$();
+      var $stream = $$();
 
       instance = this.createInstance();
 
@@ -137,23 +128,33 @@
       expect(test).to.equal($stream);
     });
     it("#pop", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.pop).to.doNothing;
     });
     it("#source", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.source).to.doNothing;
     });
     it("#source_", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.source_).to.doNothing;
     });
     it("#rate", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.rate).to.doNothing;
     });
     it("#numChannels", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.numChannels).to.doNothing;
     });
     it("#isPlaying", function() {
@@ -165,83 +166,110 @@
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
     it("#do", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.do).to.doNothing;
     });
     it("#reverseDo", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.reverseDo).to.doNothing;
     });
     it("#pairsDo", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.pairsDo).to.doNothing;
     });
     it("#collect", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.collect).to.doNothing;
     });
     it("#select", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.select).to.doNothing;
     });
     it("#reject", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.reject).to.doNothing;
     });
     it("#detect", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.detect).to.doNothing;
     });
     it("#collectAs", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.collectAs).to.doNothing;
     });
     it("#selectAs", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.selectAs).to.doNothing;
     });
     it("#rejectAs", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.rejectAs).to.doNothing;
     });
     it("#dependants", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("IdentitySet").returns($$({
-        new: spy
-      }));
+      var instance, test;
+      var SCIdentitySet$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("IdentitySet").returns($$({
+        new: SCIdentitySet$new
+      }));
 
       test = instance.dependants();
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCIdentitySet$new).to.be.calledLastIn(test);
     }));
     it("#changed", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.changed).to.doNothing;
     });
     it("#addDependant", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.addDependant).to.doNothing;
     });
     it("#removeDependant", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.removeDependant).to.doNothing;
     });
     it("#release", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.release).to.doNothing;
     });
     it("#update", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.update).to.doNothing;
     });
     it("#transformEvent", function() {
       var instance, test;
-      var $event;
-
-      $event = $$();
+      var $event = $$();
 
       instance = this.createInstance();
 
@@ -257,14 +285,14 @@
       expect(test).to.be.a("SCNil");
     });
     it("#play", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.play).to.doNothing;
     });
     it("#nextTimeOnGrid", sinon.test(function() {
       var instance, test;
-      var $clock;
-
-      $clock = $$(null);
+      var $clock = $$(null);
 
       instance = this.createInstance();
 
@@ -282,31 +310,32 @@
       expect($clock.nextTimeOnGrid).to.be.calledLastIn(test);
     }));
     it("#asQuant", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("Quant").returns($$({
-        default: spy
-      }));
+      var instance, test;
+      var SCQuant$default = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("Quant").returns($$({
+        default: SCQuant$default
+      }));
 
       test = instance.asQuant();
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCQuant$default).to.be.calledLastIn(test);
     }));
     it("#swapThisGroup", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.swapThisGroup).to.doNothing;
     });
     it("#performMsg", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.swapThisGroup).to.doNothing;
     });
     it("printOn", sinon.test(function() {
       var instance, test;
-      var $stream;
-
-      $stream = $$({
+      var $stream = $$({
         putAll: this.spy()
       });
 
@@ -318,9 +347,7 @@
     }));
     it("storeOn", sinon.test(function() {
       var instance, test;
-      var $stream;
-
-      $stream = $$({
+      var $stream = $$({
         putAll: this.spy()
       });
 
@@ -339,9 +366,7 @@
     });
     it("#add", function() {
       var instance, test;
-      var $value;
-
-      $value = $$();
+      var $value = $$();
 
       instance = this.createInstance();
 
@@ -350,9 +375,7 @@
     });
     it("#addAll", function() {
       var instance, test;
-      var $array;
-
-      $array = $$();
+      var $array = $$();
 
       instance = this.createInstance();
 
@@ -361,9 +384,7 @@
     });
     it("#++", function() {
       var instance, test;
-      var $array;
-
-      $array = $$();
+      var $array = $$();
 
       instance = this.createInstance();
 
@@ -379,18 +400,20 @@
       expect(test).to.be.a("SCArray").that.eql([]);
     });
     it("#remove", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.remove).to.doNothing;
     });
     it("#set", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.set).to.doNothing;
     });
     it("#get", function() {
       var instance, test;
-      var $prevVal;
-
-      $prevVal = $$();
+      var $prevVal = $$();
 
       instance = this.createInstance();
 
@@ -399,19 +422,18 @@
     });
     it("#addFunc", sinon.test(function() {
       var instance, test, stub;
-      var $arg1, $arg2, $arg3;
+      var $arg1 = $$();
+      var $arg2 = $$();
+      var $arg3 = $$();
 
+      instance = this.createInstance();
       stub = this.stub(sc.lang.klass, "get");
       stub.withArgs("FunctionList").returns($$({
         new: function(arg) {
           return arg;
         }
       }));
-      $arg1 = $$();
-      $arg2 = $$();
-      $arg3 = $$();
 
-      instance = this.createInstance();
       test = instance.addFunc($arg1);
       expect(stub).to.be.not.called;
       expect(test).to.equal($arg1);
@@ -422,19 +444,27 @@
       expect(test).to.be.a("SCArray").that.eql([ $arg1, $arg2, $arg3 ]);
     }));
     it("#removeFunc", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.removeFunc).to.doNothing;
     });
     it("#replaceFunc", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.replaceFunc).to.doNothing;
     });
     it("#seconds_", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.seconds_).to.doNothing;
     });
     it("#throw", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.throw).to.doNothing;
     });
     it.skip("#handleError", function() {
@@ -447,26 +477,27 @@
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
     it("#asSpec", sinon.test(function() {
-      var instance, test, spy, stub;
-
-      spy = this.spy(sc.test.func());
-      stub = this.stub(sc.lang.klass, "get");
-      stub.withArgs("ControlSpec").returns($$({
-        new: spy
-      }));
+      var instance, test;
+      var SCControlSpec$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("ControlSpec").returns($$({
+        new: SCControlSpec$new
+      }));
 
       test = instance.asSpec();
-      expect(stub.getCall(0)).to.be.calledWith("ControlSpec");
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCControlSpec$new).to.be.calledLastIn(test);
     }));
     it("#superclassesDo", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.superclassesDo).to.doNothing;
     });
     it("#shallowCopy", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.shallowCopy).to.doNothing;
     });
   });

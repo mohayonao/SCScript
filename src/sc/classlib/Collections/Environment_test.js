@@ -6,7 +6,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-
   var SCEnvironment = $("Environment");
 
   describe("SCEnvironment", function() {
@@ -19,6 +18,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });
@@ -26,16 +26,16 @@
       var instance, test;
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
-      test = instance.eventAt($$(1));
 
+      test = instance.eventAt($$(1));
       expect(test).to.be.a("SCInteger").equals(2);
     });
     it("#composeEvents", function() {
       var instance, test;
 
       instance = this.createInstance();
-      test = instance.composeEvents($$([ 1, 2, 3, 4 ]));
 
+      test = instance.composeEvents($$([ 1, 2, 3, 4 ]));
       expect(test).to.not.equal(instance);
       expect(test).to.be.a("SCEnvironment").that.eqls({ 1: 2, 3: 4 });
     });
@@ -63,13 +63,12 @@
     }));
     it("make", sc.test(function() {
       var test;
-      var $function;
-
-      $.Environment("a", $$(1));
-      $function = $$(function() {
+      var $function = $$(function() {
         $.Environment("a", $$(100));
         return $.Environment("a").neg();
       });
+
+      $.Environment("a", $$(1));
 
       test = SCEnvironment.make($function);
       expect(test).to.be.a("SCEnvironment").that.eqls({ a: 100 });
@@ -79,13 +78,12 @@
     }));
     it("use", sc.test(function() {
       var test;
-      var $function;
-
-      $.Environment("a", $$(1));
-      $function = $$(function() {
+      var $function = $$(function() {
         $.Environment("a", $$(100));
         return $.Environment("a").neg();
       });
+
+      $.Environment("a", $$(1));
 
       test = SCEnvironment.use($function);
       expect(test).to.be.a("SCInteger").that.equals(-100);

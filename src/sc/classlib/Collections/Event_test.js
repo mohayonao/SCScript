@@ -6,7 +6,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-
   var SCEvent = $("Event");
 
   describe("SCEvent", function() {
@@ -19,6 +18,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });

@@ -7,8 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
-
   var SCFloat = $("Float");
 
   describe("SCFloat", function() {
@@ -67,7 +65,9 @@
       ]);
     });
     it("#asFloat", function() {
-      var instance = this.createInstance(0);
+      var instance;
+
+      instance = this.createInstance(0);
       expect(instance.asFloat).to.doNothing;
     });
     it("#+", function() {
@@ -382,40 +382,31 @@
       ]);
     });
     it("#do", sinon.test(function() {
-      var instance, test, iter;
-      var $function;
-
-      iter = [];
-      $function = $$();
-      this.stub(iterator, "float$do", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var instance, test;
+      var iter = [];
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "float$do").returns(iter);
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.do($function);
-      expect(iterator.float$do).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.float$do).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#reverseDo", sinon.test(function() {
-      var instance, test, iter;
-      var $function;
-
-      iter = {};
-      $function = $$();
-
-      this.stub(iterator, "float$reverseDo", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var instance, test;
+      var iter = {};
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "float$reverseDo").returns(iter);
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.reverseDo($function);
-      expect(iterator.float$reverseDo).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.float$reverseDo).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#bitNot", function() {

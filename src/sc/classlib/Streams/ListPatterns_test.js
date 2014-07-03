@@ -24,9 +24,7 @@
     });
     it("#copy", function() {
       var instance, test;
-      var $list;
-
-      $list = $$([ 1, 2, 3, 4, 5 ]);
+      var $list = $$([ 1, 2, 3, 4, 5 ]);
 
       instance = this.createInstance($list);
 

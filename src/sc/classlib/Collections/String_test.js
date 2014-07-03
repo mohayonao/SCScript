@@ -7,7 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-
   var SCString = $("String");
 
   describe("SCString", function() {
@@ -34,9 +33,7 @@
     });
     it("#__elem__", function() {
       var instance, test;
-      var $ch;
-
-      $ch = $$("$a");
+      var $ch = $$("$a");
 
       instance = this.createInstance();
 
@@ -56,7 +53,9 @@
       expect(test).to.be.a("JSString").that.equals("str");
     });
     it(".newClear", function() {
-      var test = SCString.newClear($$(4));
+      var test;
+
+      test = SCString.newClear($$(4));
       expect(test).to.be.a("SCString").that.equals("    ");
     });
     it.skip("<>unixCmdActions", function() {
@@ -167,47 +166,41 @@
     it.skip("#hash", function() {
     });
     it("#performBinaryOpOnSimpleNumber", sinon.test(function() {
-      var instance, test, spy;
-      var $aSelector, $aNumber;
-
-      spy = this.spy(sc.test.func());
-      $aSelector = $$();
-      $aNumber = $$({
+      var instance, test;
+      var $aSelector = $$();
+      var $aNumber = $$({
         asString: function() {
-          return $$({
-            perform: spy
-          });
+          return $$({ perform: SCString$perform });
         }
       });
+      var SCString$perform = this.spy(sc.test.func());
 
       instance = this.createInstance();
 
       test = instance.performBinaryOpOnSimpleNumber($aSelector, $aNumber);
-      expect(spy).to.be.calledWith($aSelector, instance);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCString$perform).to.be.calledWith($aSelector, instance);
+      expect(SCString$perform).to.be.calledLastIn(test);
     }));
     it("#performBinaryOpOnComplex", sinon.test(function() {
-      var instance, test, spy;
-      var $aSelector, $aComplex;
-
-      spy = this.spy(sc.test.func());
-      $aSelector = $$();
-      $aComplex = $$({
+      var instance, test;
+      var $aSelector = $$();
+      var $aComplex = $$({
         asString: function() {
-          return $$({
-            perform: spy
-          });
+          return $$({ perform: SCString$perform });
         }
       });
+      var SCString$perform = this.spy(sc.test.func());
 
       instance = this.createInstance();
 
       test = instance.performBinaryOpOnComplex($aSelector, $aComplex);
-      expect(spy).to.be.calledWith($aSelector, instance);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCString$perform).to.be.calledWith($aSelector, instance);
+      expect(SCString$perform).to.be.calledLastIn(test);
     }));
     it("#multiChannelPerform", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(function() {
         instance.multiChannelPerform();
       }).to.throw("Cannot expand strings");
@@ -221,7 +214,9 @@
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
     it("#asString", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asString).to.doNothing;
     });
     it("#asCompileString", function() {
@@ -243,9 +238,8 @@
     it("#postln", sinon.test(function() {
       var instance, test;
 
-      this.stub(sc.lang.io, "post");
-
       instance = this.createInstance("post");
+      this.stub(sc.lang.io, "post");
 
       test = instance.postln();
       expect(test).to.equal(instance);
@@ -254,9 +248,8 @@
     it("#post", sinon.test(function() {
       var instance, test;
 
-      this.stub(sc.lang.io, "post");
-
       instance = this.createInstance("post");
+      this.stub(sc.lang.io, "post");
 
       test = instance.post();
       expect(test).to.equal(instance);
@@ -265,9 +258,8 @@
     it("#postcln", sinon.test(function() {
       var instance, test;
 
-      this.stub(sc.lang.io, "post");
-
       instance = this.createInstance("post");
+      this.stub(sc.lang.io, "post");
 
       test = instance.postcln();
       expect(test).to.equal(instance);
@@ -276,9 +268,8 @@
     it("#postc", sinon.test(function() {
       var instance, test;
 
-      this.stub(sc.lang.io, "post");
-
       instance = this.createInstance("post");
+      this.stub(sc.lang.io, "post");
 
       test = instance.postc();
       expect(test).to.equal(instance);

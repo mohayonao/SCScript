@@ -21,6 +21,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.__tag;
       expect(test).to.be.a("JSNumber").that.equals(sc.TAG_CHAR);
     });
@@ -28,6 +29,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.__str__();
       expect(test).to.be.a("JSString").that.equals("a");
     });
@@ -35,27 +37,38 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.be.a("JSString").that.equals("a");
     });
     it(".nl", function() {
-      var test = SCChar.nl();
+      var test;
+
+      test = SCChar.nl();
       expect(test).to.be.a("SCChar").that.equals("\n");
     });
     it(".ff", function() {
-      var test = SCChar.ff();
+      var test;
+
+      test = SCChar.ff();
       expect(test).to.be.a("SCChar").that.equals("\f");
     });
     it(".tab", function() {
-      var test = SCChar.tab();
+      var test;
+
+      test = SCChar.tab();
       expect(test).to.be.a("SCChar").that.equals("\t");
     });
     it(".space", function() {
-      var test = SCChar.space();
+      var test;
+
+      test = SCChar.space();
       expect(test).to.be.a("SCChar").that.equals(" ");
     });
     it(".comma", function() {
-      var test = SCChar.comma();
+      var test;
+
+      test = SCChar.comma();
       expect(test).to.be.a("SCChar").that.equals(",");
     });
     it(".new", function() {
@@ -69,6 +82,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.ascii();
       expect(test).to.be.a("SCInteger").that.equals(0x61);
     });
@@ -98,7 +112,9 @@
       }
     });
     it("#asAscii", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asAscii).to.doNothing;
     });
     it("#asUnicode", sinon.test(function() {
@@ -114,6 +130,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.toUpper();
       expect(test).to.be.a("SCChar").that.equals("A");
     });
@@ -121,6 +138,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.toLower();
       expect(test).to.be.a("SCChar").that.equals("a");
     });
@@ -281,9 +299,7 @@
     });
     it("#++", function() {
       var test, instance;
-      var $h;
-
-      $h = $$("$h");
+      var $h = $$("$h");
 
       instance = this.createInstance("c");
 

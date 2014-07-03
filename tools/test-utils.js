@@ -33,7 +33,7 @@
     };
   };
 
-  var toSCObject = function(obj, opts) {
+  function toSCObject(obj, opts) {
     var $ = sc.lang.$;
 
     if (isSCObject(obj)) {
@@ -74,25 +74,25 @@
     }
 
     return obj;
-  };
+  }
 
-  var toString = function(obj) {
+  function toString(obj) {
     var str = JSON.stringify(obj) || (typeof obj);
     if (str.length > 2) {
       str = str.replace(/([{[,])/g, "$1 ").replace(/([\]}])/g, " $1");
     }
     return str;
-  };
+  }
 
-  var isDictionary = function(obj) {
+  function isDictionary(obj) {
     return obj && obj.constructor === Object;
-  };
+  }
 
-  var isSCObject = function(obj) {
+  function isSCObject(obj) {
     return obj && typeof obj._ !== "undefined";
-  };
+  }
 
-  var typeOf = function(obj, guess) {
+  function typeOf(obj, guess) {
     var type;
 
     if (isSCObject(obj)) {
@@ -116,7 +116,7 @@
 
     type = typeof obj;
     return "JS" + type.charAt(0).toUpperCase() + type.slice(1);
-  };
+  }
 
   sc.test.testCase = function(context, cases, opts) {
     var expect = global.expect;
@@ -235,7 +235,7 @@
   };
 
   var prev = null;
-  var setSingletonMethod = function(instance, className, methodName) {
+  function setSingletonMethod(instance, className, methodName) {
     var method;
 
     if (prev) {
@@ -250,7 +250,7 @@
     prev = {
       instance: instance, methodName: methodName
     };
-  };
+  }
 
   sc.test.object = function(source, opts) {
     var instance, matches;
@@ -457,9 +457,10 @@
       );
     });
 
-    utils.addProperty(assert$proto, "nan", function() {
+    utils.addProperty(assert$proto, "NaN", function() {
+      var num = utils.flag(this, "object");
       this.assert(
-        isNaN(utils.flag(this, "object")),
+        typeof num === "number" && isNaN(num),
         "expected #{this} to be NaN",
         "expected #{this} to be not NaN",
         this.negate ? false : true

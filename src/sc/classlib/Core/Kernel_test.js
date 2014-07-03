@@ -7,7 +7,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-
   var SCClass = $("Class");
   var SCMetaClass = $("Meta_Class");
   var SCProcess = $("Process");
@@ -29,11 +28,14 @@
       expect(test).to.equal(SCClass);
     });
     it("#name", function() {
-      var test = SCClass.name();
+      var test;
+
+      test = SCClass.name();
       expect(test).to.be.a("SCString").that.equals("Class");
     });
     it("#[]", function() {
       var test;
+
       test = $("Set")["[]"]($$([ 1, 2, 3, 4 ]));
       expect(test).to.be.a("SCSet").that.eqls([ 1, 2, 3, 4 ]);
     });
@@ -49,16 +51,16 @@
       var instance, test;
 
       instance = this.createInstance();
-      test = instance.interpreter();
 
+      test = instance.interpreter();
       expect(test).to.be.a("SCNil");
     });
     it("<mainThread", function() {
       var instance, test;
 
       instance = this.createInstance();
-      test = instance.mainThread();
 
+      test = instance.mainThread();
       expect(test).to.be.a("SCNil");
     });
   });
@@ -82,10 +84,10 @@
 
       instance = this.createInstance();
 
-      "abcdefghijklmnopqrstuvwxyz".split("").forEach(function(ch) {
-        var test, $value;
+      _.each("abcdefghijklmnopqrstuvwxyz".split(""), function(ch) {
+        var test;
 
-        $value = $$();
+        var $value = $$();
 
         test = instance[ch]();
         expect(test).to.be.a("SCNil");
@@ -99,8 +101,10 @@
 
       instance.clearAll();
 
-      "abcdefghijklmnopqrstuvwxyz".split("").forEach(function(ch) {
-        var test = instance[ch]();
+      _.each("abcdefghijklmnopqrstuvwxyz".split(""), function(ch) {
+        var test;
+
+        test = instance[ch]();
         expect(test).to.be.a("SCNil");
       });
     });

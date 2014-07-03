@@ -7,8 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
-
   var SCInteger = $("Integer");
 
   describe("SCInteger", function() {
@@ -384,12 +382,8 @@
     });
     it("#degreeToKey", sinon.test(function() {
       var instance, test;
-      var $scale, $stepsPerOctave;
-
-      $scale = $$({
-        performDegreeToKey: this.spy(sc.test.func())
-      });
-      $stepsPerOctave = $$();
+      var $scale = $$({ performDegreeToKey: this.spy(sc.test.func()) });
+      var $stepsPerOctave = $$();
 
       instance = this.createInstance();
 
@@ -398,29 +392,22 @@
       expect($scale.performDegreeToKey).to.be.calledLastIn(test);
     }));
     it("#do", sinon.test(function() {
-      var instance, test, iter;
-      var $function;
-
-      iter = {};
-      $function = $$();
-
-      this.stub(iterator, "integer$do", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var instance, test;
+      var iter = {};
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "integer$do").returns(iter);
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.do($function);
-      expect(iterator.integer$do).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.integer$do).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#generate", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$({ value: this.spy() });
+      var $function = $$({ value: this.spy() });
 
       instance = this.createInstance();
       test = instance.generate($function);
@@ -448,9 +435,7 @@
     });
     it("#collect", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "collectAs", sc.test.func());
@@ -460,42 +445,32 @@
       expect(instance.collectAs).to.be.calledLastIn(test);
     }));
     it("#reverseDo", sinon.test(function() {
-      var instance, test, iter;
-      var $function;
-
-      iter = {};
-      $function = $$();
-
-      this.stub(iterator, "integer$reverseDo", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var instance, test;
+      var iter = {};
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "integer$reverseDo").returns(iter);
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.reverseDo($function);
-      expect(iterator.integer$reverseDo).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.integer$reverseDo).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#for", sinon.test(function() {
-      var instance, test, iter;
-      var $endval, $function;
-
-      iter = {};
-      $endval   = $$();
-      $function = $$();
-
-      this.stub(iterator, "integer$for", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var instance, test;
+      var iter = {};
+      var $endval   = $$();
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "integer$for").returns(iter);
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.for($endval, $function);
-      expect(iterator.integer$for).to.be.calledWith(instance, $endval);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.integer$for).to.be.calledWith(instance, $endval);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#forBy", sinon.test(function() {
@@ -505,33 +480,29 @@
       var $stepval  = $$();
       var $function = $$();
 
-      this.stub(iterator, "integer$forBy", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
-
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "integer$forBy").returns(iter);
+      this.stub(sc.lang.iterator, "execute");
+
       test = instance.forBy($endval, $stepval, $function);
-      expect(iterator.integer$forBy).to.be.calledWith(instance, $endval, $stepval);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.integer$forBy).to.be.calledWith(instance, $endval, $stepval);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#to", sinon.test(function() {
-      var instance, test, spy;
-      var $hi, $step;
-
-      spy = this.spy(sc.test.func());
-      $hi = $$();
-      $step = $$();
-      this.stub(sc.lang.klass, "get").withArgs("Interval").returns($$({
-        new: spy
-      }));
+      var instance, test;
+      var $hi = $$();
+      var $step = $$();
+      var SCInterval$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("Interval").returns($$({
+        new: SCInterval$new
+      }));
 
       test = instance.to($hi, $step);
-      expect(spy).to.be.calledWith(instance, $hi, $step);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCInterval$new).to.be.calledWith(instance, $hi, $step);
+      expect(SCInterval$new).to.be.calledLastIn(test);
     }));
     it("#asAscii", function() {
       testCase(this, [

@@ -14,14 +14,14 @@ window.onload = function() {
     };
   }
 
-  var update = function(source) {
+  function update(source) {
     if (prev !== source) {
       window.location.replace("#" + encodeURIComponent(source));
       prev = source;
     }
-  };
+  }
 
-  var getCode = function(editor) {
+  function getCode(editor) {
     var code, cursor, line, range, callback;
     var cssName = "blink1";
 
@@ -43,9 +43,9 @@ window.onload = function() {
     blink(cssName, ".CodeMirror-focused .CodeMirror-selected", callback);
 
     return code;
-  };
+  }
 
-  var selectRegion = function(editor, begin) {
+  function selectRegion(editor, begin) {
     var lookAt, end, last, line;
     var depth, code;
 
@@ -81,7 +81,7 @@ window.onload = function() {
         lookAt = end;
       }
     }
-  };
+  }
 
   var getCssRule = (function() {
     var cache = {};
@@ -100,7 +100,7 @@ window.onload = function() {
     };
   })();
 
-  var blink = function(cssName, selector, callback) {
+  function blink(cssName, selector, callback) {
     var rule = getCssRule(selector);
     if (rule) {
       setTimeout(function() {
@@ -111,9 +111,9 @@ window.onload = function() {
       }, 500);
       rule.style.setProperty("-webkit-animation", cssName + " 0.5s");
     }
-  };
+  }
 
-  var evaluate = function() {
+  function evaluate() {
     var code, result;
     var beginTime, elapsedTime;
 
@@ -138,17 +138,17 @@ window.onload = function() {
     if (!isNaN(elapsedTime)) {
       $("#timecop").text(elapsedTime.toFixed(3) + "ms");
     }
-  };
+  }
 
-  var boot = function() {
+  function boot() {
     console.log("boot");
-  };
+  }
 
-  var stop = function() {
+  function stop() {
     console.log("stop");
-  };
+  }
 
-  var readFromGist = function(gistid, callback) {
+  function readFromGist(gistid, callback) {
     var url = "https://api.github.com/gists/" + gistid;
     $.ajax({ url: url, type: "GET", dataType: "jsonp" }).then(function(result) {
       var files, code;
@@ -165,7 +165,7 @@ window.onload = function() {
       }
       callback(code);
     });
-  };
+  }
 
   editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
     mode: "SCScript",

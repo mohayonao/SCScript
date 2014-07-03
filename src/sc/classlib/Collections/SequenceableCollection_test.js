@@ -7,7 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-
   var SCSequenceableCollection = $("SequenceableCollection");
   var SCArray = $("Array");
 
@@ -28,9 +27,7 @@
     });
     it("#|@|", sinon.test(function() {
       var instance, test;
-      var $index;
-
-      $index = $$();
+      var $index = $$();
 
       instance = this.createInstance();
       this.stub(instance, "clipAt", sc.test.func());
@@ -41,9 +38,7 @@
     }));
     it("#@@", sinon.test(function() {
       var instance, test;
-      var $index;
-
-      $index = $$();
+      var $index = $$();
 
       instance = this.createInstance();
       this.stub(instance, "wrapAt", sc.test.func());
@@ -54,9 +49,7 @@
     }));
     it("#@|@", sinon.test(function() {
       var instance, test;
-      var $index;
-
-      $index = $$();
+      var $index = $$();
 
       instance = this.createInstance();
       this.stub(instance, "foldAt", sc.test.func());
@@ -66,7 +59,9 @@
       expect(instance.foldAt).to.be.calledLastIn(test);
     }));
     it(".series", function() {
-      var test = SCSequenceableCollection.series.call(
+      var test;
+
+      test = SCSequenceableCollection.series.call(
         SCArray, $$(6), $$(2), $$(4)
       );
       expect(test).to.be.a("SCArray").to.eql([
@@ -74,7 +69,9 @@
       ]);
     });
     it(".geom", function() {
-      var test = SCSequenceableCollection.geom.call(
+      var test;
+
+      test = SCSequenceableCollection.geom.call(
         SCArray, $$(6), $$(2), $$(4)
       );
       expect(test).to.be.a("SCArray").to.eql([
@@ -82,7 +79,9 @@
       ]);
     });
     it(".fib", function() {
-      var test = SCSequenceableCollection.fib.call(
+      var test;
+
+      test = SCSequenceableCollection.fib.call(
         SCArray, $$(6)
       );
       expect(test).to.be.a("SCArray").to.eql([
@@ -90,8 +89,11 @@
       ]);
     });
     it(".rand", function() {
+      var test;
+
       sc.libs.random.setSeed(0);
-      var test = SCSequenceableCollection.rand.call(
+
+      test = SCSequenceableCollection.rand.call(
         SCArray, $$(5), $.Float(0.0), $.Float(1.0)
       );
       expect(test).to.be.a("SCArray").to.closeTo([
@@ -103,8 +105,11 @@
       ], 1e-6);
     });
     it(".exprand", function() {
+      var test;
+
       sc.libs.random.setSeed(0);
-      var test = SCSequenceableCollection.exprand.call(
+
+      test = SCSequenceableCollection.exprand.call(
         SCArray, $$(5), $$(0.01), $$(1)
       );
       expect(test).to.be.a("SCArray").to.closeTo([
@@ -116,8 +121,11 @@
       ], 1e-6);
     });
     it(".rand2", function() {
+      var test;
+
       sc.libs.random.setSeed(0);
-      var test = SCSequenceableCollection.rand2.call(
+
+      test = SCSequenceableCollection.rand2.call(
         SCArray, $$(5), $.Float(1.0)
       );
       expect(test).to.be.a("SCArray").to.closeTo([
@@ -129,8 +137,11 @@
       ], 1e-6);
     });
     it(".linrand", function() {
+      var test;
+
       sc.libs.random.setSeed(0);
-      var test = SCSequenceableCollection.linrand.call(
+
+      test = SCSequenceableCollection.linrand.call(
         SCArray, $$(5), $.Float(0.0), $.Float(1.0)
       );
       expect(test).to.be.a("SCArray").to.closeTo([
@@ -168,7 +179,9 @@
     it.skip("#+++", function() {
     });
     it("#asSequenceableCollection", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asSequenceableCollection).to.doNothing;
     });
     it("#choose", function() {
@@ -627,9 +640,7 @@
     });
     it("#pairsDo", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$({ value: this.spy() });
+      var $function = $$({ value: this.spy() });
 
       instance = this.createInstance([ 10, 20, 30, 40 ]);
 
@@ -641,9 +652,7 @@
     }));
     it("#keysValuesDo", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance([ 10, 20, 30, 40 ]);
       this.stub(instance, "pairsDo", sc.test.func());
@@ -654,11 +663,7 @@
     }));
     it("#doAdjacentPairs", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$({
-        value: this.spy()
-      });
+      var $function = $$({ value: this.spy() });
 
       instance = this.createInstance([ 10, 20, 30, 40 ]);
 
@@ -727,10 +732,9 @@
       ]);
     });
     it("#curdle", function() {
-      var test, instance, i = 0;
-      var $probability;
-
-      $probability = $$({
+      var test, instance;
+      var i = 0;
+      var $probability = $$({
         coin: function() {
           return $$(i++ === 2);
         }
@@ -941,16 +945,15 @@
     });
     it("#degreeToKey", sinon.test(function() {
       var instance, test;
-      var $scale, $stepsPerOctave, $item1, $item2;
-
-      $scale = $$();
-      $stepsPerOctave = $$();
-      $item1 = sc.test.object({ degreeToKey: this.spy(function() {
+      var $scale = $$();
+      var $stepsPerOctave = $$();
+      var $item1 = sc.test.object({ degreeToKey: this.spy(function() {
         return $item1;
       }) });
-      $item2 = sc.test.object({ degreeToKey: this.spy(function() {
+      var $item2 = sc.test.object({ degreeToKey: this.spy(function() {
         return $item2;
       }) });
+
       instance = this.createInstance([ $item1, $item2 ]);
 
       test = instance.degreeToKey($scale, $stepsPerOctave);
@@ -960,16 +963,15 @@
     }));
     it("#keyToDegree", sinon.test(function() {
       var instance, test;
-      var $scale, $stepsPerOctave, $item1, $item2;
-
-      $scale = $$();
-      $stepsPerOctave = $$();
-      $item1 = sc.test.object({ keyToDegree: this.spy(function() {
+      var $scale = $$();
+      var $stepsPerOctave = $$();
+      var $item1 = sc.test.object({ keyToDegree: this.spy(function() {
         return $item1;
       }) });
-      $item2 = sc.test.object({ keyToDegree: this.spy(function() {
+      var $item2 = sc.test.object({ keyToDegree: this.spy(function() {
         return $item2;
       }) });
+
       instance = this.createInstance([ $item1, $item2 ]);
 
       test = instance.keyToDegree($scale, $stepsPerOctave);
@@ -1116,7 +1118,7 @@
       ]);
     });
 
-    [
+    _.each([
       "neg",
       "bitNot",
       "abs",
@@ -1184,7 +1186,7 @@
       "theta",
       "degrad",
       "raddeg",
-    ].forEach(function(methodName) {
+    ], function(methodName) {
       it("#" + methodName, sinon.test(function() {
         var instance, test;
 
@@ -1199,7 +1201,7 @@
       }));
     });
 
-    [
+    _.each([
       "+",
       "-",
       "*",
@@ -1247,7 +1249,7 @@
       "firstArg",
       "rrand",
       "exprand",
-    ].forEach(function(methodName) {
+    ], function(methodName) {
       it("#" + methodName, sinon.test(function() {
         var instance, test;
         var $aNumber = $$(), $adverb = $$();
@@ -1266,15 +1268,13 @@
 
     it("#performUnaryOp", sinon.test(function() {
       var instance, test;
-      var $elem, $aSelector, $returned;
-
-      $elem = $$({
+      var $elem = $$({
         perform: this.spy(function() {
           return $returned;
         })
       });
-      $aSelector = $$();
-      $returned = $$();
+      var $aSelector = $$();
+      var $returned = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1285,13 +1285,11 @@
     }));
     it("#performBinaryOp", sinon.test(function() {
       var instance, test;
-      var $aSelector, $theOperand, $adverb;
-
-      $aSelector  = $$();
-      $theOperand = $$({
+      var $aSelector  = $$();
+      var $theOperand = $$({
         performBinaryOpOnSeqColl: this.spy(sc.test.func())
       });
-      $adverb = $$();
+      var $adverb = $$();
 
       instance = this.createInstance();
 
@@ -1420,11 +1418,9 @@
     });
     it("#performBinaryOpOnSeqColl.error", function() {
       var instance;
-      var $aSelector, $theOperand, $adverb;
-
-      $aSelector  = $$("\\+");
-      $theOperand = $$();
-      $adverb     = $$("\\error");
+      var $aSelector  = $$("\\+");
+      var $theOperand = $$();
+      var $adverb     = $$("\\error");
 
       instance = this.createInstance();
 
@@ -1434,17 +1430,15 @@
     });
     it("#performBinaryOpOnSimpleNumber", sinon.test(function() {
       var instance, test;
-      var $elem, $aSelector, $aNumber, $adverb, $returned;
-
-      $elem      = $$();
-      $aSelector = $$();
-      $aNumber   = $$({
+      var $elem      = $$();
+      var $aSelector = $$();
+      var $aNumber   = $$({
         perform: this.spy(function() {
           return $returned;
         })
       });
-      $adverb   = $$();
-      $returned = $$();
+      var $adverb   = $$();
+      var $returned = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1455,17 +1449,15 @@
     }));
     it("#performBinaryOpOnComplex", sinon.test(function() {
       var instance, test;
-      var $elem, $aSelector, $aComplex, $adverb, $returned;
-
-      $elem      = $$();
-      $aSelector = $$();
-      $aComplex  = $$({
+      var $elem      = $$();
+      var $aSelector = $$();
+      var $aComplex  = $$({
         perform: this.spy(function() {
           return $returned;
         })
       });
-      $adverb   = $$();
-      $returned = $$();
+      var $adverb   = $$();
+      var $returned = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1476,16 +1468,14 @@
     }));
     it("#asFraction", sinon.test(function() {
       var instance, test;
-      var $elem, $denominator, $fasterBetter, $returned;
-
-      $elem = $$({
+      var $elem = $$({
         asFraction: this.spy(function() {
           return $returned;
         })
       });
-      $denominator  = $$();
-      $fasterBetter = $$();
-      $returned     = $$();
+      var $denominator  = $$();
+      var $fasterBetter = $$();
+      var $returned     = $$();
 
       instance = this.createInstance([ $elem ]);
 
@@ -1526,21 +1516,25 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.multiChannelPerform();
       expect(test).to.be.a("SCArray").to.eql([]);
 
       instance = this.createInstance([ 10, 20, 30 ]);
+
       test = instance.multiChannelPerform(
         $$("\\clip"), $$(15), $$([ 20, 25, 20 ])
       );
       expect(test).to.be.a("SCArray").to.eqls([ 15, 20, 20 ]);
     });
     it("#multichannelExpandRef", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.multichannelExpandRef).to.doNothing;
     });
 
-    [
+    _.each([
       "clip",
       "wrap",
       "fold",
@@ -1569,14 +1563,12 @@
       "blend",
       "checkBadValues",
       "prune",
-    ].forEach(function(methodName) {
+    ], function(methodName) {
       it("#" + methodName, sinon.test(function() {
         var instance, test;
-        var $arg1, $arg2, $arg3;
-
-        $arg1 = $$();
-        $arg2 = $$();
-        $arg3 = $$();
+        var $arg1 = $$();
+        var $arg2 = $$();
+        var $arg3 = $$();
 
         instance = this.createInstance();
         this.stub(instance, "multiChannelPerform", sc.test.func());
@@ -1642,6 +1634,7 @@
       var instance, test;
 
       instance = this.createInstance([ 1, 2, 3, 4, 5 ]);
+
       test = instance.swap($$(1), $$(3));
       expect(test).to.equal(instance)
         .that.is.a("SCArray").and.eqls([ 1, 4, 3, 2, 5 ]);

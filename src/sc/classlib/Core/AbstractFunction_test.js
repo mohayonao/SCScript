@@ -7,9 +7,10 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-  var klass = sc.lang.klass;
-
   var SCFunctionList = $("FunctionList");
+  var $int10 = $$(10);
+  var $int20 = $$(20);
+  var $int5  = $$(5);
 
   describe("SCAbstractFunction", function() {
     before(function() {
@@ -20,81 +21,71 @@
     });
 
     it("#composeUnaryOp", sinon.test(function() {
-      var instance, test, spy;
-      var $aSelector;
-
-      spy = this.spy(sc.test.func());
-      $aSelector = $$();
-      this.stub(klass, "get").withArgs("UnaryOpFunction").returns($$({
-        new: spy
-      }));
+      var instance, test;
+      var $aSelector = $$();
+      var SCUnaryOpFunction$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("UnaryOpFunction").returns($$({
+        new: SCUnaryOpFunction$new
+      }));
 
       test = instance.composeUnaryOp($aSelector);
-      expect(spy).to.be.calledWith($aSelector, instance);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCUnaryOpFunction$new).to.be.calledWith($aSelector, instance);
+      expect(SCUnaryOpFunction$new).to.be.calledLastIn(test);
     }));
     it("#composeBinaryOp", sinon.test(function() {
-      var instance, test, spy;
-      var $aSelector, $something, $adverb;
-
-      spy = this.spy(sc.test.func());
-      $aSelector = $$();
-      $something = $$();
-      $adverb    = $$();
-      this.stub(klass, "get").withArgs("BinaryOpFunction").returns($$({
-        new: spy
-      }));
+      var instance, test;
+      var $aSelector = $$();
+      var $something = $$();
+      var $adverb    = $$();
+      var SCBinaryOpFunction$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
+        new: SCBinaryOpFunction$new
+      }));
 
       test = instance.composeBinaryOp($aSelector, $something, $adverb);
-      expect(spy).to.be.calledWith($aSelector, instance, $something, $adverb);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCBinaryOpFunction$new).to.be.calledWith($aSelector, instance, $something, $adverb);
+      expect(SCBinaryOpFunction$new).to.be.calledLastIn(test);
     }));
     it("#reverseComposeBinaryOp", sinon.test(function() {
-      var instance, test, spy;
-      var $aSelector, $something, $adverb;
-
-      spy = this.spy(sc.test.func());
-      $aSelector = $$();
-      $something = $$();
-      $adverb    = $$();
-      this.stub(klass, "get").withArgs("BinaryOpFunction").returns($$({
-        new: spy
-      }));
+      var instance, test;
+      var $aSelector = $$();
+      var $something = $$();
+      var $adverb    = $$();
+      var SCBinaryOpFunction$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpFunction").returns($$({
+        new: SCBinaryOpFunction$new
+      }));
 
       test = instance.reverseComposeBinaryOp($aSelector, $something, $adverb);
-      expect(spy).to.be.calledWith($aSelector, $something, instance, $adverb);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCBinaryOpFunction$new).to.be.calledWith($aSelector, $something, instance, $adverb);
+      expect(SCBinaryOpFunction$new).to.be.calledLastIn(test);
     }));
     it("#composeNAryOp", sinon.test(function() {
-      var instance, test, spy;
-      var $aSelector, $anArgList;
-
-      spy = this.spy(sc.test.func());
-      $aSelector = $$();
-      $anArgList = $$();
-      this.stub(klass, "get").withArgs("NAryOpFunction").returns($$({
-        new: spy
-      }));
+      var instance, test;
+      var $aSelector = $$();
+      var $anArgList = $$();
+      var SCNAryOpFunction$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("NAryOpFunction").returns($$({
+        new: SCNAryOpFunction$new
+      }));
 
       test = instance.composeNAryOp($aSelector, $anArgList);
-      expect(spy).to.be.calledWith($aSelector, instance, $anArgList);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCNAryOpFunction$new).to.be.calledWith($aSelector, instance, $anArgList);
+      expect(SCNAryOpFunction$new).to.be.calledLastIn(test);
     }));
     it("#performBinaryOpOnSimpleNumber", sinon.test(function() {
       var instance, test;
-      var $aSelector, $aNumber, $adverb;
-
-      $aSelector = $$();
-      $aNumber   = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $aNumber   = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func());
@@ -105,11 +96,9 @@
     }));
     it("#performBinaryOpOnSignal", sinon.test(function() {
       var instance, test;
-      var $aSelector, $aSignal, $adverb;
-
-      $aSelector = $$();
-      $aSignal   = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $aSignal   = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func());
@@ -120,11 +109,9 @@
     }));
     it("#performBinaryOpOnComplex", sinon.test(function() {
       var instance, test;
-      var $aSelector, $aComplex, $adverb;
-
-      $aSelector = $$();
-      $aComplex  = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $aComplex  = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func());
@@ -135,11 +122,9 @@
     }));
     it("#performBinaryOpOnSeqColl", sinon.test(function() {
       var instance, test;
-      var $aSelector, $aSeqColl, $adverb;
-
-      $aSelector = $$();
-      $aSeqColl  = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $aSeqColl  = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reverseComposeBinaryOp", sc.test.func());
@@ -149,7 +134,7 @@
       expect(instance.reverseComposeBinaryOp).to.be.calledLastIn(test);
     }));
 
-    [
+    _.each([
       "neg",
       "reciprocal",
       "bitNot",
@@ -210,7 +195,7 @@
       // "ref",
       "degrad",
       "raddeg",
-    ].forEach(function(methodName) {
+    ], function(methodName) {
       it("#" + methodName, sinon.test(function() {
         var instance, test;
 
@@ -234,7 +219,7 @@
       expect(instance.composeUnaryOp).to.be.calledLastIn(test);
     }));
 
-    [
+    _.each([
       "+",
       "-",
       "*",
@@ -288,13 +273,11 @@
       "&&",
       "xor",
       "nand",
-    ].forEach(function(methodName) {
+    ], function(methodName) {
       it("#" + methodName, sinon.test(function() {
         var instance, test;
-        var $function, $adverb;
-
-        $function = $$();
-        $adverb   = $$();
+        var $function = $$();
+        var $adverb   = $$();
 
         instance = this.createInstance();
         this.stub(instance, "composeBinaryOp", sc.test.func());
@@ -308,9 +291,7 @@
     });
     it("#rotate", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeBinaryOp", sc.test.func());
@@ -323,9 +304,7 @@
     }));
     it("#dist", sinon.test(function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeBinaryOp", sc.test.func());
@@ -337,7 +316,9 @@
       expect(instance.composeBinaryOp).to.be.calledLastIn(test);
     }));
     it("#real", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.real).to.doNothing;
     });
     it("#imag", function() {
@@ -347,10 +328,8 @@
     });
     it("#clip", sinon.test(function() {
       var instance, test;
-      var $lo, $hi;
-
-      $lo = $$();
-      $hi = $$();
+      var $lo = $$();
+      var $hi = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -363,10 +342,8 @@
     }));
     it("#wrap", sinon.test(function() {
       var instance, test;
-      var $lo, $hi;
-
-      $lo = $$();
-      $hi = $$();
+      var $lo = $$();
+      var $hi = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -379,10 +356,8 @@
     }));
     it("#fold", sinon.test(function() {
       var instance, test;
-      var $lo, $hi;
-
-      $lo = $$();
-      $hi = $$();
+      var $lo = $$();
+      var $hi = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -395,10 +370,8 @@
     }));
     it("#blend", sinon.test(function() {
       var instance, test;
-      var $that, $blendFrac;
-
-      $that      = $$();
-      $blendFrac = $$();
+      var $that      = $$();
+      var $blendFrac = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -411,13 +384,11 @@
     }));
     it("#linlin", sinon.test(function() {
       var instance, test;
-      var $inMin, $inMax, $outMin, $outMax, $clip;
-
-      $inMin  = $$();
-      $inMax  = $$();
-      $outMin = $$();
-      $outMax = $$();
-      $clip   = $$();
+      var $inMin  = $$();
+      var $inMax  = $$();
+      var $outMin = $$();
+      var $outMax = $$();
+      var $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -430,13 +401,11 @@
     }));
     it("#linexp", sinon.test(function() {
       var instance, test;
-      var $inMin, $inMax, $outMin, $outMax, $clip;
-
-      $inMin  = $$();
-      $inMax  = $$();
-      $outMin = $$();
-      $outMax = $$();
-      $clip   = $$();
+      var $inMin  = $$();
+      var $inMax  = $$();
+      var $outMin = $$();
+      var $outMax = $$();
+      var $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -449,13 +418,11 @@
     }));
     it("#explin", sinon.test(function() {
       var instance, test;
-      var $inMin, $inMax, $outMin, $outMax, $clip;
-
-      $inMin  = $$();
-      $inMax  = $$();
-      $outMin = $$();
-      $outMax = $$();
-      $clip   = $$();
+      var $inMin  = $$();
+      var $inMax  = $$();
+      var $outMin = $$();
+      var $outMax = $$();
+      var $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -468,13 +435,11 @@
     }));
     it("#expexp", sinon.test(function() {
       var instance, test;
-      var $inMin, $inMax, $outMin, $outMax, $clip;
-
-      $inMin  = $$();
-      $inMax  = $$();
-      $outMin = $$();
-      $outMax = $$();
-      $clip   = $$();
+      var $inMin  = $$();
+      var $inMax  = $$();
+      var $outMin = $$();
+      var $outMax = $$();
+      var $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -487,14 +452,12 @@
     }));
     it("#lincurve", sinon.test(function() {
       var instance, test;
-      var $inMin, $inMax, $outMin, $outMax, $curve, $clip;
-
-      $inMin  = $$();
-      $inMax  = $$();
-      $outMin = $$();
-      $outMax = $$();
-      $curve  = $$();
-      $clip   = $$();
+      var $inMin  = $$();
+      var $inMax  = $$();
+      var $outMin = $$();
+      var $outMax = $$();
+      var $curve  = $$();
+      var $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -507,14 +470,12 @@
     }));
     it("#curvelin", sinon.test(function() {
       var instance, test;
-      var $inMin, $inMax, $outMin, $outMax, $curve, $clip;
-
-      $inMin  = $$();
-      $inMax  = $$();
-      $outMin = $$();
-      $outMax = $$();
-      $curve  = $$();
-      $clip   = $$();
+      var $inMin  = $$();
+      var $inMax  = $$();
+      var $outMin = $$();
+      var $outMax = $$();
+      var $curve  = $$();
+      var $clip   = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -527,15 +488,13 @@
     }));
     it("#bilin", sinon.test(function() {
       var instance, test;
-      var $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip;
-
-      $inCenter  = $$();
-      $inMin     = $$();
-      $inMax     = $$();
-      $outCenter = $$();
-      $outMin    = $$();
-      $outMax    = $$();
-      $clip      = $$();
+      var $inCenter  = $$();
+      var $inMin     = $$();
+      var $inMax     = $$();
+      var $outCenter = $$();
+      var $outMin    = $$();
+      var $outMax    = $$();
+      var $clip      = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -548,15 +507,13 @@
     }));
     it("#biexp", sinon.test(function() {
       var instance, test;
-      var $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip;
-
-      $inCenter  = $$();
-      $inMin     = $$();
-      $inMax     = $$();
-      $outCenter = $$();
-      $outMin    = $$();
-      $outMax    = $$();
-      $clip      = $$();
+      var $inCenter  = $$();
+      var $inMin     = $$();
+      var $inMax     = $$();
+      var $outCenter = $$();
+      var $outMin    = $$();
+      var $outMax    = $$();
+      var $clip      = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -569,10 +526,8 @@
     }));
     it("#moddif", sinon.test(function() {
       var instance, test;
-      var $function, $mod;
-
-      $function = $$();
-      $mod      = $$();
+      var $function = $$();
+      var $mod      = $$();
 
       instance = this.createInstance();
       this.stub(instance, "composeNAryOp", sc.test.func());
@@ -599,10 +554,8 @@
     }));
     it("#applyTo", sinon.test(function() {
       var instance, test;
-      var $arg1, $arg2;
-
-      $arg1 = $$();
-      $arg2 = $$();
+      var $arg1 = $$();
+      var $arg2 = $$();
 
       instance = this.createInstance();
       this.stub(instance, "value", sc.test.func());
@@ -617,9 +570,7 @@
     });
     it("#asUGenInput", sinon.test(function() {
       var instance, test;
-      var $for;
-
-      $for = $$();
+      var $for = $$();
 
       instance = this.createInstance();
       this.stub(instance, "value", sc.test.func());
@@ -629,34 +580,34 @@
       expect(instance.value).to.be.calledLastIn(test);
     }));
     it("#asAudioRateInput", sinon.test(function() {
-      var instance, test, spy, rate;
-      var $result;
-
-      spy = this.spy(sc.test.func());
-      $result = $$({
+      var instance, test;
+      var $result = $$({
         rate: function() {
           return $.Symbol(rate);
         }
       });
-      this.stub(klass, "get").withArgs("K2A").returns($$({
-        ar: spy
-      }));
+      var SCK2A$ar = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("K2A").returns($$({
+        ar: SCK2A$ar
+      }));
       this.stub(instance, "value", function() {
         return $result;
       });
 
+      var rate;
+
       rate = "audio";
       test = instance.asAudioRateInput();
       expect(test).to.equal($result);
-      expect(spy).to.be.not.called;
-      spy.reset();
+      expect(SCK2A$ar).to.be.not.called;
+      SCK2A$ar.reset();
 
       rate = "control";
       test = instance.asAudioRateInput();
-      expect(spy).to.be.calledWith($result);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCK2A$ar).to.be.calledWith($result);
+      expect(SCK2A$ar).to.be.calledLastIn(test);
     }));
     it("#asControlInput", sinon.test(function() {
       var instance, test;
@@ -774,10 +725,8 @@
     });
     it("#functionPerformList", sinon.test(function() {
       var test, instance;
-      var $selector, $arglist;
-
-      $selector = $$();
-      $arglist  = $$();
+      var $selector = $$();
+      var $arglist  = $$();
 
       instance = this.createInstance("{|a, b| a * b} * -1");
       this.stub(instance, "performList", sc.test.func());
@@ -823,10 +772,8 @@
     });
     it("#functionPerformList", sinon.test(function() {
       var test, instance;
-      var $selector, $arglist;
-
-      $selector = $$();
-      $arglist  = $$();
+      var $selector = $$();
+      var $arglist  = $$();
 
       instance = this.createInstance("{|a, b| a + b}.wrap(-199, 20)");
       this.stub(instance, "performList", sc.test.func());
@@ -838,7 +785,6 @@
   });
 
   describe("SCFunctionList", function() {
-    var $int10, $int20, $int5;
     before(function() {
       this.createInstance = function() {
         var instance = SCFunctionList.new($$([
@@ -857,9 +803,6 @@
         ]));
         return instance;
       };
-      $int10 = $$(10);
-      $int20 = $$(20);
-      $int5  = $$(5);
     });
     describe("operate function list", function() {
       var instance;
@@ -913,7 +856,9 @@
       });
     });
     it("#addFunc.failed", function() {
-      var instance = this.createInstance().flop();
+      var instance;
+
+      instance = this.createInstance().flop();
       expect(function() {
         instance.addFunc();
       }).to.throw("cannot add a function to a flopped FunctionList");
@@ -969,28 +914,27 @@
     it.skip("#valueArrayEnvir", function() {
     });
     it("#do", sinon.test(function() {
-      var instance, test, spy;
-      var $elem1, $elem2, $function;
-
-      spy = this.spy();
-      $elem1 = $$();
-      $elem2 = $$();
-      $function = $$(spy);
+      var instance, test;
+      var $elem1 = $$();
+      var $elem2 = $$();
+      var func = this.spy();
+      var $function = $$(func);
 
       instance = this.createInstance();
       instance.array_($$([ $elem1, $elem2 ]));
 
       test = instance.do($function);
       expect(test).to.equal(instance);
-      expect(spy).to.callCount(2);
-      expect(spy.args[0]).to.eql($$([ $elem1, 0 ])._);
-      expect(spy.args[1]).to.eql($$([ $elem2, 1 ])._);
+      expect(func).to.callCount(2);
+      expect(func.args[0]).to.eql($$([ $elem1, 0 ])._);
+      expect(func.args[1]).to.eql($$([ $elem2, 1 ])._);
     }));
     it("#flop", function() {
       var instance, test;
       var $array;
 
       instance = this.createInstance();
+
       $array = instance.array();
       expect(instance.flopped()).to.be.a("SCBoolean").that.is.false;
 
@@ -1013,7 +957,6 @@
       instance = this.createInstance();
 
       test = instance.storeArgs();
-
       expect(test).to.be.a("SCArray").that.eqls([
         instance._$array.valueOf()
       ]);

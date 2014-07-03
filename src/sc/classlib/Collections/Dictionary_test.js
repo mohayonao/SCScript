@@ -7,7 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-
   var SCDictionary = $("Dictionary");
   var SCIdentityDictionary = $("IdentityDictionary");
   var SCSet = $("Set");
@@ -24,6 +23,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });
@@ -280,18 +280,16 @@
     });
     it("#keysValuesDo", sinon.test(function() {
       var instance, test;
-      var spy, $function;
-
-      spy = this.spy();
-      $function = $$(spy);
+      var func = this.spy();
+      var $function = $$(func);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
       test = instance.keysValuesDo($function);
       expect(test).to.equal(instance);
-      expect(spy).to.callCount(2);
-      expect(spy.args[0]).to.eql($$([ 1, 2, 0 ])._);
-      expect(spy.args[1]).to.eql($$([ 3, 4, 1 ])._);
+      expect(func).to.callCount(2);
+      expect(func.args[0]).to.eql($$([ 1, 2, 0 ])._);
+      expect(func.args[1]).to.eql($$([ 3, 4, 1 ])._);
     }));
     it("#keysValuesChange", function() {
       testCase(this, [
@@ -307,67 +305,55 @@
     });
     it("#do", sinon.test(function() {
       var instance, test;
-      var spy, $function;
-
-      spy = this.spy();
-      $function = $$(spy);
+      var func = this.spy();
+      var $function = $$(func);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
       test = instance.do($function);
       expect(test).to.equal(instance);
-
-      expect(spy).to.callCount(2);
-      expect(spy.args[0]).to.eql($$([ 2, 0 ])._);
-      expect(spy.args[1]).to.eql($$([ 4, 1 ])._);
+      expect(func).to.callCount(2);
+      expect(func.args[0]).to.eql($$([ 2, 0 ])._);
+      expect(func.args[1]).to.eql($$([ 4, 1 ])._);
     }));
     it("#keysDo", sinon.test(function() {
       var instance, test;
-      var spy, $function;
-
-      spy = this.spy();
-      $function = $$(spy);
+      var func = this.spy();
+      var $function = $$(func);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
       test = instance.keysDo($function);
       expect(test).to.equal(instance);
-
-      expect(spy).to.callCount(2);
-      expect(spy.args[0]).to.eql($$([ 1, 0 ])._);
-      expect(spy.args[1]).to.eql($$([ 3, 1 ])._);
+      expect(func).to.callCount(2);
+      expect(func.args[0]).to.eql($$([ 1, 0 ])._);
+      expect(func.args[1]).to.eql($$([ 3, 1 ])._);
     }));
     it("#associationsDo", sinon.test(function() {
       var instance, test;
-      var spy, $function;
-
-      spy = this.spy();
-      $function = $$(spy);
+      var func = this.spy();
+      var $function = $$(func);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
       test = instance.associationsDo($function);
       expect(test).to.equal(instance);
-
-      expect(spy).to.callCount(2);
-      expect(spy.args[0]).to.eql($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
-      expect(spy.args[1]).to.eql($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
+      expect(func).to.callCount(2);
+      expect(func.args[0]).to.eql($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
+      expect(func.args[1]).to.eql($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
     }));
     it("#pairsDo", sinon.test(function() {
       var instance, test;
-      var spy, $function;
-
-      spy = this.spy();
-      $function = $$(spy);
+      var func = this.spy();
+      var $function = $$(func);
 
       instance = this.createInstance([ 1, 2, 3, 4 ]);
 
       test = instance.pairsDo($function);
       expect(test).to.equal(instance);
-
-      expect(spy).to.callCount(2);
-      expect(spy.args[0]).to.eql($$([ 1, 2, 0 ])._);
-      expect(spy.args[1]).to.eql($$([ 3, 4, 1 ])._);
+      expect(func).to.callCount(2);
+      expect(func.args[0]).to.eql($$([ 1, 2, 0 ])._);
+      expect(func.args[1]).to.eql($$([ 3, 4, 1 ])._);
     }));
     it("#collect", function() {
       testCase(this, [
@@ -468,11 +454,9 @@
     });
     it("#sortedKeysValuesDo", sinon.test(function() {
       var instance, test;
-      var spy, $function, $sortFunc;
-
-      spy = this.spy();
-      $function = $$(spy);
-      $sortFunc = $$(function($a, $b) {
+      var func = this.spy();
+      var $function = $$(func);
+      var $sortFunc = $$(function($a, $b) {
         return $b ["<="] ($a);
       });
 
@@ -480,10 +464,9 @@
 
       test = instance.sortedKeysValuesDo($function, $sortFunc);
       expect(test).to.equal(instance);
-
-      expect(spy).to.callCount(2);
-      expect(spy.args[0]).to.eql($$([ 3, 4, 0 ])._);
-      expect(spy.args[1]).to.eql($$([ 1, 2, 1 ])._);
+      expect(func).to.callCount(2);
+      expect(func.args[0]).to.eql($$([ 3, 4, 0 ])._);
+      expect(func.args[1]).to.eql($$([ 1, 2, 1 ])._);
     }));
     it("#choose", function() {
       testCase(this, [
@@ -531,15 +514,13 @@
     });
     it("#transformEvent", sinon.test(function() {
       var instance, test;
-      var $event;
-
-      $event = $$({
+      var $event = $$({
         putAll: this.spy(sc.test.func())
       });
 
       instance = this.createInstance();
-      test = instance.transformEvent($event);
 
+      test = instance.transformEvent($event);
       expect($event.putAll).to.be.calledWith(instance);
       expect($event.putAll).to.be.calledLastIn(test);
     }));
@@ -565,6 +546,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.eqls({});
     });

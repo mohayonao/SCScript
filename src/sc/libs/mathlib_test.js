@@ -7,37 +7,39 @@
   var mathlib = sc.libs.mathlib;
   var strlib  = sc.libs.strlib;
 
-  describe("sc.libs.mathlib", function() {
-    function testCase(context, cases, opts) {
-      var methodName = context.test.title;
-      opts = opts || {};
+  function isInfinity(num) {
+    return Math.abs(num) === Infinity;
+  }
 
-      if (typeof opts.randSeed === "number") {
-        sc.libs.random.setSeed(opts.randSeed);
-      }
+  function testCase(context, cases, opts) {
+    opts = opts || {};
 
-      cases.forEach(function(items) {
-        var expected, actual;
-        var desc;
+    var methodName = context.test.title;
 
-        expected = items.pop();
-        actual = mathlib[methodName].apply(null, items);
-
-        desc = strlib.format("#{0}(#{1})", methodName, "" + items);
-
-        if (opts.closeTo) {
-          if (isFinite(actual)) {
-            expect(actual).withMessage(desc).to.be.closeTo(expected, opts.closeTo);
-          } else if (isNaN(actual)) {
-            expect(actual).withMessage(desc).to.be.nan;
-          } else {
-            expect(actual).withMessage(desc).to.equal(expected);
-          }
-        } else {
-          expect(actual).withMessage(desc).to.equal(expected);
-        }
-      });
+    if (typeof opts.randSeed === "number") {
+      sc.libs.random.setSeed(opts.randSeed);
     }
+
+    _.each(cases, function(items) {
+      var expected = items.pop();
+      var actual = mathlib[methodName].apply(null, items);
+      var expects = expect(
+        actual, strlib.format("#{0}(#{1})", methodName, items)
+      );
+
+      if (isNaN(expected)) {
+        expects.to.be.NaN;
+      } else if (isInfinity(expected)) {
+        expects.to.equal(expected);
+      } else if (opts.closeTo) {
+        expects.to.be.closeTo(expected, opts.closeTo);
+      } else {
+        expects.to.equal(expected);
+      }
+    });
+  }
+
+  describe("sc.libs.mathlib", function() {
     it("rand", function() {
       testCase(this, [
         [ 1.0, 0.85755145549774 ],

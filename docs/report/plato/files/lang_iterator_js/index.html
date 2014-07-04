@@ -45,7 +45,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">127.01</p>
+      <p class="stat">127.29</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">85.11</p>
+      <p class="stat">83.52</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.95</p>
+      <p class="stat">2.86</p>
     </div>
   </div>
 </div>
@@ -93,7 +93,7 @@
     <textarea id="file-source" class="col-md-12">(function(sc) {
   &quot;use strict&quot;;
 
-  require(&quot;./sc&quot;);
+  require(&quot;./lang&quot;);
   require(&quot;./dollar&quot;);
   require(&quot;./klass/utils&quot;);
 
@@ -172,7 +172,7 @@
     return iter;
   };
 
-  var sc$incremental$iter = function($start, $end, $step) {
+  function sc$incremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -188,9 +188,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var sc$decremental$iter = function($start, $end, $step) {
+  function sc$decremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -206,9 +206,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var sc$numeric$iter = function($start, $end, $step) {
+  function sc$numeric$iter($start, $end, $step) {
     if ($start.valueOf() === $end.valueOf()) {
       return once$iter($start);
     } else if ($start &lt; $end &amp;&amp; $step &gt; 0) {
@@ -217,7 +217,7 @@
       return sc$decremental$iter($start, $end, $step);
     }
     return nop$iter;
-  };
+  }
 
   iterator.number$do = function($end) {
     var $start, $step;
@@ -259,7 +259,7 @@
     return sc$numeric$iter($start, $last, $step);
   };
 
-  var js$incremental$iter = function(start, end, step, type) {
+  function js$incremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -275,9 +275,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var js$decremental$iter = function(start, end, step, type) {
+  function js$decremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -293,9 +293,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var js$numeric$iter = function(start, end, step, type) {
+  function js$numeric$iter(start, end, step, type) {
     if (start === end) {
       return once$iter(type(start));
     } else if (start &lt; end &amp;&amp; step &gt; 0) {
@@ -304,43 +304,43 @@
       return js$decremental$iter(start, end, step, type);
     }
     return nop$iter;
-  };
+  }
 
-  var js$numeric$iter$do = function($endval, type) {
+  function js$numeric$iter$do($endval, type) {
     var end = type($endval.__num__()).valueOf();
     return js$numeric$iter(0, end - 1, +1, type);
-  };
+  }
 
-  var js$numeric$iter$reverseDo = function($startval, type) {
+  function js$numeric$iter$reverseDo($startval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = (start|0) - start;
     return js$numeric$iter(start - 1, end, -1, type);
-  };
+  }
 
-  var js$numeric$iter$for = function($startval, $endval, type) {
+  function js$numeric$iter$for($startval, $endval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = (start &lt;= end) ? +1 : -1;
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
-  var js$numeric$iter$forBy = function($startval, $endval, $stepval, type) {
+  function js$numeric$iter$forBy($startval, $endval, $stepval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = type($stepval .__num__()).valueOf();
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
-  var js$numeric$iter$forSeries = function($startval, $second, $last, type) {
+  function js$numeric$iter$forSeries($startval, $second, $last, type) {
     var start  = type($startval.__num__()).valueOf();
     var second = type($second  .__num__()).valueOf();
     var end    = type($last    .__num__()).valueOf();
     var step = second - start;
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
   iterator.integer$do = function($endval) {
     return js$numeric$iter$do($endval, $.Integer);
@@ -382,7 +382,7 @@
     return js$numeric$iter$forSeries($startval, $second, $last, $.Float);
   };
 
-  var list$iter = function(list) {
+  function list$iter(list) {
     var i = 0, iter = {
       hasNext: true,
       next: function() {
@@ -397,14 +397,14 @@
       }
     };
     return iter;
-  };
+  }
 
-  var js$array$iter = function(list) {
+  function js$array$iter(list) {
     if (list.length) {
       return list$iter(list);
     }
     return nop$iter;
-  };
+  }
 
   iterator.array$do = function($array) {
     return js$array$iter($array._.slice());

@@ -1,47 +1,10 @@
 (function(global) {
 "use strict";
-var sc = { VERSION: "0.0.66" };
+var sc = { VERSION: "0.0.67" };
 
-// src/sc/sc.js
+// src/sc/libs/libs.js
 (function(sc) {
-  sc.lang = {};
   sc.libs = {};
-  sc.config = {};
-
-  function SCScript(fn) {
-    return sc.lang.main.run(fn);
-  }
-
-  SCScript.VERSION = sc.VERSION;
-
-  SCScript.install = function(installer) {
-    installer(sc);
-    return SCScript;
-  };
-
-  SCScript.stdout = function(msg) {
-    console.log(msg);
-    return SCScript;
-  };
-
-  SCScript.stderr = function(msg) {
-    console.error(msg);
-    return SCScript;
-  };
-
-  SCScript.tokenize = function(source, opts) {
-    return sc.lang.compiler.tokenize(source, opts);
-  };
-
-  SCScript.parse = function(source, opts) {
-    return sc.lang.compiler.parse(source, opts);
-  };
-
-  SCScript.compile = function(source, opts) {
-    return sc.lang.compiler.compile(source, opts);
-  };
-
-  global.SCScript = sc.SCScript = SCScript;
 })(sc);
 
 // src/sc/libs/strlib.js
@@ -550,7 +513,7 @@ var sc = { VERSION: "0.0.66" };
 // src/sc/libs/extend.js
 (function(sc) {
 
-  function extend(child, parent) {
+  var extend = function(child, parent) {
     var ctor = function() {
       this.constructor = child;
     };
@@ -559,9 +522,53 @@ var sc = { VERSION: "0.0.66" };
     child.prototype = new ctor();
     /* jshint newcap: true */
     return child;
-  }
+  };
 
   sc.libs.extend = extend;
+})(sc);
+
+// src/sc/scscript.js
+(function(sc) {
+  function SCScript(fn) {
+    return sc.lang.main.run(fn);
+  }
+
+  SCScript.VERSION = sc.VERSION;
+
+  SCScript.install = function(installer) {
+    installer(sc);
+    return SCScript;
+  };
+
+  SCScript.stdout = function(msg) {
+    console.log(msg);
+    return SCScript;
+  };
+
+  SCScript.stderr = function(msg) {
+    console.error(msg);
+    return SCScript;
+  };
+
+  SCScript.tokenize = function(source, opts) {
+    return sc.lang.compiler.tokenize(source, opts);
+  };
+
+  SCScript.parse = function(source, opts) {
+    return sc.lang.compiler.parse(source, opts);
+  };
+
+  SCScript.compile = function(source, opts) {
+    return sc.lang.compiler.compile(source, opts);
+  };
+
+  global.SCScript = sc.SCScript = SCScript;
+})(sc);
+
+// src/sc/lang/lang.js
+(function(sc) {
+
+  sc.lang = {};
 })(sc);
 
 // src/sc/lang/dollar.js
@@ -663,46 +670,6 @@ var sc = { VERSION: "0.0.66" };
   var slice = [].slice;
   var $ = sc.lang.$;
 
-  var _getDefaultValue = function(value) {
-    var ch;
-
-    switch (value) {
-    case "nil":
-      return $.Nil();
-    case "true":
-      return $.True();
-    case "false":
-      return $.False();
-    case "inf":
-      return $.Float(Infinity);
-    case "-inf":
-      return $.Float(-Infinity);
-    }
-
-    ch = value.charAt(0);
-    switch (ch) {
-    case "$":
-      return $.Char(value.charAt(1));
-    case "\\":
-      return $.Symbol(value.substr(1));
-    }
-
-    if (value.indexOf(".") !== -1) {
-      return $.Float(+value);
-    }
-
-    return $.Integer(+value);
-  };
-
-  var getDefaultValue = function(value) {
-    if (value.charAt(0) === "[") {
-      return $.Array(value.slice(1, -2).split(",").map(function(value) {
-        return _getDefaultValue(value.trim());
-      }));
-    }
-    return _getDefaultValue(value);
-  };
-
   var fn = function(func, def) {
     var argItems, argNames, argVals;
     var remain, wrapper;
@@ -750,26 +717,66 @@ var sc = { VERSION: "0.0.66" };
     return wrapper;
   };
 
-  var isDictionary = function(obj) {
+  function isDictionary(obj) {
     return !!(obj && obj.constructor === Object);
-  };
+  }
 
-  var copy = function(args, given, length) {
+  function copy(args, given, length) {
     for (var i = 0; i < length; ++i) {
       if (given[i]) {
         args[i] = given[i];
       }
     }
-  };
+  }
 
-  var setKeywordArguments = function(args, argNames, dict) {
+  function _getDefaultValue(value) {
+    var ch;
+
+    switch (value) {
+    case "nil":
+      return $.Nil();
+    case "true":
+      return $.True();
+    case "false":
+      return $.False();
+    case "inf":
+      return $.Float(Infinity);
+    case "-inf":
+      return $.Float(-Infinity);
+    }
+
+    ch = value.charAt(0);
+    switch (ch) {
+    case "$":
+      return $.Char(value.charAt(1));
+    case "\\":
+      return $.Symbol(value.substr(1));
+    }
+
+    if (value.indexOf(".") !== -1) {
+      return $.Float(+value);
+    }
+
+    return $.Integer(+value);
+  }
+
+  function getDefaultValue(value) {
+    if (value.charAt(0) === "[") {
+      return $.Array(value.slice(1, -2).split(",").map(function(value) {
+        return _getDefaultValue(value.trim());
+      }));
+    }
+    return _getDefaultValue(value);
+  }
+
+  function setKeywordArguments(args, argNames, dict) {
     Object.keys(dict).forEach(function(key) {
       var index = argNames.indexOf(key);
       if (index !== -1) {
         args[index] = dict[key];
       }
     });
-  };
+  }
 
   sc.lang.fn = fn;
 })(sc);
@@ -1775,7 +1782,7 @@ var sc = { VERSION: "0.0.66" };
     return iter;
   };
 
-  var sc$incremental$iter = function($start, $end, $step) {
+  function sc$incremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -1791,9 +1798,9 @@ var sc = { VERSION: "0.0.66" };
       }
     };
     return iter;
-  };
+  }
 
-  var sc$decremental$iter = function($start, $end, $step) {
+  function sc$decremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -1809,9 +1816,9 @@ var sc = { VERSION: "0.0.66" };
       }
     };
     return iter;
-  };
+  }
 
-  var sc$numeric$iter = function($start, $end, $step) {
+  function sc$numeric$iter($start, $end, $step) {
     if ($start.valueOf() === $end.valueOf()) {
       return once$iter($start);
     } else if ($start < $end && $step > 0) {
@@ -1820,7 +1827,7 @@ var sc = { VERSION: "0.0.66" };
       return sc$decremental$iter($start, $end, $step);
     }
     return nop$iter;
-  };
+  }
 
   iterator.number$do = function($end) {
     var $start, $step;
@@ -1862,7 +1869,7 @@ var sc = { VERSION: "0.0.66" };
     return sc$numeric$iter($start, $last, $step);
   };
 
-  var js$incremental$iter = function(start, end, step, type) {
+  function js$incremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -1878,9 +1885,9 @@ var sc = { VERSION: "0.0.66" };
       }
     };
     return iter;
-  };
+  }
 
-  var js$decremental$iter = function(start, end, step, type) {
+  function js$decremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -1896,9 +1903,9 @@ var sc = { VERSION: "0.0.66" };
       }
     };
     return iter;
-  };
+  }
 
-  var js$numeric$iter = function(start, end, step, type) {
+  function js$numeric$iter(start, end, step, type) {
     if (start === end) {
       return once$iter(type(start));
     } else if (start < end && step > 0) {
@@ -1907,43 +1914,43 @@ var sc = { VERSION: "0.0.66" };
       return js$decremental$iter(start, end, step, type);
     }
     return nop$iter;
-  };
+  }
 
-  var js$numeric$iter$do = function($endval, type) {
+  function js$numeric$iter$do($endval, type) {
     var end = type($endval.__num__()).valueOf();
     return js$numeric$iter(0, end - 1, +1, type);
-  };
+  }
 
-  var js$numeric$iter$reverseDo = function($startval, type) {
+  function js$numeric$iter$reverseDo($startval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = (start|0) - start;
     return js$numeric$iter(start - 1, end, -1, type);
-  };
+  }
 
-  var js$numeric$iter$for = function($startval, $endval, type) {
+  function js$numeric$iter$for($startval, $endval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = (start <= end) ? +1 : -1;
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
-  var js$numeric$iter$forBy = function($startval, $endval, $stepval, type) {
+  function js$numeric$iter$forBy($startval, $endval, $stepval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = type($stepval .__num__()).valueOf();
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
-  var js$numeric$iter$forSeries = function($startval, $second, $last, type) {
+  function js$numeric$iter$forSeries($startval, $second, $last, type) {
     var start  = type($startval.__num__()).valueOf();
     var second = type($second  .__num__()).valueOf();
     var end    = type($last    .__num__()).valueOf();
     var step = second - start;
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
   iterator.integer$do = function($endval) {
     return js$numeric$iter$do($endval, $.Integer);
@@ -1985,7 +1992,7 @@ var sc = { VERSION: "0.0.66" };
     return js$numeric$iter$forSeries($startval, $second, $last, $.Float);
   };
 
-  var list$iter = function(list) {
+  function list$iter(list) {
     var i = 0, iter = {
       hasNext: true,
       next: function() {
@@ -2000,14 +2007,14 @@ var sc = { VERSION: "0.0.66" };
       }
     };
     return iter;
-  };
+  }
 
-  var js$array$iter = function(list) {
+  function js$array$iter(list) {
     if (list.length) {
       return list$iter(list);
     }
     return nop$iter;
-  };
+  }
 
   iterator.array$do = function($array) {
     return js$array$iter($array._.slice());
@@ -3228,461 +3235,6 @@ var sc = { VERSION: "0.0.66" };
   sc.lang.compiler.Node = Node;
 })(sc);
 
-// src/sc/lang/compiler/lexer/comment.js
-(function(sc) {
-
-  var Token = sc.lang.compiler.Token;
-
-  function CommentLexer(source, index) {
-    this.source = source;
-    this.index = index;
-  }
-
-  CommentLexer.prototype.scan = function() {
-    var source = this.source;
-    var index = this.index;
-    var op = source.charAt(index) + source.charAt(index + 1);
-    if (op === "//") {
-      return this.scanSingleLineComment();
-    }
-    if (op === "/*") {
-      return this.scanMultiLineComment();
-    }
-  };
-
-  CommentLexer.prototype.scanSingleLineComment = function() {
-    var source = this.source;
-    var index = this.index;
-    var length = source.length;
-
-    var value = "";
-    var line = 0;
-    while (index < length) {
-      var ch = source.charAt(index++);
-      value += ch;
-      if (ch === "\n") {
-        line = 1;
-        break;
-      }
-    }
-
-    return makeCommentToken(Token.SingleLineComment, value, line);
-  };
-
-  CommentLexer.prototype.scanMultiLineComment = function() {
-    var source = this.source;
-    var index = this.index;
-    var length = source.length;
-
-    var value = "";
-    var line = 0, depth = 0;
-    while (index < length) {
-      var ch1 = source.charAt(index);
-      var ch2 = source.charAt(index + 1);
-      value += ch1;
-
-      if (ch1 === "\n") {
-        line += 1;
-      } else if (ch1 === "/" && ch2 === "*") {
-        depth += 1;
-        index += 1;
-        value += ch2;
-      } else if (ch1 === "*" && ch2 === "/") {
-        depth -= 1;
-        index += 1;
-        value += ch2;
-        if (depth === 0) {
-          return makeCommentToken(Token.MultiLineComment, value, line);
-        }
-      }
-
-      index += 1;
-    }
-
-    return { error: true, value: "ILLEGAL", length: length, line: line };
-  };
-
-  function makeCommentToken(type, value, line) {
-    return {
-      type: type,
-      value: value,
-      length: value.length,
-      line: line|0
-    };
-  }
-
-  sc.lang.compiler.lexComment = function(source, index) {
-    return new CommentLexer(source, index).scan();
-  };
-})(sc);
-
-// src/sc/lang/compiler/lexer/punctuator.js
-(function(sc) {
-
-  var Token = sc.lang.compiler.Token;
-
-  function PunctuatorLexer(source, index) {
-    this.source = source;
-    this.index = index;
-  }
-
-  var re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/;
-
-  PunctuatorLexer.prototype.scan = function() {
-    var source = this.source;
-    var index  = this.index;
-
-    var items = re.exec(source.slice(index));
-
-    if (items) {
-      return {
-        type: Token.Punctuator, value: items[0], length: items[0].length
-      };
-    }
-
-    return { error: true, value: source.charAt(index), length: 1 };
-  };
-
-  sc.lang.compiler.lexPunctuator = function(source, index) {
-    return new PunctuatorLexer(source, index).scan();
-  };
-})(sc);
-
-// src/sc/lang/compiler/lexer/number.js
-(function(sc) {
-
-  var strlib = sc.libs.strlib;
-  var Token = sc.lang.compiler.Token;
-
-  function NumberLexer(source, index) {
-    this.source = source;
-    this.index  = index;
-  }
-
-  NumberLexer.prototype.scan = function() {
-    return this.scanNAryNumberLiteral() ||
-      this.scanHexNumberLiteral() ||
-      this.scanAccidentalNumberLiteral() ||
-      this.scanDecimalNumberLiteral();
-  };
-
-  NumberLexer.prototype.match = function(re) {
-    return re.exec(this.source.slice(this.index));
-  };
-
-  NumberLexer.prototype.scanNAryNumberLiteral = function() {
-    var items = this.match(
-      /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/
-    );
-
-    if (!items) {
-      return;
-    }
-
-    var base    = removeUnderscore(items[1])|0;
-    var integer = removeUnderscore(items[2]);
-    var frac    = removeUnderscore(items[3]) || "";
-    var pi = false;
-
-    if (!frac && base < 26 && integer.substr(-2) === "pi") {
-      integer = integer.slice(0, -2);
-      pi = true;
-    }
-
-    var type  = Token.IntegerLiteral;
-    var value = calcNBasedInteger(integer, base);
-
-    if (frac) {
-      type = Token.FloatLiteral;
-      value += calcNBasedFrac(frac, base);
-    }
-
-    if (isNaN(value)) {
-      return { error: true, value: items[0], length: items[0].length };
-    }
-
-    return makeNumberToken(type, value, pi, items[0].length);
-  };
-
-  NumberLexer.prototype.scanHexNumberLiteral = function() {
-    var items = this.match(/^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/);
-
-    if (!items) {
-      return;
-    }
-
-    var integer = removeUnderscore(items[1]);
-    var pi      = !!items[2];
-
-    var type  = Token.IntegerLiteral;
-    var value = +integer;
-
-    return makeNumberToken(type, value, pi, items[0].length);
-  };
-
-  NumberLexer.prototype.scanAccidentalNumberLiteral = function() {
-    var items = this.match(/^(\d+)([bs]+)(\d*)/);
-
-    if (!items) {
-      return;
-    }
-
-    var integer    = removeUnderscore(items[1]);
-    var accidental = items[2];
-    var sign = (accidental.charAt(0) === "s") ? +1 : -1;
-
-    var cents;
-    if (items[3] === "") {
-      cents = Math.min(accidental.length * 0.1, 0.4);
-    } else {
-      cents = Math.min(items[3] * 0.001, 0.499);
-    }
-    var value = +integer + (sign * cents);
-
-    return makeNumberToken(Token.FloatLiteral, value, false, items[0].length);
-  };
-
-  NumberLexer.prototype.scanDecimalNumberLiteral = function() {
-    var items = this.match(
-      /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/
-    );
-
-    var integer = +removeUnderscore(items[1]);
-    var frac    = !!items[2];
-    var pi      = !!items[3];
-
-    var type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
-    var value = integer;
-
-    return makeNumberToken(type, value, pi, items[0].length);
-  };
-
-  function removeUnderscore(str) {
-    return str && str.replace(/_/g, "");
-  }
-
-  function char2num(ch, base) {
-    var num = strlib.char2num(ch, base);
-    if (num >= base) {
-      num = NaN;
-    }
-    return num;
-  }
-
-  function calcNBasedInteger(integer, base) {
-    var value = 0;
-    for (var i = 0, imax = integer.length; i < imax; ++i) {
-      value *= base;
-      value += char2num(integer[i], base);
-    }
-    return value;
-  }
-
-  function calcNBasedFrac(frac, base) {
-    var value = 0;
-    for (var i = 0, imax = frac.length; i < imax; ++i) {
-      value += char2num(frac[i], base) * Math.pow(base, -(i + 1));
-    }
-    return value;
-  }
-
-  function makeNumberToken(type, value, pi, length) {
-    if (pi) {
-      type = Token.FloatLiteral;
-      value = value * Math.PI;
-    }
-
-    if (type === Token.FloatLiteral && value === (value|0)) {
-      value = value + ".0";
-    }
-
-    return { type: type, value: String(value), length: length };
-  }
-
-  sc.lang.compiler.lexNumber = function(source, index) {
-    return new NumberLexer(source, index).scan();
-  };
-})(sc);
-
-// src/sc/lang/compiler/lexer/string.js
-(function(sc) {
-
-  var Token = sc.lang.compiler.Token;
-
-  function StringLexer(source, index) {
-    this.source = source;
-    this.index = index;
-  }
-
-  StringLexer.prototype.scan = function() {
-    return this.scanSymbolLiteral() ||
-      this.scanQuotedSymbolLiteral() ||
-      this.scanStringLiteral() ||
-      this.scanCharLiteral();
-  };
-
-  StringLexer.prototype.match = function(re) {
-    return re.exec(this.source.slice(this.index));
-  };
-
-  StringLexer.prototype.scanCharLiteral = function() {
-    var source = this.source;
-    var index  = this.index;
-
-    if (source.charAt(index) !== "$") {
-      return;
-    }
-
-    var value = source.charAt(index + 1) || "";
-
-    return makeStringToken(Token.CharLiteral, value, 1);
-  };
-
-  StringLexer.prototype.scanSymbolLiteral = function() {
-    var items = this.match(/^\\([a-zA-Z_]\w*|\d+)?/);
-
-    if (!items) {
-      return;
-    }
-
-    var value = items[1] || "";
-
-    return makeStringToken(Token.SymbolLiteral, value, 1);
-  };
-
-  StringLexer.prototype.scanQuotedSymbolLiteral = function() {
-    var source = this.source;
-    var index  = this.index;
-
-    if (source.charAt(index) !== "'") {
-      return;
-    }
-
-    var value = "";
-    var pad = 2;
-    for (var i = index + 1, imax = source.length; i < imax; ++i) {
-      var ch = source.charAt(i);
-      if (ch === "'") {
-        return makeStringToken(Token.SymbolLiteral, value, pad);
-      }
-      if (ch === "\n") {
-        break;
-      }
-      if (ch === "\\") {
-        pad += 1;
-      } else {
-        value += ch;
-      }
-    }
-
-    return makeErrorToken("'" + value);
-  };
-
-  StringLexer.prototype.scanStringLiteral = function() {
-    var source = this.source;
-    var index  = this.index;
-
-    if (source.charAt(index) !== '"') {
-      return;
-    }
-
-    var value = "";
-    var pad = 2, line = 0;
-    for (var i = index + 1, imax = source.length; i < imax; ++i) {
-      var ch = source.charAt(i);
-      if (ch === '"') {
-        return makeStringToken(Token.StringLiteral, value, pad, line);
-      } else if (ch === "\n") {
-        line += 1;
-        value += "\\n";
-        pad -= 1;
-      } else if (ch === "\\") {
-        value += "\\" + source.charAt(++i);
-      } else {
-        value += ch;
-      }
-    }
-
-    return makeErrorToken('"' + value, line);
-  };
-
-  function makeStringToken(type, value, pad, line) {
-    return {
-      type: type,
-      value: value,
-      length: value.length + pad,
-      line: line|0
-    };
-  }
-
-  function makeErrorToken(value, line) {
-    return {
-      error: true,
-      value: value,
-      length: value.length,
-      line: line|0
-    };
-  }
-
-  sc.lang.compiler.lexString = function(source, index) {
-    return new StringLexer(source, index).scan();
-  };
-})(sc);
-
-// src/sc/lang/compiler/lexer/identifier.js
-(function(sc) {
-
-  var Token = sc.lang.compiler.Token;
-  var Keywords = sc.lang.compiler.Keywords;
-
-  function IdentifierLexer(source, index) {
-    this.source = source;
-    this.index = index;
-  }
-
-  var re = /^(_|[a-zA-Z][a-zA-Z0-9_]*)/;
-
-  IdentifierLexer.prototype.scan = function() {
-    var source = this.source;
-    var index  = this.index;
-
-    var value = re.exec(source.slice(index))[0];
-    var length = value.length;
-
-    var type;
-    if (source.charAt(index + length) === ":") {
-      type = Token.Label;
-      length += 1;
-    } else if (isKeyword(value)) {
-      type = Token.Keyword;
-    } else if (value === "inf") {
-      type = Token.FloatLiteral;
-      value = "Infinity";
-    } else if (value === "pi") {
-      type = Token.FloatLiteral;
-      value = String(Math.PI);
-    } else if (value === "nil") {
-      type = Token.NilLiteral;
-    } else if (value === "true") {
-      type = Token.TrueLiteral;
-    } else if (value === "false") {
-      type = Token.FalseLiteral;
-    } else {
-      type = Token.Identifier;
-    }
-
-    return { type: type, value: value, length: length };
-  };
-
-  function isKeyword(value) {
-    return Keywords.hasOwnProperty(value);
-  }
-
-  sc.lang.compiler.lexIdentifier = function(source, index) {
-    return new IdentifierLexer(source, index).scan();
-  };
-})(sc);
-
 // src/sc/lang/compiler/lexer/lexer.js
 (function(sc) {
 
@@ -3691,11 +3243,6 @@ var sc = { VERSION: "0.0.66" };
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Marker = sc.lang.compiler.Marker;
-  var lexIdentifier = sc.lang.compiler.lexIdentifier;
-  var lexString = sc.lang.compiler.lexString;
-  var lexNumber = sc.lang.compiler.lexNumber;
-  var lexPunctuator = sc.lang.compiler.lexPunctuator;
-  var lexComment = sc.lang.compiler.lexComment;
 
   function Lexer(source, opts) {
     /* istanbul ignore next */
@@ -3727,6 +3274,10 @@ var sc = { VERSION: "0.0.66" };
       return this.index - this.lineStart;
     }
   });
+
+  Lexer.addLexMethod = function(name, method) {
+    Lexer.prototype["lex" + name] = method;
+  };
 
   Lexer.prototype.tokenize = function() {
     var tokens = [];
@@ -3822,7 +3373,7 @@ var sc = { VERSION: "0.0.66" };
         this.lineNumber += 1;
         this.lineStart = this.index;
       } else if (ch1 === "/" && (ch2 === "/" || ch2 === "*")) {
-        this.scanWithFunc(lexComment);
+        this.scanWithFunc(this.lexComment);
       } else {
         break;
       }
@@ -3837,18 +3388,18 @@ var sc = { VERSION: "0.0.66" };
     var ch = this.source.charAt(this.index);
 
     if (ch === "\\" || ch === "'" || ch === '"' || ch === "$") {
-      return lexString;
+      return this.lexString;
     }
 
     if (ch === "_" || strlib.isAlpha(ch)) {
-      return lexIdentifier;
+      return this.lexIdentifier;
     }
 
     if (strlib.isNumber(ch)) {
-      return lexNumber;
+      return this.lexNumber;
     }
 
-    return lexPunctuator;
+    return this.lexPunctuator;
   };
 
   Lexer.prototype.scanWithFunc = function(func) {
@@ -5895,6 +5446,466 @@ var sc = { VERSION: "0.0.66" };
   }
 })(sc);
 
+// src/sc/lang/compiler/lexer/string.js
+(function(sc) {
+
+  var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("String", function(source, index) {
+    return new StringLexer(source, index).scan();
+  });
+
+  function StringLexer(source, index) {
+    this.source = source;
+    this.index = index;
+  }
+
+  StringLexer.prototype.scan = function() {
+    return this.scanSymbolLiteral() ||
+      this.scanQuotedSymbolLiteral() ||
+      this.scanStringLiteral() ||
+      this.scanCharLiteral();
+  };
+
+  StringLexer.prototype.match = function(re) {
+    return re.exec(this.source.slice(this.index));
+  };
+
+  StringLexer.prototype.scanCharLiteral = function() {
+    var source = this.source;
+    var index  = this.index;
+
+    if (source.charAt(index) !== "$") {
+      return;
+    }
+
+    var value = source.charAt(index + 1) || "";
+
+    return makeStringToken(Token.CharLiteral, value, 1);
+  };
+
+  StringLexer.prototype.scanSymbolLiteral = function() {
+    var items = this.match(/^\\([a-zA-Z_]\w*|\d+)?/);
+
+    if (!items) {
+      return;
+    }
+
+    var value = items[1] || "";
+
+    return makeStringToken(Token.SymbolLiteral, value, 1);
+  };
+
+  StringLexer.prototype.scanQuotedSymbolLiteral = function() {
+    var source = this.source;
+    var index  = this.index;
+
+    if (source.charAt(index) !== "'") {
+      return;
+    }
+
+    var value = "";
+    var pad = 2;
+    for (var i = index + 1, imax = source.length; i < imax; ++i) {
+      var ch = source.charAt(i);
+      if (ch === "'") {
+        return makeStringToken(Token.SymbolLiteral, value, pad);
+      }
+      if (ch === "\n") {
+        break;
+      }
+      if (ch === "\\") {
+        pad += 1;
+      } else {
+        value += ch;
+      }
+    }
+
+    return makeErrorToken("'" + value);
+  };
+
+  StringLexer.prototype.scanStringLiteral = function() {
+    var source = this.source;
+    var index  = this.index;
+
+    if (source.charAt(index) !== '"') {
+      return;
+    }
+
+    var value = "";
+    var pad = 2, line = 0;
+    for (var i = index + 1, imax = source.length; i < imax; ++i) {
+      var ch = source.charAt(i);
+      if (ch === '"') {
+        return makeStringToken(Token.StringLiteral, value, pad, line);
+      } else if (ch === "\n") {
+        line += 1;
+        value += "\\n";
+        pad -= 1;
+      } else if (ch === "\\") {
+        value += "\\" + source.charAt(++i);
+      } else {
+        value += ch;
+      }
+    }
+
+    return makeErrorToken('"' + value, line);
+  };
+
+  function makeStringToken(type, value, pad, line) {
+    return {
+      type: type,
+      value: value,
+      length: value.length + pad,
+      line: line|0
+    };
+  }
+
+  function makeErrorToken(value, line) {
+    return {
+      error: true,
+      value: value,
+      length: value.length,
+      line: line|0
+    };
+  }
+})(sc);
+
+// src/sc/lang/compiler/lexer/punctuator.js
+(function(sc) {
+
+  var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Punctuator", function(source, index) {
+    return new PunctuatorLexer(source, index).scan();
+  });
+
+  function PunctuatorLexer(source, index) {
+    this.source = source;
+    this.index = index;
+  }
+
+  var re = /^(\.{1,3}|[(){}[\]:;,~#`]|[-+*\/%<=>!?&|@]+)/;
+
+  PunctuatorLexer.prototype.scan = function() {
+    var source = this.source;
+    var index  = this.index;
+
+    var items = re.exec(source.slice(index));
+
+    if (items) {
+      return {
+        type: Token.Punctuator, value: items[0], length: items[0].length
+      };
+    }
+
+    return { error: true, value: source.charAt(index), length: 1 };
+  };
+})(sc);
+
+// src/sc/lang/compiler/lexer/number.js
+(function(sc) {
+
+  var strlib = sc.libs.strlib;
+  var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Number", function(source, index) {
+    return new NumberLexer(source, index).scan();
+  });
+
+  function NumberLexer(source, index) {
+    this.source = source;
+    this.index  = index;
+  }
+
+  NumberLexer.prototype.scan = function() {
+    return this.scanNAryNumberLiteral() ||
+      this.scanHexNumberLiteral() ||
+      this.scanAccidentalNumberLiteral() ||
+      this.scanDecimalNumberLiteral();
+  };
+
+  NumberLexer.prototype.match = function(re) {
+    return re.exec(this.source.slice(this.index));
+  };
+
+  NumberLexer.prototype.scanNAryNumberLiteral = function() {
+    var items = this.match(
+      /^(\d+)r((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+)(?:\.((?:[\da-zA-Z](?:_(?=[\da-zA-Z]))?)+))?/
+    );
+
+    if (!items) {
+      return;
+    }
+
+    var base    = removeUnderscore(items[1])|0;
+    var integer = removeUnderscore(items[2]);
+    var frac    = removeUnderscore(items[3]) || "";
+    var pi = false;
+
+    if (!frac && base < 26 && integer.substr(-2) === "pi") {
+      integer = integer.slice(0, -2);
+      pi = true;
+    }
+
+    var type  = Token.IntegerLiteral;
+    var value = calcNBasedInteger(integer, base);
+
+    if (frac) {
+      type = Token.FloatLiteral;
+      value += calcNBasedFrac(frac, base);
+    }
+
+    if (isNaN(value)) {
+      return { error: true, value: items[0], length: items[0].length };
+    }
+
+    return makeNumberToken(type, value, pi, items[0].length);
+  };
+
+  NumberLexer.prototype.scanHexNumberLiteral = function() {
+    var items = this.match(/^(0x(?:[\da-fA-F](?:_(?=[\da-fA-F]))?)+)(pi)?/);
+
+    if (!items) {
+      return;
+    }
+
+    var integer = removeUnderscore(items[1]);
+    var pi      = !!items[2];
+
+    var type  = Token.IntegerLiteral;
+    var value = +integer;
+
+    return makeNumberToken(type, value, pi, items[0].length);
+  };
+
+  NumberLexer.prototype.scanAccidentalNumberLiteral = function() {
+    var items = this.match(/^(\d+)([bs]+)(\d*)/);
+
+    if (!items) {
+      return;
+    }
+
+    var integer    = removeUnderscore(items[1]);
+    var accidental = items[2];
+    var sign = (accidental.charAt(0) === "s") ? +1 : -1;
+
+    var cents;
+    if (items[3] === "") {
+      cents = Math.min(accidental.length * 0.1, 0.4);
+    } else {
+      cents = Math.min(items[3] * 0.001, 0.499);
+    }
+    var value = +integer + (sign * cents);
+
+    return makeNumberToken(Token.FloatLiteral, value, false, items[0].length);
+  };
+
+  NumberLexer.prototype.scanDecimalNumberLiteral = function() {
+    var items = this.match(
+      /^((?:\d(?:_(?=\d))?)+((?:\.(?:\d(?:_(?=\d))?)+)?(?:e[-+]?(?:\d(?:_(?=\d))?)+)?))(pi)?/
+    );
+
+    var integer = +removeUnderscore(items[1]);
+    var frac    = !!items[2];
+    var pi      = !!items[3];
+
+    var type  = (frac || pi) ? Token.FloatLiteral : Token.IntegerLiteral;
+    var value = integer;
+
+    return makeNumberToken(type, value, pi, items[0].length);
+  };
+
+  function removeUnderscore(str) {
+    return str && str.replace(/_/g, "");
+  }
+
+  function char2num(ch, base) {
+    var num = strlib.char2num(ch, base);
+    if (num >= base) {
+      num = NaN;
+    }
+    return num;
+  }
+
+  function calcNBasedInteger(integer, base) {
+    var value = 0;
+    for (var i = 0, imax = integer.length; i < imax; ++i) {
+      value *= base;
+      value += char2num(integer[i], base);
+    }
+    return value;
+  }
+
+  function calcNBasedFrac(frac, base) {
+    var value = 0;
+    for (var i = 0, imax = frac.length; i < imax; ++i) {
+      value += char2num(frac[i], base) * Math.pow(base, -(i + 1));
+    }
+    return value;
+  }
+
+  function makeNumberToken(type, value, pi, length) {
+    if (pi) {
+      type = Token.FloatLiteral;
+      value = value * Math.PI;
+    }
+
+    if (type === Token.FloatLiteral && value === (value|0)) {
+      value = value + ".0";
+    }
+
+    return { type: type, value: String(value), length: length };
+  }
+})(sc);
+
+// src/sc/lang/compiler/lexer/identifier.js
+(function(sc) {
+
+  var Token = sc.lang.compiler.Token;
+  var Keywords = sc.lang.compiler.Keywords;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Identifier", function(source, index) {
+    return new IdentifierLexer(source, index).scan();
+  });
+
+  function IdentifierLexer(source, index) {
+    this.source = source;
+    this.index = index;
+  }
+
+  var re = /^(_|[a-zA-Z][a-zA-Z0-9_]*)/;
+
+  IdentifierLexer.prototype.scan = function() {
+    var source = this.source;
+    var index  = this.index;
+
+    var value = re.exec(source.slice(index))[0];
+    var length = value.length;
+
+    var type;
+    if (source.charAt(index + length) === ":") {
+      type = Token.Label;
+      length += 1;
+    } else if (isKeyword(value)) {
+      type = Token.Keyword;
+    } else if (value === "inf") {
+      type = Token.FloatLiteral;
+      value = "Infinity";
+    } else if (value === "pi") {
+      type = Token.FloatLiteral;
+      value = String(Math.PI);
+    } else if (value === "nil") {
+      type = Token.NilLiteral;
+    } else if (value === "true") {
+      type = Token.TrueLiteral;
+    } else if (value === "false") {
+      type = Token.FalseLiteral;
+    } else {
+      type = Token.Identifier;
+    }
+
+    return { type: type, value: value, length: length };
+  };
+
+  function isKeyword(value) {
+    return Keywords.hasOwnProperty(value);
+  }
+})(sc);
+
+// src/sc/lang/compiler/lexer/comment.js
+(function(sc) {
+
+  var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Comment", function(source, index) {
+    return new CommentLexer(source, index).scan();
+  });
+
+  function CommentLexer(source, index) {
+    this.source = source;
+    this.index = index;
+  }
+
+  CommentLexer.prototype.scan = function() {
+    var source = this.source;
+    var index = this.index;
+    var op = source.charAt(index) + source.charAt(index + 1);
+    if (op === "//") {
+      return this.scanSingleLineComment();
+    }
+    if (op === "/*") {
+      return this.scanMultiLineComment();
+    }
+  };
+
+  CommentLexer.prototype.scanSingleLineComment = function() {
+    var source = this.source;
+    var index = this.index;
+    var length = source.length;
+
+    var value = "";
+    var line = 0;
+    while (index < length) {
+      var ch = source.charAt(index++);
+      value += ch;
+      if (ch === "\n") {
+        line = 1;
+        break;
+      }
+    }
+
+    return makeCommentToken(Token.SingleLineComment, value, line);
+  };
+
+  CommentLexer.prototype.scanMultiLineComment = function() {
+    var source = this.source;
+    var index = this.index;
+    var length = source.length;
+
+    var value = "";
+    var line = 0, depth = 0;
+    while (index < length) {
+      var ch1 = source.charAt(index);
+      var ch2 = source.charAt(index + 1);
+      value += ch1;
+
+      if (ch1 === "\n") {
+        line += 1;
+      } else if (ch1 === "/" && ch2 === "*") {
+        depth += 1;
+        index += 1;
+        value += ch2;
+      } else if (ch1 === "*" && ch2 === "/") {
+        depth -= 1;
+        index += 1;
+        value += ch2;
+        if (depth === 0) {
+          return makeCommentToken(Token.MultiLineComment, value, line);
+        }
+      }
+
+      index += 1;
+    }
+
+    return { error: true, value: "ILLEGAL", length: length, line: line };
+  };
+
+  function makeCommentToken(type, value, line) {
+    return {
+      type: type,
+      value: value,
+      length: value.length,
+      line: line|0
+    };
+  }
+})(sc);
+
 // src/sc/lang/compiler/rewriter/rewriter.js
 (function(sc) {
 
@@ -6018,6 +6029,11 @@ var sc = { VERSION: "0.0.66" };
   }
 
   sc.lang.compiler.Rewriter = Rewriter;
+})(sc);
+
+// src/sc/config/config.js
+(function(sc) {
+  sc.config = {};
 })(sc);
 
 })(this.self || global);

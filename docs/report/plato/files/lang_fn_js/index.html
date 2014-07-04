@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">114.50</p>
+      <p class="stat">114.39</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">118</p>
+      <p class="stat">119</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">33.71</p>
+      <p class="stat">32.86</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.00</p>
+      <p class="stat">0.97</p>
     </div>
   </div>
 </div>
@@ -93,50 +93,11 @@
     <textarea id="file-source" class="col-md-12">(function(sc) {
   &quot;use strict&quot;;
 
+  require(&quot;./lang&quot;);
   require(&quot;./dollar&quot;);
 
   var slice = [].slice;
   var $ = sc.lang.$;
-
-  var _getDefaultValue = function(value) {
-    var ch;
-
-    switch (value) {
-    case &quot;nil&quot;:
-      return $.Nil();
-    case &quot;true&quot;:
-      return $.True();
-    case &quot;false&quot;:
-      return $.False();
-    case &quot;inf&quot;:
-      return $.Float(Infinity);
-    case &quot;-inf&quot;:
-      return $.Float(-Infinity);
-    }
-
-    ch = value.charAt(0);
-    switch (ch) {
-    case &quot;$&quot;:
-      return $.Char(value.charAt(1));
-    case &quot;\\&quot;:
-      return $.Symbol(value.substr(1));
-    }
-
-    if (value.indexOf(&quot;.&quot;) !== -1) {
-      return $.Float(+value);
-    }
-
-    return $.Integer(+value);
-  };
-
-  var getDefaultValue = function(value) {
-    if (value.charAt(0) === &quot;[&quot;) {
-      return $.Array(value.slice(1, -2).split(&quot;,&quot;).map(function(value) {
-        return _getDefaultValue(value.trim());
-      }));
-    }
-    return _getDefaultValue(value);
-  };
 
   var fn = function(func, def) {
     var argItems, argNames, argVals;
@@ -185,26 +146,66 @@
     return wrapper;
   };
 
-  var isDictionary = function(obj) {
+  function isDictionary(obj) {
     return !!(obj &amp;&amp; obj.constructor === Object);
-  };
+  }
 
-  var copy = function(args, given, length) {
+  function copy(args, given, length) {
     for (var i = 0; i &lt; length; ++i) {
       if (given[i]) {
         args[i] = given[i];
       }
     }
-  };
+  }
 
-  var setKeywordArguments = function(args, argNames, dict) {
+  function _getDefaultValue(value) {
+    var ch;
+
+    switch (value) {
+    case &quot;nil&quot;:
+      return $.Nil();
+    case &quot;true&quot;:
+      return $.True();
+    case &quot;false&quot;:
+      return $.False();
+    case &quot;inf&quot;:
+      return $.Float(Infinity);
+    case &quot;-inf&quot;:
+      return $.Float(-Infinity);
+    }
+
+    ch = value.charAt(0);
+    switch (ch) {
+    case &quot;$&quot;:
+      return $.Char(value.charAt(1));
+    case &quot;\\&quot;:
+      return $.Symbol(value.substr(1));
+    }
+
+    if (value.indexOf(&quot;.&quot;) !== -1) {
+      return $.Float(+value);
+    }
+
+    return $.Integer(+value);
+  }
+
+  function getDefaultValue(value) {
+    if (value.charAt(0) === &quot;[&quot;) {
+      return $.Array(value.slice(1, -2).split(&quot;,&quot;).map(function(value) {
+        return _getDefaultValue(value.trim());
+      }));
+    }
+    return _getDefaultValue(value);
+  }
+
+  function setKeywordArguments(args, argNames, dict) {
     Object.keys(dict).forEach(function(key) {
       var index = argNames.indexOf(key);
       if (index !== -1) {
         args[index] = dict[key];
       }
     });
-  };
+  }
 
   sc.lang.fn = fn;
 })(sc);</textarea>

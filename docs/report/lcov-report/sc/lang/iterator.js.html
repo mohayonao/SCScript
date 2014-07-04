@@ -562,7 +562,7 @@
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">612</span>
+<span class="cline-any cline-yes">613</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -590,7 +590,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">782</span>
+<span class="cline-any cline-yes">783</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -883,7 +883,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">(function(sc) {
   "use strict";
 &nbsp;
-  require("./sc");
+  require("./lang");
   require("./dollar");
   require("./klass/utils");
 &nbsp;
@@ -962,7 +962,7 @@
     return iter;
   };
 &nbsp;
-  var sc$incremental$iter = function($start, $end, $step) {
+  function sc$incremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -978,9 +978,9 @@
       }
     };
     return iter;
-  };
+  }
 &nbsp;
-  var sc$decremental$iter = function($start, $end, $step) {
+  function sc$decremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -996,9 +996,9 @@
       }
     };
     return iter;
-  };
+  }
 &nbsp;
-  var sc$numeric$iter = function($start, $end, $step) {
+  function sc$numeric$iter($start, $end, $step) {
     if ($start.valueOf() === $end.valueOf()) {
       return once$iter($start);
     } else if ($start &lt; $end &amp;&amp; $step &gt; 0) {
@@ -1007,7 +1007,7 @@
       return sc$decremental$iter($start, $end, $step);
     }
     return nop$iter;
-  };
+  }
 &nbsp;
   iterator.number$do = function($end) {
     var $start, $step;
@@ -1049,7 +1049,7 @@
     return sc$numeric$iter($start, $last, $step);
   };
 &nbsp;
-  var js$incremental$iter = function(start, end, step, type) {
+  function js$incremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -1065,9 +1065,9 @@
       }
     };
     return iter;
-  };
+  }
 &nbsp;
-  var js$decremental$iter = function(start, end, step, type) {
+  function js$decremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -1083,9 +1083,9 @@
       }
     };
     return iter;
-  };
+  }
 &nbsp;
-  var js$numeric$iter = function(start, end, step, type) {
+  function js$numeric$iter(start, end, step, type) {
     if (start === end) {
       return once$iter(type(start));
     } else if (start &lt; end &amp;&amp; step &gt; 0) {
@@ -1094,43 +1094,43 @@
       return js$decremental$iter(start, end, step, type);
     }
     return nop$iter;
-  };
+  }
 &nbsp;
-  var js$numeric$iter$do = function($endval, type) {
+  function js$numeric$iter$do($endval, type) {
     var end = type($endval.__num__()).valueOf();
     return js$numeric$iter(0, end - 1, +1, type);
-  };
+  }
 &nbsp;
-  var js$numeric$iter$reverseDo = function($startval, type) {
+  function js$numeric$iter$reverseDo($startval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = (start|0) - start;
     return js$numeric$iter(start - 1, end, -1, type);
-  };
+  }
 &nbsp;
-  var js$numeric$iter$for = function($startval, $endval, type) {
+  function js$numeric$iter$for($startval, $endval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = (start &lt;= end) ? +1 : -1;
 &nbsp;
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 &nbsp;
-  var js$numeric$iter$forBy = function($startval, $endval, $stepval, type) {
+  function js$numeric$iter$forBy($startval, $endval, $stepval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = type($stepval .__num__()).valueOf();
 &nbsp;
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 &nbsp;
-  var js$numeric$iter$forSeries = function($startval, $second, $last, type) {
+  function js$numeric$iter$forSeries($startval, $second, $last, type) {
     var start  = type($startval.__num__()).valueOf();
     var second = type($second  .__num__()).valueOf();
     var end    = type($last    .__num__()).valueOf();
     var step = second - start;
 &nbsp;
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 &nbsp;
   iterator.integer$do = function($endval) {
     return js$numeric$iter$do($endval, $.Integer);
@@ -1172,7 +1172,7 @@
     return js$numeric$iter$forSeries($startval, $second, $last, $.Float);
   };
 &nbsp;
-  var list$iter = function(list) {
+  function list$iter(list) {
     var i = 0, iter = {
       hasNext: true,
       next: function() {
@@ -1187,14 +1187,14 @@
       }
     };
     return iter;
-  };
+  }
 &nbsp;
-  var js$array$iter = function(list) {
+  function js$array$iter(list) {
     if (list.length) {
       return list$iter(list);
     }
     return nop$iter;
-  };
+  }
 &nbsp;
   iterator.array$do = function($array) {
     return js$array$iter($array._.slice());
@@ -1217,7 +1217,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Jul 01 2014 20:02:13 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Fri Jul 04 2014 20:57:08 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../prettify.js"></script>

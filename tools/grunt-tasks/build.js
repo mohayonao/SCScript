@@ -43,20 +43,23 @@ module.exports = function(grunt) {
     var result = [];
 
     function walker(filepath) {
-      var index, dir, src, re, m;
-
-      index = result.indexOf(filepath);
+      var index = result.indexOf(filepath);
       if (index !== -1) {
         result.splice(index, 1);
       }
       result.unshift(filepath);
 
-      dir = path.dirname(filepath);
-      src = grunt.file.read(filepath);
+      var dir = path.dirname(filepath);
+      var src = grunt.file.read(filepath);
 
-      re = /^\s*require\("(\..+?)(?:\.js)?"\);\s*$/gm;
+      var re = /^\s*require\("(\..+?)(?:\.js)?"\);\s*$/gm;
+      var m;
       while ((m = re.exec(src)) !== null) {
-        walker(path.join(dir, m[1] + ".js"));
+        var filename = m[1];
+        if (filename.charAt(filename.length - 1) === "/") {
+          filename += "index";
+        }
+        walker(path.join(dir, filename + ".js"));
       }
     }
 

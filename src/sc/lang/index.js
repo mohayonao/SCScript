@@ -1,4 +1,4 @@
-require("../libs/installer");
+require("../libs/");
 require("./bytecode");
 require("./compiler");
 require("./dollar");

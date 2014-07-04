@@ -2,7 +2,7 @@
 (function(sc) {
   "use strict";
 
-  require("../src/sc/lang/installer");
+  require("../src/sc/lang");
 
   require("../src/sc/classlib/Collections/Array");
   require("../src/sc/classlib/Collections/Association");

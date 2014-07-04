@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./installer");
+  require("./");
 
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;

@@ -1,1 +1,1 @@
-require("./compiler/installer");
+require("./compiler/");

@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./installer");
+  require("./");
 
   var CodeGen = sc.lang.compiler.CodeGen;
   var Node = sc.lang.compiler.Node;

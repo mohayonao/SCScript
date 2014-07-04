@@ -3,11 +3,11 @@
 
   require("./compiler");
   require("../marker/marker");
+  require("./comment");
   require("./identifier");
-  require("./string");
   require("./number");
   require("./punctuator");
-  require("./comment");
+  require("./string");
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;

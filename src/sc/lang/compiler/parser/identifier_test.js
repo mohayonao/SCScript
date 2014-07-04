@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./installer");
+  require("./");
 
   var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;

@@ -1,9 +1,14 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("./lexer");
 
   var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Comment", function(source, index) {
+    return new CommentLexer(source, index).scan();
+  });
 
   function CommentLexer(source, index) {
     this.source = source;
@@ -82,8 +87,4 @@
       line: line|0
     };
   }
-
-  sc.lang.compiler.lexComment = function(source, index) {
-    return new CommentLexer(source, index).scan();
-  };
 })(sc);

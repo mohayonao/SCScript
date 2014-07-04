@@ -1,10 +1,15 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("./lexer");
 
   var strlib = sc.libs.strlib;
   var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Number", function(source, index) {
+    return new NumberLexer(source, index).scan();
+  });
 
   function NumberLexer(source, index) {
     this.source = source;
@@ -150,8 +155,4 @@
 
     return { type: type, value: String(value), length: length };
   }
-
-  sc.lang.compiler.lexNumber = function(source, index) {
-    return new NumberLexer(source, index).scan();
-  };
 })(sc);

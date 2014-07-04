@@ -1,24 +1,14 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
-  require("../marker/marker");
-  require("./identifier");
-  require("./string");
-  require("./number");
-  require("./punctuator");
-  require("./comment");
+  require("../compiler");
+  require("../marker/");
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Marker = sc.lang.compiler.Marker;
-  var lexIdentifier = sc.lang.compiler.lexIdentifier;
-  var lexString = sc.lang.compiler.lexString;
-  var lexNumber = sc.lang.compiler.lexNumber;
-  var lexPunctuator = sc.lang.compiler.lexPunctuator;
-  var lexComment = sc.lang.compiler.lexComment;
 
   function Lexer(source, opts) {
     /* istanbul ignore next */
@@ -50,6 +40,10 @@
       return this.index - this.lineStart;
     }
   });
+
+  Lexer.addLexMethod = function(name, method) {
+    Lexer.prototype["lex" + name] = method;
+  };
 
   Lexer.prototype.tokenize = function() {
     var tokens = [];
@@ -145,7 +139,7 @@
         this.lineNumber += 1;
         this.lineStart = this.index;
       } else if (ch1 === "/" && (ch2 === "/" || ch2 === "*")) {
-        this.scanWithFunc(lexComment);
+        this.scanWithFunc(this.lexComment);
       } else {
         break;
       }
@@ -160,18 +154,18 @@
     var ch = this.source.charAt(this.index);
 
     if (ch === "\\" || ch === "'" || ch === '"' || ch === "$") {
-      return lexString;
+      return this.lexString;
     }
 
     if (ch === "_" || strlib.isAlpha(ch)) {
-      return lexIdentifier;
+      return this.lexIdentifier;
     }
 
     if (strlib.isNumber(ch)) {
-      return lexNumber;
+      return this.lexNumber;
     }
 
-    return lexPunctuator;
+    return this.lexPunctuator;
   };
 
   Lexer.prototype.scanWithFunc = function(func) {

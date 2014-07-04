@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("./lang");
 
   var io = {};
 

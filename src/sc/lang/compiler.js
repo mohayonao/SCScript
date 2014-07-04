@@ -1,1 +1,2 @@
-require("./compiler/installer");
+require("./lang");
+require("./compiler/");

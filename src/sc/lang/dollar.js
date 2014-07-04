@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("./lang");
 
   var $ = function(name) {
     return sc.lang.klass.get(name);

@@ -1,10 +1,15 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("./lexer");
 
   var Token = sc.lang.compiler.Token;
   var Keywords = sc.lang.compiler.Keywords;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Identifier", function(source, index) {
+    return new IdentifierLexer(source, index).scan();
+  });
 
   function IdentifierLexer(source, index) {
     this.source = source;
@@ -48,8 +53,4 @@
   function isKeyword(value) {
     return Keywords.hasOwnProperty(value);
   }
-
-  sc.lang.compiler.lexIdentifier = function(source, index) {
-    return new IdentifierLexer(source, index).scan();
-  };
 })(sc);

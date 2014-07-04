@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("./libs");
 
   var extend = function(child, parent) {
     var ctor = function() {

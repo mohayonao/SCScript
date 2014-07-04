@@ -18,7 +18,7 @@
   "engines": {
     "node": ">=0.10.0"
   },
-  "main": "index.js",
+  "main": "./src/scscript",
   "dependencies": {
     "esprima": "^1.2.2",
     "escodegen": "^1.3.3"

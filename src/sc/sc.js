@@ -1,8 +1,6 @@
 (function(sc) {
   "use strict";
 
-  sc.config = {};
-
   function SCScript(fn) {
     return sc.lang.main.run(fn);
   }

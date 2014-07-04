@@ -1,0 +1,10 @@
+require("./AbstractFunction");
+require("./Boolean");
+require("./Char");
+require("./Function");
+require("./Kernel");
+require("./Nil");
+require("./Object");
+require("./Ref");
+require("./Symbol");
+require("./Thread");

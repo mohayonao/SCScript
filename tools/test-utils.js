@@ -2,22 +2,8 @@
 (function(sc) {
   "use strict";
 
-  require("../src/sc/lang");
-
-  require("../src/sc/classlib/Collections/Array");
-  require("../src/sc/classlib/Collections/Association");
-  require("../src/sc/classlib/Collections/String");
-  require("../src/sc/classlib/Collections/Event");
-  require("../src/sc/classlib/Core/Boolean");
-  require("../src/sc/classlib/Core/Char");
-  require("../src/sc/classlib/Core/Function");
-  require("../src/sc/classlib/Core/Kernel");
-  require("../src/sc/classlib/Core/Nil");
-  require("../src/sc/classlib/Core/Symbol");
-  require("../src/sc/classlib/Core/Thread");
-  require("../src/sc/classlib/Math/Integer");
-  require("../src/sc/classlib/Math/Float");
-  require("../src/sc/classlib/Streams/ListPatterns");
+  require("../src/sc/");
+  require("../src/sc/classlib/");
 
   var $ = sc.lang.$;
 

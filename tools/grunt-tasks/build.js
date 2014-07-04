@@ -21,25 +21,25 @@ module.exports = function(grunt) {
     return "\"" + str + "\"";
   }
 
-  function build(files) {
-    return sortModules(files).map(formatter).join("").trim();
+  function build(root) {
+    return sortModules(root).map(formatter).join("").trim();
   }
 
   function buildSCScript() {
     var tmpl = _.template(grunt.file.read(__dirname + "/assets/scscript.tmpl"));
     grunt.file.write("build/scscript.js", tmpl({
       version: q(grunt.config.data.pkg.version),
-      source: build(grunt.file._expand("src", "!classlib", "!test"))
+      source: build("src/sc/index.js")
     }));
   }
 
   function buildClassLib() {
     grunt.file.write("build/scscript-classlib.js", [
-      build(grunt.file._expand("classlib", "!test"))
+      build("src/sc/classlib/index.js")
     ].join(""));
   }
 
-  function sortModules(files) {
+  function sortModules(root) {
     var result = [];
 
     function walker(filepath) {
@@ -63,7 +63,7 @@ module.exports = function(grunt) {
       }
     }
 
-    _.each(files, walker);
+    walker(root);
 
     return result;
   }

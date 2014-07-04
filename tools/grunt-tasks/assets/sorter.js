@@ -6,13 +6,13 @@ var FILENAME = 2;
 
 var re = /^src\/sc\/(?:(.+?)\/)?(.+)\.js$/;
 
-var order = function(dirname) {
+function order(dirname) {
   return ORDER[dirname] || Infinity;
-};
+}
 
-var depth = function(filepath) {
+function depth(filepath) {
   return filepath.split("/").length;
-};
+}
 
 var byFilePath = function(a, b) {
   var cond = 0;

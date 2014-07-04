@@ -1,50 +1,11 @@
 (function(sc) {
   "use strict";
 
+  require("./lang");
   require("./dollar");
 
   var slice = [].slice;
   var $ = sc.lang.$;
-
-  var _getDefaultValue = function(value) {
-    var ch;
-
-    switch (value) {
-    case "nil":
-      return $.Nil();
-    case "true":
-      return $.True();
-    case "false":
-      return $.False();
-    case "inf":
-      return $.Float(Infinity);
-    case "-inf":
-      return $.Float(-Infinity);
-    }
-
-    ch = value.charAt(0);
-    switch (ch) {
-    case "$":
-      return $.Char(value.charAt(1));
-    case "\\":
-      return $.Symbol(value.substr(1));
-    }
-
-    if (value.indexOf(".") !== -1) {
-      return $.Float(+value);
-    }
-
-    return $.Integer(+value);
-  };
-
-  var getDefaultValue = function(value) {
-    if (value.charAt(0) === "[") {
-      return $.Array(value.slice(1, -2).split(",").map(function(value) {
-        return _getDefaultValue(value.trim());
-      }));
-    }
-    return _getDefaultValue(value);
-  };
 
   var fn = function(func, def) {
     var argItems, argNames, argVals;
@@ -93,26 +54,66 @@
     return wrapper;
   };
 
-  var isDictionary = function(obj) {
+  function isDictionary(obj) {
     return !!(obj && obj.constructor === Object);
-  };
+  }
 
-  var copy = function(args, given, length) {
+  function copy(args, given, length) {
     for (var i = 0; i < length; ++i) {
       if (given[i]) {
         args[i] = given[i];
       }
     }
-  };
+  }
 
-  var setKeywordArguments = function(args, argNames, dict) {
+  function _getDefaultValue(value) {
+    var ch;
+
+    switch (value) {
+    case "nil":
+      return $.Nil();
+    case "true":
+      return $.True();
+    case "false":
+      return $.False();
+    case "inf":
+      return $.Float(Infinity);
+    case "-inf":
+      return $.Float(-Infinity);
+    }
+
+    ch = value.charAt(0);
+    switch (ch) {
+    case "$":
+      return $.Char(value.charAt(1));
+    case "\\":
+      return $.Symbol(value.substr(1));
+    }
+
+    if (value.indexOf(".") !== -1) {
+      return $.Float(+value);
+    }
+
+    return $.Integer(+value);
+  }
+
+  function getDefaultValue(value) {
+    if (value.charAt(0) === "[") {
+      return $.Array(value.slice(1, -2).split(",").map(function(value) {
+        return _getDefaultValue(value.trim());
+      }));
+    }
+    return _getDefaultValue(value);
+  }
+
+  function setKeywordArguments(args, argNames, dict) {
     Object.keys(dict).forEach(function(key) {
       var index = argNames.indexOf(key);
       if (index !== -1) {
         args[index] = dict[key];
       }
     });
-  };
+  }
 
   sc.lang.fn = fn;
 })(sc);

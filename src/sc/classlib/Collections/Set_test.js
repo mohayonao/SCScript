@@ -7,8 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
-
   var SCSet = $("Set");
 
   describe("SCSet", function() {
@@ -22,6 +20,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.eql([]);
     });
@@ -41,27 +40,26 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.species();
       expect(test).to.equal(SCSet);
     });
     it.skip("#copy", function() {
     });
     it("#do", sinon.test(function() {
-      var test, instance, iter;
-      var $function;
-
-      iter = {};
-      $function = $$();
-      this.stub(iterator, "set$do", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var test, instance;
+      var iter = {};
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "set$do", function() {
+        return iter;
+      });
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.do($function);
-      expect(iterator.set$do).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.set$do).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#clear", function() {
@@ -116,7 +114,6 @@
       ]);
     });
     it("#add", function() {
-      var instance;
       testCase(this, [
         {
           source: [ 1, 2, 3 ],
@@ -131,7 +128,10 @@
           after: [ 1, 2, 3, 4 ]
         },
       ]);
+
+      var instance;
       instance = this.createInstance();
+
       expect(function() {
         instance.add($$(null));
       }).to.throw("A Set cannot contain nil");
@@ -192,51 +192,46 @@
     });
     it("#sect", function() {
       var instance, test;
-      var $set;
+      var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
-      $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.sect($set);
       expect(test.valueOf()).to.eql([ 1, 3, 5 ]);
     });
     it("#union", function() {
       var instance, test;
-      var $set;
+      var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
-      $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.union($set);
       expect(test.valueOf()).to.eql([ 1, 2, 3, 4, 5, 6, 7, 9 ]);
     });
     it("#difference", function() {
       var instance, test;
-      var $set;
+      var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
-      $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.difference($set);
       expect(test.valueOf()).to.eql([ 2, 4, 6 ]);
     });
     it("#symmetricDifference", function() {
       var instance, test;
-      var $set;
+      var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
-      $set     = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
 
       test = instance.symmetricDifference($set);
       expect(test.valueOf()).to.eql([ 2, 4, 6, 7, 9 ]);
     });
     it("#isSubsetOf", function() {
       var instance, test;
-      var $set1, $set2;
+      var $set1 = SCSet.newFrom($$([ 1, 2, 3 ]));
+      var $set2 = SCSet.newFrom($$([ 0, 1 ]));
 
       instance = this.createInstance([ 1, 2 ]);
-      $set1    = SCSet.newFrom($$([ 1, 2, 3 ]));
-      $set2    = SCSet.newFrom($$([ 0, 1 ]));
 
       test = instance.isSubsetOf($set1);
       expect(test).to.be.a("SCBoolean").that.is.true;
@@ -246,9 +241,7 @@
     });
     it("#&", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       this.stub(instance, "sect", sc.test.func());
@@ -259,9 +252,7 @@
     }));
     it("#|", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       this.stub(instance, "union", sc.test.func());
@@ -272,9 +263,7 @@
     }));
     it("#-", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       this.stub(instance, "difference", sc.test.func());
@@ -285,9 +274,7 @@
     }));
     it("#--", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       this.stub(instance, "symmetricDifference", sc.test.func());
@@ -298,6 +285,7 @@
     }));
     it("#asSet", function() {
       var instance;
+
       instance = this.createInstance();
       expect(instance.asSet).to.doNothing;
     });

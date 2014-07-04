@@ -1,9 +1,7 @@
 (function() {
   "use strict";
 
-  require("./sc");
-  require("./lang/main");
-  require("./lang/compiler");
+  require("./");
 
   describe("SCScript", function() {
     it("should call main.run given function with lang.$", sinon.test(function() {

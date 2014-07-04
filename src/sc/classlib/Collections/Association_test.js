@@ -6,7 +6,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-
   var SCAssociation = $("Association");
 
   describe("SCAssociation", function() {

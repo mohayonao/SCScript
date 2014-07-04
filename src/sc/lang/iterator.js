@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("./lang");
   require("./dollar");
   require("./klass/utils");
 
@@ -80,7 +80,7 @@
     return iter;
   };
 
-  var sc$incremental$iter = function($start, $end, $step) {
+  function sc$incremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -96,9 +96,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var sc$decremental$iter = function($start, $end, $step) {
+  function sc$decremental$iter($start, $end, $step) {
     var $i = $start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -114,9 +114,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var sc$numeric$iter = function($start, $end, $step) {
+  function sc$numeric$iter($start, $end, $step) {
     if ($start.valueOf() === $end.valueOf()) {
       return once$iter($start);
     } else if ($start < $end && $step > 0) {
@@ -125,7 +125,7 @@
       return sc$decremental$iter($start, $end, $step);
     }
     return nop$iter;
-  };
+  }
 
   iterator.number$do = function($end) {
     var $start, $step;
@@ -167,7 +167,7 @@
     return sc$numeric$iter($start, $last, $step);
   };
 
-  var js$incremental$iter = function(start, end, step, type) {
+  function js$incremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -183,9 +183,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var js$decremental$iter = function(start, end, step, type) {
+  function js$decremental$iter(start, end, step, type) {
     var i = start, j = 0, iter = {
       hasNext: true,
       next: function() {
@@ -201,9 +201,9 @@
       }
     };
     return iter;
-  };
+  }
 
-  var js$numeric$iter = function(start, end, step, type) {
+  function js$numeric$iter(start, end, step, type) {
     if (start === end) {
       return once$iter(type(start));
     } else if (start < end && step > 0) {
@@ -212,43 +212,43 @@
       return js$decremental$iter(start, end, step, type);
     }
     return nop$iter;
-  };
+  }
 
-  var js$numeric$iter$do = function($endval, type) {
+  function js$numeric$iter$do($endval, type) {
     var end = type($endval.__num__()).valueOf();
     return js$numeric$iter(0, end - 1, +1, type);
-  };
+  }
 
-  var js$numeric$iter$reverseDo = function($startval, type) {
+  function js$numeric$iter$reverseDo($startval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = (start|0) - start;
     return js$numeric$iter(start - 1, end, -1, type);
-  };
+  }
 
-  var js$numeric$iter$for = function($startval, $endval, type) {
+  function js$numeric$iter$for($startval, $endval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = (start <= end) ? +1 : -1;
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
-  var js$numeric$iter$forBy = function($startval, $endval, $stepval, type) {
+  function js$numeric$iter$forBy($startval, $endval, $stepval, type) {
     var start = type($startval.__num__()).valueOf();
     var end   = type($endval  .__num__()).valueOf();
     var step  = type($stepval .__num__()).valueOf();
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
-  var js$numeric$iter$forSeries = function($startval, $second, $last, type) {
+  function js$numeric$iter$forSeries($startval, $second, $last, type) {
     var start  = type($startval.__num__()).valueOf();
     var second = type($second  .__num__()).valueOf();
     var end    = type($last    .__num__()).valueOf();
     var step = second - start;
 
     return js$numeric$iter(start, end, step, type);
-  };
+  }
 
   iterator.integer$do = function($endval) {
     return js$numeric$iter$do($endval, $.Integer);
@@ -290,7 +290,7 @@
     return js$numeric$iter$forSeries($startval, $second, $last, $.Float);
   };
 
-  var list$iter = function(list) {
+  function list$iter(list) {
     var i = 0, iter = {
       hasNext: true,
       next: function() {
@@ -305,14 +305,14 @@
       }
     };
     return iter;
-  };
+  }
 
-  var js$array$iter = function(list) {
+  function js$array$iter(list) {
     if (list.length) {
       return list$iter(list);
     }
     return nop$iter;
-  };
+  }
 
   iterator.array$do = function($array) {
     return js$array$iter($array._.slice());

@@ -7,7 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-
   var SCArray = $("Array");
 
   describe("SCArray", function() {
@@ -25,7 +24,9 @@
       expect(test).to.be.a("JSArray").to.eql([ "freq", 440 ]);
     });
     it(".with", function() {
-      var test = SCArray.with($$(0), $$(1), $$(2));
+      var test;
+
+      test = SCArray.with($$(0), $$(1), $$(2));
       expect(test).to.be.a("SCArray").that.eqls([ 0, 1, 2 ]);
     });
     it("#reverse", function() {
@@ -692,63 +693,56 @@
     });
     it("#asUGenInput", sinon.test(function() {
       var instance, test;
-      var $elem1, $elem2, $elem3;
-      var $ugen1, $ugen2, $ugen3;
-      var $for;
 
-      $elem1 = $$({
+      var $elem1 = $$({
         asUGenInput: this.spy(function() {
           return $ugen1;
         })
       });
-      $elem2 = $$({
+      var $elem2 = $$({
         asUGenInput: this.spy(function() {
           return $ugen2;
         })
       });
-      $elem3 = $$({
+      var $elem3 = $$({
         asUGenInput: this.spy(function() {
           return $ugen3;
         })
       });
-      $ugen1 = $$();
-      $ugen2 = $$();
-      $ugen3 = $$();
-      $for = $$();
+      var $ugen1 = $$();
+      var $ugen2 = $$();
+      var $ugen3 = $$();
+      var $for = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
 
       test = instance.asUGenInput($for);
-      expect($elem1.asUGenInput).to.be.calledWith($for);
-      expect($elem2.asUGenInput).to.be.calledWith($for);
-      expect($elem3.asUGenInput).to.be.calledWith($for);
+      expect($elem1.asUGenInput, 1).to.be.calledWith($for);
+      expect($elem2.asUGenInput, 2).to.be.calledWith($for);
+      expect($elem3.asUGenInput, 3).to.be.calledWith($for);
       expect(test).to.be.a("SCArray").that.eqls([ $ugen1, $ugen2, $ugen3 ]);
     }));
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test;
-      var $elem1, $elem2, $elem3;
-      var $ugen1, $ugen2, $ugen3;
-      var $for;
-
-      $elem1 = $$({
+      var $elem1 = $$({
         asAudioRateInput: this.spy(function() {
           return $ugen1;
         })
       });
-      $elem2 = $$({
+      var $elem2 = $$({
         asAudioRateInput: this.spy(function() {
           return $ugen2;
         })
       });
-      $elem3 = $$({
+      var $elem3 = $$({
         asAudioRateInput: this.spy(function() {
           return $ugen3;
         })
       });
-      $ugen1 = $$();
-      $ugen2 = $$();
-      $ugen3 = $$();
-      $for = $$();
+      var $ugen1 = $$();
+      var $ugen2 = $$();
+      var $ugen3 = $$();
+      var $for = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
 
@@ -760,27 +754,24 @@
     }));
     it("#asControlInput", sinon.test(function() {
       var instance, test;
-      var $elem1, $elem2, $elem3;
-      var $ugen1, $ugen2, $ugen3;
-
-      $elem1 = $$({
+      var $elem1 = $$({
         asControlInput: this.spy(function() {
           return $ugen1;
         })
       });
-      $elem2 = $$({
+      var $elem2 = $$({
         asControlInput: this.spy(function() {
           return $ugen2;
         })
       });
-      $elem3 = $$({
+      var $elem3 = $$({
         asControlInput: this.spy(function() {
           return $ugen3;
         })
       });
-      $ugen1 = $$();
-      $ugen2 = $$();
-      $ugen3 = $$();
+      var $ugen1 = $$();
+      var $ugen2 = $$();
+      var $ugen3 = $$();
 
       instance = this.createInstance([ $elem1, $elem2, $elem3 ]);
 
@@ -794,6 +785,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.isValidUGenInput();
       expect(test).to.be.a("SCBoolean").that.equals(true);
     });
@@ -821,19 +813,17 @@
     it.skip("#fork", function() {
     });
     it("#madd", sinon.test(function() {
-      var instance, test, spy;
-      var $mul, $add;
+      var instance, test;
+      var spy = this.spy(sc.test.func());
+      var $mul = $$();
+      var $add = $$();
 
-      spy = this.spy(sc.test.func());
-      $mul = $$();
-      $add = $$();
+      instance = this.createInstance();
       this.stub(sc.lang.klass, "get").withArgs("MulAdd").returns($$({
         new: spy
       }));
 
-      instance = this.createInstance();
       test = instance.madd($mul, $add);
-
       expect(spy).to.be.calledWith(instance, $mul, $add);
       expect(spy).to.be.calledLastIn(test);
     }));

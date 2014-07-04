@@ -1,6 +1,7 @@
 (function(sc) {
   "use strict";
 
+  require("./lang");
   require("./dollar");
 
   var main = {};

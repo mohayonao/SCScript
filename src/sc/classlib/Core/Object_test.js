@@ -8,9 +8,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-  var iterator = sc.lang.iterator;
-  var bytecode = sc.lang.bytecode;
-
   var SCObject = $("Object");
   var SCRoutine = $("Routine");
 
@@ -114,63 +111,47 @@
     });
     it("#post", sinon.test(function() {
       var instance, test;
-      var post;
-
-      post = this.spy();
+      var SCString$post = this.spy();
 
       instance = this.createInstance();
-      this.stub(instance, "asString", function() {
-        return { post: post };
-      });
+      this.stub(instance, "asString").returns({ post: SCString$post });
 
       test = instance.post();
       expect(test).to.equal(instance);
-      expect(post).to.be.calledWith(undefined);
+      expect(SCString$post).to.be.calledWith(undefined);
     }));
     it("#postln", sinon.test(function() {
       var instance, test;
-      var postln;
-
-      postln = this.spy();
+      var SCString$postln = this.spy();
 
       instance = this.createInstance();
-      this.stub(instance, "asString", function() {
-        return { postln: postln };
-      });
+      this.stub(instance, "asString").returns({ postln: SCString$postln });
 
       test = instance.postln();
       expect(test).to.equal(instance);
-      expect(postln).to.be.calledWith(undefined);
+      expect(SCString$postln).to.be.calledWith(undefined);
     }));
     it("#postc", sinon.test(function() {
       var instance, test;
-      var postc;
-
-      postc = this.spy();
+      var SCString$postc = this.spy();
 
       instance = this.createInstance();
-      this.stub(instance, "asString", function() {
-        return { postc: postc };
-      });
+      this.stub(instance, "asString").returns({ postc: SCString$postc });
 
       test = instance.postc();
       expect(test).to.equal(instance);
-      expect(postc).to.be.calledWith(undefined);
+      expect(SCString$postc).to.be.calledWith(undefined);
     }));
     it("#postcln", sinon.test(function() {
       var instance, test;
-      var postcln;
-
-      postcln = this.spy();
+      var SCString$postcln = this.spy();
 
       instance = this.createInstance();
-      this.stub(instance, "asString", function() {
-        return { postcln: postcln };
-      });
+      this.stub(instance, "asString").returns({ postcln: SCString$postcln });
 
       test = instance.postcln();
       expect(test).to.equal(instance);
-      expect(postcln).to.be.calledWith(undefined);
+      expect(SCString$postcln).to.be.calledWith(undefined);
     }));
     it.skip("#postcs", function() {
     });
@@ -213,30 +194,23 @@
       expect(test).to.be.a("SCInteger").that.equals(1);
     });
     it("#do", sinon.test(function() {
-      var instance, test, iter;
-      var $function;
-
-      iter = {};
-      $function = $$();
-
-      this.stub(iterator, "object$do", function() {
-        return iter;
-      });
-      this.stub(iterator, "execute");
+      var instance, test;
+      var iter = {};
+      var $function = $$();
 
       instance = this.createInstance();
+      this.stub(sc.lang.iterator, "object$do").returns(iter);
+      this.stub(sc.lang.iterator, "execute");
 
       test = instance.do($function);
-      expect(iterator.object$do).to.be.calledWith(instance);
-      expect(iterator.execute).to.be.calledWith(iter, $function);
+      expect(sc.lang.iterator.object$do).to.be.calledWith(instance);
+      expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
     it("#generate", sinon.test(function() {
       var instance, test;
-      var $function, $state;
-
-      $function = $$();
-      $state = $$();
+      var $function = $$();
+      var $state = $$();
 
       instance = this.createInstance();
       this.stub(instance, "do");
@@ -293,11 +267,9 @@
     });
     it("#performMsg", sinon.test(function() {
       var instance, test;
-      var $selector, $arg1, $arg2;
-
-      $selector = $$("\\size");
-      $arg1     = $$();
-      $arg2     = $$();
+      var $selector = $$("\\size");
+      var $arg1     = $$();
+      var $arg2     = $$();
 
       instance = this.createInstance();
       this.stub(instance, "size", sc.test.func());
@@ -312,11 +284,9 @@
     }));
     it("#perform", sinon.test(function() {
       var instance, test;
-      var $selector, $arg1, $arg2;
-
-      $selector = $$("\\size");
-      $arg1     = $$();
-      $arg2     = $$();
+      var $selector = $$("\\size");
+      var $arg1     = $$();
+      var $arg2     = $$();
 
       instance = this.createInstance();
       this.stub(instance, "size", sc.test.func());
@@ -331,12 +301,10 @@
     }));
     it("#performList", sinon.test(function() {
       var instance, test;
-      var $selector, $arg1, $arg2, $arglist;
-
-      $selector = $$("\\size");
-      $arg1     = $$();
-      $arg2     = $$();
-      $arglist  = $$([ $arg1, $arg2 ]);
+      var $selector = $$("\\size");
+      var $arg1     = $$();
+      var $arg2     = $$();
+      var $arglist  = $$([ $arg1, $arg2 ]);
 
       instance = this.createInstance();
       this.stub(instance, "size", sc.test.func());
@@ -350,7 +318,9 @@
       }).to.throw("not understood");
     }));
     it("#functionPerformList", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.functionPerformList).to.doNothing;
     });
     it.skip("#superPerform", function() {
@@ -359,11 +329,9 @@
     });
     it("#tryPerform", sinon.test(function() {
       var instance, test;
-      var $selector, $arg1, $arg2;
-
-      $selector = $$("\\size");
-      $arg1     = $$();
-      $arg2     = $$();
+      var $selector = $$("\\size");
+      var $arg1     = $$();
+      var $arg2     = $$();
 
       instance = this.createInstance();
       this.stub(instance, "size", sc.test.func());
@@ -449,9 +417,7 @@
     });
     it("#!", sinon.test(function() {
       var instance, test;
-      var $n;
-
-      $n = $$();
+      var $n = $$();
 
       instance = this.createInstance();
       this.stub(instance, "dup", sc.test.func());
@@ -470,26 +436,32 @@
       expect(instance.value).to.be.calledLastIn(test);
     }));
     it("#value", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.value).to.doNothing;
     });
     it("#valueArray", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.valueArray).to.doNothing;
     });
     it("#valueEnvir", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.valueEnvir).to.doNothing;
     });
     it("#valueArrayEnvir", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.valueArrayEnvir).to.doNothing;
     });
     it("#==", sinon.test(function() {
       var instance, test;
-      var $obj;
-
-      $obj = $$();
+      var $obj = $$();
 
       instance = this.createInstance();
       this.stub(instance, "===", sc.test.func());
@@ -499,25 +471,20 @@
       expect(instance["==="]).to.be.calledLastIn(test);
     }));
     it("#!=", sinon.test(function() {
-      var instance, test, spy;
-      var $obj;
-
-      spy = this.spy(sc.test.func());
-      $obj = $$();
+      var instance, test;
+      var $obj = $$();
+      var SCBoolean$not = this.spy(sc.test.func());
 
       instance = this.createInstance();
-      this.stub(instance, "==", function() {
-        return $$({
-          not: spy
-        });
-      });
+      this.stub(instance, "==").returns($$({ not: SCBoolean$not }));
 
       test = instance ["!="] ($obj);
       expect(instance["=="]).to.be.calledWith($obj);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCBoolean$not).to.be.calledLastIn(test);
     }));
     it("#===", function() {
       var instance, test;
+
       instance = this.createInstance();
       [
         [ instance      , true  ],
@@ -529,6 +496,7 @@
     });
     it("#!==", function() {
       var instance, test;
+
       instance = this.createInstance();
       [
         [ instance      , false ],
@@ -578,27 +546,28 @@
     });
     it("#->", function() {
       var instance, test;
-      var $obj;
+      var $obj = $$();
 
-      $obj = $$();
       instance = this.createInstance();
 
       test = instance ["->"] ($obj);
       expect(test).to.be.a("SCAssociation");
     });
     it("#next", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.next).to.doNothing;
     });
     it("#reset", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.reset).to.doNothing;
     });
     it("#first", sinon.test(function() {
       var instance, test;
-      var $inval;
-
-      $inval = $$();
+      var $inval = $$();
 
       instance = this.createInstance();
       this.stub(instance, "reset");
@@ -610,39 +579,48 @@
       expect(instance.next).to.be.calledLastIn(test);
     }));
     it("#iter", sinon.test(function() {
-      var instance, test, spy;
+      var instance, test;
+      var SCOneShotStream$new = this.spy(sc.test.func());
 
-      spy = this.spy(sc.test.func());
       this.stub(sc.lang.klass, "get").withArgs("OneShotStream").returns($$({
-        new: spy
+        new: SCOneShotStream$new
       }));
 
       instance = this.createInstance();
 
       test = instance.iter();
-      expect(spy).to.be.calledWith(instance);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCOneShotStream$new ).to.be.calledWith(instance);
+      expect(SCOneShotStream$new ).to.be.calledLastIn(test);
     }));
     it("#stop", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.stop).to.doNothing;
     });
     it("#free", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.free).to.doNothing;
     });
     it("#clear", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.clear).to.doNothing;
     });
     it("#removedFromScheduler", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.removedFromScheduler).to.doNothing;
     });
     it("#isPlaying", function() {
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.isPlaying();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
@@ -694,22 +672,20 @@
     });
     it("#repeat", sinon.test(function() {
       var instance, test;
-      var $repeats, $new, $asStream;
-
-      $repeats = $$();
-      $new = this.spy(function() {
-        return { asStream: $asStream };
+      var $repeats = $$();
+      var SCPn$new = this.spy(function() {
+        return { asStream: SCObject$asStream };
       });
-      $asStream = sc.test.func();
-      this.stub(sc.lang.klass, "get").withArgs("Pn").returns({
-        new: $new
-      });
+      var SCObject$asStream = sc.test.func();
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("Pn").returns({
+        new: SCPn$new
+      });
 
       test = instance.repeat($repeats);
-      expect($new.args[0]).to.eql($$([ instance, $repeats ])._);
-      expect($asStream).to.be.calledLastIn(test);
+      expect(SCPn$new.args[0]).to.eql($$([ instance, $repeats ])._);
+      expect(SCObject$asStream).to.be.calledLastIn(test);
     }));
     it("#loop", sinon.test(function() {
       var instance, test;
@@ -755,11 +731,7 @@
     });
     it("#composeEvents", function() {
       var instance, test;
-      var $event;
-
-      $event = $$({
-        copy: sc.test.func()
-      });
+      var $event = $$({ copy: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -767,7 +739,9 @@
       expect($event.copy).to.be.calledLastIn(test);
     });
     it("#finishEvent", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.finishEvent).to.doNothing;
     });
     it("#atLimit", function() {
@@ -787,33 +761,38 @@
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
     it("#threadPlayer", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.threadPlayer).to.doNothing;
     });
     it("#threadPlayer_", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.threadPlayer_).to.doNothing;
     });
     it("#?", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance["?"]).to.doNothing;
     });
     it("#??", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance["??"]).to.doNothing;
     });
     it("#!?", sinon.test(function() {
-      var instance, test, spy;
-      var $obj;
-
-      spy = this.spy(sc.test.func());
-      $obj = $$({ value: spy });
+      var instance, test;
+      var $obj = $$({ value: this.spy(sc.test.func()) });
 
       instance = this.createInstance();
 
       test = instance ["!?"] ($obj);
-      expect(spy).to.be.calledWith(instance);
-      expect(spy).to.be.calledLastIn(test);
+      expect($obj.value).to.be.calledWith(instance);
+      expect($obj.value).to.be.calledLastIn(test);
     }));
     it("#isNil", function() {
       testCase(this, [
@@ -882,9 +861,7 @@
     });
     it("#matchItem", sinon.test(function() {
       var instance, test;
-      var $item;
-
-      $item = $$();
+      var $item = $$();
 
       instance = this.createInstance();
       this.stub(instance, "===", sc.test.func());
@@ -902,22 +879,18 @@
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
     it("#falseAt", sinon.test(function() {
-      var instance, test, spy;
-      var $key;
-
-      spy = this.spy(sc.test.func());
-      $key = $$();
+      var instance, test;
+      var $key = $$();
+      var SCBoolean$not = this.spy(sc.test.func());
 
       instance = this.createInstance();
       this.stub(instance, "trueAt", function() {
-        return $$({
-          not: spy
-        });
+        return $$({ not: SCBoolean$not });
       });
 
       test = instance.falseAt($key);
       expect(instance.trueAt).to.be.calledWith($key);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCBoolean$not).to.be.calledLastIn(test);
     }));
     it.skip("#pointsTo", function() {
     });
@@ -1002,9 +975,7 @@
     });
     it("#as", sinon.test(function() {
       var instance, test;
-      var $aSimilarClass;
-
-      $aSimilarClass = $$({
+      var $aSimilarClass = $$({
         newFrom: this.spy(sc.test.func())
       });
 
@@ -1015,15 +986,16 @@
       expect($aSimilarClass.newFrom).to.be.calledLastIn(test);
     }));
     it("#dereference", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.dereference).to.doNothing;
     });
     it("#reference", sinon.test(function() {
       var instance, test;
 
-      this.stub($, "Ref", sc.test.func());
-
       instance = this.createInstance();
+      this.stub($, "Ref", sc.test.func());
 
       test = instance.reference();
       expect($.Ref).to.be.calledWith(instance);
@@ -1032,28 +1004,24 @@
     it("#asRef", sinon.test(function() {
       var instance, test;
 
-      this.stub($, "Ref", sc.test.func());
-
       instance = this.createInstance();
+      this.stub($, "Ref", sc.test.func());
 
       test = instance.asRef();
       expect($.Ref).to.be.calledWith(instance);
       expect($.Ref).to.be.calledLastIn(test);
     }));
     it("#asArray", sinon.test(function() {
-      var instance, test, spy;
-
-      spy = this.spy(sc.test.func());
+      var instance, test;
+      var SCCollection$asArray = this.spy(sc.test.func());
 
       instance = this.createInstance();
       this.stub(instance, "asCollection", function() {
-        return $$({
-          asArray: spy
-        });
+        return $$({ asArray: SCCollection$asArray });
       });
 
       test = instance.asArray();
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCCollection$asArray).to.be.calledLastIn(test);
     }));
     it("#asSequenceableCollection", sinon.test(function() {
       var instance, test;
@@ -1071,15 +1039,13 @@
     });
     it("#deepCollect", sinon.test(function() {
       var instance, test;
-      var $depth, $function, $index, $rank;
-
-      $depth    = $$();
-      $function = $$();
-      $index    = $$();
-      $rank     = $$();
-      this.stub($function, "value", sc.test.func());
+      var $depth    = $$();
+      var $function = $$();
+      var $index    = $$();
+      var $rank     = $$();
 
       instance = this.createInstance();
+      this.stub($function, "value", sc.test.func());
 
       test = instance.deepCollect($depth, $function, $index, $rank);
       expect($function.value).to.be.calledWith(instance, $index, $rank);
@@ -1087,41 +1053,42 @@
     }));
     it("#deepDo", sinon.test(function() {
       var instance, test;
-      var $depth, $function, $index, $rank;
-
-      $depth    = $$();
-      $function = $$();
-      $index    = $$();
-      $rank     = $$();
-      this.stub($function, "value", sc.test.func());
+      var $depth    = $$();
+      var $function = $$();
+      var $index    = $$();
+      var $rank     = $$();
 
       instance = this.createInstance();
+      this.stub($function, "value", sc.test.func());
 
       test = instance.deepDo($depth, $function, $index, $rank);
       expect($function.value).to.be.calledWith(instance, $index, $rank);
       expect(test).to.equal(instance);
     }));
     it("#slice", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.slice).to.doNothing;
     });
     it("#shape", function() {
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.shape();
       expect(test).to.be.a("SCNil");
     });
     it("#unbubble", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.unbubble).to.doNothing;
     });
     it("#bubble", function() {
       var instance, test;
-      var $depth, $levels;
-
-      $depth  = $$();
-      $levels = $$(3);
+      var $depth  = $$();
+      var $levels = $$(3);
 
       instance = this.createInstance();
 
@@ -1157,28 +1124,24 @@
       ]);
     });
     it("#addFunc", sinon.test(function() {
-      var instance, test, spy;
-      var $elem, $arg1, $arg2;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("FunctionList").returns($$({
-        new: spy
-      }));
-      $elem = $$();
-      $arg1 = $$();
-      $arg2 = $$();
+      var instance, test;
+      var $elem = $$();
+      var $arg1 = $$();
+      var $arg2 = $$();
+      var SCFunctionList$new = this.spy(sc.test.func());
 
       instance = this.createInstance($$([ $elem ]));
+      this.stub(sc.lang.klass, "get").withArgs("FunctionList").returns($$({
+        new: SCFunctionList$new
+      }));
 
       test = instance.addFunc($arg1, $arg2);
-      expect(spy.args[0]).to.eql($$([ [ $elem, $arg1, $arg2 ] ])._);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCFunctionList$new.args[0]).to.eql($$([ [ $elem, $arg1, $arg2 ] ])._);
+      expect(SCFunctionList$new).to.be.calledLastIn(test);
     }));
     it("#removeFunc", function() {
       var instance, test;
-      var $function;
-
-      $function = $$();
+      var $function = $$();
 
       instance = this.createInstance();
 
@@ -1190,10 +1153,8 @@
     });
     it("#replaceFunc", function() {
       var instance, test;
-      var $function, $replace;
-
-      $function = $$();
-      $replace  = $$();
+      var $function = $$();
+      var $replace  = $$();
 
       instance = this.createInstance();
 
@@ -1208,10 +1169,9 @@
     it.skip("#removeFuncFrom", function() {
     });
     it("#while", sinon.test(function() {
-      var instance, test, count = 0;
-      var $body;
-
-      $body = $$({ value: this.spy() });
+      var instance, test;
+      var count = 0;
+      var $body = $$({ value: this.spy() });
 
       instance = this.createInstance($$(function() {
         return $$(count++ < 2);
@@ -1264,57 +1224,57 @@
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(bytecode, "yield");
+      this.stub(sc.lang.bytecode, "yield");
 
       test = instance.yield();
       expect(test).to.be.a("SCNil");
-      expect(bytecode.yield).to.be.calledWith(instance);
+      expect(sc.lang.bytecode.yield).to.be.calledWith(instance);
     }));
     it("#alwaysYield", sinon.test(function() {
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(bytecode, "alwaysYield");
+      this.stub(sc.lang.bytecode, "alwaysYield");
 
       test = instance.alwaysYield();
       expect(test).to.be.a("SCNil");
-      expect(bytecode.alwaysYield).to.be.calledWith(instance);
+      expect(sc.lang.bytecode.alwaysYield).to.be.calledWith(instance);
     }));
     it("#yieldAndReset true", sinon.test(function() {
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(bytecode, "yieldAndReset");
-      this.stub(bytecode, "yield");
+      this.stub(sc.lang.bytecode, "yieldAndReset");
+      this.stub(sc.lang.bytecode, "yield");
 
       test = instance.yieldAndReset($$(true));
       expect(test).to.be.a("SCNil");
-      expect(bytecode.yieldAndReset).to.be.calledWith(instance);
-      expect(bytecode.yield).to.be.not.called;
+      expect(sc.lang.bytecode.yieldAndReset).to.be.calledWith(instance);
+      expect(sc.lang.bytecode.yield).to.be.not.called;
     }));
     it("#yieldAndReset null", sinon.test(function() {
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(bytecode, "yieldAndReset");
-      this.stub(bytecode, "yield");
+      this.stub(sc.lang.bytecode, "yieldAndReset");
+      this.stub(sc.lang.bytecode, "yield");
 
       test = instance.yieldAndReset();
       expect(test).to.be.a("SCNil");
-      expect(bytecode.yieldAndReset).to.be.calledWith(instance);
-      expect(bytecode.yield).to.be.not.called;
+      expect(sc.lang.bytecode.yieldAndReset).to.be.calledWith(instance);
+      expect(sc.lang.bytecode.yield).to.be.not.called;
     }));
     it("#yieldAndReset false", sinon.test(function() {
       var instance, test;
 
       instance = this.createInstance();
-      this.stub(bytecode, "yieldAndReset");
-      this.stub(bytecode, "yield");
+      this.stub(sc.lang.bytecode, "yieldAndReset");
+      this.stub(sc.lang.bytecode, "yield");
 
       test = instance.yieldAndReset($$(false));
       expect(test).to.be.a("SCNil");
-      expect(bytecode.yieldAndReset).to.be.not.called;
-      expect(bytecode.yield).to.be.calledWith(instance);
+      expect(sc.lang.bytecode.yieldAndReset).to.be.not.called;
+      expect(sc.lang.bytecode.yield).to.be.calledWith(instance);
     }));
     it.skip("#idle", function() {
     });
@@ -1356,9 +1316,7 @@
     });
     it("#&", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.bitAnd = this.spy(sc.test.func());
@@ -1369,9 +1327,7 @@
     }));
     it("#|", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.bitOr = this.spy(sc.test.func());
@@ -1382,9 +1338,7 @@
     }));
     it("#%", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.mod = this.spy(sc.test.func());
@@ -1395,9 +1349,7 @@
     }));
     it("#**", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.pow = this.spy(sc.test.func());
@@ -1408,9 +1360,7 @@
     }));
     it("#<<", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.leftShift = this.spy(sc.test.func());
@@ -1421,9 +1371,7 @@
     }));
     it("#>>", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.rightShift = this.spy(sc.test.func());
@@ -1434,9 +1382,7 @@
     }));
     it("#+>>", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.unsignedRightShift = this.spy(sc.test.func());
@@ -1447,9 +1393,7 @@
     }));
     it("#<!", sinon.test(function() {
       var instance, test;
-      var $that;
-
-      $that = $$();
+      var $that = $$();
 
       instance = this.createInstance();
       instance.firstArg = this.spy(sc.test.func());
@@ -1496,6 +1440,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.isUGen();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
@@ -1503,6 +1448,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.numChannels();
       expect(test).to.be.a("SCInteger").that.equals(1);
     });
@@ -1510,6 +1456,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.pair();
       expect(test).to.be.a("SCArray").that.eqls([ instance, null ]);
     });
@@ -1531,9 +1478,7 @@
     });
     it("#awake", sinon.test(function() {
       var instance, test;
-      var $beats;
-
-      $beats = $$();
+      var $beats = $$();
 
       instance = this.createInstance();
       this.stub(instance, "next", sc.test.func());
@@ -1543,11 +1488,15 @@
       expect(instance.next).to.be.calledLastIn(test);
     }));
     it("#beats_", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.beats_).to.doNothing;
     });
     it("#clock_", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.clock_).to.doNothing;
     });
     it("#performBinaryOpOnSomething", function() {
@@ -1571,11 +1520,9 @@
     });
     it("#performBinaryOpOnSimpleNumber", sinon.test(function() {
       var instance, test;
-      var $aSelector, $thing, $adverb;
-
-      $aSelector = $$();
-      $thing     = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $thing     = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
@@ -1586,11 +1533,9 @@
     }));
     it("#performBinaryOpOnSignal", sinon.test(function() {
       var instance, test;
-      var $aSelector, $thing, $adverb;
-
-      $aSelector = $$();
-      $thing     = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $thing     = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
@@ -1601,11 +1546,9 @@
     }));
     it("#performBinaryOpOnComplex", sinon.test(function() {
       var instance, test;
-      var $aSelector, $thing, $adverb;
-
-      $aSelector = $$();
-      $thing     = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $thing     = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
@@ -1616,11 +1559,9 @@
     }));
     it("#performBinaryOpOnSeqColl", sinon.test(function() {
       var instance, test;
-      var $aSelector, $thing, $adverb;
-
-      $aSelector = $$();
-      $thing     = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $thing     = $$();
+      var $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
@@ -1631,11 +1572,9 @@
     }));
     it("#performBinaryOpOnUGen", sinon.test(function() {
       var instance, test;
-      var $aSelector, $thing, $adverb;
-
-      $aSelector = $$();
-      $thing     = $$();
-      $adverb    = $$();
+      var $aSelector = $$();
+      var $thing     = $$();
+      var  $adverb    = $$();
 
       instance = this.createInstance();
       this.stub(instance, "performBinaryOpOnSomething", sc.test.func());
@@ -1671,40 +1610,46 @@
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
     it("#source", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.source).to.doNothing;
     });
     it("#asUGenInput", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asUGenInput).to.doNothing;
     });
     it("#asControlInput", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.asControlInput).to.doNothing;
     });
     it("#asAudioRateInput", sinon.test(function() {
-      var instance, test, spy, rate;
-
-      spy = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("K2A").returns($$({
-        ar: spy
-      }));
+      var instance, test;
+      var rate;
+      var SCK2A$ar = this.spy(sc.test.func());
 
       instance = this.createInstance();
       instance.rate = function() {
         return $.Symbol(rate);
       };
+      this.stub(sc.lang.klass, "get").withArgs("K2A").returns($$({
+        ar: SCK2A$ar
+      }));
 
       rate = "audio";
       test = instance.asAudioRateInput();
       expect(test).to.equal(instance);
-      expect(spy).to.be.not.called;
-      spy.reset();
+      expect(SCK2A$ar).to.be.not.called;
+      SCK2A$ar.reset();
 
       rate = "control";
       test = instance.asAudioRateInput();
-      expect(spy).to.be.calledWith(instance);
-      expect(spy).to.be.calledLastIn(test);
+      expect(SCK2A$ar).to.be.calledWith(instance);
+      expect(SCK2A$ar).to.be.calledLastIn(test);
     }));
     it.skip("#slotSize", function() {
     });
@@ -1767,7 +1712,9 @@
     it.skip("#help", function() {
     });
     it("#processRest", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.processRest).to.doNothing;
     });
   });

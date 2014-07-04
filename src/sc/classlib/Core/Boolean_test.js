@@ -7,7 +7,6 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
-
   var SCBoolean = $("Boolean");
   var SCFalse = $("False");
   var SCTrue = $("True");
@@ -91,12 +90,8 @@
     });
     it("#if", sinon.test(function() {
       var instance, test;
-      var $trueFunc, $falseFunc;
-
-      $trueFunc = $$({
-        value: sc.test.func()
-      });
-      $falseFunc = $$({
+      var $trueFunc = $$({ value: sc.test.func() });
+      var $falseFunc = $$({
         value: function() {
           throw new Error("not reached");
         }
@@ -117,11 +112,7 @@
     });
     it("#&&", function() {
       var instance, test;
-      var $that;
-
-      $that = $$({
-        value: sc.test.func()
-      });
+      var $that = $$({ value: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -134,11 +125,7 @@
     });
     it("#and", function() {
       var instance, test;
-      var $that;
-
-      $that = $$({
-        value: sc.test.func()
-      });
+      var $that = $$({ value: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -146,19 +133,16 @@
       expect($that.value).to.be.calledLastIn(test);
     });
     it("#or", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.or).to.doNothing;
     });
     it("#nand", function() {
       var instance, test;
-      var $that;
-
-      $that = $$({
-        value: function() {
-          return this;
-        },
-        not: sc.test.func()
-      });
+      var $that = $$({ value: function() {
+        return this;
+      }, not: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -196,16 +180,12 @@
     });
     it("#if", sinon.test(function() {
       var instance, test;
-      var $trueFunc, $falseFunc;
-
-      $trueFunc = $$({
+      var $trueFunc = $$({
         value: function() {
           throw new Error("not reached");
         }
       });
-      $falseFunc = $$({
-        value: sc.test.func()
-      });
+      var $falseFunc = $$({ value: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -216,20 +196,19 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.not();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
     it("#&&", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance["&&"]).to.doNothing;
     });
     it("#||", function() {
       var instance, test;
-      var $that;
-
-      $that = $$({
-        value: sc.test.func()
-      });
+      var $that = $$({ value: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -237,16 +216,14 @@
       expect($that.value).to.be.calledLastIn(test);
     });
     it("#and", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.and).to.doNothing;
     });
     it("#or", function() {
       var instance, test;
-      var $that;
-
-      $that = $$({
-        value: sc.test.func()
-      });
+      var $that = $$({ value: sc.test.func() });
 
       instance = this.createInstance();
 
@@ -257,6 +234,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.nand();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
@@ -264,6 +242,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.asInteger();
       expect(test).to.be.a("SCInteger").that.equals(0);
     });
@@ -271,6 +250,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.binaryValue();
       expect(test).to.be.a("SCInteger").that.equals(0);
     });

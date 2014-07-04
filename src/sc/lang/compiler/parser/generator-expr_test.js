@@ -1,7 +1,7 @@
 (function() {
   "use strict";
 
-  require("./installer");
+  require("./");
 
   var Parser = sc.lang.compiler.Parser;
   var Lexer = sc.lang.compiler.Lexer;

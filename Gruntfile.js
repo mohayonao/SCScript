@@ -5,46 +5,6 @@ module.exports = function(grunt) {
 
   var _ = require("underscore");
 
-  grunt._loadNpmTasksIfNeeded = function(name) {
-    if (!grunt._loadNpmTasksIfNeeded[name]) {
-      grunt._loadNpmTasksIfNeeded[name] = true;
-      grunt.loadNpmTasks(name);
-    }
-  };
-
-  grunt.file._expand = function() {
-    var dict = grunt.file.readJSON("tools/grunt-tasks/assets/files.json");
-    var list = grunt.file.expand(_.chain(arguments).map(function(name) {
-      return dict[name] || name;
-    }).flatten().value());
-
-    Object.defineProperty(list, "applyFilter", {
-      value: function(filter) {
-        return applyFilter(this, filter);
-      }
-    });
-
-    return list;
-  };
-
-  var applyFilter = function(list, filter) {
-    return !filter ? list : _.chain(filter.split("+")).map(function(filter) {
-      return _.chain(list).filter(function(file) {
-        return file.indexOf(filter) !== -1;
-      }).value();
-    }).flatten().value();
-  };
-
-  var toTaskArgs = function(args) {
-    if (_.isUndefined(args)) {
-      return "";
-    }
-    if (_.isArguments(args)) {
-      return _.map(args, toTaskArgs).join(":");
-    }
-    return args;
-  };
-
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json")
   });
@@ -128,4 +88,44 @@ module.exports = function(grunt) {
       "build", "test::nyan:lcov", "plato"
     ]
   );
+
+  grunt._loadNpmTasksIfNeeded = function(name) {
+    if (!grunt._loadNpmTasksIfNeeded[name]) {
+      grunt._loadNpmTasksIfNeeded[name] = true;
+      grunt.loadNpmTasks(name);
+    }
+  };
+
+  grunt.file._expand = function() {
+    var dict = grunt.file.readJSON("tools/grunt-tasks/assets/files.json");
+    var list = grunt.file.expand(_.chain(arguments).map(function(name) {
+      return dict[name] || name;
+    }).flatten().value());
+
+    Object.defineProperty(list, "applyFilter", {
+      value: function(filter) {
+        return applyFilter(this, filter);
+      }
+    });
+
+    return list;
+  };
+
+  function applyFilter(list, filter) {
+    return !filter ? list : _.chain(filter.split("+")).map(function(filter) {
+      return _.chain(list).filter(function(file) {
+        return file.indexOf(filter) !== -1;
+      }).value();
+    }).flatten().value();
+  }
+
+  function toTaskArgs(args) {
+    if (_.isUndefined(args)) {
+      return "";
+    }
+    if (_.isArguments(args)) {
+      return _.map(args, toTaskArgs).join(":");
+    }
+    return args;
+  }
 };

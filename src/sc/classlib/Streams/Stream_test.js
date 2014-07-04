@@ -6,7 +6,6 @@
   var $$ = sc.test.object;
 
   var $ = sc.lang.$;
-
   var SCStream = $("Stream");
   var SCOneShotStream = $("OneShotStream");
   var SCFuncStream = $("FuncStream");
@@ -36,11 +35,15 @@
       expect(test).to.be.a("SCNil");
     });
     it("#next", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.next.__errorType).to.equal("subclassResponsibility");
     });
     it("#iter", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.iter).to.doNothing;
     });
     it("#value", function() {
@@ -79,14 +82,14 @@
       expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
     });
     it("#put", function() {
-      var instance = this.createInstance();
+      var instance;
+
+      instance = this.createInstance();
       expect(instance.put.__errorType).to.equal("subclassResponsibility");
     });
     it("#putN", sinon.test(function() {
       var instance, test;
-      var $item;
-
-      $item = $$();
+      var $item = $$();
 
       instance = this.createInstance();
       this.stub(instance, "put");
@@ -100,9 +103,7 @@
     }));
     it("#putAll", sinon.test(function() {
       var instance, test;
-      var $collection;
-
-      $collection = $$([ 1, 2, 3 ]);
+      var $collection = $$([ 1, 2, 3 ]);
 
       instance = this.createInstance();
       this.stub(instance, "put");
@@ -285,9 +286,7 @@
     }));
     it("#++", sinon.test(function() {
       var instance, test;
-      var $stream;
-
-      $stream = $$();
+      var $stream = $$();
 
       instance = this.createInstance();
       this.stub(instance, "appendStream", sc.test.func());
@@ -338,83 +337,71 @@
     }));
     it("#<>", sinon.test(function() {
       var instance, test;
-      var $obj, $new, $asStream;
-
-      $obj = $$();
-      $new = this.spy(function() {
-        return $$({ asStream: $asStream });
+      var $obj = $$();
+      var SCPchain$new = this.spy(function() {
+        return $$({ asStream: SCPchain$asStream });
       });
-      $asStream = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("Pchain").returns($$({
-        new: $new
-      }));
+      var SCPchain$asStream = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("Pchain").returns($$({
+        new: SCPchain$new
+      }));
 
       test = instance ["<>"] ($obj);
-      expect($new.firstCall).to.be.calledWith(instance, $obj);
-      expect($asStream).to.be.calledLastIn(test);
+      expect(SCPchain$new.firstCall).to.be.calledWith(instance, $obj);
+      expect(SCPchain$asStream).to.be.calledLastIn(test);
     }));
     it("#composeUnaryOp", sinon.test(function() {
       var instance, test;
-      var $argSelector, $new;
-
-      $argSelector = $$();
-      $new = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("UnaryOpStream").returns($$({
-        new: $new
-      }));
+      var $argSelector = $$();
+      var SCUnaryOpStream$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("UnaryOpStream").returns($$({
+        new: SCUnaryOpStream$new
+      }));
 
       test = instance.composeUnaryOp($argSelector);
-      expect($new.firstCall).to.be.calledWith($argSelector, instance);
-      expect($new).to.be.calledLastIn(test);
+      expect(SCUnaryOpStream$new.firstCall).to.be.calledWith($argSelector, instance);
+      expect(SCUnaryOpStream$new).to.be.calledLastIn(test);
     }));
     it("#composeBinaryOp", sinon.test(function() {
       var instance, test;
-      var $argSelector, $argStream, $new;
-
-      $argSelector = $$();
-      $argStream   = SCStream.new();
-      $new = this.spy(sc.test.func());
-
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns($$({
-        new: $new
-      }));
+      var $argSelector = $$();
+      var $argStream   = SCStream.new();
+      var SCBinaryOpStream$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns($$({
+        new: SCBinaryOpStream$new
+      }));
 
       test = instance.composeBinaryOp($argSelector, $argStream);
-      expect($new.firstCall).to.be.calledWith($argSelector, instance, $argStream);
-      expect($new).to.be.calledLastIn(test);
+      expect(SCBinaryOpStream$new.firstCall).to.be.calledWith($argSelector, instance, $argStream);
+      expect(SCBinaryOpStream$new).to.be.calledLastIn(test);
     }));
     it("#composeBinaryOp with adverb 'x'", sinon.test(function() {
       var instance, test;
-      var $argSelector, $argStream, $adverb, $new;
-
-      $argSelector = $$();
-      $argStream   = $$(SCStream.new());
-      $adverb      = $$("\\x");
-      $new = this.spy(sc.test.func());
-
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns($$({
-        new: $new
-      }));
+      var $argSelector = $$();
+      var $argStream   = $$(SCStream.new());
+      var $adverb      = $$("\\x");
+      var SCBinaryOpXStream$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns($$({
+        new: SCBinaryOpXStream$new
+      }));
 
       test = instance.composeBinaryOp($argSelector, $argStream, $adverb);
-      expect($new.firstCall).to.be.calledWith($argSelector, instance, $argStream);
-      expect($new).to.be.calledLastIn(test);
+      expect(SCBinaryOpXStream$new.firstCall).to.be.calledWith($argSelector, instance, $argStream);
+      expect(SCBinaryOpXStream$new).to.be.calledLastIn(test);
     }));
     it("#composeBinaryOp with unknown adverb", function() {
       var instance, test;
-      var $argSelector, $argStream, $adverb;
-
-      $argSelector = $$();
-      $argStream   = $$(SCStream.new());
-      $adverb      = $$("\\unknown");
+      var $argSelector = $$();
+      var $argStream   = $$(SCStream.new());
+      var $adverb      = $$("\\unknown");
 
       instance = this.createInstance();
 
@@ -423,48 +410,40 @@
     });
     it("#reverseComposeBinaryOp", sinon.test(function() {
       var instance, test;
-      var $argSelector, $argStream, $new;
-
-      $argSelector = $$();
-      $argStream   = $$(SCStream.new());
-      $new = this.spy(sc.test.func());
-
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns($$({
-        new: $new
-      }));
+      var $argSelector = $$();
+      var $argStream   = $$(SCStream.new());
+      var SCBinaryOpStream$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpStream").returns($$({
+        new: SCBinaryOpStream$new
+      }));
 
       test = instance.reverseComposeBinaryOp($argSelector, $argStream);
-      expect($new.firstCall).to.be.calledWith($argSelector, $argStream, instance);
-      expect($new).to.be.calledLastIn(test);
+      expect(SCBinaryOpStream$new.firstCall).to.be.calledWith($argSelector, $argStream, instance);
+      expect(SCBinaryOpStream$new).to.be.calledLastIn(test);
     }));
     it("#reverseComposeBinaryOp with adverb 'x'", sinon.test(function() {
       var instance, test;
-      var $argSelector, $argStream, $adverb, $new;
-
-      $argSelector = $$();
-      $argStream   = $$(SCStream.new());
-      $adverb      = $$("\\x");
-      $new = this.spy(sc.test.func());
-
-      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns($$({
-        new: $new
-      }));
+      var $argSelector = $$();
+      var $argStream   = $$(SCStream.new());
+      var $adverb      = $$("\\x");
+      var SCBinaryOpXStream$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("BinaryOpXStream").returns($$({
+        new: SCBinaryOpXStream$new
+      }));
 
       test = instance.reverseComposeBinaryOp($argSelector, $argStream, $adverb);
-      expect($new.firstCall).to.be.calledWith($argSelector, $argStream, instance);
-      expect($new).to.be.calledLastIn(test);
+      expect(SCBinaryOpXStream$new.firstCall).to.be.calledWith($argSelector, $argStream, instance);
+      expect(SCBinaryOpXStream$new).to.be.calledLastIn(test);
     }));
     it("#reverseComposeBinaryOp with unknown adverb", function() {
       var instance, test;
-      var $argSelector, $argStream, $adverb;
-
-      $argSelector = $$();
-      $argStream   = $$(SCStream.new());
-      $adverb      = $$("\\unknown");
+      var $argSelector = $$();
+      var $argStream   = $$(SCStream.new());
+      var $adverb      = $$("\\unknown");
 
       instance = this.createInstance();
 
@@ -473,20 +452,17 @@
     });
     it("#composeNAryOp", sinon.test(function() {
       var instance, test;
-      var $argSelector, $anArgList, $new;
-
-      $argSelector = $$();
-      $anArgList   = $$([ 1, 2 ]);
-
-      $new = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("NAryOpStream").returns($$({
-        new: $new
-      }));
+      var $argSelector = $$();
+      var $anArgList   = $$([ 1, 2 ]);
+      var SCNAryOpStream$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("NAryOpStream").returns($$({
+        new: SCNAryOpStream$new
+      }));
 
       test = instance.composeNAryOp($argSelector, $anArgList);
-      expect($new.args[0]).to.eql($$([ $argSelector, instance, [ 1, 2 ] ])._);
+      expect(SCNAryOpStream$new.args[0]).to.eql($$([ $argSelector, instance, [ 1, 2 ] ])._);
     }));
     it("#embedInStream", function() {
       var instance = this.createInstance(sc.test.routine([ 2, 3, 4 ]));
@@ -518,29 +494,24 @@
     });
     it("#asEventStreamPlayer", sinon.test(function() {
       var instance, test;
-      var $protoEvent, $new;
-
-      $protoEvent = $$();
-
-      $new = this.spy(sc.test.func());
-      this.stub(sc.lang.klass, "get").withArgs("EventStreamPlayer").returns($$({
-        new: $new
-      }));
+      var $protoEvent = $$();
+      var SCEventStreamPlayer$new = this.spy(sc.test.func());
 
       instance = this.createInstance();
+      this.stub(sc.lang.klass, "get").withArgs("EventStreamPlayer").returns($$({
+        new: SCEventStreamPlayer$new
+      }));
 
       test = instance.asEventStreamPlayer($protoEvent);
-      expect($new.args[0]).to.eql([ instance, $protoEvent ]);
+      expect(SCEventStreamPlayer$new.args[0]).to.eql([ instance, $protoEvent ]);
     }));
     it("#play case1", sinon.test(function() {
       var instance, test;
-      var $clock, $quant, $asQuant;
-
-      $clock = $$({ play: this.spy() });
-      $quant = $$({ asQuant: this.spy(function() {
+      var $clock = $$({ play: this.spy() });
+      var $quant = $$({ asQuant: this.spy(function() {
         return $asQuant;
       }) });
-      $asQuant = $$();
+      var $asQuant = $$();
 
       instance = this.createInstance();
 
@@ -550,21 +521,19 @@
     }));
     it("#play case2", sinon.test(function() {
       var instance, test;
-      var $clock, $quant, $asQuant, $tempoClock;
-
-      $clock = $$(null);
-      $quant = $$({ asQuant: this.spy(function() {
+      var $clock = $$(null);
+      var $quant = $$({ asQuant: this.spy(function() {
         return $asQuant;
       }) });
-      $asQuant = $$();
-      $tempoClock = $$({ play: this.spy() });
+      var $asQuant = $$();
+      var $tempoClock = $$({ play: this.spy() });
+
+      instance = this.createInstance();
       this.stub(sc.lang.klass, "get").withArgs("TempoClock").returns($$({
         default: function() {
           return $tempoClock;
         }
       }));
-
-      instance = this.createInstance();
 
       test = instance.play($clock, $quant);
       expect(test).to.equal(instance);
@@ -671,6 +640,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
@@ -730,6 +700,7 @@
       var instance, test;
 
       instance = this.createInstance();
+
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });

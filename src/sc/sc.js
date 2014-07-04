@@ -1,7 +1,6 @@
 (function(sc) {
   "use strict";
 
-  sc.libs = {};
   sc.config = {};
 
   function SCScript(fn) {

@@ -1,7 +1,7 @@
 (function(sc) {
   "use strict";
 
-  require("./sc");
+  require("./libs");
   require("./random");
 
   var rand = sc.libs.random;

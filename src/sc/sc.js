@@ -1,7 +1,6 @@
 (function(sc) {
   "use strict";
 
-  sc.lang = {};
   sc.libs = {};
   sc.config = {};
 

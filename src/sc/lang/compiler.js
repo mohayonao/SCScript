@@ -1,1 +1,2 @@
+require("./lang");
 require("./compiler/");

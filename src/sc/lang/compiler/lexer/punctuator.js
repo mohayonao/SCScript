@@ -1,9 +1,14 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("./lexer");
 
   var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("Punctuator", function(source, index) {
+    return new PunctuatorLexer(source, index).scan();
+  });
 
   function PunctuatorLexer(source, index) {
     this.source = source;
@@ -25,9 +30,5 @@
     }
 
     return { error: true, value: source.charAt(index), length: 1 };
-  };
-
-  sc.lang.compiler.lexPunctuator = function(source, index) {
-    return new PunctuatorLexer(source, index).scan();
   };
 })(sc);

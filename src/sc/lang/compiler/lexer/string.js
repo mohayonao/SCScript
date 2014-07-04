@@ -1,9 +1,14 @@
 (function(sc) {
   "use strict";
 
-  require("./compiler");
+  require("./lexer");
 
   var Token = sc.lang.compiler.Token;
+  var Lexer = sc.lang.compiler.Lexer;
+
+  Lexer.addLexMethod("String", function(source, index) {
+    return new StringLexer(source, index).scan();
+  });
 
   function StringLexer(source, index) {
     this.source = source;
@@ -119,8 +124,4 @@
       line: line|0
     };
   }
-
-  sc.lang.compiler.lexString = function(source, index) {
-    return new StringLexer(source, index).scan();
-  };
 })(sc);

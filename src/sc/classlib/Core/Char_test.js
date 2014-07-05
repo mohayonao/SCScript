@@ -72,9 +72,7 @@
       expect(test).to.be.a("SCChar").that.equals(",");
     });
     it(".new", function() {
-      expect(function() {
-        SCChar.new();
-      }).to.throw("should use literal");
+      expect(SCChar.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it.skip("#hash", function() {
     });

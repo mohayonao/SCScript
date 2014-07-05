@@ -42,10 +42,6 @@ SCScript.install(function(sc) {
       return String(this._);
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Float.new is illegal, should use literal.");
-    });
-
     builder.addMethod("isFloat", sc.TRUE);
     builder.addMethod("asFloat");
 

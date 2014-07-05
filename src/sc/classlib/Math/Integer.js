@@ -39,10 +39,6 @@ SCScript.install(function(sc) {
       return String("" + this._);
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Integer.new is illegal, should use literal.");
-    });
-
     builder.addMethod("isInteger", sc.TRUE);
 
     builder.addMethod("hash", function() {

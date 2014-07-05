@@ -51,9 +51,7 @@
       expect(test).to.be.a("JSString").that.equals("nil");
     });
     it(".new", function() {
-      expect(function() {
-        SCNil.new();
-      }).to.throw("should use literal");
+      expect(SCNil.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it("#isNil", function() {
       var instance, test;

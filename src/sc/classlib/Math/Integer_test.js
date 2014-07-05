@@ -42,7 +42,7 @@
     it(".new", function() {
       expect(function() {
         SCInteger.new();
-      }).to.throw("should use literal");
+      }).to.throw("should use literals");
     });
     it("#isInteger", function() {
       testCase(this, [

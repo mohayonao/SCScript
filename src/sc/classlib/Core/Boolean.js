@@ -16,9 +16,7 @@ SCScript.install(function(sc) {
       return String(this._);
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Boolean.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("xor", function($bool) {
       return $.Boolean(this === $bool).not();
@@ -54,10 +52,6 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.refine("True", function(builder) {
-    builder.addClassMethod("new", function() {
-      throw new Error("True.new is illegal, should use literal.");
-    });
-
     builder.addMethod("if", {
       args: "trueFunc"
     }, function($trueFunc) {
@@ -96,10 +90,6 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.refine("False", function(builder) {
-    builder.addClassMethod("new", function() {
-      throw new Error("False.new is illegal, should use literal.");
-    });
-
     builder.addMethod("if", {
       args: "trueFunc; falseFunc"
     }, function($trueFunc, $falseFunc) {

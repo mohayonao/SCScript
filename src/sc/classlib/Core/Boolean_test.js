@@ -37,9 +37,7 @@
       expect(test).to.be.a("JSString").that.equals("false");
     });
     it(".new", function() {
-      expect(function() {
-        SCBoolean.new();
-      }).to.throw("should use literal");
+      expect(SCBoolean.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it("#xor", function() {
       testCase(this, [
@@ -86,7 +84,7 @@
     it(".new", function() {
       expect(function() {
         SCTrue.new();
-      }).to.throw("should use literal");
+      }).to.throw("should use literals");
     });
     it("#if", sinon.test(function() {
       var instance, test;
@@ -176,7 +174,7 @@
     it(".new", function() {
       expect(function() {
         SCFalse.new();
-      }).to.throw("should use literal");
+      }).to.throw("should use literals");
     });
     it("#if", sinon.test(function() {
       var instance, test;

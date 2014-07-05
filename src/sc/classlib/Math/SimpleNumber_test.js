@@ -7,6 +7,7 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
+  var SCSimpleNumber = $("SimpleNumber");
 
   describe("SCSimpleNumber", function() {
     before(function() {
@@ -66,6 +67,9 @@
 
       test = instance.__num__();
       expect(test).to.be.a("JSNumber").that.equals(2014);
+    });
+    it(".new", function() {
+      expect(SCSimpleNumber.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it("#isValidUGenInput", function() {
       testCase(this, [

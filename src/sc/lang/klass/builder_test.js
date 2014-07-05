@@ -11,6 +11,7 @@
     var MetaClass, TestClass;
     beforeEach(function() {
       MetaClass = function MetaClass() {};
+      MetaClass.prototype.__className = "TestClass";
       TestClass = function TestClass() {};
       TestClass.prototype.__className = "TestClass";
       TestClass.metaClass  = MetaClass;
@@ -145,6 +146,13 @@
       expect(function() {
         instance.method();
       }).to.throw("TestClass: 'method' is not supported");
+    });
+    it("shouldUseLiterals", function() {
+      new Builder(TestClass).init().shouldUseLiterals("method");
+      var instance = new MetaClass();
+      expect(function() {
+        instance.method();
+      }).to.throw("TestClass: .new is ILLEGAL, should use literals instead");
     });
   });
 })();

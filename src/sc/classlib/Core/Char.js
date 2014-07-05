@@ -30,9 +30,7 @@ SCScript.install(function(sc) {
       return $.Char(",");
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Char.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     // TODO: implements hash
 

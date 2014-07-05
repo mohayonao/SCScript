@@ -97,6 +97,13 @@
     ));
   };
 
+  Builder.prototype.shouldUseLiterals = function(methodName) {
+    return this.addClassMethod(methodName, {}, createErrorFunc(
+      sc.ERRID_SHOULD_USE_LITERALS,
+      strlib.format(".new is ILLEGAL, should use literals instead")
+    ));
+  };
+
   function bond(that, methods) {
     return methods === that._classMethods ? "." : "#";
   }

@@ -59,6 +59,8 @@ SCScript.install(function(sc) {
       return this._;
     });
 
+    builder.shouldUseLiterals("new");
+
     builder.addMethod("isValidUGenInput", function() {
       return $.Boolean(!isNaN(this._));
     });

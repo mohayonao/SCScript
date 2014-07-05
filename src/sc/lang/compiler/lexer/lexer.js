@@ -215,7 +215,11 @@
       column     = index - this.lineStart + 1;
     }
 
-    var error = new Error("Line " + lineNumber + ": " + message);
+    var error = new SyntaxError(
+      strlib.format("Line #{0}: #{1}", lineNumber, message),
+      null, // TODO: filename
+      lineNumber
+    );
     error.index       = index;
     error.lineNumber  = lineNumber;
     error.column      = column;

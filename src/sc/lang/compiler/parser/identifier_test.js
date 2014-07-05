@@ -5,13 +5,14 @@
 
   var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseIdentifier", function() {
       sc.test.compile(this.title).each({
         "value ": sc.test.OK,
-        "1234 ": Message.UnexpectedNumber,
-        "_ ": Message.UnexpectedIdentifier,
+        "1234 ": strlib.format(Message.UnexpectedNumber),
+        "_ ": strlib.format(Message.UnexpectedIdentifier),
       });
       sc.test.parse(this.title).each({
         "value ": {
@@ -54,8 +55,8 @@
     describe("parseIdentifier(variable:true)", function() {
       sc.test.compile("parseIdentifier", { variable: true }).each({
         "value ": sc.test.OK,
-        "_ ": Message.UnexpectedIdentifier,
-        "Object ": Message.UnexpectedIdentifier,
+        "_ ": strlib.format(Message.UnexpectedIdentifier),
+        "Object ": strlib.format(Message.UnexpectedIdentifier),
       });
       sc.test.parse("parseIdentifier", { variable: true }).each({
         "value ": {

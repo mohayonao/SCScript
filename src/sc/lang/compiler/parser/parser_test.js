@@ -137,8 +137,8 @@
         parser.throwUnexpected({ type: Token.NilLiteral });
       }).to.throw(strlib.format(Message.UnexpectedLiteral, "nil"));
       expect(function() {
-        parser.throwUnexpected({ type: Token.Keyword });
-      }).to.throw(strlib.format(Message.UnexpectedKeyword));
+        parser.throwUnexpected({ type: Token.Keyword, value: "var" });
+      }).to.throw(strlib.format(Message.UnexpectedKeyword, "var"));
       expect(function() {
         parser.throwUnexpected({ type: Token.Label });
       }).to.throw(strlib.format(Message.UnexpectedLabel));
@@ -155,10 +155,10 @@
       parser.addToScope("arg", "a");
       expect(function() {
         parser.addToScope("var", "a");
-      }).to.throw(strlib.format(Message.VariableAlreadyDeclared, "a"));
+      }).to.throw(strlib.format(Message.Redeclaration, "var", "a"));
       expect(function() {
         parser.addToScope("arg", "a");
-      }).to.throw(strlib.format(Message.ArgumentAlreadyDeclared, "a"));
+      }).to.throw(strlib.format(Message.Redeclaration, "arg", "a"));
       parser.withScope(function() {
         expect(function() {
           parser.addToScope("var", "a");

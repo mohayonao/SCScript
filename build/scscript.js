@@ -1,6 +1,6 @@
 (function(global) {
 "use strict";
-var sc = { VERSION: "0.0.67" };
+var sc = { VERSION: "0.0.68" };
 
 // src/sc/libs/libs.js
 (function(sc) {
@@ -2082,6 +2082,7 @@ var sc = { VERSION: "0.0.67" };
     },
     Syntax: {
       AssignmentExpression: "AssignmentExpression",
+      BlockExpression: "BlockExpression",
       BinaryExpression: "BinaryExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",
@@ -2345,6 +2346,20 @@ var sc = { VERSION: "0.0.67" };
     return result;
   };
 
+  CodeGen.prototype.generateStatements = function(elements) {
+    var lastIndex = elements.length - 1;
+
+    return elements.map(function(item, i) {
+      var stmt = this.generate(item);
+
+      if (i === lastIndex) {
+        stmt = [ "return ", stmt ];
+      }
+
+      return [ stmt, ";" ];
+    }, this);
+  };
+
   CodeGen.prototype.useTemporaryVariable = function(func) {
     var result;
     var tempName = "_ref" + this.state.tempVarId;
@@ -2459,7 +2474,7 @@ var sc = { VERSION: "0.0.67" };
     }
 
     var body = this.withFunction([ "" ], function() { // "" compiled as $
-      return generateStatements(this, node.body);
+      return this.generateStatements(node.body);
     });
 
     var result = [ "(", body, ")" ];
@@ -2470,20 +2485,6 @@ var sc = { VERSION: "0.0.67" };
 
     return result;
   });
-
-  function generateStatements(that, elements) {
-    var lastIndex = elements.length - 1;
-
-    return elements.map(function(item, i) {
-      var stmt = that.generate(item);
-
-      if (i === lastIndex) {
-        stmt = [ "return ", stmt ];
-      }
-
-      return [ stmt, ";" ];
-    });
-  }
 })(sc);
 
 // src/sc/lang/compiler/codegen/literal.js
@@ -2896,6 +2897,20 @@ var sc = { VERSION: "0.0.67" };
   }
 })(sc);
 
+// src/sc/lang/compiler/codegen/block-expr.js
+(function(sc) {
+
+  var CodeGen = sc.lang.compiler.CodeGen;
+
+  CodeGen.addGenerateMethod("BlockExpression", function(node) {
+    var body = this.withFunction([], function() {
+      return this.generateStatements(node.body);
+    });
+
+    return [ "(", body, ")()" ];
+  });
+})(sc);
+
 // src/sc/lang/compiler/codegen/binop-expr.js
 (function(sc) {
 
@@ -3114,6 +3129,12 @@ var sc = { VERSION: "0.0.67" };
         node.adverb = operator.adverb;
       }
       return node;
+    },
+    createBlockExpression: function(body) {
+      return {
+        type: Syntax.BlockExpression,
+        body: body
+      };
     },
     createCallExpression: function(callee, method, args, stamp) {
       return {
@@ -3915,6 +3936,7 @@ var sc = { VERSION: "0.0.67" };
 // src/sc/lang/compiler/parser/program.js
 (function(sc) {
 
+  var Syntax = sc.lang.compiler.Syntax;
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
@@ -3927,8 +3949,16 @@ var sc = { VERSION: "0.0.67" };
       );
     });
 
+    if (hasSingleBlockExpression(node)) {
+      node.body = node.body[0].body;
+    }
+
     return marker.update().apply(node);
   });
+
+  function hasSingleBlockExpression(node) {
+    return node.body.length === 1 && node.body[0].type === Syntax.BlockExpression;
+  }
 })(sc);
 
 // src/sc/lang/compiler/parser/primary-expr.js
@@ -4078,6 +4108,11 @@ var sc = { VERSION: "0.0.67" };
     if (this.lookahead.type === Token.Label || this.match(")")) {
       return function() {
         return this.parseEventExpression();
+      };
+    }
+    if (this.match("var")) {
+      return function() {
+        return this.parseBlockExpression();
       };
     }
     if (this.match("..")) {
@@ -5126,6 +5161,29 @@ var sc = { VERSION: "0.0.67" };
     }
 
     return this.parseFunctionExpression(opts);
+  });
+})(sc);
+
+// src/sc/lang/compiler/parser/block-expr.js
+(function(sc) {
+
+  var Node = sc.lang.compiler.Node;
+  var Parser = sc.lang.compiler.Parser;
+
+  Parser.addParseMethod("BlockExpression", function() {
+    var marker = this.createMarker();
+
+    this.expect("(");
+
+    var expr = this.withScope(function() {
+      return Node.createBlockExpression(
+        this.parseFunctionBody()
+      );
+    });
+
+    this.expect(")");
+
+    return marker.update().apply(expr);
   });
 })(sc);
 

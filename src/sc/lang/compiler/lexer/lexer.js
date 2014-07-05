@@ -6,6 +6,7 @@
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;
+  var charlib = sc.libs.charlib;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Marker = sc.lang.compiler.Marker;
@@ -157,11 +158,11 @@
       return this.lexString;
     }
 
-    if (ch === "_" || strlib.isAlpha(ch)) {
+    if (ch === "_" || charlib.isAlpha(ch)) {
       return this.lexIdentifier;
     }
 
-    if (strlib.isNumber(ch)) {
+    if (charlib.isNumber(ch)) {
       return this.lexNumber;
     }
 

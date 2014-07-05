@@ -121,11 +121,20 @@ SCScript.install(function(sc) {
       return $.Boolean(this.__class === $aClass);
     });
 
-    var respondsTo = function($this, $aSymbol) {
-      return typeof $this[
-        $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ ""
-      ] === "function";
-    };
+    function getFunction($this, $aSymbol) {
+      var methodName = $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ "";
+      if (/^([a-z]\w*|[-+*\/%<=>!?&|@]+)$/.test(methodName)) {
+        if (typeof $this[methodName] === "function") {
+          return $this[methodName];
+        }
+      }
+      return null;
+    }
+
+    function respondsTo($this, $aSymbol) {
+      var func = getFunction($this, $aSymbol);
+      return func && !func.__errorType;
+    }
 
     builder.addMethod("respondsTo", function($aSymbol) {
       var $this = this;

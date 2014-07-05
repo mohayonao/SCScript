@@ -230,10 +230,10 @@
       });
       describe("parse with binaryPrecedence", function() {
         before(function() {
-          sc.config.binaryPrecedence = true;
+          sc.config.set("binaryPrecedence", true);
         });
         after(function() {
-          sc.config.binaryPrecedence = false;
+          sc.config.set("binaryPrecedence", false);
         });
         sc.test.parse(this.parent.title).each({
           "1 + 2 * 3": { // 1 + (2 * 3)

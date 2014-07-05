@@ -20,8 +20,8 @@
         "(0;1..10)": sc.test.OK, // SeriesExpression
         "(1;2)": sc.test.OK,     // Expressions
         "(1)": sc.test.OK,       // Expression
+        "(var a;)": sc.test.OK,  // BlockExpression
         "[1]": strlib.format(Message.UnexpectedToken, "["),
-        "(var a;)": Message.UnexpectedKeyword,
       });
       sc.test.parse(this.title).each({
         "()": {

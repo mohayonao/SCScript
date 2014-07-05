@@ -79,6 +79,14 @@
         test = toCompiledString(test);
         expect(test).to.equal("[]");
       });
+      it("generateStatements", function() {
+        var codegen = new CodeGen();
+
+        var test;
+        test = codegen.generateStatements([ "a", "b", "c" ]);
+        test = toCompiledString(test);
+        expect(test).to.equal("$a;$b;return $c;");
+      });
       it("useTemporaryVariable", function() {
         var codegen = new CodeGen();
 

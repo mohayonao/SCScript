@@ -118,11 +118,6 @@ window.onload = function() {
     var beginTime, elapsedTime;
 
     code = getCode(editor).trim();
-
-    while (/^\([\s\S]+\)$/.test(code)) {
-      code = code.slice(1, -1);
-    }
-
     beginTime = now();
 
     result = eval.call(null, SCScript.compile(code));

@@ -23,6 +23,7 @@
     },
     Syntax: {
       AssignmentExpression: "AssignmentExpression",
+      BlockExpression: "BlockExpression",
       BinaryExpression: "BinaryExpression",
       CallExpression: "CallExpression",
       FunctionExpression: "FunctionExpression",

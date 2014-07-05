@@ -6,6 +6,19 @@
   var random = sc.libs.random;
 
   describe("sc.libs.random", function() {
+    it("setCurrent / getCurrent", function() {
+      var test;
+
+      test = sc.libs.random.getCurrent();
+      expect(test).to.instanceOf(random.RandGen);
+
+      sc.libs.random.setCurrent(0);
+
+      test = sc.libs.random.getCurrent();
+      expect(test).to.equal(0);
+
+      sc.libs.random.setCurrent(new random.RandGen());
+    });
     it("random generator", function() {
       random.setSeed(0);
 

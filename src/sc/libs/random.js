@@ -3,8 +3,6 @@
 
   require("./libs");
 
-  var random = {};
-
   function RandGen(seed) {
     this.setSeed(seed);
   }
@@ -40,16 +38,21 @@
 
   RandGen.prototype.RandGen = RandGen;
 
-  random = {
+  var current = new RandGen();
+
+  sc.libs.random = {
     RandGen: RandGen,
-    current: new RandGen(),
-    next: function() {
-      return random.current.next();
+    getCurrent: function() {
+      return current;
+    },
+    setCurrent: function(randgen) {
+      current = randgen;
     },
     setSeed: function(seed) {
-      return random.current.setSeed(seed);
+      return current.setSeed(seed);
+    },
+    next: function() {
+      return current.next();
     }
   };
-
-  sc.libs.random = random;
 })(sc);

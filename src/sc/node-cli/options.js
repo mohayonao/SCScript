@@ -45,5 +45,9 @@ module.exports = optionator({
       option: "version", alias: "v", type: "Boolean",
       description: "display the version number"
     },
+    {
+      option: "sushi", type: "Boolean",
+      description: "use sushi-repl"
+    },
   ]
 });

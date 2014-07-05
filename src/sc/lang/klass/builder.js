@@ -64,35 +64,35 @@
 
   Builder.prototype.subclassResponsibility = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "subclassResponsibility",
+      sc.ERRID_SUBCLASS_RESPONSIBILITY,
       strlib.format("'#{0}' should have been implemented by this subclass", methodName)
     ));
   };
 
   Builder.prototype.doesNotUnderstand = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "doesNotUnderstand",
+      sc.ERRID_DOES_NOT_UNDERSTAND,
       strlib.format("'#{0}' not understood", methodName)
     ));
   };
 
   Builder.prototype.shouldNotImplement = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "shouldNotImplement",
+      sc.ERRID_SHOULD_NOT_IMPLEMENT,
       strlib.format("'#{0}' not valid for this subclass", methodName)
     ));
   };
 
   Builder.prototype.notYetImplemented = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "notYetImplemented",
+      sc.ERRID_NOT_YET_IMPLEMENTED,
       strlib.format("'#{0}' is not yet implemented", methodName)
     ));
   };
 
   Builder.prototype.notSupported = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "notSupported",
+      sc.ERRID_NOT_SUPPORTED,
       strlib.format("'#{0}' is not supported", methodName)
     ));
   };

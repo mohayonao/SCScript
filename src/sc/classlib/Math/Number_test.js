@@ -24,31 +24,31 @@
     });
     it("#+", function() {
       var instance = this.createInstance();
-      expect(instance["+"].__errorType).to.equal("subclassResponsibility");
+      expect(instance["+"].__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#-", function() {
       var instance = this.createInstance();
-      expect(instance["-"].__errorType).to.equal("subclassResponsibility");
+      expect(instance["-"].__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#*", function() {
       var instance = this.createInstance();
-      expect(instance["*"].__errorType).to.equal("subclassResponsibility");
+      expect(instance["*"].__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#/", function() {
       var instance = this.createInstance();
-      expect(instance["/"].__errorType).to.equal("subclassResponsibility");
+      expect(instance["/"].__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#mod", function() {
       var instance = this.createInstance();
-      expect(instance.mod.__errorType).to.equal("subclassResponsibility");
+      expect(instance.mod.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#div", function() {
       var instance = this.createInstance();
-      expect(instance.div.__errorType).to.equal("subclassResponsibility");
+      expect(instance.div.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#pow", function() {
       var instance = this.createInstance();
-      expect(instance.pow.__errorType).to.equal("subclassResponsibility");
+      expect(instance.pow.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#performBinaryOpOnSeqColl", sinon.test(function() {
       var instance, test;

@@ -22,7 +22,13 @@
     NOP: 1,
     NIL: 2,
     TRUE: 3,
-    FALSE: 4
+    FALSE: 4,
+
+    ERRID_SUBCLASS_RESPONSIBILITY: 1,
+    ERRID_DOES_NOT_UNDERSTAND: 2,
+    ERRID_SHOULD_NOT_IMPLEMENT: 3,
+    ERRID_NOT_YET_IMPLEMENTED: 4,
+    ERRID_NOT_SUPPORTED: 5
   };
 
   if (typeof global.sc !== "undefined") {

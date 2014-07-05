@@ -18,6 +18,10 @@ function toString(obj) {
 var replOptions = {
   prompt: "scsc> ",
   eval: function(input, context, filename, callback) {
+    // Node's REPL sends the input ending with a newline and then wrapped in
+    // parens. Unwrap all that.
+    input = input.replace(/^\(([\s\S]*)\n\)$/m, "$1");
+
     try {
       var js = SCScript.compile(input, { loc: true, range: true });
       var result;

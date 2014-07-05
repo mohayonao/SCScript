@@ -18,9 +18,6 @@ function toString(obj) {
 var replOptions = {
   prompt: "scsc> ",
   eval: function(input, context, filename, callback) {
-    while (/^\([\s\S]+\)$/.test(input)) {
-      input = input.slice(1, -1).trim();
-    }
     try {
       var js = SCScript.compile(input, { loc: true, range: true });
       var result;

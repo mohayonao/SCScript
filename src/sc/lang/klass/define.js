@@ -200,7 +200,7 @@
 
     builder.addMethod("__attr__", function(methodName) {
       throw new Error(strlib.format(
-        "RECEIVER #{0}: Message '#{1}' not understood.", this.__str__(), methodName
+        "RECEIVER #{0}: Message '#{1}' is not understood.", this.__str__(), methodName
       ));
     });
   });

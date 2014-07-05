@@ -65,42 +65,42 @@
   Builder.prototype.subclassResponsibility = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
       sc.ERRID_SUBCLASS_RESPONSIBILITY,
-      strlib.format("'#{0}' should have been implemented by this subclass", methodName)
+      strlib.format("Message '#{0}' should have been implemented by this subclass.", methodName)
     ));
   };
 
   Builder.prototype.doesNotUnderstand = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
       sc.ERRID_DOES_NOT_UNDERSTAND,
-      strlib.format("'#{0}' not understood", methodName)
+      strlib.format("Message '#{0}' is not understood.", methodName)
     ));
   };
 
   Builder.prototype.shouldNotImplement = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
       sc.ERRID_SHOULD_NOT_IMPLEMENT,
-      strlib.format("'#{0}' not valid for this subclass", methodName)
+      strlib.format("Message '#{0}' not valid for this subclass.", methodName)
     ));
   };
 
   Builder.prototype.notYetImplemented = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
       sc.ERRID_NOT_YET_IMPLEMENTED,
-      strlib.format("'#{0}' is not yet implemented", methodName)
+      strlib.format("Message '#{0}' is not yet implemented.", methodName)
     ));
   };
 
   Builder.prototype.notSupported = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
       sc.ERRID_NOT_SUPPORTED,
-      strlib.format("'#{0}' is not supported", methodName)
+      strlib.format("Message '#{0}' is not supported.", methodName)
     ));
   };
 
   Builder.prototype.shouldUseLiterals = function(methodName) {
     return this.addClassMethod(methodName, {}, createErrorFunc(
       sc.ERRID_SHOULD_USE_LITERALS,
-      strlib.format(".new is ILLEGAL, should use literals instead")
+      strlib.format("Message '#{0}' is ILLEGAL, should use literals instead.", methodName)
     ));
   };
 

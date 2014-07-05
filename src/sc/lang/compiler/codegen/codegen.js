@@ -105,6 +105,20 @@
     return result;
   };
 
+  CodeGen.prototype.generateStatements = function(elements) {
+    var lastIndex = elements.length - 1;
+
+    return elements.map(function(item, i) {
+      var stmt = this.generate(item);
+
+      if (i === lastIndex) {
+        stmt = [ "return ", stmt ];
+      }
+
+      return [ stmt, ";" ];
+    }, this);
+  };
+
   CodeGen.prototype.useTemporaryVariable = function(func) {
     var result;
     var tempName = "_ref" + this.state.tempVarId;

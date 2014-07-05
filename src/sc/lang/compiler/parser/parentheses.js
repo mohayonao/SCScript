@@ -43,6 +43,11 @@
         return this.parseEventExpression();
       };
     }
+    if (this.match("var")) {
+      return function() {
+        return this.parseBlockExpression();
+      };
+    }
     if (this.match("..")) {
       return function() {
         return this.parseSeriesExpression();

@@ -70,6 +70,44 @@
             start: { line: 1, column: 0 },
             end: { line: 1, column: 6 },
           }
+        },
+        "(var a;)": {
+          type: Syntax.Program,
+          body: [
+            {
+              type: Syntax.VariableDeclaration,
+              declarations: [
+                {
+                  type: Syntax.VariableDeclarator,
+                  id: {
+                    type: Syntax.Identifier,
+                    name: "a",
+                    range: [ 5, 6 ],
+                    loc: {
+                      start: { line: 1, column: 5 },
+                      end: { line: 1, column: 6 },
+                    }
+                  },
+                  range: [ 5, 6 ],
+                  loc: {
+                    start: { line: 1, column: 5 },
+                    end: { line: 1, column: 6 },
+                  }
+                }
+              ],
+              kind: "var",
+              range: [ 1, 6 ],
+              loc: {
+                start: { line: 1, column: 1 },
+                end: { line: 1, column: 6 },
+              }
+            }
+          ],
+          range: [ 0, 8 ],
+          loc: {
+            start: { line: 1, column: 0 },
+            end: { line: 1, column: 8 },
+          }
         }
       });
     });

@@ -1462,7 +1462,7 @@
         "Set[3, 4, 5]": {
           expected: [
             "SCScript(function($) {",
-            "  return $('Set').$('at', [ $.Array([",
+            "  return $('Set').$('[]', [ $.Array([",
             "    $.Integer(3),",
             "    $.Integer(4),",
             "    $.Integer(5),",
@@ -1481,7 +1481,7 @@
                 },
                 method: {
                   type: Syntax.Identifier,
-                  name: "at",
+                  name: "[]",
                 },
                 args: {
                   list: [
@@ -1514,7 +1514,7 @@
         "Array [ 1, 2 ].at(0)": { // (Array [ 1, 2 ]).at(0)
           expected: [
             "SCScript(function($) {",
-            "  return $('Array').$('at', [ $.Array([",
+            "  return $('Array').$('[]', [ $.Array([",
             "    $.Integer(1),",
             "    $.Integer(2),",
             "  ]) ]).$('at', [ $.Integer(0) ]);",
@@ -1535,7 +1535,7 @@
                   },
                   method: {
                     type: Syntax.Identifier,
-                    name: "at",
+                    name: "[]",
                   },
                   args: {
                     list: [
@@ -1577,7 +1577,7 @@
         "Array [ 1, 2 ][0]": { // (Array [ 1, 2 ])[0]
           expected: [
             "SCScript(function($) {",
-            "  return $('Array').$('at', [ $.Array([",
+            "  return $('Array').$('[]', [ $.Array([",
             "    $.Integer(1),",
             "    $.Integer(2),",
             "  ]) ]).$('at', [ $.Integer(0) ]);",
@@ -1598,7 +1598,7 @@
                   },
                   method: {
                     type: Syntax.Identifier,
-                    name: "at",
+                    name: "[]",
                   },
                   args: {
                     list: [

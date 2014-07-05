@@ -767,7 +767,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "at",
+            name: "[]",
             range: [ 6, 6 ],
             loc: {
               start: { line: 1, column: 6 },

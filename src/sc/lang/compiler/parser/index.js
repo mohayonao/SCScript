@@ -1,6 +1,7 @@
 require("./parser");
 require("./assignment-expr");
 require("./binop-expr");
+require("./block-expr");
 require("./braces");
 require("./call-expr");
 require("./envir-expr");

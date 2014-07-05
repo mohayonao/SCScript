@@ -1,6 +1,7 @@
 require("./codegen");
 require("./assignment-expr");
 require("./binop-expr");
+require("./block-expr");
 require("./call-expr");
 require("./envir-expr");
 require("./event-expr");

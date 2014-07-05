@@ -14,9 +14,6 @@ $(function() {
   }
 
   function update(code, mode) {
-    while (/^\([\s\S]+\)$/.test(code)) {
-      code = code.slice(1, -1);
-    }
     if (prev[0] !== code || prev[1] !== mode) {
       try {
         switch (mode) {

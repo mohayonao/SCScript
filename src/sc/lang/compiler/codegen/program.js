@@ -11,7 +11,7 @@
     }
 
     var body = this.withFunction([ "" ], function() { // "" compiled as $
-      return generateStatements(this, node.body);
+      return this.generateStatements(node.body);
     });
 
     var result = [ "(", body, ")" ];
@@ -22,18 +22,4 @@
 
     return result;
   });
-
-  function generateStatements(that, elements) {
-    var lastIndex = elements.length - 1;
-
-    return elements.map(function(item, i) {
-      var stmt = that.generate(item);
-
-      if (i === lastIndex) {
-        stmt = [ "return ", stmt ];
-      }
-
-      return [ stmt, ";" ];
-    });
-  }
 })(sc);

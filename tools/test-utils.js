@@ -229,7 +229,7 @@
       prev = null;
     }
 
-    method = sc.lang.klass.classes[className].__Spec.prototype[methodName];
+    method = sc.lang.klass._classes[className].__Spec.prototype[methodName];
     Object.defineProperty(instance, methodName, {
       value: method, configurable: true
     });
@@ -248,9 +248,9 @@
         setSingletonMethod(instance, matches[1], matches[2]);
       }
     } else if (typeof source === "undefined") {
-      instance = sc.lang.klass.classes.Object.new();
+      instance = sc.lang.klass._classes.Object.new();
     } else if (isDictionary(source)) {
-      instance = sc.lang.klass.classes.Object.new();
+      instance = sc.lang.klass._classes.Object.new();
       Object.keys(source).forEach(function(key) {
         Object.defineProperty(instance, key, {
           value: source[key]

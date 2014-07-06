@@ -4,18 +4,18 @@
   require("../lang");
 
   var klass = {
-    classes: {}
+    _classes: {}
   };
 
   klass.get = function(name) {
-    if (!klass.classes[name]) {
+    if (!klass._classes[name]) {
       throw new Error("Class not defined: " + name);
     }
-    return klass.classes[name];
+    return klass._classes[name];
   };
 
   klass.exists = function(name) {
-    return !!klass.classes[name];
+    return !!klass._classes[name];
   };
 
   sc.lang.klass = klass;

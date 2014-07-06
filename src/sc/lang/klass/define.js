@@ -8,7 +8,6 @@
   var $ = sc.lang.$;
   var strlib = sc.libs.strlib;
   var metaClasses = {};
-  var classes     = sc.lang.klass.classes;
   var hash = 0x100000;
 
   function createClassInstance(MetaSpec) {
@@ -59,7 +58,7 @@
     metaClass.__className  = "Meta_" + className;
     metaClass.__Spec = constructor;
     metaClass.__isMetaClass = true;
-    metaClasses[className] = classes["Meta_" + className] = metaClass;
+    metaClasses[className] = sc.lang.klass._classes["Meta_" + className] = metaClass;
   }
 
   function registerClass(className, metaClass, constructor) {
@@ -72,7 +71,7 @@
       __Spec: { value: constructor, writable: true },
       __className: { value: className, writable: true }
     });
-    classes[className] = newClass;
+    sc.lang.klass._classes[className] = newClass;
   }
 
   function buildClass(constructor, spec) {
@@ -176,12 +175,12 @@
     }
   });
 
-  classes.Class = createClassInstance();
-  classes.Class.__Spec = SCClass;
+  sc.lang.klass._classes.Class = createClassInstance();
+  sc.lang.klass._classes.Class.__Spec = SCClass;
 
-  SCObject.metaClass.__MetaSpec.prototype = classes.Class;
+  SCObject.metaClass.__MetaSpec.prototype = sc.lang.klass._classes.Class;
 
-  registerClass("Object", SCObject.metaClass, classes.Object.__Spec);
+  registerClass("Object", SCObject.metaClass, sc.lang.klass._classes.Object.__Spec);
 
   refine("Object", function(builder) {
     builder.addClassMethod("new", function() {

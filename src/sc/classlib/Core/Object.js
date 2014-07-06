@@ -121,11 +121,23 @@ SCScript.install(function(sc) {
       return $.Boolean(this.__class === $aClass);
     });
 
-    var respondsTo = function($this, $aSymbol) {
-      return typeof $this[
-        $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ ""
-      ] === "function";
-    };
+    function sym2str($aSymbol) {
+      return $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ "";
+    }
+
+    function getFunction($this, methodName) {
+      if (/^([a-z]\w*|[-+*\/%<=>!?&|@]+)$/.test(methodName)) {
+        if (typeof $this[methodName] === "function") {
+          return $this[methodName];
+        }
+      }
+      return null;
+    }
+
+    function respondsTo($this, $aSymbol) {
+      var func = getFunction($this, sym2str($aSymbol));
+      return func && !func.__errorType;
+    }
 
     builder.addMethod("respondsTo", function($aSymbol) {
       var $this = this;
@@ -137,18 +149,16 @@ SCScript.install(function(sc) {
       return $.Boolean(respondsTo(this, $aSymbol));
     });
 
-    var performMsg = function($this, msg) {
-      var selector, method;
+    function performMsg($this, msg) {
+      var methodName = sym2str(msg[0]);
+      var func = getFunction($this, methodName);
 
-      selector = msg[0] ? msg[0].__sym__() : /* istanbul ignore next */ "";
-      method = $this[selector];
-
-      if (method) {
-        return method.apply($this, msg.slice(1));
+      if (func) {
+        return func.apply($this, msg.slice(1));
       }
 
-      throw new Error(strlib.format("Message '#{0}' not understood.", selector));
-    };
+      throw new Error(strlib.format("Message '#{0}' is not understood.", methodName));
+    }
 
     builder.addMethod("performMsg", function($msg) {
       return performMsg(this, $msg ? $msg.asArray()._ : /* istanbul ignore next */ []);

@@ -29,9 +29,7 @@
     it.skip("<def", function() {
     });
     it(".new", function() {
-      expect(function() {
-        SCFunction.new();
-      }).to.throw("should use literal");
+      expect(SCFunction.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it("#isFunction", function() {
       var instance, test;

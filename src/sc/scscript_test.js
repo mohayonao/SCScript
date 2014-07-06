@@ -47,6 +47,26 @@
         expect(test, "should return SCScript").to.equal(SCScript);
       }));
     });
+    describe(".setConfig", function() {
+      it("should call config.set", sinon.test(function() {
+        this.stub(sc.config, "set");
+
+        var test = SCScript.setConfig("name", "value");
+
+        expect(sc.config.set).to.be.calledWith("name", "value");
+        expect(test, "should return SCScript").to.equal(SCScript);
+      }));
+    });
+    describe(".getConfig", function() {
+      it("should call config.get", sinon.test(function() {
+        this.stub(sc.config, "get", sc.test.func());
+
+        var test = SCScript.getConfig("name");
+
+        expect(sc.config.get).to.be.calledWith("name");
+        expect(sc.config.get).to.be.calledLastIn(test);
+      }));
+    });
     describe(".tokenize", function() {
       it("should call compiler.tokenize", sinon.test(function() {
         var source = Math.random();

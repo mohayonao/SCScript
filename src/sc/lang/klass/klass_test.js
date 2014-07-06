@@ -8,13 +8,13 @@
   describe("sc.lang.klass", function() {
     var klass$classes;
     before(function() {
-      klass$classes = klass.classes;
+      klass$classes = klass._classes;
     });
     beforeEach(function() {
-      klass.classes = { Object: function() {} };
+      klass._classes = { Object: function() {} };
     });
     after(function() {
-      klass.classes = klass$classes;
+      klass._classes = klass$classes;
     });
     describe("get", function() {
       it("return defined class", function() {

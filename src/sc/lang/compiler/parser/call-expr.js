@@ -152,7 +152,7 @@
     var marker = this.createMarker();
 
     var method = this.createMarker().apply(
-      Node.createIdentifier("at")
+      Node.createIdentifier("[]")
     );
     var listExpr = this.parseListExpression();
 

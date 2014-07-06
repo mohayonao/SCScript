@@ -272,11 +272,11 @@
     });
     it("#remove", function() {
       var instance = this.createInstance();
-      expect(instance.remove.__errorType).to.equal("shouldNotImplement");
+      expect(instance.remove.__errorType).to.equal(sc.ERRID_SHOULD_NOT_IMPLEMENT);
     });
     it("#removeFail", function() {
       var instance = this.createInstance();
-      expect(instance.removeFail.__errorType).to.equal("shouldNotImplement");
+      expect(instance.removeFail.__errorType).to.equal(sc.ERRID_SHOULD_NOT_IMPLEMENT);
     });
     it("#keysValuesDo", sinon.test(function() {
       var instance, test;

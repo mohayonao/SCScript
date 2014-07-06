@@ -10,9 +10,8 @@ SCScript.install(function(sc) {
 
   sc.lang.klass.refine("Function", function(builder, _) {
     // TODO: implements def
-    builder.addClassMethod("new", function() {
-      throw new Error("Function.new is illegal, should use literal.");
-    });
+
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("isFunction", sc.TRUE);
 

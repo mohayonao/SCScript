@@ -38,7 +38,7 @@
       var instance;
 
       instance = this.createInstance();
-      expect(instance.next.__errorType).to.equal("subclassResponsibility");
+      expect(instance.next.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#iter", function() {
       var instance;
@@ -85,7 +85,7 @@
       var instance;
 
       instance = this.createInstance();
-      expect(instance.put.__errorType).to.equal("subclassResponsibility");
+      expect(instance.put.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#putN", sinon.test(function() {
       var instance, test;

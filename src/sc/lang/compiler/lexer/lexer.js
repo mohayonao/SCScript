@@ -6,6 +6,7 @@
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;
+  var charlib = sc.libs.charlib;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Marker = sc.lang.compiler.Marker;
@@ -157,11 +158,11 @@
       return this.lexString;
     }
 
-    if (ch === "_" || strlib.isAlpha(ch)) {
+    if (ch === "_" || charlib.isAlpha(ch)) {
       return this.lexIdentifier;
     }
 
-    if (strlib.isNumber(ch)) {
+    if (charlib.isNumber(ch)) {
       return this.lexNumber;
     }
 
@@ -215,7 +216,11 @@
       column     = index - this.lineStart + 1;
     }
 
-    var error = new Error("Line " + lineNumber + ": " + message);
+    var error = new SyntaxError(
+      strlib.format("Line #{0}: #{1}", lineNumber, message),
+      null, // TODO: filename
+      lineNumber
+    );
     error.index       = index;
     error.lineNumber  = lineNumber;
     error.column      = column;

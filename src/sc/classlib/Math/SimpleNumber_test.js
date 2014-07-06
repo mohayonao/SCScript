@@ -7,6 +7,7 @@
   var testCase = sc.test.testCase;
 
   var $ = sc.lang.$;
+  var SCSimpleNumber = $("SimpleNumber");
 
   describe("SCSimpleNumber", function() {
     before(function() {
@@ -66,6 +67,9 @@
 
       test = instance.__num__();
       expect(test).to.be.a("JSNumber").that.equals(2014);
+    });
+    it(".new", function() {
+      expect(SCSimpleNumber.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it("#isValidUGenInput", function() {
       testCase(this, [
@@ -847,7 +851,7 @@
       test = instance.rate();
       expect(test).to.be.a("SCSymbol").that.equals("scalar");
     });
-    it("#asAudioRateInput", sinon.test(function() {
+    it("#asAudioRateInput when 0", sinon.test(function() {
       var instance, test;
 
       var SCSilent$ar = this.spy(sc.test.func());
@@ -861,10 +865,18 @@
       test = instance.asAudioRateInput();
       expect(SCSilent$ar).to.be.calledLastIn(test);
       expect(SCDC$ar).to.be.not.called;
-      SCSilent$ar.reset();
-      SCDC$ar.reset();
+    }));
+    it("#asAudioRateInput when otherwise", sinon.test(function() {
+      var instance, test;
+
+      var SCSilent$ar = this.spy(sc.test.func());
+      var SCDC$ar     = this.spy(sc.test.func());
 
       instance = this.createInstance(1);
+      this.stub(sc.lang.klass, "get")
+        .withArgs("Silent").returns($$({ ar: SCSilent$ar }))
+        .withArgs("DC"    ).returns($$({ ar: SCDC$ar }));
+
       test = instance.asAudioRateInput();
       expect(SCSilent$ar).to.be.not.called;
       expect(SCDC$ar).to.be.calledWith(instance);

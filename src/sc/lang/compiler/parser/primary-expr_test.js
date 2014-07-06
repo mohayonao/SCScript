@@ -158,7 +158,7 @@
         "0.0": sc.test.OK,
         "'sym'": sc.test.OK,
         "$a ": sc.test.OK,
-        "a ": Message.UnexpectedIdentifier,
+        "a ": strlib.format(Message.UnexpectedIdentifier),
         "#{}": strlib.format(Message.UnexpectedToken, "{"),
       });
       sc.test.parse(this.title).each({

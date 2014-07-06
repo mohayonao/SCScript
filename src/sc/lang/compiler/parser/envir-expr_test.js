@@ -5,14 +5,15 @@
 
   var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseEnvironmentExpression", function() {
       sc.test.compile(this.title).each({
         "~a": sc.test.OK,
-        "~1234": Message.UnexpectedNumber,
-        "~_": Message.UnexpectedIdentifier,
-        "~Object": Message.UnexpectedIdentifier,
+        "~1234": strlib.format(Message.UnexpectedNumber),
+        "~_": strlib.format(Message.UnexpectedIdentifier),
+        "~Object": strlib.format(Message.UnexpectedIdentifier),
       });
       sc.test.parse(this.title).each({
         "~a": {

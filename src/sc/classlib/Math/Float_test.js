@@ -57,7 +57,7 @@
     it(".new", function() {
       expect(function() {
         SCFloat.new();
-      }).to.throw("should use literal");
+      }).to.throw("should use literals");
     });
     it("#isFloat", function() {
       testCase(this, [

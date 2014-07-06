@@ -26,23 +26,7 @@
 
   function BinaryExpressionParser(parent) {
     Parser.call(this, parent);
-
-    // TODO:
-    // replace
-    // this.binaryPrecedence = sc.config.binaryPrecedence;
-    //
-    // remove below
-    var binaryPrecedence;
-    if (sc.config.binaryPrecedence) {
-      // istanbul ignore next
-      if (typeof sc.config.binaryPrecedence === "object") {
-        binaryPrecedence = sc.config.binaryPrecedence;
-      } else {
-        binaryPrecedence = sc.lang.compiler.binaryPrecedenceDefaults;
-      }
-    }
-
-    this.binaryPrecedence = binaryPrecedence || {};
+    this.binaryPrecedence = sc.config.get("binaryPrecedence");
   }
   sc.libs.extend(BinaryExpressionParser, Parser);
 

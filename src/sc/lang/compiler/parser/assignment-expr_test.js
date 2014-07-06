@@ -6,6 +6,7 @@
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseAssignmentExpression", function() {
@@ -16,7 +17,7 @@
         "#a, b = c": sc.test.OK,
         "#a ... b = c": sc.test.OK,
         "#[]": sc.test.OK,
-        "[ 0 ] = 10": Message.InvalidLHSInAssignment,
+        "[ 0 ] = 10": strlib.format(Message.InvalidLHSInAssignment),
       });
       sc.test.parse(this.title).each({
         "a = 10": {

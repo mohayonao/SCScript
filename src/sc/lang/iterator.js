@@ -15,21 +15,130 @@
     return null;
   };
 
-  var nop$iter = function(iter) {
+  function toNOPIterator(iter) {
     iter.hasNext = false;
     iter.next    = __stop__;
     return iter;
+  }
+  toNOPIterator.clone = function() {
+    return toNOPIterator;
   };
-  nop$iter.clone = function() {
-    return nop$iter;
-  };
-  nop$iter(nop$iter);
+  toNOPIterator(toNOPIterator);
+
+  function makeStepIterator($start, $end, $step, cond, stepper, type) {
+    var $i = $start, j = 0, iter = {
+      hasNext: true,
+      next: function() {
+        var $ret = $i;
+        $i = stepper($i, $step);
+        if (cond($i, $end)) {
+          toNOPIterator(iter);
+        }
+        return [ type ? type($ret) : $ret, $.Integer(j++) ];
+      },
+      clone: function() {
+        return makeStepIterator($start, $end, $step, cond, stepper, type);
+      }
+    };
+    return iter;
+  }
+
+  function makeSCStepIterator($start, $end, $step, cond) {
+    return makeStepIterator($start, $end, $step, cond, function($i, $step) {
+      return $i ["+"] ($step);
+    }, null);
+  }
+
+  function makeSCIncrmentalIterator($start, $end, $step) {
+    return makeSCStepIterator($start, $end, $step, function($i, $end) {
+      return $i > $end;
+    });
+  }
+
+  function makeSCDecrementalIterator($start, $end, $step) {
+    return makeSCStepIterator($start, $end, $step, function($i, $end) {
+      return $i < $end;
+    });
+  }
+
+  function makeSCNumericIterator($start, $end, $step) {
+    if ($start.valueOf() === $end.valueOf()) {
+      return once$iter($start);
+    } else if ($start < $end && $step > 0) {
+      return makeSCIncrmentalIterator($start, $end, $step);
+    } else if ($start > $end && $step < 0) {
+      return makeSCDecrementalIterator($start, $end, $step);
+    }
+    return toNOPIterator;
+  }
+
+  function makeJSNumericIterator$do($endval, type) {
+    var end = type($endval.__num__()).valueOf();
+
+    return makeJSNumericIterator(0, end - 1, +1, type);
+  }
+
+  function makeJSNumericIterator$reverseDo($startval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = (start|0) - start;
+
+    return makeJSNumericIterator(start - 1, end, -1, type);
+  }
+
+  function makeJSNumericIterator$for($startval, $endval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = (start <= end) ? +1 : -1;
+
+    return makeJSNumericIterator(start, end, step, type);
+  }
+
+  function makeJSNumericIterator$forBy($startval, $endval, $stepval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = type($stepval .__num__()).valueOf();
+
+    return makeJSNumericIterator(start, end, step, type);
+  }
+
+  function makeJSNumericIterator$forSeries($startval, $second, $last, type) {
+    var start  = type($startval.__num__()).valueOf();
+    var second = type($second  .__num__()).valueOf();
+    var end    = type($last    .__num__()).valueOf();
+    var step = second - start;
+
+    return makeJSNumericIterator(start, end, step, type);
+  }
+
+  function makeListIterator(list) {
+    var i = 0, iter = {
+      hasNext: true,
+      next: function() {
+        var $ret = list[i++];
+        if (i >= list.length) {
+          toNOPIterator(iter);
+        }
+        return [ $ret, $.Integer(i - 1) ];
+      },
+      clone: function() {
+        return makeListIterator(list);
+      }
+    };
+    return iter;
+  }
+
+  function makeJSArrayIterator(list) {
+    if (list.length) {
+      return makeListIterator(list);
+    }
+    return toNOPIterator;
+  }
 
   var once$iter = function(value) {
     var iter = {
       hasNext: true,
       next: function() {
-        nop$iter(iter);
+        toNOPIterator(iter);
         return [ value, $int0 ];
       },
       clone: function() {
@@ -54,7 +163,7 @@
       hasNext: true,
       next: function() {
         if (!bytecode.runAsFunction().__bool__()) {
-          nop$iter(iter);
+          toNOPIterator(iter);
           return null;
         }
         return [ $nil, $nil ];
@@ -80,53 +189,6 @@
     return iter;
   };
 
-  function sc$incremental$iter($start, $end, $step) {
-    var $i = $start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var $ret = $i;
-        $i = $i ["+"] ($step);
-        if ($i > $end) {
-          nop$iter(iter);
-        }
-        return [ $ret, $.Integer(j++) ];
-      },
-      clone: function() {
-        return sc$incremental$iter($start, $end, $step);
-      }
-    };
-    return iter;
-  }
-
-  function sc$decremental$iter($start, $end, $step) {
-    var $i = $start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var $ret = $i;
-        $i = $i ["+"] ($step);
-        if ($i < $end) {
-          nop$iter(iter);
-        }
-        return [ $ret, $.Integer(j++) ];
-      },
-      clone: function() {
-        return sc$decremental$iter($start, $end, $step);
-      }
-    };
-    return iter;
-  }
-
-  function sc$numeric$iter($start, $end, $step) {
-    if ($start.valueOf() === $end.valueOf()) {
-      return once$iter($start);
-    } else if ($start < $end && $step > 0) {
-      return sc$incremental$iter($start, $end, $step);
-    } else if ($start > $end && $step < 0) {
-      return sc$decremental$iter($start, $end, $step);
-    }
-    return nop$iter;
-  }
-
   iterator.number$do = function($end) {
     var $start, $step;
 
@@ -134,7 +196,7 @@
     $end   = $end.__dec__();
     $step  = $int1;
 
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$reverseDo = function($start) {
@@ -144,7 +206,7 @@
     $end   = $int0;
     $step  = $.Integer(-1);
 
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$for = function($start, $end) {
@@ -152,11 +214,11 @@
 
     $step = ($start <= $end) ? $int1 : $.Integer(-1);
 
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$forBy = function($start, $end, $step) {
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$forSeries = function($start, $second, $last) {
@@ -164,166 +226,88 @@
 
     $step   = $second ["-"] ($start);
 
-    return sc$numeric$iter($start, $last, $step);
+    return makeSCNumericIterator($start, $last, $step);
   };
 
-  function js$incremental$iter(start, end, step, type) {
-    var i = start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var ret = i;
-        i += step;
-        if (i > end) {
-          nop$iter(iter);
-        }
-        return [ type(ret), $.Integer(j++) ];
-      },
-      clone: function() {
-        return js$incremental$iter(start, end, step, type);
-      }
-    };
-    return iter;
+  function makeJSStepIterator(start, end, step, type, cond) {
+    return makeStepIterator(start, end, step, cond, function(i, step) {
+      return i + step;
+    }, type);
   }
 
-  function js$decremental$iter(start, end, step, type) {
-    var i = start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var ret = i;
-        i += step;
-        if (i < end) {
-          nop$iter(iter);
-        }
-        return [ type(ret), $.Integer(j++) ];
-      },
-      clone: function() {
-        return js$decremental$iter(start, end, step, type);
-      }
-    };
-    return iter;
+  function makeJSIncrementalIterator(start, end, step, type) {
+    return makeJSStepIterator(start, end, step, type, function(i, end) {
+      return i > end;
+    });
   }
 
-  function js$numeric$iter(start, end, step, type) {
+  function makeJSDecrementalIterator(start, end, step, type) {
+    return makeJSStepIterator(start, end, step, type, function(i, end) {
+      return i < end;
+    });
+  }
+
+  function makeJSNumericIterator(start, end, step, type) {
     if (start === end) {
       return once$iter(type(start));
     } else if (start < end && step > 0) {
-      return js$incremental$iter(start, end, step, type);
+      return makeJSIncrementalIterator(start, end, step, type);
     } else if (start > end && step < 0) {
-      return js$decremental$iter(start, end, step, type);
+      return makeJSDecrementalIterator(start, end, step, type);
     }
-    return nop$iter;
-  }
-
-  function js$numeric$iter$do($endval, type) {
-    var end = type($endval.__num__()).valueOf();
-    return js$numeric$iter(0, end - 1, +1, type);
-  }
-
-  function js$numeric$iter$reverseDo($startval, type) {
-    var start = type($startval.__num__()).valueOf();
-    var end   = (start|0) - start;
-    return js$numeric$iter(start - 1, end, -1, type);
-  }
-
-  function js$numeric$iter$for($startval, $endval, type) {
-    var start = type($startval.__num__()).valueOf();
-    var end   = type($endval  .__num__()).valueOf();
-    var step  = (start <= end) ? +1 : -1;
-
-    return js$numeric$iter(start, end, step, type);
-  }
-
-  function js$numeric$iter$forBy($startval, $endval, $stepval, type) {
-    var start = type($startval.__num__()).valueOf();
-    var end   = type($endval  .__num__()).valueOf();
-    var step  = type($stepval .__num__()).valueOf();
-
-    return js$numeric$iter(start, end, step, type);
-  }
-
-  function js$numeric$iter$forSeries($startval, $second, $last, type) {
-    var start  = type($startval.__num__()).valueOf();
-    var second = type($second  .__num__()).valueOf();
-    var end    = type($last    .__num__()).valueOf();
-    var step = second - start;
-
-    return js$numeric$iter(start, end, step, type);
+    return toNOPIterator;
   }
 
   iterator.integer$do = function($endval) {
-    return js$numeric$iter$do($endval, $.Integer);
+    return makeJSNumericIterator$do($endval, $.Integer);
   };
 
   iterator.integer$reverseDo = function($startval) {
-    return js$numeric$iter$reverseDo($startval, $.Integer);
+    return makeJSNumericIterator$reverseDo($startval, $.Integer);
   };
 
   iterator.integer$for = function($startval, $endval) {
-    return js$numeric$iter$for($startval, $endval, $.Integer);
+    return makeJSNumericIterator$for($startval, $endval, $.Integer);
   };
 
   iterator.integer$forBy = function($startval, $endval, $stepval) {
-    return js$numeric$iter$forBy($startval, $endval, $stepval, $.Integer);
+    return makeJSNumericIterator$forBy($startval, $endval, $stepval, $.Integer);
   };
 
   iterator.integer$forSeries = function($startval, $second, $last) {
-    return js$numeric$iter$forSeries($startval, $second, $last, $.Integer);
+    return makeJSNumericIterator$forSeries($startval, $second, $last, $.Integer);
   };
 
   iterator.float$do = function($endval) {
-    return js$numeric$iter$do($endval, $.Float);
+    return makeJSNumericIterator$do($endval, $.Float);
   };
 
   iterator.float$reverseDo = function($startval) {
-    return js$numeric$iter$reverseDo($startval, $.Float);
+    return makeJSNumericIterator$reverseDo($startval, $.Float);
   };
 
   iterator.float$for = function($startval, $endval) {
-    return js$numeric$iter$for($startval, $endval, $.Float);
+    return makeJSNumericIterator$for($startval, $endval, $.Float);
   };
 
   iterator.float$forBy = function($startval, $endval, $stepval) {
-    return js$numeric$iter$forBy($startval, $endval, $stepval, $.Float);
+    return makeJSNumericIterator$forBy($startval, $endval, $stepval, $.Float);
   };
 
   iterator.float$forSeries = function($startval, $second, $last) {
-    return js$numeric$iter$forSeries($startval, $second, $last, $.Float);
+    return makeJSNumericIterator$forSeries($startval, $second, $last, $.Float);
   };
 
-  function list$iter(list) {
-    var i = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var $ret = list[i++];
-        if (i >= list.length) {
-          nop$iter(iter);
-        }
-        return [ $ret, $.Integer(i - 1) ];
-      },
-      clone: function() {
-        return list$iter(list);
-      }
-    };
-    return iter;
-  }
-
-  function js$array$iter(list) {
-    if (list.length) {
-      return list$iter(list);
-    }
-    return nop$iter;
-  }
-
   iterator.array$do = function($array) {
-    return js$array$iter($array._.slice());
+    return makeJSArrayIterator($array._.slice());
   };
 
   iterator.array$reverseDo = function($array) {
-    return js$array$iter($array._.slice().reverse());
+    return makeJSArrayIterator($array._.slice().reverse());
   };
 
   iterator.set$do = function($set) {
-    return js$array$iter($set._$array._.filter(function($elem) {
+    return makeJSArrayIterator($set._$array._.filter(function($elem) {
       return $elem !== $nil;
     }));
   };

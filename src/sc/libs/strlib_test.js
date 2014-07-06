@@ -10,32 +10,9 @@
       expect(strlib.article("apple")).to.equal("an");
       expect(strlib.article("banana")).to.equal("a");
     });
-    it("isAlpha", function() {
-      var trueCase = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      for (var i = 0; i < 256; ++i) {
-        var ch = String.fromCharCode(i);
-        expect(strlib.isAlpha(ch)).to.equal(trueCase.indexOf(ch) !== -1);
-      }
-    });
-    it("isNumber", function() {
-      var trueCase = "0123456789";
-      for (var i = 0; i < 256; ++i) {
-        var ch = String.fromCharCode(i);
-        expect(strlib.isNumber(ch)).to.equal(trueCase.indexOf(ch) !== -1);
-      }
-    });
     it("isClasName", function() {
       expect(strlib.isClassName("Object")).to.be.true;
       expect(strlib.isClassName("object")).to.be.false;
-    });
-    it("char2num", function() {
-      var nums = "0123456789abcdefghijklmnopqrstuvwxyz";
-      for (var i = 0, imax = nums.length; i < imax; ++i) {
-        var ch1 = nums.charAt(i);
-        var ch2 = nums.charAt(i).toUpperCase();
-        expect(strlib.char2num(ch1), ch1).to.equal(i);
-        expect(strlib.char2num(ch2), ch2).to.equal(i);
-      }
     });
     it("format with args", function() {
       var str = strlib.format(

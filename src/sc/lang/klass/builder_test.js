@@ -11,6 +11,7 @@
     var MetaClass, TestClass;
     beforeEach(function() {
       MetaClass = function MetaClass() {};
+      MetaClass.prototype.__className = "TestClass";
       TestClass = function TestClass() {};
       TestClass.prototype.__className = "TestClass";
       TestClass.metaClass  = MetaClass;
@@ -116,35 +117,42 @@
       var instance = new TestClass();
       expect(function() {
         instance.method();
-      }).to.throw("'method' should have been implemented by this subclass");
+      }).to.throw("Message 'method' should have been implemented by this subclass.");
     });
     it("doesNotUnderstand", function() {
       new Builder(TestClass).init().doesNotUnderstand("method");
       var instance = new TestClass();
       expect(function() {
         instance.method();
-      }).to.throw("'method' not understood");
+      }).to.throw("Message 'method' is not understood.");
     });
     it("shouldNotImplement", function() {
       new Builder(TestClass).init().shouldNotImplement("method");
       var instance = new TestClass();
       expect(function() {
         instance.method();
-      }).to.throw("TestClass: 'method' not valid for this subclass");
+      }).to.throw("TestClass: Message 'method' not valid for this subclass.");
     });
     it("notYetImplemented", function() {
       new Builder(TestClass).init().notYetImplemented("method");
       var instance = new TestClass();
       expect(function() {
         instance.method();
-      }).to.throw("TestClass: 'method' is not yet implemented");
+      }).to.throw("TestClass: Message 'method' is not yet implemented.");
     });
     it("notSupported", function() {
       new Builder(TestClass).init().notSupported("method");
       var instance = new TestClass();
       expect(function() {
         instance.method();
-      }).to.throw("TestClass: 'method' is not supported");
+      }).to.throw("TestClass: Message 'method' is not supported.");
+    });
+    it("shouldUseLiterals", function() {
+      new Builder(TestClass).init().shouldUseLiterals("method");
+      var instance = new MetaClass();
+      expect(function() {
+        instance.method();
+      }).to.throw("TestClass: Message 'method' is ILLEGAL, should use literals instead.");
     });
   });
 })();

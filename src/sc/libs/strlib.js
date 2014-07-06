@@ -13,29 +13,9 @@
     return "a";
   };
 
-  strlib.isAlpha = function(ch) {
-    return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
-  };
-
-  strlib.isNumber = function(ch) {
-    return "0" <= ch && ch <= "9";
-  };
-
   strlib.isClassName = function(name) {
     var ch = name.charCodeAt(0);
     return 0x41 <= ch && ch <= 0x5a;
-  };
-
-  strlib.char2num = function(ch) {
-    var n = ch.charCodeAt(0);
-
-    if (48 <= n && n <= 57) {
-      return n - 48;
-    }
-    if (65 <= n && n <= 90) {
-      return n - 55;
-    }
-    return n - 87; // if (97 <= n && n <= 122)
   };
 
   function formatWithList(fmt, list) {

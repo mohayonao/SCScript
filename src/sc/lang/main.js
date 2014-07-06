@@ -46,7 +46,7 @@
 
     // $interpreter._$s = SCServer.default();
 
-    random.current = $process._$mainThread._randgen;
+    random.setCurrent($process._$mainThread._randgen);
     // TODO:
     // SoundSystem.addProcess($process);
     // SoundSystem.start();

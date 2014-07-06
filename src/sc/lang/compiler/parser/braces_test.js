@@ -43,7 +43,7 @@
 
           expect(function() {
             p.parseBraces({ blockList: true });
-          }).to.throw("unexpected token :");
+          }).to.throw(strlib.format(Message.UnexpectedToken, ":"));
 
           expect(p.parseGeneratorExpression).to.not.beCalled;
         }));

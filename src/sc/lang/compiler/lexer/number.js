@@ -3,7 +3,7 @@
 
   require("./lexer");
 
-  var strlib = sc.libs.strlib;
+  var charlib = sc.libs.charlib;
   var Token = sc.lang.compiler.Token;
   var Lexer = sc.lang.compiler.Lexer;
 
@@ -119,7 +119,7 @@
   }
 
   function char2num(ch, base) {
-    var num = strlib.char2num(ch, base);
+    var num = charlib.toNumber(ch);
     if (num >= base) {
       num = NaN;
     }

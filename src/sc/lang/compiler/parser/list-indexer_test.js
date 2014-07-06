@@ -20,7 +20,7 @@
         "[1..10]": sc.test.OK,
         "[1,5..10]": sc.test.OK,
         "[]": strlib.format(Message.UnexpectedToken, "]"),
-        "[1": Message.UnexpectedEOS,
+        "[1": strlib.format(Message.UnexpectedEOS),
         "[,5..10]": strlib.format(Message.UnexpectedToken, ","),
         "(1)": strlib.format(Message.UnexpectedToken, "("),
       });

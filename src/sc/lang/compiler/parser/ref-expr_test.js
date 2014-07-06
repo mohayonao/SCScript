@@ -5,13 +5,14 @@
 
   var Syntax = sc.lang.compiler.Syntax;
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseRefExpression", function() {
       sc.test.compile(this.title).each({
         "`a": sc.test.OK,
         "`a.b": sc.test.OK,
-        "a ": Message.UnexpectedIdentifier,
+        "a ": strlib.format(Message.UnexpectedIdentifier),
       });
       sc.test.parse(this.title).each({
         "`a": {

@@ -6,13 +6,14 @@
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseLabelAsSymbol", function() {
       sc.test.compile(this.title).each({
         "a:": sc.test.OK,
-        "a :": Message.UnexpectedIdentifier,
-        "1:": Message.UnexpectedNumber,
+        "a :": strlib.format(Message.UnexpectedIdentifier),
+        "1:": strlib.format(Message.UnexpectedNumber),
       });
       sc.test.parse(this.title).each({
         "a:": {

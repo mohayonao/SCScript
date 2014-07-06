@@ -15,7 +15,7 @@ function main(argv) {
   }
 
   if (opts.interactive) {
-    return require("./repl").start();
+    return require("./repl").start(opts);
   }
 
   if (opts.stdio) {
@@ -29,7 +29,7 @@ function main(argv) {
   /* jshint evil: false */
 
   if (args.length === 0) {
-    return require("./repl").start();
+    return require("./repl").start(opts);
   }
 
   require("./compile").file(args[0], opts);

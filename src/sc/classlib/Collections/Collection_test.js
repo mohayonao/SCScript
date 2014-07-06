@@ -143,7 +143,7 @@
       var instance;
 
       instance = this.createInstance();
-      expect(instance.do.__errorType).to.equal("subclassResponsibility");
+      expect(instance.do.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it.skip("#iter", function() {
     });
@@ -217,7 +217,7 @@
       var instance;
 
       instance = this.createInstance();
-      expect(instance.add.__errorType).to.equal("subclassResponsibility");
+      expect(instance.add.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#addAll", function() {
       testCase(this, [
@@ -233,7 +233,7 @@
       var instance;
 
       instance = this.createInstance();
-      expect(instance.remove.__errorType).to.equal("subclassResponsibility");
+      expect(instance.remove.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
     it("#removeAll", function() {
       testCase(this, [

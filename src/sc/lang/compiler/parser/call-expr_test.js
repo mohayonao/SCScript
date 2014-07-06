@@ -42,8 +42,8 @@
         "a[0][0]": sc.test.OK,   // (a[0])[0]
         "a[0].a": sc.test.OK,    // (a[0]).a
         "a.a": sc.test.OK,       // a.a()
-        "a.Object": Message.UnexpectedIdentifier,
-        "a._": Message.UnexpectedIdentifier,
+        "a.Object": strlib.format(Message.UnexpectedIdentifier),
+        "a._": strlib.format(Message.UnexpectedIdentifier),
         "a.a()": sc.test.OK,     // a.a()
         "a.a{}": sc.test.OK,     // a.a({})
         "a.a[0]": sc.test.OK,    // (a.a)[0]
@@ -58,7 +58,7 @@
         "a.a(*a)": sc.test.OK,
         "a.a(a:0,a:0)": sc.test.OK,
         "a.a(0,*a,a:0)": sc.test.OK,
-        "a.a(*a,0)": Message.UnexpectedNumber,
+        "a.a(*a,0)": strlib.format(Message.UnexpectedNumber),
         "a.a(a:0,*a)": strlib.format(Message.UnexpectedToken, "*"),
       });
       sc.test.parse(this.title).each({
@@ -767,7 +767,7 @@
           },
           method: {
             type: Syntax.Identifier,
-            name: "at",
+            name: "[]",
             range: [ 6, 6 ],
             loc: {
               start: { line: 1, column: 6 },

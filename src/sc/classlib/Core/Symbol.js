@@ -15,9 +15,7 @@ SCScript.install(function(sc) {
       return this._;
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Symbol.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("asSymbol");
 

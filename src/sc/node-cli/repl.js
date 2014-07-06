@@ -1,19 +1,49 @@
 "use strict";
 
-var nodeREPL = require("repl");
+var nodeREPL  = require("repl");
+var sushiREPL = require("sushi-repl");
 var vm = require("vm");
 var SCScript = require("./scscript");
+
+function isObject(obj) {
+  return obj && obj.constructor === Object;
+}
 
 function isSCObject(obj) {
   return obj && typeof obj._ !== "undefined";
 }
 
-function toString(obj) {
-  if (isSCObject(obj)) {
-    return obj.toString();
+var formatter = {
+  SCObject: function(value) {
+    return {
+      inspect: function() {
+        return "\x1B[35m" + value.__className + "\x1B[39m";
+      }
+    };
+  },
+  Array: function(value) {
+    return value.map(formatter.Value);
+  },
+  Object: function(value) {
+    var dict = {};
+    Object.keys(value).forEach(function(key) {
+      dict[key] = formatter.Value(value[key]);
+    });
+    return dict;
+  },
+  Value: function(value) {
+    if (isSCObject(value)) {
+      return formatter.SCObject(value);
+    }
+    if (Array.isArray(value)) {
+      return formatter.Array(value);
+    }
+    if (isObject(value)) {
+      return formatter.Object(value);
+    }
+    return value;
   }
-  return obj;
-}
+};
 
 var replOptions = {
   prompt: "scsc> ",
@@ -30,71 +60,21 @@ var replOptions = {
       } else {
         result = vm.runInContext(js, context, filename);
       }
-      callback(null, toString(result.valueOf()));
+      callback(null, formatter.Value(result.valueOf()));
     } catch (err) {
       callback(err);
     }
   }
 };
 
-function countCodeDepth(code) {
-  var tokens = SCScript.tokenize(code).filter(function(token) {
-    return token.type === "Punctuator";
-  });
-
-  var depth = 0;
-
-  for (var i = 0, imax = tokens.length; i < imax; ++i) {
-    if ([ "(", "{", "[" ].indexOf(tokens[i].value) !== -1) {
-      depth += 1;
-    }
-    if ([ "]", "}", ")" ].indexOf(tokens[i].value) !== -1) {
-      depth -= 1;
-    }
-    if (depth < 0) {
-      return -1;
-    }
-  }
-
-  return depth;
-}
-
-function addMultilineHandler(repl) {
-  var rli = repl.rli;
-  var buffer = "";
-
-  var nodeLineListener = rli.listeners("line")[0];
-  rli.removeListener("line", nodeLineListener);
-
-  rli.on("line", function(line) {
-    buffer += line;
-
-    var depth = countCodeDepth(buffer);
-
-    if (depth === 0) {
-      rli.setPrompt(replOptions.prompt);
-      nodeLineListener(buffer);
-      buffer = "";
-      return;
-    }
-
-    if (depth > 0) {
-      rli.setPrompt("... ");
-      return rli.prompt(true);
-    }
-
-    buffer = "";
-    rli.setPrompt(replOptions.prompt);
-    return rli.prompt(true);
-  });
-}
-
 module.exports = {
-  start: function() {
+  start: function(opts) {
+    if (opts.sushi) {
+      replOptions.writer = sushiREPL.writer;
+    }
     var repl = nodeREPL.start(replOptions);
     repl.on("exit", function() {
       repl.outputStream.write("\n");
     });
-    addMultilineHandler(repl);
   }
 };

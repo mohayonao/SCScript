@@ -40,9 +40,7 @@
       expect(test).to.be.a("JSString").that.equals("sym");
     });
     it(".new", function() {
-      expect(function() {
-        SCSymbol.new();
-      }).to.throw("should use literal");
+      expect(SCSymbol.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it("#asSymbol", function() {
       var instance;

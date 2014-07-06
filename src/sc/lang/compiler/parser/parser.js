@@ -100,20 +100,18 @@
     case Token.NilLiteral:
       return this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
     case Token.Keyword:
-      return this.throwError(token, Message.UnexpectedKeyword);
+      return this.throwError(token, Message.UnexpectedKeyword, token.value);
     case Token.Label:
-      return this.throwError(token, Message.UnexpectedLabel);
+      return this.throwError(token, Message.UnexpectedLabel, token.value);
     case Token.Identifier:
-      return this.throwError(token, Message.UnexpectedIdentifier);
+      return this.throwError(token, Message.UnexpectedIdentifier, token.value);
     }
     return this.throwError(token, Message.UnexpectedToken, token.value);
   };
 
   Parser.prototype.addToScope = function(type, name) {
     if (this.state.declared[name]) {
-      var tmpl = (type === "var") ?
-        Message.VariableAlreadyDeclared : Message.ArgumentAlreadyDeclared;
-      this.throwError({}, tmpl, name);
+      this.throwError({}, Message.Redeclaration, type, name);
     }
     this.state.declared[name] = true;
   };

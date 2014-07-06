@@ -23,9 +23,7 @@ SCScript.install(function(sc) {
       return "nil";
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Nil.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("isNil", sc.TRUE);
     builder.addMethod("notNil", sc.FALSE);

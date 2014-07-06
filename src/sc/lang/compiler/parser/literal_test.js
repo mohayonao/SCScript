@@ -6,6 +6,7 @@
   var Syntax = sc.lang.compiler.Syntax;
   var Token = sc.lang.compiler.Token;
   var Message = sc.lang.compiler.Message;
+  var strlib = sc.libs.strlib;
 
   describe("sc.lang.compiler.Parser", function() {
     describe("parseLiteral", function() {
@@ -18,7 +19,7 @@
         "'sym'": sc.test.OK,
         '"str"': sc.test.OK,
         "$a ": sc.test.OK,
-        "a ": Message.UnexpectedIdentifier,
+        "a ": strlib.format(Message.UnexpectedIdentifier),
       });
       sc.test.parse(this.title).each({
         "1 ": {

@@ -22,6 +22,15 @@
     return SCScript;
   };
 
+  SCScript.setConfig = function(name, value) {
+    sc.config.set(name, value);
+    return SCScript;
+  };
+
+  SCScript.getConfig = function(name) {
+    return sc.config.get(name);
+  };
+
   SCScript.tokenize = function(source, opts) {
     return sc.lang.compiler.tokenize(source, opts);
   };

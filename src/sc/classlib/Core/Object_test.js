@@ -582,11 +582,10 @@
       var instance, test;
       var SCOneShotStream$new = this.spy(sc.test.func());
 
+      instance = this.createInstance();
       this.stub(sc.lang.klass, "get").withArgs("OneShotStream").returns($$({
         new: SCOneShotStream$new
       }));
-
-      instance = this.createInstance();
 
       test = instance.iter();
       expect(SCOneShotStream$new ).to.be.calledWith(instance);

@@ -42,11 +42,10 @@
       var $aPattern = $$();
       var SCPchain$new = this.spy(sc.test.func());
 
+      instance = this.createInstance();
       this.stub(sc.lang.klass, "get").withArgs("Pchain").returns($$({
         new: SCPchain$new
       }));
-
-      instance = this.createInstance();
 
       test = instance ["<>"] ($aPattern);
       expect(SCPchain$new).to.be.calledWith(instance, $aPattern);
@@ -213,11 +212,10 @@
       var $adverb   = $$();
       var SCPbinop$new = this.spy(sc.test.func());
 
+      instance = this.createInstance();
       this.stub(sc.lang.klass, "get").withArgs("Pbinop").returns($$({
         new: SCPbinop$new
       }));
-
-      instance = this.createInstance();
 
       test = instance.reverseComposeBinaryOp($operator, $pattern, $adverb);
       expect(SCPbinop$new).to.be.calledWith($operator, $pattern, instance, $adverb);
@@ -257,11 +255,10 @@
       var $n = $$();
       var SCPaddp$new = this.spy(sc.test.func());
 
+      instance = this.createInstance();
       this.stub(sc.lang.klass, "get").withArgs("Paddp").returns($$({
         new: SCPaddp$new
       }));
-
-      instance = this.createInstance();
 
       test = instance.ctranspose($n);
       expect(SCPaddp$new).to.be.calledWith($$("\\ctranspose"), $n, instance);
@@ -454,11 +451,10 @@
       var $n = $$();
       var SCPstutter$new = this.spy(sc.test.func());
 
+      instance = this.createInstance();
       this.stub(sc.lang.klass, "get").withArgs("Pstutter").returns($$({
         new: SCPstutter$new
       }));
-
-      instance = this.createInstance();
 
       test = instance.stutter($n);
       expect(SCPstutter$new).to.be.calledWith($n, instance);

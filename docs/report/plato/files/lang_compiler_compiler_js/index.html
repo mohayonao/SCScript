@@ -45,7 +45,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">92.15</p>
+      <p class="stat">92.14</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
@@ -63,7 +63,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">9.57</p>
+      <p class="stat">9.63</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
@@ -133,18 +133,18 @@
       ValueMethodResult: &quot;ValueMethodResult&quot;
     },
     Message: {
-      ArgumentAlreadyDeclared: &quot;argument &#039;#{0}&#039; already declared&quot;,
-      InvalidLHSInAssignment: &quot;invalid left-hand side in assignment&quot;,
-      NotImplemented: &quot;not implemented #{0}&quot;,
-      UnexpectedEOS: &quot;unexpected end of input&quot;,
-      UnexpectedIdentifier: &quot;unexpected identifier&quot;,
-      UnexpectedKeyword: &quot;unexpected keyword&quot;,
-      UnexpectedNumber: &quot;unexpected number&quot;,
-      UnexpectedLabel: &quot;unexpected label&quot;,
-      UnexpectedLiteral: &quot;unexpected #{0}&quot;,
-      UnexpectedToken: &quot;unexpected token #{0}&quot;,
-      VariableAlreadyDeclared: &quot;variable &#039;#{0}&#039; already declared&quot;,
-      VariableNotDefined: &quot;variable &#039;#{0}&#039; not defined&quot;
+      UnexpectedToken: &quot;Unexpected token #{0}&quot;,
+      UnexpectedNumber: &quot;Unexpected number&quot;,
+      UnexpectedIdentifier: &quot;Unexpected identifier&quot;,
+      UnexpectedKeyword: &quot;Unexpected token #{0}&quot;,
+      UnexpectedLiteral: &quot;Unexpected #{0}&quot;,
+      UnexpectedLabel: &quot;Unexpected label&quot;,
+      UnexpectedReserved: &quot;Unexpected reserved word&quot;,
+      UnexpectedEOS: &quot;Unexpected end of input&quot;,
+      InvalidLHSInAssignment: &quot;Invalid left-hand side in assignment&quot;,
+      Redeclaration: &quot;&#039;#{0} #{1}&#039; has already been declared&quot;,
+      VariableNotDefined: &quot;#{0} is not defined&quot;,
+      NotImplemented: &quot;#{0} is not implemented&quot;,
     },
     Keywords: {
       var: &quot;keyword&quot;,

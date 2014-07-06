@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">117.13</p>
+      <p class="stat">131.39</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">96</p>
+      <p class="stat">80</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">27.84</p>
+      <p class="stat">18.00</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.74</p>
+      <p class="stat">0.60</p>
     </div>
   </div>
 </div>
@@ -92,24 +92,58 @@
   <div class="row">
     <textarea id="file-source" class="col-md-12">&quot;use strict&quot;;
 
-var nodeREPL = require(&quot;repl&quot;);
+var nodeREPL  = require(&quot;repl&quot;);
+var sushiREPL = require(&quot;sushi-repl&quot;);
 var vm = require(&quot;vm&quot;);
 var SCScript = require(&quot;./scscript&quot;);
+
+function isObject(obj) {
+  return obj &amp;&amp; obj.constructor === Object;
+}
 
 function isSCObject(obj) {
   return obj &amp;&amp; typeof obj._ !== &quot;undefined&quot;;
 }
 
-function toString(obj) {
-  if (isSCObject(obj)) {
-    return obj.toString();
+var formatter = {
+  SCObject: function(value) {
+    return {
+      inspect: function() {
+        return &quot;\x1B[35m&quot; + value.__className + &quot;\x1B[39m&quot;;
+      }
+    };
+  },
+  Array: function(value) {
+    return value.map(formatter.Value);
+  },
+  Object: function(value) {
+    var dict = {};
+    Object.keys(value).forEach(function(key) {
+      dict[key] = formatter.Value(value[key]);
+    });
+    return dict;
+  },
+  Value: function(value) {
+    if (isSCObject(value)) {
+      return formatter.SCObject(value);
+    }
+    if (Array.isArray(value)) {
+      return formatter.Array(value);
+    }
+    if (isObject(value)) {
+      return formatter.Object(value);
+    }
+    return value;
   }
-  return obj;
-}
+};
 
 var replOptions = {
   prompt: &quot;scsc&gt; &quot;,
   eval: function(input, context, filename, callback) {
+    // Node&#039;s REPL sends the input ending with a newline and then wrapped in
+    // parens. Unwrap all that.
+    input = input.replace(/^\(([\s\S]*)\n\)$/m, &quot;$1&quot;);
+
     try {
       var js = SCScript.compile(input, { loc: true, range: true });
       var result;
@@ -118,72 +152,22 @@ var replOptions = {
       } else {
         result = vm.runInContext(js, context, filename);
       }
-      callback(null, toString(result.valueOf()));
+      callback(null, formatter.Value(result.valueOf()));
     } catch (err) {
       callback(err);
     }
   }
 };
 
-function countCodeDepth(code) {
-  var tokens = SCScript.tokenize(code).filter(function(token) {
-    return token.type === &quot;Punctuator&quot;;
-  });
-
-  var depth = 0;
-
-  for (var i = 0, imax = tokens.length; i &lt; imax; ++i) {
-    if ([ &quot;(&quot;, &quot;{&quot;, &quot;[&quot; ].indexOf(tokens[i].value) !== -1) {
-      depth += 1;
-    }
-    if ([ &quot;]&quot;, &quot;}&quot;, &quot;)&quot; ].indexOf(tokens[i].value) !== -1) {
-      depth -= 1;
-    }
-    if (depth &lt; 0) {
-      return -1;
-    }
-  }
-
-  return depth;
-}
-
-function addMultilineHandler(repl) {
-  var rli = repl.rli;
-  var buffer = &quot;&quot;;
-
-  var nodeLineListener = rli.listeners(&quot;line&quot;)[0];
-  rli.removeListener(&quot;line&quot;, nodeLineListener);
-
-  rli.on(&quot;line&quot;, function(line) {
-    buffer += line;
-
-    var depth = countCodeDepth(buffer);
-
-    if (depth === 0) {
-      rli.setPrompt(replOptions.prompt);
-      nodeLineListener(buffer);
-      buffer = &quot;&quot;;
-      return;
-    }
-
-    if (depth &gt; 0) {
-      rli.setPrompt(&quot;... &quot;);
-      return rli.prompt(true);
-    }
-
-    buffer = &quot;&quot;;
-    rli.setPrompt(replOptions.prompt);
-    return rli.prompt(true);
-  });
-}
-
 module.exports = {
-  start: function() {
+  start: function(opts) {
+    if (opts.sushi) {
+      replOptions.writer = sushiREPL.writer;
+    }
     var repl = nodeREPL.start(replOptions);
     repl.on(&quot;exit&quot;, function() {
       repl.outputStream.write(&quot;\n&quot;);
     });
-    addMultilineHandler(repl);
   }
 };</textarea>
   </div>

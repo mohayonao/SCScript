@@ -1,6 +1,6 @@
 (function(global) {
 "use strict";
-var sc = { VERSION: "0.0.68" };
+var sc = { VERSION: "0.0.70" };
 
 // src/sc/libs/libs.js
 (function(sc) {
@@ -20,29 +20,9 @@ var sc = { VERSION: "0.0.68" };
     return "a";
   };
 
-  strlib.isAlpha = function(ch) {
-    return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
-  };
-
-  strlib.isNumber = function(ch) {
-    return "0" <= ch && ch <= "9";
-  };
-
   strlib.isClassName = function(name) {
     var ch = name.charCodeAt(0);
     return 0x41 <= ch && ch <= 0x5a;
-  };
-
-  strlib.char2num = function(ch) {
-    var n = ch.charCodeAt(0);
-
-    if (48 <= n && n <= 57) {
-      return n - 48;
-    }
-    if (65 <= n && n <= 90) {
-      return n - 55;
-    }
-    return n - 87; // if (97 <= n && n <= 122)
   };
 
   function formatWithList(fmt, list) {
@@ -80,10 +60,36 @@ var sc = { VERSION: "0.0.68" };
   sc.libs.strlib = strlib;
 })(sc);
 
-// src/sc/libs/random.js
+// src/sc/libs/charlib.js
 (function(sc) {
 
-  var random = {};
+  sc.libs.charlib = {
+    isAlpha: function(ch) {
+      return ("A" <= ch && ch <= "Z") || ("a" <= ch && ch <= "z");
+    },
+    isNumber: function(ch) {
+      return "0" <= ch && ch <= "9";
+    },
+    toNumber: function(ch) {
+      var n = ch.charCodeAt(0);
+
+      if (48 <= n && n <= 57) {
+        return n - 48;
+      }
+      if (65 <= n && n <= 90) {
+        return n - 55;
+      }
+      if (97 <= n && n <= 122) {
+        return n - 87;
+      }
+
+      return NaN;
+    }
+  };
+})(sc);
+
+// src/sc/libs/random.js
+(function(sc) {
 
   function RandGen(seed) {
     this.setSeed(seed);
@@ -120,18 +126,23 @@ var sc = { VERSION: "0.0.68" };
 
   RandGen.prototype.RandGen = RandGen;
 
-  random = {
+  var current = new RandGen();
+
+  sc.libs.random = {
     RandGen: RandGen,
-    current: new RandGen(),
-    next: function() {
-      return random.current.next();
+    getCurrent: function() {
+      return current;
+    },
+    setCurrent: function(randgen) {
+      current = randgen;
     },
     setSeed: function(seed) {
-      return random.current.setSeed(seed);
+      return current.setSeed(seed);
+    },
+    next: function() {
+      return current.next();
     }
   };
-
-  sc.libs.random = random;
 })(sc);
 
 // src/sc/libs/mathlib.js
@@ -550,6 +561,15 @@ var sc = { VERSION: "0.0.68" };
     return SCScript;
   };
 
+  SCScript.setConfig = function(name, value) {
+    sc.config.set(name, value);
+    return SCScript;
+  };
+
+  SCScript.getConfig = function(name) {
+    return sc.config.get(name);
+  };
+
   SCScript.tokenize = function(source, opts) {
     return sc.lang.compiler.tokenize(source, opts);
   };
@@ -635,7 +655,7 @@ var sc = { VERSION: "0.0.68" };
 
     // $interpreter._$s = SCServer.default();
 
-    random.current = $process._$mainThread._randgen;
+    random.setCurrent($process._$mainThread._randgen);
     // TODO:
     // SoundSystem.addProcess($process);
     // SoundSystem.start();
@@ -1107,18 +1127,18 @@ var sc = { VERSION: "0.0.68" };
 (function(sc) {
 
   var klass = {
-    classes: {}
+    _classes: {}
   };
 
   klass.get = function(name) {
-    if (!klass.classes[name]) {
+    if (!klass._classes[name]) {
       throw new Error("Class not defined: " + name);
     }
-    return klass.classes[name];
+    return klass._classes[name];
   };
 
   klass.exists = function(name) {
-    return !!klass.classes[name];
+    return !!klass._classes[name];
   };
 
   sc.lang.klass = klass;
@@ -1186,36 +1206,43 @@ var sc = { VERSION: "0.0.68" };
 
   Builder.prototype.subclassResponsibility = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "subclassResponsibility",
-      strlib.format("'#{0}' should have been implemented by this subclass", methodName)
+      1,
+      strlib.format("Message '#{0}' should have been implemented by this subclass.", methodName)
     ));
   };
 
   Builder.prototype.doesNotUnderstand = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "doesNotUnderstand",
-      strlib.format("'#{0}' not understood", methodName)
+      2,
+      strlib.format("Message '#{0}' is not understood.", methodName)
     ));
   };
 
   Builder.prototype.shouldNotImplement = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "shouldNotImplement",
-      strlib.format("'#{0}' not valid for this subclass", methodName)
+      3,
+      strlib.format("Message '#{0}' not valid for this subclass.", methodName)
     ));
   };
 
   Builder.prototype.notYetImplemented = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "notYetImplemented",
-      strlib.format("'#{0}' is not yet implemented", methodName)
+      4,
+      strlib.format("Message '#{0}' is not yet implemented.", methodName)
     ));
   };
 
   Builder.prototype.notSupported = function(methodName) {
     return this.addMethod(methodName, {}, createErrorFunc(
-      "notSupported",
-      strlib.format("'#{0}' is not supported", methodName)
+      5,
+      strlib.format("Message '#{0}' is not supported.", methodName)
+    ));
+  };
+
+  Builder.prototype.shouldUseLiterals = function(methodName) {
+    return this.addClassMethod(methodName, {}, createErrorFunc(
+      6,
+      strlib.format("Message '#{0}' is ILLEGAL, should use literals instead.", methodName)
     ));
   };
 
@@ -1261,7 +1288,6 @@ var sc = { VERSION: "0.0.68" };
   var $ = sc.lang.$;
   var strlib = sc.libs.strlib;
   var metaClasses = {};
-  var classes     = sc.lang.klass.classes;
   var hash = 0x100000;
 
   function createClassInstance(MetaSpec) {
@@ -1312,7 +1338,7 @@ var sc = { VERSION: "0.0.68" };
     metaClass.__className  = "Meta_" + className;
     metaClass.__Spec = constructor;
     metaClass.__isMetaClass = true;
-    metaClasses[className] = classes["Meta_" + className] = metaClass;
+    metaClasses[className] = sc.lang.klass._classes["Meta_" + className] = metaClass;
   }
 
   function registerClass(className, metaClass, constructor) {
@@ -1325,7 +1351,7 @@ var sc = { VERSION: "0.0.68" };
       __Spec: { value: constructor, writable: true },
       __className: { value: className, writable: true }
     });
-    classes[className] = newClass;
+    sc.lang.klass._classes[className] = newClass;
   }
 
   function buildClass(constructor, spec) {
@@ -1429,12 +1455,12 @@ var sc = { VERSION: "0.0.68" };
     }
   });
 
-  classes.Class = createClassInstance();
-  classes.Class.__Spec = SCClass;
+  sc.lang.klass._classes.Class = createClassInstance();
+  sc.lang.klass._classes.Class.__Spec = SCClass;
 
-  SCObject.metaClass.__MetaSpec.prototype = classes.Class;
+  SCObject.metaClass.__MetaSpec.prototype = sc.lang.klass._classes.Class;
 
-  registerClass("Object", SCObject.metaClass, classes.Object.__Spec);
+  registerClass("Object", SCObject.metaClass, sc.lang.klass._classes.Object.__Spec);
 
   refine("Object", function(builder) {
     builder.addClassMethod("new", function() {
@@ -1453,7 +1479,7 @@ var sc = { VERSION: "0.0.68" };
 
     builder.addMethod("__attr__", function(methodName) {
       throw new Error(strlib.format(
-        "RECEIVER #{0}: Message '#{1}' not understood.", this.__str__(), methodName
+        "RECEIVER #{0}: Message '#{1}' is not understood.", this.__str__(), methodName
       ));
     });
   });
@@ -1717,21 +1743,130 @@ var sc = { VERSION: "0.0.68" };
     return null;
   };
 
-  var nop$iter = function(iter) {
+  function toNOPIterator(iter) {
     iter.hasNext = false;
     iter.next    = __stop__;
     return iter;
+  }
+  toNOPIterator.clone = function() {
+    return toNOPIterator;
   };
-  nop$iter.clone = function() {
-    return nop$iter;
-  };
-  nop$iter(nop$iter);
+  toNOPIterator(toNOPIterator);
+
+  function makeStepIterator($start, $end, $step, cond, stepper, type) {
+    var $i = $start, j = 0, iter = {
+      hasNext: true,
+      next: function() {
+        var $ret = $i;
+        $i = stepper($i, $step);
+        if (cond($i, $end)) {
+          toNOPIterator(iter);
+        }
+        return [ type ? type($ret) : $ret, $.Integer(j++) ];
+      },
+      clone: function() {
+        return makeStepIterator($start, $end, $step, cond, stepper, type);
+      }
+    };
+    return iter;
+  }
+
+  function makeSCStepIterator($start, $end, $step, cond) {
+    return makeStepIterator($start, $end, $step, cond, function($i, $step) {
+      return $i ["+"] ($step);
+    }, null);
+  }
+
+  function makeSCIncrmentalIterator($start, $end, $step) {
+    return makeSCStepIterator($start, $end, $step, function($i, $end) {
+      return $i > $end;
+    });
+  }
+
+  function makeSCDecrementalIterator($start, $end, $step) {
+    return makeSCStepIterator($start, $end, $step, function($i, $end) {
+      return $i < $end;
+    });
+  }
+
+  function makeSCNumericIterator($start, $end, $step) {
+    if ($start.valueOf() === $end.valueOf()) {
+      return once$iter($start);
+    } else if ($start < $end && $step > 0) {
+      return makeSCIncrmentalIterator($start, $end, $step);
+    } else if ($start > $end && $step < 0) {
+      return makeSCDecrementalIterator($start, $end, $step);
+    }
+    return toNOPIterator;
+  }
+
+  function makeJSNumericIterator$do($endval, type) {
+    var end = type($endval.__num__()).valueOf();
+
+    return makeJSNumericIterator(0, end - 1, +1, type);
+  }
+
+  function makeJSNumericIterator$reverseDo($startval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = (start|0) - start;
+
+    return makeJSNumericIterator(start - 1, end, -1, type);
+  }
+
+  function makeJSNumericIterator$for($startval, $endval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = (start <= end) ? +1 : -1;
+
+    return makeJSNumericIterator(start, end, step, type);
+  }
+
+  function makeJSNumericIterator$forBy($startval, $endval, $stepval, type) {
+    var start = type($startval.__num__()).valueOf();
+    var end   = type($endval  .__num__()).valueOf();
+    var step  = type($stepval .__num__()).valueOf();
+
+    return makeJSNumericIterator(start, end, step, type);
+  }
+
+  function makeJSNumericIterator$forSeries($startval, $second, $last, type) {
+    var start  = type($startval.__num__()).valueOf();
+    var second = type($second  .__num__()).valueOf();
+    var end    = type($last    .__num__()).valueOf();
+    var step = second - start;
+
+    return makeJSNumericIterator(start, end, step, type);
+  }
+
+  function makeListIterator(list) {
+    var i = 0, iter = {
+      hasNext: true,
+      next: function() {
+        var $ret = list[i++];
+        if (i >= list.length) {
+          toNOPIterator(iter);
+        }
+        return [ $ret, $.Integer(i - 1) ];
+      },
+      clone: function() {
+        return makeListIterator(list);
+      }
+    };
+    return iter;
+  }
+
+  function makeJSArrayIterator(list) {
+    if (list.length) {
+      return makeListIterator(list);
+    }
+    return toNOPIterator;
+  }
 
   var once$iter = function(value) {
     var iter = {
       hasNext: true,
       next: function() {
-        nop$iter(iter);
+        toNOPIterator(iter);
         return [ value, $int0 ];
       },
       clone: function() {
@@ -1756,7 +1891,7 @@ var sc = { VERSION: "0.0.68" };
       hasNext: true,
       next: function() {
         if (!bytecode.runAsFunction().__bool__()) {
-          nop$iter(iter);
+          toNOPIterator(iter);
           return null;
         }
         return [ $nil, $nil ];
@@ -1782,53 +1917,6 @@ var sc = { VERSION: "0.0.68" };
     return iter;
   };
 
-  function sc$incremental$iter($start, $end, $step) {
-    var $i = $start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var $ret = $i;
-        $i = $i ["+"] ($step);
-        if ($i > $end) {
-          nop$iter(iter);
-        }
-        return [ $ret, $.Integer(j++) ];
-      },
-      clone: function() {
-        return sc$incremental$iter($start, $end, $step);
-      }
-    };
-    return iter;
-  }
-
-  function sc$decremental$iter($start, $end, $step) {
-    var $i = $start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var $ret = $i;
-        $i = $i ["+"] ($step);
-        if ($i < $end) {
-          nop$iter(iter);
-        }
-        return [ $ret, $.Integer(j++) ];
-      },
-      clone: function() {
-        return sc$decremental$iter($start, $end, $step);
-      }
-    };
-    return iter;
-  }
-
-  function sc$numeric$iter($start, $end, $step) {
-    if ($start.valueOf() === $end.valueOf()) {
-      return once$iter($start);
-    } else if ($start < $end && $step > 0) {
-      return sc$incremental$iter($start, $end, $step);
-    } else if ($start > $end && $step < 0) {
-      return sc$decremental$iter($start, $end, $step);
-    }
-    return nop$iter;
-  }
-
   iterator.number$do = function($end) {
     var $start, $step;
 
@@ -1836,7 +1924,7 @@ var sc = { VERSION: "0.0.68" };
     $end   = $end.__dec__();
     $step  = $int1;
 
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$reverseDo = function($start) {
@@ -1846,7 +1934,7 @@ var sc = { VERSION: "0.0.68" };
     $end   = $int0;
     $step  = $.Integer(-1);
 
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$for = function($start, $end) {
@@ -1854,11 +1942,11 @@ var sc = { VERSION: "0.0.68" };
 
     $step = ($start <= $end) ? $int1 : $.Integer(-1);
 
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$forBy = function($start, $end, $step) {
-    return sc$numeric$iter($start, $end, $step);
+    return makeSCNumericIterator($start, $end, $step);
   };
 
   iterator.number$forSeries = function($start, $second, $last) {
@@ -1866,166 +1954,88 @@ var sc = { VERSION: "0.0.68" };
 
     $step   = $second ["-"] ($start);
 
-    return sc$numeric$iter($start, $last, $step);
+    return makeSCNumericIterator($start, $last, $step);
   };
 
-  function js$incremental$iter(start, end, step, type) {
-    var i = start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var ret = i;
-        i += step;
-        if (i > end) {
-          nop$iter(iter);
-        }
-        return [ type(ret), $.Integer(j++) ];
-      },
-      clone: function() {
-        return js$incremental$iter(start, end, step, type);
-      }
-    };
-    return iter;
+  function makeJSStepIterator(start, end, step, type, cond) {
+    return makeStepIterator(start, end, step, cond, function(i, step) {
+      return i + step;
+    }, type);
   }
 
-  function js$decremental$iter(start, end, step, type) {
-    var i = start, j = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var ret = i;
-        i += step;
-        if (i < end) {
-          nop$iter(iter);
-        }
-        return [ type(ret), $.Integer(j++) ];
-      },
-      clone: function() {
-        return js$decremental$iter(start, end, step, type);
-      }
-    };
-    return iter;
+  function makeJSIncrementalIterator(start, end, step, type) {
+    return makeJSStepIterator(start, end, step, type, function(i, end) {
+      return i > end;
+    });
   }
 
-  function js$numeric$iter(start, end, step, type) {
+  function makeJSDecrementalIterator(start, end, step, type) {
+    return makeJSStepIterator(start, end, step, type, function(i, end) {
+      return i < end;
+    });
+  }
+
+  function makeJSNumericIterator(start, end, step, type) {
     if (start === end) {
       return once$iter(type(start));
     } else if (start < end && step > 0) {
-      return js$incremental$iter(start, end, step, type);
+      return makeJSIncrementalIterator(start, end, step, type);
     } else if (start > end && step < 0) {
-      return js$decremental$iter(start, end, step, type);
+      return makeJSDecrementalIterator(start, end, step, type);
     }
-    return nop$iter;
-  }
-
-  function js$numeric$iter$do($endval, type) {
-    var end = type($endval.__num__()).valueOf();
-    return js$numeric$iter(0, end - 1, +1, type);
-  }
-
-  function js$numeric$iter$reverseDo($startval, type) {
-    var start = type($startval.__num__()).valueOf();
-    var end   = (start|0) - start;
-    return js$numeric$iter(start - 1, end, -1, type);
-  }
-
-  function js$numeric$iter$for($startval, $endval, type) {
-    var start = type($startval.__num__()).valueOf();
-    var end   = type($endval  .__num__()).valueOf();
-    var step  = (start <= end) ? +1 : -1;
-
-    return js$numeric$iter(start, end, step, type);
-  }
-
-  function js$numeric$iter$forBy($startval, $endval, $stepval, type) {
-    var start = type($startval.__num__()).valueOf();
-    var end   = type($endval  .__num__()).valueOf();
-    var step  = type($stepval .__num__()).valueOf();
-
-    return js$numeric$iter(start, end, step, type);
-  }
-
-  function js$numeric$iter$forSeries($startval, $second, $last, type) {
-    var start  = type($startval.__num__()).valueOf();
-    var second = type($second  .__num__()).valueOf();
-    var end    = type($last    .__num__()).valueOf();
-    var step = second - start;
-
-    return js$numeric$iter(start, end, step, type);
+    return toNOPIterator;
   }
 
   iterator.integer$do = function($endval) {
-    return js$numeric$iter$do($endval, $.Integer);
+    return makeJSNumericIterator$do($endval, $.Integer);
   };
 
   iterator.integer$reverseDo = function($startval) {
-    return js$numeric$iter$reverseDo($startval, $.Integer);
+    return makeJSNumericIterator$reverseDo($startval, $.Integer);
   };
 
   iterator.integer$for = function($startval, $endval) {
-    return js$numeric$iter$for($startval, $endval, $.Integer);
+    return makeJSNumericIterator$for($startval, $endval, $.Integer);
   };
 
   iterator.integer$forBy = function($startval, $endval, $stepval) {
-    return js$numeric$iter$forBy($startval, $endval, $stepval, $.Integer);
+    return makeJSNumericIterator$forBy($startval, $endval, $stepval, $.Integer);
   };
 
   iterator.integer$forSeries = function($startval, $second, $last) {
-    return js$numeric$iter$forSeries($startval, $second, $last, $.Integer);
+    return makeJSNumericIterator$forSeries($startval, $second, $last, $.Integer);
   };
 
   iterator.float$do = function($endval) {
-    return js$numeric$iter$do($endval, $.Float);
+    return makeJSNumericIterator$do($endval, $.Float);
   };
 
   iterator.float$reverseDo = function($startval) {
-    return js$numeric$iter$reverseDo($startval, $.Float);
+    return makeJSNumericIterator$reverseDo($startval, $.Float);
   };
 
   iterator.float$for = function($startval, $endval) {
-    return js$numeric$iter$for($startval, $endval, $.Float);
+    return makeJSNumericIterator$for($startval, $endval, $.Float);
   };
 
   iterator.float$forBy = function($startval, $endval, $stepval) {
-    return js$numeric$iter$forBy($startval, $endval, $stepval, $.Float);
+    return makeJSNumericIterator$forBy($startval, $endval, $stepval, $.Float);
   };
 
   iterator.float$forSeries = function($startval, $second, $last) {
-    return js$numeric$iter$forSeries($startval, $second, $last, $.Float);
+    return makeJSNumericIterator$forSeries($startval, $second, $last, $.Float);
   };
 
-  function list$iter(list) {
-    var i = 0, iter = {
-      hasNext: true,
-      next: function() {
-        var $ret = list[i++];
-        if (i >= list.length) {
-          nop$iter(iter);
-        }
-        return [ $ret, $.Integer(i - 1) ];
-      },
-      clone: function() {
-        return list$iter(list);
-      }
-    };
-    return iter;
-  }
-
-  function js$array$iter(list) {
-    if (list.length) {
-      return list$iter(list);
-    }
-    return nop$iter;
-  }
-
   iterator.array$do = function($array) {
-    return js$array$iter($array._.slice());
+    return makeJSArrayIterator($array._.slice());
   };
 
   iterator.array$reverseDo = function($array) {
-    return js$array$iter($array._.slice().reverse());
+    return makeJSArrayIterator($array._.slice().reverse());
   };
 
   iterator.set$do = function($set) {
-    return js$array$iter($set._$array._.filter(function($elem) {
+    return makeJSArrayIterator($set._$array._.filter(function($elem) {
       return $elem !== $nil;
     }));
   };
@@ -2100,18 +2110,18 @@ var sc = { VERSION: "0.0.68" };
       ValueMethodResult: "ValueMethodResult"
     },
     Message: {
-      ArgumentAlreadyDeclared: "argument '#{0}' already declared",
-      InvalidLHSInAssignment: "invalid left-hand side in assignment",
-      NotImplemented: "not implemented #{0}",
-      UnexpectedEOS: "unexpected end of input",
-      UnexpectedIdentifier: "unexpected identifier",
-      UnexpectedKeyword: "unexpected keyword",
-      UnexpectedNumber: "unexpected number",
-      UnexpectedLabel: "unexpected label",
-      UnexpectedLiteral: "unexpected #{0}",
-      UnexpectedToken: "unexpected token #{0}",
-      VariableAlreadyDeclared: "variable '#{0}' already declared",
-      VariableNotDefined: "variable '#{0}' not defined"
+      UnexpectedToken: "Unexpected token #{0}",
+      UnexpectedNumber: "Unexpected number",
+      UnexpectedIdentifier: "Unexpected identifier",
+      UnexpectedKeyword: "Unexpected token #{0}",
+      UnexpectedLiteral: "Unexpected #{0}",
+      UnexpectedLabel: "Unexpected label",
+      UnexpectedReserved: "Unexpected reserved word",
+      UnexpectedEOS: "Unexpected end of input",
+      InvalidLHSInAssignment: "Invalid left-hand side in assignment",
+      Redeclaration: "'#{0} #{1}' has already been declared",
+      VariableNotDefined: "#{0} is not defined",
+      NotImplemented: "#{0} is not implemented",
     },
     Keywords: {
       var: "keyword",
@@ -3261,6 +3271,7 @@ var sc = { VERSION: "0.0.68" };
 
   var slice = [].slice;
   var strlib = sc.libs.strlib;
+  var charlib = sc.libs.charlib;
   var Token    = sc.lang.compiler.Token;
   var Message  = sc.lang.compiler.Message;
   var Marker = sc.lang.compiler.Marker;
@@ -3412,11 +3423,11 @@ var sc = { VERSION: "0.0.68" };
       return this.lexString;
     }
 
-    if (ch === "_" || strlib.isAlpha(ch)) {
+    if (ch === "_" || charlib.isAlpha(ch)) {
       return this.lexIdentifier;
     }
 
-    if (strlib.isNumber(ch)) {
+    if (charlib.isNumber(ch)) {
       return this.lexNumber;
     }
 
@@ -3470,7 +3481,11 @@ var sc = { VERSION: "0.0.68" };
       column     = index - this.lineStart + 1;
     }
 
-    var error = new Error("Line " + lineNumber + ": " + message);
+    var error = new SyntaxError(
+      strlib.format("Line #{0}: #{1}", lineNumber, message),
+      null, // TODO: filename
+      lineNumber
+    );
     error.index       = index;
     error.lineNumber  = lineNumber;
     error.column      = column;
@@ -3579,20 +3594,18 @@ var sc = { VERSION: "0.0.68" };
     case Token.NilLiteral:
       return this.throwError(token, Message.UnexpectedLiteral, token.type.toLowerCase());
     case Token.Keyword:
-      return this.throwError(token, Message.UnexpectedKeyword);
+      return this.throwError(token, Message.UnexpectedKeyword, token.value);
     case Token.Label:
-      return this.throwError(token, Message.UnexpectedLabel);
+      return this.throwError(token, Message.UnexpectedLabel, token.value);
     case Token.Identifier:
-      return this.throwError(token, Message.UnexpectedIdentifier);
+      return this.throwError(token, Message.UnexpectedIdentifier, token.value);
     }
     return this.throwError(token, Message.UnexpectedToken, token.value);
   };
 
   Parser.prototype.addToScope = function(type, name) {
     if (this.state.declared[name]) {
-      var tmpl = (type === "var") ?
-        Message.VariableAlreadyDeclared : Message.ArgumentAlreadyDeclared;
-      this.throwError({}, tmpl, name);
+      this.throwError({}, Message.Redeclaration, type, name);
     }
     this.state.declared[name] = true;
   };
@@ -5011,7 +5024,7 @@ var sc = { VERSION: "0.0.68" };
     var marker = this.createMarker();
 
     var method = this.createMarker().apply(
-      Node.createIdentifier("at")
+      Node.createIdentifier("[]")
     );
     var listExpr = this.parseListExpression();
 
@@ -5213,23 +5226,7 @@ var sc = { VERSION: "0.0.68" };
 
   function BinaryExpressionParser(parent) {
     Parser.call(this, parent);
-
-    // TODO:
-    // replace
-    // this.binaryPrecedence = sc.config.binaryPrecedence;
-    //
-    // remove below
-    var binaryPrecedence;
-    if (sc.config.binaryPrecedence) {
-      // istanbul ignore next
-      if (typeof sc.config.binaryPrecedence === "object") {
-        binaryPrecedence = sc.config.binaryPrecedence;
-      } else {
-        binaryPrecedence = sc.lang.compiler.binaryPrecedenceDefaults;
-      }
-    }
-
-    this.binaryPrecedence = binaryPrecedence || {};
+    this.binaryPrecedence = sc.config.get("binaryPrecedence");
   }
   sc.libs.extend(BinaryExpressionParser, Parser);
 
@@ -5666,7 +5663,7 @@ var sc = { VERSION: "0.0.68" };
 // src/sc/lang/compiler/lexer/number.js
 (function(sc) {
 
-  var strlib = sc.libs.strlib;
+  var charlib = sc.libs.charlib;
   var Token = sc.lang.compiler.Token;
   var Lexer = sc.lang.compiler.Lexer;
 
@@ -5782,7 +5779,7 @@ var sc = { VERSION: "0.0.68" };
   }
 
   function char2num(ch, base) {
-    var num = strlib.char2num(ch, base);
+    var num = charlib.toNumber(ch);
     if (num >= base) {
       num = NaN;
     }
@@ -6091,7 +6088,79 @@ var sc = { VERSION: "0.0.68" };
 
 // src/sc/config/config.js
 (function(sc) {
-  sc.config = {};
+
+  var strlib = sc.libs.strlib;
+
+  var values = {};
+  var setter = {};
+
+  sc.config = {
+    add: function(name, defaultValue, func) {
+      values[name] = typeof defaultValue !== "undefined" ? defaultValue : null;
+      if (typeof func === "function") {
+        setter[name] = func;
+      }
+    },
+    set: function(name, value) {
+      if (values.hasOwnProperty(name)) {
+        value = setter[name] ? setter[name](value) : value;
+        return (values[name] = value);
+      }
+      throw new Error(
+        strlib.format("Config '#{0}' is not found.", name)
+      );
+    },
+    get: function(name) {
+      if (values.hasOwnProperty(name)) {
+        return values[name];
+      }
+      throw new Error(
+        strlib.format("Config '#{0}' is not found.", name)
+      );
+    }
+  };
+})(sc);
+
+// src/sc/config/binaryPrecedence.js
+(function(sc) {
+
+  var defaults = {
+    "?": 1,
+    "??": 1,
+    "!?": 1,
+    "->": 2,
+    "||": 3,
+    "&&": 4,
+    "|": 5,
+    "&": 6,
+    "==": 7,
+    "!=": 7,
+    "===": 7,
+    "!==": 7,
+    "<": 8,
+    ">": 8,
+    "<=": 8,
+    ">=": 8,
+    "<<": 9,
+    ">>": 9,
+    "+>>": 9,
+    "+": 10,
+    "-": 10,
+    "*": 11,
+    "/": 11,
+    "%": 11,
+    "!": 12
+  };
+
+  sc.config.add("binaryPrecedence", {}, function(value) {
+    if (typeof value === "boolean") {
+      return value ? defaults : {};
+    }
+    if (value && typeof value === "object") {
+      return value;
+    }
+    throw new Error("Config 'binaryPrecedence' must be a boolean or an object.");
+  });
 })(sc);
 
 })(this.self || global);

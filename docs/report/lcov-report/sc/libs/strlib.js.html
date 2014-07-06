@@ -199,16 +199,16 @@
     <h1>Code coverage report for <span class="entity">sc/libs/strlib.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(40 / 40)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(29 / 29)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(26 / 26)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(12 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(11 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(8 / 8)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(40 / 40)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(29 / 29)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
@@ -270,27 +270,7 @@
 52
 53
 54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
-74
-75</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+55</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -306,38 +286,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">2537</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">2028</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">22587</span>
 <span class="cline-any cline-yes">22587</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">102</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">102</span>
-<span class="cline-any cline-yes">48</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">54</span>
-<span class="cline-any cline-yes">26</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">28</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">5557</span>
-<span class="cline-any cline-yes">5557</span>
-<span class="cline-any cline-yes">6919</span>
+<span class="cline-any cline-yes">5697</span>
+<span class="cline-any cline-yes">5697</span>
+<span class="cline-any cline-yes">7168</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5557</span>
+<span class="cline-any cline-yes">5697</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -353,13 +313,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">5558</span>
+<span class="cline-any cline-yes">5698</span>
 <span class="cline-any cline-yes">106</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5452</span>
+<span class="cline-any cline-yes">5592</span>
 <span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5451</span>
+<span class="cline-any cline-yes">5591</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -379,29 +339,9 @@
     return "a";
   };
 &nbsp;
-  strlib.isAlpha = function(ch) {
-    return ("A" &lt;= ch &amp;&amp; ch &lt;= "Z") || ("a" &lt;= ch &amp;&amp; ch &lt;= "z");
-  };
-&nbsp;
-  strlib.isNumber = function(ch) {
-    return "0" &lt;= ch &amp;&amp; ch &lt;= "9";
-  };
-&nbsp;
   strlib.isClassName = function(name) {
     var ch = name.charCodeAt(0);
     return 0x41 &lt;= ch &amp;&amp; ch &lt;= 0x5a;
-  };
-&nbsp;
-  strlib.char2num = function(ch) {
-    var n = ch.charCodeAt(0);
-&nbsp;
-    if (48 &lt;= n &amp;&amp; n &lt;= 57) {
-      return n - 48;
-    }
-    if (65 &lt;= n &amp;&amp; n &lt;= 90) {
-      return n - 55;
-    }
-    return n - 87; // if (97 &lt;= n &amp;&amp; n &lt;= 122)
   };
 &nbsp;
   function formatWithList(fmt, list) {
@@ -443,7 +383,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jul 05 2014 16:05:21 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jul 06 2014 10:25:11 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../prettify.js"></script>

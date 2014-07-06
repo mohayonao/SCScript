@@ -120,11 +120,23 @@ SCScript.install(function(sc) {
       return $.Boolean(this.__class === $aClass);
     });
 
-    var respondsTo = function($this, $aSymbol) {
-      return typeof $this[
-        $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ ""
-      ] === "function";
-    };
+    function sym2str($aSymbol) {
+      return $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ "";
+    }
+
+    function getFunction($this, methodName) {
+      if (/^([a-z]\w*|[-+*\/%<=>!?&|@]+)$/.test(methodName)) {
+        if (typeof $this[methodName] === "function") {
+          return $this[methodName];
+        }
+      }
+      return null;
+    }
+
+    function respondsTo($this, $aSymbol) {
+      var func = getFunction($this, sym2str($aSymbol));
+      return func && !func.__errorType;
+    }
 
     builder.addMethod("respondsTo", function($aSymbol) {
       var $this = this;
@@ -136,18 +148,16 @@ SCScript.install(function(sc) {
       return $.Boolean(respondsTo(this, $aSymbol));
     });
 
-    var performMsg = function($this, msg) {
-      var selector, method;
+    function performMsg($this, msg) {
+      var methodName = sym2str(msg[0]);
+      var func = getFunction($this, methodName);
 
-      selector = msg[0] ? msg[0].__sym__() : /* istanbul ignore next */ "";
-      method = $this[selector];
-
-      if (method) {
-        return method.apply($this, msg.slice(1));
+      if (func) {
+        return func.apply($this, msg.slice(1));
       }
 
-      throw new Error(strlib.format("Message '#{0}' not understood.", selector));
-    };
+      throw new Error(strlib.format("Message '#{0}' is not understood.", methodName));
+    }
 
     builder.addMethod("performMsg", function($msg) {
       return performMsg(this, $msg ? $msg.asArray()._ : /* istanbul ignore next */ []);
@@ -2977,6 +2987,8 @@ SCScript.install(function(sc) {
       return this._;
     });
 
+    builder.shouldUseLiterals("new");
+
     builder.addMethod("isValidUGenInput", function() {
       return $.Boolean(!isNaN(this._));
     });
@@ -3850,10 +3862,6 @@ SCScript.install(function(sc) {
       return String("" + this._);
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Integer.new is illegal, should use literal.");
-    });
-
     builder.addMethod("isInteger", 3);
 
     builder.addMethod("hash", function() {
@@ -4251,10 +4259,6 @@ SCScript.install(function(sc) {
       return String(this._);
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Float.new is illegal, should use literal.");
-    });
-
     builder.addMethod("isFloat", 3);
     builder.addMethod("asFloat");
 
@@ -4588,9 +4592,7 @@ SCScript.install(function(sc) {
       return this._;
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Symbol.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("asSymbol");
 
@@ -4932,9 +4934,7 @@ SCScript.install(function(sc) {
       return "nil";
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Nil.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("isNil", 3);
     builder.addMethod("notNil", 4);
@@ -5230,9 +5230,8 @@ SCScript.install(function(sc) {
 
   sc.lang.klass.refine("Function", function(builder, _) {
     // TODO: implements def
-    builder.addClassMethod("new", function() {
-      throw new Error("Function.new is illegal, should use literal.");
-    });
+
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("isFunction", 3);
 
@@ -5439,9 +5438,7 @@ SCScript.install(function(sc) {
       return $.Char(",");
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Char.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     // TODO: implements hash
 
@@ -5586,9 +5583,7 @@ SCScript.install(function(sc) {
       return String(this._);
     });
 
-    builder.addClassMethod("new", function() {
-      throw new Error("Boolean.new is illegal, should use literal.");
-    });
+    builder.shouldUseLiterals("new");
 
     builder.addMethod("xor", function($bool) {
       return $.Boolean(this === $bool).not();
@@ -5624,10 +5619,6 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.refine("True", function(builder) {
-    builder.addClassMethod("new", function() {
-      throw new Error("True.new is illegal, should use literal.");
-    });
-
     builder.addMethod("if", {
       args: "trueFunc"
     }, function($trueFunc) {
@@ -5666,10 +5657,6 @@ SCScript.install(function(sc) {
   });
 
   sc.lang.klass.refine("False", function(builder) {
-    builder.addClassMethod("new", function() {
-      throw new Error("False.new is illegal, should use literal.");
-    });
-
     builder.addMethod("if", {
       args: "trueFunc; falseFunc"
     }, function($trueFunc, $falseFunc) {

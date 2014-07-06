@@ -45,11 +45,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">126.95</p>
+      <p class="stat">127.05</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">920</p>
+      <p class="stat">930</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +63,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">70.88</p>
+      <p class="stat">70.55</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">9.15</p>
+      <p class="stat">9.24</p>
     </div>
   </div>
 </div>
@@ -213,11 +213,23 @@
       return $.Boolean(this.__class === $aClass);
     });
 
-    var respondsTo = function($this, $aSymbol) {
-      return typeof $this[
-        $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ &quot;&quot;
-      ] === &quot;function&quot;;
-    };
+    function sym2str($aSymbol) {
+      return $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ &quot;&quot;;
+    }
+
+    function getFunction($this, methodName) {
+      if (/^([a-z]\w*|[-+*\/%&lt;=&gt;!?&amp;|@]+)$/.test(methodName)) {
+        if (typeof $this[methodName] === &quot;function&quot;) {
+          return $this[methodName];
+        }
+      }
+      return null;
+    }
+
+    function respondsTo($this, $aSymbol) {
+      var func = getFunction($this, sym2str($aSymbol));
+      return func &amp;&amp; !func.__errorType;
+    }
 
     builder.addMethod(&quot;respondsTo&quot;, function($aSymbol) {
       var $this = this;
@@ -229,18 +241,16 @@
       return $.Boolean(respondsTo(this, $aSymbol));
     });
 
-    var performMsg = function($this, msg) {
-      var selector, method;
+    function performMsg($this, msg) {
+      var methodName = sym2str(msg[0]);
+      var func = getFunction($this, methodName);
 
-      selector = msg[0] ? msg[0].__sym__() : /* istanbul ignore next */ &quot;&quot;;
-      method = $this[selector];
-
-      if (method) {
-        return method.apply($this, msg.slice(1));
+      if (func) {
+        return func.apply($this, msg.slice(1));
       }
 
-      throw new Error(strlib.format(&quot;Message &#039;#{0}&#039; not understood.&quot;, selector));
-    };
+      throw new Error(strlib.format(&quot;Message &#039;#{0}&#039; is not understood.&quot;, methodName));
+    }
 
     builder.addMethod(&quot;performMsg&quot;, function($msg) {
       return performMsg(this, $msg ? $msg.asArray()._ : /* istanbul ignore next */ []);

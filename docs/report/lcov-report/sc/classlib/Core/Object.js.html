@@ -199,18 +199,18 @@
     <h1>Code coverage report for <span class="entity">sc/classlib/Core/Object.js</span></h1>
     <h2>
         
-        Statements: <span class="metric">100% <small>(411 / 411)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Statements: <span class="metric">100% <small>(418 / 418)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Branches: <span class="metric">100% <small>(62 / 62)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">100% <small>(66 / 66)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Functions: <span class="metric">100% <small>(135 / 135)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">100% <small>(137 / 137)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
         
-        Lines: <span class="metric">100% <small>(411 / 411)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">100% <small>(418 / 418)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
         
-        Ignored: <span class="metric">3 branches</span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric">2 branches</span> &nbsp;&nbsp;&nbsp;&nbsp;
     </h2>
     <div class="path"><a href="../../../index.html">All files</a> &#187; <a href="index.html">sc/classlib/Core/</a> &#187; Object.js</div>
 </div>
@@ -1136,7 +1136,17 @@
 918
 919
 920
-921</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930
+931</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -1260,9 +1270,21 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">409</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">409</span>
+<span class="cline-any cline-yes">405</span>
+<span class="cline-any cline-yes">399</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
 <span class="cline-any cline-yes">18</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
@@ -1276,8 +1298,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1</span>
-<span class="cline-any cline-yes">391</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">391</span>
 <span class="cline-any cline-yes">391</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -2179,11 +2199,23 @@
       return $.Boolean(this.__class === $aClass);
     });
 &nbsp;
-    var respondsTo = function($this, $aSymbol) {
-      return typeof $this[
-        $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ <span class="branch-1 cbranch-skip" title="branch not covered" >""</span>
-      ] === "function";
-    };
+    function sym2str($aSymbol) {
+      return $aSymbol ? $aSymbol.__sym__() : /* istanbul ignore next */ <span class="branch-1 cbranch-skip" title="branch not covered" >"";</span>
+    }
+&nbsp;
+    function getFunction($this, methodName) {
+      if (/^([a-z]\w*|[-+*\/%&lt;=&gt;!?&amp;|@]+)$/.test(methodName)) {
+        if (typeof $this[methodName] === "function") {
+          return $this[methodName];
+        }
+      }
+      return null;
+    }
+&nbsp;
+    function respondsTo($this, $aSymbol) {
+      var func = getFunction($this, sym2str($aSymbol));
+      return func &amp;&amp; !func.__errorType;
+    }
 &nbsp;
     builder.addMethod("respondsTo", function($aSymbol) {
       var $this = this;
@@ -2195,18 +2227,16 @@
       return $.Boolean(respondsTo(this, $aSymbol));
     });
 &nbsp;
-    var performMsg = function($this, msg) {
-      var selector, method;
+    function performMsg($this, msg) {
+      var methodName = sym2str(msg[0]);
+      var func = getFunction($this, methodName);
 &nbsp;
-      selector = msg[0] ? msg[0].__sym__() : /* istanbul ignore next */ <span class="branch-1 cbranch-skip" title="branch not covered" >"";</span>
-      method = $this[selector];
-&nbsp;
-      if (method) {
-        return method.apply($this, msg.slice(1));
+      if (func) {
+        return func.apply($this, msg.slice(1));
       }
 &nbsp;
-      throw new Error(strlib.format("Message '#{0}' not understood.", selector));
-    };
+      throw new Error(strlib.format("Message '#{0}' is not understood.", methodName));
+    }
 &nbsp;
     builder.addMethod("performMsg", function($msg) {
       return performMsg(this, $msg ? $msg.asArray()._ : /* istanbul ignore next */ <span class="branch-1 cbranch-skip" title="branch not covered" >[])</span>;
@@ -2981,7 +3011,7 @@
 
 </div>
 <div class="footer">
-    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sat Jul 05 2014 16:05:21 GMT+0900 (JST)</div>
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Jul 06 2014 10:25:11 GMT+0900 (JST)</div>
 </div>
 
 <script src="../../../prettify.js"></script>

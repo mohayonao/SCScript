@@ -39,17 +39,6 @@
       VariableStatement
       VariableStatements VariableStatement
 
-    VariableStatement :
-      var VariableDeclarationList ;
-
-    VariableDeclarationList :
-      VariableDeclaration
-      VariableDeclarationList , VariableDeclaration
-
-    VariableDeclaration :
-      Identifier
-      Identifier = AssignmentExpression
-
     SourceElements :
       Expression
       SourceElements ; Expression
@@ -141,8 +130,11 @@
   };
 
   FunctionExpressionParser.prototype.parseFunctionParameterElement = function() {
-    return this.parseDeclaration("arg", function() {
-      return this.parsePrimaryArgExpression();
+    return this.parseDeclarator({
+      type: "arg",
+      delegate: function() {
+        return this.parsePrimaryArgExpression();
+      }
     });
   };
 
@@ -160,41 +152,6 @@
     return elements;
   };
 
-  FunctionExpressionParser.prototype.parseVariableStatement = function() {
-    var marker = this.createMarker();
-
-    this.lex(); // var
-
-    var declaration = Node.createVariableDeclaration(
-      this.parseVariableDeclarationList(), "var"
-    );
-    declaration = marker.update().apply(declaration);
-
-    this.expect(";");
-
-    return declaration;
-  };
-
-  FunctionExpressionParser.prototype.parseVariableDeclarationList = function() {
-    var list = [];
-
-    do {
-      list.push(this.parseVariableDeclaration());
-      if (!this.match(",")) {
-        break;
-      }
-      this.lex();
-    } while (this.hasNextToken());
-
-    return list;
-  };
-
-  FunctionExpressionParser.prototype.parseVariableDeclaration = function() {
-    return this.parseDeclaration("var", function() {
-      return this.parseAssignmentExpression();
-    });
-  };
-
   FunctionExpressionParser.prototype.parseSourceElements = function() {
     var elements = [];
 
@@ -209,26 +166,5 @@
     }
 
     return elements;
-  };
-
-  FunctionExpressionParser.prototype.parseDeclaration = function(type, delegate) {
-    var marker = this.createMarker();
-
-    var identifier = this.parseIdentifier({ variable: true });
-    this.addToScope(type, identifier.name);
-
-    var initialValue = this.parseInitialiser(delegate);
-
-    return marker.update().apply(
-      Node.createVariableDeclarator(identifier, initialValue)
-    );
-  };
-
-  FunctionExpressionParser.prototype.parseInitialiser = function(delegate) {
-    if (!this.match("=")) {
-      return null;
-    }
-    this.lex();
-    return delegate.call(this);
   };
 })(sc);

@@ -370,32 +370,23 @@
     var assert$proto = chai.Assertion.prototype;
 
     utils.overwriteChainableMethod(assert$proto, "a", function(_super) {
-      return function(type, msg) {
-        var object, actual, article;
-
-        if (/^(SC|JS)/.test(String(type))) {
-          if (msg) {
-            utils.flag(this, "message", msg);
-          } else {
-            msg = utils.flag(this, "message");
-          }
-          object = utils.flag(this, "object");
-          actual = typeOf(object);
-          article = ~[
-            "A", "E", "I", "O", "U"
-          ].indexOf(type.charAt(0)) ? "an " : "a ";
-          this.assert(
-            actual === type,
-            "expected " + actual + " to be " + article + type,
-            "expected " + actual + " not to be " + actual + type
-          );
-          if (object && typeof object._ !== "undefined") {
-            object = object.valueOf();
-          }
-          return new chai.Assertion(object, msg);
-        } else {
+      return function(type) {
+        if (!/^(SC|JS)/.test(String(type))) {
           return _super.apply(this, arguments);
         }
+
+        var object = utils.flag(this, "object");
+        var actual = typeOf(object);
+        this.assert(
+          actual === type,
+          "expected " + actual + " to be a " + type,
+          "expected " + actual + " not to be a " + type
+        );
+        if (object && typeof object._ !== "undefined") {
+          object = object.valueOf();
+        }
+
+        return new chai.Assertion(object, utils.flag(this, "message"));
       };
     }, function() {
       return function() {
@@ -405,19 +396,23 @@
 
     utils.overwriteMethod(assert$proto, "closeTo", function(_super) {
       return function(expected, delta, msg) {
-        var actual, i, imax;
-        actual = utils.flag(this, "object");
-        if (Array.isArray(actual) && Array.isArray(expected)) {
-          msg = msg || "";
-          for (i = 0, imax = Math.max(actual.length, expected.length); i < imax; ++i) {
-            _super.apply(
-              new chai.Assertion(actual[i]), [ expected[i], delta, msg + "[" + i + "]" ]
-            );
-          }
-          return this;
+        if (utils.flag(this, "deep")) {
+          return this.clsTo(expected, delta, msg);
         }
         return _super.apply(this, arguments);
       };
+    });
+
+    utils.addMethod(assert$proto, "clsTo", function(expected, delta, msg) {
+      var obj = utils.flag(this, "object");
+      if (!Array.isArray(obj) || !Array.isArray(expected)) {
+        return this.closeTo(expected, delta, msg);
+      }
+      msg = msg || "";
+      for (var i = 0, imax = Math.max(obj.length, expected.length); i < imax; ++i) {
+        new chai.Assertion(obj[i]).closeTo(expected[i], delta, msg + "[" + i + "]");
+      }
+      return this;
     });
 
     utils.addMethod(assert$proto, "withMessage", function() {

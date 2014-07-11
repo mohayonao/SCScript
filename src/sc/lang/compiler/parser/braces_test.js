@@ -45,7 +45,7 @@
             p.parseBraces({ blockList: true });
           }).to.throw(strlib.format(Message.UnexpectedToken, ":"));
 
-          expect(p.parseGeneratorExpression).to.not.beCalled;
+          expect(p.parseGeneratorExpression).to.be.not.called;
         }));
       });
     });

@@ -24,3 +24,4 @@ require("./series-expr");
 require("./signed-expr");
 require("./string-expr");
 require("./this-expr");
+require("./var-stmt");

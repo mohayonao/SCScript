@@ -34,7 +34,7 @@
       }));
 
       test = instance ["++"] ($aPattern);
-      expect(SCPseq$new.args[0]).to.eqls($$([ [ instance, $aPattern ] ])._);
+      expect(SCPseq$new.args[0]).to.deep.equals($$([ [ instance, $aPattern ] ])._);
       expect(SCPseq$new).to.be.calledLastIn(test);
     }));
     it("#<>", sinon.test(function() {

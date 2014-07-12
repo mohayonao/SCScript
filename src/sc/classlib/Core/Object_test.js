@@ -351,7 +351,7 @@
       test = instance.multiChannelPerform(
         $$("\\clip"), $$(15), $$([ 20, 25, 20 ])
       );
-      expect(test).to.be.a("SCArray").that.eqls([ 15, 20, 20 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 15, 20, 20 ]);
     });
     it.skip("#performWithEnvir", function() {
     });
@@ -379,18 +379,18 @@
       test = instance.shallowCopy();
 
       expect(test).to.not.equal(instance);
-      expect(test).to.eql(instance);
+      expect(test).to.deep.equal(instance);
 
       expect(test._scalar).to.equal(instance._scalar);
       expect(test._array ).to.not.equal(instance._array);
-      expect(test._array ).to.eql(instance._array);
+      expect(test._array ).to.deep.equal(instance._array);
       expect(test._object).to.not.equal(instance._object);
-      expect(test._object).to.eql(instance._object);
+      expect(test._object).to.deep.equal(instance._object);
 
       instance = this.createInstance();
       test = instance.shallowCopy();
       expect(test).to.not.equal(instance);
-      expect(test).to.eql(instance);
+      expect(test).to.deep.equal(instance);
     });
     it.skip("#copyImmutable", function() {
     });
@@ -401,15 +401,15 @@
 
       instance = this.createInstance();
       test = instance.dup();
-      expect(test).to.be.a("SCArray").that.eqls([ instance, instance ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ instance, instance ]);
 
       instance = this.createInstance();
       test = instance.dup($$(3));
-      expect(test).to.be.a("SCArray").that.eqls([ instance, instance, instance ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ instance, instance, instance ]);
 
       instance = this.createInstance();
       test = instance.dup($$([ 3, 3 ]));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ instance, instance, instance ],
         [ instance, instance, instance ],
         [ instance, instance, instance ],
@@ -683,7 +683,7 @@
       });
 
       test = instance.repeat($repeats);
-      expect(SCPn$new.args[0]).to.eql($$([ instance, $repeats ])._);
+      expect(SCPn$new.args[0]).to.deep.equal($$([ instance, $repeats ])._);
       expect(SCObject$asStream).to.be.calledLastIn(test);
     }));
     it("#loop", sinon.test(function() {
@@ -693,7 +693,7 @@
       this.stub(instance, "repeat", sc.test.func());
 
       test = instance.loop();
-      expect(instance.repeat.args[0]).to.eql($$([ Infinity ])._);
+      expect(instance.repeat.args[0]).to.deep.equal($$([ Infinity ])._);
       expect(instance.repeat).to.be.calledLastIn(test);
     }));
     it("#asStream", function() {
@@ -936,7 +936,7 @@
       instance = this.createInstance();
 
       test = instance.asCollection();
-      expect(test).to.be.a("SCArray").that.eql([ instance ]);
+      expect(test).to.be.a("SCArray").that.deep.equal([ instance ]);
     });
     it("#asSymbol", function() {
       var instance, test;
@@ -1092,7 +1092,7 @@
       instance = this.createInstance();
 
       test = instance.bubble($depth, $levels);
-      expect(test).to.be.a("SCArray").that.eqls([ [ [ instance ] ] ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ [ [ instance ] ] ]);
     });
     it("#obtain", function() {
       testCase(this, [
@@ -1135,7 +1135,7 @@
       }));
 
       test = instance.addFunc($arg1, $arg2);
-      expect(SCFunctionList$new.args[0]).to.eql($$([ [ $elem, $arg1, $arg2 ] ])._);
+      expect(SCFunctionList$new.args[0]).to.deep.equal($$([ [ $elem, $arg1, $arg2 ] ])._);
       expect(SCFunctionList$new).to.be.calledLastIn(test);
     }));
     it("#removeFunc", function() {
@@ -1457,7 +1457,7 @@
       instance = this.createInstance();
 
       test = instance.pair();
-      expect(test).to.be.a("SCArray").that.eqls([ instance, null ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ instance, null ]);
     });
     it("#pairs", function() {
       testCase(this, [

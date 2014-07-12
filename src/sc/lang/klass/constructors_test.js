@@ -90,7 +90,7 @@
     it("Array should return an instance of SCArray", function() {
       var a, b;
       a = $.Array();
-      expect(a).to.be.a("SCArray").that.eql([]);
+      expect(a).to.be.a("SCArray").that.deep.equal([]);
 
       b = $.Array();
       expect(a).to.not.equal(b);
@@ -98,7 +98,7 @@
     it("String should return an instance of SCString", function() {
       var a, b;
       a = $.String("");
-      expect(a).to.be.a("SCString").that.eql("");
+      expect(a).to.be.a("SCString").that.deep.equal("");
 
       b = $.String("");
       expect(a).to.not.equal(b);
@@ -106,7 +106,7 @@
     it("Event should return an instance of SCEvent", function() {
       var a;
       a = $.Event([ $.Integer(0), $.Integer(1) ]);
-      expect(a).to.be.a("SCEvent").that.eql({ 0: 1 });
+      expect(a).to.be.a("SCEvent").that.deep.equal({ 0: 1 });
     });
     it("Function should return an instance of SCFunction", function() {
       var f, test;

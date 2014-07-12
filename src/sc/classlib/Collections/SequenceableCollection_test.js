@@ -64,7 +64,7 @@
       test = SCSequenceableCollection.series.call(
         SCArray, $$(6), $$(2), $$(4)
       );
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         2, 6, 10, 14, 18, 22
       ]);
     });
@@ -74,7 +74,7 @@
       test = SCSequenceableCollection.geom.call(
         SCArray, $$(6), $$(2), $$(4)
       );
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         2, 8, 32, 128, 512, 2048
       ]);
     });
@@ -84,7 +84,7 @@
       test = SCSequenceableCollection.fib.call(
         SCArray, $$(6)
       );
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         1.0, 1.0, 2.0, 3.0, 5.0, 8.0
       ]);
     });
@@ -96,7 +96,7 @@
       test = SCSequenceableCollection.rand.call(
         SCArray, $$(5), $.Float(0.0), $.Float(1.0)
       );
-      expect(test).to.be.a("SCArray").to.closeTo([
+      expect(test).to.be.a("SCArray").to.deep.closeTo([
         0.85755145549774,
         0.07253098487854,
         0.15391707420349,
@@ -112,7 +112,7 @@
       test = SCSequenceableCollection.exprand.call(
         SCArray, $$(5), $$(0.01), $$(1)
       );
-      expect(test).to.be.a("SCArray").to.closeTo([
+      expect(test).to.be.a("SCArray").to.deep.closeTo([
         0.5189231771037,
         0.01396567911473,
         0.020315818487919,
@@ -128,7 +128,7 @@
       test = SCSequenceableCollection.rand2.call(
         SCArray, $$(5), $.Float(1.0)
       );
-      expect(test).to.be.a("SCArray").to.closeTo([
+      expect(test).to.be.a("SCArray").to.deep.closeTo([
         0 + 0.71510291099548,
         0 - 0.85493803024292,
         0 - 0.69216585159302,
@@ -144,7 +144,7 @@
       test = SCSequenceableCollection.linrand.call(
         SCArray, $$(5), $.Float(0.0), $.Float(1.0)
       );
-      expect(test).to.be.a("SCArray").to.closeTo([
+      expect(test).to.be.a("SCArray").to.deep.closeTo([
         0.072531029582024,
         0.15391716198064,
         0.35834928182885,
@@ -158,12 +158,12 @@
       test = SCSequenceableCollection.interpolation.call(
         SCArray, $$(1)
       );
-      expect(test).to.be.a("SCArray").to.eql([ 0.0 ]);
+      expect(test).to.be.a("SCArray").to.deep.equal([ 0.0 ]);
 
       test = SCSequenceableCollection.interpolation.call(
         SCArray, $$(5)
       );
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0.0, 0.25, 0.5, 0.75, 1.0
       ]);
     });
@@ -646,8 +646,8 @@
 
       test = instance.pairsDo($function);
       expect($function.value).to.callCount(2);
-      expect($function.value.args[0]).to.eql($$([ 10, 20, 0 ])._);
-      expect($function.value.args[1]).to.eql($$([ 30, 40, 2 ])._);
+      expect($function.value.args[0]).to.deep.equal($$([ 10, 20, 0 ])._);
+      expect($function.value.args[1]).to.deep.equal($$([ 30, 40, 2 ])._);
       expect(test).to.equal(instance);
     }));
     it("#keysValuesDo", sinon.test(function() {
@@ -669,9 +669,9 @@
 
       test = instance.doAdjacentPairs($function);
       expect($function.value).to.callCount(3);
-      expect($function.value.args[0]).to.eql($$([ 10, 20, 0 ])._);
-      expect($function.value.args[1]).to.eql($$([ 20, 30, 1 ])._);
-      expect($function.value.args[2]).to.eql($$([ 30, 40, 2 ])._);
+      expect($function.value.args[0]).to.deep.equal($$([ 10, 20, 0 ])._);
+      expect($function.value.args[1]).to.deep.equal($$([ 20, 30, 1 ])._);
+      expect($function.value.args[2]).to.deep.equal($$([ 30, 40, 2 ])._);
       expect(test).to.equal(instance);
     }));
     it("#separate", function() {
@@ -743,7 +743,7 @@
       instance = this.createInstance([ 10, 20, 30, 40, 50 ]);
 
       test = instance.curdle($probability);
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ 10, 20, 30 ], [ 40, 50 ]
       ]);
     });
@@ -842,7 +842,7 @@
       test = instance.flopTogether(
         $$([ [ 10, 20, 30 ], [ 40, 50, 60 ], [ 70, 80 ] ]), $$([ 100 ])
       );
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ [ 1, 4 ], [ 2, 5 ], [ 3, 6 ], [ 1, 7 ], [ 2, 8 ] ],
         [ [ 10, 40, 70 ], [ 20, 50, 80 ], [ 30, 60, 70 ], [ 10, 40, 80 ], [ 20, 50, 70 ] ],
         [ [ 100 ], [ 100 ], [ 100 ], [ 100 ], [ 100 ] ]
@@ -957,7 +957,7 @@
       instance = this.createInstance([ $item1, $item2 ]);
 
       test = instance.degreeToKey($scale, $stepsPerOctave);
-      expect(test).to.be.a("SCArray").that.eqls([ $item1, $item2 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $item1, $item2 ]);
       expect($item1.degreeToKey).to.be.calledWith($scale, $stepsPerOctave);
       expect($item2.degreeToKey).to.be.calledWith($scale, $stepsPerOctave);
     }));
@@ -975,7 +975,7 @@
       instance = this.createInstance([ $item1, $item2 ]);
 
       test = instance.keyToDegree($scale, $stepsPerOctave);
-      expect(test).to.be.a("SCArray").that.eqls([ $item1, $item2 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $item1, $item2 ]);
       expect($item1.keyToDegree).to.be.calledWith($scale, $stepsPerOctave);
       expect($item2.keyToDegree).to.be.calledWith($scale, $stepsPerOctave);
     }));
@@ -1194,7 +1194,7 @@
         this.stub(instance, "performUnaryOp", sc.test.func());
 
         test = instance[methodName]();
-        expect(instance.performUnaryOp.args[0]).to.eql($$([
+        expect(instance.performUnaryOp.args[0]).to.deep.equal($$([
           $.Symbol(methodName)
         ])._);
         expect(instance.performUnaryOp).to.be.calledLastIn(test);
@@ -1259,7 +1259,7 @@
 
         test = instance[methodName]($aNumber, $adverb);
         expect(instance.performBinaryOp).to.callCount(1);
-        expect(instance.performBinaryOp.args[0]).to.eql($$([
+        expect(instance.performBinaryOp.args[0]).to.deep.equal($$([
           $.Symbol(methodName), $aNumber, $adverb
         ])._);
         expect(instance.performBinaryOp).to.be.calledLastIn(test);
@@ -1281,7 +1281,7 @@
       test = instance.performUnaryOp($aSelector);
       expect($elem.perform).to.callCount(1);
       expect($elem.perform).to.be.calledWith($aSelector);
-      expect(test).to.be.a("SCArray").that.eqls([ $returned ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $returned ]);
     }));
     it("#performBinaryOp", sinon.test(function() {
       var instance, test;
@@ -1445,7 +1445,7 @@
       test = instance.performBinaryOpOnSimpleNumber($aSelector, $aNumber, $adverb);
       expect($aNumber.perform).to.callCount(1);
       expect($aNumber.perform).to.be.calledWith($aSelector, $elem, $adverb);
-      expect(test).to.be.a("SCArray").that.eqls([ $returned ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $returned ]);
     }));
     it("#performBinaryOpOnComplex", sinon.test(function() {
       var instance, test;
@@ -1464,7 +1464,7 @@
       test = instance.performBinaryOpOnComplex($aSelector, $aComplex, $adverb);
       expect($aComplex.perform).to.callCount(1);
       expect($aComplex.perform).to.be.calledWith($aSelector, $elem, $adverb);
-      expect(test).to.be.a("SCArray").that.eqls([ $returned ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $returned ]);
     }));
     it("#asFraction", sinon.test(function() {
       var instance, test;
@@ -1482,7 +1482,7 @@
       test = instance.asFraction($denominator, $fasterBetter);
       expect($elem.asFraction).to.callCount(1);
       expect($elem.asFraction).to.be.calledWith($denominator, $fasterBetter);
-      expect(test).to.be.a("SCArray").that.eqls([ $returned ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $returned ]);
     }));
     it.skip("#asPoint", function() {
     });
@@ -1518,14 +1518,14 @@
       instance = this.createInstance();
 
       test = instance.multiChannelPerform();
-      expect(test).to.be.a("SCArray").to.eql([]);
+      expect(test).to.be.a("SCArray").to.deep.equal([]);
 
       instance = this.createInstance([ 10, 20, 30 ]);
 
       test = instance.multiChannelPerform(
         $$("\\clip"), $$(15), $$([ 20, 25, 20 ])
       );
-      expect(test).to.be.a("SCArray").to.eqls([ 15, 20, 20 ]);
+      expect(test).to.be.a("SCArray").to.deep.equals([ 15, 20, 20 ]);
     });
     it("#multichannelExpandRef", function() {
       var instance;
@@ -1574,7 +1574,7 @@
         this.stub(instance, "multiChannelPerform", sc.test.func());
 
         test = instance[methodName]($arg1, $arg2, $arg3);
-        expect(instance.multiChannelPerform.args[0]).to.eql($$([
+        expect(instance.multiChannelPerform.args[0]).to.deep.equal($$([
           $.Symbol(methodName), $arg1, $arg2, $arg3
         ])._);
         expect(instance.multiChannelPerform).to.be.calledLastIn(test);
@@ -1637,7 +1637,7 @@
 
       test = instance.swap($$(1), $$(3));
       expect(test).to.equal(instance)
-        .that.is.a("SCArray").and.eqls([ 1, 4, 3, 2, 5 ]);
+        .that.is.a("SCArray").and.deep.equals([ 1, 4, 3, 2, 5 ]);
     });
     it.skip("#quickSortRange", function() {
     });
@@ -1676,7 +1676,7 @@
 
       test = instance.wrapPut($$(7), $$(0));
       expect(test).to.equals(instance)
-        .that.is.a("SCArray").and.eqls([ 1, 2, 0, 4, 5 ]);
+        .that.is.a("SCArray").and.deep.equals([ 1, 2, 0, 4, 5 ]);
     });
     it("#reduce", function() {
       testCase(this, [

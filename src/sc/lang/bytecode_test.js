@@ -75,9 +75,9 @@
             return $$([ $a, $b ]);
           } ];
         }, "a=0; b=1");
-        expect(f.value()              , 0).to.be.a("SCArray").that.eqls([  0,  1 ]);
-        expect(f.value($$(10))        , 1).to.be.a("SCArray").that.eqls([ 10,  1 ]);
-        expect(f.value($$(10), $$(20)), 2).to.be.a("SCArray").that.eqls([ 10, 20 ]);
+        expect(f.value()              , 0).to.be.a("SCArray").that.deep.equals([  0,  1 ]);
+        expect(f.value($$(10))        , 1).to.be.a("SCArray").that.deep.equals([ 10,  1 ]);
+        expect(f.value($$(10), $$(20)), 2).to.be.a("SCArray").that.deep.equals([ 10, 20 ]);
         expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("break", function() {
@@ -113,8 +113,8 @@
             return $_.neg();
           }));
         });
-        expect(f.value(), 0).to.be.a("SCArray").that.eqls([ -10, -20, -30 ]);
-        expect(f.value(), 1).to.be.a("SCArray").that.eqls([ -10, -20, -30 ]);
+        expect(f.value(), 0).to.be.a("SCArray").that.deep.equals([ -10, -20, -30 ]);
+        expect(f.value(), 1).to.be.a("SCArray").that.deep.equals([ -10, -20, -30 ]);
         expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("iterator break", function() {
@@ -225,7 +225,7 @@
             return $i ["+"] ($$(1));
           }));
         });
-        expect(f.value()).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4 ]);
+        expect(f.value()).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4 ]);
         expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
     });
@@ -291,9 +291,9 @@
         var r = this.createInstance($$(function($a, $b) {
           return $$([ $a, $b ]).yield();
         }, "a=0; b=1"));
-        expect(r.reset().value()              , 0).to.be.a("SCArray").that.eqls([ null, 1 ]);
-        expect(r.reset().value($$(10))        , 1).to.be.a("SCArray").that.eqls([ 10, 1 ]);
-        expect(r.reset().value($$(10), $$(20)), 2).to.be.a("SCArray").that.eqls([ 10, 1 ]);
+        expect(r.reset().value()              , 0).to.be.a("SCArray").that.deep.equals([ null, 1 ]);
+        expect(r.reset().value($$(10))        , 1).to.be.a("SCArray").that.deep.equals([ 10, 1 ]);
+        expect(r.reset().value($$(10), $$(20)), 2).to.be.a("SCArray").that.deep.equals([ 10, 1 ]);
         expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("break", function() {
@@ -828,10 +828,10 @@
         f = $$(function() {
           return $$([ a.value(), b.value(), c.value() ]);
         });
-        expect(f.value(), 0).to.be.a("SCArray").that.eqls([ 1, 10, 100 ]);
-        expect(f.value(), 1).to.be.a("SCArray").that.eqls([ 2, 20, 200 ]);
-        expect(f.value(), 2).to.be.a("SCArray").that.eqls([ 3, 30, 300 ]);
-        expect(f.value(), 3).to.be.a("SCArray").that.eqls([ null, null, null ]);
+        expect(f.value(), 0).to.be.a("SCArray").that.deep.equals([ 1, 10, 100 ]);
+        expect(f.value(), 1).to.be.a("SCArray").that.deep.equals([ 2, 20, 200 ]);
+        expect(f.value(), 2).to.be.a("SCArray").that.deep.equals([ 3, 30, 300 ]);
+        expect(f.value(), 3).to.be.a("SCArray").that.deep.equals([ null, null, null ]);
         expect(sc.lang.bytecode.getCurrent(), "bytecode.current should be null").to.be.null;
       });
       it("Array.fill", function() {
@@ -842,7 +842,7 @@
           })).yield();
         }));
         expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
-        expect(r.value(), 1).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4 ]);
+        expect(r.value(), 1).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4 ]);
         expect(r.state(), 2).to.be.a("SCInteger").that.equals(sc.STATE_SUSPENDED);
         expect(r.value(), 3).to.be.a("SCNil");
         expect(r.state(), 4).to.be.a("SCInteger").that.equals(sc.STATE_DONE);

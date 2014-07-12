@@ -34,7 +34,7 @@
       var test;
 
       test = SCArray.newClear($$(4));
-      expect(test).to.be.a("SCArray").that.eqls([ null, null, null, null ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ null, null, null, null ]);
     });
     it.skip("#indexedSize", function() {
     });
@@ -1293,11 +1293,11 @@
       instance = SCInt8Array.newFrom($$([ 0, 255, 256 ]));
 
       test = instance.valueOf();
-      expect(test).to.eql(expected);
+      expect(test).to.deep.equal(expected);
     });
     it(".newClear", function() {
       var test = SCInt8Array.newClear($$(4));
-      expect(test).to.be.a("SCInt8Array").that.eqls(
+      expect(test).to.be.a("SCInt8Array").that.deep.equals(
         new Int8Array([ 0, 0, 0, 0 ])
       );
     });
@@ -1311,11 +1311,11 @@
       instance = SCInt16Array.newFrom($$([ 0, 65535, 65536 ]));
 
       test = instance.valueOf();
-      expect(test).to.eql(expected);
+      expect(test).to.deep.equal(expected);
     });
     it(".newClear", function() {
       var test = SCInt16Array.newClear($$(4));
-      expect(test).to.be.a("SCInt16Array").that.eqls(
+      expect(test).to.be.a("SCInt16Array").that.deep.equals(
         new Int16Array([ 0, 0, 0, 0 ])
       );
     });
@@ -1329,11 +1329,11 @@
       instance = SCInt32Array.newFrom($$([ 0, 4294967295, 4294967296 ]));
 
       test = instance.valueOf();
-      expect(test).to.eql(expected);
+      expect(test).to.deep.equal(expected);
     });
     it(".newClear", function() {
       var test = SCInt32Array.newClear($$(4));
-      expect(test).to.be.a("SCInt32Array").that.eqls(
+      expect(test).to.be.a("SCInt32Array").that.deep.equals(
         new Int32Array([ 0, 0, 0, 0 ])
       );
     });
@@ -1347,11 +1347,11 @@
       instance = SCFloatArray.newFrom($$([ 0, 0.5, -0.5 ]));
 
       test = instance.valueOf();
-      expect(test).to.eql(expected);
+      expect(test).to.deep.equal(expected);
     });
     it(".newClear", function() {
       var test = SCFloatArray.newClear($$(4));
-      expect(test).to.be.a("SCFloatArray").that.eqls(
+      expect(test).to.be.a("SCFloatArray").that.deep.equals(
         new Float32Array([ 0, 0, 0, 0 ])
       );
     });
@@ -1365,11 +1365,11 @@
       instance = SCDoubleArray.newFrom($$([ 0, 0.5, -0.5 ]));
 
       test = instance.valueOf();
-      expect(test).to.eql(expected);
+      expect(test).to.deep.equal(expected);
     });
     it(".newClear", function() {
       var test = SCDoubleArray.newClear($$(4));
-      expect(test).to.be.a("SCDoubleArray").that.eqls(
+      expect(test).to.be.a("SCDoubleArray").that.deep.equals(
         new Float64Array([ 0, 0, 0, 0 ])
       );
     });

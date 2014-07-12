@@ -335,7 +335,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.clip($lo, $hi);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\clip", [ $lo, $hi ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -349,7 +349,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.wrap($lo, $hi);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\wrap", [ $lo, $hi ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -363,7 +363,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.fold($lo, $hi);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\fold", [ $lo, $hi ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -377,7 +377,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.blend($that, $blendFrac);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\blend", [ $that, $blendFrac ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -394,7 +394,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.linlin($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\linlin", [ $inMin, $inMax, $outMin, $outMax, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -411,7 +411,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.linexp($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\linexp", [ $inMin, $inMax, $outMin, $outMax, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -428,7 +428,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.explin($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\explin", [ $inMin, $inMax, $outMin, $outMax, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -445,7 +445,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.expexp($inMin, $inMax, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\expexp", [ $inMin, $inMax, $outMin, $outMax, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -463,7 +463,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.lincurve($inMin, $inMax, $outMin, $outMax, $curve, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\lincurve", [ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -481,7 +481,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.curvelin($inMin, $inMax, $outMin, $outMax, $curve, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\curvelin", [ $inMin, $inMax, $outMin, $outMax, $curve, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -500,7 +500,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.bilin($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\bilin", [ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -519,7 +519,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.biexp($inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\biexp", [ $inCenter, $inMin, $inMax, $outCenter, $outMin, $outMax, $clip ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -533,7 +533,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.moddif($function, $mod);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\moddif", [ $function, $mod ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -547,7 +547,7 @@
       this.stub(instance, "composeNAryOp", sc.test.func());
 
       test = instance.degreeToKey($scale, $stepsPerOctave);
-      expect(instance.composeNAryOp.args[0]).to.eql($$([
+      expect(instance.composeNAryOp.args[0]).to.deep.equal($$([
         "\\degreeToKey", [ $scale, $stepsPerOctave ]
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
@@ -820,7 +820,7 @@
 
         test = instance.array_($$([ $arg1, $arg2 ]));
         expect(test).to.be.equal(instance);
-        expect(instance.array()).to.be.a("SCArray").that.eqls([
+        expect(instance.array()).to.be.a("SCArray").that.deep.equals([
           $arg1, $arg2
         ]);
       });
@@ -829,7 +829,7 @@
 
         test = instance.addFunc($arg3);
         expect(test).to.be.equal(instance);
-        expect(instance.array()).to.be.a("SCArray").that.eqls([
+        expect(instance.array()).to.be.a("SCArray").that.deep.equals([
           $arg1, $arg2, $arg3
         ]);
       });
@@ -838,7 +838,7 @@
 
         test = instance.replaceFunc($arg2, $arg4);
         expect(test).to.be.equal(instance);
-        expect(instance.array()).to.be.a("SCArray").that.eqls([
+        expect(instance.array()).to.be.a("SCArray").that.deep.equals([
           $arg1, $arg4, $arg3
         ]);
       });
@@ -847,7 +847,7 @@
 
         test = instance.removeFunc($arg4);
         expect(test).to.be.equal(instance);
-        expect(instance.array()).to.be.a("SCArray").that.eqls([
+        expect(instance.array()).to.be.a("SCArray").that.deep.equals([
           $arg1, $arg3
         ]);
 
@@ -869,7 +869,7 @@
       instance = this.createInstance();
 
       test = instance.value($$([ $int10, $int20 ]), $int5);
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
       ]);
     });
@@ -880,7 +880,7 @@
       instance = instance.flop();
 
       test = instance.value($$([ $int10, $int20 ]), $int5);
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ 15, 5, 50, 2 ], [ 25, 15, 100, 4 ]
       ]);
     });
@@ -892,7 +892,7 @@
       test = instance.valueArray($$([
         [ $int10, $int20 ], $int5
       ]));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
       ]);
     });
@@ -905,7 +905,7 @@
       test = instance.valueArray($$([
         [ $int10, $int20 ], $int5
       ]));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ 15, 5, 50, 2 ], [ 25, 15, 100, 4 ]
       ]);
     });
@@ -926,8 +926,8 @@
       test = instance.do($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ $elem1, 0 ])._);
-      expect(func.args[1]).to.eql($$([ $elem2, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ $elem1, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ $elem2, 1 ])._);
     }));
     it("#flop", function() {
       var instance, test;
@@ -957,7 +957,7 @@
       instance = this.createInstance();
 
       test = instance.storeArgs();
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         instance._$array.valueOf()
       ]);
     });

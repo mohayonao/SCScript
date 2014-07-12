@@ -37,7 +37,7 @@
       var test;
 
       test = $("Set")["[]"]($$([ 1, 2, 3, 4 ]));
-      expect(test).to.be.a("SCSet").that.eqls([ 1, 2, 3, 4 ]);
+      expect(test).to.be.a("SCSet").that.deep.equals([ 1, 2, 3, 4 ]);
     });
   });
 

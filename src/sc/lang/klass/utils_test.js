@@ -11,7 +11,7 @@
       var test = (function() {
         return utils.toArray(arguments);
       })(1, 2, 3, 4, 5);
-      expect(test).to.eql([ 1, 2, 3, 4, 5 ]);
+      expect(test).to.deep.equal([ 1, 2, 3, 4, 5 ]);
     });
     it("newCopyArgs", function() {
       var instance = utils.newCopyArgs($("Object"), {

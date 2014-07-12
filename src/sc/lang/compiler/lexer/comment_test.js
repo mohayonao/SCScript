@@ -8,7 +8,7 @@
 
   function test(items) {
     var lexer = new Lexer();
-    expect(lexer.lexComment(items[0], 1), items[0]).to.eql(items[1]);
+    expect(lexer.lexComment(items[0], 1), items[0]).to.deep.equal(items[1]);
   }
 
   describe("sc.lang.compiler.Lexer", function() {

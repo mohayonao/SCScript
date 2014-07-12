@@ -81,7 +81,7 @@
       };
 
       actual = new Rewriter().rewrite(ast);
-      expect(actual).to.eql(expected);
+      expect(actual).to.deep.equal(expected);
     });
 
     it("split value and value result for sync", function() {
@@ -205,7 +205,7 @@
       };
 
       actual = new Rewriter().rewrite(ast);
-      expect(actual).to.eql(expected);
+      expect(actual).to.deep.equal(expected);
     });
   });
 })();

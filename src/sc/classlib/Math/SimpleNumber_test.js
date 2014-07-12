@@ -939,7 +939,7 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
       ]);
     });
@@ -950,7 +950,7 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10
       ]);
     });
@@ -961,7 +961,7 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.nextN($$(15));
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
       ]);
     });
@@ -972,7 +972,7 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 3, 6, 9
       ]);
     });
@@ -983,7 +983,7 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, -3, -6, -9
       ]);
     });
@@ -994,7 +994,7 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.nextN($$(15));
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42
       ]);
     });
@@ -1005,7 +1005,7 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.nextN($$(15));
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, -3, -6, -9, -12, -15, -18, -21, -24, -27, -30, -33, -36, -39, -42
       ]);
     });
@@ -1042,7 +1042,7 @@
       sc.libs.random.setSeed(0);
 
       test = instance.partition($$(10), $$(8));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         0 - 50, 8, 19, 14, 17, 8, 21, 8, 14, -54
       ]);
     });

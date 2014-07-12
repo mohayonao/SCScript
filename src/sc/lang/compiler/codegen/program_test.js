@@ -50,7 +50,7 @@
             }
           ]
         }).replace(/[\s\n]+/g, " ");
-        expect(test).to.eql("(function($){return $.Nil();})");
+        expect(test).to.equal("(function($){return $.Nil();})");
       });
     });
   });

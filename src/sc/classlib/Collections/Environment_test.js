@@ -20,7 +20,7 @@
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSObject").that.eqls({});
+      expect(test).to.be.a("JSObject").that.deep.equals({});
     });
     it("#eventAt", function() {
       var instance, test;
@@ -37,7 +37,7 @@
 
       test = instance.composeEvents($$([ 1, 2, 3, 4 ]));
       expect(test).to.not.equal(instance);
-      expect(test).to.be.a("SCEnvironment").that.eqls({ 1: 2, 3: 4 });
+      expect(test).to.be.a("SCEnvironment").that.deep.equals({ 1: 2, 3: 4 });
     });
     it.skip("#linkDoc", function() {
     });
@@ -71,7 +71,7 @@
       $.Environment("a", $$(1));
 
       test = SCEnvironment.make($function);
-      expect(test).to.be.a("SCEnvironment").that.eqls({ a: 100 });
+      expect(test).to.be.a("SCEnvironment").that.deep.equals({ a: 100 });
 
       test = $.Environment("a");
       expect(test).to.be.a("SCInteger").that.equals(1);

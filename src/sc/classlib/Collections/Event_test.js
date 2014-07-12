@@ -20,7 +20,7 @@
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSObject").that.eqls({});
+      expect(test).to.be.a("JSObject").that.deep.equals({});
     });
     it.skip(".default", function() {
     });

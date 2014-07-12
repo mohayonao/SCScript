@@ -27,7 +27,7 @@
       node = {};
       node = marker.update().apply(node);
 
-      expect(node).to.eql({
+      expect(node).to.deep.equal({
         range: [ 0, 3 ],
         loc: {
           start: { line: 1, column: 2 },
@@ -44,7 +44,7 @@
       node = {};
       node = marker.apply(node);
 
-      expect(node).to.eql({
+      expect(node).to.deep.equal({
         range: [ 0, 0 ],
         loc: {
           start: { line: 1, column: 2 },
@@ -70,7 +70,7 @@
       node = {};
       node = marker.update().apply(node);
 
-      expect(node).to.eql({
+      expect(node).to.deep.equal({
         range: [ 100, 0 ],
         loc: {
           start: { line: 101, column: 102 },
@@ -93,7 +93,7 @@
         }
       }).apply(node);
 
-      expect(node).to.eql({
+      expect(node).to.deep.equal({
         range: [ 0, 103 ],
         loc: {
           start: { line: 1, column: 2 },
@@ -116,7 +116,7 @@
       };
       node = marker.update().apply(node);
 
-      expect(node).to.eql({
+      expect(node).to.deep.equal({
         range: [ 100, 103 ],
         loc: {
           start: { line: 101, column: 102 },
@@ -139,7 +139,7 @@
       };
       node = marker.update().apply(node, true);
 
-      expect(node).to.eql({
+      expect(node).to.deep.equal({
         range: [ 0, 3 ],
         loc: {
           start: { line: 1, column: 2 },
@@ -156,7 +156,7 @@
       node = [];
       node = marker.update().apply(node);
 
-      expect(node).to.eql([]);
+      expect(node).to.deep.equal([]);
     });
     it("should no operate when options are false", function() {
       var lexer, marker, node;
@@ -167,7 +167,7 @@
       node = {};
       node = marker.update().apply(node);
 
-      expect(node).to.eql({});
+      expect(node).to.deep.equal({});
     });
   });
 })();

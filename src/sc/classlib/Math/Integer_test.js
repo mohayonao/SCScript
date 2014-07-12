@@ -441,7 +441,7 @@
       this.stub(instance, "collectAs", sc.test.func());
 
       test = instance.collect($function);
-      expect(instance.collectAs.args[0]).to.eql($$([ $function, $("Array") ])._);
+      expect(instance.collectAs.args[0]).to.deep.equal($$([ $function, $("Array") ])._);
       expect(instance.collectAs).to.be.calledLastIn(test);
     }));
     it("#reverseDo", sinon.test(function() {

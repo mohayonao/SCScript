@@ -340,7 +340,7 @@
       instance = this.createInstance();
 
       test = instance.printOn($stream);
-      expect($stream.putAll.args[0]).to.eql($$([ "nil" ])._);
+      expect($stream.putAll.args[0]).to.deep.equal($$([ "nil" ])._);
       expect(test).to.equal(instance);
     }));
     it("storeOn", sinon.test(function() {
@@ -352,7 +352,7 @@
       instance = this.createInstance();
 
       test = instance.storeOn($stream);
-      expect($stream.putAll.args[0]).to.eql($$([ "nil" ])._);
+      expect($stream.putAll.args[0]).to.deep.equal($$([ "nil" ])._);
       expect(test).to.equal(instance);
     }));
     it("#matchItem", function() {
@@ -369,7 +369,7 @@
       instance = this.createInstance();
 
       test = instance.add($value);
-      expect(test).to.be.a("SCArray").that.eql([ $value ]);
+      expect(test).to.be.a("SCArray").that.deep.equal([ $value ]);
     });
     it("#addAll", function() {
       var instance, test;
@@ -378,7 +378,7 @@
       instance = this.createInstance();
 
       test = instance.addAll($array);
-      expect(test).to.be.a("SCArray").that.eql([ $array ]);
+      expect(test).to.be.a("SCArray").that.deep.equal([ $array ]);
     });
     it("#++", function() {
       var instance, test;
@@ -387,7 +387,7 @@
       instance = this.createInstance();
 
       test = instance ["++"] ($array);
-      expect(test).to.be.a("SCArray").that.eql([ $array ]);
+      expect(test).to.be.a("SCArray").that.deep.equal([ $array ]);
     });
     it("#asCollection", function() {
       var instance, test;
@@ -395,7 +395,7 @@
       instance = this.createInstance();
 
       test = instance.asCollection();
-      expect(test).to.be.a("SCArray").that.eql([]);
+      expect(test).to.be.a("SCArray").that.deep.equal([]);
     });
     it("#remove", function() {
       var instance;
@@ -439,7 +439,7 @@
       instance = this.createInstance();
       test = instance.addFunc($arg1, $arg2, $arg3);
       expect(stub).to.be.called;
-      expect(test).to.be.a("SCArray").that.eql([ $arg1, $arg2, $arg3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equal([ $arg1, $arg2, $arg3 ]);
     }));
     it("#removeFunc", function() {
       var instance;

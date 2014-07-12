@@ -15,7 +15,7 @@
         var iter = iterator.object$do($obj);
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ $obj, 0 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ $obj, 0 ])._);
           expect(iter.hasNext, 3).to.be.false;
           expect(iter.next() , 4).to.be.null;
         }
@@ -29,11 +29,11 @@
         );
         for (var i = 0; i < 2; i++, x = 0, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ null, null ])._);
-          expect(iter.next() , 3).to.eql($$([ null, null ])._);
-          expect(iter.next() , 4).to.eql($$([ null, null ])._);
-          expect(iter.next() , 5).to.eql($$([ null, null ])._);
-          expect(iter.next() , 6).to.eql($$([ null, null ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ null, null ])._);
           expect(iter.hasNext, 7).to.be.true; // !!!!!
           expect(iter.next() , 8).to.be.null;
           expect(iter.hasNext, 9).to.be.false;
@@ -55,25 +55,25 @@
         var iter = iterator.function$loop();
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ null, null ])._);
-          expect(iter.next() , 3).to.eql($$([ null, null ])._);
-          expect(iter.next() , 4).to.eql($$([ null, null ])._);
-          expect(iter.next() , 5).to.eql($$([ null, null ])._);
-          expect(iter.next() , 6).to.eql($$([ null, null ])._);
-          expect(iter.next() , 7).to.eql($$([ null, null ])._);
-          expect(iter.next() , 8).to.eql($$([ null, null ])._);
-          expect(iter.next() , 9).to.eql($$([ null, null ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 7).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 8).to.deep.equal($$([ null, null ])._);
+          expect(iter.next() , 9).to.deep.equal($$([ null, null ])._);
         }
       });
       it("number$do", function() {
         var iter = iterator.number$do($$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 0, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 1, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 2, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 3, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 4, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 0, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 1, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 2, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 3, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 4, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -89,11 +89,11 @@
         var iter = iterator.number$reverseDo($$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 4, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 2, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 1, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 0, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 4, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 2, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 1, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 0, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -109,11 +109,11 @@
         var iter = iterator.number$for($$(1), $$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 2, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 3, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 4, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 5, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 2, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 3, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 4, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 5, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -122,11 +122,11 @@
         var iter = iterator.number$for($$(5), $$(1));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 4, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 3, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 2, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 1, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 4, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 3, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 2, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 1, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -135,9 +135,9 @@
         var iter = iterator.number$forBy($$(1), $$(5), $$(2));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 5, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 5, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -146,9 +146,9 @@
         var iter = iterator.number$forBy($$(5), $$(1), $$(-2));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 1, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 1, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -164,7 +164,7 @@
         var iter = iterator.number$forBy($$(1), $$(1), $$(0));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
           expect(iter.hasNext, 3).to.be.false;
           expect(iter.next() , 4).to.be.null;
         }
@@ -173,9 +173,9 @@
         var iter = iterator.number$forSeries($$(1), $$(3), $$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 5, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 5, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -184,9 +184,9 @@
         var iter = iterator.number$forSeries($$(5), $$(3), $$(1));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next(),  4).to.eql($$([ 1, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next(),  4).to.deep.equal($$([ 1, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next(),  6).to.be.null;
         }
@@ -202,11 +202,11 @@
         var iter = iterator.integer$do($$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 0, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 1, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 2, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 3, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 4, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 0, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 1, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 2, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 3, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 4, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -222,11 +222,11 @@
         var iter = iterator.integer$reverseDo($$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 4, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 2, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 1, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 0, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 4, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 2, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 1, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 0, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -242,11 +242,11 @@
         var iter = iterator.integer$for($$(1), $$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 2, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 3, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 4, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 5, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 2, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 3, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 4, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 5, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -254,11 +254,11 @@
       it("integer$for downto", function() {
         var iter = iterator.integer$for($$(5), $$(1));
         expect(iter.hasNext, 1).to.be.true;
-        expect(iter.next() , 2).to.eql($$([ 5, 0 ])._);
-        expect(iter.next() , 3).to.eql($$([ 4, 1 ])._);
-        expect(iter.next() , 4).to.eql($$([ 3, 2 ])._);
-        expect(iter.next() , 5).to.eql($$([ 2, 3 ])._);
-        expect(iter.next() , 6).to.eql($$([ 1, 4 ])._);
+        expect(iter.next() , 2).to.deep.equal($$([ 5, 0 ])._);
+        expect(iter.next() , 3).to.deep.equal($$([ 4, 1 ])._);
+        expect(iter.next() , 4).to.deep.equal($$([ 3, 2 ])._);
+        expect(iter.next() , 5).to.deep.equal($$([ 2, 3 ])._);
+        expect(iter.next() , 6).to.deep.equal($$([ 1, 4 ])._);
         expect(iter.hasNext, 7).to.be.false;
         expect(iter.next(),  8).to.be.null;
       });
@@ -266,9 +266,9 @@
         var iter = iterator.integer$forBy($$(1), $$(5), $$(2));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 5, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 5, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next(),  6).to.be.null;
         }
@@ -277,9 +277,9 @@
         var iter = iterator.integer$forBy($$(5), $$(1), $$(-2));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next(),  4).to.eql($$([ 1, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next(),  4).to.deep.equal($$([ 1, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -294,7 +294,7 @@
       it("integer$forBy start=end", function() {
         var iter = iterator.integer$forBy($$(1), $$(1), $$(0));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
-          expect(iter.next() , 1).to.eql($$([ 1, 0 ])._);
+          expect(iter.next() , 1).to.deep.equal($$([ 1, 0 ])._);
           expect(iter.hasNext, 2).to.be.false;
           expect(iter.next() , 3).to.be.null;
         }
@@ -303,9 +303,9 @@
         var iter = iterator.integer$forSeries($$(1), $$(3), $$(5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 5, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 5, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next(),  6).to.be.null;
         }
@@ -314,9 +314,9 @@
         var iter = iterator.integer$forSeries($$(5), $$(3), $$(1));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 1, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 1, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -332,11 +332,11 @@
         var iter = iterator.float$do($$(5.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ $.Float(0.0), 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ $.Float(1.0), 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ $.Float(2.0), 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ $.Float(3.0), 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ $.Float(4.0), 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ $.Float(0.0), 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ $.Float(1.0), 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ $.Float(2.0), 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ $.Float(3.0), 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ $.Float(4.0), 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -352,12 +352,12 @@
         var iter = iterator.float$reverseDo($$(5.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([  4.5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([  3.5, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([  2.5, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([  1.5, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([  0.5, 4 ])._);
-          expect(iter.next() , 7).to.eql($$([ -0.5, 5 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([  4.5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([  3.5, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([  2.5, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([  1.5, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([  0.5, 4 ])._);
+          expect(iter.next() , 7).to.deep.equal($$([ -0.5, 5 ])._);
           expect(iter.hasNext, 8).to.be.false;
           expect(iter.next() , 9).to.be.null;
         }
@@ -366,11 +366,11 @@
         var iter = iterator.float$reverseDo($$(5.0));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ $.Float(4.0), 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ $.Float(3.0), 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ $.Float(2.0), 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ $.Float(1.0), 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ $.Float(0.0), 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ $.Float(4.0), 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ $.Float(3.0), 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ $.Float(2.0), 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ $.Float(1.0), 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ $.Float(0.0), 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -386,11 +386,11 @@
         var iter = iterator.float$for($$(1.5), $$(5.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1.5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 2.5, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 3.5, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 4.5, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 5.5, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1.5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 2.5, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 3.5, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 4.5, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 5.5, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -399,11 +399,11 @@
         var iter = iterator.float$for($$(5.5), $$(1.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 5.5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 4.5, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 3.5, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 2.5, 3 ])._);
-          expect(iter.next() , 6).to.eql($$([ 1.5, 4 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 5.5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 4.5, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 3.5, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 2.5, 3 ])._);
+          expect(iter.next() , 6).to.deep.equal($$([ 1.5, 4 ])._);
           expect(iter.hasNext, 7).to.be.false;
           expect(iter.next() , 8).to.be.null;
         }
@@ -412,8 +412,8 @@
         var iter = iterator.float$forBy($$(1.5), $$(5.5), $$(2.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ $.Float(1.5), 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ $.Float(4.0), 1 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ $.Float(1.5), 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ $.Float(4.0), 1 ])._);
           expect(iter.hasNext, 4).to.be.false;
           expect(iter.next() , 5).to.be.null;
         }
@@ -422,8 +422,8 @@
         var iter = iterator.float$forBy($$(5.5), $$(1.5), $$(-2.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ $.Float(5.5), 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ $.Float(3.0), 1 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ $.Float(5.5), 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ $.Float(3.0), 1 ])._);
           expect(iter.hasNext, 4).to.be.false;
           expect(iter.next() , 5).to.be.null;
         }
@@ -439,7 +439,7 @@
         var iter = iterator.float$forBy($$(1.5), $$(1.5), $$(0.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ $.Float(1.5), 0 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ $.Float(1.5), 0 ])._);
           expect(iter.hasNext, 3).to.be.false;
           expect(iter.next() , 4).to.be.null;
         }
@@ -448,9 +448,9 @@
         var iter = iterator.float$forSeries($$(1.5), $$(3.5), $$(5.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1.5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3.5, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 5.5, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1.5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3.5, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 5.5, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -459,9 +459,9 @@
         var iter = iterator.float$forSeries($$(5.5), $$(3.5), $$(1.5));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 5.5, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3.5, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 1.5, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 5.5, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3.5, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 1.5, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -477,10 +477,10 @@
         var iter = iterator.array$do($$([ 1, 2, 3, 4 ]));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 2, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 3, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 4, 3 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 2, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 3, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 4, 3 ])._);
           expect(iter.hasNext, 6).to.be.false;
           expect(iter.next() , 7).to.be.null;
         }
@@ -496,10 +496,10 @@
         var iter = iterator.array$reverseDo($$([ 1, 2, 3, 4 ]));
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 4, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 3, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 2, 2 ])._);
-          expect(iter.next() , 5).to.eql($$([ 1, 3 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 4, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 3, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 2, 2 ])._);
+          expect(iter.next() , 5).to.deep.equal($$([ 1, 3 ])._);
           expect(iter.hasNext, 6).to.be.false;
           expect(iter.next() , 7).to.be.null;
         }
@@ -518,9 +518,9 @@
         var iter = iterator.set$do($set);
         for (var i = 0; i < 2; i++, iter = iter.clone()) {
           expect(iter.hasNext, 1).to.be.true;
-          expect(iter.next() , 2).to.eql($$([ 1, 0 ])._);
-          expect(iter.next() , 3).to.eql($$([ 2, 1 ])._);
-          expect(iter.next() , 4).to.eql($$([ 3, 2 ])._);
+          expect(iter.next() , 2).to.deep.equal($$([ 1, 0 ])._);
+          expect(iter.next() , 3).to.deep.equal($$([ 2, 1 ])._);
+          expect(iter.next() , 4).to.deep.equal($$([ 3, 2 ])._);
           expect(iter.hasNext, 5).to.be.false;
           expect(iter.next() , 6).to.be.null;
         }
@@ -538,9 +538,9 @@
         iterator.execute(iter, $function);
 
         expect(spy).to.callCount(3);
-        expect(spy.args[0], 1).to.eql($$([ 1, 0 ])._);
-        expect(spy.args[1], 2).to.eql($$([ 3, 1 ])._);
-        expect(spy.args[2], 3).to.eql($$([ 5, 2 ])._);
+        expect(spy.args[0], 1).to.deep.equal($$([ 1, 0 ])._);
+        expect(spy.args[1], 2).to.deep.equal($$([ 3, 1 ])._);
+        expect(spy.args[2], 3).to.deep.equal($$([ 5, 2 ])._);
       }));
       it("arguments", sinon.test(function() {
         var iter, spy;
@@ -558,9 +558,9 @@
         iterator.execute(iter, $function);
 
         expect(spy).to.callCount(3);
-        expect(spy.args[0], 1).to.eql($$([ null, null ])._);
-        expect(spy.args[1], 2).to.eql($$([ null, null ])._);
-        expect(spy.args[2], 3).to.eql($$([ null, null ])._);
+        expect(spy.args[0], 1).to.deep.equal($$([ null, null ])._);
+        expect(spy.args[1], 2).to.deep.equal($$([ null, null ])._);
+        expect(spy.args[2], 3).to.deep.equal($$([ null, null ])._);
       }));
       it("loop break", sinon.test(function() {
         var iter, spy;
@@ -577,9 +577,9 @@
         iterator.execute(iter, $function);
 
         expect(spy).to.callCount(3);
-        expect(spy.args[0], 1).to.eql($$([ 0, 0 ])._);
-        expect(spy.args[1], 2).to.eql($$([ 1, 1 ])._);
-        expect(spy.args[2], 3).to.eql($$([ 2, 2 ])._);
+        expect(spy.args[0], 1).to.deep.equal($$([ 0, 0 ])._);
+        expect(spy.args[1], 2).to.deep.equal($$([ 1, 1 ])._);
+        expect(spy.args[2], 3).to.deep.equal($$([ 2, 2 ])._);
       }));
       it("no operation", function() {
         var iter;

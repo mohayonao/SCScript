@@ -78,7 +78,7 @@
       expect(test).to.equal(instance);
 
       test = instance.randData();
-      expect(test).to.be.a("SCInt32Array").that.eqls(
+      expect(test).to.be.a("SCInt32Array").that.deep.equals(
         new Int32Array([ 204043952, -27998203, 716100824 ])
       );
     });
@@ -89,7 +89,7 @@
       test = instance.randData_($$([ 1, 2, 3 ]));
 
       test = instance.randData();
-      expect(test).to.be.a("SCInt32Array").that.eqls(
+      expect(test).to.be.a("SCInt32Array").that.deep.equals(
         new Int32Array([ 1, 2, 3 ])
       );
     });

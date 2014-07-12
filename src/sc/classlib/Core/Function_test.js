@@ -122,7 +122,7 @@
       $.Environment("c", $$(300));
 
       test = instance.valueEnvir($arg1);
-      expect(func.args[0]).that.eqls($$([ $arg1, 2, 300 ])._);
+      expect(func.args[0]).that.deep.equals($$([ $arg1, 2, 300 ])._);
       expect(func).to.be.calledLastIn(test);
     })));
     it("#valueArrayEnvir", sinon.test(sc.test(function() {
@@ -136,7 +136,7 @@
 
       test = instance.valueArrayEnvir($$([ $arg1, $arg2 ]));
 
-      expect(func.args[0]).that.eqls($$([ $arg1, null, 300 ])._);
+      expect(func.args[0]).that.deep.equals($$([ $arg1, null, 300 ])._);
       expect(func).to.be.calledLastIn(test);
     })));
     it("#functionPerformList", sinon.test(function() {
@@ -146,7 +146,7 @@
       this.stub(instance, "value", sc.test.func());
 
       test = instance.functionPerformList($$("\\value"), $$([ 1, 2, 3 ]));
-      expect(instance.value.args[0]).to.eql($$([ 1, 2, 3 ])._);
+      expect(instance.value.args[0]).to.deep.equal($$([ 1, 2, 3 ])._);
       expect(instance.value).to.be.calledLastIn(test);
     }));
     it.skip("#valueWithEnvir", function() {
@@ -320,7 +320,7 @@
         $$([  1,  2     ]),
         $$([ 10, 20, 30 ])
       );
-      expect(test).to.be.a("SCArray").that.eqls([ 11, 22, 31 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 11, 22, 31 ]);
     });
     it.skip("#envirFlop", function() {
     });

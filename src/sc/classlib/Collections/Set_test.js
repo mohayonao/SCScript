@@ -22,7 +22,7 @@
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.eql([]);
+      expect(test).to.deep.equal([]);
     });
     it("<size", function() {
       var instance, test;
@@ -69,7 +69,7 @@
 
       test = instance.clear();
       expect(test).to.equal(instance);
-      expect(instance._$array).to.be.a("SCArray").that.eqls([
+      expect(instance._$array).to.be.a("SCArray").that.deep.equals([
         null, null, null, null, null, null,
         null, null, null, null, null, null,
       ]);
@@ -197,7 +197,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
 
       test = instance.sect($set);
-      expect(test.valueOf()).to.eql([ 1, 3, 5 ]);
+      expect(test.valueOf()).to.deep.equal([ 1, 3, 5 ]);
     });
     it("#union", function() {
       var instance, test;
@@ -206,7 +206,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
 
       test = instance.union($set);
-      expect(test.valueOf()).to.eql([ 1, 2, 3, 4, 5, 6, 7, 9 ]);
+      expect(test.valueOf()).to.deep.equal([ 1, 2, 3, 4, 5, 6, 7, 9 ]);
     });
     it("#difference", function() {
       var instance, test;
@@ -215,7 +215,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
 
       test = instance.difference($set);
-      expect(test.valueOf()).to.eql([ 2, 4, 6 ]);
+      expect(test.valueOf()).to.deep.equal([ 2, 4, 6 ]);
     });
     it("#symmetricDifference", function() {
       var instance, test;
@@ -224,7 +224,7 @@
       instance = this.createInstance([ 1, 2, 3, 4, 5, 6 ]);
 
       test = instance.symmetricDifference($set);
-      expect(test.valueOf()).to.eql([ 2, 4, 6, 7, 9 ]);
+      expect(test.valueOf()).to.deep.equal([ 2, 4, 6, 7, 9 ]);
     });
     it("#isSubsetOf", function() {
       var instance, test;

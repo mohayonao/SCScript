@@ -2055,13 +2055,13 @@
         var expected = items[1].expected;
         it("ast:" + code, function() {
           var test = sc.lang.compiler.parse(code);
-          expect(test).to.eql(ast);
+          expect(test).to.deep.equal(ast);
         });
         it("compile:" + code, function() {
           var expectedAST = esprima.parse(expected.join("\n"));
           var compiled  = sc.lang.compiler.compile(code);
           var actualAST = esprima.parse(compiled);
-          expect(actualAST).to.eql(expectedAST);
+          expect(actualAST).to.deep.equal(expectedAST);
         });
       });
     });

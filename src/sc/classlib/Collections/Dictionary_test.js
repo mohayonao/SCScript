@@ -25,13 +25,13 @@
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSObject").that.eqls({});
+      expect(test).to.be.a("JSObject").that.deep.equals({});
     });
     it("#$newFrom", function() {
       var instance;
 
       instance = SCDictionary.newFrom($$([ 1, 2, 3, 4, ]));
-      expect(instance).to.be.a("SCDictionary").that.eqls({ 1:2, 3: 4 });
+      expect(instance).to.be.a("SCDictionary").that.deep.equals({ 1:2, 3: 4 });
     });
     it("#at", function() {
       testCase(this, [
@@ -288,8 +288,8 @@
       test = instance.keysValuesDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 1, 2, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 3, 4, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 1, 2, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 3, 4, 1 ])._);
     }));
     it("#keysValuesChange", function() {
       testCase(this, [
@@ -313,8 +313,8 @@
       test = instance.do($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 2, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 4, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 2, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 4, 1 ])._);
     }));
     it("#keysDo", sinon.test(function() {
       var instance, test;
@@ -326,8 +326,8 @@
       test = instance.keysDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 1, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 3, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 1, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 3, 1 ])._);
     }));
     it("#associationsDo", sinon.test(function() {
       var instance, test;
@@ -339,8 +339,8 @@
       test = instance.associationsDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
-      expect(func.args[1]).to.eql($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
     }));
     it("#pairsDo", sinon.test(function() {
       var instance, test;
@@ -352,8 +352,8 @@
       test = instance.pairsDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 1, 2, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 3, 4, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 1, 2, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 3, 4, 1 ])._);
     }));
     it("#collect", function() {
       testCase(this, [
@@ -465,8 +465,8 @@
       test = instance.sortedKeysValuesDo($function, $sortFunc);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 3, 4, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 1, 2, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 3, 4, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 1, 2, 1 ])._);
     }));
     it("#choose", function() {
       testCase(this, [
@@ -548,7 +548,7 @@
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSObject").that.eqls({});
+      expect(test).to.be.a("JSObject").that.deep.equals({});
     });
     it("#at", function() {
       testCase(this, [

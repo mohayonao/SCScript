@@ -71,7 +71,7 @@
       instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.nextN($$(3));
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 2, 3 ]);
     });
     it("#all", function() {
       var instance, test;
@@ -79,7 +79,7 @@
       instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.all();
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
     it("#put", function() {
       var instance;
@@ -97,9 +97,9 @@
       test = instance.putN($$(3), $item);
       expect(test).to.equal(instance);
       expect(instance.put).to.callCount(3);
-      expect(instance.put.args[0]).to.eql([ $item ]);
-      expect(instance.put.args[1]).to.eql([ $item ]);
-      expect(instance.put.args[2]).to.eql([ $item ]);
+      expect(instance.put.args[0]).to.deep.equal([ $item ]);
+      expect(instance.put.args[1]).to.deep.equal([ $item ]);
+      expect(instance.put.args[2]).to.deep.equal([ $item ]);
     }));
     it("#putAll", sinon.test(function() {
       var instance, test;
@@ -111,9 +111,9 @@
       test = instance.putAll($collection);
       expect(test).to.equal(instance);
       expect(instance.put).to.callCount(3);
-      expect(instance.put.args[0]).to.eql($$([ 1 ])._);
-      expect(instance.put.args[1]).to.eql($$([ 2 ])._);
-      expect(instance.put.args[2]).to.eql($$([ 3 ])._);
+      expect(instance.put.args[0]).to.deep.equal($$([ 1 ])._);
+      expect(instance.put.args[1]).to.deep.equal($$([ 2 ])._);
+      expect(instance.put.args[2]).to.deep.equal($$([ 3 ])._);
     }));
     it("#do", function() {
       var instance, test;
@@ -125,7 +125,7 @@
         $result.add($a);
       }));
       expect(test).to.equal(instance);
-      expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect($result).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
     it("#subSample", function() {
       /*
@@ -152,7 +152,7 @@
         $result.add($a);
       }));
       expect(test).to.equal(instance);
-      expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect($result).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
     it("#collect", sc.test(function() {
       /*
@@ -462,7 +462,7 @@
       }));
 
       test = instance.composeNAryOp($argSelector, $anArgList);
-      expect(SCNAryOpStream$new.args[0]).to.eql($$([ $argSelector, instance, [ 1, 2 ] ])._);
+      expect(SCNAryOpStream$new.args[0]).to.deep.equal($$([ $argSelector, instance, [ 1, 2 ] ])._);
     }));
     it("#embedInStream", function() {
       var instance = this.createInstance(sc.test.routine([ 2, 3, 4 ]));
@@ -503,7 +503,7 @@
       }));
 
       test = instance.asEventStreamPlayer($protoEvent);
-      expect(SCEventStreamPlayer$new.args[0]).to.eql([ instance, $protoEvent ]);
+      expect(SCEventStreamPlayer$new.args[0]).to.deep.equal([ instance, $protoEvent ]);
     }));
     it("#play case1", sinon.test(function() {
       var instance, test;

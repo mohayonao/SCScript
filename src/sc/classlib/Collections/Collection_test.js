@@ -33,7 +33,7 @@
       var $aCollection = $$([ 1, 2, 3, 4, 5 ]);
 
       test = SCCollection.newFrom.call(SCArray, $aCollection);
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
     it(".with", function() {
       var test;
@@ -42,7 +42,7 @@
       var $arg3 = $$();
 
       test = SCCollection.with.call(SCArray, $arg1, $arg2, $arg3);
-      expect(test).to.be.a("SCArray").that.eqls([ $arg1, $arg2, $arg3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $arg1, $arg2, $arg3 ]);
     });
     it(".fill", function() {
       var test;
@@ -50,10 +50,10 @@
       test = SCCollection.fill.call(SCArray, $int3, $$(function($i) {
         return $i ["*"] ($$(100));
       }));
-      expect(test).to.be.a("SCArray").that.eqls([ 0, 100, 200 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 0, 100, 200 ]);
 
       test = SCCollection.fill.call(SCArray, $$([ $int3, $int3 ]));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ null, null, null ], [ null, null, null ], [ null, null, null ]
       ]);
     });
@@ -63,7 +63,7 @@
       test = SCCollection.fill2D.call(SCArray, $int3, $int3, $$(function($i, $j) {
         return $i ["*"] ($int10) ["+"] ($j);
       }));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ 0, 1, 2 ], [ 10, 11, 12 ], [ 20, 21, 22 ]
       ]);
     });
@@ -75,7 +75,7 @@
           return $i ["*"] ($int100) ["+"] ($j ["*"] ($int10)) ["+"] ($k);
         })
       );
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ [   0,   1,   2 ], [  10,  11,  12 ], [  20,  21 , 22 ] ],
         [ [ 100, 101, 102 ], [ 110, 111, 112 ], [ 120, 121, 122 ] ],
         [ [ 200, 201, 202 ], [ 210, 211, 212 ], [ 220, 221, 222 ] ]
@@ -85,7 +85,7 @@
       var test;
 
       test = SCCollection.fillND.call(SCArray, $$([ $int3, $int3 ]));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ null, null, null ], [ null, null, null ], [ null, null, null ]
       ]);
     });
@@ -415,7 +415,7 @@
       instance = this.createInstance([ 10, 20, 30, 40, 50 ]);
 
       test = instance.collectAs($function, instance.species());
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 3, 5, 7, 9 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 3, 5, 7, 9 ]);
     });
     it("#selectAs", function() {
       var instance, test;
@@ -426,7 +426,7 @@
       instance = this.createInstance([ 10, 20, 30, 40, 50 ]);
 
       test = instance.selectAs($function, instance.species());
-      expect(test).to.be.a("SCArray").that.eqls([ 10, 20, 30 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 10, 20, 30 ]);
     });
     it("#rejectAs", function() {
       var instance, test;
@@ -437,7 +437,7 @@
       instance = this.createInstance([ 10, 20, 30, 40, 50 ]);
 
       test = instance.rejectAs($function, instance.species());
-      expect(test).to.be.a("SCArray").that.eqls([ 40, 50 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 40, 50 ]);
     });
     it("#detect", function() {
       testCase(this, [
@@ -510,7 +510,7 @@
       expect($elem1.odd).to.be.calledWith($arg1, $arg2);
       expect($elem2.odd).to.be.calledWith($arg1, $arg2);
       expect($elem3.odd).to.be.calledWith($arg1, $arg2);
-      expect(test).to.be.a("SCArray").that.eqls([ true, false, true ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ true, false, true ]);
     }));
     it("#selectMsg", sinon.test(function() {
       var instance, test;
@@ -530,7 +530,7 @@
       expect($elem1.odd).to.be.calledWith($arg1, $arg2);
       expect($elem2.odd).to.be.calledWith($arg1, $arg2);
       expect($elem3.odd).to.be.calledWith($arg1, $arg2);
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 3 ]);
     }));
     it("#rejectMsg", sinon.test(function() {
       var instance, test;
@@ -550,7 +550,7 @@
       expect($elem1.odd).to.be.calledWith($arg1, $arg2);
       expect($elem2.odd).to.be.calledWith($arg1, $arg2);
       expect($elem3.odd).to.be.calledWith($arg1, $arg2);
-      expect(test).to.be.a("SCArray").that.eqls([ 2 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 2 ]);
     }));
     it("#detectMsg", sinon.test(function() {
       var instance, test;
@@ -936,7 +936,7 @@
         test = instance.deepDo($$(null), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ 1, 2, 3, 4, 5 ]);
+          .that.deep.equals([ 1, 2, 3, 4, 5 ]);
       });
       it("#deepDo.depth:0", function() {
         var instance, test;
@@ -946,7 +946,7 @@
         test = instance.deepDo($$(0), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ [ 1, [ 2, 3, 4 ], [ [ 5 ] ] ] ]);
+          .that.deep.equals([ [ 1, [ 2, 3, 4 ], [ [ 5 ] ] ] ]);
       });
       it("#deepDo.depth:1", function() {
         var instance, test;
@@ -956,7 +956,7 @@
         test = instance.deepDo($$(1), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
+          .that.deep.equals([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
       });
       it("#deepDo.depth:2", function() {
         var instance, test;
@@ -966,7 +966,7 @@
         test = instance.deepDo($$(2), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ 1, 2, 3, 4, [ 5 ] ]);
+          .that.deep.equals([ 1, 2, 3, 4, [ 5 ] ]);
       });
     });
     it("#invert", function() {
@@ -1047,7 +1047,7 @@
       this.stub(SCArray, "new", $new);
 
       test = instance.asArray();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1064,7 +1064,7 @@
       }));
 
       test = instance.asBag();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1081,7 +1081,7 @@
       }));
 
       test = instance.asList();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1098,7 +1098,7 @@
       }));
 
       test = instance.asSet();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1116,7 +1116,7 @@
       }));
 
       test = instance.asSortedList($function);
-      expect($new.args[0]).to.eql($$([ 3, $function ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3, $function ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));

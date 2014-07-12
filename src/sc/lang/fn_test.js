@@ -21,7 +21,7 @@
 
       instance.func(null, null, null, null);
 
-      expect(spy.args[0]).to.eql($$([
+      expect(spy.args[0]).to.deep.equal($$([
         null, null, true, false, 0, $.Float(0.0), Infinity, -Infinity, "\\symbol", "$j"
       ])._);
     });
@@ -35,15 +35,15 @@
 
       instance.func();
 
-      expect(spy.args[0]).to.eql($$([ [ 0, 1, 2 ] ])._);
+      expect(spy.args[0]).to.deep.equal($$([ [ 0, 1, 2 ] ])._);
     });
     it("meta data", function() {
       var func;
 
       func = fn(function() {}, "a=1; b=1.0");
 
-      expect(func._argNames).to.be.a("JSArray").that.eqls([ "a", "b" ]);
-      expect(func._argVals ).to.be.a("JSArray").that.eqls([ $.Integer(1), $.Float(1.0) ]);
+      expect(func._argNames).to.be.a("JSArray").that.deep.equals([ "a", "b" ]);
+      expect(func._argVals ).to.be.a("JSArray").that.deep.equals([ $.Integer(1), $.Float(1.0) ]);
     });
     it("'a, b, c': call($arg1, { c: $argC }) should pass [ $arg1, $nil, $argC ]", function() {
       var instance, spy;
@@ -72,7 +72,7 @@
 
       instance.func();
 
-      expect(spy.args[0]).to.eql($$([ [] ])._);
+      expect(spy.args[0]).to.deep.equal($$([ [] ])._);
     });
     it("'a, b, *c': call(1, 2, 3, 4, 5) should pass [ 1, 2, [ 3, 4, 5 ] ]", function() {
       var instance, spy;
@@ -91,7 +91,7 @@
 
       instance.func($arg1, $arg2, $arg3, $arg4, $arg5);
 
-      expect(spy.args[0]).to.eql($$([ $arg1, $arg2, [ $arg3, $arg4, $arg5 ] ])._);
+      expect(spy.args[0]).to.deep.equal($$([ $arg1, $arg2, [ $arg3, $arg4, $arg5 ] ])._);
     });
   });
 })();

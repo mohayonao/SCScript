@@ -21,13 +21,13 @@
       instance = this.createInstance([ $$("freq"), $$(440) ]);
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSArray").to.eql([ "freq", 440 ]);
+      expect(test).to.be.a("JSArray").to.deep.equal([ "freq", 440 ]);
     });
     it(".with", function() {
       var test;
 
       test = SCArray.with($$(0), $$(1), $$(2));
-      expect(test).to.be.a("SCArray").that.eqls([ 0, 1, 2 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 0, 1, 2 ]);
     });
     it("#reverse", function() {
       testCase(this, [
@@ -720,7 +720,7 @@
       expect($elem1.asUGenInput, 1).to.be.calledWith($for);
       expect($elem2.asUGenInput, 2).to.be.calledWith($for);
       expect($elem3.asUGenInput, 3).to.be.calledWith($for);
-      expect(test).to.be.a("SCArray").that.eqls([ $ugen1, $ugen2, $ugen3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $ugen1, $ugen2, $ugen3 ]);
     }));
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test;
@@ -750,7 +750,7 @@
       expect($elem1.asAudioRateInput).to.be.calledWith($for);
       expect($elem2.asAudioRateInput).to.be.calledWith($for);
       expect($elem3.asAudioRateInput).to.be.calledWith($for);
-      expect(test).to.be.a("SCArray").that.eqls([ $ugen1, $ugen2, $ugen3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $ugen1, $ugen2, $ugen3 ]);
     }));
     it("#asControlInput", sinon.test(function() {
       var instance, test;
@@ -779,7 +779,7 @@
       expect($elem1.asControlInput).to.be.called;
       expect($elem2.asControlInput).to.be.called;
       expect($elem3.asControlInput).to.be.called;
-      expect(test).to.be.a("SCArray").that.eqls([ $ugen1, $ugen2, $ugen3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $ugen1, $ugen2, $ugen3 ]);
     }));
     it("#isValidUGenInput", function() {
       var instance, test;

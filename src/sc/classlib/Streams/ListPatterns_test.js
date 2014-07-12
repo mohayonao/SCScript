@@ -31,7 +31,7 @@
       test = instance.copy();
       expect(test).to.be.a("SCListPattern").that.not.equals(instance);
       expect(test.list()).to.not.equals(instance.list());
-      expect(test.list().valueOf()).to.eql(instance.list().valueOf());
+      expect(test.list().valueOf()).to.deep.equal(instance.list().valueOf());
     });
     it.skip("#storeArgs", function() {
     });

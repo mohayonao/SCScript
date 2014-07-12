@@ -10,6 +10,7 @@ module.exports = function(grunt) {
   var sinon = require("sinon");
   var istanbul = require("istanbul");
   var esprima = require("esprima");
+  var escodegen = require("escodegen");
   var sorter = require("./assets/sorter");
   var reqUtils = require("./assets/require");
 
@@ -17,6 +18,7 @@ module.exports = function(grunt) {
   global.chai = chai;
   global.sinon = sinon;
   global.esprima = esprima;
+  global.escodegen = escodegen;
   global._ = _;
 
   chai.use(require("sinon-chai"));

@@ -1,97 +1,177 @@
-(function() {
+describe("sc.lang.compiler.rewriter", function() {
   "use strict";
-
-  require("./rewriter");
 
   var Syntax   = sc.lang.compiler.Syntax;
   var Rewriter = sc.lang.compiler.Rewriter;
 
-  describe("sc.lang.compiler.rewriter", function() {
-    it("segmented check", function() {
-      var ast, actual, expected;
+  it("segmented check", function() {
+    var ast, actual, expected;
 
-      ast = {
-        type: Syntax.FunctionExpression,
-        body: [
-          {
-            type: Syntax.CallExpression,
-            callee: {
-              type: Syntax.Identifier,
-              name: "a"
-            },
-            method: {
-              type: Syntax.Identifier,
-              name: "wait"
-            },
-            args: {
-              list: []
-            }
+    ast = {
+      type: Syntax.FunctionExpression,
+      body: [
+        {
+          type: Syntax.CallExpression,
+          callee: {
+            type: Syntax.Identifier,
+            name: "a"
           },
-          {
-            type: Syntax.CallExpression,
-            callee: {
-              type: Syntax.Identifier,
-              name: "a"
-            },
-            method: {
-              type: Syntax.Identifier,
-              name: "neg"
-            },
-            args: {
-              list: []
-            }
+          method: {
+            type: Syntax.Identifier,
+            name: "wait"
           },
-        ]
-      };
+          args: {
+            list: []
+          }
+        },
+        {
+          type: Syntax.CallExpression,
+          callee: {
+            type: Syntax.Identifier,
+            name: "a"
+          },
+          method: {
+            type: Syntax.Identifier,
+            name: "neg"
+          },
+          args: {
+            list: []
+          }
+        },
+      ]
+    };
 
-      expected = {
-        type: Syntax.FunctionExpression,
-        segmented: true,
-        body: [
-          {
+    expected = {
+      type: Syntax.FunctionExpression,
+      segmented: true,
+      body: [
+        {
+          type: Syntax.CallExpression,
+          segmented: true,
+          callee: {
+            type: Syntax.Identifier,
+            name: "a"
+          },
+          method: {
+            type: Syntax.Identifier,
+            name: "wait"
+          },
+          args: {
+            list: []
+          }
+        },
+        {
+          type: Syntax.CallExpression,
+          callee: {
+            type: Syntax.Identifier,
+            name: "a"
+          },
+          method: {
+            type: Syntax.Identifier,
+            name: "neg"
+          },
+          args: {
+            list: []
+          }
+        },
+      ]
+    };
+
+    actual = new Rewriter().rewrite(ast);
+    expect(actual).to.deep.equal(expected);
+  });
+
+  it("split value and value result for sync", function() {
+    var ast, actual, expected;
+
+    ast = {
+      type: Syntax.FunctionExpression,
+      body: [
+        {
+          type: Syntax.CallExpression,
+          callee: {
+            type: Syntax.Identifier,
+            name: "a"
+          },
+          method: {
+            type: Syntax.Identifier,
+            name: "value"
+          },
+          args: {
+            list: [
+              {
+                type: Syntax.CallExpression,
+                callee: {
+                  type: Syntax.Identifier,
+                  name: "b"
+                },
+                method: {
+                  type: Syntax.Identifier,
+                  name: "value"
+                },
+              },
+              {
+                type: Syntax.CallExpression,
+                callee: {
+                  type: Syntax.Identifier,
+                  name: "c"
+                },
+                method: {
+                  type: Syntax.Identifier,
+                  name: "value"
+                },
+              },
+            ]
+          }
+        }
+      ]
+    };
+
+    expected = {
+      type: Syntax.FunctionExpression,
+      segmented: true,
+      body: [
+        {
+          type: Syntax.ValueMethodEvaluator,
+          segmented: true,
+          id: 0,
+          expr: {
             type: Syntax.CallExpression,
             segmented: true,
             callee: {
               type: Syntax.Identifier,
-              name: "a"
+              name: "b"
             },
             method: {
               type: Syntax.Identifier,
-              name: "wait"
+              name: "value"
             },
-            args: {
-              list: []
-            }
           },
-          {
+        },
+        {
+          type: Syntax.ValueMethodEvaluator,
+          segmented: true,
+          id: 1,
+          expr: {
             type: Syntax.CallExpression,
+            segmented: true,
             callee: {
               type: Syntax.Identifier,
-              name: "a"
+              name: "c"
             },
             method: {
               type: Syntax.Identifier,
-              name: "neg"
+              name: "value"
             },
-            args: {
-              list: []
-            }
           },
-        ]
-      };
-
-      actual = new Rewriter().rewrite(ast);
-      expect(actual).to.deep.equal(expected);
-    });
-
-    it("split value and value result for sync", function() {
-      var ast, actual, expected;
-
-      ast = {
-        type: Syntax.FunctionExpression,
-        body: [
-          {
+        },
+        {
+          type: Syntax.ValueMethodEvaluator,
+          segmented: true,
+          id: 2,
+          expr: {
             type: Syntax.CallExpression,
+            segmented: true,
             callee: {
               type: Syntax.Identifier,
               name: "a"
@@ -103,109 +183,26 @@
             args: {
               list: [
                 {
-                  type: Syntax.CallExpression,
-                  callee: {
-                    type: Syntax.Identifier,
-                    name: "b"
-                  },
-                  method: {
-                    type: Syntax.Identifier,
-                    name: "value"
-                  },
+                  type: Syntax.ValueMethodResult,
+                  id: 0
                 },
                 {
-                  type: Syntax.CallExpression,
-                  callee: {
-                    type: Syntax.Identifier,
-                    name: "c"
-                  },
-                  method: {
-                    type: Syntax.Identifier,
-                    name: "value"
-                  },
+                  type: Syntax.ValueMethodResult,
+                  id: 1
                 },
               ]
             }
           }
-        ]
-      };
+        },
+        {
+          type: Syntax.ValueMethodResult,
+          id: 2
+        }
+      ]
+    };
 
-      expected = {
-        type: Syntax.FunctionExpression,
-        segmented: true,
-        body: [
-          {
-            type: Syntax.ValueMethodEvaluator,
-            segmented: true,
-            id: 0,
-            expr: {
-              type: Syntax.CallExpression,
-              segmented: true,
-              callee: {
-                type: Syntax.Identifier,
-                name: "b"
-              },
-              method: {
-                type: Syntax.Identifier,
-                name: "value"
-              },
-            },
-          },
-          {
-            type: Syntax.ValueMethodEvaluator,
-            segmented: true,
-            id: 1,
-            expr: {
-              type: Syntax.CallExpression,
-              segmented: true,
-              callee: {
-                type: Syntax.Identifier,
-                name: "c"
-              },
-              method: {
-                type: Syntax.Identifier,
-                name: "value"
-              },
-            },
-          },
-          {
-            type: Syntax.ValueMethodEvaluator,
-            segmented: true,
-            id: 2,
-            expr: {
-              type: Syntax.CallExpression,
-              segmented: true,
-              callee: {
-                type: Syntax.Identifier,
-                name: "a"
-              },
-              method: {
-                type: Syntax.Identifier,
-                name: "value"
-              },
-              args: {
-                list: [
-                  {
-                    type: Syntax.ValueMethodResult,
-                    id: 0
-                  },
-                  {
-                    type: Syntax.ValueMethodResult,
-                    id: 1
-                  },
-                ]
-              }
-            }
-          },
-          {
-            type: Syntax.ValueMethodResult,
-            id: 2
-          }
-        ]
-      };
-
-      actual = new Rewriter().rewrite(ast);
-      expect(actual).to.deep.equal(expected);
-    });
+    actual = new Rewriter().rewrite(ast);
+    expect(actual).to.deep.equal(expected);
   });
-})();
+
+});

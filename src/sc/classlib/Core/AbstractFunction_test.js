@@ -1,12 +1,9 @@
-(function() {
+describe("Core/AbstractFunction", function() {
   "use strict";
 
-  require("./AbstractFunction");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCFunctionList = $("FunctionList");
   var $int10 = $$(10);
   var $int20 = $$(20);
@@ -34,6 +31,7 @@
       expect(SCUnaryOpFunction$new).to.be.calledWith($aSelector, instance);
       expect(SCUnaryOpFunction$new).to.be.calledLastIn(test);
     }));
+
     it("#composeBinaryOp", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -50,6 +48,7 @@
       expect(SCBinaryOpFunction$new).to.be.calledWith($aSelector, instance, $something, $adverb);
       expect(SCBinaryOpFunction$new).to.be.calledLastIn(test);
     }));
+
     it("#reverseComposeBinaryOp", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -66,6 +65,7 @@
       expect(SCBinaryOpFunction$new).to.be.calledWith($aSelector, $something, instance, $adverb);
       expect(SCBinaryOpFunction$new).to.be.calledLastIn(test);
     }));
+
     it("#composeNAryOp", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -81,6 +81,7 @@
       expect(SCNAryOpFunction$new).to.be.calledWith($aSelector, instance, $anArgList);
       expect(SCNAryOpFunction$new).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnSimpleNumber", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -94,6 +95,7 @@
       expect(instance.reverseComposeBinaryOp).to.be.calledWith($aSelector, $aNumber, $adverb);
       expect(instance.reverseComposeBinaryOp).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnSignal", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -107,6 +109,7 @@
       expect(instance.reverseComposeBinaryOp).to.be.calledWith($aSelector, $aSignal, $adverb);
       expect(instance.reverseComposeBinaryOp).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnComplex", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -120,6 +123,7 @@
       expect(instance.reverseComposeBinaryOp).to.be.calledWith($aSelector, $aComplex, $adverb);
       expect(instance.reverseComposeBinaryOp).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnSeqColl", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -289,6 +293,7 @@
         expect(instance.composeBinaryOp).to.be.calledLastIn(test);
       }));
     });
+
     it("#rotate", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -302,6 +307,7 @@
       );
       expect(instance.composeBinaryOp).to.be.calledLastIn(test);
     }));
+
     it("#dist", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -315,17 +321,20 @@
       );
       expect(instance.composeBinaryOp).to.be.calledLastIn(test);
     }));
+
     it("#real", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.real).to.doNothing;
     });
+
     it("#imag", function() {
       testCase(this, [
         [ null, [], $.Float(0.0) ]
       ]);
     });
+
     it("#clip", sinon.test(function() {
       var instance, test;
       var $lo = $$();
@@ -340,6 +349,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#wrap", sinon.test(function() {
       var instance, test;
       var $lo = $$();
@@ -354,6 +364,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#fold", sinon.test(function() {
       var instance, test;
       var $lo = $$();
@@ -368,6 +379,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#blend", sinon.test(function() {
       var instance, test;
       var $that      = $$();
@@ -382,6 +394,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#linlin", sinon.test(function() {
       var instance, test;
       var $inMin  = $$();
@@ -399,6 +412,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#linexp", sinon.test(function() {
       var instance, test;
       var $inMin  = $$();
@@ -416,6 +430,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#explin", sinon.test(function() {
       var instance, test;
       var $inMin  = $$();
@@ -433,6 +448,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#expexp", sinon.test(function() {
       var instance, test;
       var $inMin  = $$();
@@ -450,6 +466,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#lincurve", sinon.test(function() {
       var instance, test;
       var $inMin  = $$();
@@ -468,6 +485,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#curvelin", sinon.test(function() {
       var instance, test;
       var $inMin  = $$();
@@ -486,6 +504,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#bilin", sinon.test(function() {
       var instance, test;
       var $inCenter  = $$();
@@ -505,6 +524,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#biexp", sinon.test(function() {
       var instance, test;
       var $inCenter  = $$();
@@ -524,6 +544,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#moddif", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -538,6 +559,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#degreeToKey", sinon.test(function() {
       var instance, test;
       var $scale          = $$();
@@ -552,6 +574,7 @@
       ])._);
       expect(instance.composeNAryOp).to.be.calledLastIn(test);
     }));
+
     it("#applyTo", sinon.test(function() {
       var instance, test;
       var $arg1 = $$();
@@ -568,6 +591,7 @@
     });
     it.skip("#sampled", function() {
     });
+
     it("#asUGenInput", sinon.test(function() {
       var instance, test;
       var $for = $$();
@@ -579,6 +603,7 @@
       expect(instance.value).to.be.calledWith($for);
       expect(instance.value).to.be.calledLastIn(test);
     }));
+
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test;
       var $result = $$({
@@ -609,6 +634,7 @@
       expect(SCK2A$ar).to.be.calledWith($result);
       expect(SCK2A$ar).to.be.calledLastIn(test);
     }));
+
     it("#asControlInput", sinon.test(function() {
       var instance, test;
 
@@ -618,6 +644,7 @@
       test = instance.asControlInput();
       expect(instance.value).to.be.calledLastIn(test);
     }));
+
     it("#isValidUGenInput", function() {
       testCase(this, [
         [ null, [], true ]
@@ -638,6 +665,7 @@
         return instance;
       };
     });
+
     it("#value", function() {
       var instance, test;
 
@@ -646,6 +674,7 @@
       test = instance.value($$(10), $$(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
+
     it("#valueArray", function() {
       var instance, test;
 
@@ -654,6 +683,7 @@
       test = instance.valueArray($$([ 10, 100 ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
+
     it("#valueEnvir", sc.test(function() {
       var instance, test;
 
@@ -664,6 +694,7 @@
       test = instance.valueEnvir($$(10));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     }));
+
     it("#valueArrayEnvir", sc.test(function() {
       var instance, test;
 
@@ -674,6 +705,7 @@
       test = instance.valueArrayEnvir($$([ 10 ]));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     }));
+
     it("#functionPerformList", sinon.test(function() {
       var test, instance;
       var $selector, $arglist;
@@ -703,6 +735,7 @@
         return instance;
       };
     });
+
     it("#value", function() {
       var instance, test;
 
@@ -711,6 +744,7 @@
       test = instance.value($$(10), $$(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
+
     it("#valueArray", function() {
       var instance, test;
 
@@ -723,6 +757,7 @@
     });
     it.skip("#valueArrayEnvir", function() {
     });
+
     it("#functionPerformList", sinon.test(function() {
       var test, instance;
       var $selector = $$();
@@ -750,6 +785,7 @@
         return instance;
       };
     });
+
     it("#value", function() {
       var test, instance;
 
@@ -758,6 +794,7 @@
       test = instance.value($$(10), $$(100));
       expect(test).to.be.a("SCInteger").that.equals(-110);
     });
+
     it("#valueArray", function() {
       var test, instance;
 
@@ -770,6 +807,7 @@
     });
     it.skip("#valueArrayEnvir", function() {
     });
+
     it("#functionPerformList", sinon.test(function() {
       var test, instance;
       var $selector = $$();
@@ -815,6 +853,7 @@
         $arg3 = $$();
         $arg4 = $$();
       });
+
       it("<>array", function() {
         var test;
 
@@ -824,6 +863,7 @@
           $arg1, $arg2
         ]);
       });
+
       it("#addFunc", function() {
         var test;
 
@@ -833,6 +873,7 @@
           $arg1, $arg2, $arg3
         ]);
       });
+
       it("#replaceFunc", function() {
         var test;
 
@@ -842,6 +883,7 @@
           $arg1, $arg4, $arg3
         ]);
       });
+
       it("#removeFunc", function() {
         var test;
 
@@ -855,6 +897,7 @@
         expect(test).to.equal($arg3);
       });
     });
+
     it("#addFunc.failed", function() {
       var instance;
 
@@ -863,6 +906,7 @@
         instance.addFunc();
       }).to.throw("cannot add a function to a flopped FunctionList");
     });
+
     it("#value", function() {
       var instance, test;
 
@@ -873,6 +917,7 @@
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
       ]);
     });
+
     it("#value.flopped", function() {
       var instance, test;
 
@@ -884,6 +929,7 @@
         [ 15, 5, 50, 2 ], [ 25, 15, 100, 4 ]
       ]);
     });
+
     it("#valueArray", function() {
       var instance, test;
 
@@ -896,6 +942,7 @@
         [ 15, 25 ], [ 5, 15 ], [ 50, 100 ], [ 2, 4 ]
       ]);
     });
+
     it("#valueArray.flopped", function() {
       var instance, test;
 
@@ -913,6 +960,7 @@
     });
     it.skip("#valueArrayEnvir", function() {
     });
+
     it("#do", sinon.test(function() {
       var instance, test;
       var $elem1 = $$();
@@ -929,6 +977,7 @@
       expect(func.args[0]).to.deep.equal($$([ $elem1, 0 ])._);
       expect(func.args[1]).to.deep.equal($$([ $elem2, 1 ])._);
     }));
+
     it("#flop", function() {
       var instance, test;
       var $array;
@@ -951,6 +1000,7 @@
     });
     it.skip("#envirFlop", function() {
     });
+
     it("#storeArgs", function() {
       var instance, test;
 
@@ -962,4 +1012,4 @@
       ]);
     });
   });
-})();
+});

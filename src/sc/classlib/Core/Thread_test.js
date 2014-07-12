@@ -1,11 +1,8 @@
-(function() {
+describe("Core/Thread", function() {
   "use strict";
 
-  require("./Thread");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
   var SCThread = $("Thread");
   var SCRoutine = $("Routine");
 
@@ -17,6 +14,7 @@
         }));
       };
     });
+
     it("<state", function() {
       var instance, test;
 
@@ -51,6 +49,7 @@
     });
     it.skip("#init", function() {
     });
+
     it("#copy", function() {
       var instance;
 
@@ -69,6 +68,7 @@
     });
     it.skip("#findThreadPlayer", function() {
     });
+
     it(">randSeed", function() {
       var instance, test;
 
@@ -82,6 +82,7 @@
         new Int32Array([ 204043952, -27998203, 716100824 ])
       );
     });
+
     it("<>randData", function() {
       var instance, test;
 
@@ -97,18 +98,21 @@
     });
     it.skip("#handleError", function() {
     });
+
     it("#next", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.next).to.doNothing;
     });
+
     it("#value", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.value).to.doNothing;
     });
+
     it("#valueArray", function() {
       var instance;
 
@@ -135,6 +139,7 @@
         }));
       };
     });
+
     it("#__tag", function() {
       var instance, test;
 
@@ -143,6 +148,7 @@
       test = instance.__tag;
       expect(test).to.be.a("JSNumber").that.equals(sc.TAG_ROUTINE);
     });
+
     it(".new", function() {
       var instance;
 
@@ -155,6 +161,7 @@
     });
     it.skip(".run", function() {
     });
+
     it("#next", function() {
       var instance;
       var $inval = $$();
@@ -200,30 +207,35 @@
       expect(instance.next($inval), 7).to.be.a("SCInteger").that.equals(7);
       expect(instance.next($inval), 8).to.be.a("SCNil");
     });
+
     it("#value", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.value).to.equal(instance.next);
     });
+
     it("#resume", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.resume).to.equal(instance.next);
     });
+
     it("#run", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.run).to.equal(instance.next);
     });
+
     it("#valueArray", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.valueArray).to.equal(instance.value);
     });
+
     it("#reset", function() {
       var instance;
 
@@ -266,4 +278,5 @@
     it.skip("#awake", function() {
     });
   });
-})();
+
+});

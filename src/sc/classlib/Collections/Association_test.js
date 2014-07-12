@@ -1,11 +1,8 @@
-(function() {
+describe("Collections/Association", function() {
   "use strict";
 
-  require("./Association");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
   var SCAssociation = $("Association");
 
   describe("SCAssociation", function() {
@@ -14,6 +11,7 @@
         return SCAssociation.new($key, $value);
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -22,6 +20,7 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSNumber").that.equals(1);
     });
+
     it("#==", function() {
       var instance, test;
       var $anAssociation;
@@ -40,6 +39,7 @@
       test = instance ["=="] ($anAssociation);
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
+
     it("#hash", function() {
       var instance, test;
 
@@ -48,6 +48,7 @@
       test = instance.hash();
       expect(test).to.be.a("SCInteger");
     });
+
     it("#<", function() {
       var instance, test;
       var $anAssociation;
@@ -71,4 +72,5 @@
     it.skip("#transformEvent", function() {
     });
   });
-})();
+
+});

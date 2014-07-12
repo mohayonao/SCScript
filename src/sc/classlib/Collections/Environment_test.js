@@ -1,11 +1,8 @@
-(function() {
+describe("Collections/Environment", function() {
   "use strict";
 
-  require("./Environment");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
   var SCEnvironment = $("Environment");
 
   describe("SCEnvironment", function() {
@@ -14,6 +11,7 @@
         return SCEnvironment.newFrom($$(list || []));
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -22,6 +20,7 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSObject").that.deep.equals({});
     });
+
     it("#eventAt", function() {
       var instance, test;
 
@@ -30,6 +29,7 @@
       test = instance.eventAt($$(1));
       expect(test).to.be.a("SCInteger").equals(2);
     });
+
     it("#composeEvents", function() {
       var instance, test;
 
@@ -43,6 +43,7 @@
     });
     it.skip("#unlinkDoc", function() {
     });
+
     it("push/pop", sc.test(function() {
       var test;
 
@@ -61,6 +62,7 @@
 
       SCEnvironment.new().pop();
     }));
+
     it("make", sc.test(function() {
       var test;
       var $function = $$(function() {
@@ -76,6 +78,7 @@
       test = $.Environment("a");
       expect(test).to.be.a("SCInteger").that.equals(1);
     }));
+
     it("use", sc.test(function() {
       var test;
       var $function = $$(function() {
@@ -92,4 +95,5 @@
       expect(test).to.be.a("SCInteger").that.equals(1);
     }));
   });
-})();
+
+});

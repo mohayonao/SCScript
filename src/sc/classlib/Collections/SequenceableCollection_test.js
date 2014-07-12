@@ -1,12 +1,9 @@
-(function() {
+describe("Collections/SequenceableCollection", function() {
   "use strict";
 
-  require("./SequenceableCollection");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCSequenceableCollection = $("SequenceableCollection");
   var SCArray = $("Array");
 
@@ -17,6 +14,7 @@
         return $$(instance, "SequenceableCollection" + this.test.title);
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -25,6 +23,7 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
+
     it("#|@|", sinon.test(function() {
       var instance, test;
       var $index = $$();
@@ -36,6 +35,7 @@
       expect(instance.clipAt).to.be.calledWith($index);
       expect(instance.clipAt).to.be.calledLastIn(test);
     }));
+
     it("#@@", sinon.test(function() {
       var instance, test;
       var $index = $$();
@@ -47,6 +47,7 @@
       expect(instance.wrapAt).to.be.calledWith($index);
       expect(instance.wrapAt).to.be.calledLastIn(test);
     }));
+
     it("#@|@", sinon.test(function() {
       var instance, test;
       var $index = $$();
@@ -58,6 +59,7 @@
       expect(instance.foldAt).to.be.calledWith($index);
       expect(instance.foldAt).to.be.calledLastIn(test);
     }));
+
     it(".series", function() {
       var test;
 
@@ -68,6 +70,7 @@
         2, 6, 10, 14, 18, 22
       ]);
     });
+
     it(".geom", function() {
       var test;
 
@@ -78,6 +81,7 @@
         2, 8, 32, 128, 512, 2048
       ]);
     });
+
     it(".fib", function() {
       var test;
 
@@ -88,6 +92,7 @@
         1.0, 1.0, 2.0, 3.0, 5.0, 8.0
       ]);
     });
+
     it(".rand", function() {
       var test;
 
@@ -104,6 +109,7 @@
         0.37802028656006
       ], 1e-6);
     });
+
     it(".exprand", function() {
       var test;
 
@@ -120,6 +126,7 @@
         0.057021761707466
       ], 1e-6);
     });
+
     it(".rand2", function() {
       var test;
 
@@ -136,6 +143,7 @@
         0 - 0.24395942687988
       ], 1e-6);
     });
+
     it(".linrand", function() {
       var test;
 
@@ -152,6 +160,7 @@
         0.09632418397814
       ], 1e-6);
     });
+
     it(".interpolation", function() {
       var test;
 
@@ -167,6 +176,7 @@
         0.0, 0.25, 0.5, 0.75, 1.0
       ]);
     });
+
     it("#++", function() {
       testCase(this, [
         {
@@ -178,12 +188,14 @@
     });
     it.skip("#+++", function() {
     });
+
     it("#asSequenceableCollection", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.asSequenceableCollection).to.doNothing;
     });
+
     it("#choose", function() {
       testCase(this, [
         [ [ 1, 2, 3, 4, 5 ], [], 5 ],
@@ -193,6 +205,7 @@
         [ [ 1, 2, 3, 4, 5 ], [], 2 ],
       ], { randSeed: 0 });
     });
+
     it("#wchoose", function() {
       testCase(this, [
         [ [ 1, 2, 3, 4, 5 ], [ [ 0.1, 0.2, 0.3, 0.4 ] ], 4 ],
@@ -202,6 +215,7 @@
         [ [ 1, 2, 3, 4, 5 ], [ [ 0.1, 0.2, 0.3, 0.4 ] ], 3 ],
       ], { randSeed: 0 });
     });
+
     it("#==", function() {
       testCase(this, [
         {
@@ -233,6 +247,7 @@
     });
     it.skip("#hash", function() {
     });
+
     it("#copyRange", function() {
       testCase(this, [
         {
@@ -242,6 +257,7 @@
         },
       ]);
     });
+
     it("#keep", function() {
       testCase(this, [
         {
@@ -256,6 +272,7 @@
         }
       ]);
     });
+
     it("#drop", function() {
       testCase(this, [
         {
@@ -270,6 +287,7 @@
         }
       ]);
     });
+
     it("#copyToEnd", function() {
       testCase(this, [
         {
@@ -279,6 +297,7 @@
         }
       ]);
     });
+
     it("#copyFromStart", function() {
       testCase(this, [
         {
@@ -288,6 +307,7 @@
         }
       ]);
     });
+
     it("#indexOf", function() {
       testCase(this, [
         {
@@ -304,6 +324,7 @@
     });
     it.skip("#indexOfEqual", function() {
     });
+
     it("#indicesOfEqual", function() {
       testCase(this, [
         {
@@ -318,6 +339,7 @@
         },
       ]);
     });
+
     it("#find", function() {
       testCase(this, [
         {
@@ -332,6 +354,7 @@
         },
       ]);
     });
+
     it("#findAll", function() {
       testCase(this, [
         {
@@ -351,6 +374,7 @@
         },
       ]);
     });
+
     it("#indexOfGreaterThan", function() {
       testCase(this, [
         {
@@ -365,6 +389,7 @@
         },
       ]);
     });
+
     it("#indexIn", function() {
       testCase(this, [
         {
@@ -389,6 +414,7 @@
         }
       ]);
     });
+
     it("#indexInBetween", function() {
       testCase(this, [
         {
@@ -413,6 +439,7 @@
         },
       ]);
     });
+
     it("#isSeries", function() {
       testCase(this, [
         {
@@ -432,6 +459,7 @@
         },
       ]);
     });
+
     it("#resamp0", function() {
       testCase(this, [
         {
@@ -441,6 +469,7 @@
         }
       ]);
     });
+
     it("#resamp1", function() {
       testCase(this, [
         {
@@ -459,6 +488,7 @@
         }
       ]);
     });
+
     it("#remove", function() {
       testCase(this, [
         {
@@ -474,6 +504,7 @@
         },
       ]);
     });
+
     it("#removing", function() {
       testCase(this, [
         {
@@ -483,6 +514,7 @@
         },
       ]);
     });
+
     it("#take", function() {
       testCase(this, [
         {
@@ -498,6 +530,7 @@
         },
       ]);
     });
+
     it("#lastIndex", function() {
       testCase(this, [
         {
@@ -510,6 +543,7 @@
         },
       ]);
     });
+
     it("#middleIndex", function() {
       testCase(this, [
         {
@@ -526,6 +560,7 @@
         },
       ]);
     });
+
     it("#first", function() {
       testCase(this, [
         {
@@ -538,6 +573,7 @@
         },
       ]);
     });
+
     it("#last", function() {
       testCase(this, [
         {
@@ -550,6 +586,7 @@
         },
       ]);
     });
+
     it("#middle", function() {
       testCase(this, [
         {
@@ -566,6 +603,7 @@
         },
       ]);
     });
+
     it("#top", function() {
       testCase(this, [
         {
@@ -578,6 +616,7 @@
         },
       ]);
     });
+
     it("#putFirst", function() {
       testCase(this, [
         {
@@ -594,6 +633,7 @@
         },
       ]);
     });
+
     it("#putLast", function() {
       testCase(this, [
         {
@@ -610,6 +650,7 @@
         },
       ]);
     });
+
     it("#obtain", function() {
       testCase(this, [
         {
@@ -624,6 +665,7 @@
         },
       ]);
     });
+
     it("#instill", function() {
       testCase(this, [
         {
@@ -638,6 +680,7 @@
         },
       ]);
     });
+
     it("#pairsDo", sinon.test(function() {
       var instance, test;
       var $function = $$({ value: this.spy() });
@@ -650,6 +693,7 @@
       expect($function.value.args[1]).to.deep.equal($$([ 30, 40, 2 ])._);
       expect(test).to.equal(instance);
     }));
+
     it("#keysValuesDo", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -661,6 +705,7 @@
       expect(instance.pairsDo).to.be.calledWith($function);
       expect(instance.pairsDo).to.be.calledLastIn(test);
     }));
+
     it("#doAdjacentPairs", sinon.test(function() {
       var instance, test;
       var $function = $$({ value: this.spy() });
@@ -674,6 +719,7 @@
       expect($function.value.args[2]).to.deep.equal($$([ 30, 40, 2 ])._);
       expect(test).to.equal(instance);
     }));
+
     it("#separate", function() {
       testCase(this, [
         {
@@ -689,6 +735,7 @@
         },
       ]);
     });
+
     it("#delimit", function() {
       testCase(this, [
         {
@@ -704,6 +751,7 @@
         },
       ]);
     });
+
     it("#clump", function() {
       testCase(this, [
         {
@@ -717,6 +765,7 @@
         },
       ]);
     });
+
     it("#clumps", function() {
       testCase(this, [
         {
@@ -731,6 +780,7 @@
         },
       ]);
     });
+
     it("#curdle", function() {
       var test, instance;
       var i = 0;
@@ -747,6 +797,7 @@
         [ 10, 20, 30 ], [ 40, 50 ]
       ]);
     });
+
     it("#flatten", function() {
       testCase(this, [
         {
@@ -765,6 +816,7 @@
         }
       ]);
     });
+
     it("#flat", function() {
       testCase(this, [
         {
@@ -781,6 +833,7 @@
         }
       ]);
     });
+
     it("#flatIf", function() {
       testCase(this, [
         {
@@ -796,6 +849,7 @@
         },
       ]);
     });
+
     it("#flop", function() {
       testCase(this, [
         {
@@ -808,6 +862,7 @@
         },
       ]);
     });
+
     it("#flopWith", function() {
       testCase(this, [
         {
@@ -827,6 +882,7 @@
         },
       ]);
     });
+
     it("#flopTogether", function() {
       /*
         flopTogether(
@@ -848,6 +904,7 @@
         [ [ 100 ], [ 100 ], [ 100 ], [ 100 ], [ 100 ] ]
       ]);
     });
+
     it("#flopDeep", function() {
       testCase(this, [
         {
@@ -867,6 +924,7 @@
         }
       ]);
     });
+
     it("#wrapAtDepth", function() {
       testCase(this, [
         {
@@ -886,6 +944,7 @@
         },
       ]);
     });
+
     it("#unlace", function() {
       testCase(this, [
         {
@@ -900,6 +959,7 @@
         },
       ]);
     });
+
     it("#integrate", function() {
       testCase(this, [
         {
@@ -908,6 +968,7 @@
         },
       ]);
     });
+
     it("#differentiate", function() {
       testCase(this, [
         {
@@ -916,6 +977,7 @@
         },
       ]);
     });
+
     it("#convertDigits", function() {
       testCase(this, [
         {
@@ -934,6 +996,7 @@
         },
       ]);
     });
+
     it("#hammingDistance", function() {
       testCase(this, [
         {
@@ -943,6 +1006,7 @@
         }
       ]);
     });
+
     it("#degreeToKey", sinon.test(function() {
       var instance, test;
       var $scale = $$();
@@ -961,6 +1025,7 @@
       expect($item1.degreeToKey).to.be.calledWith($scale, $stepsPerOctave);
       expect($item2.degreeToKey).to.be.calledWith($scale, $stepsPerOctave);
     }));
+
     it("#keyToDegree", sinon.test(function() {
       var instance, test;
       var $scale = $$();
@@ -979,6 +1044,7 @@
       expect($item1.keyToDegree).to.be.calledWith($scale, $stepsPerOctave);
       expect($item2.keyToDegree).to.be.calledWith($scale, $stepsPerOctave);
     }));
+
     it("#nearestInScale", function() {
       testCase(this, [
         {
@@ -988,6 +1054,7 @@
         }
       ]);
     });
+
     it("#nearestInList", function() {
       testCase(this, [
         {
@@ -997,6 +1064,7 @@
         }
       ]);
     });
+
     it("#transposeKey", function() {
       testCase(this, [
         {
@@ -1006,6 +1074,7 @@
         }
       ]);
     });
+
     it("#mode", function() {
       testCase(this, [
         {
@@ -1015,6 +1084,7 @@
         }
       ]);
     });
+
     it("#performDegreeToKey", function() {
       testCase(this, [
         {
@@ -1034,6 +1104,7 @@
         }
       ]);
     });
+
     it("#performKeyToDegree", function() {
       testCase(this, [
         {
@@ -1053,6 +1124,7 @@
         }
       ]);
     });
+
     it("#performNearestInList", function() {
       testCase(this, [
         {
@@ -1072,6 +1144,7 @@
         }
       ]);
     });
+
     it("#performNearestInScale", function() {
       testCase(this, [
         {
@@ -1097,6 +1170,7 @@
     });
     it.skip("#convertOneRhythm", function() {
     });
+
     it("#isSequenceableCollection", function() {
       var instance, test;
 
@@ -1105,6 +1179,7 @@
       test = instance.isSequenceableCollection();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
+
     it("#containsSeqColl", function() {
       testCase(this, [
         {
@@ -1266,6 +1341,7 @@
       }));
     });
 
+
     it("#performUnaryOp", sinon.test(function() {
       var instance, test;
       var $elem = $$({
@@ -1283,6 +1359,7 @@
       expect($elem.perform).to.be.calledWith($aSelector);
       expect(test).to.be.a("SCArray").that.deep.equals([ $returned ]);
     }));
+
     it("#performBinaryOp", sinon.test(function() {
       var instance, test;
       var $aSelector  = $$();
@@ -1298,6 +1375,7 @@
       expect($theOperand.performBinaryOpOnSeqColl).to.be.calledWith($aSelector, instance, $adverb);
       expect($theOperand.performBinaryOpOnSeqColl).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnSeqColl.nil", function() {
       testCase(this, [
         {
@@ -1317,6 +1395,7 @@
         },
       ]);
     });
+
     it("#performBinaryOpOnSeqColl.int", function() {
       testCase(this, [
         {
@@ -1348,6 +1427,7 @@
         },
       ]);
     });
+
     it("#performBinaryOpOnSeqColl.t", function() {
       testCase(this, [
         {
@@ -1363,6 +1443,7 @@
         },
       ]);
     });
+
     it("#performBinaryOpOnSeqColl.x", function() {
       testCase(this, [
         {
@@ -1378,6 +1459,7 @@
         },
       ]);
     });
+
     it("#performBinaryOpOnSeqColl.s", function() {
       testCase(this, [
         {
@@ -1397,6 +1479,7 @@
         },
       ]);
     });
+
     it("#performBinaryOpOnSeqColl.f", function() {
       testCase(this, [
         {
@@ -1416,6 +1499,7 @@
         },
       ]);
     });
+
     it("#performBinaryOpOnSeqColl.error", function() {
       var instance;
       var $aSelector  = $$("\\+");
@@ -1428,6 +1512,7 @@
         instance.performBinaryOpOnSeqColl($aSelector, $theOperand, $adverb);
       }).to.throw("unrecognized adverb");
     });
+
     it("#performBinaryOpOnSimpleNumber", sinon.test(function() {
       var instance, test;
       var $elem      = $$();
@@ -1447,6 +1532,7 @@
       expect($aNumber.perform).to.be.calledWith($aSelector, $elem, $adverb);
       expect(test).to.be.a("SCArray").that.deep.equals([ $returned ]);
     }));
+
     it("#performBinaryOpOnComplex", sinon.test(function() {
       var instance, test;
       var $elem      = $$();
@@ -1466,6 +1552,7 @@
       expect($aComplex.perform).to.be.calledWith($aSelector, $elem, $adverb);
       expect(test).to.be.a("SCArray").that.deep.equals([ $returned ]);
     }));
+
     it("#asFraction", sinon.test(function() {
       var instance, test;
       var $elem = $$({
@@ -1488,6 +1575,7 @@
     });
     it.skip("#asRect", function() {
     });
+
     it("#ascii", function() {
       testCase(this, [
         {
@@ -1496,6 +1584,7 @@
         },
       ]);
     });
+
     it("#rate", function() {
       testCase(this, [
         {
@@ -1512,6 +1601,7 @@
         },
       ]);
     });
+
     it("#multiChannelPerform", function() {
       var instance, test;
 
@@ -1527,6 +1617,7 @@
       );
       expect(test).to.be.a("SCArray").to.deep.equals([ 15, 20, 20 ]);
     });
+
     it("#multichannelExpandRef", function() {
       var instance;
 
@@ -1583,6 +1674,7 @@
 
     it.skip("#minNyquist", function() {
     });
+
     it("#sort", function() {
       testCase(this, [
         {
@@ -1600,6 +1692,7 @@
         }
       ]);
     });
+
     it("#sortBy", function() {
       testCase(this, [
         {
@@ -1610,6 +1703,7 @@
         }
       ]);
     });
+
     it("#sortMap", function() {
       testCase(this, [
         {
@@ -1630,6 +1724,7 @@
     });
     it.skip("#order", function() {
     });
+
     it("#swap", function() {
       var instance, test;
 
@@ -1661,6 +1756,7 @@
     });
     it.skip("#$streamContenstsLimit", function() {
     });
+
     it("#wrapAt", function() {
       var instance, test;
 
@@ -1669,6 +1765,7 @@
       test = instance.wrapAt($$(7));
       expect(test).to.be.a("SCInteger").that.equals(3);
     });
+
     it("#wrapPut", function() {
       var instance, test;
 
@@ -1678,6 +1775,7 @@
       expect(test).to.equals(instance)
         .that.is.a("SCArray").and.deep.equals([ 1, 2, 0, 4, 5 ]);
     });
+
     it("#reduce", function() {
       testCase(this, [
         {
@@ -1692,6 +1790,7 @@
         },
       ]);
     });
+
     it("#join", function() {
       testCase(this, [
         {
@@ -1712,4 +1811,5 @@
     it.skip("#schedBundleArrayOnClock", function() {
     });
   });
-})();
+
+});

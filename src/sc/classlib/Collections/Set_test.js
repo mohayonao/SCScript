@@ -1,12 +1,9 @@
-(function() {
+describe("Collections/Set", function() {
   "use strict";
 
-  require("./Set");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCSet = $("Set");
 
   describe("SCSet", function() {
@@ -16,6 +13,7 @@
         return SCSet.newFrom(source);
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -24,6 +22,7 @@
       test = instance.valueOf();
       expect(test).to.deep.equal([]);
     });
+
     it("<size", function() {
       var instance, test;
 
@@ -36,6 +35,7 @@
       test = instance.size();
       expect(test).to.be.a("SCInteger").that.equals(3);
     });
+
     it("#species", function() {
       var instance, test;
 
@@ -46,6 +46,7 @@
     });
     it.skip("#copy", function() {
     });
+
     it("#do", sinon.test(function() {
       var test, instance;
       var iter = {};
@@ -62,6 +63,7 @@
       expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
+
     it("#clear", function() {
       var instance, test;
 
@@ -75,6 +77,7 @@
       ]);
       expect(instance._size).to.equal(0);
     });
+
     it("#makeEmpty", sinon.test(function() {
       var instance, test;
 
@@ -85,6 +88,7 @@
       expect(instance.clear).to.be.called;
       expect(test).to.equal(instance);
     }));
+
     it("#includes", function() {
       testCase(this, [
         {
@@ -99,6 +103,7 @@
         }
       ]);
     });
+
     it("#findMatch", function() {
       testCase(this, [
         {
@@ -113,6 +118,7 @@
         }
       ]);
     });
+
     it("#add", function() {
       testCase(this, [
         {
@@ -136,6 +142,7 @@
         instance.add($$(null));
       }).to.throw("A Set cannot contain nil");
     });
+
     it("#remove", function() {
       testCase(this, [
         {
@@ -152,6 +159,7 @@
         },
       ]);
     });
+
     it("#choose", function() {
       testCase(this, [
         {
@@ -164,6 +172,7 @@
         }
       ], { randSeed: 0 });
     });
+
     it("#pop", function() {
       testCase(this, [
         {
@@ -178,6 +187,7 @@
         }
       ]);
     });
+
     it("#unify", function() {
       testCase(this, [
         {
@@ -190,6 +200,7 @@
         },
       ]);
     });
+
     it("#sect", function() {
       var instance, test;
       var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
@@ -199,6 +210,7 @@
       test = instance.sect($set);
       expect(test.valueOf()).to.deep.equal([ 1, 3, 5 ]);
     });
+
     it("#union", function() {
       var instance, test;
       var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
@@ -208,6 +220,7 @@
       test = instance.union($set);
       expect(test.valueOf()).to.deep.equal([ 1, 2, 3, 4, 5, 6, 7, 9 ]);
     });
+
     it("#difference", function() {
       var instance, test;
       var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
@@ -217,6 +230,7 @@
       test = instance.difference($set);
       expect(test.valueOf()).to.deep.equal([ 2, 4, 6 ]);
     });
+
     it("#symmetricDifference", function() {
       var instance, test;
       var $set = SCSet.newFrom($$([ 1, 3, 5, 7, 9 ]));
@@ -226,6 +240,7 @@
       test = instance.symmetricDifference($set);
       expect(test.valueOf()).to.deep.equal([ 2, 4, 6, 7, 9 ]);
     });
+
     it("#isSubsetOf", function() {
       var instance, test;
       var $set1 = SCSet.newFrom($$([ 1, 2, 3 ]));
@@ -239,6 +254,7 @@
       test = instance.isSubsetOf($set2);
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#&", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -250,6 +266,7 @@
       expect(instance.sect).to.be.calledWith($that);
       expect(instance.sect).to.be.calledLastIn(test);
     }));
+
     it("#|", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -261,6 +278,7 @@
       expect(instance.union).to.be.calledWith($that);
       expect(instance.union).to.be.calledLastIn(test);
     }));
+
     it("#-", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -272,6 +290,7 @@
       expect(instance.difference).to.be.calledWith($that);
       expect(instance.difference).to.be.calledLastIn(test);
     }));
+
     it("#--", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -283,6 +302,7 @@
       expect(instance.symmetricDifference).to.be.calledWith($that);
       expect(instance.symmetricDifference).to.be.calledLastIn(test);
     }));
+
     it("#asSet", function() {
       var instance;
 
@@ -290,4 +310,5 @@
       expect(instance.asSet).to.doNothing;
     });
   });
-})();
+
+});

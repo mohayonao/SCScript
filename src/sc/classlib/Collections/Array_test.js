@@ -1,12 +1,9 @@
-(function() {
+describe("Collections/Array", function() {
   "use strict";
 
-  require("./Array");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCArray = $("Array");
 
   describe("SCArray", function() {
@@ -15,6 +12,7 @@
         return $.Array((source || []).map($$));
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -23,12 +21,14 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSArray").to.deep.equal([ "freq", 440 ]);
     });
+
     it(".with", function() {
       var test;
 
       test = SCArray.with($$(0), $$(1), $$(2));
       expect(test).to.be.a("SCArray").that.deep.equals([ 0, 1, 2 ]);
     });
+
     it("#reverse", function() {
       testCase(this, [
         {
@@ -45,6 +45,7 @@
         },
       ]);
     });
+
     it("#scramble", function() {
       testCase(this, [
         {
@@ -57,6 +58,7 @@
         },
       ], { randSeed: 0 });
     });
+
     it("#mirror", function() {
       testCase(this, [
         {
@@ -73,6 +75,7 @@
         },
       ]);
     });
+
     it("#mirror1", function() {
       testCase(this, [
         {
@@ -89,6 +92,7 @@
         },
       ]);
     });
+
     it("#mirror2", function() {
       testCase(this, [
         {
@@ -105,6 +109,7 @@
         },
       ]);
     });
+
     it("#stutter", function() {
       testCase(this, [
         {
@@ -122,6 +127,7 @@
         },
       ]);
     });
+
     it("#rotate", function() {
       testCase(this, [
         {
@@ -144,6 +150,7 @@
         },
       ]);
     });
+
     it("#pyramid", function() {
       testCase(this, [
         {
@@ -292,6 +299,7 @@
         },
       ]);
     });
+
     it("#pyramidg", function() {
       testCase(this, [
         {
@@ -440,6 +448,7 @@
         },
       ]);
     });
+
     it("#sputter", function() {
       testCase(this, [
         {
@@ -449,6 +458,7 @@
         },
       ], { randSeed: 0 });
     });
+
     it("#lace", function() {
       testCase(this, [
         {
@@ -462,6 +472,7 @@
         },
       ]);
     });
+
     it("#permute", function() {
       testCase(this, [
         {
@@ -495,6 +506,7 @@
         },
       ]);
     });
+
     it("#allTuples", function() {
       testCase(this, [
         {
@@ -522,6 +534,7 @@
         },
       ]);
     });
+
     it("#wrapExtend", function() {
       testCase(this, [
         {
@@ -536,6 +549,7 @@
         },
       ]);
     });
+
     it("#foldExtend", function() {
       testCase(this, [
         {
@@ -550,6 +564,7 @@
         },
       ]);
     });
+
     it("#clipExtend", function() {
       testCase(this, [
         {
@@ -564,6 +579,7 @@
         },
       ]);
     });
+
     it("#slide", function() {
       testCase(this, [
         {
@@ -582,6 +598,7 @@
         },
       ]);
     });
+
     it("#containsSeqColl", function() {
       testCase(this, [
         {
@@ -594,6 +611,7 @@
         }
       ]);
     });
+
     it("#unlace", function() {
       testCase(this, [
         {
@@ -631,6 +649,7 @@
     });
     it.skip("#deinterlace", function() {
     });
+
     it("#flop", function() {
       testCase(this, [
         {
@@ -647,6 +666,7 @@
         },
       ]);
     });
+
     it("#multiChannelExpand", function() {
       testCase(this, [
         {
@@ -665,6 +685,7 @@
     });
     it.skip("#envirPairs", function() {
     });
+
     it("#shift", function() {
       testCase(this, [
         {
@@ -679,6 +700,7 @@
         },
       ]);
     });
+
     it("#powerset", function() {
       testCase(this, [
         {
@@ -691,6 +713,7 @@
     });
     it.skip("#source", function() {
     });
+
     it("#asUGenInput", sinon.test(function() {
       var instance, test;
 
@@ -722,6 +745,7 @@
       expect($elem3.asUGenInput, 3).to.be.calledWith($for);
       expect(test).to.be.a("SCArray").that.deep.equals([ $ugen1, $ugen2, $ugen3 ]);
     }));
+
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test;
       var $elem1 = $$({
@@ -752,6 +776,7 @@
       expect($elem3.asAudioRateInput).to.be.calledWith($for);
       expect(test).to.be.a("SCArray").that.deep.equals([ $ugen1, $ugen2, $ugen3 ]);
     }));
+
     it("#asControlInput", sinon.test(function() {
       var instance, test;
       var $elem1 = $$({
@@ -781,6 +806,7 @@
       expect($elem3.asControlInput).to.be.called;
       expect(test).to.be.a("SCArray").that.deep.equals([ $ugen1, $ugen2, $ugen3 ]);
     }));
+
     it("#isValidUGenInput", function() {
       var instance, test;
 
@@ -789,6 +815,7 @@
       test = instance.isValidUGenInput();
       expect(test).to.be.a("SCBoolean").that.equals(true);
     });
+
     it("#numChannels", sinon.test(function() {
       var instance, test;
 
@@ -812,6 +839,7 @@
     });
     it.skip("#fork", function() {
     });
+
     it("#madd", sinon.test(function() {
       var instance, test;
       var spy = this.spy(sc.test.func());
@@ -834,4 +862,5 @@
     it.skip("storeOn", function() {
     });
   });
-})();
+
+});

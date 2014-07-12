@@ -1,12 +1,8 @@
-(function() {
+describe("Core/Kernel", function() {
   "use strict";
 
-  require("./Kernel");
-  require("../Collections/Set");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
   var SCClass = $("Class");
   var SCMetaClass = $("Meta_Class");
   var SCProcess = $("Process");
@@ -18,6 +14,7 @@
       var test = SCClass.toString();
       expect(test).to.be.a("JSString").that.equals("Class");
     });
+
     it("#class", function() {
       var test;
 
@@ -27,12 +24,14 @@
       test = SCMetaClass.class();
       expect(test).to.equal(SCClass);
     });
+
     it("#name", function() {
       var test;
 
       test = SCClass.name();
       expect(test).to.be.a("SCString").that.equals("Class");
     });
+
     it("#[]", function() {
       var test;
 
@@ -47,6 +46,7 @@
         return SCProcess.new();
       };
     });
+
     it("<interpreter", function() {
       var instance, test;
 
@@ -55,6 +55,7 @@
       test = instance.interpreter();
       expect(test).to.be.a("SCNil");
     });
+
     it("<mainThread", function() {
       var instance, test;
 
@@ -66,6 +67,7 @@
   });
 
   describe("SCMain", function() {
+
     it(".new", function() {
       expect(function() {
         SCMain.new();
@@ -79,6 +81,7 @@
         return SCInterpreter.new();
       };
     });
+
     it("<>a..z / #clearAll", function() {
       var instance;
 
@@ -109,4 +112,5 @@
       });
     });
   });
-})();
+
+});

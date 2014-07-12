@@ -1,12 +1,9 @@
-(function() {
+describe("Collections/ArrayedCollection", function() {
   "use strict";
 
-  require("./ArrayedCollection");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCInt8Array = $("Int8Array");
   var SCInt16Array = $("Int16Array");
   var SCInt32Array = $("Int32Array");
@@ -21,6 +18,7 @@
         return $$(instance, "ArrayedCollection" + this.test.title);
       };
     });
+
     it("#__elem__", function() {
       var instance, test;
       var $obj = $$();
@@ -30,6 +28,7 @@
       test = instance.__elem__($obj);
       expect(test).to.equal($obj);
     });
+
     it(".newClear", function() {
       var test;
 
@@ -38,6 +37,7 @@
     });
     it.skip("#indexedSize", function() {
     });
+
     it("#size", function() {
       testCase(this, [
         {
@@ -52,6 +52,7 @@
     });
     it.skip("#maxSize", function() {
     });
+
     it("#swap", function() {
       testCase(this, [
         {
@@ -73,6 +74,7 @@
         },
       ]);
     });
+
     it("#at", function() {
       testCase(this, [
         {
@@ -117,6 +119,7 @@
         },
       ]);
     });
+
     it("#clipAt", function() {
       testCase(this, [
         {
@@ -161,6 +164,7 @@
         },
       ]);
     });
+
     it("#wrapAt", function() {
       testCase(this, [
         {
@@ -205,6 +209,7 @@
         },
       ]);
     });
+
     it("#foldAt", function() {
       testCase(this, [
         {
@@ -249,6 +254,7 @@
         },
       ]);
     });
+
     it("#put", function() {
       testCase(this, [
         {
@@ -281,6 +287,7 @@
         },
       ]);
     });
+
     it("#clipPut", function() {
       testCase(this, [
         {
@@ -303,6 +310,7 @@
         },
       ]);
     });
+
     it("#wrapPut", function() {
       testCase(this, [
         {
@@ -325,6 +333,7 @@
         },
       ]);
     });
+
     it("#foldPut", function() {
       testCase(this, [
         {
@@ -347,6 +356,7 @@
         },
       ]);
     });
+
     it("#removeAt", function() {
       testCase(this, [
         {
@@ -368,6 +378,7 @@
         },
       ]);
     });
+
     it("#takeAt", function() {
       testCase(this, [
         {
@@ -389,6 +400,7 @@
         },
       ]);
     });
+
     it("#indexOf", function() {
       testCase(this, [
         {
@@ -403,6 +415,7 @@
         },
       ]);
     });
+
     it("#indexOfGreaterThan", function() {
       testCase(this, [
         {
@@ -417,6 +430,7 @@
         },
       ]);
     });
+
     it("#takeThese", function() {
       testCase(this, [
         {
@@ -437,6 +451,7 @@
         },
       ]);
     });
+
     it("#replace", function() {
       testCase(this, [
         {
@@ -457,6 +472,7 @@
         },
       ]);
     });
+
     it("#slotSize", function() {
       testCase(this, [
         {
@@ -465,6 +481,7 @@
         }
       ]);
     });
+
     it("#slotAt", function() {
       testCase(this, [
         {
@@ -474,6 +491,7 @@
         },
       ]);
     });
+
     it("#slotPut", function() {
       testCase(this, [
         {
@@ -490,6 +508,7 @@
         },
       ]);
     });
+
     it("#slotKey", function() {
       testCase(this, [
         {
@@ -499,6 +518,7 @@
         }
       ]);
     });
+
     it("#slotIndex", function() {
       testCase(this, [
         {
@@ -508,6 +528,7 @@
         }
       ]);
     });
+
     it("#getSlots", sinon.test(function() {
       var instance, test;
 
@@ -517,6 +538,7 @@
       test = instance.getSlots();
       expect(instance.copy).to.be.calledLastIn(test);
     }));
+
     it("#setSlots", sinon.test(function() {
       var instance, test;
       var $array = $$();
@@ -528,6 +550,7 @@
       expect(instance.overWrite).to.be.calledWith($array);
       expect(instance.overWrite).to.be.calledLastIn(test);
     }));
+
     it("#atModify", function() {
       testCase(this, [
         {
@@ -540,6 +563,7 @@
         }
       ]);
     });
+
     it("#atInc", function() {
       testCase(this, [
         {
@@ -562,6 +586,7 @@
         },
       ]);
     });
+
     it("#atDec", function() {
       testCase(this, [
         {
@@ -584,6 +609,7 @@
         },
       ]);
     });
+
     it("#isArray", function() {
       var instance, test;
 
@@ -592,12 +618,14 @@
       test = instance.isArray();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
+
     it("#asArray", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.asArray).to.doNothing;
     });
+
     it("#copyRange", function() {
       testCase(this, [
         {
@@ -627,6 +655,7 @@
         },
       ]);
     });
+
     it("#copySeries", function() {
       testCase(this, [
         {
@@ -681,6 +710,7 @@
         },
       ]);
     });
+
     it("#putSeries", function() {
       testCase(this, [
         {
@@ -751,6 +781,7 @@
         },
       ]);
     });
+
     it("#add", function() {
       testCase(this, [
         {
@@ -767,6 +798,7 @@
         },
       ]);
     });
+
     it("#addAll", function() {
       testCase(this, [
         {
@@ -789,6 +821,7 @@
         },
       ]);
     });
+
     it("#putEach", function() {
       testCase(this, [
         {
@@ -805,6 +838,7 @@
         },
       ]);
     });
+
     it("#extend", function() {
       testCase(this, [
         {
@@ -824,6 +858,7 @@
         },
       ]);
     });
+
     it("#insert", function() {
       testCase(this, [
         {
@@ -852,6 +887,7 @@
         },
       ]);
     });
+
     it("#move", function() {
       testCase(this, [
         {
@@ -868,6 +904,7 @@
         },
       ]);
     });
+
     it("#addFirst", function() {
       testCase(this, [
         {
@@ -877,6 +914,7 @@
         },
       ]);
     });
+
     it("#addIfNotNil", function() {
       testCase(this, [
         {
@@ -891,6 +929,7 @@
         },
       ]);
     });
+
     it("#pop", function() {
       testCase(this, [
         {
@@ -915,6 +954,7 @@
         },
       ]);
     });
+
     it("#++", function() {
       testCase(this, [
         {
@@ -940,6 +980,7 @@
     });
     it.skip("#growClear", function() {
     });
+
     it("#seriesFill", function() {
       testCase(this, [
         {
@@ -956,6 +997,7 @@
         },
       ]);
     });
+
     it("#fill", function() {
       testCase(this, [
         {
@@ -972,6 +1014,7 @@
         },
       ]);
     });
+
     it("#do", sinon.test(function() {
       var test, instance;
       var iter = {};
@@ -988,6 +1031,7 @@
       expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
+
     it("#reverseDo", sinon.test(function() {
       var test, instance;
       var iter = {};
@@ -1004,6 +1048,7 @@
       expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
+
     it("#reverse", function() {
       testCase(this, [
         {
@@ -1012,6 +1057,7 @@
         }
       ]);
     });
+
     it("#windex", function() {
       testCase(this, [
         [ [ 0.1, 0.2, 0.3, 0.4 ], [], 3 ],
@@ -1022,6 +1068,7 @@
         [ [ 0 ], [], 0 ],
       ], { randSeed: 0 });
     });
+
     it("#normalizeSum", function() {
       testCase(this, [
         {
@@ -1030,6 +1077,7 @@
         }
       ]);
     });
+
     it("#normalize", function() {
       testCase(this, [
         {
@@ -1049,6 +1097,7 @@
     });
     it.skip("#performInPlace", function() {
     });
+
     it("#clipExtend", function() {
       testCase(this, [
         {
@@ -1063,6 +1112,7 @@
         },
       ]);
     });
+
     it("#rank", function() {
       testCase(this, [
         {
@@ -1075,6 +1125,7 @@
         },
       ]);
     });
+
     it("#shape", function() {
       testCase(this, [
         {
@@ -1087,6 +1138,7 @@
         },
       ]);
     });
+
     it("#reshape", function() {
       testCase(this, [
         {
@@ -1101,6 +1153,7 @@
         },
       ]);
     });
+
     it("#reshapeLike", function() {
       testCase(this, [
         {
@@ -1124,6 +1177,7 @@
     });
     it.skip("#deepDo", function() {
     });
+
     it("#unbubble", function() {
       testCase(this, [
         {
@@ -1146,6 +1200,7 @@
         },
       ]);
     });
+
     it("#bubble", function() {
       testCase(this, [
         {
@@ -1164,6 +1219,7 @@
         },
       ]);
     });
+
     it("#slice", function() {
       testCase(this, [
         {
@@ -1187,6 +1243,7 @@
         },
       ]);
     });
+
     it(".iota", function() {
       testCase(this, [
         {
@@ -1204,6 +1261,7 @@
     });
     it.skip("#bundleSize", function() {
     });
+
     it("#includes", function() {
       testCase(this, [
         {
@@ -1223,6 +1281,7 @@
         },
       ]);
     });
+
     it("#asString", function() {
       var instance, test;
 
@@ -1240,6 +1299,7 @@
         return $$(instance, "RawArray" + this.test.title);
       };
     });
+
     it("#archiveAsCompileString", function() {
       var instance, test;
 
@@ -1248,6 +1308,7 @@
       test = instance.archiveAsCompileString();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
+
     it("#archiveAsObject", function() {
       var instance, test;
 
@@ -1256,6 +1317,7 @@
       test = instance.archiveAsObject();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
+
     it("#rate", function() {
       var instance, test;
 
@@ -1266,6 +1328,7 @@
     });
     it.skip("#readFromStream", function() {
     });
+
     it("#powerset", function() {
       testCase(this, [
         {
@@ -1286,6 +1349,7 @@
   });
 
   describe("SCInt8Array", function() {
+
     it("#valueOf", function() {
       var instance, test;
       var expected = new Int8Array([ 0, -1, 0 ]);
@@ -1295,6 +1359,7 @@
       test = instance.valueOf();
       expect(test).to.deep.equal(expected);
     });
+
     it(".newClear", function() {
       var test = SCInt8Array.newClear($$(4));
       expect(test).to.be.a("SCInt8Array").that.deep.equals(
@@ -1304,6 +1369,7 @@
   });
 
   describe("SCInt16Array", function() {
+
     it("#valueOf", function() {
       var instance, test;
       var expected = new Int16Array([ 0, -1, 0 ]);
@@ -1313,6 +1379,7 @@
       test = instance.valueOf();
       expect(test).to.deep.equal(expected);
     });
+
     it(".newClear", function() {
       var test = SCInt16Array.newClear($$(4));
       expect(test).to.be.a("SCInt16Array").that.deep.equals(
@@ -1322,6 +1389,7 @@
   });
 
   describe("SCInt32Array", function() {
+
     it("#valueOf", function() {
       var instance, test;
       var expected = new Int32Array([ 0, -1, 0 ]);
@@ -1331,6 +1399,7 @@
       test = instance.valueOf();
       expect(test).to.deep.equal(expected);
     });
+
     it(".newClear", function() {
       var test = SCInt32Array.newClear($$(4));
       expect(test).to.be.a("SCInt32Array").that.deep.equals(
@@ -1340,6 +1409,7 @@
   });
 
   describe("SCFloatArray", function() {
+
     it("#valueOf", function() {
       var instance, test;
       var expected = new Float32Array([ 0, 0.5, -0.5 ]);
@@ -1349,6 +1419,7 @@
       test = instance.valueOf();
       expect(test).to.deep.equal(expected);
     });
+
     it(".newClear", function() {
       var test = SCFloatArray.newClear($$(4));
       expect(test).to.be.a("SCFloatArray").that.deep.equals(
@@ -1358,6 +1429,7 @@
   });
 
   describe("SCDoubleArray", function() {
+
     it("#valueOf", function() {
       var instance, test;
       var expected = new Float64Array([ 0, 0.5, -0.5 ]);
@@ -1367,6 +1439,7 @@
       test = instance.valueOf();
       expect(test).to.deep.equal(expected);
     });
+
     it(".newClear", function() {
       var test = SCDoubleArray.newClear($$(4));
       expect(test).to.be.a("SCDoubleArray").that.deep.equals(
@@ -1374,4 +1447,5 @@
       );
     });
   });
-})();
+
+});

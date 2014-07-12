@@ -1,13 +1,9 @@
-
-(function() {
+describe("Core/Object", function() {
   "use strict";
 
-  require("./Object");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCObject = $("Object");
   var SCRoutine = $("Routine");
 
@@ -17,6 +13,7 @@
         return $$($$(instance), "Object" + this.test.title);
       };
     });
+
     it("#__tag", function() {
       var instance, test;
 
@@ -25,6 +22,7 @@
       test = instance.__tag;
       expect(test).to.be.a("JSNumber").that.equals(sc.TAG_OBJ);
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -36,6 +34,7 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
+
     it("#toString", function() {
       var instance, test;
 
@@ -47,6 +46,7 @@
       test = instance.toString();
       expect(test).to.be.a("JSString").that.equals("an Object");
     });
+
     it("#toJSON", function() {
       var test, json;
 
@@ -56,6 +56,7 @@
       json = JSON.parse(test);
       expect(json.class).to.equal("Nil");
     });
+
     it("#__num__", function() {
       var instance;
 
@@ -65,6 +66,7 @@
         instance.__num__();
       }).to.throw(Error, "cannot be converted to a Number");
     });
+
     it("#__int__", function() {
       var instance, test;
 
@@ -76,6 +78,7 @@
       test = instance.__int__();
       expect(test).to.be.a("JSNumber").that.equals(3);
     });
+
     it("#__bool__", function() {
       var instance;
 
@@ -85,6 +88,7 @@
         instance.__bool__();
       }).to.throw(Error, "cannot be converted to a Boolean");
     });
+
     it("#__sym__", function() {
       var instance;
 
@@ -94,6 +98,7 @@
         instance.__sym__();
       }).to.throw(Error, "cannot be converted to a Symbol");
     });
+
     it("#__str__", function() {
       var instance, test;
 
@@ -102,6 +107,7 @@
       test = instance.__str__();
       expect(test).to.be.a("JSString").that.equals("an Object");
     });
+
     it(".newFrom", function() {
       expect(function() {
         SCObject.newFrom();
@@ -109,6 +115,7 @@
     });
     it.skip("#dump", function() {
     });
+
     it("#post", sinon.test(function() {
       var instance, test;
       var SCString$post = this.spy();
@@ -120,6 +127,7 @@
       expect(test).to.equal(instance);
       expect(SCString$post).to.be.calledWith(undefined);
     }));
+
     it("#postln", sinon.test(function() {
       var instance, test;
       var SCString$postln = this.spy();
@@ -131,6 +139,7 @@
       expect(test).to.equal(instance);
       expect(SCString$postln).to.be.calledWith(undefined);
     }));
+
     it("#postc", sinon.test(function() {
       var instance, test;
       var SCString$postc = this.spy();
@@ -142,6 +151,7 @@
       expect(test).to.equal(instance);
       expect(SCString$postc).to.be.calledWith(undefined);
     }));
+
     it("#postcln", sinon.test(function() {
       var instance, test;
       var SCString$postcln = this.spy();
@@ -169,6 +179,7 @@
     });
     it.skip("#canCallOS", function() {
     });
+
     it("#size", function() {
       var instance, test;
 
@@ -177,6 +188,7 @@
       test = instance.size();
       expect(test).to.be.a("SCInteger").that.equals(0);
     });
+
     it("#indexedSize", function() {
       var instance, test;
 
@@ -185,6 +197,7 @@
       test = instance.indexedSize();
       expect(test).to.be.a("SCInteger").that.equals(0);
     });
+
     it("#flatSize", function() {
       var instance, test;
 
@@ -193,6 +206,7 @@
       test = instance.flatSize();
       expect(test).to.be.a("SCInteger").that.equals(1);
     });
+
     it("#do", sinon.test(function() {
       var instance, test;
       var iter = {};
@@ -207,6 +221,7 @@
       expect(sc.lang.iterator.execute).to.be.calledWith(iter, $function);
       expect(test).to.equal(instance);
     }));
+
     it("#generate", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -219,6 +234,7 @@
       expect(instance.do).to.be.calledWith($function);
       expect(test).to.equal($state);
     }));
+
     it("#class", function() {
       var instance,test;
 
@@ -227,6 +243,7 @@
 
       expect(test).to.equal(SCObject);
     });
+
     it("#isKindOf", function() {
       var instance, test;
 
@@ -242,6 +259,7 @@
       test = instance.isKindOf($("Nil"));
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#isMemberOf", function() {
       var instance, test;
 
@@ -257,6 +275,7 @@
       test = instance.isMemberOf($("Nil"));
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#respondsTo", function() {
       testCase(this, [
         [ null, [ "\\respondsTo" ], true  ],
@@ -265,6 +284,7 @@
         [ null, [ [ "\\undefined" , "\\size" ] ], false ],
       ]);
     });
+
     it("#performMsg", sinon.test(function() {
       var instance, test;
       var $selector = $$("\\size");
@@ -282,6 +302,7 @@
         instance.performMsg($$( [ "\\not-understood" ]));
       }).to.throw("not understood");
     }));
+
     it("#perform", sinon.test(function() {
       var instance, test;
       var $selector = $$("\\size");
@@ -299,6 +320,7 @@
         instance.perform($$("\\not-understood"));
       }).to.throw("not understood");
     }));
+
     it("#performList", sinon.test(function() {
       var instance, test;
       var $selector = $$("\\size");
@@ -317,6 +339,7 @@
         instance.performList($$("\\not-understood"));
       }).to.throw("not understood");
     }));
+
     it("#functionPerformList", function() {
       var instance;
 
@@ -327,6 +350,7 @@
     });
     it.skip("#superPerformList", function() {
     });
+
     it("#tryPerform", sinon.test(function() {
       var instance, test;
       var $selector = $$("\\size");
@@ -343,6 +367,7 @@
       test = instance.tryPerform($$("\\not-understood"));
       expect(test).to.be.a("SCNil");
     }));
+
     it("#multiChannelPerform", function() {
       var instance, test;
 
@@ -357,6 +382,7 @@
     });
     it.skip("#performKeyValuePairs", function() {
     });
+
     it("#copy", sinon.test(function() {
       var instance, test;
 
@@ -368,6 +394,7 @@
     }));
     it.skip("#contentsCopy", function() {
     });
+
     it("#shallowCopy", function() {
       var instance, test;
 
@@ -396,6 +423,7 @@
     });
     it.skip("#deepCopy", function() {
     });
+
     it("#dup", function() {
       var instance, test;
 
@@ -415,6 +443,7 @@
         [ instance, instance, instance ],
       ]);
     });
+
     it("#!", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -426,6 +455,7 @@
       expect(instance.dup).to.be.calledWith($n);
       expect(instance.dup).to.be.calledLastIn(test);
     }));
+
     it("#poll", sinon.test(function() {
       var instance, test;
 
@@ -435,30 +465,35 @@
       test = instance.poll();
       expect(instance.value).to.be.calledLastIn(test);
     }));
+
     it("#value", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.value).to.doNothing;
     });
+
     it("#valueArray", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.valueArray).to.doNothing;
     });
+
     it("#valueEnvir", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.valueEnvir).to.doNothing;
     });
+
     it("#valueArrayEnvir", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.valueArrayEnvir).to.doNothing;
     });
+
     it("#==", sinon.test(function() {
       var instance, test;
       var $obj = $$();
@@ -470,6 +505,7 @@
       expect(instance["==="]).to.be.calledWith($obj);
       expect(instance["==="]).to.be.calledLastIn(test);
     }));
+
     it("#!=", sinon.test(function() {
       var instance, test;
       var $obj = $$();
@@ -482,6 +518,7 @@
       expect(instance["=="]).to.be.calledWith($obj);
       expect(SCBoolean$not).to.be.calledLastIn(test);
     }));
+
     it("#===", function() {
       var instance, test;
 
@@ -494,6 +531,7 @@
         expect(test).to.be.a("SCBoolean").that.equals(items[1]);
       }, this);
     });
+
     it("#!==", function() {
       var instance, test;
 
@@ -506,6 +544,7 @@
         expect(test).to.be.a("SCBoolean").that.equals(items[1]);
       }, this);
     });
+
     it("#equals", function() {
       testCase(this, [
         [ 10, [ 10 ], true ],
@@ -520,6 +559,7 @@
     });
     it.skip("#instVarHash", function() {
     });
+
     it("#basicHash", function() {
       var instance, test;
 
@@ -528,6 +568,7 @@
       test = instance.basicHash();
       expect(test).to.be.a("SCInteger");
     });
+
     it("#hash", function() {
       var instance, test;
 
@@ -536,6 +577,7 @@
       test = instance.hash();
       expect(test).to.be.a("SCInteger");
     });
+
     it("#identityHash", function() {
       var instance, test;
 
@@ -544,6 +586,7 @@
       test = instance.identityHash();
       expect(test).to.be.a("SCInteger");
     });
+
     it("#->", function() {
       var instance, test;
       var $obj = $$();
@@ -553,18 +596,21 @@
       test = instance ["->"] ($obj);
       expect(test).to.be.a("SCAssociation");
     });
+
     it("#next", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.next).to.doNothing;
     });
+
     it("#reset", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.reset).to.doNothing;
     });
+
     it("#first", sinon.test(function() {
       var instance, test;
       var $inval = $$();
@@ -578,6 +624,7 @@
       expect(instance.next).to.be.calledWith($inval);
       expect(instance.next).to.be.calledLastIn(test);
     }));
+
     it("#iter", sinon.test(function() {
       var instance, test;
       var SCOneShotStream$new = this.spy(sc.test.func());
@@ -591,30 +638,35 @@
       expect(SCOneShotStream$new ).to.be.calledWith(instance);
       expect(SCOneShotStream$new ).to.be.calledLastIn(test);
     }));
+
     it("#stop", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.stop).to.doNothing;
     });
+
     it("#free", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.free).to.doNothing;
     });
+
     it("#clear", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.clear).to.doNothing;
     });
+
     it("#removedFromScheduler", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.removedFromScheduler).to.doNothing;
     });
+
     it("#isPlaying", function() {
       var instance, test;
 
@@ -623,6 +675,7 @@
       test = instance.isPlaying();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#embedInStream", sinon.test(function() {
       var instance, test;
 
@@ -632,6 +685,7 @@
       test = instance.embedInStream();
       expect(instance.yield).to.be.calledLastIn(test);
     }));
+
     it("#cyc", function() {
       var r = this.createInstance(SCRoutine.new($$(function() {
         return $$([ 1, 2 ]).do($$(function($_) {
@@ -648,6 +702,7 @@
       expect(r.next(), 7).to.be.a("SCNil");
       expect(r.next(), 8).to.be.a("SCNil");
     });
+
     it("#fin [ 1, 2, 3 ]", function() {
       var r = this.createInstance(SCRoutine.new($$(function() {
         return $$([ 1, 2, 3 ]).do($$(function($_) {
@@ -659,6 +714,7 @@
       expect(r.next(), 2).to.be.a("SCNil");
       expect(r.next(), 3).to.be.a("SCNil");
     });
+
     it("#fin [ nil ]", function() {
       var r = this.createInstance(SCRoutine.new($$(function() {
         return $$([ null ]).do($$(function($_) {
@@ -669,6 +725,7 @@
       expect(r.next(), 1).to.be.a("SCNil");
       expect(r.next(), 2).to.be.a("SCNil");
     });
+
     it("#repeat", sinon.test(function() {
       var instance, test;
       var $repeats = $$();
@@ -686,6 +743,7 @@
       expect(SCPn$new.args[0]).to.deep.equal($$([ instance, $repeats ])._);
       expect(SCObject$asStream).to.be.calledLastIn(test);
     }));
+
     it("#loop", sinon.test(function() {
       var instance, test;
 
@@ -696,10 +754,12 @@
       expect(instance.repeat.args[0]).to.deep.equal($$([ Infinity ])._);
       expect(instance.repeat).to.be.calledLastIn(test);
     }));
+
     it("#asStream", function() {
       var instance = this.createInstance();
       expect(instance.asStream).to.doNothing;
     });
+
     it("#streamArg true", function() {
       var r = this.createInstance(
         $("Pseq").new($$([ 10, 20, 30 ]))
@@ -710,6 +770,7 @@
       expect(r.next(), 3).to.be.a("SCInteger").that.equals(30);
       expect(r.next(), 4).to.be.a("SCNil");
     });
+
     it("#streamArg false", function() {
       var r = this.createInstance(
         $("Pseq").new($$([ 10, 20, 30 ])).asStream()
@@ -720,6 +781,7 @@
       expect(r.next(), 3).to.be.a("SCInteger").that.equals(30);
       expect(r.next(), 4).to.be.a("SCNil");
     });
+
     it("#eventAt", function() {
       var instance, test;
 
@@ -728,6 +790,7 @@
       test = instance.eventAt();
       expect(test).to.be.a("SCNil");
     });
+
     it("#composeEvents", function() {
       var instance, test;
       var $event = $$({ copy: sc.test.func() });
@@ -737,12 +800,14 @@
       test = instance.composeEvents($event);
       expect($event.copy).to.be.calledLastIn(test);
     });
+
     it("#finishEvent", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.finishEvent).to.doNothing;
     });
+
     it("#atLimit", function() {
       var instance, test;
 
@@ -751,6 +816,7 @@
       test = instance.atLimit();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#isRest", function() {
       var instance, test;
 
@@ -759,30 +825,35 @@
       test = instance.isRest();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#threadPlayer", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.threadPlayer).to.doNothing;
     });
+
     it("#threadPlayer_", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.threadPlayer_).to.doNothing;
     });
+
     it("#?", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance["?"]).to.doNothing;
     });
+
     it("#??", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance["??"]).to.doNothing;
     });
+
     it("#!?", sinon.test(function() {
       var instance, test;
       var $obj = $$({ value: this.spy(sc.test.func()) });
@@ -793,71 +864,85 @@
       expect($obj.value).to.be.calledWith(instance);
       expect($obj.value).to.be.calledLastIn(test);
     }));
+
     it("#isNil", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#notNil", function() {
       testCase(this, [
         [ null, [], true ]
       ]);
     });
+
     it("#isNumber", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isInteger", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isFloat", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isSequenceableCollection", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isCollection", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isArray", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isString", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#containsSeqColl", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isValidUGenInput", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isException", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#isFunction", function() {
       testCase(this, [
         [ null, [], false ]
       ]);
     });
+
     it("#matchItem", sinon.test(function() {
       var instance, test;
       var $item = $$();
@@ -869,6 +954,7 @@
       expect(instance["==="]).to.be.calledWith($item);
       expect(instance["==="]).to.be.calledLastIn(test);
     }));
+
     it("#trueAt", function() {
       var instance, test;
 
@@ -877,6 +963,7 @@
       test = instance.trueAt();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#falseAt", sinon.test(function() {
       var instance, test;
       var $key = $$();
@@ -921,6 +1008,7 @@
     });
     it.skip("#throw", function() {
     });
+
     it("#species", sinon.test(function() {
       var instance, test;
 
@@ -930,6 +1018,7 @@
       test = instance.species();
       expect(instance.class).to.be.calledLastIn(test);
     }));
+
     it("#asCollection", function() {
       var instance, test;
 
@@ -938,6 +1027,7 @@
       test = instance.asCollection();
       expect(test).to.be.a("SCArray").that.deep.equal([ instance ]);
     });
+
     it("#asSymbol", function() {
       var instance, test;
 
@@ -946,6 +1036,7 @@
       test = instance.asSymbol();
       expect(test).to.be.a("SCSymbol").that.equals("an Object");
     });
+
     it("#asString", function() {
       var instance, test;
 
@@ -972,6 +1063,7 @@
     });
     it.skip("#storeModifiersOn", function() {
     });
+
     it("#as", sinon.test(function() {
       var instance, test;
       var $aSimilarClass = $$({
@@ -984,12 +1076,14 @@
       expect($aSimilarClass.newFrom).to.be.calledWith(instance);
       expect($aSimilarClass.newFrom).to.be.calledLastIn(test);
     }));
+
     it("#dereference", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.dereference).to.doNothing;
     });
+
     it("#reference", sinon.test(function() {
       var instance, test;
 
@@ -1000,6 +1094,7 @@
       expect($.Ref).to.be.calledWith(instance);
       expect($.Ref).to.be.calledLastIn(test);
     }));
+
     it("#asRef", sinon.test(function() {
       var instance, test;
 
@@ -1010,6 +1105,7 @@
       expect($.Ref).to.be.calledWith(instance);
       expect($.Ref).to.be.calledLastIn(test);
     }));
+
     it("#asArray", sinon.test(function() {
       var instance, test;
       var SCCollection$asArray = this.spy(sc.test.func());
@@ -1022,6 +1118,7 @@
       test = instance.asArray();
       expect(SCCollection$asArray).to.be.calledLastIn(test);
     }));
+
     it("#asSequenceableCollection", sinon.test(function() {
       var instance, test;
 
@@ -1031,11 +1128,13 @@
       test = instance.asSequenceableCollection();
       expect(instance.asArray).to.be.calledLastIn(test);
     }));
+
     it("#rank", function() {
       testCase(this, [
         [ null, [], 0 ]
       ]);
     });
+
     it("#deepCollect", sinon.test(function() {
       var instance, test;
       var $depth    = $$();
@@ -1050,6 +1149,7 @@
       expect($function.value).to.be.calledWith(instance, $index, $rank);
       expect($function.value).to.be.calledLastIn(test);
     }));
+
     it("#deepDo", sinon.test(function() {
       var instance, test;
       var $depth    = $$();
@@ -1064,12 +1164,14 @@
       expect($function.value).to.be.calledWith(instance, $index, $rank);
       expect(test).to.equal(instance);
     }));
+
     it("#slice", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.slice).to.doNothing;
     });
+
     it("#shape", function() {
       var instance, test;
 
@@ -1078,12 +1180,14 @@
       test = instance.shape();
       expect(test).to.be.a("SCNil");
     });
+
     it("#unbubble", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.unbubble).to.doNothing;
     });
+
     it("#bubble", function() {
       var instance, test;
       var $depth  = $$();
@@ -1094,6 +1198,7 @@
       test = instance.bubble($depth, $levels);
       expect(test).to.be.a("SCArray").that.deep.equals([ [ [ instance ] ] ]);
     });
+
     it("#obtain", function() {
       testCase(this, [
         {
@@ -1108,6 +1213,7 @@
         },
       ]);
     });
+
     it("#instill", function() {
       testCase(this, [
         {
@@ -1122,6 +1228,7 @@
         },
       ]);
     });
+
     it("#addFunc", sinon.test(function() {
       var instance, test;
       var $elem = $$();
@@ -1138,6 +1245,7 @@
       expect(SCFunctionList$new.args[0]).to.deep.equal($$([ [ $elem, $arg1, $arg2 ] ])._);
       expect(SCFunctionList$new).to.be.calledLastIn(test);
     }));
+
     it("#removeFunc", function() {
       var instance, test;
       var $function = $$();
@@ -1150,6 +1258,7 @@
       test = instance.removeFunc(instance);
       expect(test).to.be.a("SCNil");
     });
+
     it("#replaceFunc", function() {
       var instance, test;
       var $function = $$();
@@ -1167,6 +1276,7 @@
     });
     it.skip("#removeFuncFrom", function() {
     });
+
     it("#while", sinon.test(function() {
       var instance, test;
       var count = 0;
@@ -1180,6 +1290,7 @@
       expect(test).to.equal(instance);
       expect($body.value).to.callCount(2);
     }));
+
     it("#switch", function() {
       testCase(this, [
         {
@@ -1219,6 +1330,7 @@
         },
       ]);
     });
+
     it("#yield", sinon.test(function() {
       var instance, test;
 
@@ -1229,6 +1341,7 @@
       expect(test).to.be.a("SCNil");
       expect(sc.lang.bytecode.yield).to.be.calledWith(instance);
     }));
+
     it("#alwaysYield", sinon.test(function() {
       var instance, test;
 
@@ -1239,6 +1352,7 @@
       expect(test).to.be.a("SCNil");
       expect(sc.lang.bytecode.alwaysYield).to.be.calledWith(instance);
     }));
+
     it("#yieldAndReset true", sinon.test(function() {
       var instance, test;
 
@@ -1251,6 +1365,7 @@
       expect(sc.lang.bytecode.yieldAndReset).to.be.calledWith(instance);
       expect(sc.lang.bytecode.yield).to.be.not.called;
     }));
+
     it("#yieldAndReset null", sinon.test(function() {
       var instance, test;
 
@@ -1263,6 +1378,7 @@
       expect(sc.lang.bytecode.yieldAndReset).to.be.calledWith(instance);
       expect(sc.lang.bytecode.yield).to.be.not.called;
     }));
+
     it("#yieldAndReset false", sinon.test(function() {
       var instance, test;
 
@@ -1313,6 +1429,7 @@
     });
     it.skip("#freeze", function() {
     });
+
     it("#&", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1324,6 +1441,7 @@
       expect(instance.bitAnd).to.be.calledWith($that);
       expect(instance.bitAnd).to.be.calledLastIn(test);
     }));
+
     it("#|", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1335,6 +1453,7 @@
       expect(instance.bitOr).to.be.calledWith($that);
       expect(instance.bitOr).to.be.calledLastIn(test);
     }));
+
     it("#%", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1346,6 +1465,7 @@
       expect(instance.mod).to.be.calledWith($that);
       expect(instance.mod).to.be.calledLastIn(test);
     }));
+
     it("#**", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1357,6 +1477,7 @@
       expect(instance.pow).to.be.calledWith($that);
       expect(instance.pow).to.be.calledLastIn(test);
     }));
+
     it("#<<", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1368,6 +1489,7 @@
       expect(instance.leftShift).to.be.calledWith($that);
       expect(instance.leftShift).to.be.calledLastIn(test);
     }));
+
     it("#>>", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1379,6 +1501,7 @@
       expect(instance.rightShift).to.be.calledWith($that);
       expect(instance.rightShift).to.be.calledLastIn(test);
     }));
+
     it("#+>>", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1390,6 +1513,7 @@
       expect(instance.unsignedRightShift).to.be.calledWith($that);
       expect(instance.unsignedRightShift).to.be.calledLastIn(test);
     }));
+
     it("#<!", sinon.test(function() {
       var instance, test;
       var $that = $$();
@@ -1401,6 +1525,7 @@
       expect(instance.firstArg).to.be.calledWith($that);
       expect(instance.firstArg).to.be.calledLastIn(test);
     }));
+
     it("#asInt", sinon.test(function() {
       var instance, test;
 
@@ -1410,17 +1535,20 @@
       test = instance.asInt();
       expect(instance.asInteger).to.be.calledLastIn(test);
     }));
+
     it("#blend", function() {
       testCase(this, [
         [ $$(0), [ 10       ], $.Float(5.0) ],
         [ $$(0), [ 10, 0.25 ], $.Float(2.5) ],
       ]);
     });
+
     it("#blendAt", function() {
       testCase(this, [
         [ $$([ 1, 2, 3 ]), [ 1.5 ], $.Float(2.5) ],
       ]);
     });
+
     it("#blendPut", function() {
       testCase(this, [
         {
@@ -1430,11 +1558,13 @@
         },
       ]);
     });
+
     it("#fuzzyEqual", function() {
       testCase(this, [
         [ $.Float(2.5), [ $.Float(3.0) ], $.Float(0.5) ],
       ]);
     });
+
     it("#isUGen", function() {
       var instance, test;
 
@@ -1443,6 +1573,7 @@
       test = instance.isUGen();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#numChannels", function() {
       var instance, test;
 
@@ -1451,6 +1582,7 @@
       test = instance.numChannels();
       expect(test).to.be.a("SCInteger").that.equals(1);
     });
+
     it("#pair", function() {
       var instance, test;
 
@@ -1459,6 +1591,7 @@
       test = instance.pair();
       expect(test).to.be.a("SCArray").that.deep.equals([ instance, null ]);
     });
+
     it("#pairs", function() {
       testCase(this, [
         {
@@ -1475,6 +1608,7 @@
         }
       ]);
     });
+
     it("#awake", sinon.test(function() {
       var instance, test;
       var $beats = $$();
@@ -1486,18 +1620,21 @@
       expect(instance.next).to.be.calledWith($beats);
       expect(instance.next).to.be.calledLastIn(test);
     }));
+
     it("#beats_", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.beats_).to.doNothing;
     });
+
     it("#clock_", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.clock_).to.doNothing;
     });
+
     it("#performBinaryOpOnSomething", function() {
       var instance, test;
       var $aSelector;
@@ -1517,6 +1654,7 @@
         instance.performBinaryOpOnSomething($aSelector);
       }).to.throw("binary operator '+' failed");
     });
+
     it("#performBinaryOpOnSimpleNumber", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -1530,6 +1668,7 @@
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnSignal", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -1543,6 +1682,7 @@
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnComplex", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -1556,6 +1696,7 @@
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnSeqColl", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -1569,6 +1710,7 @@
       expect(instance.performBinaryOpOnSomething).to.be.calledWith($aSelector, $thing, $adverb);
       expect(instance.performBinaryOpOnSomething).to.be.calledLastIn(test);
     }));
+
     it("#performBinaryOpOnUGen", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -1584,6 +1726,7 @@
     }));
     it.skip("#writeDefFile", function() {
     });
+
     it("#isInputUGen", function() {
       var instance, test;
 
@@ -1592,6 +1735,7 @@
       test = instance.isInputUGen();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#isOutputUGen", function() {
       var instance, test;
 
@@ -1600,6 +1744,7 @@
       test = instance.isOutputUGen();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#isControlUGen", function() {
       var instance, test;
 
@@ -1608,24 +1753,28 @@
       test = instance.isControlUGen();
       expect(test).to.be.a("SCBoolean").that.is.false;
     });
+
     it("#source", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.source).to.doNothing;
     });
+
     it("#asUGenInput", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.asUGenInput).to.doNothing;
     });
+
     it("#asControlInput", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.asControlInput).to.doNothing;
     });
+
     it("#asAudioRateInput", sinon.test(function() {
       var instance, test;
       var rate;
@@ -1710,6 +1859,7 @@
     });
     it.skip("#help", function() {
     });
+
     it("#processRest", function() {
       var instance;
 
@@ -1717,4 +1867,4 @@
       expect(instance.processRest).to.doNothing;
     });
   });
-})();
+});

@@ -32,6 +32,9 @@
                 }
               ]
             }
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
           }
         },
         {
@@ -51,6 +54,9 @@
             args: {
               list: []
             }
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
           }
         },
         {
@@ -75,6 +81,10 @@
                 }
               ]
             }
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
+            codegen.scope.add("var", "a1");
           }
         },
         {
@@ -98,6 +108,10 @@
                 name: "a1"
               }
             }
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
+            codegen.scope.add("var", "a1");
           }
         },
         {
@@ -127,6 +141,11 @@
                 },
               }
             }
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
+            codegen.scope.add("var", "a1");
+            codegen.scope.add("var", "a2");
           }
         },
         {
@@ -169,6 +188,12 @@
                 },
               }
             }
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
+            codegen.scope.add("var", "a1");
+            codegen.scope.add("var", "a2");
+            codegen.scope.add("var", "a3");
           }
         },
       ]);

@@ -7,7 +7,7 @@
   var Token = sc.lang.compiler.Token;
 
   describe("sc.lang.compiler.CodeGen", function() {
-    describe("Value", function() {
+    describe("FunctionExpression", function() {
       sc.test.codegen().each([
         {
           code: "{}",
@@ -347,6 +347,10 @@
                 }
               }
             ]
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
+            codegen.scope.add("var", "a1");
           }
         },
         {

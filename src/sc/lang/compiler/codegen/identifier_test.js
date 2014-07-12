@@ -26,6 +26,9 @@
           ast: {
             type: Syntax.Identifier,
             name: "a0"
+          },
+          before: function(codegen) {
+            codegen.scope.add("var", "a0");
           }
         },
         {

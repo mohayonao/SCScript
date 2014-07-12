@@ -346,11 +346,6 @@
       it(code, function() {
         var expectedAST = esprima.parse(expected);
         var codegen = new sc.lang.compiler.CodeGen();
-        codegen.scope.add("var", "a0");
-        codegen.scope.add("var", "a1");
-        codegen.scope.add("var", "a2");
-        codegen.scope.add("var", "a3");
-        codegen.scope.add("var", "a4");
         if (before) {
           before(codegen);
         }

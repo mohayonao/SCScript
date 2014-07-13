@@ -1,6 +1,6 @@
 (function(global) {
 "use strict";
-var sc = { VERSION: "0.0.70" };
+var sc = { VERSION: "0.0.71" };
 
 // src/sc/libs/libs.js
 (function(sc) {
@@ -3625,6 +3625,104 @@ var sc = { VERSION: "0.0.70" };
   sc.lang.compiler.Parser = Parser;
 })(sc);
 
+// src/sc/lang/compiler/parser/var-stmt.js
+(function(sc) {
+
+  var Node = sc.lang.compiler.Node;
+  var Parser = sc.lang.compiler.Parser;
+
+  /*
+    VariableStatement :
+      var VariableDeclarators ;
+
+    VariableDeclarators :
+      Declarator
+      VariableDeclarators , Declarator
+  */
+  Parser.addParseMethod("VariableStatement", function(opts) {
+    return new VariableStatementParser(this).parse(opts);
+  });
+
+  /*
+    Declarator :
+      Identifier
+      Identifier = AssignmentExpression
+  */
+  Parser.addParseMethod("Declarator", function(opts) {
+    return new DeclaratorParser(this).parse(opts);
+  });
+
+  function VariableStatementParser(parent) {
+    Parser.call(this, parent);
+  }
+  sc.libs.extend(VariableStatementParser, Parser);
+
+  VariableStatementParser.prototype.parse = function() {
+    var marker = this.createMarker();
+
+    this.lex(); // var
+
+    var declaration = Node.createVariableDeclaration(
+      this.parseVariableDeclarators(), "var"
+    );
+    declaration = marker.update().apply(declaration);
+
+    this.expect(";");
+
+    return declaration;
+  };
+
+  VariableStatementParser.prototype.parseVariableDeclarators = function() {
+    var list = [];
+
+    do {
+      list.push(this.parseVariableDeclarator());
+      if (!this.match(",")) {
+        break;
+      }
+      this.lex();
+    } while (this.hasNextToken());
+
+    return list;
+  };
+
+  VariableStatementParser.prototype.parseVariableDeclarator = function() {
+    return this.parseDeclarator({
+      type: "var",
+      delegate: function() {
+        return this.parseAssignmentExpression();
+      }
+    });
+  };
+
+  function DeclaratorParser(parent) {
+    Parser.call(this, parent);
+  }
+  sc.libs.extend(DeclaratorParser, Parser);
+
+  DeclaratorParser.prototype.parse = function(opts) {
+    var marker = this.createMarker();
+
+    var identifier = this.parseIdentifier({ variable: true });
+    this.addToScope(opts.type, identifier.name);
+
+    var initialValue = this.parseInitialiser(opts.delegate);
+
+    return marker.update().apply(
+      Node.createVariableDeclarator(identifier, initialValue)
+    );
+  };
+
+  DeclaratorParser.prototype.parseInitialiser = function(delegate) {
+    if (!this.match("=")) {
+      return null;
+    }
+    this.lex();
+
+    return delegate.call(this);
+  };
+})(sc);
+
 // src/sc/lang/compiler/parser/this-expr.js
 (function(sc) {
 
@@ -4499,7 +4597,6 @@ var sc = { VERSION: "0.0.70" };
 (function(sc) {
 
   var Token = sc.lang.compiler.Token;
-  var Message = sc.lang.compiler.Message;
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
@@ -4512,10 +4609,195 @@ var sc = { VERSION: "0.0.70" };
   }
   sc.libs.extend(GeneratorExpressionParser, Parser);
 
-  /* istanbul ignore next */
   GeneratorExpressionParser.prototype.parse = function() {
-    this.lexer.throwError({}, Message.NotImplemented, "generator literal");
-    return Node.createLiteral({ value: "nil", valueType: Token.NilLiteral });
+    this.expect("{");
+    this.expect(":"); // TODO: ;
+
+    var expr = this.parseExpressions();
+    var clauses = this.parseClauses().concat(expr);
+
+    this.expect("}");
+
+    return compile(clauses);
+  };
+
+  GeneratorExpressionParser.prototype.parseClauses = function() {
+    var elements = [];
+
+    while (this.match(",")) {
+      this.lex();
+      elements.push(this.parseClause());
+    }
+
+    return elements;
+  };
+
+  GeneratorExpressionParser.prototype.parseClause = function() {
+    if (this.match("var")) {
+      return this.parseVarClause();
+    }
+    if (this.match(":")) {
+      this.lex();
+      if (this.match(":")) {
+        this.lex();
+        return this.parseSideEffectClause();
+      }
+      return this.parseTerminationClause();
+    }
+
+    return this.parseClauseStartsWithIdentifier();
+  };
+
+  GeneratorExpressionParser.prototype.parseClauseStartsWithIdentifier = function() {
+    var lookahead = this.lookahead;
+    var first  = this.parseIdentifierIf();
+    var second = this.parseIdentifierIf();
+
+    if (this.match("<-")) {
+      this.lex();
+      return this.parseGeneratorClause([ first, second ]);
+    }
+
+    this.unlex(lookahead);
+    return this.parseGuardClause();
+  };
+
+  GeneratorExpressionParser.prototype.parseIdentifierIf = function() {
+    if (this.lookahead.type === Token.Identifier) {
+      return this.parseIdentifier();
+    }
+    return null;
+  };
+
+  GeneratorExpressionParser.prototype.parseGeneratorClause = function(args) {
+    return {
+      type: "generator",
+      args: args,
+      expr: this.parseExpressions()
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseGuardClause = function() {
+    return {
+      type: "guard",
+      expr: this.parseExpressions()
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseVarClause = function() {
+    this.lex();
+    return {
+      type: "value",
+      expr: this.parseDeclarator({
+        type: "var",
+        delegate: function() {
+          return this.parseBinaryExpression();
+        }
+      })
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseTerminationClause = function() {
+    var token = this.lex();
+    if (token.type !== Token.Identifier || token.value !== "while") {
+      this.throwUnexpected(token);
+    }
+
+    return {
+      type: "termination",
+      expr: this.parseExpressions()
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseSideEffectClause = function() {
+    return {
+      type: "drop",
+      expr: this.parseExpressions()
+    };
+  };
+
+  function compile(clauses) {
+    return Node.createCallExpression(
+      Node.createFunctionExpression(null, [ next(clauses) ], {}),
+      Node.createIdentifier("r"), { list: [] }, "("
+    );
+  }
+
+  function next(clauses) {
+    var clause = clauses.shift();
+
+    if (clauses.length === 0) {
+      return Node.createCallExpression(
+        clause,
+        Node.createIdentifier("yield"),
+        { list: [] }, "("
+      );
+    }
+
+    return creator[clause.type](clause, clauses);
+  }
+
+  function createCallExpression(callee, method, args) {
+    return Node.createCallExpression(
+      callee, Node.createIdentifier(method), { list: args }, "("
+    );
+  }
+
+  function createFunctionExpression(args, body) {
+    return Node.createFunctionExpression(args, [ body ], {});
+  }
+
+  var creator = {
+    generator: function(clause, clauses) {
+      // expr.do { |args| <next> }
+      var args = {
+        list: clause.args.filter(function(node) {
+          return node !== null;
+        }).map(function(node) {
+          return Node.createVariableDeclarator(node);
+        })
+      };
+      return createCallExpression(clause.expr, "do", [
+        createFunctionExpression(args, next(clauses))
+      ]);
+    },
+    value: function(clause, clauses) {
+      // { <next> }.value(expr)
+      var args = {
+        list: [ Node.createVariableDeclarator(clause.expr.id) ]
+      };
+      return createCallExpression(
+        createFunctionExpression(args, next(clauses)),
+        "value", [ clause.expr.init ]
+      );
+    },
+    guard: function(clause, clauses) {
+      // expr.if { <next> }
+      return createCallExpression(
+        clause.expr,
+        "if",
+        [ createFunctionExpression(null, next(clauses)) ]
+      );
+    },
+    drop: function(clause, clauses) {
+      // expr; <next>
+      return [ clause.expr, next(clauses) ];
+    },
+    termination: function(clause, clauses) {
+      // expr.if { <next } { nil.alwaysYield }
+      var nil$alwaysYield = createCallExpression(
+        Node.createLiteral({ type: Token.NilLiteral, value: "nil" }),
+        "alwaysYield", []
+      );
+      return createCallExpression(
+        clause.expr,
+        "if",
+        [
+          createFunctionExpression(null, next(clauses)),
+          createFunctionExpression(null, nil$alwaysYield)
+        ]
+      );
+    }
   };
 })(sc);
 
@@ -4557,17 +4839,6 @@ var sc = { VERSION: "0.0.70" };
     VariableStatements :
       VariableStatement
       VariableStatements VariableStatement
-
-    VariableStatement :
-      var VariableDeclarationList ;
-
-    VariableDeclarationList :
-      VariableDeclaration
-      VariableDeclarationList , VariableDeclaration
-
-    VariableDeclaration :
-      Identifier
-      Identifier = AssignmentExpression
 
     SourceElements :
       Expression
@@ -4660,8 +4931,11 @@ var sc = { VERSION: "0.0.70" };
   };
 
   FunctionExpressionParser.prototype.parseFunctionParameterElement = function() {
-    return this.parseDeclaration("arg", function() {
-      return this.parsePrimaryArgExpression();
+    return this.parseDeclarator({
+      type: "arg",
+      delegate: function() {
+        return this.parsePrimaryArgExpression();
+      }
     });
   };
 
@@ -4679,41 +4953,6 @@ var sc = { VERSION: "0.0.70" };
     return elements;
   };
 
-  FunctionExpressionParser.prototype.parseVariableStatement = function() {
-    var marker = this.createMarker();
-
-    this.lex(); // var
-
-    var declaration = Node.createVariableDeclaration(
-      this.parseVariableDeclarationList(), "var"
-    );
-    declaration = marker.update().apply(declaration);
-
-    this.expect(";");
-
-    return declaration;
-  };
-
-  FunctionExpressionParser.prototype.parseVariableDeclarationList = function() {
-    var list = [];
-
-    do {
-      list.push(this.parseVariableDeclaration());
-      if (!this.match(",")) {
-        break;
-      }
-      this.lex();
-    } while (this.hasNextToken());
-
-    return list;
-  };
-
-  FunctionExpressionParser.prototype.parseVariableDeclaration = function() {
-    return this.parseDeclaration("var", function() {
-      return this.parseAssignmentExpression();
-    });
-  };
-
   FunctionExpressionParser.prototype.parseSourceElements = function() {
     var elements = [];
 
@@ -4728,27 +4967,6 @@ var sc = { VERSION: "0.0.70" };
     }
 
     return elements;
-  };
-
-  FunctionExpressionParser.prototype.parseDeclaration = function(type, delegate) {
-    var marker = this.createMarker();
-
-    var identifier = this.parseIdentifier({ variable: true });
-    this.addToScope(type, identifier.name);
-
-    var initialValue = this.parseInitialiser(delegate);
-
-    return marker.update().apply(
-      Node.createVariableDeclarator(identifier, initialValue)
-    );
-  };
-
-  FunctionExpressionParser.prototype.parseInitialiser = function(delegate) {
-    if (!this.match("=")) {
-      return null;
-    }
-    this.lex();
-    return delegate.call(this);
   };
 })(sc);
 

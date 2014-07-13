@@ -15,7 +15,6 @@
   <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
   <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
   <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
-  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
   <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
   <link href="../../assets/css/plato.css" rel="stylesheet">
   <link href="../../assets/css/plato-file.css" rel="stylesheet">
@@ -45,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">127.22</p>
+      <p class="stat">124.49</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">25</p>
+      <p class="stat">209</p>
     </div>
   </div>
   <div class="row historical">
@@ -63,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">9.45</p>
+      <p class="stat">29.24</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.20</p>
+      <p class="stat">1.65</p>
     </div>
   </div>
 </div>
@@ -96,7 +95,6 @@
   require(&quot;./parser&quot;);
 
   var Token = sc.lang.compiler.Token;
-  var Message = sc.lang.compiler.Message;
   var Node = sc.lang.compiler.Node;
   var Parser = sc.lang.compiler.Parser;
 
@@ -109,10 +107,195 @@
   }
   sc.libs.extend(GeneratorExpressionParser, Parser);
 
-  /* istanbul ignore next */
   GeneratorExpressionParser.prototype.parse = function() {
-    this.lexer.throwError({}, Message.NotImplemented, &quot;generator literal&quot;);
-    return Node.createLiteral({ value: &quot;nil&quot;, valueType: Token.NilLiteral });
+    this.expect(&quot;{&quot;);
+    this.expect(&quot;:&quot;); // TODO: ;
+
+    var expr = this.parseExpressions();
+    var clauses = this.parseClauses().concat(expr);
+
+    this.expect(&quot;}&quot;);
+
+    return compile(clauses);
+  };
+
+  GeneratorExpressionParser.prototype.parseClauses = function() {
+    var elements = [];
+
+    while (this.match(&quot;,&quot;)) {
+      this.lex();
+      elements.push(this.parseClause());
+    }
+
+    return elements;
+  };
+
+  GeneratorExpressionParser.prototype.parseClause = function() {
+    if (this.match(&quot;var&quot;)) {
+      return this.parseVarClause();
+    }
+    if (this.match(&quot;:&quot;)) {
+      this.lex();
+      if (this.match(&quot;:&quot;)) {
+        this.lex();
+        return this.parseSideEffectClause();
+      }
+      return this.parseTerminationClause();
+    }
+
+    return this.parseClauseStartsWithIdentifier();
+  };
+
+  GeneratorExpressionParser.prototype.parseClauseStartsWithIdentifier = function() {
+    var lookahead = this.lookahead;
+    var first  = this.parseIdentifierIf();
+    var second = this.parseIdentifierIf();
+
+    if (this.match(&quot;&lt;-&quot;)) {
+      this.lex();
+      return this.parseGeneratorClause([ first, second ]);
+    }
+
+    this.unlex(lookahead);
+    return this.parseGuardClause();
+  };
+
+  GeneratorExpressionParser.prototype.parseIdentifierIf = function() {
+    if (this.lookahead.type === Token.Identifier) {
+      return this.parseIdentifier();
+    }
+    return null;
+  };
+
+  GeneratorExpressionParser.prototype.parseGeneratorClause = function(args) {
+    return {
+      type: &quot;generator&quot;,
+      args: args,
+      expr: this.parseExpressions()
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseGuardClause = function() {
+    return {
+      type: &quot;guard&quot;,
+      expr: this.parseExpressions()
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseVarClause = function() {
+    this.lex();
+    return {
+      type: &quot;value&quot;,
+      expr: this.parseDeclarator({
+        type: &quot;var&quot;,
+        delegate: function() {
+          return this.parseBinaryExpression();
+        }
+      })
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseTerminationClause = function() {
+    var token = this.lex();
+    if (token.type !== Token.Identifier || token.value !== &quot;while&quot;) {
+      this.throwUnexpected(token);
+    }
+
+    return {
+      type: &quot;termination&quot;,
+      expr: this.parseExpressions()
+    };
+  };
+
+  GeneratorExpressionParser.prototype.parseSideEffectClause = function() {
+    return {
+      type: &quot;drop&quot;,
+      expr: this.parseExpressions()
+    };
+  };
+
+  function compile(clauses) {
+    return Node.createCallExpression(
+      Node.createFunctionExpression(null, [ next(clauses) ], {}),
+      Node.createIdentifier(&quot;r&quot;), { list: [] }, &quot;(&quot;
+    );
+  }
+
+  function next(clauses) {
+    var clause = clauses.shift();
+
+    if (clauses.length === 0) {
+      return Node.createCallExpression(
+        clause,
+        Node.createIdentifier(&quot;yield&quot;),
+        { list: [] }, &quot;(&quot;
+      );
+    }
+
+    return creator[clause.type](clause, clauses);
+  }
+
+  function createCallExpression(callee, method, args) {
+    return Node.createCallExpression(
+      callee, Node.createIdentifier(method), { list: args }, &quot;(&quot;
+    );
+  }
+
+  function createFunctionExpression(args, body) {
+    return Node.createFunctionExpression(args, [ body ], {});
+  }
+
+  var creator = {
+    generator: function(clause, clauses) {
+      // expr.do { |args| &lt;next&gt; }
+      var args = {
+        list: clause.args.filter(function(node) {
+          return node !== null;
+        }).map(function(node) {
+          return Node.createVariableDeclarator(node);
+        })
+      };
+      return createCallExpression(clause.expr, &quot;do&quot;, [
+        createFunctionExpression(args, next(clauses))
+      ]);
+    },
+    value: function(clause, clauses) {
+      // { &lt;next&gt; }.value(expr)
+      var args = {
+        list: [ Node.createVariableDeclarator(clause.expr.id) ]
+      };
+      return createCallExpression(
+        createFunctionExpression(args, next(clauses)),
+        &quot;value&quot;, [ clause.expr.init ]
+      );
+    },
+    guard: function(clause, clauses) {
+      // expr.if { &lt;next&gt; }
+      return createCallExpression(
+        clause.expr,
+        &quot;if&quot;,
+        [ createFunctionExpression(null, next(clauses)) ]
+      );
+    },
+    drop: function(clause, clauses) {
+      // expr; &lt;next&gt;
+      return [ clause.expr, next(clauses) ];
+    },
+    termination: function(clause, clauses) {
+      // expr.if { &lt;next } { nil.alwaysYield }
+      var nil$alwaysYield = createCallExpression(
+        Node.createLiteral({ type: Token.NilLiteral, value: &quot;nil&quot; }),
+        &quot;alwaysYield&quot;, []
+      );
+      return createCallExpression(
+        clause.expr,
+        &quot;if&quot;,
+        [
+          createFunctionExpression(null, next(clauses)),
+          createFunctionExpression(null, nil$alwaysYield)
+        ]
+      );
+    }
   };
 })(sc);</textarea>
   </div>

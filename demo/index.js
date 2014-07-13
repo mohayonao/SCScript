@@ -113,6 +113,47 @@ window.onload = function() {
     }
   }
 
+  function isObject(obj) {
+    return obj && obj.constructor === Object;
+  }
+
+  function isSCObject(obj) {
+    return obj && typeof obj._ !== "undefined";
+  }
+
+  function SCObject(value) {
+    this.class = value.__className;
+    this.hash  = value.__hash;
+  }
+
+  var formatter = {
+    SCObject: function(value) {
+      return new SCObject(value);
+    },
+    Array: function(value) {
+      return value.map(formatter.Value);
+    },
+    Object: function(value) {
+      var dict = {};
+      Object.keys(value).forEach(function(key) {
+        dict[key] = formatter.Value(value[key]);
+      });
+      return dict;
+    },
+    Value: function(value) {
+      if (isSCObject(value)) {
+        return formatter.SCObject(value);
+      }
+      if (Array.isArray(value)) {
+        return formatter.Array(value);
+      }
+      if (isObject(value)) {
+        return formatter.Object(value);
+      }
+      return value;
+    }
+  };
+
   function evaluate() {
     var code, result;
     var beginTime, elapsedTime;
@@ -125,7 +166,7 @@ window.onload = function() {
     elapsedTime = now() - beginTime;
 
     if (result) {
-      result = result.valueOf();
+      result = formatter.Value(result.valueOf());
     }
 
     console.log(result);

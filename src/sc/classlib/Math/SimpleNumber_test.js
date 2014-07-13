@@ -1,12 +1,9 @@
-(function() {
+describe("Math/SimpleNumber", function() {
   "use strict";
 
-  require("./SimpleNumber");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCSimpleNumber = $("SimpleNumber");
 
   describe("SCSimpleNumber", function() {
@@ -16,6 +13,7 @@
         return $$(instance, "SimpleNumber" + this.test.title);
       };
     });
+
     it("#__bool__", function() {
       var instance, test;
 
@@ -27,6 +25,7 @@
       test = instance.__bool__();
       expect(test).to.be.a("JSBoolean").that.is.false;
     });
+
     it("#__dec__", function() {
       var instance, test;
 
@@ -38,6 +37,7 @@
       test = instance.__dec__();
       expect(test).to.be.a("SCInteger").that.equals(0);
     });
+
     it("#__inc__", function() {
       var instance, test;
 
@@ -49,6 +49,7 @@
       test = instance.__inc__();
       expect(test).to.be.a("SCInteger").that.equals(2);
     });
+
     it("#__int__", function() {
       var instance, test;
 
@@ -60,6 +61,7 @@
       test = instance.__int__();
       expect(test).to.be.a("JSNumber").that.equals(Infinity);
     });
+
     it("#__num__", function() {
       var instance, test;
 
@@ -68,20 +70,24 @@
       test = instance.__num__();
       expect(test).to.be.a("JSNumber").that.equals(2014);
     });
+
     it(".new", function() {
       expect(SCSimpleNumber.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
+
     it("#isValidUGenInput", function() {
       testCase(this, [
         [ 100, [], true  ],
         [ NaN, [], false ],
       ]);
     });
+
     it("#numChannels", function() {
       testCase(this, [
         [ 100, [], $$(1) ],
       ]);
     });
+
     it("#magnitude", sinon.test(function() {
       var instance, test;
 
@@ -91,6 +97,7 @@
       test = instance.magnitude();
       expect(instance.abs).to.be.calledLastIn(test);
     }));
+
     it("#angle", function() {
       testCase(this, [
         [ -2, [], Math.PI ],
@@ -100,6 +107,7 @@
         [  2, [], $.Float(0.0) ],
       ]);
     });
+
     it("#neg", function() {
       testCase(this, [
         [ -3.14, [],  3.14 ],
@@ -109,6 +117,7 @@
         [  3.14, [], -3.14 ],
       ]);
     });
+
     it("#abs", function() {
       testCase(this, [
         [ -3.14, [], 3.14 ],
@@ -118,6 +127,7 @@
         [  3.14, [], 3.14 ],
       ]);
     });
+
     it("#ceil", function() {
       testCase(this, [
         [ -3.14, [], $.Float(-3.0) ],
@@ -127,6 +137,7 @@
         [  3.14, [], $.Float( 4.0) ],
       ]);
     });
+
     it("#floor", function() {
       testCase(this, [
         [ -3.14, [], $.Float(-4.0) ],
@@ -136,6 +147,7 @@
         [  3.14, [], $.Float( 3.0) ],
       ]);
     });
+
     it("#frac", function() {
       testCase(this, [
         [ -3.14, [], 0.86 ],
@@ -145,6 +157,7 @@
         [  3.14, [], 0.14 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#sign", function() {
       testCase(this, [
         [ -3.14, [], $.Float(-1.0) ],
@@ -154,6 +167,7 @@
         [  3.14, [], $.Float(+1.0) ],
       ]);
     });
+
     it("#squared", function() {
       testCase(this, [
         [ -3.14, [], 9.8596 ],
@@ -163,6 +177,7 @@
         [  3.14, [], 9.8596 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#cubed", function() {
       testCase(this, [
         [ -3.14, [], -30.959144 ],
@@ -172,6 +187,7 @@
         [  3.14, [],  30.959144 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#sqrt", function() {
       testCase(this, [
         [ -3.14, [], NaN ],
@@ -181,6 +197,7 @@
         [  3.14, [], 1.7720045146669  ],
       ], { closeTo: 1e-6 });
     });
+
     it("#exp", function() {
       testCase(this, [
         [ -3.14, [],  0.043282797901966 ],
@@ -190,6 +207,7 @@
         [  3.14, [], 23.103866858722    ],
       ], { closeTo: 1e-6 });
     });
+
     it("#reciprocal", function() {
       testCase(this, [
         [ -3.14, [], -0.31847133757962 ],
@@ -199,6 +217,7 @@
         [  3.14, [],  0.31847133757962 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#midicps", function() {
       testCase(this, [
         [ -3.14, [], 6.819628010454  ],
@@ -208,6 +227,7 @@
         [  3.14, [], 9.8016618804682 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#cpsmidi", function() {
       testCase(this, [
         [ -3.14, [], -16.567141852893 ],
@@ -217,6 +237,7 @@
         [  3.14, [], -16.567141852893 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#midiratio", function() {
       testCase(this, [
         [ -3.14, [], 0.83412374507037 ],
@@ -226,6 +247,7 @@
         [  3.14, [], 1.1988628856449  ],
       ], { closeTo: 1e-6 });
     });
+
     it("#ratiomidi", function() {
       testCase(this, [
         [ -3.14, [],  19.809174709403 ],
@@ -235,6 +257,7 @@
         [  3.14, [],  19.809174709403 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#ampdb", function() {
       testCase(this, [
         [ -3.14, [], NaN ],
@@ -244,6 +267,7 @@
         [  3.14, [],   9.9385929614643 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#dbamp", function() {
       testCase(this, [
         [ -3.14, [], 0.69662651411077 ],
@@ -253,6 +277,7 @@
         [  3.14, [], 1.4354894333537  ],
       ], { closeTo: 1e-6 });
     });
+
     it("#octcps", function() {
       testCase(this, [
         [ -3.14, [],   1.854923531492 ],
@@ -262,6 +287,7 @@
         [  3.14, [], 144.14327442442  ],
       ], { closeTo: 1e-6 });
     });
+
     it("#cpsoct", function() {
       testCase(this, [
         [ -3.14, [], -2.3805951544251 ],
@@ -271,6 +297,7 @@
         [  3.14, [], -2.3805951544251 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#log", function() {
       testCase(this, [
         [ -3.14, [], NaN ],
@@ -280,6 +307,7 @@
         [  3.14, [],  1.1442227999202 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#log2", function() {
       testCase(this, [
         [ -3.14, [],  1.6507645591169 ],
@@ -289,6 +317,7 @@
         [  3.14, [],  1.6507645591169 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#log10", function() {
       testCase(this, [
         [ -3.14, [], NaN ],
@@ -298,6 +327,7 @@
         [  3.14, [],  0.49692964807321 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#sin", function() {
       testCase(this, [
         [ -3.14, [], -0.0015926529164868 ],
@@ -307,6 +337,7 @@
         [  3.14, [],  0.0015926529164868 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#cos", function() {
       testCase(this, [
         [ -3.14, [], -0.99999873172754 ],
@@ -316,6 +347,7 @@
         [  3.14, [], -0.99999873172754 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#tan", function() {
       testCase(this, [
         [ -3.14, [],  0.0015926549364072 ],
@@ -325,6 +357,7 @@
         [  3.14, [], -0.0015926549364072 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#asin", function() {
       testCase(this, [
         [ -3.14, [],  NaN ],
@@ -334,6 +367,7 @@
         [  3.14, [],  NaN ],
       ], { closeTo: 1e-6 });
     });
+
     it("#acos", function() {
       testCase(this, [
         [ -3.14, [],  NaN ],
@@ -343,6 +377,7 @@
         [  3.14, [],  NaN ],
       ], { closeTo: 1e-6 });
     });
+
     it("#atan", function() {
       testCase(this, [
         [ -3.14, [], -1.2624806645995  ],
@@ -352,6 +387,7 @@
         [  3.14, [],  1.2624806645995  ],
       ], { closeTo: 1e-6 });
     });
+
     it("#sinh", function() {
       testCase(this, [
         [ -3.14, [], -11.53029203041    ],
@@ -361,6 +397,7 @@
         [  3.14, [],  11.53029203041    ],
       ], { closeTo: 1e-6 });
     });
+
     it("#cosh", function() {
       testCase(this, [
         [ -3.14, [], 11.573574828312 ],
@@ -370,6 +407,7 @@
         [  3.14, [], 11.573574828312 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#tanh", function() {
       testCase(this, [
         [ -3.14, [], -0.99626020494583 ],
@@ -379,6 +417,7 @@
         [  3.14, [],  0.99626020494583 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#rand", function() {
       testCase(this, [
         [ $.Float(1.0), [], 0.85755145549774 ],
@@ -388,6 +427,7 @@
         [ $.Float(1.0), [], 0.37802028656006 ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
+
     it("#rand2", function() {
       testCase(this, [
         [ $.Float(1.0), [],  0.71510291099548  ],
@@ -397,6 +437,7 @@
         [ $.Float(1.0), [], -0.24395942687988  ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
+
     it("#linrand", function() {
       testCase(this, [
         [ $.Float(1.0), [], 0.072531029582024 ],
@@ -406,6 +447,7 @@
         [ $.Float(1.0), [], 0.09632418397814  ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
+
     it("#bilinrand", function() {
       testCase(this, [
         [ $.Float(1.0), [],  0.78502050461248  ],
@@ -415,6 +457,7 @@
         [ $.Float(1.0), [], -0.84007759438828  ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
+
     it("#sum3rand", function() {
       testCase(this, [
         [ $.Float(1.0), [], -0.27733351630056  ],
@@ -424,6 +467,7 @@
         [ $.Float(1.0), [], -0.052895963684095 ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
+
     it("#distort", function() {
       testCase(this, [
         [ -3.14, [], -0.75845410628019 ],
@@ -433,6 +477,7 @@
         [  3.14, [],  0.75845410628019 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#softclip", function() {
       testCase(this, [
         [ -3.14, [], -0.9203821656051 ],
@@ -442,6 +487,7 @@
         [  3.14, [],  0.9203821656051 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#coin", function() {
       testCase(this, [
         [ 0.5, [], false ],
@@ -456,6 +502,7 @@
         [ 0.5, [], false ],
       ], { randSeed: 0 });
     });
+
     it("#isPositive", function() {
       testCase(this, [
         [ -1, [], false ],
@@ -463,6 +510,7 @@
         [ +1, [], true  ],
       ]);
     });
+
     it("#isNegative", function() {
       testCase(this, [
         [ -1, [], true  ],
@@ -470,6 +518,7 @@
         [ +1, [], false ],
       ]);
     });
+
     it("#isStrictlyPositive", function() {
       testCase(this, [
         [ -1, [], false ],
@@ -477,6 +526,7 @@
         [ +1, [], true  ],
       ]);
     });
+
     it("#isNaN", function() {
       testCase(this, [
         [ NaN     , [], true  ],
@@ -484,6 +534,7 @@
         [ 0       , [], false ],
       ]);
     });
+
     it("#asBoolean", function() {
       testCase(this, [
         [ -1, [], false ],
@@ -491,6 +542,7 @@
         [ +1, [], true  ],
       ]);
     });
+
     it("#booleanValue", function() {
       testCase(this, [
         [ -1, [], false ],
@@ -498,6 +550,7 @@
         [ +1, [], true  ],
       ]);
     });
+
     it("#binaryValue", function() {
       testCase(this, [
         [ -2, [], 0 ],
@@ -507,6 +560,7 @@
         [ +2, [], 1 ],
       ]);
     });
+
     it("#rectWindow", function() {
       testCase(this, [
         [ -3.14, [], $.Float(0.0) ],
@@ -516,6 +570,7 @@
         [  3.14, [], $.Float(0.0) ],
       ]);
     });
+
     it("#hanWindow", function() {
       testCase(this, [
         [ -3.14, [], $.Float(0.0) ],
@@ -525,6 +580,7 @@
         [  3.14, [], $.Float(0.0) ],
       ], { closeTo: 1e-6 });
     });
+
     it("#welWindow", function() {
       testCase(this, [
         [ -3.14, [], $.Float(0.0) ],
@@ -534,6 +590,7 @@
         [  3.14, [], $.Float(0.0) ],
       ], { closeTo: 1e-6 });
     });
+
     it("#triWindow", function() {
       testCase(this, [
         [ -3.14, [], $.Float(0.0)  ],
@@ -544,6 +601,7 @@
         [  0.80, [], $.Float(0.40) ],
       ], { closeTo: 1e-6 });
     });
+
     it("#scurve", function() {
       testCase(this, [
         [ -3.14, [], $.Float(0.0) ],
@@ -553,6 +611,7 @@
         [  3.14, [], $.Float(1.0) ],
       ], { closeTo: 1e-6 });
     });
+
     it("#ramp", function() {
       testCase(this, [
         [ -3.14, [], $.Float(0.0) ],
@@ -562,6 +621,7 @@
         [  3.14, [], $.Float(1.0) ],
       ]);
     });
+
     it("#bitTest", function() {
       testCase(this, [
         [ 11, [ 0 ], true  ],
@@ -570,6 +630,7 @@
         [ 11, [ 3 ], true  ],
       ]);
     });
+
     it("#==", function() {
       testCase(this, [
         [ $$(10), [ $$(10) ], true ],
@@ -579,6 +640,7 @@
         [ $.Float(10.0), [ $.Float(10.5) ], false ],
       ]);
     });
+
     it("#!=", function() {
       testCase(this, [
         [ $$(10), [ $$(10) ], false ],
@@ -588,6 +650,7 @@
         [ $.Float(10.0), [ $.Float(10.5) ], true  ],
       ]);
     });
+
     it("#<", function() {
       testCase(this, [
         [ 10, [ 20 ], true  ],
@@ -600,6 +663,7 @@
         [ 20, [ [ 10, 20, 30 ] ], [ false, false, true ] ],
       ]);
     });
+
     it("#>", function() {
       testCase(this, [
         [ 10, [ 20 ], false ],
@@ -607,6 +671,7 @@
         [ 30, [ 20 ], true  ],
       ]);
     });
+
     it("#<=", function() {
       testCase(this, [
         [ 10, [ 20 ], true  ],
@@ -614,6 +679,7 @@
         [ 30, [ 20 ], false ],
       ]);
     });
+
     it("#>=", function() {
       testCase(this, [
         [ 10, [ 20 ], false ],
@@ -621,18 +687,21 @@
         [ 30, [ 20 ], true  ],
       ]);
     });
+
     it("#equalWithPrecision", function() {
       testCase(this, [
         [ 10, [ 10.01       ], false ],
         [ 10, [ 10.01, 0.02 ], true  ],
       ]);
     });
+
     it("#asInteger", function() {
       testCase(this, [
         [ $$(10), [], $$(10) ],
         [ $.Float(10.5), [], $$(10) ],
       ]);
     });
+
     it("#asFloat", function() {
       testCase(this, [
         [ $$(10), [], $.Float(10.0) ],
@@ -643,16 +712,19 @@
     });
     it.skip("#asRect", function() {
     });
+
     it("#degrad", function() {
       testCase(this, [
         [ 180, [], Math.PI ],
       ]);
     });
+
     it("#raddeg", function() {
       testCase(this, [
         [ Math.PI, [], $.Float(180) ]
       ]);
     });
+
     it("#performBinaryOpOnSimpleNumber", function() {
       var instance;
       var $aSelecor = $$("\\+");
@@ -662,8 +734,10 @@
         instance.performBinaryOpOnSimpleNumber($aSelecor);
       }).to.throw("failed");
     });
+
     it("#performBinaryOpOnComplex", function() {
     });
+
     it("#performBinaryOpOnSignal", function() {
       var instance;
       var $aSelecor = $$("\\+");
@@ -673,28 +747,33 @@
         instance.performBinaryOpOnSignal($aSelecor);
       }).to.throw("failed");
     });
+
     it("#nextPowerOfTwo", function() {
       testCase(this, [
         [ 50, [], $.Float(64) ],
       ]);
     });
+
     it("#nextPowerOf", function() {
       testCase(this, [
         [ 50, [ 2 ], $.Float(64) ],
         [ 50, [ 3 ], $.Float(81) ],
       ]);
     });
+
     it("#nextPowerOfThree", function() {
       testCase(this, [
         [ 50, [], $.Float(81) ],
       ]);
     });
+
     it("#previousPowerOf", function() {
       testCase(this, [
         [ 50, [ 2 ], $.Float(32) ],
         [ 50, [ 3 ], $.Float(27) ],
       ]);
     });
+
     it("#quantize", function() {
       testCase(this, [
         [ 0.25, [ 1.0, 0.30, 0.50 ], 0.125  ],
@@ -703,6 +782,7 @@
         [ 0.25, [ 1.0, 0.15, 0.50 ], 0.25   ],
       ]);
     });
+
     it("#linlin", function() {
       testCase(this, [
         [ -0.2, [ 0, 2, 440, 880 ], 440 ],
@@ -715,6 +795,7 @@
         [ +2.2, [ 0, 2, 440, 880, "\\max" ], 880 ],
       ]);
     });
+
     it("#linexp", function() {
       testCase(this, [
         [ -0.2, [ 0, 2, 440, 880 ], 440 ],
@@ -727,6 +808,7 @@
         [ +2.2, [ 0, 2, 440, 880, "\\max" ], 880 ],
       ]);
     });
+
     it("#explin", function() {
       testCase(this, [
         [ -0.2, [ 0.001, 2, 440, 880 ], 440 ],
@@ -739,6 +821,7 @@
         [ +2.2, [ 0.001, 2, 440, 880, "\\max" ], 880 ],
       ]);
     });
+
     it("#expexp", function() {
       testCase(this, [
         [ -0.2, [ 0.001, 2, 440, 880 ], 440 ],
@@ -751,6 +834,7 @@
         [ +2.2, [ 0.001, 2, 440, 880, "\\max" ], 880 ],
       ]);
     });
+
     it("#lincurve", function() {
       testCase(this, [
         [ -0.2, [ 0, 2, 440, 880 ], 440 ],
@@ -764,6 +848,7 @@
         [ +1.8, [ 0, 2, 440, 880, 0.0001 ], $.Float(836) ],
       ]);
     });
+
     it("#curvelin", function() {
       testCase(this, [
         [ -0.2, [ 0, 2, 440, 880 ], 440 ],
@@ -777,6 +862,7 @@
         [ +1.8, [ 0, 2, 440, 880, 0.0001 ], $.Float(836) ],
       ]);
     });
+
     it("#bilin", function() {
       testCase(this, [
         [ -0.2, [ 0.5, 0, 2, 554, 440, 880 ], 440 ],
@@ -789,6 +875,7 @@
         [ +2.2, [ 0.5, 0, 2, 554, 440, 880, "\\max" ], 880 ],
       ]);
     });
+
     it("#biexp", function() {
       testCase(this, [
         [ -0.2, [ 0.5, 0.001, 2, 554, 440, 880 ], 440 ],
@@ -801,22 +888,26 @@
         [ +2.2, [ 0.5, 0.001, 2, 554, 440, 880, "\\max" ], 880 ],
       ]);
     });
+
     it("#moddif", function() {
       testCase(this, [
         [ 0.75, [], 0.25 ],
       ]);
     });
+
     it("#lcurve", function() {
       testCase(this, [
         [ 0.5, [], 0.62245933120185 ],
         [ 0.5, [ 1, 2, 3, 4 ], 0.8957778033431 ],
       ], { closeTo: 1e-6 });
     });
+
     it("#gauss", function() {
       testCase(this, [
         [ 1.0, [ 1 ], 1.2439947641865 ],
       ], { closeTo: 1e-6, randSeed: 0 });
     });
+
     it("#gaussCurve", function() {
       testCase(this, [
         [ 1.0, [], 0.60653065971263 ]
@@ -826,6 +917,7 @@
     });
     it.skip("#asWarp", function() {
     });
+
     it("#wait", sinon.test(function() {
       var instance, test;
 
@@ -843,6 +935,7 @@
     });
     it.skip("#storeOn", function() {
     });
+
     it("#rate", function() {
       var instance, test;
 
@@ -851,6 +944,7 @@
       test = instance.rate();
       expect(test).to.be.a("SCSymbol").that.equals("scalar");
     });
+
     it("#asAudioRateInput when 0", sinon.test(function() {
       var instance, test;
 
@@ -866,6 +960,7 @@
       expect(SCSilent$ar).to.be.calledLastIn(test);
       expect(SCDC$ar).to.be.not.called;
     }));
+
     it("#asAudioRateInput when otherwise", sinon.test(function() {
       var instance, test;
 
@@ -882,41 +977,48 @@
       expect(SCDC$ar).to.be.calledWith(instance);
       expect(SCDC$ar).to.be.calledLastIn(test);
     }));
+
     it("#madd", function() {
       testCase(this, [
         [ 0.5, [ 2, 10 ], $.Float(11.0) ],
       ]);
     });
+
     it("#lag", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.lag).to.doNothing;
     });
+
     it("#lag2", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.lag2).to.doNothing;
     });
+
     it("#lag3", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.lag3).to.doNothing;
     });
+
     it("#lagud", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.lagud).to.doNothing;
     });
+
     it("#lag2ud", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.lag2ud).to.doNothing;
     });
+
     it("#lag3ud", function() {
       var instance;
 
@@ -925,6 +1027,7 @@
     });
     it.skip("#writeInputSpec", function() {
     });
+
     it("#series", function() {
       testCase(this, [
         [ 10, [ 13, 20 ], [ 10, 13, 16, 19 ] ],
@@ -932,6 +1035,7 @@
         [ 13, [ null, 10 ], [ 13, 12, 11, 10 ] ],
       ]);
     });
+
     it("#seriesIter (:0..10)", function() {
       var iter, test;
 
@@ -939,10 +1043,11 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
       ]);
     });
+
     it("#seriesIter (:0..-10)", function() {
       var iter, test;
 
@@ -950,10 +1055,11 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, -1, -2, -3, -4, -5, -6, -7, -8, -9, -10
       ]);
     });
+
     it("#seriesIter (:0..)", function() {
       var iter, test;
 
@@ -961,10 +1067,11 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.nextN($$(15));
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
       ]);
     });
+
     it("#seriesIter (:0, 3..10)", function() {
       var iter, test;
 
@@ -972,10 +1079,11 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 3, 6, 9
       ]);
     });
+
     it("#seriesIter (:0, -3..-10)", function() {
       var iter, test;
 
@@ -983,10 +1091,11 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.all();
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, -3, -6, -9
       ]);
     });
+
     it("#seriesIter (:0, 3..)", function() {
       var iter, test;
 
@@ -994,10 +1103,11 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.nextN($$(15));
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42
       ]);
     });
+
     it("#seriesIter (:0, -3..)", function() {
       var iter, test;
 
@@ -1005,22 +1115,25 @@
       expect(iter).to.be.a("SCRoutine");
 
       test = iter.nextN($$(15));
-      expect(test).to.be.a("SCArray").to.eql([
+      expect(test).to.be.a("SCArray").to.deep.equal([
         0, -3, -6, -9, -12, -15, -18, -21, -24, -27, -30, -33, -36, -39, -42
       ]);
     });
+
     it("#degreeToKey", function() {
       testCase(this, [
         [ 4, [ [ 0, 1, 2, 3, 5, 8 ] ], 5 ],
         [ 8, [ [ 0, 1, 2, 3, 5, 8 ] ], 14 ],
       ]);
     });
+
     it("#keyToDegree", function() {
       testCase(this, [
         [ 4, [ [ 0, 1, 2, 3, 5, 8 ] ], 3.5 ],
         [ 8, [ [ 0, 1, 2, 3, 5, 8 ] ], 5 ],
       ]);
     });
+
     it("#nearestInList", function() {
       testCase(this, [
         [  9.5, [ [ 8, 13, 21 ] ], 8 ],
@@ -1028,6 +1141,7 @@
         [ 13.5, [ [ 8, 13, 21 ] ], 13 ],
       ]);
     });
+
     it("#nearestInScale", function() {
       testCase(this, [
         [  9.5, [ [ 8, 13, 21 ] ], $.Float(8.0) ],
@@ -1035,6 +1149,7 @@
         [ 13.5, [ [ 8, 13, 21 ] ], $.Float(20.0) ],
       ]);
     });
+
     it("#partition", function() {
       var instance, test;
 
@@ -1042,10 +1157,11 @@
       sc.libs.random.setSeed(0);
 
       test = instance.partition($$(10), $$(8));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         0 - 50, 8, 19, 14, 17, 8, 21, 8, 14, -54
       ]);
     });
+
     it("#nextTimeOnGrid", sinon.test(function() {
       var instance, test;
       var $clock = sc.test.object({
@@ -1058,10 +1174,12 @@
       expect($clock.nextTimeOnGrid).to.be.calledWith(instance, $$(0));
       expect($clock.nextTimeOnGrid).to.be.calledLastIn(test);
     }));
+
     it("#playAndDelta", function() {
       var instance = this.createInstance();
       expect(instance.playAndDelta).to.doNothing;
     });
+
     it("#asQuant", sinon.test(function() {
       var instance, test;
       var SCQuant$new = this.spy(sc.test.func());
@@ -1083,6 +1201,7 @@
     });
     it.skip("#schedBundleArrayOnClock", function() {
     });
+
     it("#shallowCopy", function() {
       var instance;
 
@@ -1090,4 +1209,5 @@
       expect(instance.shallowCopy).to.doNothing;
     });
   });
-})();
+
+});

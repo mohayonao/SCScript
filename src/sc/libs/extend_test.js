@@ -1,18 +1,16 @@
-(function() {
+describe("sc.libs.extend", function() {
   "use strict";
 
-  require("./extend");
+  it("extend", function() {
+    function P() {}
+    P.prototype.method = function() {};
 
-  var extend = sc.libs.extend;
+    function C() {}
+    sc.libs.extend(C, P);
 
-  describe("sc.libs.extend", function() {
-    it("extend", function() {
-      var P = function() {};
-      var C = function() {};
-      extend(C, P);
-
-      var instance = new C();
-      expect(instance).to.instanceOf(P);
-    });
+    var instance = new C();
+    expect(instance).to.instanceOf(P);
+    expect(instance).to.respondTo("method");
   });
-})();
+
+});

@@ -1,12 +1,8 @@
-(function() {
+describe("Streams/Patterns", function() {
   "use strict";
 
-  require("./Patterns");
-  require("./ListPatterns");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
   var SCPattern = $("Pattern");
   var SCPseq = $("Pseq");
 
@@ -22,6 +18,7 @@
         return $$(instance, "Pattern" + this.test.title);
       };
     });
+
     it("#++", sinon.test(function() {
       var instance, test;
       var $aPattern = $$();
@@ -34,9 +31,10 @@
       }));
 
       test = instance ["++"] ($aPattern);
-      expect(SCPseq$new.args[0]).to.eqls($$([ [ instance, $aPattern ] ])._);
+      expect(SCPseq$new.args[0]).to.deep.equals($$([ [ instance, $aPattern ] ])._);
       expect(SCPseq$new).to.be.calledLastIn(test);
     }));
+
     it("#<>", sinon.test(function() {
       var instance, test;
       var $aPattern = $$();
@@ -51,6 +49,7 @@
       expect(SCPchain$new).to.be.calledWith(instance, $aPattern);
       expect(SCPchain$new).to.be.calledLastIn(test);
     }));
+
     it("#play", sinon.test(function() {
       var instance, test;
       var $clock = $$();
@@ -68,6 +67,7 @@
       expect($play).to.be.calledWith($clock, $.False(), $quant);
       expect($play).to.be.calledLastIn(test);
     }));
+
     it("#asStream", function() {
       var r = this.createInstance([ 1, 2, 3 ]).asStream();
       expect(r.next(), 1).to.be.a("SCInteger").that.equals(1);
@@ -75,6 +75,7 @@
       expect(r.next(), 3).to.be.a("SCInteger").that.equals(3);
       expect(r.next(), 4).to.be.a("SCNil");
     });
+
     it("#iter", sinon.test(function() {
       var instance, test;
 
@@ -84,6 +85,7 @@
       test = instance.iter();
       expect(instance.asStream).to.be.calledLastIn(test);
     }));
+
     it("#streamArg", sinon.test(function() {
       var instance, test;
 
@@ -93,6 +95,7 @@
       test = instance.streamArg();
       expect(instance.asStream).to.be.calledLastIn(test);
     }));
+
     it("#asEventStreamPlayer", sinon.test(function() {
       var instance, test;
       var $protoEvent = $$();
@@ -109,6 +112,7 @@
       expect(SCEventStreamPlayer$new).to.be.calledWith($stream, $protoEvent);
       expect(SCEventStreamPlayer$new).to.be.calledLastIn(test);
     }));
+
     it("#embedInStream", sinon.test(function() {
       var instance, test;
       var $inval = $$();
@@ -121,6 +125,7 @@
       expect($stream.embedInStream).to.be.calledWith($inval);
       expect($stream.embedInStream).to.be.calledLastIn(test);
     }));
+
     it("#do", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -133,6 +138,7 @@
       expect($stream.do).to.be.calledWith($function);
       expect($stream.do).to.be.calledLastIn(test);
     }));
+
     it("#collect", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -147,6 +153,7 @@
       expect(SCPcollect$new).to.be.calledWith($function, instance);
       expect(SCPcollect$new).to.be.calledLastIn(test);
     }));
+
     it("#select", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -161,6 +168,7 @@
       expect(SCPselect$new).to.be.calledWith($function, instance);
       expect(SCPselect$new).to.be.calledLastIn(test);
     }));
+
     it("#reject", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -175,6 +183,7 @@
       expect(SCPreject$new).to.be.calledWith($function, instance);
       expect(SCPreject$new).to.be.calledLastIn(test);
     }));
+
     it("#composeUnaryOp", sinon.test(function() {
       var instance, test;
       var $operator = $$();
@@ -189,6 +198,7 @@
       expect(SCPunop$new).to.be.calledWith($operator, instance);
       expect(SCPunop$new).to.be.calledLastIn(test);
     }));
+
     it("#composeBinaryOp", sinon.test(function() {
       var instance, test;
       var $operator = $$();
@@ -205,6 +215,7 @@
       expect(SCPbinop$new).to.be.calledWith($operator, instance, $pattern, $adverb);
       expect(SCPbinop$new).to.be.calledLastIn(test);
     }));
+
     it("#reverseComposeBinaryOp", sinon.test(function() {
       var instance, test;
       var $operator = $$();
@@ -221,6 +232,7 @@
       expect(SCPbinop$new).to.be.calledWith($operator, $pattern, instance, $adverb);
       expect(SCPbinop$new).to.be.calledLastIn(test);
     }));
+
     it("#composeNAryOp", sinon.test(function() {
       var instance, test;
       var $selector = $$();
@@ -236,6 +248,7 @@
       expect(SCPnaryop$new).to.be.calledWith($selector, instance, $argList);
       expect(SCPnaryop$new).to.be.calledLastIn(test);
     }));
+
     it("#mtranspose", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -250,6 +263,7 @@
       expect(SCPaddp$new).to.be.calledWith($$("\\mtranspose"), $n, instance);
       expect(SCPaddp$new).to.be.calledLastIn(test);
     }));
+
     it("#ctranspose", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -264,6 +278,7 @@
       expect(SCPaddp$new).to.be.calledWith($$("\\ctranspose"), $n, instance);
       expect(SCPaddp$new).to.be.calledLastIn(test);
     }));
+
     it("#gtranspose", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -278,6 +293,7 @@
       expect(SCPaddp$new).to.be.calledWith($$("\\gtranspose"), $n, instance);
       expect(SCPaddp$new).to.be.calledLastIn(test);
     }));
+
     it("#detune", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -292,6 +308,7 @@
       expect(SCPaddp$new).to.be.calledWith($$("\\detune"), $n, instance);
       expect(SCPaddp$new).to.be.calledLastIn(test);
     }));
+
     it("#scaleDur", sinon.test(function() {
       var instance, test;
       var $x = $$();
@@ -306,6 +323,7 @@
       expect(SCPmulp$new).to.be.calledWith($$("\\dur"), $x, instance);
       expect(SCPmulp$new).to.be.calledLastIn(test);
     }));
+
     it("#addDur", sinon.test(function() {
       var instance, test;
       var $x = $$();
@@ -320,6 +338,7 @@
       expect(SCPaddp$new).to.be.calledWith($$("\\dur"), $x, instance);
       expect(SCPaddp$new).to.be.calledLastIn(test);
     }));
+
     it("#stretch", sinon.test(function() {
       var instance, test;
       var $x = $$();
@@ -334,6 +353,7 @@
       expect(SCPmulp$new).to.be.calledWith($$("\\stretch"), $x, instance);
       expect(SCPmulp$new).to.be.calledLastIn(test);
     }));
+
     it("#lag", sinon.test(function() {
       var instance, test;
       var $t = $$();
@@ -348,6 +368,7 @@
       expect(SCPlag$new).to.be.calledWith($t, instance);
       expect(SCPlag$new).to.be.calledLastIn(test);
     }));
+
     it("#legato", sinon.test(function() {
       var instance, test;
       var $x = $$();
@@ -362,6 +383,7 @@
       expect(SCPmulp$new).to.be.calledWith($$("\\legato"), $x, instance);
       expect(SCPmulp$new).to.be.calledLastIn(test);
     }));
+
     it("#db", sinon.test(function() {
       var instance, test;
       var $db = $$();
@@ -376,6 +398,7 @@
       expect(SCPaddp$new).to.be.calledWith($$("\\db"), $db, instance);
       expect(SCPaddp$new).to.be.calledLastIn(test);
     }));
+
     it("#clump", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -390,6 +413,7 @@
       expect(SCPclump$new).to.be.calledWith($n, instance);
       expect(SCPclump$new).to.be.calledLastIn(test);
     }));
+
     it("#flatten", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -404,6 +428,7 @@
       expect(SCPflatten$new).to.be.calledWith($n, instance);
       expect(SCPflatten$new).to.be.calledLastIn(test);
     }));
+
     it("#repeat", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -418,6 +443,7 @@
       expect(SCPn$new).to.be.calledWith(instance, $n);
       expect(SCPn$new).to.be.calledLastIn(test);
     }));
+
     it("#keep", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -432,6 +458,7 @@
       expect(SCPfin$new).to.be.calledWith($n, instance);
       expect(SCPfin$new).to.be.calledLastIn(test);
     }));
+
     it("#drop", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -446,6 +473,7 @@
       expect(SCPdrop$new).to.be.calledWith($n, instance);
       expect(SCPdrop$new).to.be.calledLastIn(test);
     }));
+
     it("#stutter", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -460,6 +488,7 @@
       expect(SCPstutter$new).to.be.calledWith($n, instance);
       expect(SCPstutter$new).to.be.calledLastIn(test);
     }));
+
     it("#finDur", sinon.test(function() {
       var instance, test;
       var $dur = $$();
@@ -475,6 +504,7 @@
       expect(SCPfindur$new).to.be.calledWith($dur, instance, $tolerance);
       expect(SCPfindur$new).to.be.calledLastIn(test);
     }));
+
     it("#fin", sinon.test(function() {
       var instance, test;
       var $n = $$();
@@ -489,6 +519,7 @@
       expect(SCPfin$new).to.be.calledWith($n, instance);
       expect(SCPfin$new).to.be.calledLastIn(test);
     }));
+
     it("#trace", sinon.test(function() {
       var instance, test;
       var $key = $$();
@@ -505,6 +536,7 @@
       expect(SCPtrace$new).to.be.calledWith(instance, $key, $printStream, $prefix);
       expect(SCPtrace$new).to.be.calledLastIn(test);
     }));
+
     it("#differentiate", sinon.test(function() {
       var instance, test;
       var SCPdiff$new = this.spy(sc.test.func());
@@ -518,8 +550,10 @@
       expect(SCPdiff$new).to.be.calledWith(instance);
       expect(SCPdiff$new).to.be.calledLastIn(test);
     }));
+
     it.skip("#integrate", function() {
     });
+
     it.skip("#record", function() {
     });
   });
@@ -532,6 +566,7 @@
         return SCPseries.new($$(start || 0), $$(step || 1), $$(length || Infinity));
       };
     });
+
     it("#asStream", function() {
       var r = this.createInstance(100, 10, 5).asStream();
       expect(r.next(), 0).to.be.a("SCInteger").that.equals(100);
@@ -541,10 +576,12 @@
       expect(r.next(), 4).to.be.a("SCInteger").that.equals(140);
       expect(r.next(), 5).to.be.a("SCNil");
     });
+
     it("#asStream break", function() {
       var r = this.createInstance(100, $$(null)).asStream();
       expect(r.next(), 0).to.be.a("SCNil");
     });
+
     it.skip("#storeArgs", function() {
     });
   });
@@ -557,6 +594,7 @@
         return SCPgeom.new($$(start || 0), $$(grow || 1), $$(length || Infinity));
       };
     });
+
     it("#asStream", function() {
       var r = this.createInstance(1, 256, 5).asStream();
       expect(r.next(), 0).to.be.a("SCInteger").that.equals(1);
@@ -566,11 +604,14 @@
       expect(r.next(), 4).to.be.a("SCInteger").that.equals(0); // overflow
       expect(r.next(), 5).to.be.a("SCNil");
     });
+
     it("#asStream break", function() {
       var r = this.createInstance(1, $$(null)).asStream();
       expect(r.next(), 0).to.be.a("SCNil");
     });
+
     it.skip("#storeArgs", function() {
     });
   });
-})();
+
+});

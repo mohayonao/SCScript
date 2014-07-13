@@ -1,25 +1,23 @@
-(function() {
+describe("Collections/Collection", function() {
   "use strict";
 
-  require("./Collection");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCCollection = $("Collection");
   var SCArray = $("Array");
+  var $int3 = $$(3);
+  var $int10 = $$(10);
+  var $int100 = $$(100);
 
   describe("SCCollection", function() {
-    var $int3 = $$(3);
-    var $int10 = $$(10);
-    var $int100 = $$(100);
     before(function() {
       this.createInstance = function(source, immutable) {
         var instance = $.Array((source||[]).map($$), !!immutable);
         return $$(instance, "Collection" + this.test.title);
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -28,13 +26,15 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
+
     it(".newFrom", function() {
       var test;
       var $aCollection = $$([ 1, 2, 3, 4, 5 ]);
 
       test = SCCollection.newFrom.call(SCArray, $aCollection);
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
+
     it(".with", function() {
       var test;
       var $arg1 = $$();
@@ -42,31 +42,34 @@
       var $arg3 = $$();
 
       test = SCCollection.with.call(SCArray, $arg1, $arg2, $arg3);
-      expect(test).to.be.a("SCArray").that.eqls([ $arg1, $arg2, $arg3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ $arg1, $arg2, $arg3 ]);
     });
+
     it(".fill", function() {
       var test;
 
       test = SCCollection.fill.call(SCArray, $int3, $$(function($i) {
         return $i ["*"] ($$(100));
       }));
-      expect(test).to.be.a("SCArray").that.eqls([ 0, 100, 200 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 0, 100, 200 ]);
 
       test = SCCollection.fill.call(SCArray, $$([ $int3, $int3 ]));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ null, null, null ], [ null, null, null ], [ null, null, null ]
       ]);
     });
+
     it(".fill2D", function() {
       var test;
 
       test = SCCollection.fill2D.call(SCArray, $int3, $int3, $$(function($i, $j) {
         return $i ["*"] ($int10) ["+"] ($j);
       }));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ 0, 1, 2 ], [ 10, 11, 12 ], [ 20, 21, 22 ]
       ]);
     });
+
     it(".fill3D", function() {
       var test;
 
@@ -75,20 +78,22 @@
           return $i ["*"] ($int100) ["+"] ($j ["*"] ($int10)) ["+"] ($k);
         })
       );
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ [   0,   1,   2 ], [  10,  11,  12 ], [  20,  21 , 22 ] ],
         [ [ 100, 101, 102 ], [ 110, 111, 112 ], [ 120, 121, 122 ] ],
         [ [ 200, 201, 202 ], [ 210, 211, 212 ], [ 220, 221, 222 ] ]
       ]);
     });
+
     it(".fillND", function() {
       var test;
 
       test = SCCollection.fillND.call(SCArray, $$([ $int3, $int3 ]));
-      expect(test).to.be.a("SCArray").that.eqls([
+      expect(test).to.be.a("SCArray").that.deep.equals([
         [ null, null, null ], [ null, null, null ], [ null, null, null ]
       ]);
     });
+
     it("#@", sinon.test(function() {
       var instance, test;
       var $index = $$();
@@ -100,6 +105,7 @@
       expect(instance.at).to.be.calledWith($index);
       expect(instance.at).to.be.calledLastIn(test);
     }));
+
     it("#==", function() {
       testCase(this, [
         {
@@ -131,6 +137,7 @@
     });
     it.skip("#hash", function() {
     });
+
     it("#species", function() {
       var instance, test;
 
@@ -139,6 +146,7 @@
       test = instance.species();
       expect(test).to.equal(SCArray);
     });
+
     it("#do", function() {
       var instance;
 
@@ -147,6 +155,7 @@
     });
     it.skip("#iter", function() {
     });
+
     it("#size", function() {
       testCase(this, [
         {
@@ -159,6 +168,7 @@
         },
       ]);
     });
+
     it("#flatSize", function() {
       testCase(this, [
         {
@@ -175,6 +185,7 @@
         },
       ]);
     });
+
     it("#isEmpty", function() {
       testCase(this, [
         {
@@ -187,6 +198,7 @@
         },
       ]);
     });
+
     it("#notEmpty", function() {
       testCase(this, [
         {
@@ -199,12 +211,14 @@
         },
       ]);
     });
+
     it("#asCollection", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.asCollection).to.doNothing;
     });
+
     it("#isCollection", function() {
       var instance, test;
 
@@ -213,12 +227,14 @@
       test = instance.isCollection();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
+
     it("#add", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.add.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
+
     it("#addAll", function() {
       testCase(this, [
         {
@@ -229,12 +245,14 @@
         },
       ]);
     });
+
     it("#remove", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.remove.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
+
     it("#removeAll", function() {
       testCase(this, [
         {
@@ -245,6 +263,7 @@
         },
       ]);
     });
+
     it("#removeEvery", function() {
       testCase(this, [
         {
@@ -255,6 +274,7 @@
         },
       ]);
     });
+
     it("#removeAllSuchThat", function() {
       testCase(this, [
         {
@@ -267,6 +287,7 @@
         },
       ]);
     });
+
     it("#atAll", function() {
       testCase(this, [
         {
@@ -276,6 +297,7 @@
         },
       ]);
     });
+
     it("#putEach", function() {
       testCase(this, [
         {
@@ -286,6 +308,7 @@
         },
       ]);
     });
+
     it("#includes", function() {
       testCase(this, [
         {
@@ -305,6 +328,7 @@
         },
       ]);
     });
+
     it("#includesEqual", function() {
       testCase(this, [
         {
@@ -324,6 +348,7 @@
         },
       ]);
     });
+
     it("#includesAny", function() {
       testCase(this, [
         {
@@ -343,6 +368,7 @@
         },
       ]);
     });
+
     it("#includesAll", function() {
       testCase(this, [
         {
@@ -362,6 +388,7 @@
         },
       ]);
     });
+
     it("#matchItem", sinon.test(function() {
       var instance, test;
       var $item = $$();
@@ -373,6 +400,7 @@
       expect(instance.includes).to.be.calledWith($item);
       expect(instance.includes).to.be.calledLastIn(test);
     }));
+
     it("#collect", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -384,6 +412,7 @@
       expect(instance.collectAs).to.be.calledWith($function, SCArray);
       expect(instance.collectAs).to.be.calledLastIn(test);
     }));
+
     it("#select", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -395,6 +424,7 @@
       expect(instance.selectAs).to.be.calledWith($function, SCArray);
       expect(instance.selectAs).to.be.calledLastIn(test);
     }));
+
     it("#reject", sinon.test(function() {
       var instance, test;
       var $function = $$();
@@ -406,6 +436,7 @@
       expect(instance.rejectAs).to.be.calledWith($function, SCArray);
       expect(instance.rejectAs).to.be.calledLastIn(test);
     }));
+
     it("#collectAs", function() {
       var instance, test;
       var $function = $$(function($elem, $i) {
@@ -415,8 +446,9 @@
       instance = this.createInstance([ 10, 20, 30, 40, 50 ]);
 
       test = instance.collectAs($function, instance.species());
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 3, 5, 7, 9 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 3, 5, 7, 9 ]);
     });
+
     it("#selectAs", function() {
       var instance, test;
       var $function = $$(function($elem, $i) {
@@ -426,8 +458,9 @@
       instance = this.createInstance([ 10, 20, 30, 40, 50 ]);
 
       test = instance.selectAs($function, instance.species());
-      expect(test).to.be.a("SCArray").that.eqls([ 10, 20, 30 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 10, 20, 30 ]);
     });
+
     it("#rejectAs", function() {
       var instance, test;
       var $function = $$(function($elem, $i) {
@@ -437,8 +470,9 @@
       instance = this.createInstance([ 10, 20, 30, 40, 50 ]);
 
       test = instance.rejectAs($function, instance.species());
-      expect(test).to.be.a("SCArray").that.eqls([ 40, 50 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 40, 50 ]);
     });
+
     it("#detect", function() {
       testCase(this, [
         {
@@ -457,6 +491,7 @@
         },
       ]);
     });
+
     it("#detectIndex", function() {
       testCase(this, [
         {
@@ -475,6 +510,7 @@
         },
       ]);
     });
+
     it("#doMsg", sinon.test(function() {
       var instance, test;
       var $elem1 = $$({ perform: this.spy() });
@@ -492,6 +528,7 @@
       expect($elem3.perform).to.be.calledWith($selector, $arg1, $arg2);
       expect(test).to.equal(instance);
     }));
+
     it("#collectMsg", sinon.test(function() {
       var instance, test;
       var $elem1 = $$(1);
@@ -510,8 +547,9 @@
       expect($elem1.odd).to.be.calledWith($arg1, $arg2);
       expect($elem2.odd).to.be.calledWith($arg1, $arg2);
       expect($elem3.odd).to.be.calledWith($arg1, $arg2);
-      expect(test).to.be.a("SCArray").that.eqls([ true, false, true ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ true, false, true ]);
     }));
+
     it("#selectMsg", sinon.test(function() {
       var instance, test;
       var $elem1 = $$(1);
@@ -530,8 +568,9 @@
       expect($elem1.odd).to.be.calledWith($arg1, $arg2);
       expect($elem2.odd).to.be.calledWith($arg1, $arg2);
       expect($elem3.odd).to.be.calledWith($arg1, $arg2);
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 3 ]);
     }));
+
     it("#rejectMsg", sinon.test(function() {
       var instance, test;
       var $elem1 = $$(1);
@@ -550,8 +589,9 @@
       expect($elem1.odd).to.be.calledWith($arg1, $arg2);
       expect($elem2.odd).to.be.calledWith($arg1, $arg2);
       expect($elem3.odd).to.be.calledWith($arg1, $arg2);
-      expect(test).to.be.a("SCArray").that.eqls([ 2 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 2 ]);
     }));
+
     it("#detectMsg", sinon.test(function() {
       var instance, test;
       var $elem1 = $$(-2);
@@ -574,6 +614,7 @@
       expect($elem3.isPositive).to.be.calledWith($arg1, $arg2);
       expect(test).to.be.a("SCInteger").that.equals(0);
     }));
+
     it("#detectIndexMsg", sinon.test(function() {
       var instance, test;
       var $elem1 = $$(-2);
@@ -596,6 +637,7 @@
       expect($elem3.isPositive).to.be.calledWith($arg1, $arg2);
       expect(test).to.be.a("SCInteger").that.equals(2);
     }));
+
     it("#lastForWhich", function() {
       testCase(this, [
         {
@@ -614,6 +656,7 @@
         },
       ]);
     });
+
     it("#lastIndexForWhich", function() {
       testCase(this, [
         {
@@ -632,6 +675,7 @@
         },
       ]);
     });
+
     it("#inject", function() {
       testCase(this, [
         {
@@ -643,6 +687,7 @@
         },
       ]);
     });
+
     it("#injectr", function() {
       testCase(this, [
         {
@@ -654,6 +699,7 @@
         },
       ]);
     });
+
     it("#count", function() {
       testCase(this, [
         {
@@ -665,6 +711,7 @@
         }
       ]);
     });
+
     it("#occurrencesOf", function() {
       testCase(this, [
         {
@@ -679,6 +726,7 @@
         },
       ]);
     });
+
     it("#any", function() {
       testCase(this, [
         {
@@ -697,6 +745,7 @@
         },
       ]);
     });
+
     it("#every", function() {
       testCase(this, [
         {
@@ -715,6 +764,7 @@
         },
       ]);
     });
+
     it("#sum", function() {
       testCase(this, [
         {
@@ -730,6 +780,7 @@
         },
       ]);
     });
+
     it("#mean", function() {
       testCase(this, [
         {
@@ -738,6 +789,7 @@
         },
       ]);
     });
+
     it("#product", function() {
       testCase(this, [
         {
@@ -753,6 +805,7 @@
         },
       ]);
     });
+
     it("#sumabs", function() {
       testCase(this, [
         {
@@ -765,6 +818,7 @@
         },
       ]);
     });
+
     it("#maxItem", function() {
       testCase(this, [
         {
@@ -780,6 +834,7 @@
         },
       ]);
     });
+
     it("#minItem", function() {
       testCase(this, [
         {
@@ -795,6 +850,7 @@
         },
       ]);
     });
+
     it("#maxIndex", function() {
       testCase(this, [
         {
@@ -810,6 +866,7 @@
         },
       ]);
     });
+
     it("#minIndex", function() {
       testCase(this, [
         {
@@ -825,6 +882,7 @@
         },
       ]);
     });
+
     it("#maxValue", function() {
       testCase(this, [
         {
@@ -840,6 +898,7 @@
         },
       ]);
     });
+
     it("#minValue", function() {
       testCase(this, [
         {
@@ -855,6 +914,7 @@
         },
       ]);
     });
+
     it("#maxSizeAtDepth", function() {
       testCase(this, [
         {
@@ -879,6 +939,7 @@
         },
       ]);
     });
+
     it("#maxDepth", function() {
       testCase(this, [
         {
@@ -893,6 +954,7 @@
         },
       ]);
     });
+
     it("#deepCollect", function() {
       testCase(this, [
         {
@@ -928,6 +990,7 @@
       beforeEach(function() {
         $result = $$([]);
       });
+
       it("#deepDo.depth:nil", function() {
         var instance, test;
 
@@ -936,8 +999,9 @@
         test = instance.deepDo($$(null), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ 1, 2, 3, 4, 5 ]);
+          .that.deep.equals([ 1, 2, 3, 4, 5 ]);
       });
+
       it("#deepDo.depth:0", function() {
         var instance, test;
 
@@ -946,8 +1010,9 @@
         test = instance.deepDo($$(0), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ [ 1, [ 2, 3, 4 ], [ [ 5 ] ] ] ]);
+          .that.deep.equals([ [ 1, [ 2, 3, 4 ], [ [ 5 ] ] ] ]);
       });
+
       it("#deepDo.depth:1", function() {
         var instance, test;
 
@@ -956,8 +1021,9 @@
         test = instance.deepDo($$(1), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
+          .that.deep.equals([ 1, [ 2, 3, 4 ], [ [ 5 ] ] ]);
       });
+
       it("#deepDo.depth:2", function() {
         var instance, test;
 
@@ -966,9 +1032,10 @@
         test = instance.deepDo($$(2), $function);
         expect(test).to.equal(instance);
         expect($result).to.be.a("SCArray")
-          .that.eqls([ 1, 2, 3, 4, [ 5 ] ]);
+          .that.deep.equals([ 1, 2, 3, 4, [ 5 ] ]);
       });
     });
+
     it("#invert", function() {
       testCase(this, [
         {
@@ -986,6 +1053,7 @@
         },
       ]);
     });
+
     it("#sect", function() {
       testCase(this, [
         {
@@ -995,6 +1063,7 @@
         },
       ]);
     });
+
     it("#union", function() {
       testCase(this, [
         {
@@ -1004,6 +1073,7 @@
         },
       ]);
     });
+
     it("#difference", function() {
       testCase(this, [
         {
@@ -1013,6 +1083,7 @@
         },
       ]);
     });
+
     it("#symmetricDifference", function() {
       testCase(this, [
         {
@@ -1022,6 +1093,7 @@
         },
       ]);
     });
+
     it("#isSubsetOf", function() {
       testCase(this, [
         {
@@ -1036,6 +1108,7 @@
         },
       ]);
     });
+
     it("#asArray", sinon.test(function() {
       var instance, test;
       var $new = this.spy(function() {
@@ -1047,10 +1120,11 @@
       this.stub(SCArray, "new", $new);
 
       test = instance.asArray();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
+
     it("#asBag", sinon.test(function() {
       var instance, test;
       var $new = this.spy(function() {
@@ -1064,10 +1138,11 @@
       }));
 
       test = instance.asBag();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
+
     it("#asList", sinon.test(function() {
       var instance, test;
       var $new = this.spy(function() {
@@ -1081,10 +1156,11 @@
       }));
 
       test = instance.asList();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
+
     it("#asSet", sinon.test(function() {
       var instance, test;
       var $new = this.spy(function() {
@@ -1098,10 +1174,11 @@
       }));
 
       test = instance.asSet();
-      expect($new.args[0]).to.eql($$([ 3 ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3 ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
+
     it("#asSortedList", sinon.test(function() {
       var instance, test;
       var $new = this.spy(function() {
@@ -1116,7 +1193,7 @@
       }));
 
       test = instance.asSortedList($function);
-      expect($new.args[0]).to.eql($$([ 3, $function ])._);
+      expect($new.args[0]).to.deep.equal($$([ 3, $function ])._);
       expect($addAll).to.be.calledWith(instance);
       expect($addAll).to.be.calledLastIn(test);
     }));
@@ -1156,6 +1233,7 @@
     });
     it.skip("#makeEnvirValPairs", function() {
     });
+
     it("#asString", function() {
       var instance, test;
 
@@ -1165,4 +1243,5 @@
       expect(test).to.be.a("SCString").that.equals("Array[ 1, 2, 3 ]");
     });
   });
-})();
+
+});

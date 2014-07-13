@@ -1,12 +1,9 @@
-(function() {
+describe("Math/Magnitude", function() {
   "use strict";
 
-  require("./Magnitude");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
 
   describe("SCMagnitude", function() {
     before(function() {
@@ -15,6 +12,7 @@
         return $$(instance, "Magnitude" + this.test.title);
       };
     });
+
     it("#==", function() {
       testCase(this, [
         [ 1, [ 2 ], false ],
@@ -22,6 +20,7 @@
         [ 3, [ 2 ], false ],
       ]);
     });
+
     it("#!=", function() {
       testCase(this, [
         [ 1, [ 2 ], true  ],
@@ -29,6 +28,7 @@
         [ 3, [ 2 ], true  ],
       ]);
     });
+
     it("#<", function() {
       testCase(this, [
         [ 1, [ 2 ], true  ],
@@ -36,6 +36,7 @@
         [ 3, [ 2 ], false ],
       ]);
     });
+
     it("#>", function() {
       testCase(this, [
         [ 1, [ 2 ], false ],
@@ -43,6 +44,7 @@
         [ 3, [ 2 ], true  ],
       ]);
     });
+
     it("#<=", function() {
       testCase(this, [
         [ 1, [ 2 ], true  ],
@@ -50,6 +52,7 @@
         [ 3, [ 2 ], false ],
       ]);
     });
+
     it("#>=", function() {
       testCase(this, [
         [ 1, [ 2 ], false ],
@@ -57,6 +60,7 @@
         [ 3, [ 2 ], true  ],
       ]);
     });
+
     it("#exclusivelyBetween", function() {
       testCase(this, [
         [ 1, [ 2, 4 ], false ],
@@ -66,6 +70,7 @@
         [ 5, [ 2, 4 ], false ],
       ]);
     });
+
     it("#inclusivelyBetween", function() {
       testCase(this, [
         [ 1, [ 2, 4 ], false ],
@@ -75,6 +80,7 @@
         [ 5, [ 2, 4 ], false ],
       ]);
     });
+
     it("#min", function() {
       testCase(this, [
         [ 1, [ 2 ], $.Float(1.0) ],
@@ -82,6 +88,7 @@
         [ 3, [ 2 ], 2 ],
       ]);
     });
+
     it("#max", function() {
       testCase(this, [
         [ 1, [ 2 ], 2 ],
@@ -89,6 +96,7 @@
         [ 3, [ 2 ], $.Float(3.0) ],
       ]);
     });
+
     it("#clip", function() {
       testCase(this, [
         [ 1, [ 2, 4 ], 2 ],
@@ -99,4 +107,5 @@
       ]);
     });
   });
-})();
+
+});

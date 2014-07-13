@@ -1,28 +1,21 @@
 (function() {
   "use strict";
 
-  require("./random");
-
   var random = sc.libs.random;
 
   describe("sc.libs.random", function() {
     it("setCurrent / getCurrent", function() {
-      var test;
+      var randgen = new random.RandGen();
+      random.setCurrent(randgen);
 
-      test = sc.libs.random.getCurrent();
-      expect(test).to.instanceOf(random.RandGen);
-
-      sc.libs.random.setCurrent(0);
-
-      test = sc.libs.random.getCurrent();
-      expect(test).to.equal(0);
-
-      sc.libs.random.setCurrent(new random.RandGen());
+      var test = random.getCurrent();
+      expect(test).to.equal(randgen);
     });
-    it("random generator", function() {
+    it("generate", function() {
       random.setSeed(0);
 
-      _.each([
+      var test = _.map(_.range(10), random.next);
+      var expected = [
         0.85755145549774,
         0.07253098487854,
         0.15391707420349,
@@ -33,10 +26,8 @@
         0.82429480552673,
         0.09632408618927,
         0.93640172481537
-      ], function(expected, i) {
-        expect(random.next()).withMessage("i: #{0}", i)
-          .to.closeTo(expected, 1e-6);
-      });
+      ];
+      expect(test).to.deep.closeTo(expected, 1e-6);
     });
   });
 })();

@@ -1,12 +1,9 @@
-(function() {
+describe("Core/Function", function() {
   "use strict";
 
-  require("./Function");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCFunction = $("Function");
   var SCArray = $("Array");
 
@@ -18,6 +15,7 @@
         }, def);
       };
     });
+
     it("#__tag", function() {
       var instance, test;
 
@@ -28,9 +26,11 @@
     });
     it.skip("<def", function() {
     });
+
     it(".new", function() {
       expect(SCFunction.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
+
     it("#isFunction", function() {
       var instance, test;
 
@@ -41,6 +41,7 @@
     });
     it.skip("#isClosed", function() {
     });
+
     it("#archiveAsCompileString", function() {
       var instance, test;
 
@@ -49,6 +50,7 @@
       test = instance.archiveAsCompileString();
       expect(test).to.be.a("SCBoolean").that.is.true;
     });
+
     it("#archiveAsObject", function() {
       var instance, test;
 
@@ -59,10 +61,12 @@
     });
     it.skip("#checkCanArchive", function() {
     });
+
     it("#shallowCopy", function() {
       var instance = this.createInstance();
       expect(instance.shallowCopy).to.doNothing;
     });
+
     it("#choose", sinon.test(function() {
       var instance, test;
 
@@ -72,6 +76,7 @@
       test = instance.choose();
       expect(instance.value).to.be.calledLastIn(test);
     }));
+
     it("#update", sinon.test(function() {
       var instance, test;
       var $arg1 = $$();
@@ -85,6 +90,7 @@
       expect(func).to.be.calledWith($arg1, $arg2, $arg3);
       expect(func).to.be.calledLastIn(test);
     }));
+
     it("#value", sinon.test(function() {
       var instance, test;
       var func = this.spy(sc.test.func());
@@ -95,6 +101,7 @@
       expect(func).to.be.calledWith(1, 2, 3);
       expect(func).to.be.calledLastIn(test);
     }));
+
     it("#valueArray", sinon.test(function() {
       var instance, test;
       var $arg1 = $$();
@@ -113,6 +120,7 @@
       expect(func).to.be.calledWith($arg1, $arg2, $arg3);
       expect(func).to.be.calledLastIn(test);
     }));
+
     it("#valueEnvir", sinon.test(sc.test(function() {
       var instance, test;
       var $arg1 = $$();
@@ -122,9 +130,10 @@
       $.Environment("c", $$(300));
 
       test = instance.valueEnvir($arg1);
-      expect(func.args[0]).that.eqls($$([ $arg1, 2, 300 ])._);
+      expect(func.args[0]).that.deep.equals($$([ $arg1, 2, 300 ])._);
       expect(func).to.be.calledLastIn(test);
     })));
+
     it("#valueArrayEnvir", sinon.test(sc.test(function() {
       var instance, test;
       var $arg1 = $$();
@@ -136,9 +145,10 @@
 
       test = instance.valueArrayEnvir($$([ $arg1, $arg2 ]));
 
-      expect(func.args[0]).that.eqls($$([ $arg1, null, 300 ])._);
+      expect(func.args[0]).that.deep.equals($$([ $arg1, null, 300 ])._);
       expect(func).to.be.calledLastIn(test);
     })));
+
     it("#functionPerformList", sinon.test(function() {
       var instance, test;
 
@@ -146,7 +156,7 @@
       this.stub(instance, "value", sc.test.func());
 
       test = instance.functionPerformList($$("\\value"), $$([ 1, 2, 3 ]));
-      expect(instance.value.args[0]).to.eql($$([ 1, 2, 3 ])._);
+      expect(instance.value.args[0]).to.deep.equal($$([ 1, 2, 3 ])._);
       expect(instance.value).to.be.calledLastIn(test);
     }));
     it.skip("#valueWithEnvir", function() {
@@ -159,6 +169,7 @@
     });
     it.skip("#numVars", function() {
     });
+
     it("#loop", sinon.test(function() {
       var instance, test;
       var iter = {};
@@ -176,6 +187,7 @@
     }));
     it.skip("#block", function() {
     });
+
     it("#asRoutine", function() {
       var instance, test;
 
@@ -184,6 +196,7 @@
       test = instance.asRoutine();
       expect(test).to.be.a("SCRoutine");
     });
+
     it("#dup", sinon.test(function() {
       var instance, test;
       var $n = $$(3);
@@ -218,6 +231,7 @@
     });
     it.skip("#bench", function() {
     });
+
     it("#protect", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -231,6 +245,7 @@
       expect(test).to.be.a("SCInteger").that.equals(1);
       expect(func).to.be.called;
     }));
+
     it("#protect with error", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -246,6 +261,7 @@
     }));
     it.skip("#handleError", function() {
     });
+
     it("#case", function() {
       testCase(this, [
         {
@@ -281,6 +297,7 @@
         },
       ]);
     });
+
     it("#r", function() {
       var instance, test;
 
@@ -289,6 +306,7 @@
       test = instance.r();
       expect(test).to.be.a("SCRoutine");
     });
+
     it("#p", sinon.test(function() {
       var instance, test;
       var SCProut$new = this.spy(sc.test.func());
@@ -306,6 +324,7 @@
     });
     it.skip("#performDegreeToKey", function() {
     });
+
     it("#flop", function() {
       var instance, test;
 
@@ -320,7 +339,7 @@
         $$([  1,  2     ]),
         $$([ 10, 20, 30 ])
       );
-      expect(test).to.be.a("SCArray").that.eqls([ 11, 22, 31 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 11, 22, 31 ]);
     });
     it.skip("#envirFlop", function() {
     });
@@ -328,6 +347,7 @@
     });
     it.skip("#inEnvir", function() {
     });
+
     it("#while", sinon.test(function() {
       var instance, test;
       var iter = {};
@@ -345,4 +365,5 @@
       expect(test).to.equal(instance);
     }));
   });
-})();
+
+});

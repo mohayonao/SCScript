@@ -1,11 +1,8 @@
-(function() {
+describe("Streams/BasicOpsStream", function() {
   "use strict";
 
-  require("./BasicOpsStream");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
 
   function arrayToFuncStream() {
     var args = arguments, i = 0, j = 0;
@@ -25,6 +22,7 @@
         return $stream.composeUnaryOp($.Symbol(op));
       };
     });
+
     it("#next / #reset", function() {
       /*
         r = Pseq.new([ 1, 2, 3 ]).asStream.neg
@@ -41,6 +39,7 @@
       expect(r.next() , 8).to.be.a("SCInteger").that.equals(-3);
       expect(r.next() , 9).to.be.a("SCNil");
     });
+
     it.skip("#storeOn", function() {
     });
   });
@@ -51,6 +50,7 @@
         return $stream.composeBinaryOp($.Symbol(op), $argStream);
       };
     });
+
     it("#next / #reset case1", function() {
       /*
         r = Pseq.new([ 1, 2, 3 ]).asStream + Pseq.new([ 10, 20 ]).asStream
@@ -67,6 +67,7 @@
       expect(r.next() , 5).to.be.a("SCInteger").that.equals(22);
       expect(r.next() , 6).to.be.a("SCNil");
     });
+
     it("#next / #reset case2", function() {
       /*
         r = Pseq.new([ 1, 2, 3 ]).asStream + Pseq.new([ 10, 20, 30, 40 ]).asStream
@@ -85,6 +86,7 @@
       expect(r.next() , 8).to.be.a("SCInteger").that.equals(33);
       expect(r.next() , 9).to.be.a("SCNil");
     });
+
     it.skip("#storeOn", function() {
     });
   });
@@ -95,6 +97,7 @@
         return $stream.composeBinaryOp($.Symbol(op), $argStream, $$("\\x"));
       };
     });
+
     it("#next / #reset case1", function() {
       /*
         r = Pseq.new([ 1, 2, 3 ]).asStream + Pseq.new([ 10, 20 ]).asStream
@@ -119,6 +122,7 @@
       expect(r.next() ,14).to.be.a("SCInteger").that.equals(23);
       expect(r.next() ,15).to.be.a("SCNil");
     });
+
     it("#next / #reset case2", sc.test(function() {
       /*
         r = r { [].do(_.yield) } + Pseq.new([ 10, 20 ]).asStream
@@ -129,6 +133,7 @@
 
       expect(r.next()).to.be.a("SCNil");
     }));
+
     it("#next / #reset case3", sc.test(function() {
       /*
         r = Pseq.new([ 1, 2 ]).asStream + r { [].do(_.yield) }
@@ -139,6 +144,7 @@
 
       expect(r.next()).to.be.a("SCNil");
     }));
+
     it("#next / #reset case4", sc.test(function() {
       var r;
       var $stream1, $stream2;
@@ -150,6 +156,7 @@
       expect(r.next(), 1).to.be.a("SCInteger").that.equals(11);
       expect(r.next(), 2).to.be.a("SCNil");
     }));
+
     it.skip("#storeOn", function() {
     });
   });
@@ -160,6 +167,7 @@
         return $stream.composeNAryOp($.Symbol(op), $argList);
       };
     });
+
     it("#next / #reset case1", function() {
       /*
         r = Pseq.new([ 1, 2, 3, 4, 5 ]).asStream.clip(2, 4)
@@ -182,6 +190,7 @@
       expect(r.next() ,12).to.be.a("SCInteger").that.equals(4);
       expect(r.next() ,13).to.be.a("SCNil");
     });
+
     it("#next / #reset case2", function() {
       /*
         r = Pseq.new([ 10, 20, 30, 40, 50 ]).asStream.clip(
@@ -206,7 +215,9 @@
       expect(r.next() , 8).to.be.a("SCInteger").that.equals(100);
       expect(r.next() , 9).to.be.a("SCNil");
     });
+
     it.skip("#storeOn", function() {
     });
   });
-})();
+
+});

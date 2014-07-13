@@ -1,12 +1,9 @@
-(function() {
+describe("Core/Symbol", function() {
   "use strict";
 
-  require("./Symbol");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCSymbol = $("Symbol");
 
   describe("SCSymbol", function() {
@@ -15,6 +12,7 @@
         return $.Symbol(value || "sym");
       };
     });
+
     it("#__tag", function() {
       var instance, test;
 
@@ -23,6 +21,7 @@
       test = instance.__tag;
       expect(test).to.be.a("JSNumber").that.equals(sc.TAG_SYM);
     });
+
     it("#__sym__", function() {
       var instance, test;
 
@@ -31,6 +30,7 @@
       test = instance.__sym__();
       expect(test).to.be.a("JSString").that.equals("sym");
     });
+
     it("#__str__", function() {
       var instance, test;
 
@@ -39,15 +39,18 @@
       test = instance.__str__();
       expect(test).to.be.a("JSString").that.equals("sym");
     });
+
     it(".new", function() {
       expect(SCSymbol.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
+
     it("#asSymbol", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.asSymbol).to.doNothing;
     });
+
     it("#asInteger", function() {
       testCase(this, [
         [ "100", [], 100 ],
@@ -58,6 +61,7 @@
         [ "oo5", [],   0 ],
       ]);
     });
+
     it("#asFloat", function() {
       testCase(this, [
         [ "100", [], $.Float(100) ],
@@ -69,6 +73,7 @@
         [ "+1.5e-5", [], +1.5e-5 ],
       ]);
     });
+
     it("#ascii", sinon.test(function() {
       var instance, test;
       var SCString$ascii = this.spy(sc.test.func());
@@ -82,6 +87,7 @@
     }));
     it.skip("#asCompileString", function() {
     });
+
     it("#asClass", function() {
       var instance, test;
 
@@ -93,6 +99,7 @@
       test = instance.asClass();
       expect(test).to.be.a("SCNil").that.is.null;
     });
+
     it("#asSetter", function() {
       testCase(this, [
         [ "a" , [], "\\a_" ],
@@ -107,12 +114,14 @@
         }
       ]);
     });
+
     it("#asGetter", function() {
       testCase(this, [
         [ "a" , [], "\\a" ],
         [ "a_", [], "\\a" ],
       ]);
     });
+
     it("#asSpec", sinon.test(function() {
       var instance, test;
       var SCArray$at = this.spy(sc.test.func());
@@ -128,6 +137,7 @@
       expect(SCArray$at).to.be.calledWith(instance);
       expect(SCArray$at).to.be.calledLastIn(test);
     }));
+
     it("#asWarp", sinon.test(function() {
       var instance, test;
       var $spec = $$();
@@ -148,6 +158,7 @@
       expect(SCObject$new).to.be.calledWith($spec);
       expect(SCObject$new).to.be.calledLastIn(test);
     }));
+
     it("#asTuning", sinon.test(function() {
       var instance, test;
       var SCTuning$at = this.spy(sc.test.func());
@@ -161,6 +172,7 @@
       expect(SCTuning$at).to.be.calledWith(instance);
       expect(SCTuning$at).to.be.calledLastIn(test);
     }));
+
     it("#asScale", sinon.test(function() {
       var instance, test;
       var SCScale$at = this.spy(sc.test.func());
@@ -174,6 +186,7 @@
       expect(SCScale$at).to.be.calledWith(instance);
       expect(SCScale$at).to.be.calledLastIn(test);
     }));
+
     it("#isSetter", function() {
       testCase(this, [
         [ "a_", [], true  ],
@@ -182,6 +195,7 @@
         [ "1_", [], false ],
       ]);
     });
+
     it("#isClassName", function() {
       testCase(this, [
         [ "Symbol" , [], true ],
@@ -189,12 +203,14 @@
         [ "lowercase", [], false ],
       ]);
     });
+
     it("#isMetaClassName", function() {
       testCase(this, [
         [ "Meta_Symbol", [], true  ],
         [ "Symbol"     , [], false ],
       ]);
     });
+
     it("#isPrefix", function() {
       testCase(this, [
         [ "isPrefix", [ "\\is"  ], true  ],
@@ -202,27 +218,32 @@
         [ "isPrefix", [ 0 ], "\\isPrefix" ]
       ]);
     });
+
     it("#isPrimitiveName", function() {
       testCase(this, [
         [ "_Primitive", [], true  ],
         [ "Primitive_", [], false ],
       ]);
     });
+
     it("#isPrimitive", function() {
       testCase(this, [
         [ "_SymbolIsClassName", [], false ]
       ]);
     });
+
     it("#isMap", function() {
       testCase(this, [
         [ "a0", [], true ]
       ]);
     });
+
     it("#isRest", function() {
       testCase(this, [
         [ "a0", [], false ]
       ]);
     });
+
     it("#envirGet", sc.test(function() {
       var instance, test;
 
@@ -232,6 +253,7 @@
       test = instance.envirGet();
       expect(test).to.be.a("SCInteger").that.equals(1234);
     }));
+
     it("#envirPut", sc.test(function() {
       var instance, test;
 
@@ -242,23 +264,27 @@
       test = $.Environment("key");
       expect(test).to.be.a("SCInteger").that.equals(5678);
     }));
+
     it("#blend", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.blend).to.doNothing;
     });
+
     it("#++", function() {
       testCase(this, [
         [ "abc", [ "def" ], "abcdef" ]
       ]);
     });
+
     it("#asBinOpString", function() {
       testCase(this, [
         [ "max", [], "max:" ],
         [ "123", [], "\\123" ],
       ]);
     });
+
     it("#applyTo", function() {
       var instance, test;
       var $a = $$(10);
@@ -269,6 +295,7 @@
       test = instance.applyTo($a, $b);
       expect(test).to.be.a("SCInteger").that.equals(200);
     });
+
     it("#performBinaryOpOnSomething", function() {
       var instance;
 
@@ -359,6 +386,7 @@
 
     it.skip("#hammingDistance", function() {
     });
+
     it("#<", function() {
       testCase(this, [
         [ "b", [ "\\a" ], false ],
@@ -366,6 +394,7 @@
         [ "b", [ "\\c" ], true  ],
       ]);
     });
+
     it("#>", function() {
       testCase(this, [
         [ "b", [ "\\a" ], true  ],
@@ -373,6 +402,7 @@
         [ "b", [ "\\c" ], false ],
       ]);
     });
+
     it("#<=", function() {
       testCase(this, [
         [ "b", [ "\\a" ], false ],
@@ -380,6 +410,7 @@
         [ "b", [ "\\c" ], true  ],
       ]);
     });
+
     it("#>=", function() {
       testCase(this, [
         [ "b", [ "\\a" ], true  ],
@@ -387,42 +418,49 @@
         [ "b", [ "\\c" ], false ],
       ]);
     });
+
     it("#degreeToKey", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.degreeToKey).to.doNothing;
     });
+
     it("#degrad", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.degrad).to.doNothing;
     });
+
     it("#raddeg", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.raddeg).to.doNothing;
     });
+
     it("#doNumberOp", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.doNumberOp).to.doNothing;
     });
+
     it("#doComplexOp", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.doComplexOp).to.doNothing;
     });
+
     it("#doSignalOp", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.doSignalOp).to.doNothing;
     });
+
     it("#doListOp", sinon.test(function() {
       var instance, test;
       var $aSelector = $$();
@@ -444,6 +482,7 @@
     });
     it.skip("#codegen_UGenCtorArg", function() {
     });
+
     it("#archiveAsCompileString", function() {
       var instance, test;
 
@@ -464,6 +503,7 @@
     });
     it.skip("#help", function() {
     });
+
     it("#asString", function() {
       var instance, test;
 
@@ -472,12 +512,14 @@
       test = instance.asString();
       expect(test).to.be.a("SCString").that.equals("sym");
     });
+
     it("#shallowCopy", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.shallowCopy).to.doNothing;
     });
+
     it("#performBinaryOpOnSimpleNumber", function() {
       var instance;
 
@@ -485,4 +527,5 @@
       expect(instance.performBinaryOpOnSimpleNumber).to.doNothing;
     });
   });
-})();
+
+});

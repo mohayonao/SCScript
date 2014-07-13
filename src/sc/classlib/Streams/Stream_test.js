@@ -1,11 +1,8 @@
-(function() {
+describe("Streams/Stream", function() {
   "use strict";
 
-  require("./Stream");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
   var SCStream = $("Stream");
   var SCOneShotStream = $("OneShotStream");
   var SCFuncStream = $("FuncStream");
@@ -26,6 +23,7 @@
         return $$(instance, "Stream" + this.test.title);
       };
     });
+
     it("#parent", function() {
       var instance, test;
 
@@ -34,18 +32,21 @@
       test = instance.parent();
       expect(test).to.be.a("SCNil");
     });
+
     it("#next", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.next.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
+
     it("#iter", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.iter).to.doNothing;
     });
+
     it("#value", function() {
       /*
         r = Pseq.new([ 1, 2, 3, 4, 5 ]).asStream
@@ -56,6 +57,7 @@
       expect(r.value(), 2).to.be.a("SCInteger").that.equals(2);
       expect(r.value(), 3).to.be.a("SCInteger").that.equals(3);
     });
+
     it("#valueArray", sinon.test(function() {
       var instance, test;
 
@@ -65,28 +67,32 @@
       test = instance.valueArray();
       expect(instance.next).to.be.calledLastIn(test);
     }));
+
     it("#nextN", function() {
       var instance, test;
 
       instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.nextN($$(3));
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 2, 3 ]);
     });
+
     it("#all", function() {
       var instance, test;
 
       instance = this.createInstance(sc.test.routine([ 1, 2, 3, 4, 5 ]));
 
       test = instance.all();
-      expect(test).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect(test).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
+
     it("#put", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.put.__errorType).to.equal(sc.ERRID_SUBCLASS_RESPONSIBILITY);
     });
+
     it("#putN", sinon.test(function() {
       var instance, test;
       var $item = $$();
@@ -97,10 +103,11 @@
       test = instance.putN($$(3), $item);
       expect(test).to.equal(instance);
       expect(instance.put).to.callCount(3);
-      expect(instance.put.args[0]).to.eql([ $item ]);
-      expect(instance.put.args[1]).to.eql([ $item ]);
-      expect(instance.put.args[2]).to.eql([ $item ]);
+      expect(instance.put.args[0]).to.deep.equal([ $item ]);
+      expect(instance.put.args[1]).to.deep.equal([ $item ]);
+      expect(instance.put.args[2]).to.deep.equal([ $item ]);
     }));
+
     it("#putAll", sinon.test(function() {
       var instance, test;
       var $collection = $$([ 1, 2, 3 ]);
@@ -111,10 +118,11 @@
       test = instance.putAll($collection);
       expect(test).to.equal(instance);
       expect(instance.put).to.callCount(3);
-      expect(instance.put.args[0]).to.eql($$([ 1 ])._);
-      expect(instance.put.args[1]).to.eql($$([ 2 ])._);
-      expect(instance.put.args[2]).to.eql($$([ 3 ])._);
+      expect(instance.put.args[0]).to.deep.equal($$([ 1 ])._);
+      expect(instance.put.args[1]).to.deep.equal($$([ 2 ])._);
+      expect(instance.put.args[2]).to.deep.equal($$([ 3 ])._);
     }));
+
     it("#do", function() {
       var instance, test;
       var $result = $$([]);
@@ -125,8 +133,9 @@
         $result.add($a);
       }));
       expect(test).to.equal(instance);
-      expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect($result).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
+
     it("#subSample", function() {
       /*
         r = Pseq.new([ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]).asStream.subSample(1, 3)
@@ -142,6 +151,7 @@
       expect(r.reset(), 5).to.equal(r);
       expect(r.next() , 6).to.be.a("SCNil");
     });
+
     it("#generate", function() {
       var instance, test;
       var $result = $$([]);
@@ -152,8 +162,9 @@
         $result.add($a);
       }));
       expect(test).to.equal(instance);
-      expect($result).to.be.a("SCArray").that.eqls([ 1, 2, 3, 4, 5 ]);
+      expect($result).to.be.a("SCArray").that.deep.equals([ 1, 2, 3, 4, 5 ]);
     });
+
     it("#collect", sc.test(function() {
       /*
         r = Pseq.new([ 1, 2, 3, 4, 5 ]).asStream.collect(_.neg)
@@ -175,6 +186,7 @@
       expect(r.next() , 9).to.be.a("SCInteger").that.equals(-2);
       expect(r.next() ,10).to.be.a("SCInteger").that.equals(-3);
     }));
+
     it("#reject", sc.test(function() {
       /*
         r = Pseq.new([ 1, 2, 3, 4, 5 ]).asStream.reject(_.neg)
@@ -192,6 +204,7 @@
       expect(r.next() , 6).to.be.a("SCInteger").that.equals(4);
       expect(r.next() , 7).to.be.a("SCNil");
     }));
+
     it("#select", sc.test(function() {
       /*
         r = Pseq.new( [ 1, 2, 3, 4, 5 ]).asStream.select(_.neg)
@@ -211,6 +224,7 @@
       expect(r.next() , 8).to.be.a("SCInteger").that.equals(5);
       expect(r.next() , 9).to.be.a("SCNil");
     }));
+
     it("#dot", sc.test(function() {
       /*
         r = Pseq.new([ 0, 1, 2, 3, 4 ]).asStream.dot({ |a, b|
@@ -232,6 +246,7 @@
       expect(r.next() , 7).to.be.a("SCInteger").that.equals(21);
       expect(r.next() , 8).to.be.a("SCInteger").that.equals(32);
     }));
+
     it("#interlace case1", sc.test(function() {
       /*
         r = Pseq.new([ 0, 5, 7 ]).asStream.interlace({ |a, b|
@@ -258,6 +273,7 @@
       expect(r.next() ,12).to.be.a("SCInteger").that.equals(6);
       expect(r.next() ,13).to.be.a("SCNil");
     }));
+
     it("#interlace case2", sc.test(function() {
       /*
         r = Pseq.new([ 0, 5, 7 ]).asStream.interlace({ |a, b|
@@ -284,6 +300,7 @@
       expect(r.next() ,12).to.be.a("SCInteger").that.equals(7);
       expect(r.next() ,13).to.be.a("SCNil");
     }));
+
     it("#++", sinon.test(function() {
       var instance, test;
       var $stream = $$();
@@ -294,6 +311,7 @@
       test = instance ["++"] ($stream);
       expect(instance.appendStream).to.be.calledLastIn(test);
     }));
+
     it("#appendStream", function() {
       /*
         r = Pseq.new([ 1, 2, 3 ]).asStream.appendStream(Pseq.new([ 4, 5, 6 ]).asStream)
@@ -318,6 +336,7 @@
       expect(r.next() ,14).to.be.a("SCInteger").that.equals(6);
       expect(r.next() ,15).to.be.a("SCNil");
     });
+
     it("#collate", sc.test(function() {
       var r = this.createInstance(
         sc.test.routine([ 1, 5 ])
@@ -335,6 +354,7 @@
       expect(r.next() ,10).to.be.a("SCInteger").that.equals(6);
       expect(r.next() ,11).to.be.a("SCNil");
     }));
+
     it("#<>", sinon.test(function() {
       var instance, test;
       var $obj = $$();
@@ -352,6 +372,7 @@
       expect(SCPchain$new.firstCall).to.be.calledWith(instance, $obj);
       expect(SCPchain$asStream).to.be.calledLastIn(test);
     }));
+
     it("#composeUnaryOp", sinon.test(function() {
       var instance, test;
       var $argSelector = $$();
@@ -381,6 +402,7 @@
       expect(SCBinaryOpStream$new.firstCall).to.be.calledWith($argSelector, instance, $argStream);
       expect(SCBinaryOpStream$new).to.be.calledLastIn(test);
     }));
+
     it("#composeBinaryOp with adverb 'x'", sinon.test(function() {
       var instance, test;
       var $argSelector = $$();
@@ -397,6 +419,7 @@
       expect(SCBinaryOpXStream$new.firstCall).to.be.calledWith($argSelector, instance, $argStream);
       expect(SCBinaryOpXStream$new).to.be.calledLastIn(test);
     }));
+
     it("#composeBinaryOp with unknown adverb", function() {
       var instance, test;
       var $argSelector = $$();
@@ -408,6 +431,7 @@
       test = instance.composeBinaryOp($argSelector, $argStream, $adverb);
       expect(test).to.be.a("SCNil");
     });
+
     it("#reverseComposeBinaryOp", sinon.test(function() {
       var instance, test;
       var $argSelector = $$();
@@ -423,6 +447,7 @@
       expect(SCBinaryOpStream$new.firstCall).to.be.calledWith($argSelector, $argStream, instance);
       expect(SCBinaryOpStream$new).to.be.calledLastIn(test);
     }));
+
     it("#reverseComposeBinaryOp with adverb 'x'", sinon.test(function() {
       var instance, test;
       var $argSelector = $$();
@@ -439,6 +464,7 @@
       expect(SCBinaryOpXStream$new.firstCall).to.be.calledWith($argSelector, $argStream, instance);
       expect(SCBinaryOpXStream$new).to.be.calledLastIn(test);
     }));
+
     it("#reverseComposeBinaryOp with unknown adverb", function() {
       var instance, test;
       var $argSelector = $$();
@@ -450,6 +476,7 @@
       test = instance.reverseComposeBinaryOp($argSelector, $argStream, $adverb);
       expect(test).to.be.a("SCNil");
     });
+
     it("#composeNAryOp", sinon.test(function() {
       var instance, test;
       var $argSelector = $$();
@@ -462,8 +489,9 @@
       }));
 
       test = instance.composeNAryOp($argSelector, $anArgList);
-      expect(SCNAryOpStream$new.args[0]).to.eql($$([ $argSelector, instance, [ 1, 2 ] ])._);
+      expect(SCNAryOpStream$new.args[0]).to.deep.equal($$([ $argSelector, instance, [ 1, 2 ] ])._);
     }));
+
     it("#embedInStream", function() {
       var instance = this.createInstance(sc.test.routine([ 2, 3, 4 ]));
       var r = SCRoutine.new($.Function(function() {
@@ -492,6 +520,7 @@
       expect(r.next() , 9).to.be.a("SCInteger").that.equals(5);
       expect(r.next() ,10).to.be.a("SCNil");
     });
+
     it("#asEventStreamPlayer", sinon.test(function() {
       var instance, test;
       var $protoEvent = $$();
@@ -503,8 +532,9 @@
       }));
 
       test = instance.asEventStreamPlayer($protoEvent);
-      expect(SCEventStreamPlayer$new.args[0]).to.eql([ instance, $protoEvent ]);
+      expect(SCEventStreamPlayer$new.args[0]).to.deep.equal([ instance, $protoEvent ]);
     }));
+
     it("#play case1", sinon.test(function() {
       var instance, test;
       var $clock = $$({ play: this.spy() });
@@ -519,6 +549,7 @@
       expect(test).to.equal(instance);
       expect($clock.play).to.be.calledWith(instance, $asQuant);
     }));
+
     it("#play case2", sinon.test(function() {
       var instance, test;
       var $clock = $$(null);
@@ -539,8 +570,10 @@
       expect(test).to.equal(instance);
       expect($tempoClock.play).to.be.calledWith(instance, $asQuant);
     }));
+
     it.skip("#trace", function() {
     });
+
     it("#repeat", function() {
       /*
         r = Pseq.new([ 1, 2, 3 ]).asStream.repeat(3)
@@ -577,6 +610,7 @@
         return SCOneShotStream.new($$(value));
       };
     });
+
     it("#next / #reset", function() {
       var instance;
 
@@ -590,6 +624,7 @@
       expect(instance.next(), 5).to.be.a("SCNil");
       expect(instance.next(), 6).to.be.a("SCNil");
     });
+
     it.skip("#storeArgs", function() {
     });
   });
@@ -600,6 +635,7 @@
         return SCFuncStream.new($$(nextFunc), $$(resetFunc));
       };
     });
+
     it("#next / #reset", function() {
       var instance, test;
       var count = 0;
@@ -636,6 +672,7 @@
         return SCPauseStream.new();
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -644,6 +681,7 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
+
     it.skip("<stream", function() {
     });
     it.skip("<originalStream", function() {
@@ -704,7 +742,9 @@
       test = instance.valueOf();
       expect(test).to.equal(instance);
     });
+
     it.skip("#storeArgs", function() {
     });
   });
-})();
+
+});

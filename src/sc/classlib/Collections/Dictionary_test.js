@@ -1,12 +1,9 @@
-(function() {
+describe("Collections/Dictionary", function() {
   "use strict";
 
-  require("./Dictionary");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var SCDictionary = $("Dictionary");
   var SCIdentityDictionary = $("IdentityDictionary");
   var SCSet = $("Set");
@@ -19,20 +16,23 @@
         return SCDictionary.newFrom($$(list || []));
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSObject").that.eqls({});
+      expect(test).to.be.a("JSObject").that.deep.equals({});
     });
+
     it("#$newFrom", function() {
       var instance;
 
       instance = SCDictionary.newFrom($$([ 1, 2, 3, 4, ]));
-      expect(instance).to.be.a("SCDictionary").that.eqls({ 1:2, 3: 4 });
+      expect(instance).to.be.a("SCDictionary").that.deep.equals({ 1:2, 3: 4 });
     });
+
     it("#at", function() {
       testCase(this, [
         {
@@ -52,6 +52,7 @@
         },
       ]);
     });
+
     it("#atFail", function() {
       testCase(this, [
         {
@@ -66,6 +67,7 @@
         }
       ]);
     });
+
     it("#matchAt", function() {
       testCase(this, [
         {
@@ -80,6 +82,7 @@
         }
       ]);
     });
+
     it("#trueAt", function() {
       testCase(this, [
         {
@@ -94,6 +97,7 @@
         }
       ]);
     });
+
     it("#add", function() {
       testCase(this, [
         {
@@ -104,6 +108,7 @@
         },
       ]);
     });
+
     it("#put", function() {
       testCase(this, [
         {
@@ -126,6 +131,7 @@
         },
       ]);
     });
+
     it("#putAll", function() {
       testCase(this, [
         {
@@ -136,6 +142,7 @@
         }
       ]);
     });
+
     it("#putPairs", function() {
       testCase(this, [
         {
@@ -146,6 +153,7 @@
         }
       ]);
     });
+
     it("#getPairs", function() {
       testCase(this, [
         {
@@ -160,6 +168,7 @@
         },
       ]);
     });
+
     it("#associationAt", function() {
       testCase(this, [
         {
@@ -174,6 +183,7 @@
         },
       ]);
     });
+
     it("#associationAtFail", function() {
       testCase(this, [
         {
@@ -188,6 +198,7 @@
         },
       ]);
     });
+
     it("#keys", function() {
       testCase(this, [
         {
@@ -201,6 +212,7 @@
         },
       ]);
     });
+
     it("#values", sinon.test(function() {
       this.stub(sc.lang.klass, "get").withArgs("List").returns(SCArray);
       testCase(this, [
@@ -210,6 +222,7 @@
         },
       ]);
     }));
+
     it("#includes", function() {
       testCase(this, [
         {
@@ -224,6 +237,7 @@
         },
       ]);
     });
+
     it("#includesKey", function() {
       testCase(this, [
         {
@@ -238,6 +252,7 @@
         },
       ]);
     });
+
     it("#removeAt", function() {
       testCase(this, [
         {
@@ -254,6 +269,7 @@
         },
       ]);
     });
+
     it("#removeAtFail", function() {
       testCase(this, [
         {
@@ -270,14 +286,17 @@
         },
       ]);
     });
+
     it("#remove", function() {
       var instance = this.createInstance();
       expect(instance.remove.__errorType).to.equal(sc.ERRID_SHOULD_NOT_IMPLEMENT);
     });
+
     it("#removeFail", function() {
       var instance = this.createInstance();
       expect(instance.removeFail.__errorType).to.equal(sc.ERRID_SHOULD_NOT_IMPLEMENT);
     });
+
     it("#keysValuesDo", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -288,9 +307,10 @@
       test = instance.keysValuesDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 1, 2, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 3, 4, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 1, 2, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 3, 4, 1 ])._);
     }));
+
     it("#keysValuesChange", function() {
       testCase(this, [
         {
@@ -303,6 +323,7 @@
         }
       ]);
     });
+
     it("#do", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -313,9 +334,10 @@
       test = instance.do($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 2, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 4, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 2, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 4, 1 ])._);
     }));
+
     it("#keysDo", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -326,9 +348,10 @@
       test = instance.keysDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 1, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 3, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 1, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 3, 1 ])._);
     }));
+
     it("#associationsDo", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -339,9 +362,10 @@
       test = instance.associationsDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
-      expect(func.args[1]).to.eql($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ SCAssociation.new($$(1), $$(2)), 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ SCAssociation.new($$(3), $$(4)), 1 ])._);
     }));
+
     it("#pairsDo", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -352,9 +376,10 @@
       test = instance.pairsDo($function);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 1, 2, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 3, 4, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 1, 2, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 3, 4, 1 ])._);
     }));
+
     it("#collect", function() {
       testCase(this, [
         {
@@ -366,6 +391,7 @@
         },
       ]);
     });
+
     it("#select", function() {
       testCase(this, [
         {
@@ -377,6 +403,7 @@
         },
       ]);
     });
+
     it("#reject", function() {
       testCase(this, [
         {
@@ -388,6 +415,7 @@
         },
       ]);
     });
+
     it("#invert", function() {
       testCase(this, [
         {
@@ -400,6 +428,7 @@
         },
       ]);
     });
+
     it("#merge", function() {
       testCase(this, [
         {
@@ -438,6 +467,7 @@
     });
     it.skip("#blend", function() {
     });
+
     it("#findKeyForValue", function() {
       testCase(this, [
         {
@@ -452,6 +482,7 @@
         },
       ]);
     });
+
     it("#sortedKeysValuesDo", sinon.test(function() {
       var instance, test;
       var func = this.spy();
@@ -465,9 +496,10 @@
       test = instance.sortedKeysValuesDo($function, $sortFunc);
       expect(test).to.equal(instance);
       expect(func).to.callCount(2);
-      expect(func.args[0]).to.eql($$([ 3, 4, 0 ])._);
-      expect(func.args[1]).to.eql($$([ 1, 2, 1 ])._);
+      expect(func.args[0]).to.deep.equal($$([ 3, 4, 0 ])._);
+      expect(func.args[1]).to.deep.equal($$([ 1, 2, 1 ])._);
     }));
+
     it("#choose", function() {
       testCase(this, [
         {
@@ -480,6 +512,7 @@
         },
       ], { randSeed: 0 });
     });
+
     it("#order", function() {
       testCase(this, [
         {
@@ -499,6 +532,7 @@
         }
       ]);
     });
+
     it("#powerset", function() {
       testCase(this, [
         {
@@ -512,6 +546,7 @@
         }
       ]);
     });
+
     it("#transformEvent", sinon.test(function() {
       var instance, test;
       var $event = $$({
@@ -542,14 +577,16 @@
         return SCIdentityDictionary.newFrom($$(list || []));
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSObject").that.eqls({});
+      expect(test).to.be.a("JSObject").that.deep.equals({});
     });
+
     it("#at", function() {
       testCase(this, [
         {
@@ -564,6 +601,7 @@
         },
       ]);
     });
+
     it("#putGet", function() {
       testCase(this, [
         {
@@ -580,6 +618,7 @@
         },
       ]);
     });
+
     it("#findKeyForValue", function() {
       testCase(this, [
         {
@@ -609,4 +648,5 @@
     it.skip("#timingOffset", function() {
     });
   });
-})();
+
+});

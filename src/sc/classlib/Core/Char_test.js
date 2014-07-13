@@ -1,14 +1,10 @@
-(function() {
+describe("Core/Char", function() {
   "use strict";
 
-  require("./Char");
-
-  var $$ = sc.test.object;
   var testCase = sc.test.testCase;
-
-  var $ = sc.lang.$;
+  var $$ = sc.test.object;
+  var $  = sc.lang.$;
   var fromCharCode = String.fromCharCode;
-
   var SCChar = $("Char");
 
   describe("SCChar", function() {
@@ -17,6 +13,7 @@
         return $.Char(typeof value === "undefined" ? "a" : value);
       };
     });
+
     it("#__tag", function() {
       var instance, test;
 
@@ -25,6 +22,7 @@
       test = instance.__tag;
       expect(test).to.be.a("JSNumber").that.equals(sc.TAG_CHAR);
     });
+
     it("#__str__", function() {
       var instance, test;
 
@@ -33,6 +31,7 @@
       test = instance.__str__();
       expect(test).to.be.a("JSString").that.equals("a");
     });
+
     it("#valueOf", function() {
       var instance, test;
 
@@ -41,41 +40,48 @@
       test = instance.valueOf();
       expect(test).to.be.a("JSString").that.equals("a");
     });
+
     it(".nl", function() {
       var test;
 
       test = SCChar.nl();
       expect(test).to.be.a("SCChar").that.equals("\n");
     });
+
     it(".ff", function() {
       var test;
 
       test = SCChar.ff();
       expect(test).to.be.a("SCChar").that.equals("\f");
     });
+
     it(".tab", function() {
       var test;
 
       test = SCChar.tab();
       expect(test).to.be.a("SCChar").that.equals("\t");
     });
+
     it(".space", function() {
       var test;
 
       test = SCChar.space();
       expect(test).to.be.a("SCChar").that.equals(" ");
     });
+
     it(".comma", function() {
       var test;
 
       test = SCChar.comma();
       expect(test).to.be.a("SCChar").that.equals(",");
     });
+
     it(".new", function() {
       expect(SCChar.new.__errorType).to.equal(sc.ERRID_SHOULD_USE_LITERALS);
     });
     it.skip("#hash", function() {
     });
+
     it("#ascii", function() {
       var instance, test;
 
@@ -84,6 +90,7 @@
       test = instance.ascii();
       expect(test).to.be.a("SCInteger").that.equals(0x61);
     });
+
     it("#digit", function() {
       var instance, test;
       var table = {
@@ -109,12 +116,14 @@
         }
       }
     });
+
     it("#asAscii", function() {
       var instance;
 
       instance = this.createInstance();
       expect(instance.asAscii).to.doNothing;
     });
+
     it("#asUnicode", sinon.test(function() {
       var instance, test;
 
@@ -124,6 +133,7 @@
       test = instance.asUnicode();
       expect(instance.ascii).to.be.calledLastIn(test);
     }));
+
     it("#toUpper", function() {
       var instance, test;
 
@@ -132,6 +142,7 @@
       test = instance.toUpper();
       expect(test).to.be.a("SCChar").that.equals("A");
     });
+
     it("#toUpper", function() {
       var instance, test;
 
@@ -140,6 +151,7 @@
       test = instance.toLower();
       expect(test).to.be.a("SCChar").that.equals("a");
     });
+
     it("#isAlpha", function() {
       var instance, test;
       var trueCase = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -152,6 +164,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isAlphaNum", function() {
       var instance, test;
       var trueCase = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -164,6 +177,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isPrint", function() {
       var instance, test;
       var trueCase = " !\"#$%&'()*+,-./0123456789:;<=>?@" +
@@ -177,6 +191,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isPunct", function() {
       var instance, test;
       var trueCase = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
@@ -189,6 +204,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isControl", function() {
       var instance, test;
       var falseCase = " !\"#$%&'()*+,-./0123456789:;<=>?@" +
@@ -202,6 +218,7 @@
           .to.be.a("SCBoolean").that.equals(falseCase.indexOf(ch) === -1);
       }
     });
+
     it("#isSpace", function() {
       var instance, test;
       var trueCase = "\t\n\v\f\r ";
@@ -214,6 +231,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isVowl", function() {
       var instance, test;
       var trueCase = "aeiouAEIOU";
@@ -226,6 +244,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isDecDigit", function() {
       var instance, test;
       var trueCase = "0123456789";
@@ -238,6 +257,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isUpper", function() {
       var instance, test;
       var trueCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -250,6 +270,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isLower", function() {
       var instance, test;
       var trueCase = "abcdefghijklmnopqrstuvwxyz";
@@ -262,6 +283,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isFileSafe", function() {
       var instance, test;
       var trueCase = " !#$%&'()*+,-.0123456789;<=>?@" +
@@ -275,6 +297,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#isPathSeparator", function() {
       var instance, test;
       var trueCase = "/";
@@ -287,6 +310,7 @@
           .to.be.a("SCBoolean").that.equals(trueCase.indexOf(ch) !== -1);
       }
     });
+
     it("#<", function() {
       testCase(this, [
         [ "a", [ "$a" ], false ],
@@ -295,6 +319,7 @@
         [ "b", [ "$b" ], false ],
       ]);
     });
+
     it("#++", function() {
       var test, instance;
       var $h = $$("$h");
@@ -304,6 +329,7 @@
       test = instance ["++"] ($h);
       expect(test).to.be.a("SCString").that.equals("ch");
     });
+
     it("#archiveAsCompileString", function() {
       var instance, test;
 
@@ -312,6 +338,7 @@
       test = instance.archiveAsCompileString();
       expect(test).to.be.a("SCBoolean").that.equals(true);
     });
+
     it("#asString", function() {
       var instance, test;
 
@@ -320,9 +347,11 @@
       test = instance.asString();
       expect(test).to.be.a("SCString").that.equals("a");
     });
+
     it("#shallowCopy", function() {
       var instance = this.createInstance();
       expect(instance.shallowCopy).to.doNothing;
     });
   });
-})();
+
+});

@@ -1,11 +1,8 @@
-(function() {
+describe("Collections/Event", function() {
   "use strict";
 
-  require("./Event");
-
   var $$ = sc.test.object;
-
-  var $ = sc.lang.$;
+  var $  = sc.lang.$;
   var SCEvent = $("Event");
 
   describe("SCEvent", function() {
@@ -14,13 +11,14 @@
         return SCEvent.new();
       };
     });
+
     it("#valueOf", function() {
       var instance, test;
 
       instance = this.createInstance();
 
       test = instance.valueOf();
-      expect(test).to.be.a("JSObject").that.eqls({});
+      expect(test).to.be.a("JSObject").that.deep.equals({});
     });
     it.skip(".default", function() {
     });
@@ -58,6 +56,7 @@
     });
     it.skip("#$makeParentEvents", function() {
     });
+
     it("setter/getter", function() {
       var instance, test;
 
@@ -69,6 +68,7 @@
       test = instance.$("a");
       expect(test).to.be.a("SCInteger").that.equals(1);
     });
+
     it("setter with warning", sinon.test(function() {
       var instance, test;
 
@@ -84,4 +84,5 @@
       expect(test).to.be.a("SCInteger").that.equals(1);
     }));
   });
-})();
+
+});

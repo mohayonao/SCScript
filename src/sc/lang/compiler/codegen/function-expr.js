@@ -68,7 +68,7 @@
       while (i < imax) {
         if (i === 0) {
           if (args.length) {
-            stmt = that.stitchWith(args, ";", assignArguments);
+            stmt = that.interpose(args, ";", assignArguments);
             fragments.push([ stmt, ";" ]);
           }
         }
@@ -113,12 +113,12 @@
       return [];
     }
 
-    var args = that.stitchWith(keys, ";", function(item, i) {
+    var args = that.interpose(keys, ";", function(item, i) {
       var result = [ keys[i] ];
 
       if (vals[i]) {
         if (vals[i].type === Syntax.ListExpression) {
-          result.push("=[", that.stitchWith(vals[i].elements, ",", function(item) {
+          result.push("=[", that.interpose(vals[i].elements, ",", function(item) {
             return toArgumentValueString(item);
           }), "]");
         } else {

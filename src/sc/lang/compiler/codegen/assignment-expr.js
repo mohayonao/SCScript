@@ -33,7 +33,7 @@
 
       var result = [ "(" + tempVar + "=", that.generate(node.right), "," ];
 
-      result.push(that.stitchWith(elements, ",", function(item, i) {
+      result.push(that.interpose(elements, ",", function(item, i) {
         return generateAssign(
           that, item, operator, tempVar + ".$('at',[$.Integer(" + i + ")])"
         );

@@ -107,11 +107,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "seriesIter",
-          range: [ 2, 2 ],
-          loc: {
-            start: { line: 1, column: 2 },
-            end: { line: 1, column: 2 },
-          }
         },
         args: {
           list: [
@@ -141,11 +136,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "series",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 },
-          }
         },
         args: {
           list: [
@@ -184,11 +174,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "series",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 },
-          }
         },
         args: {
           list: [
@@ -239,11 +224,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "series",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 },
-          }
         },
         args: {
           list: [

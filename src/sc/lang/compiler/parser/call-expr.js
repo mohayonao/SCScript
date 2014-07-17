@@ -79,7 +79,7 @@
     opts = opts || {};
 
     if (expr.type === Syntax.Identifier) {
-      expr = createCallExpressionForBraces(expr, this.createMarker());
+      expr = createCallExpressionForBraces(expr);
     }
     var node = this.parseFunctionExpression({ blockList: true, closed: !!opts.closed });
 
@@ -92,12 +92,12 @@
     return expr;
   };
 
-  function createCallExpressionForBraces(expr, marker) {
+  function createCallExpressionForBraces(expr) {
     var callee, method;
 
     if (isClassName(expr)) {
       callee = expr;
-      method = marker.apply(Node.createIdentifier("new"));
+      method = Node.createIdentifier("new");
     } else {
       callee = null;
       method = expr;
@@ -133,9 +133,6 @@
 
   CallExpressionParser.prototype.parseCallAbbrMethodCall = function(expr, methodName, stamp) {
     var method = Node.createIdentifier(methodName);
-
-    method = this.createMarker().apply(method);
-
     var args = new ArgumentsParser(this).parse();
 
     return Node.createCallExpression(expr, method, args, stamp);
@@ -150,10 +147,7 @@
 
   CallExpressionParser.prototype.parseCallwithList = function(expr) {
     var marker = this.createMarker();
-
-    var method = this.createMarker().apply(
-      Node.createIdentifier("[]")
-    );
+    var method = Node.createIdentifier("[]");
     var listExpr = this.parseListExpression();
 
     return marker.update().apply(
@@ -163,10 +157,7 @@
 
   CallExpressionParser.prototype.parseCallwithIndexer = function(expr) {
     var marker = this.createMarker();
-
-    var method = this.createMarker().apply(
-      Node.createIdentifier()
-    );
+    var method = Node.createIdentifier();
     var listIndexer = this.parseListIndexer();
 
     method.name = listIndexer.length === 3 ? "copySeries" : "at";

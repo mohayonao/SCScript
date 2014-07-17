@@ -84,11 +84,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "new",
-          range: [ 6, 6 ],
-          loc: {
-            start: { line: 1, column: 6 },
-            end: { line: 1, column: 6 },
-          }
         },
         args: {
           list: []
@@ -209,11 +204,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 4, 4 ],
-          loc: {
-            start: { line: 1, column: 4 },
-            end: { line: 1, column: 4 },
-          }
         },
         args: {
           list: [
@@ -333,11 +323,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "new",
-          range: [ 6, 6 ],
-          loc: {
-            start: { line: 1, column: 6 },
-            end: { line: 1, column: 6 },
-          }
         },
         args: {
           list: [
@@ -438,11 +423,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 3, 3 ],
-          loc: {
-            start: { line: 1, column: 3 },
-            end: { line: 1, column: 3 },
-          }
         },
         args: {
           list: [
@@ -563,11 +543,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "new",
-          range: [ 7, 7 ],
-          loc: {
-            start: { line: 1, column: 7 },
-            end: { line: 1, column: 7 },
-          }
         },
         args: {
           list: [
@@ -672,11 +647,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 4, 4 ],
-          loc: {
-            start: { line: 1, column: 4 },
-            end: { line: 1, column: 4 },
-          }
         },
         args: {
           list: [
@@ -766,11 +736,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "[]",
-          range: [ 6, 6 ],
-          loc: {
-            start: { line: 1, column: 6 },
-            end: { line: 1, column: 6 },
-          }
         },
         args: {
           list: [
@@ -806,11 +771,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 },
-          }
         },
         args: {
           list: [
@@ -847,11 +807,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "copySeries",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 },
-          },
         },
         args: {
           list: [
@@ -884,11 +839,6 @@ describe("sc.lang.compiler.Parser", function() {
           method: {
             type: Syntax.Identifier,
             name: "at",
-            range: [ 1, 1 ],
-            loc: {
-              start: { line: 1, column: 1 },
-              end: { line: 1, column: 1 },
-            }
           },
           args: {
             list: [
@@ -913,11 +863,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 4, 4 ],
-          loc: {
-            start: { line: 1, column: 4 },
-            end: { line: 1, column: 4 },
-          }
         },
         args: {
           list: [
@@ -957,11 +902,6 @@ describe("sc.lang.compiler.Parser", function() {
           method: {
             type: Syntax.Identifier,
             name: "at",
-            range: [ 1, 1 ],
-            loc: {
-              start: { line: 1, column: 1 },
-              end: { line: 1, column: 1 },
-            }
           },
           args: {
             list: [
@@ -1138,11 +1078,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 3, 3 ],
-          loc: {
-            start: { line: 1, column: 3 },
-            end: { line: 1, column: 3 },
-          }
         },
         args: {
           list: [
@@ -1230,11 +1165,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "value",
-          range: [ 2, 2 ],
-          loc: {
-            start: { line: 1, column: 2 },
-            end: { line: 1, column: 2 },
-          }
         },
         args: {
           list: []
@@ -1260,11 +1190,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 2, 2 ],
-          loc: {
-            start: { line: 1, column: 2 },
-            end: { line: 1, column: 2 },
-          }
         },
         args: {
           list: [

@@ -28,9 +28,7 @@
       generator = true;
     }
 
-    var method = this.createMarker().apply(
-      Node.createIdentifier(generator ? "seriesIter" : "series")
-    );
+    var method = Node.createIdentifier(generator ? "seriesIter" : "series");
 
     var innerElements = this.state.innerElements;
     this.state.innerElements = true;

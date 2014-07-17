@@ -103,7 +103,7 @@
       method = expr;
     }
 
-    return Node.createCallExpression(callee, method, { list: [] }, "(");
+    return Node.createCallExpression(callee, method);
   }
 
   CallExpressionParser.prototype.parseCallMethodCall = function(expr) {
@@ -128,7 +128,7 @@
     }
 
     // max(0, 1) -> 0.max(1)
-    return Node.createCallExpression(expr, method, args, "(");
+    return Node.createCallExpression(expr, method, args);
   };
 
   CallExpressionParser.prototype.parseCallAbbrMethodCall = function(expr, methodName, stamp) {
@@ -194,7 +194,7 @@
     var args   = new ArgumentsParser(this).parse();
 
     return marker.update().apply(
-      Node.createCallExpression(expr, method, args, "(")
+      Node.createCallExpression(expr, method, args)
     );
   };
 

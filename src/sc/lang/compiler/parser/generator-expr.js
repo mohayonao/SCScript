@@ -126,7 +126,7 @@
   function compile(clauses) {
     return Node.createCallExpression(
       Node.createFunctionExpression(null, [ next(clauses) ], {}),
-      Node.createIdentifier("r"), { list: [] }, "("
+      Node.createIdentifier("r")
     );
   }
 
@@ -135,9 +135,7 @@
 
     if (clauses.length === 0) {
       return Node.createCallExpression(
-        clause,
-        Node.createIdentifier("yield"),
-        { list: [] }, "("
+        clause, Node.createIdentifier("yield")
       );
     }
 
@@ -146,7 +144,7 @@
 
   function createCallExpression(callee, method, args) {
     return Node.createCallExpression(
-      callee, Node.createIdentifier(method), { list: args }, "("
+      callee, Node.createIdentifier(method), { list: args }
     );
   }
 

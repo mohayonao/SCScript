@@ -15,6 +15,8 @@ describe("sc.lang.compiler.Parser", function() {
       "#a ... b = c": sc.test.OK,
       "#[]": sc.test.OK,
       "[ 0 ] = 10": strlib.format(Message.InvalidLHSInAssignment),
+      "a.b() = 10": strlib.format(Message.UnexpectedToken, "="),
+      "-a = 10": strlib.format(Message.UnexpectedToken, "="),
     });
 
     sc.test.parse(this.title).each({

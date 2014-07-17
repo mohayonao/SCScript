@@ -32,7 +32,7 @@ describe("sc.lang.compiler.Parser", function() {
         operator: "++",
         left: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "freq"
@@ -76,7 +76,7 @@ describe("sc.lang.compiler.Parser", function() {
         },
         right: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "cd"
@@ -100,7 +100,7 @@ describe("sc.lang.compiler.Parser", function() {
         operator: "++",
         left: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "ab"

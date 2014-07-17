@@ -49,7 +49,7 @@ describe("sc.lang.compiler.Parser", function() {
         body: [
           {
             type: Syntax.CallExpression,
-            stamp: "(",
+            stamp: ".",
             callee: {
               type: Syntax.Identifier,
               name: "$_0",

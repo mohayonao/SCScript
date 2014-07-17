@@ -36,7 +36,7 @@ describe("sc.lang.compiler.Parser", function() {
         operator: "`",
         arg: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "a",

@@ -177,7 +177,7 @@ describe("sc.lang.compiler", function() {
           body: [
             {
               type: Syntax.CallExpression,
-              stamp: "(",
+              stamp: ".",
               callee: {
                 type: Syntax.CallExpression,
                 stamp: "(",
@@ -271,7 +271,7 @@ describe("sc.lang.compiler", function() {
               stamp: "=",
               callee: {
                 type: Syntax.CallExpression,
-                stamp: "(",
+                stamp: ".",
                 callee: {
                   type: Syntax.Identifier,
                   name: "a",
@@ -1079,7 +1079,7 @@ describe("sc.lang.compiler", function() {
                 },
                 {
                   type: Syntax.CallExpression,
-                  stamp: "(",
+                  stamp: ".",
                   callee: {
                     type: Syntax.Identifier,
                     name: "x",
@@ -1149,7 +1149,7 @@ describe("sc.lang.compiler", function() {
                         body: [
                           {
                             type: Syntax.CallExpression,
-                            stamp: "(",
+                            stamp: ".",
                             callee: {
                               type: Syntax.Literal,
                               value: "1",
@@ -1444,7 +1444,7 @@ describe("sc.lang.compiler", function() {
           body: [
             {
               type: Syntax.CallExpression,
-              stamp: "(",
+              stamp: ".",
               callee: {
                 type: Syntax.Identifier,
                 name: "Point",
@@ -1668,7 +1668,7 @@ describe("sc.lang.compiler", function() {
           body: [
             {
               type: Syntax.CallExpression,
-              stamp: "(",
+              stamp: ".",
               callee: {
                 type: Syntax.EnvironmentExpression,
                 id: {
@@ -2026,7 +2026,7 @@ describe("sc.lang.compiler", function() {
                         body: [
                           {
                             type: Syntax.CallExpression,
-                            stamp: "(",
+                            stamp: ".",
                             callee: {
                               type: Syntax.Identifier,
                               name: "$_0",

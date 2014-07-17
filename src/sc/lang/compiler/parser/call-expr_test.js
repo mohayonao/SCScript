@@ -29,7 +29,7 @@ describe("sc.lang.compiler.Parser", function() {
       "a#{}#{}": sc.test.OK,   // #{}.a(#{})
       "a#{}[0]": sc.test.OK,   // (#{}.a)[0]
       "a#{}.a": sc.test.OK,    // (#{}.a).a
-      "a#[]": strlib.format(Message.UnexpectedToken, "#"),
+      "a#[]": strlib.format(Message.UnexpectedToken, "["),
       "a[]": strlib.format(Message.UnexpectedToken, "]"),
       "Object[]": sc.test.OK,  // Object[]
       "a[0]": sc.test.OK,      // a[0]
@@ -43,6 +43,8 @@ describe("sc.lang.compiler.Parser", function() {
       "a._": strlib.format(Message.UnexpectedIdentifier),
       "a.a()": sc.test.OK,     // a.a()
       "a.a{}": sc.test.OK,     // a.a({})
+      "a.a#{}": sc.test.OK,    // a.a(#{})
+      "a.a#[]": strlib.format(Message.UnexpectedToken, "["),
       "a.a[0]": sc.test.OK,    // (a.a)[0]
       "a.a.a": sc.test.OK,     // (a.a).a
       "a.()": sc.test.OK,      // a.value()
@@ -227,7 +229,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a(0).a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "(",
@@ -446,7 +448,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a{}.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "(",
@@ -670,7 +672,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a#{}.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "(",
@@ -886,7 +888,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a[0].a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "[",
@@ -943,7 +945,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.Identifier,
           name: "a",
@@ -1047,7 +1049,7 @@ describe("sc.lang.compiler.Parser", function() {
         stamp: "[",
         callee: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1101,10 +1103,10 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a.a.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "a",

@@ -65,8 +65,10 @@
     var methodName = expr.method.name;
     if (expr.stamp === "[") {
       methodName = methodName === "at" ? "put" : "putSeries";
-    } else {
+    } else if (expr.stamp === ".") {
       methodName = methodName + "_";
+    } else {
+      return this.throwUnexpected({ value: "=" });
     }
 
     expr.method.name = methodName;

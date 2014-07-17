@@ -377,7 +377,7 @@ describe("sc.lang.compiler.Parser", function() {
                         stamp: "(",
                         callee: {
                           type: Syntax.CallExpression,
-                          stamp: "(",
+                          stamp: ".",
                           callee: {
                             type: Syntax.Identifier,
                             name: "a",
@@ -501,7 +501,7 @@ describe("sc.lang.compiler.Parser", function() {
                       [
                         {
                           type: Syntax.CallExpression,
-                          stamp: "(",
+                          stamp: ".",
                           callee: {
                             type: Syntax.Identifier,
                             name: "a",

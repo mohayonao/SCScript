@@ -26,7 +26,7 @@
     var expr = this.parseSignedExpression();
 
     var stamp;
-    while ((stamp = this.matchAny([ "(", "{", "#", "[", "." ])) !== null) {
+    while ((stamp = this.matchAny([ ".", "[", "(", "{", "#" ])) !== null) {
       var err = false;
       err = err || (expr.stamp === "(" && stamp === "(");
       err = err || (expr.stamp === "[" && stamp === "(");
@@ -46,14 +46,11 @@
     if (stamp === "(") {
       return this.parseCallParentheses(expr);
     }
-    if (stamp === "#") {
-      return this.parseCallClosedBraces(expr);
-    }
-    if (stamp === "{") {
-      return this.parseCallBraces(expr);
-    }
     if (stamp === "[") {
       return this.parseCallBrackets(expr);
+    }
+    if (stamp === "#" || stamp === "{") {
+      return this.parseBlockList(expr);
     }
     return this.parseCallDot(expr);
   };
@@ -65,31 +62,6 @@
     }
     // expr( a ... ) -> a.expr( ... )
     return this.parseCallMethodCall(expr);
-  };
-
-  CallExpressionParser.prototype.parseCallClosedBraces = function(expr) {
-    var token = this.expect("#");
-    if (!this.match("{")) {
-      return this.throwUnexpected(token);
-    }
-    return this.parseCallBraces(expr, { closed: true });
-  };
-
-  CallExpressionParser.prototype.parseCallBraces = function(expr, opts) {
-    opts = opts || {};
-
-    if (expr.type === Syntax.Identifier) {
-      expr = createCallExpressionForBraces(expr);
-    }
-    var node = this.parseFunctionExpression({ blockList: true, closed: !!opts.closed });
-
-    if (expr.callee === null) {
-      expr.callee = node;
-    } else {
-      expr.args.list.push(node);
-    }
-
-    return expr;
   };
 
   function createCallExpressionForBraces(expr) {
@@ -167,6 +139,21 @@
     );
   };
 
+  CallExpressionParser.prototype.parseBlockList = function(expr) {
+    if (expr.type === Syntax.Identifier) {
+      expr = createCallExpressionForBraces(expr);
+    }
+    var blockList = new ArgumentsParser(this).parseBlockList().list;
+
+    if (expr.callee === null) {
+      expr.callee = blockList.shift();
+    }
+
+    expr.args.list = expr.args.list.concat(blockList);
+
+    return expr;
+  };
+
   CallExpressionParser.prototype.parseCallDot = function(expr) {
     this.expect(".");
 
@@ -183,9 +170,10 @@
 
     var method = this.parseIdentifier({ variable: true });
     var args   = new ArgumentsParser(this).parse();
+    var stamp  = args ? "(" : ".";
 
     return marker.update().apply(
-      Node.createCallExpression(expr, method, args)
+      Node.createCallExpression(expr, method, args, stamp)
     );
   };
 
@@ -200,7 +188,33 @@
     if (this.match("(")) {
       return this.parseArguments();
     }
-    return { list: [] };
+    if (this.matchAny([ "{", "#" ])) {
+      return this.parseBlockList();
+    }
+    return null;
+  };
+
+  ArgumentsParser.prototype.parseBlockList = function() {
+    var list = this._args.list;
+    var stamp;
+
+    while ((stamp = this.matchAny([ "{", "#" ])) !== null) {
+      var closed = false;
+
+      if (stamp === "#") {
+        this.lex();
+        if (!this.match("{")) {
+          return this.throwUnexpected(this.lookahead);
+        }
+        closed = true;
+      }
+
+      list.push(
+        this.parseFunctionExpression({ blockList: true, closed: closed })
+      );
+    }
+
+    return this._args;
   };
 
   ArgumentsParser.prototype.parseArguments = function() {

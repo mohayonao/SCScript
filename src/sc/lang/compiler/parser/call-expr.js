@@ -184,8 +184,8 @@
       return this.parseCallAbbrMethodCall(expr, "value", "(");
     }
     if (this.match("[")) {
-      // expr.[0]
-      return this.parseDotBrackets(expr);
+      // expr.[0] === expr.at(0)
+      return this.parseCallwithIndexer(expr);
     }
 
     var marker = this.createMarker();
@@ -196,18 +196,6 @@
     return marker.update().apply(
       Node.createCallExpression(expr, method, args, "(")
     );
-  };
-
-  CallExpressionParser.prototype.parseDotBrackets = function(expr) {
-    var marker = this.createMarker(expr);
-
-    var method = Node.createIdentifier("value");
-    method = this.createMarker().apply(method);
-
-    expr = Node.createCallExpression(expr, method, { list: [] }, "(");
-    expr = marker.update().apply(expr);
-
-    return this.parseCallwithIndexer(expr);
   };
 
   function ArgumentsParser(parent) {

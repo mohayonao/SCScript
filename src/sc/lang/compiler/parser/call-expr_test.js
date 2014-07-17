@@ -1249,33 +1249,12 @@ describe("sc.lang.compiler.Parser", function() {
         type: Syntax.CallExpression,
         stamp: "[",
         callee: {
-          type: Syntax.CallExpression,
-          stamp: "(",
-          callee: {
-            type: Syntax.Identifier,
-            name: "a",
-            range: [ 0, 1 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 1 },
-            }
-          },
-          method: {
-            type: Syntax.Identifier,
-            name: "value",
-            range: [ 2, 2 ],
-            loc: {
-              start: { line: 1, column: 2 },
-              end: { line: 1, column: 2 },
-            }
-          },
-          args: {
-            list: []
-          },
-          range: [ 0, 2 ],
+          type: Syntax.Identifier,
+          name: "a",
+          range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end: { line: 1, column: 2 },
+            end: { line: 1, column: 1 },
           }
         },
         method: {

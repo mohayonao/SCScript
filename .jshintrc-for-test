@@ -16,6 +16,7 @@
     "afterEach" : true,
     "after"     : true,
     "esprima"   : true,
+    "escodegen" : true,
     "_"         : true
   }
 }

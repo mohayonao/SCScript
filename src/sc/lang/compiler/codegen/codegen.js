@@ -23,7 +23,6 @@
     that.parent = null;
     that.opts = opts || {};
     that.state = {
-      calledSegmentedMethod: false,
       syncBlockScope: null,
       tempVarId: 0
     };

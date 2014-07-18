@@ -2054,17 +2054,29 @@ describe("sc.lang.compiler", function() {
       var code = items[0];
       var ast  = items[1].ast;
       var expected = items[1].expected;
+
       it("ast:" + code, function() {
         var test = sc.lang.compiler.parse(code);
         expect(test).to.deep.equal(ast);
       });
+
       it("compile:" + code, function() {
-        var expectedAST = esprima.parse(expected.join("\n"));
         var compiled  = sc.lang.compiler.compile(code);
-        var actualAST = esprima.parse(compiled);
-        expect(actualAST).to.deep.equal(expectedAST);
+        expect(js(compiled)).to.deep.equal(js(expected.join("\n")));
       });
     });
   });
+
+  function js(str) {
+    return ast2js(js2ast(str));
+  }
+
+  function js2ast(js) {
+    return esprima.parse(js);
+  }
+
+  function ast2js(ast) {
+    return escodegen.generate(ast);
+  }
 
 });

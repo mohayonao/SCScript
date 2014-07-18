@@ -6,10 +6,6 @@
   var CodeGen = sc.lang.compiler.CodeGen;
 
   CodeGen.addGenerateMethod("CallExpression", function(node) {
-    if (node.segmented) {
-      this.state.calledSegmentedMethod = true;
-    }
-
     if (node.args.expand) {
       return generateExpandCall(this, node);
     }

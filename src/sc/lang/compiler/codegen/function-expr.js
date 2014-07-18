@@ -73,22 +73,18 @@
           }
         }
 
-        var calledSegmentedMethod = that.state.calledSegmentedMethod;
-        that.state.calledSegmentedMethod = false;
-
         stmt = that.generate(node.body[i]);
+        var segmented = !!node.body[i].segmented;
 
-        if (i === lastIndex || that.state.calledSegmentedMethod) {
+        if (i === lastIndex || segmented) {
           stmt = [ "return ", stmt ];
         }
         fragments.push([ stmt, ";" ]);
 
         i += 1;
-        if (that.state.calledSegmentedMethod) {
+        if (segmented) {
           break;
         }
-
-        that.state.calledSegmentedMethod = calledSegmentedMethod;
       }
 
       return fragments;

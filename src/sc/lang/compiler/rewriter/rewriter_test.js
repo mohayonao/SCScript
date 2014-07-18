@@ -1,13 +1,12 @@
 describe("sc.lang.compiler.rewriter", function() {
   "use strict";
 
-  var Syntax   = sc.lang.compiler.Syntax;
+  var Syntax = sc.lang.compiler.Syntax;
+  var Token = sc.lang.compiler.Token;
   var Rewriter = sc.lang.compiler.Rewriter;
 
   it("segmented check", function() {
-    var ast, actual, expected;
-
-    ast = {
+    var ast = {
       type: Syntax.FunctionExpression,
       body: [
         {
@@ -41,9 +40,8 @@ describe("sc.lang.compiler.rewriter", function() {
       ]
     };
 
-    expected = {
+    var expected = {
       type: Syntax.FunctionExpression,
-      segmented: true,
       body: [
         {
           type: Syntax.CallExpression,
@@ -77,14 +75,131 @@ describe("sc.lang.compiler.rewriter", function() {
       ]
     };
 
-    actual = new Rewriter().rewrite(ast);
+    var actual = new Rewriter().rewrite(ast);
+
+    expect(actual).to.deep.equal(expected);
+  });
+
+  it("segmented", function() {
+    var ast = {
+      type: Syntax.Program,
+      body: [
+        {
+          type: Syntax.FunctionExpression,
+          body: [
+            {
+              type: Syntax.CallExpression,
+              stamp: "(",
+              callee: {
+                type: Syntax.Literal,
+                value: "true",
+                valueType: Token.TrueLiteral,
+              },
+              method: {
+                type: Syntax.Identifier,
+                name: "if",
+              },
+              args: {
+                list: [
+                  {
+                    type: Syntax.FunctionExpression,
+                    body: [
+                      {
+                        type: Syntax.CallExpression,
+                        stamp: ".",
+                        callee: {
+                          type: Syntax.Literal,
+                          value: "1",
+                          valueType: Token.IntegerLiteral,
+                        },
+                        method: {
+                          type: Syntax.Identifier,
+                          name: "wait",
+                        },
+                        args: {
+                          list: []
+                        },
+                      }
+                    ],
+                    blockList: true,
+                  }
+                ]
+              },
+            },
+            {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+            }
+          ],
+        }
+      ],
+    };
+
+    var expected = {
+      type: Syntax.Program,
+      body: [
+        {
+          type: Syntax.FunctionExpression,
+          body: [
+            {
+              type: Syntax.CallExpression,
+              segmented: true,
+              stamp: "(",
+              callee: {
+                type: Syntax.Literal,
+                value: "true",
+                valueType: Token.TrueLiteral,
+              },
+              method: {
+                type: Syntax.Identifier,
+                name: "if",
+              },
+              args: {
+                list: [
+                  {
+                    type: Syntax.FunctionExpression,
+                    body: [
+                      {
+                        type: Syntax.CallExpression,
+                        segmented: true,
+                        stamp: ".",
+                        callee: {
+                          type: Syntax.Literal,
+                          value: "1",
+                          valueType: Token.IntegerLiteral,
+                        },
+                        method: {
+                          type: Syntax.Identifier,
+                          name: "wait",
+                        },
+                        args: {
+                          list: []
+                        },
+                      }
+                    ],
+                    blockList: true,
+                  }
+                ]
+              },
+            },
+            {
+              type: Syntax.Literal,
+              value: "0",
+              valueType: Token.IntegerLiteral,
+            }
+          ],
+        }
+      ],
+    };
+
+    var actual = new Rewriter().rewrite(ast);
+
     expect(actual).to.deep.equal(expected);
   });
 
   it("split value and value result for sync", function() {
-    var ast, actual, expected;
-
-    ast = {
+    var ast = {
       type: Syntax.FunctionExpression,
       body: [
         {
@@ -127,9 +242,8 @@ describe("sc.lang.compiler.rewriter", function() {
       ]
     };
 
-    expected = {
+    var expected = {
       type: Syntax.FunctionExpression,
-      segmented: true,
       body: [
         {
           type: Syntax.ValueMethodEvaluator,
@@ -201,7 +315,8 @@ describe("sc.lang.compiler.rewriter", function() {
       ]
     };
 
-    actual = new Rewriter().rewrite(ast);
+    var actual = new Rewriter().rewrite(ast);
+
     expect(actual).to.deep.equal(expected);
   });
 

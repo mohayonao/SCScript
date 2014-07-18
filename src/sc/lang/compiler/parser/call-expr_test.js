@@ -35,7 +35,6 @@ describe("sc.lang.compiler.Parser", function() {
       "a[0]": sc.test.OK,      // a[0]
       "a[..]": sc.test.OK,     // a[..]
       "a[0]()": strlib.format(Message.UnexpectedToken, "("),
-      "a[0]{}": strlib.format(Message.UnexpectedToken, "{"),
       "a[0][0]": sc.test.OK,   // (a[0])[0]
       "a[0].a": sc.test.OK,    // (a[0]).a
       "a.a": sc.test.OK,       // a.a()

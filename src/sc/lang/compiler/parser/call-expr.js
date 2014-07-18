@@ -19,38 +19,46 @@
 
   /*
     CallExpression :
-      TODO: write
+      TODO: write later
   */
   CallExpressionParser.prototype.parse = function() {
     var marker = this.createMarker();
     var expr = this.parseSignedExpression();
 
-    var stamp;
-    while ((stamp = this.matchAny([ ".", "[", "(", "{", "#" ])) !== null) {
-      var err = false;
-      err = err || (expr.stamp === "(" && stamp === "(");
-      err = err || (expr.stamp === "[" && stamp === "(");
-      err = err || (expr.stamp === "[" && stamp === "{");
-      if (err) {
-        this.throwUnexpected(this.lookahead);
-      }
+    if (this.matchAny([ "{", "#" ])) {
+      expr = this.parseBlockList(expr);
+      marker.update().apply(expr, true);
+    }
 
-      expr = this.parseCallChainExpression(stamp, expr);
+    var stamp;
+    while ((stamp = this.matchAny([ ".", "[", "(" ])) !== null) {
+      verifyChain(this, expr.stamp, stamp);
+
+      expr = this.parseChainable(stamp, expr);
+
       marker.update().apply(expr, true);
     }
 
     return expr;
   };
 
-  CallExpressionParser.prototype.parseCallChainExpression = function(stamp, expr) {
+  function verifyChain(that, prev, stamp) {
+    var err = false;
+
+    err = err || (prev === "(" && stamp === "(");
+    err = err || (prev === "[" && stamp === "(");
+
+    if (err) {
+      that.throwUnexpected(that.lookahead);
+    }
+  }
+
+  CallExpressionParser.prototype.parseChainable = function(stamp, expr) {
     if (stamp === "(") {
       return this.parseCallParentheses(expr);
     }
     if (stamp === "[") {
       return this.parseCallBrackets(expr);
-    }
-    if (stamp === "#" || stamp === "{") {
-      return this.parseBlockList(expr);
     }
     return this.parseCallDot(expr);
   };
@@ -58,35 +66,20 @@
   CallExpressionParser.prototype.parseCallParentheses = function(expr) {
     if (isClassName(expr)) {
       // Expr.new( ... )
-      return this.parseCallAbbrMethodCall(expr, "new", "(");
+      return this.parseShortHandMethodCall(expr, "new");
     }
     // expr( a ... ) -> a.expr( ... )
-    return this.parseCallMethodCall(expr);
+    return this.parseMethodCall(expr);
   };
 
-  function createCallExpressionForBraces(expr) {
-    var callee, method;
-
-    if (isClassName(expr)) {
-      callee = expr;
-      method = Node.createIdentifier("new");
-    } else {
-      callee = null;
-      method = expr;
-    }
-
-    return Node.createCallExpression(callee, method);
-  }
-
-  CallExpressionParser.prototype.parseCallMethodCall = function(expr) {
+  CallExpressionParser.prototype.parseMethodCall = function(expr) {
     if (expr.type !== Syntax.Identifier) {
       this.throwUnexpected(this.lookahead);
     }
 
     var lookahead = this.lookahead;
     var args      = new ArgumentsParser(this).parse();
-
-    var method = expr;
+    var method    = expr;
 
     expr = args.list.shift();
 
@@ -103,11 +96,11 @@
     return Node.createCallExpression(expr, method, args);
   };
 
-  CallExpressionParser.prototype.parseCallAbbrMethodCall = function(expr, methodName, stamp) {
+  CallExpressionParser.prototype.parseShortHandMethodCall = function(expr, methodName) {
     var method = Node.createIdentifier(methodName);
     var args = new ArgumentsParser(this).parse();
 
-    return Node.createCallExpression(expr, method, args, stamp);
+    return Node.createCallExpression(expr, method, args);
   };
 
   CallExpressionParser.prototype.parseCallBrackets = function(expr) {
@@ -139,10 +132,23 @@
     );
   };
 
-  CallExpressionParser.prototype.parseBlockList = function(expr) {
-    if (expr.type === Syntax.Identifier) {
-      expr = createCallExpressionForBraces(expr);
+  function createCallExpressionForBraces(expr) {
+    var callee, method;
+
+    if (isClassName(expr)) {
+      callee = expr;
+      method = Node.createIdentifier("new");
+    } else {
+      callee = null;
+      method = expr;
     }
+
+    return Node.createCallExpression(callee, method);
+  }
+
+  CallExpressionParser.prototype.parseBlockList = function(expr) {
+    expr = createCallExpressionForBraces(expr);
+
     var blockList = new ArgumentsParser(this).parseBlockList().list;
 
     if (expr.callee === null) {
@@ -159,7 +165,7 @@
 
     if (this.match("(")) {
       // expr.()
-      return this.parseCallAbbrMethodCall(expr, "value", "(");
+      return this.parseShortHandMethodCall(expr, "value");
     }
     if (this.match("[")) {
       // expr.[0] === expr.at(0)
@@ -179,7 +185,6 @@
 
   function ArgumentsParser(parent) {
     Parser.call(this, parent);
-    this._hasKeyword = false;
     this._args = { list: [] };
   }
   sc.libs.extend(ArgumentsParser, Parser);
@@ -220,34 +225,66 @@
   ArgumentsParser.prototype.parseArguments = function() {
     this.expect("(");
 
-    while (this.hasNextToken() && !this.match(")")) {
-      var lookahead = this.lookahead;
-      if (!this._hasKeyword) {
-        if (this.match("*")) {
-          this.lex();
-          this._args.expand = this.parseExpressions();
-          this._hasKeyword = true;
-        } else if (lookahead.type === Token.Label) {
-          this.parseKeywordArgument();
-          this._hasKeyword = true;
-        } else {
-          this._args.list.push(this.parseExpressions());
-        }
-      } else {
-        this.parseKeywordArgument();
-      }
-      if (!this.match(")")) {
-        this.expect(",");
-      }
+    if (this.lookahead.type !== Token.Label) {
+      this.parseArgList();
+    } else {
+      this.parseKeyArgList();
     }
 
     this.expect(")");
 
+    if (this.matchAny([ "{", "#" ])) {
+      return this.parseBlockList();
+    }
+
     return this._args;
   };
 
-  ArgumentsParser.prototype.parseKeywordArgument = function() {
+  ArgumentsParser.prototype.parseArgList = function() {
+    while (this.hasNextToken() && !this.match(")")) {
+      if (this.match("*") || this.lookahead.type === Token.Label) {
+        break;
+      }
+      this.parseArg();
+      this.skipComma();
+    }
+
+    if (this.match("*")) {
+      this.parseArgv();
+      this.skipComma();
+    }
+
+    if (!this.match(")")) {
+      this.parseKeyArgList();
+    }
+  };
+
+  ArgumentsParser.prototype.parseArg = function() {
+    var arg = this.parseExpressions();
+
+    this._args.list.push(arg);
+  };
+
+  ArgumentsParser.prototype.parseArgv = function() {
+    this.expect("*");
+
+    var argv = this.parseExpressions();
+
+    this._args.expand = argv;
+  };
+
+  ArgumentsParser.prototype.parseKeyArgList = function() {
+    this._args.keywords = {};
+
+    while (this.hasNextToken() && !this.match(")")) {
+      this.parseKeyArg();
+      this.skipComma();
+    }
+  };
+
+  ArgumentsParser.prototype.parseKeyArg = function() {
     var token = this.lex();
+
     if (token.type !== Token.Label) {
       return this.throwUnexpected(token);
     }
@@ -255,10 +292,13 @@
     var key = token.value;
     var val = this.parseExpressions();
 
-    if (!this._args.keywords) {
-      this._args.keywords = {};
-    }
     this._args.keywords[key] = val;
+  };
+
+  ArgumentsParser.prototype.skipComma = function() {
+    if (!this.match(")")) {
+      this.expect(",");
+    }
   };
 
   function isClassName(node) {

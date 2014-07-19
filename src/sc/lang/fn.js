@@ -8,51 +8,76 @@
   var $ = sc.lang.$;
 
   var fn = function(func, def) {
-    var argItems, argNames, argVals;
-    var remain, wrapper;
-
     if (!def) {
       return func;
     }
 
-    argItems = def.split(/\s*;\s*/);
-    if (argItems[argItems.length - 1].charAt(0) === "*") {
-      remain = !!argItems.pop();
-    }
+    var transduce = compile(def);
 
-    argNames = new Array(argItems.length);
-    argVals  = new Array(argItems.length);
-
-    argItems.forEach(function(items, i) {
-      items = items.split("=");
-      argNames[i] = items[0].trim();
-      argVals [i] = getDefaultValue(items[1] || "nil");
-    });
-
-    wrapper = function() {
-      var given, args;
-
-      given = slice.call(arguments);
-      args  = argVals.slice();
-
-      if (isDictionary(given[given.length - 1])) {
-        setKeywordArguments(args, argNames, given.pop());
-      }
-
-      copy(args, given, Math.min(argNames.length, given.length));
-
-      if (remain) {
-        args.push($.Array(given.slice(argNames.length)));
-      }
-
-      return func.apply(this, args);
+    var wrapper = function() {
+      return func.apply(this, transduce(slice.call(arguments)));
     };
 
-    wrapper._argNames = argNames;
-    wrapper._argVals  = argVals;
+    // TODO: remove
+    wrapper._argNames = transduce._argNames;
+    wrapper._argVals  = transduce._argVals;
 
     return wrapper;
   };
+
+  var compile = function(def) {
+    if (!def) {
+      return identify;
+    }
+
+    var defItems = getDefItems(def);
+
+    var func = function(given) {
+      var args  = defItems.vals.slice();
+
+      if (isDictionary(peek(given))) {
+        setKeywordArguments(args, defItems.names, given.pop());
+      }
+
+      copy(args, given, Math.min(defItems.names.length, given.length));
+
+      if (defItems.remain) {
+        args.push($.Array(given.slice(defItems.names.length)));
+      }
+
+      return args;
+    };
+
+    func._argNames = defItems.names;
+    func._argVals  = defItems.vals;
+
+    return func;
+  };
+
+  fn.compile = compile;
+
+  function getDefItems(def) {
+    var items = def.split(/\s*;\s*/);
+    var remain = peek(items).charAt(0) === "*" ? !!items.pop() : false;
+    var names  = new Array(items.length);
+    var vals   = new Array(items.length);
+
+    items.forEach(function(items, i) {
+      items = items.split("=");
+      names[i] = items[0].trim();
+      vals [i] = getDefaultValue(items[1] || "nil");
+    });
+
+    return { names: names, vals: vals, remain: remain };
+  }
+
+  function identify(id) {
+    return id;
+  }
+
+  function peek(list) {
+    return list[list.length - 1];
+  }
 
   function isDictionary(obj) {
     return !!(obj && obj.constructor === Object);
@@ -66,9 +91,12 @@
     }
   }
 
-  function _getDefaultValue(value) {
-    var ch;
-
+  function getDefaultValue(value) {
+    if (value.charAt(0) === "[") {
+      return $.Array(value.slice(1, -2).split(",").map(function(value) {
+        return getDefaultValue(value.trim());
+      }));
+    }
     switch (value) {
     case "nil":
       return $.Nil();
@@ -82,7 +110,7 @@
       return $.Float(-Infinity);
     }
 
-    ch = value.charAt(0);
+    var ch = value.charAt(0);
     switch (ch) {
     case "$":
       return $.Char(value.charAt(1));
@@ -95,15 +123,6 @@
     }
 
     return $.Integer(+value);
-  }
-
-  function getDefaultValue(value) {
-    if (value.charAt(0) === "[") {
-      return $.Array(value.slice(1, -2).split(",").map(function(value) {
-        return _getDefaultValue(value.trim());
-      }));
-    }
-    return _getDefaultValue(value);
   }
 
   function setKeywordArguments(args, argNames, dict) {

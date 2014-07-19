@@ -5,6 +5,30 @@ describe("sc.lang.fn", function() {
   var $  = sc.lang.$;
   var $nil = $.nil;
 
+  describe("transducer", function() {
+    it("empty", function() {
+      var transduce = sc.lang.fn.compile();
+      var args = transduce([ 1, 2, 3 ]);
+      expect(args).to.eql([ 1, 2, 3 ]);
+    });
+    it("default args", function() {
+      var transduce = sc.lang.fn.compile(
+        "a; b=nil; c=true; d=false; e=0; f=0.0; g=inf; h=-inf; i=\\symbol; j=$j"
+      );
+      var args = transduce([]);
+
+      expect(args).to.deep.equal($$([
+        null, null, true, false, 0, $.Float(0.0), Infinity, -Infinity, "\\symbol", "$j"
+      ])._);
+    });
+    it("default args (list)", function() {
+      var transduce = sc.lang.fn.compile("a=[ 0, 1, 2 ]");
+      var args = transduce([]);
+
+      expect(args).to.deep.equal($$([ [ 0, 1, 2 ] ])._);
+    });
+  });
+
   it("default arguments", function() {
     var spy = sinon.spy();
     var instance = {

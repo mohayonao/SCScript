@@ -90,10 +90,10 @@ describe("sc.lang.bytecode", function() {
         f = { ^10; throw('should not be reached') }
       */
       var spy = sinon.spy();
-      var f = $.Function(function() {
+      var f = $.Function(function(_) {
         return [
           function() {
-            this.break();
+            _.break();
             return $$(10);
           },
           function() {
@@ -128,11 +128,13 @@ describe("sc.lang.bytecode", function() {
 
     it("iterator break", function() {
       var f = $$(function() {
-        return $$(100).do($$(function($_) {
-          passed += 1;
-          if ($_.valueOf() === 5) {
-            this.break();
-          }
+        return $$(100).do($.Function(function(_) {
+          return [ function($_) {
+            passed += 1;
+            if ($_.valueOf() === 5) {
+              _.break();
+            }
+          } ];
         }));
       }), passed;
 
@@ -164,43 +166,47 @@ describe("sc.lang.bytecode", function() {
         return $actual;
       };
       var spy = sinon.spy();
-      var f = $.Function(function() {
+      var f = $.Function(function(_) {
         return [
           function() {
-            return this.push(), $.Func(function() {
+            return _.push(), $.Func(function() {
               return $$(10);
             }).value();
           },
           function() {
-            return this.push(), $.Func(function() {
+            return _.push(), $.Func(function() {
               return $$(20);
             }).value();
           },
           function() {
-            return this.push(), $.Func(function() {
-              assert(this.shift(), 10);
-              return assert(this.shift(), 20);
+            return _.push(), $.Function(function(_) {
+              return [ function() {
+                assert(_.shift(), 10);
+                return assert(_.shift(), 20);
+              } ];
             }).value();
           },
           function() {
-            assert(this.shift(), 20);
-            return this.push(), $.Func(function() {
+            assert(_.shift(), 20);
+            return _.push(), $.Func(function() {
               return $$(30);
             }).value();
           },
           function() {
-            return this.push(), $.Func(function() {
+            return _.push(), $.Func(function() {
               return $$(40);
             }).value();
           },
           function() {
-            return this.push(), $.Func(function() {
-              assert(this.shift(), 30);
-              return assert(this.shift(), 40);
+            return _.push(), $.Function(function(_) {
+              return [ function() {
+                assert(_.shift(), 30);
+                return assert(_.shift(), 40);
+              } ];
             }).value();
           },
           function() {
-            return assert(this.shift(), 40);
+            return assert(_.shift(), 40);
           },
           spy
         ];
@@ -244,25 +250,11 @@ describe("sc.lang.bytecode", function() {
   });
 
   describe("as Routine", function() {
-    before(function() {
-      this.createInstance = function(value) {
-        var $func;
-        if (Array.isArray(value)) {
-          $func = $.Function(function() {
-            return value;
-          });
-        } else {
-          $func = value;
-        }
-        return SCRoutine.new($func);
-      };
-    });
-
     it("empty", function() {
       /*
         r = r {}
       */
-      var r = this.createInstance($.Function(function() {
+      var r = SCRoutine.new($.Function(function() {
         return [];
       }));
 
@@ -277,7 +269,7 @@ describe("sc.lang.bytecode", function() {
       /*
         r = r { 10 }
       */
-      var r = this.createInstance($$(function() {
+      var r = SCRoutine.new($$(function() {
         return $$(10);
       }));
 
@@ -292,7 +284,7 @@ describe("sc.lang.bytecode", function() {
       /*
         r = r { 10.yield }
       */
-      var r = this.createInstance($$(function() {
+      var r = SCRoutine.new($$(function() {
         return $$(10).yield();
       }));
 
@@ -308,7 +300,7 @@ describe("sc.lang.bytecode", function() {
       /*
         r = r { |a, b| [ a, b ].yield }
       */
-      var r = this.createInstance($$(function($a, $b) {
+      var r = SCRoutine.new($$(function($a, $b) {
         return $$([ $a, $b ]).yield();
       }, "a=0; b=1"));
 
@@ -320,16 +312,18 @@ describe("sc.lang.bytecode", function() {
 
     it("break", function() {
       var spy = sinon.spy();
-      var r = this.createInstance([
-        function() {
-          this.break();
-          return $$(10).yield();
-        },
-        function() {
-          throw new Error("should not be reached");
-        },
-        spy
-      ]);
+      var r = SCRoutine.new($.Function(function(_) {
+        return [
+          function() {
+            _.break();
+            return $$(10).yield();
+          },
+          function() {
+            throw new Error("should not be reached");
+          },
+          spy
+        ];
+      }));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -351,26 +345,28 @@ describe("sc.lang.bytecode", function() {
         }
       */
       var spy = sinon.spy();
-      var r = this.createInstance([
-        SHOULD_BE_IGNORED,
-        function() {
-          return $$(10).yield();
-        },
-        SHOULD_BE_IGNORED,
-        function() {
-          return $$(20).yield();
-        },
-        SHOULD_BE_IGNORED,
-        function() {
-          return $$(30).yield();
-        },
-        SHOULD_BE_IGNORED,
-        function() {
-          return $$(40).yield();
-        },
-        SHOULD_BE_IGNORED,
-        spy
-      ]);
+      var r = SCRoutine.new($.Function(function() {
+        return [
+          SHOULD_BE_IGNORED,
+          function() {
+            return $$(10).yield();
+          },
+          SHOULD_BE_IGNORED,
+          function() {
+            return $$(20).yield();
+          },
+          SHOULD_BE_IGNORED,
+          function() {
+            return $$(30).yield();
+          },
+          SHOULD_BE_IGNORED,
+          function() {
+            return $$(40).yield();
+          },
+          SHOULD_BE_IGNORED,
+          spy
+        ];
+      }));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -400,34 +396,36 @@ describe("sc.lang.bytecode", function() {
         }
       */
       var spy = sinon.spy();
-      var r = this.createInstance([
-        SHOULD_BE_IGNORED,
-        function() {
-          return $$(10).yield();
-        },
-        SHOULD_BE_IGNORED,
-        function() {
-          return $.Function(function() {
-            return [
-              SHOULD_BE_IGNORED,
-              function() {
-                return $$(20).yield();
-              },
-              SHOULD_BE_IGNORED,
-              function() {
-                return $$(30).yield();
-              },
-              SHOULD_BE_IGNORED
-            ];
-          }).value();
-        },
-        SHOULD_BE_IGNORED,
-        function() {
-          return $$(40).yield();
-        },
-        SHOULD_BE_IGNORED,
-        spy
-      ]);
+      var r = SCRoutine.new($.Function(function() {
+        return [
+          SHOULD_BE_IGNORED,
+          function() {
+            return $$(10).yield();
+          },
+          SHOULD_BE_IGNORED,
+          function() {
+            return $.Function(function() {
+              return [
+                SHOULD_BE_IGNORED,
+                function() {
+                  return $$(20).yield();
+                },
+                SHOULD_BE_IGNORED,
+                function() {
+                  return $$(30).yield();
+                },
+                SHOULD_BE_IGNORED
+              ];
+            }).value();
+          },
+          SHOULD_BE_IGNORED,
+          function() {
+            return $$(40).yield();
+          },
+          SHOULD_BE_IGNORED,
+          spy
+        ];
+      }));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -449,7 +447,7 @@ describe("sc.lang.bytecode", function() {
       /*
         r = r { [ 10, 20, 30, 40 ].do(_.yield) }
       */
-      var r = this.createInstance($$(function() {
+      var r = SCRoutine.new($$(function() {
         return $$([ 10, 20, 30, 40 ]).do($$(function($_) {
           return $_.yield();
         }));
@@ -479,7 +477,7 @@ describe("sc.lang.bytecode", function() {
         }
       */
       var spy = sinon.spy();
-      var r = this.createInstance($$(function() {
+      var r = SCRoutine.new($$(function() {
         return $$([ 10, 30 ]).do($.Function(function() {
           var $i;
           return [
@@ -525,32 +523,34 @@ describe("sc.lang.bytecode", function() {
       */
       var spy1 = sinon.spy();
       var spy2 = sinon.spy();
-      var r = this.createInstance([
-        function() {
-          return $$(10).yield();
-        },
-        function() {
-          return this.push(), $.Function(function() {
-            return [
-              function() {
-                return $$(20).yield();
-              },
-              function() {
-                return $$(30).yieldAndReset();
-              },
-              function() {
-                return $$(40).yield();
-              },
-              spy1
-            ];
-          }).value();
-        },
-        function() {
-          this.shift();
-          return $$(50).yield();
-        },
-        spy2
-      ]);
+      var r = SCRoutine.new($.Function(function(_) {
+        return [
+          function() {
+            return $$(10).yield();
+          },
+          function() {
+            return _.push(), $.Function(function() {
+              return [
+                function() {
+                  return $$(20).yield();
+                },
+                function() {
+                  return $$(30).yieldAndReset();
+                },
+                function() {
+                  return $$(40).yield();
+                },
+                spy1
+              ];
+            }).value();
+          },
+          function() {
+            _.shift();
+            return $$(50).yield();
+          },
+          spy2
+        ];
+      }));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -590,32 +590,34 @@ describe("sc.lang.bytecode", function() {
       */
       var spy1 = sinon.spy();
       var spy2 = sinon.spy();
-      var r = this.createInstance([
-        function() {
-          return $$(10).yield();
-        },
-        function() {
-          return this.push(), $.Function(function() {
-            return [
-              function() {
-                return $$(20).yield();
-              },
-              function() {
-                return $$(30).alwaysYield();
-              },
-              function() {
-                return $$(40).yield();
-              },
-              spy1
-            ];
-          }).value();
-        },
-        function() {
-          this.shift();
-          return $$(50).yield();
-        },
-        spy2
-      ]);
+      var r = SCRoutine.new($.Function(function(_) {
+        return [
+          function() {
+            return $$(10).yield();
+          },
+          function() {
+            return _.push(), $.Function(function() {
+              return [
+                function() {
+                  return $$(20).yield();
+                },
+                function() {
+                  return $$(30).alwaysYield();
+                },
+                function() {
+                  return $$(40).yield();
+                },
+                spy1
+              ];
+            }).value();
+          },
+          function() {
+            _.shift();
+            return $$(50).yield();
+          },
+          spy2
+        ];
+      }));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -661,62 +663,64 @@ describe("sc.lang.bytecode", function() {
       var spy1 = sinon.spy();
       var spy2 = sinon.spy();
       var spy3 = sinon.spy();
-      var r = this.createInstance([
-        function() {
-          return this.push(), $.Func(function() {
-            return $$(10);
-          }).value();
-        },
-        function() {
-          return this.push(), $.Func(function() {
-            return $$(20);
-          }).value();
-        },
-        function() {
-          return this.push(), $.Function(function() {
-            return [
-              function() {
-                return this.shift().yield();
-              },
-              function() {
-                return this.shift().yield();
-              },
-              spy1
-            ];
-          }).value();
-        },
-        function() {
-          var $a = this.shift();
-          return $a.yield();
-        },
-        function() {
-          return this.push(), $.Func(function() {
-            return $$(30);
-          }).value();
-        },
-        function() {
-          return this.push(), $.Func(function() {
-            return $$(40);
-          }).value();
-        },
-        function() {
-          return this.push(), $.Function(function() {
-            return [
-              function() {
-                return this.shift().yield();
-              },
-              function() {
-                return this.shift().yield();
-              },
-              spy2
-            ];
-          }).value();
-        },
-        function() {
-          return this.shift().yield();
-        },
-        spy3
-      ]);
+      var r = SCRoutine.new($.Function(function(_) {
+        return [
+          function() {
+            return _.push(), $.Func(function() {
+              return $$(10);
+            }).value();
+          },
+          function() {
+            return _.push(), $.Func(function() {
+              return $$(20);
+            }).value();
+          },
+          function() {
+            return _.push(), $.Function(function(_) {
+              return [
+                function() {
+                  return _.shift().yield();
+                },
+                function() {
+                  return _.shift().yield();
+                },
+                spy1
+              ];
+            }).value();
+          },
+          function() {
+            var $a = _.shift();
+            return $a.yield();
+          },
+          function() {
+            return _.push(), $.Func(function() {
+              return $$(30);
+            }).value();
+          },
+          function() {
+            return _.push(), $.Func(function() {
+              return $$(40);
+            }).value();
+          },
+          function() {
+            return _.push(), $.Function(function(_) {
+              return [
+                function() {
+                  return _.shift().yield();
+                },
+                function() {
+                  return _.shift().yield();
+                },
+                spy2
+              ];
+            }).value();
+          },
+          function() {
+            return _.shift().yield();
+          },
+          spy3
+        ];
+      }));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -749,13 +753,13 @@ describe("sc.lang.bytecode", function() {
       */
       var spy = sinon.spy();
       var a = sc.test.routine([ 10, 20, 30 ]);
-      var r = this.createInstance($.Function(function() {
+      var r = SCRoutine.new($.Function(function(_) {
         return [
           function() {
-            return this.push(), a.value();
+            return _.push(), a.value();
           },
           function() {
-            return this.shift().yield();
+            return _.shift().yield();
           },
           spy
         ];
@@ -777,11 +781,11 @@ describe("sc.lang.bytecode", function() {
       */
       var spy1 = sinon.spy();
       var spy2 = sinon.spy();
-      var r = this.createInstance($.Function(function() {
+      var r = SCRoutine.new($.Function(function(_) {
         var $a;
         return [
           function() {
-            return this.push(), $.Function(function() {
+            return _.push(), $.Function(function() {
               return [
                 function() {
                   return $$(10).yield();
@@ -794,7 +798,7 @@ describe("sc.lang.bytecode", function() {
             }).value();
           },
           function() {
-            $a = this.shift();
+            $a = _.shift();
             return $a.yield();
           },
           spy2
@@ -823,7 +827,7 @@ describe("sc.lang.bytecode", function() {
         }
       */
       var i = 0, spy;
-      var r = this.createInstance($$(function() {
+      var r = SCRoutine.new($$(function() {
         return $$(function() {
           return $$(i < 3);
         }).while($$(spy = sinon.spy(function() {
@@ -878,7 +882,7 @@ describe("sc.lang.bytecode", function() {
 
     it("Array.fill", function() {
       /* r = r { Array.fill(4, { |i| i + 1 }).yield } */
-      var r = this.createInstance($$(function() {
+      var r = SCRoutine.new($$(function() {
         return $("Array").fill($$(4), $$(function($i) {
           return $i ["+"] ($$(1));
         })).yield();

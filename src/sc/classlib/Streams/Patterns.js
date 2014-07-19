@@ -197,14 +197,14 @@ SCScript.install(function(sc) {
 
       $.Func(function() {
         return $.Boolean(counter < length);
-      }).while($.Function(function() {
+      }).while($.Function(function(_) {
         var $stepVal;
         return [
           function() {
             $stepVal = $stepStr.next($inval);
 
             if ($stepVal === $nil) {
-              this.break();
+              _.break();
             }
           },
           function() {
@@ -257,14 +257,14 @@ SCScript.install(function(sc) {
 
       $.Func(function() {
         return $.Boolean(counter < length);
-      }).while($.Function(function() {
+      }).while($.Function(function(_) {
         var $growVal;
         return [
           function() {
             $growVal = $growStr.next($inval);
 
             if ($growVal === $nil) {
-              this.break();
+              _.break();
             }
           },
           function() {

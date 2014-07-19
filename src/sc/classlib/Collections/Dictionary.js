@@ -80,12 +80,14 @@ SCScript.install(function(sc) {
     }, function($key) {
       var ret = null;
 
-      this.keysValuesDo($.Func(function($k, $v) {
-        if ($k.matchItem($key).__bool__()) {
-          ret = $v;
-          this.break();
-        }
-        return $nil;
+      this.keysValuesDo($.Function(function(_) {
+        return [ function($k, $v) {
+          if ($k.matchItem($key).__bool__()) {
+            ret = $v;
+            _.break();
+          }
+          return $nil;
+        } ];
       }));
 
       return ret || $nil;
@@ -243,12 +245,14 @@ SCScript.install(function(sc) {
     }, function($item1) {
       var $ret = null;
 
-      this.do($.Func(function($item2) {
-        if ($item1 ["=="] ($item2).__bool__()) {
-          $ret = $true;
-          this.break();
-        }
-        return $nil;
+      this.do($.Function(function(_) {
+        return [ function($item2) {
+          if ($item1 ["=="] ($item2).__bool__()) {
+            $ret = $true;
+            _.break();
+          }
+          return $nil;
+        } ];
       }));
 
       return $ret || $false;
@@ -463,12 +467,14 @@ SCScript.install(function(sc) {
     }, function($argValue) {
       var $ret = null;
 
-      this.keysValuesArrayDo(this._$array, $.Func(function($key, $val) {
-        if ($argValue ["=="] ($val).__bool__()) {
-          $ret = $key;
-          this.break();
-        }
-        return $nil;
+      this.keysValuesArrayDo(this._$array, $.Function(function(_) {
+        return [ function($key, $val) {
+          if ($argValue ["=="] ($val).__bool__()) {
+            $ret = $key;
+            _.break();
+          }
+          return $nil;
+        } ];
       }));
 
       return $ret || $nil;
@@ -636,12 +642,14 @@ SCScript.install(function(sc) {
     }, function($argValue) {
       var $ret = null;
 
-      this.keysValuesArrayDo(this._$array, $.Func(function($key, $val) {
-        if ($argValue === $val) {
-          $ret = $key;
-          this.break();
-        }
-        return $nil;
+      this.keysValuesArrayDo(this._$array, $.Function(function(_) {
+        return [ function($key, $val) {
+          if ($argValue === $val) {
+            $ret = $key;
+            _.break();
+          }
+          return $nil;
+        } ];
       }));
 
       return $ret || $nil;

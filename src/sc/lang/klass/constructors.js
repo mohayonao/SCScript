@@ -204,7 +204,7 @@
 
   $.addProperty("Function", function(value, def) {
     var instance = new SCFunction();
-    instance._bytecode = sc.lang.bytecode.create(value, def).setOwner(instance);
+    instance._bytecode = sc.lang.bytecode.create(value, def).init(instance);
     return instance;
   });
 

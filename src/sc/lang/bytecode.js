@@ -8,10 +8,13 @@
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
 
-  function Bytecode(initializer, def) {
+  function Bytecode(initializer, def, length, localVars) {
     var code = initializer(this);
 
-    if (def && code[0]) {
+    this.transduce = fn.compile(def);
+
+
+    if (code[0]) {
       code[0] = fn(code[0], def);
       this._argNames = code[0]._argNames;
       this._argVals  = code[0]._argVals;
@@ -19,7 +22,7 @@
       this._argNames = [];
       this._argVals  = [];
     }
-    if (code.length > 1) {
+    if (localVars !== null) {
       this._free = code.pop();
     }
 
@@ -30,7 +33,7 @@
     this.parent  = null;
     this.child   = null;
     this._code   = code;
-    this._length = code.length;
+    this._length = length;
     this._vals = [];
     this._$owner = null;
   }
@@ -298,8 +301,8 @@
   }
 
   sc.lang.bytecode = {
-    create: function(initializer, def) {
-      return new Bytecode(initializer, def);
+    create: function(initializer, def, length, localVars) {
+      return new Bytecode(initializer, def, length, localVars);
     },
     yield: function($value) {
       throwIfOutsideOfRoutine();

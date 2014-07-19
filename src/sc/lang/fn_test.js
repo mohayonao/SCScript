@@ -7,7 +7,7 @@ describe("sc.lang.fn", function() {
 
   describe("transducer", function() {
     it("empty", function() {
-      var transduce = sc.lang.fn.compile();
+      var transduce = sc.lang.fn.compile(null);
       var args = transduce([ 1, 2, 3 ]);
       expect(args).to.eql([ 1, 2, 3 ]);
     });

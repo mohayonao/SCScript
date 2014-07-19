@@ -215,10 +215,9 @@ SCScript.install(function(sc) {
             counter += 1;
             $inval   = $outval.yield();
             return $inval;
-          },
-          $.NOP
+          }
         ];
-      }));
+      }, null, 2, null));
 
       return $inval;
     });
@@ -275,10 +274,9 @@ SCScript.install(function(sc) {
             counter += 1;
             $inval   = $outval.yield();
             return $inval;
-          },
-          $.NOP
+          }
         ];
-      }));
+      }, null, 2, null));
 
       return $inval;
     });

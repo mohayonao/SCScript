@@ -811,7 +811,7 @@ SCScript.install(function(sc) {
             return $nil;
           }));
         } ];
-      }));
+      }, null, 1, null));
     });
 
     builder.addMethod("degreeToKey", {

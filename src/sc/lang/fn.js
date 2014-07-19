@@ -8,7 +8,7 @@
   var $ = sc.lang.$;
 
   var fn = function(func, def) {
-    if (!def) {
+    if (def === null) {
       return func;
     }
 
@@ -26,7 +26,7 @@
   };
 
   var compile = function(def) {
-    if (!def) {
+    if (def === null) {
       return identify;
     }
 

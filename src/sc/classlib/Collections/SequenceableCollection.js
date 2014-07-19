@@ -180,7 +180,7 @@ SCScript.install(function(sc) {
           }
           return $nil;
         } ];
-      }));
+      }, null, 1, null));
 
       return $res || $true;
     });
@@ -255,7 +255,7 @@ SCScript.install(function(sc) {
           }
           return $nil;
         } ];
-      }));
+      }, null, 1, null));
 
       return $ret || $nil;
     });
@@ -391,7 +391,7 @@ SCScript.install(function(sc) {
           }
           return $nil;
         } ];
-      }));
+      }, null, 1, null));
 
       return $res || $true;
     });

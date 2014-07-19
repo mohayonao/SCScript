@@ -371,16 +371,15 @@ SCScript.install(function(sc) {
                 },
                 function() {
                   return $this.reset();
-                },
-                $.NOP
+                }
               ];
-            }));
+            }, null, 2, null));
           },
           function() {
             $inval = null;
           }
         ];
-      }));
+      }, null, 1, []));
     });
 
     builder.addMethod("fin", {
@@ -408,16 +407,15 @@ SCScript.install(function(sc) {
                 function() {
                   $inval = $item.yield();
                   return $inval;
-                },
-                $.NOP
+                }
               ];
-            }));
+            }, null, 3, null));
           },
           function() {
             $inval = null;
           }
         ];
-      }));
+      }, null, 1, []));
     });
 
     builder.addMethod("repeat", {
@@ -448,7 +446,7 @@ SCScript.install(function(sc) {
               $inval = null;
             }
           ];
-        }));
+        }, null, 1, []));
       } else {
         return SCRoutine.new($.Func(function() {
           return $.Func(function() {

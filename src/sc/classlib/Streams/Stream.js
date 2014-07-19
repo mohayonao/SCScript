@@ -117,10 +117,9 @@ SCScript.install(function(sc) {
               for (i = 0; i < skipSize; ++i) {
                 $this.next();
               }
-            },
-            $.NOP
+            }
           ];
-        }).loop();
+        }, null, 2, null).loop();
       }));
     });
 
@@ -307,10 +306,9 @@ SCScript.install(function(sc) {
           },
           function() {
             return $stream.embedInStream($inval);
-          },
-          $.NOP
+          }
         ];
-      }));
+      }, null, 2, null));
     });
 
     builder.addMethod("collate", {

@@ -217,7 +217,7 @@ SCScript.install(function(sc) {
             return $inval;
           }
         ];
-      }, null, 2, null));
+      }, null, null));
 
       return $inval;
     });
@@ -276,7 +276,7 @@ SCScript.install(function(sc) {
             return $inval;
           }
         ];
-      }, null, 2, null));
+      }, null, null));
 
       return $inval;
     });

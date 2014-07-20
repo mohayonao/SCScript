@@ -675,7 +675,7 @@ describe("sc.lang.iterator", function() {
           }
         });
         return [ spy ];
-      }, null, 1, null);
+      }, null, null);
       var iter = sc.lang.iterator.integer$do($$(10));
 
       sc.lang.iterator.execute(iter, $function);

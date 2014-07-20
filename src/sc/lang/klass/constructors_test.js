@@ -70,7 +70,7 @@ describe("$", function() {
       return [ function($a) {
         return $a;
       } ];
-    }, "a", 1, null);
+    }, "a", null);
 
     expect(f).to.be.a("SCFunction");
     expect(f.value($$(10))).to.be.a("SCInteger").that.equals(10);

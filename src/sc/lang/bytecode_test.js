@@ -35,7 +35,7 @@ describe("sc.lang.bytecode", function() {
       */
       var f = $.Function(function() {
         return [];
-      }, null, 0, null);
+      }, null, null);
 
       expect(f.value(), 0).to.be.a("SCNil");
       expect(f.value(), 1).to.be.a("SCNil");
@@ -77,7 +77,7 @@ describe("sc.lang.bytecode", function() {
         return [ function($a, $b) {
           return $$([ $a, $b ]);
         } ];
-      }, "a=0; b=1", 1, null);
+      }, "a=0; b=1", null);
 
       expect(f.value()              , 0).to.be.a("SCArray").that.deep.equals([  0,  1 ]);
       expect(f.value($$(10))        , 1).to.be.a("SCArray").that.deep.equals([ 10,  1 ]);
@@ -101,7 +101,7 @@ describe("sc.lang.bytecode", function() {
           },
           spy
         ];
-      }, null, 2, []);
+      }, null, []);
 
       expect(spy      , 0).to.callCount(0);
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -135,7 +135,7 @@ describe("sc.lang.bytecode", function() {
               _.break();
             }
           } ];
-        }, null, 1, null));
+        }, null, null));
       }), passed;
 
       passed = 0;
@@ -184,7 +184,7 @@ describe("sc.lang.bytecode", function() {
                 assert(_.shift(), 10);
                 return assert(_.shift(), 20);
               } ];
-            }, null, 1, null).value();
+            }, null, null).value();
           },
           function() {
             assert(_.shift(), 20);
@@ -203,14 +203,14 @@ describe("sc.lang.bytecode", function() {
                 assert(_.shift(), 30);
                 return assert(_.shift(), 40);
               } ];
-            }, null, 1, null).value();
+            }, null, null).value();
           },
           function() {
             return assert(_.shift(), 40);
           },
           spy
         ];
-      }, null, 7, []);
+      }, null, []);
 
       expect(spy      , 0).to.callCount(0);
       expect(f.value(), 1).to.be.a("SCInteger").that.equals(40);
@@ -256,7 +256,7 @@ describe("sc.lang.bytecode", function() {
       */
       var r = SCRoutine.new($.Function(function() {
         return [];
-      }, null, 0, null));
+      }, null, null));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCNil");
@@ -323,7 +323,7 @@ describe("sc.lang.bytecode", function() {
           },
           spy
         ];
-      }, null, 2, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -366,7 +366,7 @@ describe("sc.lang.bytecode", function() {
           SHOULD_BE_IGNORED,
           spy
         ];
-      }, null, 9, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -416,7 +416,7 @@ describe("sc.lang.bytecode", function() {
                 },
                 SHOULD_BE_IGNORED
               ];
-            }, null, 5, null).value();
+            }, null, null).value();
           },
           SHOULD_BE_IGNORED,
           function() {
@@ -425,7 +425,7 @@ describe("sc.lang.bytecode", function() {
           SHOULD_BE_IGNORED,
           spy
         ];
-      }, null, 7, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -490,7 +490,7 @@ describe("sc.lang.bytecode", function() {
             },
             spy
           ];
-        }, null, 2, []));
+        }, null, []));
       }));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
@@ -542,7 +542,7 @@ describe("sc.lang.bytecode", function() {
                 },
                 spy1
               ];
-            }, null, 3, []).value();
+            }, null, []).value();
           },
           function() {
             _.shift();
@@ -550,7 +550,7 @@ describe("sc.lang.bytecode", function() {
           },
           spy2
         ];
-      }, null, 3, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -609,7 +609,7 @@ describe("sc.lang.bytecode", function() {
                 },
                 spy1
               ];
-            }, null, 3, []).value();
+            }, null, []).value();
           },
           function() {
             _.shift();
@@ -617,7 +617,7 @@ describe("sc.lang.bytecode", function() {
           },
           spy2
         ];
-      }, null, 3, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -686,7 +686,7 @@ describe("sc.lang.bytecode", function() {
                 },
                 spy1
               ];
-            }, null, 2, []).value();
+            }, null, []).value();
           },
           function() {
             var $a = _.shift();
@@ -713,14 +713,14 @@ describe("sc.lang.bytecode", function() {
                 },
                 spy2
               ];
-            }, null, 2, []).value();
+            }, null, []).value();
           },
           function() {
             return _.shift().yield();
           },
           spy3
         ];
-      }, null, 8, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -763,7 +763,7 @@ describe("sc.lang.bytecode", function() {
           },
           spy
         ];
-      }, null, 2, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);
@@ -795,7 +795,7 @@ describe("sc.lang.bytecode", function() {
                 },
                 spy1
               ];
-            }, null, 2, []).value();
+            }, null, []).value();
           },
           function() {
             $a = _.shift();
@@ -803,7 +803,7 @@ describe("sc.lang.bytecode", function() {
           },
           spy2
         ];
-      }, null, 2, []));
+      }, null, []));
 
       expect(r.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(r.value(), 1).to.be.a("SCInteger").that.equals(10);

@@ -11,7 +11,7 @@ describe("Core/Thread", function() {
       this.createInstance = function() {
         return SCThread.new($.Function(function() {
           return [];
-        }, null, 0, null));
+        }, null, null));
       };
     });
 
@@ -137,7 +137,7 @@ describe("Core/Thread", function() {
         if (!func) {
           func = $.Function(function() {
             return [];
-          }, null, 0, null);
+          }, null, null);
         }
         return SCRoutine.new(func);
       };
@@ -187,7 +187,7 @@ describe("Core/Thread", function() {
                   return $$(3).yield();
                 }
               ];
-            }, null, 2, null).value();
+            }, null, null).value();
           },
           function() {
             return $$(4).yield();
@@ -198,7 +198,7 @@ describe("Core/Thread", function() {
             }));
           }
         ];
-      }, null, 5, null));
+      }, null, null));
 
       expect(instance.next($inval), 0).to.equal($inval);
       expect(instance.next($inval), 1).to.be.a("SCInteger").that.equals(1);
@@ -250,7 +250,7 @@ describe("Core/Thread", function() {
             }));
           }
         ];
-      }, null, 1, null));
+      }, null, null));
 
       expect(instance.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(instance.next() , 1).to.be.a("SCInteger").that.equals(1);

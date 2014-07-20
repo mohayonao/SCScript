@@ -8,11 +8,10 @@
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
 
-  function Bytecode(initializer, def, length, localVars) {
+  function Bytecode(initializer, def, localVars) {
     var code = initializer(this);
 
     this.transduce = fn.compile(def);
-
 
     if (code[0]) {
       code[0] = this.transduce.wrap(code[0]);
@@ -28,7 +27,7 @@
     this.parent  = null;
     this.child   = null;
     this._code   = code;
-    this._length = length;
+    this._length = code.length;
     this._vals = [];
     this._$owner = null;
   }

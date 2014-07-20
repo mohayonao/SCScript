@@ -119,7 +119,7 @@ SCScript.install(function(sc) {
               }
             }
           ];
-        }, null, 2, null).loop();
+        }, null, null).loop();
       }));
     });
 
@@ -308,7 +308,7 @@ SCScript.install(function(sc) {
             return $stream.embedInStream($inval);
           }
         ];
-      }, null, 2, null));
+      }, null, null));
     });
 
     builder.addMethod("collate", {

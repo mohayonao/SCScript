@@ -373,13 +373,13 @@ SCScript.install(function(sc) {
                   return $this.reset();
                 }
               ];
-            }, null, 2, null));
+            }, null, null));
           },
           function() {
             $inval = null;
           }
         ];
-      }, null, 1, []));
+      }, null, []));
     });
 
     builder.addMethod("fin", {
@@ -409,13 +409,13 @@ SCScript.install(function(sc) {
                   return $inval;
                 }
               ];
-            }, null, 3, null));
+            }, null, null));
           },
           function() {
             $inval = null;
           }
         ];
-      }, null, 1, []));
+      }, null, []));
     });
 
     builder.addMethod("repeat", {
@@ -446,7 +446,7 @@ SCScript.install(function(sc) {
               $inval = null;
             }
           ];
-        }, null, 1, []));
+        }, null, []));
       } else {
         return SCRoutine.new($.Func(function() {
           return $.Func(function() {

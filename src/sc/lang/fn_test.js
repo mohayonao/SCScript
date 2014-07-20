@@ -60,8 +60,10 @@ describe("sc.lang.fn", function() {
   it("meta data", function() {
     var func = sc.lang.fn(function() {}, "a=1; b=1.0");
 
-    expect(func._argNames).to.be.a("JSArray").that.deep.equals([ "a", "b" ]);
-    expect(func._argVals ).to.be.a("JSArray").that.deep.equals([ $.Integer(1), $.Float(1.0) ]);
+    expect(func.transduce.names)
+      .to.be.a("JSArray").that.deep.equals([ "a", "b" ]);
+    expect(func.transduce.vals)
+      .to.be.a("JSArray").that.deep.equals([ $.Integer(1), $.Float(1.0) ]);
   });
 
   it("'a, b, c': call($arg1, { c: $argC }) should pass [ $arg1, $nil, $argC ]", function() {

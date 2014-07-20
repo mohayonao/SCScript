@@ -7,32 +7,18 @@
   var slice = [].slice;
   var $ = sc.lang.$;
 
-  var fn = function(func, def) {
-    if (def === null) {
-      return func;
-    }
-
-    var transduce = compile(def);
-
-    var wrapper = function() {
-      return func.apply(this, transduce(slice.call(arguments)));
-    };
-
-    // TODO: remove
-    wrapper._argNames = transduce._argNames;
-    wrapper._argVals  = transduce._argVals;
-
-    return wrapper;
+  sc.lang.fn = function(func, def) {
+    return compile(def).wrap(func);
   };
 
-  var compile = function(def) {
+  var compile = sc.lang.fn.compile = function(def) {
     if (def === null) {
-      return identify;
+      return nopTransducer;
     }
 
     var defItems = getDefItems(def);
 
-    var func = function(given) {
+    function transduce(given) {
       var args  = defItems.vals.slice();
 
       if (isDictionary(peek(given))) {
@@ -46,15 +32,37 @@
       }
 
       return args;
-    };
+    }
 
-    func._argNames = defItems.names;
-    func._argVals  = defItems.vals;
+    return build(transduce, defItems.names, defItems.vals, function(func) {
+      var wrapped = function() {
+        return func.apply(this, transduce(slice.call(arguments)));
+      };
 
-    return func;
+      wrapped.transduce = transduce;
+
+      return wrapped;
+    });
   };
 
-  fn.compile = compile;
+  var nopTransducer = (function() {
+    function transduce(given) {
+      return given;
+    }
+
+    return build(transduce, [], [], function(func) {
+      func.transduce = transduce;
+      return func;
+    });
+  })();
+
+  function build(transduce, names, vals, wrap) {
+    transduce.wrap = wrap;
+    transduce.names = names;
+    transduce.vals = vals;
+
+    return transduce;
+  }
 
   function getDefItems(def) {
     var items = def.split(/\s*;\s*/);
@@ -69,10 +77,6 @@
     });
 
     return { names: names, vals: vals, remain: remain };
-  }
-
-  function identify(id) {
-    return id;
   }
 
   function peek(list) {
@@ -133,6 +137,4 @@
       }
     });
   }
-
-  sc.lang.fn = fn;
 })(sc);

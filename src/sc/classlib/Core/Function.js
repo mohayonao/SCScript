@@ -45,7 +45,7 @@ SCScript.install(function(sc) {
     });
 
     var envir = function(func, args) {
-      return func._argNames.map(function(name, i) {
+      return func.transduce.names.map(function(name, i) {
         var val;
         if (this[i]) {
           return this[i];

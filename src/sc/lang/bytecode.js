@@ -15,12 +15,7 @@
 
 
     if (code[0]) {
-      code[0] = fn(code[0], def);
-      this._argNames = code[0]._argNames;
-      this._argVals  = code[0]._argVals;
-    } else {
-      this._argNames = [];
-      this._argVals  = [];
+      code[0] = this.transduce.wrap(code[0]);
     }
     if (localVars !== null) {
       this._free = code.pop();

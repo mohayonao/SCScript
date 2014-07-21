@@ -9,38 +9,41 @@
 
   CodeGen.addGenerateMethod("FunctionExpression", function(node) {
     var meta = getMetaDataOfFunction(node);
-    return [
+
+    var result = [
       "$.Function(",
       generateFunctionBody(this, node, meta.args),
       generateFunctionMetadata(this, meta),
       ")"
     ];
+
+    return result;
   });
 
   function generateFunctionBody(that, node, args) {
     return that.withFunction([], function() {
-      if (!node.body.length) {
-        return [ "return [];" ];
-      }
-
       return [
-        "return [",
-        generateSegmentedFunctionBody(that, node, args),
-        "];"
+        "return [", generateSegmentedFunctionBody(that, node, args), "];"
       ];
     });
   }
 
   function generateSegmentedFunctionBody(that, node, args) {
-    for (var i = 0, imax = args.length; i < imax; ++i) {
-      that.scope.add("var", args[i]);
+    if (node.body.length === 0) {
+      return [];
     }
 
-    var result;
+    var result = null;
     var syncBlockScope = that.state.syncBlockScope;
+
     that.state.syncBlockScope = that.scope.peek();
 
+    args.forEach(function(arg) {
+      that.scope.add("var", arg);
+    });
     result = generateSegmentedFunctionBodyElements(that, node, args);
+
+    console.log(that.state.syncBlockScope.vars);
 
     that.state.syncBlockScope = syncBlockScope;
 
@@ -48,51 +51,52 @@
   }
 
   function generateSegmentedFunctionBodyElements(that, node, args) {
+
     var fargs = args.map(function(_, i) {
       return "_arg" + i;
     });
 
-    var assignArguments = function(item, i) {
+    var assignArguments = function(_, i) {
       return $id(args[i]) + "=" + fargs[i];
     };
 
-    var i = 0, imax = node.body.length;
-    var lastIndex = imax - 1;
-
+    var index = 0;
+    var lastIndex = node.body.length - 1;
     var fragments = [];
 
-    var loop = function() {
+    function loop() {
       var fragments = [];
-      var stmt;
 
-      while (i < imax) {
-        if (i === 0) {
+      while (index <= lastIndex) {
+        var stmt;
+
+        if (index === 0) {
           if (args.length) {
             stmt = that.interpose(args, ";", assignArguments);
             fragments.push([ stmt, ";" ]);
           }
         }
 
-        stmt = that.generate(node.body[i]);
-        var segmented = !!node.body[i].segmented;
+        stmt = that.generate(node.body[index]);
+        var segmented = !!node.body[index].segmented;
 
-        if (i === lastIndex || segmented) {
+        if (index === lastIndex || segmented) {
           stmt = [ "return ", stmt ];
         }
         fragments.push([ stmt, ";" ]);
 
-        i += 1;
+        index += 1;
         if (segmented) {
           break;
         }
       }
 
       return fragments;
-    };
+    }
 
     fragments.push(that.withFunction(fargs, loop));
 
-    while (i < imax) {
+    while (index <= lastIndex) {
       fragments.push(",", that.withFunction([], loop));
     }
 
@@ -104,11 +108,6 @@
   function generateFunctionMetadata(that, info) {
     var keys = info.keys;
     var vals = info.vals;
-
-    if (keys.length === 0 && !info.remain && !info.closed) {
-      return [];
-    }
-
     var args = that.interpose(keys, ";", function(item, i) {
       var result = [ keys[i] ];
 
@@ -125,18 +124,21 @@
       return result;
     });
 
-    var result = [ ",'", args ];
+    var result = [ "," ];
 
-    if (info.remain) {
-      if (keys.length) {
-        result.push(";");
+    if (args.length || info.remain) {
+      result.push("'", args);
+
+      if (info.remain) {
+        if (keys.length) {
+          result.push(";");
+        }
+        result.push("*" + info.remain);
       }
-      result.push("*" + info.remain);
-    }
-    result.push("'");
 
-    if (info.closed) {
-      result.push(",true");
+      result.push("',[]"); // TODO: put local variables
+    } else {
+      result.push("null,[]");
     }
 
     return result;

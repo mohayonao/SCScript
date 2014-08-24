@@ -36,7 +36,7 @@
     "grunt-contrib-connect": "^0.8.0",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-este-watch": "^0.1.16",
-    "grunt-jscs-checker": "^0.6.1",
+    "grunt-jscs": "^0.6.2",
     "grunt-plato": "^1.0.0",
     "istanbul": "^0.2.13",
     "mocha": "^1.20.1",

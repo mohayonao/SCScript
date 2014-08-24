@@ -8,7 +8,7 @@ module.exports = function(grunt) {
       return;
     }
 
-    grunt._loadNpmTasksIfNeeded("grunt-jscs-checker");
+    grunt._loadNpmTasksIfNeeded("grunt-jscs");
 
     grunt.config.data.jscs = {
       src: src,

@@ -12,7 +12,7 @@ describe("Core/Function", function() {
       this.createInstance = function(func, def) {
         return $.Function(function() {
           return [ func || function() {} ];
-        }, def);
+        }, def || null, null);
       };
     });
 

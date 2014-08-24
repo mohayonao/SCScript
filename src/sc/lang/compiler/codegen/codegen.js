@@ -23,7 +23,6 @@
     that.parent = null;
     that.opts = opts || {};
     that.state = {
-      calledSegmentedMethod: false,
       syncBlockScope: null,
       tempVarId: 0
     };
@@ -41,7 +40,7 @@
   CodeGen.prototype.generate = function(node, opts) {
     if (Array.isArray(node)) {
       return [
-        "(", this.stitchWith(node, ",", function(item) {
+        "(", this.interpose(node, ",", function(item) {
           return this.generate(item, opts);
         }), ")"
       ];
@@ -59,7 +58,7 @@
   };
 
   CodeGen.prototype.withFunction = function(args, func) {
-    var argItems = this.stitchWith(args, ",", function(item) {
+    var argItems = this.interpose(args, ",", function(item) {
       return this.generate(item);
     });
     var result = [ "function(", argItems, "){" ];
@@ -83,7 +82,7 @@
     var result = [ "[", "]" ];
 
     if (elements.length) {
-      var items = this.stitchWith(elements, ",", function(item) {
+      var items = this.interpose(elements, ",", function(item) {
         return this.generate(item);
       });
       result.splice(1, 0, items);
@@ -92,7 +91,7 @@
     return result;
   };
 
-  CodeGen.prototype.stitchWith = function(elements, bond, func) {
+  CodeGen.prototype.interpose = function(elements, bond, func) {
     var result = [];
 
     for (var i = 0, imax = elements.length; i < imax; ++i) {

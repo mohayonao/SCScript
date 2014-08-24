@@ -11,16 +11,22 @@
   /*
     AssignmentExpression :
       PartialExpression
+      SimpleAssign
+      MultiAssign
+
+    SimpleAssign :
       PartialExpression = AssignmentExpression
-      # DestructuringAssignmentLeft = AssignmentExpression
 
-    DestructuringAssignmentLeft :
-      DestructingAssignmentLeftList
-      DestructingAssignmentLeftList ... Identifier
+    MultiAssign :
+      # MultiAssignLeft = AssignmentExpression
 
-    DestructingAssignmentLeftList :
+    MultiAssignLeft :
+      MultiAssignLeftList
+      MultiAssignLeftList ... Identifier
+
+    MultiAssignLeftList :
       Identifier
-      DestructingAssignmentLeftList , Identifier
+      MultiAssignLeftList , Identifier
   */
   Parser.addParseMethod("AssignmentExpression", function() {
     return new AssignmentExpressionParser(this).parse();
@@ -36,14 +42,14 @@
     if (this.match("#")) {
       token = this.lex();
       if (!this.matchAny([ "[", "{" ])) {
-        return this.unlex(token).parseDestructuringAssignmentExpression();
+        return this.unlex(token).parseMultiAssign();
       }
       this.unlex(token);
     }
-    return this.parseSimpleAssignmentExpression();
+    return this.parseSimpleAssign();
   };
 
-  AssignmentExpressionParser.prototype.parseSimpleAssignmentExpression = function() {
+  AssignmentExpressionParser.prototype.parseSimpleAssign = function() {
     var expr = this.parsePartialExpression();
 
     if (!this.match("=")) {
@@ -52,21 +58,23 @@
     this.lex();
 
     if (expr.type === Syntax.CallExpression) {
-      return this.parseSimpleAssignmentExpressionViaMethod(expr);
+      return this.parseSimpleAssignViaMethod(expr);
     }
 
-    return this.parseSimpleAssignmentExpressionViaOperator(expr);
+    return this.parseSimpleAssignViaOperator(expr);
   };
 
-  AssignmentExpressionParser.prototype.parseSimpleAssignmentExpressionViaMethod = function(expr) {
+  AssignmentExpressionParser.prototype.parseSimpleAssignViaMethod = function(expr) {
     var marker = this.createMarker(expr);
     var right = this.parseAssignmentExpression();
 
     var methodName = expr.method.name;
     if (expr.stamp === "[") {
       methodName = methodName === "at" ? "put" : "putSeries";
-    } else {
+    } else if (expr.stamp === ".") {
       methodName = methodName + "_";
+    } else {
+      return this.throwUnexpected({ value: "=" });
     }
 
     expr.method.name = methodName;
@@ -78,7 +86,7 @@
     return marker.update().apply(expr, true);
   };
 
-  AssignmentExpressionParser.prototype.parseSimpleAssignmentExpressionViaOperator = function(expr) {
+  AssignmentExpressionParser.prototype.parseSimpleAssignViaOperator = function(expr) {
     if (isInvalidLeftHandSide(expr)) {
       this.throwError(expr, Message.InvalidLHSInAssignment);
     }
@@ -91,12 +99,12 @@
     );
   };
 
-  AssignmentExpressionParser.prototype.parseDestructuringAssignmentExpression = function() {
+  AssignmentExpressionParser.prototype.parseMultiAssign = function() {
     var marker = this.createMarker();
 
     this.expect("#");
 
-    var left = this.parseDestructuringAssignmentLeft();
+    var left = this.parseMultiAssignLeft();
 
     this.expect("=");
     var right = this.parseAssignmentExpression();
@@ -106,9 +114,9 @@
     );
   };
 
-  AssignmentExpressionParser.prototype.parseDestructuringAssignmentLeft = function() {
+  AssignmentExpressionParser.prototype.parseMultiAssignLeft = function() {
     var params = {
-      list: this.parseDestructingAssignmentLeftList()
+      list: this.parseMultiAssignLeftList()
     };
 
     if (this.match("...")) {
@@ -119,7 +127,7 @@
     return params;
   };
 
-  AssignmentExpressionParser.prototype.parseDestructingAssignmentLeftList = function() {
+  AssignmentExpressionParser.prototype.parseMultiAssignLeftList = function() {
     var elemtns = [];
 
     do {

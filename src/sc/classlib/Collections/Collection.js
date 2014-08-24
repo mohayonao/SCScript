@@ -152,13 +152,15 @@ SCScript.install(function(sc) {
       if (this.size() !== $aCollection.size()) {
         return $false;
       }
-      this.do($.Func(function($item) {
-        if (!$aCollection.$("includes", [ $item ]).__bool__()) {
-          $res = $false;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($item) {
+          if (!$aCollection.$("includes", [ $item ]).__bool__()) {
+            $res = $false;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $true;
     });
@@ -286,13 +288,15 @@ SCScript.install(function(sc) {
     }, function($item1) {
       var $res = null;
 
-      this.do($.Func(function($item2) {
-        if ($item1 === $item2) {
-          $res = $true;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($item2) {
+          if ($item1 === $item2) {
+            $res = $true;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $false;
     });
@@ -302,13 +306,15 @@ SCScript.install(function(sc) {
     }, function($item1) {
       var $res = null;
 
-      this.do($.Func(function($item2) {
-        if ($item1 ["=="] ($item2).__bool__()) {
-          $res = $true;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($item2) {
+          if ($item1 ["=="] ($item2).__bool__()) {
+            $res = $true;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $false;
     });
@@ -318,13 +324,15 @@ SCScript.install(function(sc) {
     }, function($aCollection) {
       var $this = this, $res = null;
 
-      $aCollection.do($.Func(function($item) {
-        if ($this.includes($item).__bool__()) {
-          $res = $true;
-          this.break();
-        }
-        return $nil;
-      }));
+      $aCollection.do($.Function(function(_) {
+        return [ function($item) {
+          if ($this.includes($item).__bool__()) {
+            $res = $true;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $false;
     });
@@ -334,13 +342,15 @@ SCScript.install(function(sc) {
     }, function($aCollection) {
       var $this = this, $res = null;
 
-      $aCollection.do($.Func(function($item) {
-        if (!$this.includes($item).__bool__()) {
-          $res = $false;
-          this.break();
-        }
-        return $nil;
-      }));
+      $aCollection.do($.Function(function(_) {
+        return [ function($item) {
+          if (!$this.includes($item).__bool__()) {
+            $res = $false;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $true;
     });
@@ -411,13 +421,15 @@ SCScript.install(function(sc) {
     builder.addMethod("detect", function($function) {
       var $res = null;
 
-      this.do($.Func(function($elem, $i) {
-        if ($function.value($elem, $i).__bool__()) {
-          $res = $elem;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $elem;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $nil;
     });
@@ -425,13 +437,15 @@ SCScript.install(function(sc) {
     builder.addMethod("detectIndex", function($function) {
       var $res = null;
 
-      this.do($.Func(function($elem, $i) {
-        if ($function.value($elem, $i).__bool__()) {
-          $res = $i;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $i;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
       return $res || $nil;
     });
 
@@ -482,27 +496,31 @@ SCScript.install(function(sc) {
 
     builder.addMethod("lastForWhich", function($function) {
       var $res = null;
-      this.do($.Func(function($elem, $i) {
-        if ($function.value($elem, $i).__bool__()) {
-          $res = $elem;
-        } else {
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $elem;
+          } else {
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
       return $res || $nil;
     });
 
     builder.addMethod("lastIndexForWhich", function($function) {
       var $res = null;
-      this.do($.Func(function($elem, $i) {
-        if ($function.value($elem, $i).__bool__()) {
-          $res = $i;
-        } else {
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $i;
+          } else {
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
       return $res || $nil;
     });
 
@@ -558,25 +576,29 @@ SCScript.install(function(sc) {
 
     builder.addMethod("any", function($function) {
       var $res = null;
-      this.do($.Func(function($elem, $i) {
-        if ($function.value($elem, $i).__bool__()) {
-          $res = $true;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($elem, $i) {
+          if ($function.value($elem, $i).__bool__()) {
+            $res = $true;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
       return $res || $false;
     });
 
     builder.addMethod("every", function($function) {
       var $res = null;
-      this.do($.Func(function($elem, $i) {
-        if (!$function.value($elem, $i).__bool__()) {
-          $res = $false;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($elem, $i) {
+          if (!$function.value($elem, $i).__bool__()) {
+            $res = $false;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
       return $res || $true;
     });
 

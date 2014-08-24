@@ -202,16 +202,16 @@
     return instance;
   });
 
-  $.addProperty("Function", function(value, def) {
+  $.addProperty("Function", function(value, def, localVars) {
     var instance = new SCFunction();
-    instance._bytecode = sc.lang.bytecode.create(value, def).setOwner(instance);
+    instance._bytecode = sc.lang.bytecode.create(value, def, localVars).init(instance);
     return instance;
   });
 
   $.addProperty("Func", function(func) {
     return $.Function(function() {
       return [ func ];
-    });
+    }, null, null);
   });
 
   $.addProperty("Ref", function(value) {

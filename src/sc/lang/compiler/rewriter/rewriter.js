@@ -18,99 +18,91 @@
   };
 
   function Rewriter() {
-    this.functionStack = [];
-    this.functionArray = [];
+    this.functionStmtStack = [];
   }
 
   Rewriter.prototype.rewrite = function(ast) {
-    ast = this.traverse(ast);
-    this.functionArray.forEach(function(node) {
-      node.body = this.segment(node.body);
-    }, this);
-    return ast;
+    return this.traverse(ast);
   };
 
   Rewriter.prototype.traverse = function(node) {
-    var result;
-
-    if (Array.isArray(node)) {
-      result = this.traverse$Array(node);
-    } else if (node && typeof node === "object") {
-      result = this.traverse$Object(node);
-    } else {
-      result = node;
+    if (!node) {
+      return;
     }
 
-    return result;
-  };
+    if (Array.isArray(node)) {
+      node.forEach(function(elem) {
+        this.traverse(elem);
+      }, this);
+      return;
+    }
 
-  Rewriter.prototype.traverse$Array = function(node) {
-    return node.map(function(node) {
-      return this.traverse(node);
-    }, this);
-  };
+    if (node.type === Syntax.FunctionExpression) {
+      this.processFunctionExpression(node);
+    } else {
+      if (isSegmentedMethod(node)) {
+        node.segmented = true;
+        this.setSegmented();
+      }
+    }
 
-  Rewriter.prototype.traverse$Object = function(node) {
-    var result = {};
-
-    if (isFunctionExpression(node)) {
-      this.functionStack.push(result);
-    } else if (isSegmentedMethod(node)) {
-      result.segmented = true;
-      this.functionStack.forEach(function(node) {
-        if (!node.segmented) {
-          this.functionArray.push(node);
-          node.segmented = true;
-        }
+    if (isObject(node)) {
+      Object.keys(node).forEach(function(key) {
+        this.traverse(node[key]);
       }, this);
     }
 
-    Object.keys(node).forEach(function(key) {
-      /* istanbul ignore next */
-      if (key === "range" || key === "loc") {
-        result[key] = node[key];
-      } else {
-        result[key] = this.traverse(node[key]);
-      }
-    }, this);
-
-    if (isFunctionExpression(result)) {
-      this.functionStack.pop();
-    }
-
-    return result;
+    return node;
   };
 
-  Rewriter.prototype.segment = function(list) {
+  Rewriter.prototype.processFunctionExpression = function(node) {
+    var body = this.replaceBody(node.body);
+
+    body.forEach(function(stmt) {
+      this.functionStmtStack.push(stmt);
+
+      this.traverse(stmt);
+
+      this.functionStmtStack.pop();
+    }, this);
+
+    node.body = body;
+  };
+
+  Rewriter.prototype.setSegmented = function() {
+    this.functionStmtStack.forEach(function(stmt) {
+      stmt.segmented = true;
+    });
+  };
+
+  Rewriter.prototype.replaceBody = function(list) {
     var result = [];
     var id = 0;
-    var i, imax;
 
     function traverse(parent, node, key) {
-      var expr;
-
-      if (node && typeof node === "object") {
+      if (isObject(node)) {
         Object.keys(node).forEach(function(key) {
           traverse(node, node[key], key);
         });
       }
+
       if (isValueMethod(node)) {
-        expr = Node.createValueMethodEvaluator(id, node);
+        var expr = Node.createValueMethodEvaluator(id, node);
         parent[key] = Node.createValueMethodResult(id++);
         result.push(expr);
       }
     }
 
-    for (i = 0, imax = list.length; i < imax; ++i) {
-      traverse(list, list[i], i);
+    list.forEach(function(elem, i) {
+      traverse(list, elem, i);
       result.push(list[i]);
-    }
+    });
 
     return result;
   };
 
-  function isFunctionExpression(node) {
-    return node && node.type === Syntax.FunctionExpression;
+  function isObject(obj) {
+    return obj && typeof obj === "object";
   }
 
   function isSegmentedMethod(node) {

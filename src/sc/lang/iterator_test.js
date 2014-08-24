@@ -667,12 +667,15 @@ describe("sc.lang.iterator", function() {
     }));
 
     it("loop break", sinon.test(function() {
-      var spy = this.spy(function($i) {
-        if ($i.valueOf() === 2) {
-          this.break();
-        }
-      });
-      var $function = $$(spy);
+      var spy;
+      var $function = $.Function(function(_) {
+        spy = sinon.spy(function($i) {
+          if ($i.valueOf() === 2) {
+            _.break();
+          }
+        });
+        return [ spy ];
+      }, null, null);
       var iter = sc.lang.iterator.integer$do($$(10));
 
       sc.lang.iterator.execute(iter, $function);

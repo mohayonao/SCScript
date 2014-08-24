@@ -5,6 +5,30 @@ describe("sc.lang.fn", function() {
   var $  = sc.lang.$;
   var $nil = $.nil;
 
+  describe("transducer", function() {
+    it("empty", function() {
+      var transduce = sc.lang.fn.compile(null);
+      var args = transduce([ 1, 2, 3 ]);
+      expect(args).to.eql([ 1, 2, 3 ]);
+    });
+    it("default args", function() {
+      var transduce = sc.lang.fn.compile(
+        "a; b=nil; c=true; d=false; e=0; f=0.0; g=inf; h=-inf; i=\\symbol; j=$j"
+      );
+      var args = transduce([]);
+
+      expect(args).to.deep.equal($$([
+        null, null, true, false, 0, $.Float(0.0), Infinity, -Infinity, "\\symbol", "$j"
+      ])._);
+    });
+    it("default args (list)", function() {
+      var transduce = sc.lang.fn.compile("a=[ 0, 1, 2 ]");
+      var args = transduce([]);
+
+      expect(args).to.deep.equal($$([ [ 0, 1, 2 ] ])._);
+    });
+  });
+
   it("default arguments", function() {
     var spy = sinon.spy();
     var instance = {
@@ -36,8 +60,10 @@ describe("sc.lang.fn", function() {
   it("meta data", function() {
     var func = sc.lang.fn(function() {}, "a=1; b=1.0");
 
-    expect(func._argNames).to.be.a("JSArray").that.deep.equals([ "a", "b" ]);
-    expect(func._argVals ).to.be.a("JSArray").that.deep.equals([ $.Integer(1), $.Float(1.0) ]);
+    expect(func.transduce.names)
+      .to.be.a("JSArray").that.deep.equals([ "a", "b" ]);
+    expect(func.transduce.vals)
+      .to.be.a("JSArray").that.deep.equals([ $.Integer(1), $.Float(1.0) ]);
   });
 
   it("'a, b, c': call($arg1, { c: $argC }) should pass [ $arg1, $nil, $argC ]", function() {

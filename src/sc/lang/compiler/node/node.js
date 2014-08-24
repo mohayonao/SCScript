@@ -13,9 +13,11 @@
         left: left,
         right: right
       };
+
       if (remain) {
         node.remain = remain;
       }
+
       return node;
     },
     createBinaryExpression: function(operator, left, right) {
@@ -25,9 +27,11 @@
         left: left,
         right: right
       };
+
       if (operator.adverb) {
         node.adverb = operator.adverb;
       }
+
       return node;
     },
     createBlockExpression: function(body) {
@@ -37,13 +41,18 @@
       };
     },
     createCallExpression: function(callee, method, args, stamp) {
-      return {
+      args  = args  || { list: [] };
+      stamp = stamp || "(";
+
+      var node = {
         type: Syntax.CallExpression,
         stamp: stamp,
         callee: callee,
         method: method,
-        args: args,
+        args: args
       };
+
+      return node;
     },
     createEnvironmentExpression: function(id) {
       return {
@@ -52,12 +61,11 @@
       };
     },
     createFunctionExpression: function(args, body, opts) {
-      var node;
-
-      node = {
+      var node = {
         type: Syntax.FunctionExpression,
         body: body
       };
+
       if (args) {
         node.args = args;
       }
@@ -70,6 +78,7 @@
       if (opts.blockList) {
         node.blockList = true;
       }
+
       return node;
     },
     createIdentifier: function(name) {
@@ -83,9 +92,11 @@
         type: Syntax.ListExpression,
         elements: elements
       };
+
       if (immutable) {
         node.immutable = !!immutable;
       }
+
       return node;
     },
     createLiteral: function(token) {
@@ -132,9 +143,11 @@
         type: Syntax.VariableDeclarator,
         id: id
       };
+
       if (init) {
         node.init = init;
       }
+
       return node;
     },
     createValueMethodEvaluator: function(id, expr) {

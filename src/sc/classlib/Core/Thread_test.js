@@ -8,10 +8,10 @@ describe("Core/Thread", function() {
 
   describe("SCThread", function() {
     before(function() {
-      this.createInstance = function(funcArray) {
+      this.createInstance = function() {
         return SCThread.new($.Function(function() {
-          return funcArray || [];
-        }));
+          return [];
+        }, null, null));
       };
     });
 
@@ -133,10 +133,13 @@ describe("Core/Thread", function() {
 
   describe("SCRoutine", function() {
     before(function() {
-      this.createInstance = function(funcArray) {
-        return SCRoutine.new($.Function(function() {
-          return funcArray || [];
-        }));
+      this.createInstance = function(func) {
+        if (!func) {
+          func = $.Function(function() {
+            return [];
+          }, null, null);
+        }
+        return SCRoutine.new(func);
       };
     });
 
@@ -166,36 +169,36 @@ describe("Core/Thread", function() {
       var instance;
       var $inval = $$();
 
-      instance = this.createInstance([
-        function($inval) {
-          return $inval.yield();
-        },
-        function() {
-          return $$(1).yield();
-        },
-        function() {
-          return $.Function(function() {
-            return [
-              function() {
-                return $$(2).yield();
-              },
-              function() {
-                return $$(3).yield();
-              },
-              $.NOP
-            ];
-          }).value();
-        },
-        function() {
-          return $$(4).yield();
-        },
-        function() {
-          return $$([ 5, 6, 7 ]).do($$(function($_) {
-            return $_.yield();
-          }));
-        },
-        $.NOP
-      ]);
+      instance = this.createInstance($.Function(function() {
+        return [
+          function($inval) {
+            return $inval.yield();
+          },
+          function() {
+            return $$(1).yield();
+          },
+          function() {
+            return $.Function(function() {
+              return [
+                function() {
+                  return $$(2).yield();
+                },
+                function() {
+                  return $$(3).yield();
+                }
+              ];
+            }, null, null).value();
+          },
+          function() {
+            return $$(4).yield();
+          },
+          function() {
+            return $$([ 5, 6, 7 ]).do($$(function($_) {
+              return $_.yield();
+            }));
+          }
+        ];
+      }, null, null));
 
       expect(instance.next($inval), 0).to.equal($inval);
       expect(instance.next($inval), 1).to.be.a("SCInteger").that.equals(1);
@@ -239,13 +242,15 @@ describe("Core/Thread", function() {
     it("#reset", function() {
       var instance;
 
-      instance = this.createInstance([
-        function() {
-          return $$([ 1, 2, 3 ]).do($$(function($_) {
-            return $_.yield();
-          }));
-        }
-      ]);
+      instance = this.createInstance($.Function(function() {
+        return [
+          function() {
+            return $$([ 1, 2, 3 ]).do($$(function($_) {
+              return $_.yield();
+            }));
+          }
+        ];
+      }, null, null));
 
       expect(instance.state(), 0).to.be.a("SCInteger").that.equals(sc.STATE_INIT);
       expect(instance.next() , 1).to.be.a("SCInteger").that.equals(1);

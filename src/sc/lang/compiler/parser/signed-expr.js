@@ -23,13 +23,11 @@
     var expr;
     if (this.match("-")) {
       this.lex();
-      var method = Node.createIdentifier("neg");
-      method = marker.update().apply(method);
       expr = this.parsePrimaryExpression();
       if (isNumber(expr)) {
         expr.value = "-" + expr.value;
       } else {
-        expr = Node.createCallExpression(expr, method, { list: [] }, "(");
+        expr = Node.createCallExpression(expr, Node.createIdentifier("neg"));
       }
     } else {
       expr = this.parsePrimaryExpression();

@@ -6,10 +6,6 @@
   var CodeGen = sc.lang.compiler.CodeGen;
 
   CodeGen.addGenerateMethod("CallExpression", function(node) {
-    if (node.segmented) {
-      this.state.calledSegmentedMethod = true;
-    }
-
     if (node.args.expand) {
       return generateExpandCall(this, node);
     }
@@ -33,7 +29,7 @@
     if (list.length || node.args.keywords) {
       var hasActualArgument = !!list.length;
       var args = [
-        that.stitchWith(list, ",", function(item) {
+        that.interpose(list, ",", function(item) {
           return that.generate(item);
         }),
         insertKeyValueElement(that, node.args.keywords, hasActualArgument)
@@ -70,7 +66,7 @@
         result.push(",");
       }
       result.push(
-        "{", that.stitchWith(Object.keys(keyValues), ",", function(key) {
+        "{", that.interpose(Object.keys(keyValues), ",", function(key) {
           return [ key, ":", that.generate(keyValues[key]) ];
         }), "}"
       );

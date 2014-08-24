@@ -7,77 +7,101 @@
 
   var $  = sc.lang.$;
   var fn = sc.lang.fn;
-  var current = null;
 
-  function insideOfARoutine() {
-    return sc.lang.main.getCurrentThread().__tag === sc.TAG_ROUTINE;
-  }
+  function Bytecode(initializer, def, localVars) {
+    var code = initializer(this);
 
-  function Bytecode(initializer, def) {
-    this._initializer = initializer;
-    this._def  = def;
-    this._code = [];
-    this._vals = [];
-    this._$owner = null;
-    this._init(initializer);
-  }
+    this.transduce = fn.compile(def);
 
-  Bytecode.prototype._init = function() {
-    var code = this._initializer();
-    if (this._def && code[0]) {
-      code[0] = fn(code[0], this._def);
-      this._argNames = code[0]._argNames;
-      this._argVals  = code[0]._argVals;
-    } else {
-      this._argNames = [];
-      this._argVals  = [];
+    if (code[0]) {
+      code[0] = this.transduce.wrap(code[0]);
     }
-    if (code.length > 1) {
-      this._freeFunc = code.pop();
+    if (localVars !== null) {
+      this._free = code.pop();
     }
+
+    this.state   = sc.STATE_INIT;
+    this.result  = null;
+    this.address = 0;
+    this.iter    = null;
+    this.parent  = null;
+    this.child   = null;
     this._code   = code;
     this._length = code.length;
+    this._vals = [];
+    this._$owner = null;
+  }
+  Bytecode.current = null;
+
+  Bytecode.prototype.init = function($owner) {
+    this._$owner = $owner;
     return this.reset();
+  };
+
+  Bytecode.prototype.free = function() {
+    if (this._free) {
+      this._free();
+    }
+    return this;
+  };
+
+  Bytecode.prototype.ready = function() {
+    this.state  = sc.STATE_RUNNING;
+    this.result = null;
+    return this.purgeChild();
   };
 
   Bytecode.prototype.reset = function() {
     this.state   = sc.STATE_INIT;
-    this.result  = null;
-    this._index  = 0;
-    this._iter   = null;
-    this._parent = null;
-    this._child  = null;
+    this.address = 0;
+    this.iter    = null;
+    this.child   = null;
     return this;
   };
 
-  Bytecode.prototype.free = function() {
-    if (this._freeFunc) {
-      this._freeFunc();
+  Bytecode.prototype.break = function() {
+    this.state   = sc.STATE_BREAK;
+    this.address = this._length;
+    return this;
+  };
+
+  Bytecode.prototype.suspend = function() {
+    this.state = sc.STATE_SUSPENDED;
+    return this;
+  };
+
+  Bytecode.prototype.loop = function() {
+    if (this.iter === null) {
+      return this.suspend();
     }
+    this.address = 0;
     return this;
   };
 
-  Bytecode.prototype.setOwner = function($owner) {
-    this._$owner = $owner;
-    return this;
+  Bytecode.prototype.done = function(state) {
+    this.state   = state || sc.STATE_DONE;
+    this.address = this._length;
+    this.iter    = null;
+    this.child   = null;
+    return this.free();
   };
 
   Bytecode.prototype.setIterator = function(iter) {
-    this._iter = iter;
+    this.iter = iter;
     return this;
   };
 
   Bytecode.prototype.setParent = function(parent) {
     if (parent && parent !== this) {
-      this._parent  = parent;
-      parent._child = this;
+      this.parent  = parent;
+      parent.child = this;
     }
   };
 
   Bytecode.prototype.run = function(args) {
     if (insideOfARoutine()) {
       return this.runAsRoutine(args);
-    } else if (this._iter) {
+    } else if (this.iter !== null) {
       return this.runAsFunctionWithIter();
     } else {
       return this.runAsFunction(args);
@@ -85,30 +109,26 @@
   };
 
   Bytecode.prototype.runAsFunction = function(args) {
-    var result;
-    var i, code, length;
+    var code   = this._code;
+    var length = this._length;
 
-    code   = this._code;
-    length = this._length;
+    this.parent = Bytecode.current;
 
-    this._parent = current;
-
-    current = this;
+    Bytecode.current = this;
     this.state = sc.STATE_RUNNING;
 
-    for (i = 0; i < length; ++i) {
-      result = this.update(code[i].apply(this, args));
-      if (this.state === sc.STATE_BREAK) {
-        this._iter = null;
+    var result = null;
+    for (var i = 0; i < length; ++i) {
+      result = this.update(code[i].apply(null, args));
+      if (this.state !== sc.STATE_RUNNING) {
+        this.iter = null;
         break;
       }
     }
-    if (this._freeFunc) {
-      this._freeFunc();
-    }
+    this.free();
 
-    current = this._parent;
-    this._parent = null;
+    Bytecode.current = this.parent;
+    this.parent = null;
 
     this.state = sc.STATE_INIT;
 
@@ -118,22 +138,21 @@
   Bytecode.prototype.runAsFunctionWithIter = function() {
     var items;
 
-    while (this._iter && (items = this._iter.next()) !== null) {
+    while (this.iter && (items = this.iter.next()) !== null) {
       this.runAsFunction(items);
     }
 
-    this._iter = null;
+    this.iter = null;
   };
 
   Bytecode.prototype.runAsRoutine = function(args) {
-    var result;
+    this.setParent(Bytecode.current);
 
-    this.setParent(current);
+    Bytecode.current = this;
 
-    current = this;
-
-    if (this._child) {
-      result = this._child.runAsRoutine(args);
+    var result = null;
+    if (this.child) {
+      result = this.child.runAsRoutine(args);
       if (this.state === sc.STATE_RUNNING) {
         result = null;
       }
@@ -143,7 +162,7 @@
       result = this._runAsRoutine(args);
     }
 
-    current = this._parent;
+    Bytecode.current = this.parent;
 
     this.advance();
 
@@ -151,37 +170,31 @@
   };
 
   Bytecode.prototype._runAsRoutine = function(args) {
-    var result;
-    var code, length, iter;
+    var code   = this._code;
+    var length = this._length;
 
-    code   = this._code;
-    length = this._length;
-    iter   = this._iter;
+    this.ready();
 
-    this.state  = sc.STATE_RUNNING;
-    this.result = null;
-    while (this._index < length) {
-      if (iter && this._index === 0) {
-        args = iter.next();
-        if (args === null) {
-          this.state  = sc.STATE_SUSPENDED;
-          this._index = length;
-          break;
+    var result = null;
+    while (this.address < length) {
+      if (this.iter !== null) {
+        if (this.address === 0) {
+          args = this.iter.next();
+          if (args === null) {
+            this.break();
+            break;
+          }
+        }
+        if (!this.iter.hasNext) {
+          this.iter = null;
         }
       }
-      if (iter && !iter.hasNext) {
-        iter = null;
-      }
 
-      result = this.update(code[this._index].apply(this, args));
+      result = this.update(code[this.address].apply(null, args));
 
-      this._index += 1;
-      if (this._index >= length) {
-        if (iter) {
-          this._index = 0;
-        } else {
-          this.state = sc.STATE_SUSPENDED;
-        }
+      this.address += 1;
+      if (this.address >= length) {
+        this.loop();
       }
 
       if (this.state !== sc.STATE_RUNNING) {
@@ -194,32 +207,28 @@
 
   Bytecode.prototype.advance = function() {
     if (this.state === sc.STATE_INIT) {
-      this.free();
-      return;
+      return this.free();
     }
-    if (this._child || this._index < this._length) {
-      this.state = sc.STATE_SUSPENDED;
-      return;
+    if (this.child !== null || this.address < this._length) {
+      return this.suspend();
     }
-    if (!this.result) {
-      this.state = sc.STATE_DONE;
-      this.free();
+    if (this.result === null) {
+      this.done();
     }
-    if (this._parent) {
+    if (this.parent !== null) {
       if (this.state === sc.STATE_DONE) {
-        this._parent.state = sc.STATE_RUNNING;
+        this.parent.ready();
       } else {
-        this._parent.state = sc.STATE_SUSPENDED;
-        this.free();
+        this.parent.suspend().purgeChild();
+        this.done(sc.STATE_SUSPENDED);
       }
-      this._parent.purge();
     }
   };
 
-  Bytecode.prototype.purge = function() {
-    if (this._child) {
-      this._child._parent = null;
-      this._child = null;
+  Bytecode.prototype.purgeChild = function() {
+    if (this.child !== null) {
+      this.child.parent = null;
+      this.child = null;
     }
     return this;
   };
@@ -232,94 +241,80 @@
     if (this._vals.length) {
       return this._vals.shift();
     }
-    return this._parent.shift();
+    return this.parent.shift();
   };
 
   Bytecode.prototype.update = function($value) {
     if (this._vals.length) {
       this._vals[this._vals.length - 1] = $value;
-    } else if (this._parent) {
-      this._parent.update($value);
+    } else if (this.parent) {
+      this.parent.update($value);
     }
     return $value;
   };
 
-  Bytecode.prototype.break = function() {
-    this.state  = sc.STATE_BREAK;
-    this._index = this._length;
-    return this;
-  };
-
   Bytecode.prototype.yield = function($value) {
-    this.state  = sc.STATE_SUSPENDED;
+    this.bubble(function(parent) {
+      parent.yield($value);
+    });
     this.result = $value;
-    if (this._parent && this._$owner.__tag === sc.TAG_FUNC) {
-      this._parent.yield($value);
-    }
-    return this;
+    return this.suspend();
   };
 
   Bytecode.prototype.yieldAndReset = function($value) {
-    this.state   = sc.STATE_INIT;
-    this.result  = $value;
-    if (this._parent && this._$owner.__tag === sc.TAG_FUNC) {
-      this._parent.yieldAndReset($value);
-    }
-    this._index  = 0;
-    this._iter   = null;
-    this._parent = null;
-    this._child  = null;
-    return this;
+    this.bubble(function(parent) {
+      parent.yieldAndReset($value);
+    });
+    this.result = $value;
+    return this.reset();
   };
 
   Bytecode.prototype.alwaysYield = function($value) {
-    this.state   = sc.STATE_DONE;
-    this.result  = $value;
-    if (this._parent && this._$owner.__tag === sc.TAG_FUNC) {
-      this._parent.alwaysYield($value);
-    }
-    this._index  = this._length;
-    this._iter   = null;
-    this._parent = null;
-    this._child  = null;
-    return this.free();
+    this.bubble(function(parent) {
+      parent.alwaysYield($value);
+    });
+    this.result = $value;
+    return this.purgeChild().done();
   };
 
-  var throwIfOutsideOfRoutine = function() {
+  Bytecode.prototype.bubble = function(callback) {
+    if (this.parent && this._$owner.__tag === sc.TAG_FUNC) {
+      callback(this.parent);
+    }
+  };
+
+  function insideOfARoutine() {
+    return sc.lang.main.getCurrentThread().__tag === sc.TAG_ROUTINE;
+  }
+
+  function throwIfOutsideOfRoutine() {
     if (!insideOfARoutine()) {
-      current = null;
+      Bytecode.current = null;
       throw new Error("yield was called outside of a Routine.");
     }
+  }
+
+  sc.lang.bytecode = {
+    create: function(initializer, def, length, localVars) {
+      return new Bytecode(initializer, def, length, localVars);
+    },
+    yield: function($value) {
+      throwIfOutsideOfRoutine();
+      return Bytecode.current.yield($value).purgeChild();
+    },
+    alwaysYield: function($value) {
+      throwIfOutsideOfRoutine();
+      return Bytecode.current.alwaysYield($value);
+    },
+    yieldAndReset: function($value) {
+      throwIfOutsideOfRoutine();
+      return Bytecode.current.yieldAndReset($value);
+    },
+    setCurrent: function(bytecode) {
+      Bytecode.current = bytecode;
+    },
+    getCurrent: function() {
+      return Bytecode.current;
+    }
   };
-
-  var bytecode = {};
-
-  bytecode.create = function(initializer, def) {
-    return new Bytecode(initializer, def);
-  };
-
-  bytecode.yield = function($value) {
-    throwIfOutsideOfRoutine();
-    return current.yield($value).purge();
-  };
-
-  bytecode.alwaysYield = function($value) {
-    throwIfOutsideOfRoutine();
-    return current.alwaysYield($value);
-  };
-
-  bytecode.yieldAndReset = function($value) {
-    throwIfOutsideOfRoutine();
-    return current.yieldAndReset($value);
-  };
-
-  bytecode.setCurrent = function(bytecode) {
-    current = bytecode;
-  };
-
-  bytecode.getCurrent = function() {
-    return current;
-  };
-
-  sc.lang.bytecode = bytecode;
 })(sc);

@@ -151,7 +151,7 @@
     if (_.isFunction(obj)) {
       return $.Function(function() {
         return [ obj ];
-      }, typeof opts === "string" ? opts : undefined);
+      }, typeof opts === "string" ? opts : null, null);
     }
 
     return obj;

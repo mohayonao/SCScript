@@ -15,6 +15,8 @@ describe("sc.lang.compiler.Parser", function() {
       "#a ... b = c": sc.test.OK,
       "#[]": sc.test.OK,
       "[ 0 ] = 10": strlib.format(Message.InvalidLHSInAssignment),
+      "a.b() = 10": strlib.format(Message.UnexpectedToken, "="),
+      "-a = 10": strlib.format(Message.UnexpectedToken, "="),
     });
 
     sc.test.parse(this.title).each({
@@ -102,11 +104,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "put",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 }
-          }
         },
         args: {
           list: [
@@ -153,11 +150,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "putSeries",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 }
-          }
         },
         args: {
           list: [

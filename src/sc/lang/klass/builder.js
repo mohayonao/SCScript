@@ -133,7 +133,7 @@
       func = choose(opts);
       opts = {};
     }
-    methods[name] = fn(func, opts.args);
+    methods[name] = fn(func, opts.args || null);
     return that;
   }
 

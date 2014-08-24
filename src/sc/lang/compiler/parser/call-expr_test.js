@@ -29,13 +29,12 @@ describe("sc.lang.compiler.Parser", function() {
       "a#{}#{}": sc.test.OK,   // #{}.a(#{})
       "a#{}[0]": sc.test.OK,   // (#{}.a)[0]
       "a#{}.a": sc.test.OK,    // (#{}.a).a
-      "a#[]": strlib.format(Message.UnexpectedToken, "#"),
+      "a#[]": strlib.format(Message.UnexpectedToken, "["),
       "a[]": strlib.format(Message.UnexpectedToken, "]"),
       "Object[]": sc.test.OK,  // Object[]
       "a[0]": sc.test.OK,      // a[0]
       "a[..]": sc.test.OK,     // a[..]
       "a[0]()": strlib.format(Message.UnexpectedToken, "("),
-      "a[0]{}": strlib.format(Message.UnexpectedToken, "{"),
       "a[0][0]": sc.test.OK,   // (a[0])[0]
       "a[0].a": sc.test.OK,    // (a[0]).a
       "a.a": sc.test.OK,       // a.a()
@@ -43,6 +42,8 @@ describe("sc.lang.compiler.Parser", function() {
       "a._": strlib.format(Message.UnexpectedIdentifier),
       "a.a()": sc.test.OK,     // a.a()
       "a.a{}": sc.test.OK,     // a.a({})
+      "a.a#{}": sc.test.OK,    // a.a(#{})
+      "a.a#[]": strlib.format(Message.UnexpectedToken, "["),
       "a.a[0]": sc.test.OK,    // (a.a)[0]
       "a.a.a": sc.test.OK,     // (a.a).a
       "a.()": sc.test.OK,      // a.value()
@@ -84,11 +85,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "new",
-          range: [ 6, 6 ],
-          loc: {
-            start: { line: 1, column: 6 },
-            end: { line: 1, column: 6 },
-          }
         },
         args: {
           list: []
@@ -209,11 +205,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 4, 4 ],
-          loc: {
-            start: { line: 1, column: 4 },
-            end: { line: 1, column: 4 },
-          }
         },
         args: {
           list: [
@@ -237,7 +228,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a(0).a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "(",
@@ -333,11 +324,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "new",
-          range: [ 6, 6 ],
-          loc: {
-            start: { line: 1, column: 6 },
-            end: { line: 1, column: 6 },
-          }
         },
         args: {
           list: [
@@ -438,11 +424,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 3, 3 ],
-          loc: {
-            start: { line: 1, column: 3 },
-            end: { line: 1, column: 3 },
-          }
         },
         args: {
           list: [
@@ -466,7 +447,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a{}.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "(",
@@ -563,11 +544,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "new",
-          range: [ 7, 7 ],
-          loc: {
-            start: { line: 1, column: 7 },
-            end: { line: 1, column: 7 },
-          }
         },
         args: {
           list: [
@@ -672,11 +648,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 4, 4 ],
-          loc: {
-            start: { line: 1, column: 4 },
-            end: { line: 1, column: 4 },
-          }
         },
         args: {
           list: [
@@ -700,7 +671,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a#{}.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "(",
@@ -766,11 +737,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "[]",
-          range: [ 6, 6 ],
-          loc: {
-            start: { line: 1, column: 6 },
-            end: { line: 1, column: 6 },
-          }
         },
         args: {
           list: [
@@ -806,11 +772,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 },
-          }
         },
         args: {
           list: [
@@ -847,11 +808,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "copySeries",
-          range: [ 1, 1 ],
-          loc: {
-            start: { line: 1, column: 1 },
-            end: { line: 1, column: 1 },
-          },
         },
         args: {
           list: [
@@ -884,11 +840,6 @@ describe("sc.lang.compiler.Parser", function() {
           method: {
             type: Syntax.Identifier,
             name: "at",
-            range: [ 1, 1 ],
-            loc: {
-              start: { line: 1, column: 1 },
-              end: { line: 1, column: 1 },
-            }
           },
           args: {
             list: [
@@ -913,11 +864,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 4, 4 ],
-          loc: {
-            start: { line: 1, column: 4 },
-            end: { line: 1, column: 4 },
-          }
         },
         args: {
           list: [
@@ -941,7 +887,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a[0].a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
           stamp: "[",
@@ -957,11 +903,6 @@ describe("sc.lang.compiler.Parser", function() {
           method: {
             type: Syntax.Identifier,
             name: "at",
-            range: [ 1, 1 ],
-            loc: {
-              start: { line: 1, column: 1 },
-              end: { line: 1, column: 1 },
-            }
           },
           args: {
             list: [
@@ -1003,7 +944,7 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.Identifier,
           name: "a",
@@ -1107,7 +1048,7 @@ describe("sc.lang.compiler.Parser", function() {
         stamp: "[",
         callee: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1138,11 +1079,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 3, 3 ],
-          loc: {
-            start: { line: 1, column: 3 },
-            end: { line: 1, column: 3 },
-          }
         },
         args: {
           list: [
@@ -1166,10 +1102,10 @@ describe("sc.lang.compiler.Parser", function() {
       },
       "a.a.a": {
         type: Syntax.CallExpression,
-        stamp: "(",
+        stamp: ".",
         callee: {
           type: Syntax.CallExpression,
-          stamp: "(",
+          stamp: ".",
           callee: {
             type: Syntax.Identifier,
             name: "a",
@@ -1230,11 +1166,6 @@ describe("sc.lang.compiler.Parser", function() {
         method: {
           type: Syntax.Identifier,
           name: "value",
-          range: [ 2, 2 ],
-          loc: {
-            start: { line: 1, column: 2 },
-            end: { line: 1, column: 2 },
-          }
         },
         args: {
           list: []
@@ -1249,43 +1180,17 @@ describe("sc.lang.compiler.Parser", function() {
         type: Syntax.CallExpression,
         stamp: "[",
         callee: {
-          type: Syntax.CallExpression,
-          stamp: "(",
-          callee: {
-            type: Syntax.Identifier,
-            name: "a",
-            range: [ 0, 1 ],
-            loc: {
-              start: { line: 1, column: 0 },
-              end: { line: 1, column: 1 },
-            }
-          },
-          method: {
-            type: Syntax.Identifier,
-            name: "value",
-            range: [ 2, 2 ],
-            loc: {
-              start: { line: 1, column: 2 },
-              end: { line: 1, column: 2 },
-            }
-          },
-          args: {
-            list: []
-          },
-          range: [ 0, 2 ],
+          type: Syntax.Identifier,
+          name: "a",
+          range: [ 0, 1 ],
           loc: {
             start: { line: 1, column: 0 },
-            end: { line: 1, column: 2 },
+            end: { line: 1, column: 1 },
           }
         },
         method: {
           type: Syntax.Identifier,
           name: "at",
-          range: [ 2, 2 ],
-          loc: {
-            start: { line: 1, column: 2 },
-            end: { line: 1, column: 2 },
-          }
         },
         args: {
           list: [

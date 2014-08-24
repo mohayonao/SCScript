@@ -504,10 +504,9 @@ describe("Streams/Stream", function() {
           },
           function() {
             return $$(5).yield();
-          },
-          $.NOP
+          }
         ];
-      }));
+      }, null, null));
 
       expect(r.next() , 1).to.be.a("SCInteger").that.equals(1);
       expect(r.next() , 2).to.be.a("SCInteger").that.equals(2);

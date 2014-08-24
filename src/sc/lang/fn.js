@@ -7,52 +7,81 @@
   var slice = [].slice;
   var $ = sc.lang.$;
 
-  var fn = function(func, def) {
-    var argItems, argNames, argVals;
-    var remain, wrapper;
+  sc.lang.fn = function(func, def) {
+    return compile(def).wrap(func);
+  };
 
-    if (!def) {
+  var compile = sc.lang.fn.compile = function(def) {
+    if (def === null) {
+      return nopTransducer;
+    }
+
+    var defItems = getDefItems(def);
+
+    function transduce(given) {
+      var args  = defItems.vals.slice();
+
+      if (isDictionary(peek(given))) {
+        setKeywordArguments(args, defItems.names, given.pop());
+      }
+
+      copy(args, given, Math.min(defItems.names.length, given.length));
+
+      if (defItems.remain) {
+        args.push($.Array(given.slice(defItems.names.length)));
+      }
+
+      return args;
+    }
+
+    return build(transduce, defItems.names, defItems.vals, function(func) {
+      var wrapped = function() {
+        return func.apply(this, transduce(slice.call(arguments)));
+      };
+
+      wrapped.transduce = transduce;
+
+      return wrapped;
+    });
+  };
+
+  var nopTransducer = (function() {
+    function transduce(given) {
+      return given;
+    }
+
+    return build(transduce, [], [], function(func) {
+      func.transduce = transduce;
       return func;
-    }
+    });
+  })();
 
-    argItems = def.split(/\s*;\s*/);
-    if (argItems[argItems.length - 1].charAt(0) === "*") {
-      remain = !!argItems.pop();
-    }
+  function build(transduce, names, vals, wrap) {
+    transduce.wrap = wrap;
+    transduce.names = names;
+    transduce.vals = vals;
 
-    argNames = new Array(argItems.length);
-    argVals  = new Array(argItems.length);
+    return transduce;
+  }
 
-    argItems.forEach(function(items, i) {
+  function getDefItems(def) {
+    var items = def.split(/\s*;\s*/);
+    var remain = peek(items).charAt(0) === "*" ? !!items.pop() : false;
+    var names  = new Array(items.length);
+    var vals   = new Array(items.length);
+
+    items.forEach(function(items, i) {
       items = items.split("=");
-      argNames[i] = items[0].trim();
-      argVals [i] = getDefaultValue(items[1] || "nil");
+      names[i] = items[0].trim();
+      vals [i] = getDefaultValue(items[1] || "nil");
     });
 
-    wrapper = function() {
-      var given, args;
+    return { names: names, vals: vals, remain: remain };
+  }
 
-      given = slice.call(arguments);
-      args  = argVals.slice();
-
-      if (isDictionary(given[given.length - 1])) {
-        setKeywordArguments(args, argNames, given.pop());
-      }
-
-      copy(args, given, Math.min(argNames.length, given.length));
-
-      if (remain) {
-        args.push($.Array(given.slice(argNames.length)));
-      }
-
-      return func.apply(this, args);
-    };
-
-    wrapper._argNames = argNames;
-    wrapper._argVals  = argVals;
-
-    return wrapper;
-  };
+  function peek(list) {
+    return list[list.length - 1];
+  }
 
   function isDictionary(obj) {
     return !!(obj && obj.constructor === Object);
@@ -66,9 +95,12 @@
     }
   }
 
-  function _getDefaultValue(value) {
-    var ch;
-
+  function getDefaultValue(value) {
+    if (value.charAt(0) === "[") {
+      return $.Array(value.slice(1, -2).split(",").map(function(value) {
+        return getDefaultValue(value.trim());
+      }));
+    }
     switch (value) {
     case "nil":
       return $.Nil();
@@ -82,7 +114,7 @@
       return $.Float(-Infinity);
     }
 
-    ch = value.charAt(0);
+    var ch = value.charAt(0);
     switch (ch) {
     case "$":
       return $.Char(value.charAt(1));
@@ -97,15 +129,6 @@
     return $.Integer(+value);
   }
 
-  function getDefaultValue(value) {
-    if (value.charAt(0) === "[") {
-      return $.Array(value.slice(1, -2).split(",").map(function(value) {
-        return _getDefaultValue(value.trim());
-      }));
-    }
-    return _getDefaultValue(value);
-  }
-
   function setKeywordArguments(args, argNames, dict) {
     Object.keys(dict).forEach(function(key) {
       var index = argNames.indexOf(key);
@@ -114,6 +137,4 @@
       }
     });
   }
-
-  sc.lang.fn = fn;
 })(sc);

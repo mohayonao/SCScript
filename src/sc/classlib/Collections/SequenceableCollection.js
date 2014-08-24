@@ -172,13 +172,15 @@ SCScript.install(function(sc) {
       if (this.size() !== $aCollection.size()) {
         return $false;
       }
-      this.do($.Func(function($item, $i) {
-        if ($item ["!="] ($aCollection.$("at", [ $i ])).__bool__()) {
-          $res = $false;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($item, $i) {
+          if ($item ["!="] ($aCollection.$("at", [ $i ])).__bool__()) {
+            $res = $false;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $true;
     });
@@ -245,13 +247,15 @@ SCScript.install(function(sc) {
     }, function($item) {
       var $ret = null;
 
-      this.do($.Func(function($elem, $i) {
-        if ($item === $elem) {
-          $ret = $i;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.do($.Function(function(_) {
+        return [ function($elem, $i) {
+          if ($item === $elem) {
+            $ret = $i;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $ret || $nil;
     });
@@ -376,16 +380,18 @@ SCScript.install(function(sc) {
       if (this.size() <= 1) {
         return $true;
       }
-      this.doAdjacentPairs($.Func(function($a, $b) {
-        var $diff = $b.$("-", [ $a ]);
-        if ($step === $nil) {
-          $step = $diff;
-        } else if ($step ["!="] ($diff).__bool__()) {
-          $res = $false;
-          this.break();
-        }
-        return $nil;
-      }));
+      this.doAdjacentPairs($.Function(function(_) {
+        return [ function($a, $b) {
+          var $diff = $b.$("-", [ $a ]);
+          if ($step === $nil) {
+            $step = $diff;
+          } else if ($step ["!="] ($diff).__bool__()) {
+            $res = $false;
+            _.break();
+          }
+          return $nil;
+        } ];
+      }, null, null));
 
       return $res || $true;
     });

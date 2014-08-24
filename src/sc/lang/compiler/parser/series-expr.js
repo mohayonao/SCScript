@@ -28,9 +28,7 @@
       generator = true;
     }
 
-    var method = this.createMarker().apply(
-      Node.createIdentifier(generator ? "seriesIter" : "series")
-    );
+    var method = Node.createIdentifier(generator ? "seriesIter" : "series");
 
     var innerElements = this.state.innerElements;
     this.state.innerElements = true;
@@ -49,7 +47,7 @@
     this.expect(")");
 
     return marker.update().apply(
-      Node.createCallExpression(items.shift(), method, { list: items }, "(")
+      Node.createCallExpression(items.shift(), method, { list: items })
     );
   };
 

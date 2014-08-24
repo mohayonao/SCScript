@@ -8,7 +8,7 @@ describe("sc.lang.compiler.CodeGen", function() {
     sc.test.codegen().each([
       {
         code: "{}",
-        expected: "$.Function(function() { return []; })",
+        expected: "$.Function(function() { return []; }, null, [])",
         ast: {
           type: Syntax.FunctionExpression,
           body: []
@@ -16,7 +16,7 @@ describe("sc.lang.compiler.CodeGen", function() {
       },
       {
         code: "#{}",
-        expected: "$.Function(function() { return []; }, '', true)",
+        expected: "$.Function(function() { return []; }, null, [])",
         ast: {
           type: Syntax.FunctionExpression,
           closed: true,
@@ -25,7 +25,7 @@ describe("sc.lang.compiler.CodeGen", function() {
       },
       {
         code: "{|a,b|}",
-        expected: "$.Function(function() { return []; }, 'a;b')",
+        expected: "$.Function(function() { return []; }, 'a;b', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -51,7 +51,7 @@ describe("sc.lang.compiler.CodeGen", function() {
       },
       {
         code: "{|a=0,b=1.0,c=$c,d=\\d}",
-        expected: "$.Function(function() { return []; }, 'a=0;b=1.0;c=$c;d=\\d')",
+        expected: "$.Function(function() { return []; }, 'a=0;b=1.0;c=$c;d=\\d', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -111,7 +111,7 @@ describe("sc.lang.compiler.CodeGen", function() {
       },
       {
         code: "{|a=nil,b=true,c=false}",
-        expected: "$.Function(function() { return []; }, 'a=nil;b=true;c=false')",
+        expected: "$.Function(function() { return []; }, 'a=nil;b=true;c=false', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -159,7 +159,7 @@ describe("sc.lang.compiler.CodeGen", function() {
       },
       {
         code: "{|a=inf,b=-inf}",
-        expected: "$.Function(function() { return []; }, 'a=inf;b=-inf')",
+        expected: "$.Function(function() { return []; }, 'a=inf;b=-inf', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -195,7 +195,7 @@ describe("sc.lang.compiler.CodeGen", function() {
       },
       {
         code: "{|a=#[0,1,2]}",
-        expected: "$.Function(function() { return []; }, 'a=[0,1,2]')",
+        expected: "$.Function(function() { return []; }, 'a=[0,1,2]', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -233,8 +233,8 @@ describe("sc.lang.compiler.CodeGen", function() {
         }
       },
       {
-        code: "{|*a|}",
-        expected: "$.Function(function() { return []; }, '*a')",
+        code: "{|...a|}",
+        expected: "$.Function(function() { return []; }, '*a', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -248,8 +248,8 @@ describe("sc.lang.compiler.CodeGen", function() {
         }
       },
       {
-        code: "{|a,*b|}",
-        expected: "$.Function(function() { return []; }, 'a;*b')",
+        code: "{|a...b|}",
+        expected: "$.Function(function() { return []; }, 'a;*b', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -280,7 +280,7 @@ describe("sc.lang.compiler.CodeGen", function() {
                   "    }," +
                   "    $.NOP" +
                   "  ]; " +
-                  "})",
+                  "}, null, [])",
         ast: {
           type: Syntax.FunctionExpression,
           body: [
@@ -309,7 +309,7 @@ describe("sc.lang.compiler.CodeGen", function() {
                   "    }," +
                   "    $.NOP" +
                   "  ]; " +
-                  "})",
+                  "}, null, [])",
         ast: {
           type: Syntax.FunctionExpression,
           body: [
@@ -363,7 +363,7 @@ describe("sc.lang.compiler.CodeGen", function() {
                   "      $a = null;" +
                   "    }" +
                   "  ]; " +
-                  "}, 'a')",
+                  "}, 'a', [])",
         ast: {
           type: Syntax.FunctionExpression,
           args: {
@@ -399,7 +399,7 @@ describe("sc.lang.compiler.CodeGen", function() {
                   "      $_0 = $_1 = null;" +
                   "    }" +
                   "  ]; " +
-                  "})",
+                  "}, null, [])",
         ast: {
           type: Syntax.FunctionExpression,
           partial: true,

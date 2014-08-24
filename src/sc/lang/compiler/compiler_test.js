@@ -177,7 +177,7 @@ describe("sc.lang.compiler", function() {
           body: [
             {
               type: Syntax.CallExpression,
-              stamp: "(",
+              stamp: ".",
               callee: {
                 type: Syntax.CallExpression,
                 stamp: "(",
@@ -271,7 +271,7 @@ describe("sc.lang.compiler", function() {
               stamp: "=",
               callee: {
                 type: Syntax.CallExpression,
-                stamp: "(",
+                stamp: ".",
                 callee: {
                   type: Syntax.Identifier,
                   name: "a",
@@ -829,7 +829,7 @@ describe("sc.lang.compiler", function() {
           "        $a = $x = null;",
           "      }",
           "    ];",
-          "  }, 'x=1');",
+          "  }, 'x=1', []);",
           "});",
         ],
         ast: {
@@ -1017,7 +1017,7 @@ describe("sc.lang.compiler", function() {
           "        $a = $x = $y = null;",
           "      }",
           "    ];",
-          "  }, 'x;y');",
+          "  }, 'x;y', []);",
           "});",
         ],
         ast: {
@@ -1079,7 +1079,7 @@ describe("sc.lang.compiler", function() {
                 },
                 {
                   type: Syntax.CallExpression,
-                  stamp: "(",
+                  stamp: ".",
                   callee: {
                     type: Syntax.Identifier,
                     name: "x",
@@ -1114,14 +1114,14 @@ describe("sc.lang.compiler", function() {
           "            },",
           "            $.NOP",
           "          ];",
-          "        }) ]);",
+          "        }, null, []) ]);",
           "      },",
           "      function() {",
           "        return $.Integer(0);",
           "      },",
           "      $.NOP",
           "    ];",
-          "  });",
+          "  }, null, []);",
           "});",
         ],
         ast: {
@@ -1149,7 +1149,7 @@ describe("sc.lang.compiler", function() {
                         body: [
                           {
                             type: Syntax.CallExpression,
-                            stamp: "(",
+                            stamp: ".",
                             callee: {
                               type: Syntax.Literal,
                               value: "1",
@@ -1192,7 +1192,7 @@ describe("sc.lang.compiler", function() {
           "      },",
           "      $.NOP",
           "    ];",
-          "  });",
+          "  }, null, []);",
           "});",
         ],
         ast: {
@@ -1444,7 +1444,7 @@ describe("sc.lang.compiler", function() {
           body: [
             {
               type: Syntax.CallExpression,
-              stamp: "(",
+              stamp: ".",
               callee: {
                 type: Syntax.Identifier,
                 name: "Point",
@@ -1668,7 +1668,7 @@ describe("sc.lang.compiler", function() {
           body: [
             {
               type: Syntax.CallExpression,
-              stamp: "(",
+              stamp: ".",
               callee: {
                 type: Syntax.EnvironmentExpression,
                 id: {
@@ -1790,7 +1790,7 @@ describe("sc.lang.compiler", function() {
           "        $_0 = $_1 = null;",
           "      }",
           "    ];",
-          "  }), $.This().$('f_', [ _ref0 ]), _ref0);",
+          "  }, null, []), $.This().$('f_', [ _ref0 ]), _ref0);",
           "});",
         ],
         ast: {
@@ -1898,7 +1898,7 @@ describe("sc.lang.compiler", function() {
           "        $a = null;",
           "      }",
           "    ];",
-          "  });",
+          "  }, null, []);",
           "  return $a;",
           "});",
         ],
@@ -1965,11 +1965,11 @@ describe("sc.lang.compiler", function() {
           "              $_0 = null;",
           "            }",
           "          ];",
-          "        }) ]);",
+          "        }, null, []) ]);",
           "      },",
           "      $.NOP",
           "    ];",
-          "  });",
+          "  }, null, []);",
           "});"
         ],
         ast: {
@@ -2026,7 +2026,7 @@ describe("sc.lang.compiler", function() {
                         body: [
                           {
                             type: Syntax.CallExpression,
-                            stamp: "(",
+                            stamp: ".",
                             callee: {
                               type: Syntax.Identifier,
                               name: "$_0",
@@ -2054,17 +2054,29 @@ describe("sc.lang.compiler", function() {
       var code = items[0];
       var ast  = items[1].ast;
       var expected = items[1].expected;
+
       it("ast:" + code, function() {
         var test = sc.lang.compiler.parse(code);
         expect(test).to.deep.equal(ast);
       });
+
       it("compile:" + code, function() {
-        var expectedAST = esprima.parse(expected.join("\n"));
         var compiled  = sc.lang.compiler.compile(code);
-        var actualAST = esprima.parse(compiled);
-        expect(actualAST).to.deep.equal(expectedAST);
+        expect(js(compiled)).to.deep.equal(js(expected.join("\n")));
       });
     });
   });
+
+  function js(str) {
+    return ast2js(js2ast(str));
+  }
+
+  function js2ast(js) {
+    return esprima.parse(js);
+  }
+
+  function ast2js(ast) {
+    return escodegen.generate(ast);
+  }
 
 });

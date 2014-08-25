@@ -1,0 +1,102 @@
+SCScript.install(function(sc) {
+  "use strict";
+
+  require("../Core/Object");
+
+  sc.lang.klass.define("Buffer", function() {
+    // TODO: implements $initClass
+    // TODO: implements $new
+    // TODO: implements $alloc
+    // TODO: implements $allocConsecutive
+    // TODO: implements $read
+    // TODO: implements $readChannel
+    // TODO: implements $readNoUpdate
+    // TODO: implements $cueSoundFile
+    // TODO: implements $loadCollection
+    // TODO: implements $sendCollection
+    // TODO: implements $freeAll
+    // TODO: implements $initServerCache
+    // TODO: implements $clearServerCaches
+    // TODO: implements $cachedBuffersDo
+    // TODO: implements $cachedBufferAt
+    // TODO: implements $loadDialog
+    // TODO: implements server
+    // TODO: implements bufnum
+    // TODO: implements numFrames
+    // TODO: implements numFrames_
+    // TODO: implements numChannels
+    // TODO: implements numChannels_
+    // TODO: implements sampleRate
+    // TODO: implements sampleRate_
+    // TODO: implements path
+    // TODO: implements path_
+    // TODO: implements startFrame
+    // TODO: implements startFrame_
+    // TODO: implements doOnInfo_
+    // TODO: implements alloc
+    // TODO: implements allocRead
+    // TODO: implements allocReadChannel
+    // TODO: implements allocMsg
+    // TODO: implements allocReadMsg
+    // TODO: implements allocReadChannelMsg
+    // TODO: implements read
+    // TODO: implements readChannel
+    // TODO: implements readNoUpdate
+    // TODO: implements readMsg
+    // TODO: implements readChannelMsg
+    // TODO: implements cueSoundFile
+    // TODO: implements cueSoundFileMsg
+    // TODO: implements loadCollection
+    // TODO: implements sendCollection
+    // TODO: implements streamCollection
+    // TODO: implements loadToFloatArray
+    // TODO: implements getToFloatArray
+    // TODO: implements write
+    // TODO: implements writeMsg
+    // TODO: implements free
+    // TODO: implements freeMsg
+    // TODO: implements zero
+    // TODO: implements zeroMsg
+    // TODO: implements set
+    // TODO: implements setMsg
+    // TODO: implements setn
+    // TODO: implements setnMsgArgs
+    // TODO: implements setnMsg
+    // TODO: implements get
+    // TODO: implements getMsg
+    // TODO: implements getn
+    // TODO: implements getnMsg
+    // TODO: implements fill
+    // TODO: implements fillMsg
+    // TODO: implements normalize
+    // TODO: implements normalizeMsg
+    // TODO: implements gen
+    // TODO: implements genMsg
+    // TODO: implements sine1
+    // TODO: implements sine2
+    // TODO: implements sine3
+    // TODO: implements cheby
+    // TODO: implements sine1Msg
+    // TODO: implements sine2Msg
+    // TODO: implements sine3Msg
+    // TODO: implements chebyMsg
+    // TODO: implements copyData
+    // TODO: implements copyMsg
+    // TODO: implements close
+    // TODO: implements closeMsg
+    // TODO: implements query
+    // TODO: implements updateInfo
+    // TODO: implements cache
+    // TODO: implements uncache
+    // TODO: implements queryDone
+    // TODO: implements printOn
+    // TODO: implements play
+    // TODO: implements duration
+    // TODO: implements asUGenInput
+    // TODO: implements asControlInput
+    // TODO: implements asBufWithValues
+    // TODO: implements preparePartConv
+    // TODO: implements plot
+  });
+
+});
